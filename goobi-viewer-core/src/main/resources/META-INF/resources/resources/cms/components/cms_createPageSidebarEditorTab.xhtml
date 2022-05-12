@@ -34,19 +34,67 @@
 											<!-- MOVE ITEM UP OR DOWN -->
 											<div class="sidebar-editor__move-wrapper">
 
-												<button class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
+												<button class="btn btn--clean sidebar-editor__move-up -deactivated" type="button" rendered="#{status.first}" jsf:action="false">
+													<i class="fa fa-chevron-up" aria-hidden="true"></i>
+												</button>
+
+												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms_pageSidebar_widget_tooltip_up}"
+													class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
 													jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
-													<i class="fa fa-arrow-up" aria-hidden="true"></i>
+													<i class="fa fa-chevron-up" aria-hidden="true"></i>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 
-												<button class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
+												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms_pageSidebar_widget_tooltip_down}" 
+													class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
 													jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
-													<i class="fa fa-arrow-down" aria-hidden="true"></i>
+													<i class="fa fa-chevron-down " aria-hidden="true"></i>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
+												</button>
+												
+												<button class="btn btn--clean sidebar-editor__move-down -deactivated" type="button" rendered="#{status.last}"  jsf:action="false">
+													<i class="fa fa-chevron-down" aria-hidden="true"></i>
 												</button>
 
 											</div>
+											
+											<div class="sidebar-editor__icon">
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_RSSFEED'}" >
+	                                        		<i class="fa fa-rss" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- FACETS TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_FACETTING'}" >
+	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- FACETS 2 TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_FIELDFACETS'}" >
+	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- PAGES TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_CMSPAGES'}" >
+	                                        		<i class="fa fa-clone" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- HTML TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_HTML'}" >
+	                                        		<i class="fa fa-code" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- MAP TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_CMSGEOMAP'}" >
+	                                        		<i class="fa fa-map-o" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- SEARCH TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_SEARCH'}" >
+	                                        		<i class="fa fa-search" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- WORK COUNT TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_WORKCOUNT'}" >
+	                                        		<i class="fa fa-circle-o" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                        	<!-- BROWSING TITLE -->
+	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_BROWSING'}" >
+	                                        		<i class="fa fa-list-alt" aria-hidden="true"></i>
+	                                        	</ui:fragment>
+	                                      </div>  	
 
 											<!-- ITEM LABEL -->
 											<div class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</div>

@@ -22,11 +22,11 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchQueryItemTest extends AbstractTest {
+public class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#getAvailableOperators()
@@ -259,5 +259,42 @@ public class SearchQueryItemTest extends AbstractTest {
         item.setOperator(SearchItemOperator.AUTO);
         item.checkAutoOperator();
         Assert.assertEquals(SearchItemOperator.AUTO, item.getOperator());
+    }
+
+    /**
+     * @see SearchQueryItem#toggleDisplaySelectItems()
+     * @verifies set displaySelectItems false if searching in all fields
+     */
+    @Test
+    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInAllFields() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+        item.displaySelectItems = true;
+        item.toggleDisplaySelectItems();
+        Assert.assertFalse(item.isDisplaySelectItems());
+    }
+
+    /**
+     * @see SearchQueryItem#toggleDisplaySelectItems()
+     * @verifies set displaySelectItems true if value count below threshold
+     */
+    @Test
+    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsTrueIfValueCountBelowThreshold() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setField("MD_FOO");
+        item.toggleDisplaySelectItems();
+        Assert.assertTrue(item.isDisplaySelectItems());
+    }
+
+    /**
+     * @see SearchQueryItem#toggleDisplaySelectItems()
+     * @verifies set displaySelectItems false if value count above threshold
+     */
+    @Test
+    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountAboveThreshold() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setField(SolrConstants.PI);
+        item.toggleDisplaySelectItems();
+        Assert.assertFalse(item.isDisplaySelectItems());
     }
 }

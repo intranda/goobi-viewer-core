@@ -42,6 +42,7 @@ public class CitationDataProviderTest extends AbstractTest {
             fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
             fields.put(CitationDataProvider.ISSUED, Collections.singletonList("2017-04-11"));
             fields.put(CitationDataProvider.ISBN, Collections.singletonList("9780606412148"));
+            fields.put(CitationDataProvider.URL, Collections.singletonList("https://example.com/9780606412148"));
 
             CitationDataProvider provider = new CitationDataProvider();
             provider.addItemData("id", fields, CSLType.BOOK);
@@ -53,6 +54,7 @@ public class CitationDataProviderTest extends AbstractTest {
             Assert.assertEquals("Timothy", itemData.getAuthor()[0].getGiven());
             Assert.assertEquals("2017-04-11", itemData.getIssued().getRaw());
             Assert.assertNull(itemData.getIssued().getDateParts());
+            Assert.assertEquals("https://example.com/9780606412148", itemData.getURL());
 
         }
         {

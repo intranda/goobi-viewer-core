@@ -87,9 +87,9 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
-import io.goobi.viewer.model.viewer.DcSortingList;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.collections.DcSortingList;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -949,16 +949,12 @@ public final class Configuration extends AbstractConfiguration {
             String level = sub.getString("[@for]");
             String label = sub.getString("[@label]");
             String field = sub.getString("[@field]");
-            String prefix = sub.getString("[@prefix]");
-            String suffix = sub.getString("[@suffix]");
+            String pattern = sub.getString("[@pattern]");
             boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
-            boolean appendImageNumberToSuffix = sub.getBoolean("[@appendImageNumberToSuffix]", false);
             try {
                 ret.add(new CitationLink(type, level, label).setField(field)
-                        .setPrefix(prefix)
-                        .setSuffix(suffix)
-                        .setTopstructValueFallback(topstructValueFallback)
-                        .setAppendImageNumberToSuffix(appendImageNumberToSuffix));
+                        .setPattern(pattern)
+                        .setTopstructValueFallback(topstructValueFallback));
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage());
             }
@@ -1554,7 +1550,7 @@ public final class Configuration extends AbstractConfiguration {
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
-            int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 10);
+            int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1687,7 +1683,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isAdvancedSearchFieldUntokenizeForPhraseSearch(String field) {
         return isAdvancedSearchFieldHasAttribute(field, "untokenizeForPhraseSearch");
     }
-    
+
     /**
      * 
      * @param field
@@ -1706,7 +1702,7 @@ public final class Configuration extends AbstractConfiguration {
                 return subElement.getInt("[@displaySelectItemsThreshold]", AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD);
             }
         }
-        
+
         return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
     }
 
@@ -2783,7 +2779,7 @@ public final class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public String getGeoFacetFields() {
-        return getLocalString("search.facets.geoField");
+        return getLocalString("search.facets.geoField", null);
     }
 
     public String getGeoFacetFieldPredicate() {
@@ -2802,10 +2798,10 @@ public final class Configuration extends AbstractConfiguration {
      * getInitialFacetElementNumber.
      * </p>
      *
+     * @param field a {@link java.lang.String} object.
+     * @return Number of initial facet values
      * @should return correct value
      * @should return default value if field not found
-     * @param field a {@link java.lang.String} object.
-     * @return a int.
      */
     public int getInitialFacetElementNumber(String facetField) {
         if (StringUtils.isBlank(facetField)) {
@@ -2813,7 +2809,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         String value = getPropertyForFacetField(facetField, "[@initialElementNumber]", "-1");
-        return Integer.valueOf(value);
+        return Integer.valueOf(value.trim());
     }
 
     /**
@@ -5219,7 +5215,31 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getGeoMapMarkerFields() {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
     }
-    
+
+    public boolean useHeatmapForCMSMaps() {
+        return getLocalBoolean("maps.cms.heatmap[@enabled]", false);
+    }
+
+    public boolean useHeatmapForMapSearch() {
+        return getLocalBoolean("maps.search.heatmap[@enabled]", false);
+    }
+
+    public boolean useHeatmapForFacetting() {
+        return getLocalBoolean("maps.facet.heatmap[@enabled]", false);
+    }
+
+    public GeoMapMarker getMarkerForMapSearch() {
+        HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.search.marker");
+        GeoMapMarker marker = readGeoMapMarker(config);
+        return marker;
+    }
+
+    public GeoMapMarker getMarkerForFacetting() {
+        HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.facet.marker");
+        GeoMapMarker marker = readGeoMapMarker(config);
+        return marker;
+    }
+
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
@@ -5245,8 +5265,8 @@ public final class Configuration extends AbstractConfiguration {
      */
     public static GeoMapMarker readGeoMapMarker(HierarchicalConfiguration<ImmutableNode> config) {
         GeoMapMarker marker = null;
-        String name = config.getString(".");
-        if (StringUtils.isNotBlank(name)) {
+        if (config != null) {
+            String name = config.getString(".", "default");
             marker = new GeoMapMarker(name);
             marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
             marker.setIcon(config.getString("[@icon]", marker.getIcon()));

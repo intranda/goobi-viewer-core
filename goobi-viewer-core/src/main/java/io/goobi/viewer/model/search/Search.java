@@ -277,6 +277,27 @@ public class Search implements Serializable {
         execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false);
     }
 
+    public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator) throws IndexUnreachableException {
+        String currentQuery = SearchHelper.prepareQuery(this.query);
+        String termQuery = null;
+
+        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, false);
+        
+        // Apply current facets
+        String subElementQueryFilterSuffix = "";
+        if(facets != null) {
+            subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
+            if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
+                subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
+            }
+        }
+
+
+        String finalQuery = query + subElementQueryFilterSuffix;
+        
+        return finalQuery;
+    }
+    
     /**
      * <p>
      * execute.
@@ -307,6 +328,11 @@ public class Search implements Serializable {
         List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
         List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
 
+        //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
+        if(facets.getGeoFacetting().isActive()) {
+            allFacetFields.add("BOOL_WKT_COORDS");
+        }
+        
         String termQuery = null;
         if (boostTopLevelDocstructs && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
@@ -406,7 +432,7 @@ public class Search implements Serializable {
                 fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT,
                         SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.BOOL_IMAGEAVAILABLE,
                         SolrConstants.MIMETYPE);
-                maxResults = Integer.MAX_VALUE;
+                maxResults = DataManager.getInstance().getConfiguration().useHeatmapForFacetting() ? 0 : Integer.MAX_VALUE;
             }
 
             // Actual search
@@ -428,12 +454,10 @@ public class Search implements Serializable {
                     }
                 }
                 if (facets.getGeoFacetting().isActive()) {
+                    this.hasGeoLocationHits = resp.getFacetField("BOOL_WKT_COORDS").getValueCount() > 0;
                     if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap()) {
                         this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                         this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
-                        this.hasGeoLocationHits = !this.hitLocationList.isEmpty();
-                    } else {
-                        this.hasGeoLocationHits = resp.getResults().stream().anyMatch(doc -> doc.containsKey(facets.getGeoFacetting().getField()));
                     }
                 }
                 logger.debug("Total search hits: {}", hitsCount);

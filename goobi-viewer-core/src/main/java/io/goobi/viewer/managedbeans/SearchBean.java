@@ -101,10 +101,10 @@ import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
-import io.goobi.viewer.model.viewer.BrowseDcElement;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -373,15 +373,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String resetSearchAction() {
         logger.trace("resetSearchAction");
-        generateSimpleSearchString("");
-        setCurrentPage(1);
-        setExactSearchString("");
-        mirrorAdvancedSearchCurrentHierarchicalFacets();
-        resetSearchResults();
-        resetSearchParameters(true);
-        searchInCurrentItemString = null;
-        customFilterQuery = null;
-        proximitySearchDistance = 0;
+        reset();
 
         // After resetting, return to the correct search entry page
         switch (activeSearchType) {
@@ -392,6 +384,21 @@ public class SearchBean implements SearchInterface, Serializable {
             default:
                 return "pretty:" + PageType.search.name();
         }
+    }
+
+    /**
+     * Same as {@link #resetSearchAction()} without the redirect
+     */
+    public void reset() {
+        generateSimpleSearchString("");
+        setCurrentPage(1);
+        setExactSearchString("");
+        mirrorAdvancedSearchCurrentHierarchicalFacets();
+        resetSearchResults();
+        resetSearchParameters(true);
+        searchInCurrentItemString = null;
+        customFilterQuery = null;
+        proximitySearchDistance = 0;
     }
 
     /**
@@ -839,6 +846,48 @@ public class SearchBean implements SearchInterface, Serializable {
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, navigationHelper.getLocale(),
                 DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+    }
+
+    public String getFinalSolrQuery() throws IndexUnreachableException {
+        if(this.currentSearch != null) { 
+            String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
+            return query;
+        } else {
+            return new Search().generateFinalSolrQuery(null, advancedSearchGroupOperator);
+        }
+    }
+    
+    public List<String> getFilterQueries() {
+        List<String> queries = new ArrayList<>();
+        if (this.currentSearch != null) {
+            String customQuery = this.currentSearch.getCustomFilterQuery();
+            if(StringUtils.isNotBlank(customQuery)) {
+                queries.add(customQuery);
+            }
+        }
+        if (this.facets != null) {
+            List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
+            queries.addAll(facetQueries);
+        }
+        return  queries;
+    }
+    
+    public String getCombinedFilterQuery() {
+        String query = "";
+        if (this.currentSearch != null) {
+            String customQuery = this.currentSearch.getCustomFilterQuery();
+            if(StringUtils.isNotBlank(customQuery)) {
+                query += " +(" + customQuery + ")";
+            }
+        }
+        if (this.facets != null) {
+            List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
+            String facetQuery = StringUtils.join(facetQueries, " " + this.advancedSearchGroupOperator + " ");
+            if(StringUtils.isNotBlank(facetQuery)) {
+                query += " +(" + facetQuery + ")";
+            }
+        }
+        return  query;
     }
 
     /** {@inheritDoc} */
@@ -2837,23 +2886,25 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
         try {
-        num = num <= 0 ? Integer.MAX_VALUE : num;
-        String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
-        if (StringUtils.isNotBlank(filterQuery)) {
-            query += " +(" + filterQuery + ")";
-        }
-        String facetField = SearchHelper.facetifyField(field);
-        QueryResponse response =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
-        return response.getFacetField(facetField)
-                .getValues()
-                .stream()
-                .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
-                .map(count -> new FacetItem(count))
-                .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
-                .limit(num)
-                .collect(Collectors.toList());
-        } catch(PresentationException e) {
+            num = num <= 0 ? Integer.MAX_VALUE : num;
+            String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
+            if (StringUtils.isNotBlank(filterQuery)) {
+                query += " +(" + filterQuery + ")";
+            }
+            String facetField = SearchHelper.facetifyField(field);
+            QueryResponse response =
+                    DataManager.getInstance()
+                            .getSearchIndex()
+                            .searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, false);
+            return response.getFacetField(facetField)
+                    .getValues()
+                    .stream()
+                    .filter(count -> !StringTools.checkValueEmptyOrInverted(count.getName()))
+                    .map(count -> new FacetItem(count))
+                    .sorted((f1, f2) -> Long.compare(f2.getCount(), f1.getCount()))
+                    .limit(num)
+                    .collect(Collectors.toList());
+        } catch (PresentationException e) {
             logger.warn("Error rendering field facet values: {}", e.toString());
             return Collections.emptyList();
         }
@@ -2880,5 +2931,18 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return ret;
     }
+    
+    public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false); 
+        return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
+   }
+    
+   public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
+       return StringTools.encodeUrl(getFinalSolrQuery());
+   }
+   
+   public String getCombinedFilterQueryEscaped() {
+       return StringTools.encodeUrl(getCombinedFilterQuery());
+   }
 
 }

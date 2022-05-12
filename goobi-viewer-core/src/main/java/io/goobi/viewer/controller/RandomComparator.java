@@ -15,10 +15,10 @@
  */
 package io.goobi.viewer.controller;
 
+import java.security.SecureRandom;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * @author florian
@@ -26,13 +26,13 @@ import java.util.Random;
  */
 public class RandomComparator<T> implements Comparator<T> {
     private final Map<T, Integer> map = new IdentityHashMap<>();
-    private final Random random;
+    private final SecureRandom random;
 
     public RandomComparator() {
-        this(new Random());
+        this(new SecureRandom());
     }
 
-    public RandomComparator(Random random) {
+    public RandomComparator(SecureRandom random) {
         this.random = random;
     }
 

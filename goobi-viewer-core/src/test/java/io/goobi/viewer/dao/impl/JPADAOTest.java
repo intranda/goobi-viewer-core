@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -708,7 +709,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getCommentCount_shouldApplyTargetPiFilterCorrectly() throws Exception {
         // TODO update test dataset to include comments with different target_pi
-        Assert.assertEquals(4L ,DataManager.getInstance().getDao().getCommentCount(null, null, Collections.singleton("PI_1")));
+        Assert.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, Collections.singleton("PI_1")));
     }
 
     @Test
@@ -2481,6 +2482,41 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAllAnnotations(String,boolean)
+     * @verifies sort correctly
+     */
+    @Test
+    public void getAllAnnotations_shouldSortCorrectly() throws Exception {
+        {
+            List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAllAnnotations("id", false);
+            Assert.assertEquals(5, result.size());
+            Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
+            Assert.assertEquals(Long.valueOf(2), result.get(1).getId());
+            Assert.assertEquals(Long.valueOf(3), result.get(2).getId());
+            Assert.assertEquals(Long.valueOf(4), result.get(3).getId());
+            Assert.assertEquals(Long.valueOf(5), result.get(4).getId());
+        }
+        {
+            List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAllAnnotations("id", true);
+            Assert.assertEquals(5, result.size());
+            Assert.assertEquals(Long.valueOf(5), result.get(0).getId());
+            Assert.assertEquals(Long.valueOf(4), result.get(1).getId());
+            Assert.assertEquals(Long.valueOf(3), result.get(2).getId());
+            Assert.assertEquals(Long.valueOf(2), result.get(3).getId());
+            Assert.assertEquals(Long.valueOf(1), result.get(4).getId());
+        }
+    }
+
+    /**
+     * @see JPADAO#getAllAnnotations(String,boolean)
+     * @verifies throw IllegalArgumentException if sortField unknown
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getAllAnnotations_shouldThrowIllegalArgumentExceptionIfSortFieldUnknown() throws Exception {
+        DataManager.getInstance().getDao().getAllAnnotations("foo", false);
+    }
+
+    /**
      * @see JPADAO#getAnnotation(Long)
      * @verifies return correct row
      */
@@ -2601,11 +2637,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getAnnotationsForUserId_shouldReturnCorrectRows() throws Exception {
-        List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, "id", false);
+        List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, "id", true);
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
-        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
-        Assert.assertEquals(Long.valueOf(2), result.get(1).getId());
+        Assert.assertEquals(Long.valueOf(2), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(1), result.get(1).getId());
+    }
+
+    /**
+     * @see JPADAO#getAnnotationsForUserId(Long,Integer,String,boolean)
+     * @verifies throw IllegalArgumentException if sortField unknown
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getAnnotationsForUserId_shouldThrowIllegalArgumentExceptionIfSortFieldUnknown() throws Exception {
+        DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, "foo", false);
     }
 
     /**

@@ -26,20 +26,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.Version;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.download.DownloadJobTools;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Servlet for deleting cache elements. Should not be accessible to unauthorized persons. This is a temporary solutions which will probably be
  * replaced with some kind of GUI later.
  */
+@Deprecated
 public class ToolServlet extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = -2888790425901398519L;
@@ -53,11 +50,7 @@ public class ToolServlet extends HttpServlet implements Serializable {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = null;
-        String identifier = null;
-        boolean fromContentCache = false;
-        boolean fromThumbnailCache = false;
-        boolean fromPdfCache = false;
-
+        
         if (request.getParameterMap().size() > 0) {
             // Regular URLs
             Set<String> keys = request.getParameterMap().keySet();
@@ -68,18 +61,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
                         case "action":
                             action = values[0];
                             break;
-                        case "identifier":
-                            identifier = values[0];
-                            break;
-                        case "fromContent":
-                            fromContentCache = Boolean.valueOf(values[0]);
-                            break;
-                        case "fromThumbs":
-                            fromThumbnailCache = Boolean.valueOf(values[0]);
-                            break;
-                        case "fromPdfs":
-                            fromPdfCache = Boolean.valueOf(values[0]);
-                            break;
                         default: // nothing
                     }
                 }
@@ -89,31 +70,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
         // Check access conditions, if an actual document with a PI is involved
         if (action != null) {
             switch (action) {
-                case "emptyCache":
-                    // TODO this might be obsolete (superceded by REST endpoint)
-                    int deleted = CacheUtils.deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
-
-                    // Delete download jobs/files
-                    if (fromPdfCache) {
-                        try {
-                            int count = DownloadJobTools.removeJobsForRecord(identifier);
-                            logger.debug("Removed {} download jobs for '{}'", count, identifier);
-                        } catch (DAOException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
-
-                    response.getWriter().write(deleted + " cache elements belonging to '" + StringEscapeUtils.escapeHtml4(identifier) + "' deleted.");
-                    break;
-                case "fillCache":
-                    //                    String answer = performCacheFillerAction(request.getParameterMap());
-                    //                    String returnString = answer.trim().replaceAll("\\n", "<br>").replaceAll("\\t", "&#160;&#160;&#160;&#160;");
-                    //
-                    //                    response.setContentType("text/html"); {
-                    //                    ServletOutputStream output = response.getOutputStream();
-                    //                    output.write(returnString.getBytes(Charset.forName("utf-8")));
-                    //                }
-                    break;
                 case "checkSolrSchemaName":
                     String[] result = SolrTools.checkSolrSchemaName();
                     int status = Integer.valueOf(result[0]);

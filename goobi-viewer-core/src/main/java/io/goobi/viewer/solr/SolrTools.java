@@ -712,7 +712,7 @@ public class SolrTools {
                         if (schemaName.length() > SCHEMA_VERSION_PREFIX.length()
                                 && Integer.parseInt(schemaName.substring(SCHEMA_VERSION_PREFIX.length())) >= MIN_SCHEMA_VERSION) {
                             String msg = "Solr schema is up to date: " + SCHEMA_VERSION_PREFIX + MIN_SCHEMA_VERSION;
-                            logger.info(msg);
+                            logger.trace(msg);
                             ret[0] = "200";
                             ret[1] = msg;
                             return ret;

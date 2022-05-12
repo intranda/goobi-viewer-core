@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -88,6 +90,15 @@ public class UserTest extends AbstractDatabaseEnabledTest {
         User user = new User();
         user.setSuperuser(false);
         Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<String>(0), IPrivilegeHolder.PRIV_LIST, "PPN123"));
+    }
+
+    /**
+     * @see User#getId(URI)
+     * @verifies extract id correctly
+     */
+    @Test
+    public void getId_shouldExtractIdCorrectly() throws Exception {
+        Assert.assertEquals(Long.valueOf(1234567890L), User.getId(new URI("https://example.com/viewer/users/1234567890/")));
     }
 
 }

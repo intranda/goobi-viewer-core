@@ -14,133 +14,120 @@
 <script>
 
 this.on("mount", function() {
-	this.initMap();
+	this.geoMap = this.initMap();
+	this.drawLayer = this.initDrawLayer(this.geoMap);
+    if(this.opts.area) {
+    	this.initArea(this.drawLayer, this.opts.area);
+    } 
+	if(!this.opts.inactive) { 
+	    this.initGeocoder(this.geoMap);
+	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
+	}
+	this.hitsLayer = this.initHitsLayer(this.geoMap);
+	if(this.opts.toggleFeatures) {   
+		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
+	}
+	if(this.opts.heatmap?.showSearchResultsHeatmap) {	    
+		this.heatmap = this.initHeatmap(this.hitsLayer)
+	}
 }); 
 
 initMap() {
     //console.log("initializing geomap for search", this.refs.map);
-    this.geoMap = new viewerJS.GeoMap({
+    let geoMap = new viewerJS.GeoMap({
         element : this.refs.map, 
         language: viewerJS.translator.language,
         fixed: this.opts.inactive ? true : false,
-        layer: {
-	        allowMovingFeatures: false,
-	        popover: $("<div><p data-metadata='title'></p></div>"),
-	        popoverOnHover: true,
-	        emptyMarkerMessage: undefined,
-	        clusterMarkers: true,
-// 	        markerIcon: {
-// 	            shape: "circle",
-// 	            prefix: "fa",
-// 	            markerColor: "blue",
-// 	            iconColor: "white",
-// 	            icon: "fa-circle",
-// 	            svg: true
-// 	        },
-		    style: {
-				    fillOpacity: 0.02
-			}
-        }
+        layer: this.opts.hitsLayer
     })
     let initialView = {
         zoom: 5,
         center: [11.073397, 49.451993] //long, lat
     };
-    this.geoMap.init(initialView, this.opts.features);
-    this.drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, {
+    geoMap.init(initialView, this.opts.features);
+    return geoMap;
+}
+
+initDrawLayer(map) {
+    let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
    	    style : {
          	fillColor : "#d9534f",
          	color : "#d9534f",
          	fillOpacity : 0.3,
         	}
     });
-    if(!this.opts.inactive) {        
-        let geocoderConfig = {};
-        if(this.opts.search_placeholder) {
-            geocoderConfig.placeholder = this.opts.search_placeholder
-        }
-        if(this.opts.search_enabled) {            
-	    	this.geoMap.initGeocoder(this.refs.geocoder, geocoderConfig);
-        }
-	    this.initMapDraw();
-    }
-    
-//     this.refs.toggleMarkers.addEventListener("click", () => {
-//         this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
-//     })
-    
-    
-    
-    this.geoMap.layers[0].onFeatureClick.subscribe(f => {
-        if(f.properties && f.properties.link) {
-           window.location.assign(f.properties.link);
-       }
-    })
+	return drawLayer;
+}
 
-	if(this.opts.toggleFeatures) {   
-		let ToggleFeaturesControl = L.Control.extend({
-		    options: {
-		        position: "topleft"
-		    },
-		    onAdd: function(map) {
-		        let button  = this.opts.toggleFeatures;
-		        L.DomEvent.on(button, "dblclick" , (e) => {
-		            L.DomEvent.stopPropagation(e);
-		            e.stopPropagation();
-		            return false;
-		        });
-		        L.DomEvent.on(button, "click" , (e) => {
-		            this.geoMap.layers[0].setVisible(!this.geoMap.layers[0].isVisible());
-		            L.DomEvent.stopPropagation(e);
-		            e.stopPropagation();
-		            return false;
-		        });
-		        return button;
-		    }.bind(this),
-		    onRemove: function(map) {
-		        
-		    }
-		})
-		let control = new ToggleFeaturesControl();
-		this.geoMap.map.addControl(control);
+initGeocoder(map) {
+	let geocoderConfig = {};
+	if(this.opts.search_placeholder) {
+		geocoderConfig.placeholder = this.opts.search_placeholder
 	}
+	if(this.opts.search_enabled) {            
+   		map.initGeocoder(this.refs.geocoder, geocoderConfig);
+	} 
+}
     
-    if(this.opts.area) {
-        let shape = this.opts.area;
-        if(viewerJS.isString(shape)) {
-            try {                
-            	shape = JSON.parse(shape);
-            } catch(e) {
-                console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
-            }
+initToggleLayer(geoMap, layer, button) {
+	let ToggleFeaturesControl = L.Control.extend({
+	    options: {
+	        position: "topleft"
+	    },
+	    onAdd: function(map) {
+	        L.DomEvent.on(button, "dblclick" , (e) => {
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        L.DomEvent.on(button, "click" , (e) => {
+	            layer.setVisible(!layer.isVisible());
+	            L.DomEvent.stopPropagation(e);
+	            e.stopPropagation();
+	            return false;
+	        });
+	        return button;
+	    }.bind(this),
+	    onRemove: function(map) {
+	        
+	    }
+	})
+	let control = new ToggleFeaturesControl();
+	geoMap.map.addControl(control);
+}
+ 
+initArea(layer, shape) {
+	if(viewerJS.isString(shape)) {
+        try {                
+        	shape = JSON.parse(shape);
+        } catch(e) {
+            console.error("Unable to draw geomap area ", this.opts.area, ": cannot parse json");
         }
-
-        let layer = undefined;
-        switch(shape.type) {
-            case "polygon":
-                layer = this.drawLayer.drawPolygon(shape.vertices, true);
-                break;
-            case "circle":
-                layer = this.drawLayer.drawCircle(shape.center, shape.radius, true);
-                break;
-            case "rectangle":
-                layer = this.drawLayer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
-                break;
-        }
-        this.onLayerDrawn({layer: layer});
-
     }
 
+    let feature = undefined;
+    switch(shape.type) {
+        case "polygon":
+            feature = layer.drawPolygon(shape.vertices, true);
+            break;
+        case "circle":
+            feature = layer.drawCircle(shape.center, shape.radius, true);
+            break;
+        case "rectangle":
+            feature = layer.drawRectangle([shape.vertices[0], shape.vertices[2]], true);
+            break;
+    }
+    this.onLayerDrawn({layer: feature});
 } 
 
-initMapDraw() {
+initMapDraw(geomap, drawLayer) {
     //console.log("init map draw");
-    this.drawnItems = new L.FeatureGroup();
+    let drawnItems = new L.FeatureGroup();
     //this.drawnItems = this.drawLayer.locations;
-    this.geoMap.map.addLayer(this.drawnItems);
-    this.drawControl = new L.Control.Draw({
+    geomap.map.addLayer(drawnItems);
+    let drawControl = new L.Control.Draw({
         edit: {
-            featureGroup: this.drawnItems,
+            featureGroup: drawnItems,
             edit: false,
             remove: false
         },
@@ -150,42 +137,45 @@ initMapDraw() {
             circlemarker: false
         }
     });
-    this.drawControl.setDrawingOptions({
+    drawControl.setDrawingOptions({
         rectangle: {
-        	shapeOptions: this.drawLayer.config.style
+        	shapeOptions: drawLayer.config.style
         },
         circle: {
-        	shapeOptions: this.drawLayer.config.style
+        	shapeOptions: drawLayer.config.style
         },
         polygon: {
-        	shapeOptions: this.drawLayer.config.style
+        	shapeOptions: drawLayer.config.style
         }
     });
     
-    this.geoMap.map.addControl(this.drawControl);
+    geomap.map.addControl(drawControl);
     //console.log("initialized map draw", this.drawControl);
     
     let edited = new rxjs.Subject();
     edited.pipe(rxjs.operators.debounceTime(300)).subscribe(e => this.onLayerEdited(e));
-    this.geoMap.map.on(L.Draw.Event.EDITMOVE, e => edited.next(e));
-    this.geoMap.map.on(L.Draw.Event.EDITRESIZE, e => edited.next(e));
-    this.geoMap.map.on(L.Draw.Event.EDITVERTEX, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITMOVE, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITRESIZE, e => edited.next(e));
+    geomap.map.on(L.Draw.Event.EDITVERTEX, e => edited.next(e));
 
     let deleted = new rxjs.Subject();
     deleted.subscribe(e => this.onLayerDeleted(e));
-    this.geoMap.map.on(L.Draw.Event.DELETED, e => deleted.next(e));
-    this.geoMap.map.on(L.Draw.Event.DRAWSTART, e => deleted.next(e));
+    geomap.map.on(L.Draw.Event.DELETED, e => deleted.next(e));
+    geomap.map.on(L.Draw.Event.DRAWSTART, e => deleted.next(e));
     
-    this.geoMap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
+    geomap.map.on(L.Draw.Event.CREATED, (e) => this.onLayerDrawn(e));
 
     if(this.opts.reset_button) {
         $(this.opts.reset_button).on("click",  e => deleted.next(e));
     }
+    return drawnItems;
 }
 
 onLayerDeleted(e) {
     if(this.searchLayer) {
-        this.drawnItems.removeLayer(this.searchLayer);
+        if(this.drawnItems) {
+        	this.drawnItems.removeLayer(this.searchLayer);
+        }
         this.searchLayer = undefined;
     }
     this.notifyFeatureSet(undefined);
@@ -205,11 +195,14 @@ onLayerEdited(e) {
 }
 
 onLayerDrawn(e) {
-    //console.log("layer drawn ", e);
-    this.searchLayer = e.layer;
-	this.drawnItems.addLayer(e.layer);
-	this.searchLayer.editing.enable();
-	this.setSearchArea(this.searchLayer);
+    if(e.layer) {        
+	    this.searchLayer = e.layer;
+		if(this.drawnItems) {
+	    	this.drawnItems.addLayer(e.layer);
+		}
+		this.searchLayer.editing.enable();
+		this.setSearchArea(this.searchLayer);
+    }
 }
 
 setSearchArea(layer) {
@@ -292,6 +285,36 @@ getType(layer) {
     } else {
         throw "Unknown layer type: " + layer;
     }
+}
+
+initHitsLayer(map) {
+    console.log("opts ", this.opts);
+	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
+	hitsLayer.init(this.opts.features, false);
+	hitsLayer.onFeatureClick.subscribe(f => {
+		if(f.properties && f.properties.link) {
+			$(this.opts.search.loader).show();
+			window.location.assign(f.properties.link);
+		}
+	})
+
+	return hitsLayer;
+}
+
+initHeatmap(hitsLayer) {
+	let heatmapQuery = this.opts.heatmap.mainQuery;
+	let heatmapFacetQuery = this.opts.heatmap.facetQuery;
+	
+	let heatmap = L.solrHeatmap(this.opts.heatmap.heatmapUrl, this.opts.heatmap.featureUrl, hitsLayer, {
+		field: "WKT_COORDS",
+		type: "clusters",
+		filterQuery: heatmapQuery,
+		facetQuery: heatmapFacetQuery,
+		labelField: this.opts.heatmap.labelField,
+		queryAdapter: "goobiViewer"    
+	});
+	heatmap.addTo(this.geoMap.map);
+	return heatmap;
 }
 
 </script>

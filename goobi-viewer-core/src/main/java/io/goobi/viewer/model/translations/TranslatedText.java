@@ -80,7 +80,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     public TranslatedText(IMetadataValue orig) {
         this(orig, IPolyglott.getCurrentLocale());
     }
-    
+
     public TranslatedText(IMetadataValue orig, Locale initialLocale) {
         super(orig.getLanguages()
                 .stream()
@@ -104,7 +104,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     public String getTextOrDefault() {
         return getTextOrDefault(IPolyglott.getCurrentLocale(), IPolyglott.getDefaultLocale());
     }
-    
+
     public String getTextOrDefault(Locale locale, Locale defaultLocale) {
         return super.getValue(locale)
                 .orElse(getValue(defaultLocale)
@@ -161,35 +161,35 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     public boolean hasLocale(Locale locale) {
         return super.getLanguages().stream().anyMatch(l -> l.equalsIgnoreCase(locale.getLanguage()));
     }
-    
+
     @Override
     public String toString() {
         return getText();
     }
-    
+
     @Override
     public int hashCode() {
         return this.getValues().stream().map(ValuePair::getValue).mapToInt(String::hashCode).sum();
     }
-    
+
     public boolean equals(Object obj) {
-        if (obj.getClass().equals(TranslatedText.class)) {
-            TranslatedText other = (TranslatedText)obj;
-            if(other.getLanguages().size() != this.getLanguages().size()) {
+        if (obj != null && obj.getClass().equals(TranslatedText.class)) {
+            TranslatedText other = (TranslatedText) obj;
+            if (other.getLanguages().size() != this.getLanguages().size()) {
                 return false;
             }
             for (ValuePair pair : this.getValues()) {
                 Locale locale = pair.getLocale();
                 String value = pair.getValue();
                 boolean same = Objects.equals(other.getValue(locale).orElse(""), value == null ? "" : value);
-                if(!same) {
+                if (!same) {
                     return false;
                 }
             }
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
 }

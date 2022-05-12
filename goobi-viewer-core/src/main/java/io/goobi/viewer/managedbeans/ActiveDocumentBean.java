@@ -289,7 +289,7 @@ public class ActiveDocumentBean implements Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
-                if (e.getMessage() != null && !"null".equals(e.getMessage())) {
+                if (e.getMessage() != null && !"null".equals(e.getMessage()) && !"???".equals(e.getMessage())) {
                     logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
                 }
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
@@ -341,7 +341,14 @@ public class ActiveDocumentBean implements Serializable {
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
         synchronized (this) {
             if (topDocumentIddoc == 0) {
-                throw new RecordNotFoundException(lastReceivedIdentifier);
+                try {
+                    if (StringUtils.isNotEmpty(lastReceivedIdentifier)) {
+                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                    }
+                    throw new RecordNotFoundException("???");
+                } finally {
+                    lastReceivedIdentifier = null;
+                }
             }
             logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
             prevHit = null;
@@ -371,9 +378,13 @@ public class ActiveDocumentBean implements Serializable {
                     topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topStructElement.getPi());
                     if (topDocumentIddoc == 0) {
                         logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
-                                viewManager.getPi());
+                                topStructElement.getPi());
                         reset();
-                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                        try {
+                            throw new RecordNotFoundException(lastReceivedIdentifier);
+                        } finally {
+                            lastReceivedIdentifier = null;
+                        }
                     }
                 } else if (topStructElement.isDeleted()) {
                     logger.debug("Record '{}' is deleted and only available as a trace document.", topStructElement.getPi());
@@ -389,7 +400,11 @@ public class ActiveDocumentBean implements Serializable {
                             (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access) {
                         logger.debug("User may not open {}", topStructElement.getPi());
-                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                        try {
+                            throw new RecordNotFoundException(lastReceivedIdentifier);
+                        } finally {
+                            lastReceivedIdentifier = null;
+                        }
                     }
 
                 }
@@ -415,7 +430,11 @@ public class ActiveDocumentBean implements Serializable {
                                 .lockRecord(viewManager.getPi(), session.getId(), Integer.valueOf(limit));
                     } else {
                         logger.debug("No session found, unable to lock limited view record {}", topStructElement.getPi());
-                        throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
+                        try {
+                            throw new RecordLimitExceededException(lastReceivedIdentifier + ":" + limit);
+                        } finally {
+                            lastReceivedIdentifier = null;
+                        }
                     }
                 }
             }
@@ -461,7 +480,11 @@ public class ActiveDocumentBean implements Serializable {
                 StructElement structElement = viewManager.getCurrentStructElement();
                 if (!structElement.isExists()) {
                     logger.trace("StructElement {} is not marked as existing. Record will be reloaded", structElement.getLuceneId());
-                    throw new IDDOCNotFoundException(lastReceivedIdentifier + " - " + structElement.getLuceneId());
+                    try {
+                        throw new IDDOCNotFoundException(lastReceivedIdentifier + " - " + structElement.getLuceneId());
+                    } finally {
+                        lastReceivedIdentifier = null;
+                    }
                 }
                 if (structElement.isAnchor()) {
                     anchor = true;
@@ -504,7 +527,11 @@ public class ActiveDocumentBean implements Serializable {
                 }
             } else {
                 logger.debug("ViewManager is null or ViewManager.currentDocument is null.");
-                throw new RecordNotFoundException(lastReceivedIdentifier);
+                try {
+                    throw new RecordNotFoundException(lastReceivedIdentifier);
+                } finally {
+                    lastReceivedIdentifier = null;
+                }
             }
 
             // Metadata language versions
@@ -1124,7 +1151,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should return correct range in double page mode if currently showing two pages
      * @should return correct range in double page mode if currently showing one page
      */
-    public String getPageUrl(int step) throws IndexUnreachableException, DAOException {
+    public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException, DAOException {
         // logger.trace("getPageUrl: {}", step);
         if (viewManager == null) {
             return getPageUrl(imageToShow);
@@ -1185,6 +1212,10 @@ public class ActiveDocumentBean implements Serializable {
         return getPageUrl(number + "-" + (number + 1));
     }
 
+    public String getPageUrl(int order) throws IndexUnreachableException {
+        return getPageUrl(Integer.toString(order));
+    }
+
     /**
      * <p>
      * getPreviousPageUrl.
@@ -1196,7 +1227,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getPreviousPageUrl(int step) throws IndexUnreachableException, DAOException {
-        return getPageUrl(step * -1);
+        return getPageUrlRelativeToCurrentPage(step * -1);
     }
 
     /**
@@ -1210,7 +1241,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      */
     public String getNextPageUrl(int step) throws IndexUnreachableException, DAOException {
-        return getPageUrl(step);
+        return getPageUrlRelativeToCurrentPage(step);
     }
 
     /**
@@ -2434,7 +2465,7 @@ public class ActiveDocumentBean implements Serializable {
      * Indicates whether user comments are allowed for the current record based on several criteria.
      *
      * @return a boolean.
-     * @throws DAOException 
+     * @throws DAOException
      */
     public boolean isAllowUserComments() throws DAOException {
         if (viewManager == null) {

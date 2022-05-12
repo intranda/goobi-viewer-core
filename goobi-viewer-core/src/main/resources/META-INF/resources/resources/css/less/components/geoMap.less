@@ -1,5 +1,12 @@
 .geomap {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	.geomap_popover {
+	}
+	.ajax_loader {
+		display: none;
+		z-index: 2000;
 	}
 	.record_geomap_popover {
 		font-size: 10px;
@@ -7,4 +14,19 @@
 			font-size: 12px;
 		}
 	}
+}
+.leaflet-container {
+	.leaflet-marker-pane {
+		.leaflet-marker-icon {
+			&.extra-marker-svg {
+				.fa {
+					&.fa-circle {
+						font-size: 12px;
+						width: 32px;
+						top: 1px;
+					}
+				}
+			}
+		}
+	}	
 }

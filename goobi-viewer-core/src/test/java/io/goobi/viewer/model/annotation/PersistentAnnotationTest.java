@@ -23,10 +23,6 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.Query;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,7 +46,6 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -158,27 +153,24 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         JPADAO dao = (JPADAO) DataManager.getInstance().getDao();
 
-      
-
         long existingAnnotations = getAnnotations(dao).size();
 
-            dao.addAnnotation(daoAnno);
+        dao.addAnnotation(daoAnno);
 
-            List<CrowdsourcingAnnotation> list = getAnnotations(dao);
-            Assert.assertEquals(existingAnnotations + 1, list.size());
+        List<CrowdsourcingAnnotation> list = getAnnotations(dao);
+        Assert.assertEquals(existingAnnotations + 1, list.size());
 
-            CrowdsourcingAnnotation retrieved = list.get(list.size() - 1);
-            Assert.assertEquals(body, converter.getBodyAsResource(retrieved));
-            Assert.assertEquals(target, converter.getTargetAsResource(retrieved));
+        CrowdsourcingAnnotation retrieved = list.get(list.size() - 1);
+        Assert.assertEquals(body, converter.getBodyAsResource(retrieved));
+        Assert.assertEquals(target, converter.getTargetAsResource(retrieved));
 
     }
 
     /**
      * @param em
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
-    @SuppressWarnings("unchecked")
     private static List<CrowdsourcingAnnotation> getAnnotations(IDAO dao) throws DAOException {
         return dao.getAllAnnotations(null, false);
     }
@@ -187,7 +179,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     public void testPersistAnnotation() throws DAOException {
         boolean added = DataManager.getInstance().getDao().addAnnotation(daoAnno);
         Assert.assertTrue(added);
-        URI uri = URI.create(Long.toString(daoAnno.getId()));
+        //        URI uri = URI.create(Long.toString(daoAnno.getId()));
         CrowdsourcingAnnotation fromDAO = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         WebAnnotation webAnno = converter.getAsWebAnnotation(daoAnno);
         WebAnnotation fromDAOWebAnno = converter.getAsWebAnnotation(daoAnno);
@@ -197,14 +189,14 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         LocalDateTime changed = LocalDateTime.now();
         fromDAO.setDateModified(changed);
-        boolean updated = DataManager.getInstance().getDao().updateAnnotation(fromDAO);
+        Assert.assertTrue(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
 
         CrowdsourcingAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         Assert.assertEquals(fromDAO.getDateModified(), fromDAO2.getDateModified());
     }
 
     @Test
-    public void testGetContent_fromOA() throws JsonParseException, JsonMappingException, IOException, DAOException {
+    public void testGetContent_fromOA() {
         String content = "{\n" +
                 "        \"@type\": \"cnt:ContentAsText\",\n" +
                 "        \"format\": \"text/plain\",\n" +
@@ -216,7 +208,7 @@ public class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetContent_fromWA() throws JsonParseException, JsonMappingException, IOException, DAOException {
+    public void testGetContent_fromWA() {
         String content = "{\n" +
                 "        \"type\": \"TextualBody\",\n" +
                 "        \"format\": \"text/plain\",\n" +

@@ -209,7 +209,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
-                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "])))",
+                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*)))",
                 suffix);
     }
 
@@ -222,7 +222,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null, null);
         // User has listing privilege for 'license type 1 name'
-        Assert.assertTrue(suffix.contains("(+ACCESSCONDITION:\"license type 1 name\" +(-YEAR:[* TO 3000]))"));
+        Assert.assertTrue(suffix.contains("(+ACCESSCONDITION:\"license type 1 name\" +(-YEAR:[* TO 3000] *:*))"));
     }
 
     /**
@@ -251,7 +251,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             // Regular IP address (has listing privilege for 'license type 3 name')
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4", null);
             Assert.assertTrue(suffix.contains(
-                    "+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "]))"));
+                    "+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*))"));
         }
     }
 
@@ -264,7 +264,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null, null);
         // Moving wall license with negated filter query
         Assert.assertTrue(suffix.contains(
-                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "]))"));
+                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*))"));
     }
 
     /**
@@ -1699,5 +1699,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void isPhrase_shouldDetectPhraseWithProximityCorrectly() throws Exception {
         Assert.assertFalse(SearchHelper.isPhrase("foo bar~10"));
         Assert.assertTrue(SearchHelper.isPhrase("\"foo bar\"~10"));
+    }
+
+    /**
+     * @see SearchHelper#getFacetValues(String,String,String,int,Map)
+     * @verifies return correct values via json response
+     */
+    @Test
+    public void getFacetValues_shouldReturnCorrectValuesViaJsonResponse() throws Exception {
+        Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + SolrConstants.PI + ")\"}");
+        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":[* TO *]", "json:uniqueCount", null, 1, params);
+        Assert.assertNotNull(values);
+        Assert.assertEquals(1, values.size());
+        int size = !values.isEmpty() ? Integer.valueOf(values.get(0)) : 0;
+        Assert.assertTrue(size > 0);
     }
 }

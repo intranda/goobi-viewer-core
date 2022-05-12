@@ -329,7 +329,8 @@ public class BrowseElement implements Serializable {
 
         //..or if we have video or audio
         hasMedia = !hasImages && !isAnchor()
-                && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
+                && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("application")
+                        || this.mimeType.startsWith("text")/*sandboxed*/);
 
         showThumbnail = hasImages || hasMedia || isAnchor();
 

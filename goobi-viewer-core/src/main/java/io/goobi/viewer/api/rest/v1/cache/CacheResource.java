@@ -131,12 +131,12 @@ public class CacheResource {
         }
 
         int deleted = CacheUtils.deleteFromCache(pi, content, thumbs, pdf);
-        
+
         // Delete download jobs/files
         if (pdf) {
             try {
                 int count = DownloadJobTools.removeJobsForRecord(pi);
-                logger.debug("Removed {} download jobs for '{}'", count, pi);
+                logger.debug("Removed {} download jobs for '{}'", count, pi.replaceAll("[\n\r\t]", "_"));
             } catch (DAOException e) {
                 logger.error(e.getMessage(), e);
             }

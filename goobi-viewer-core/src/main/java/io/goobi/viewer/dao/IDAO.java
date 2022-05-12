@@ -98,7 +98,7 @@ public interface IDAO {
      * @throws java.sql.SQLException if any.
      */
     boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
-
+    
     // User
 
     /**
@@ -2485,5 +2485,6 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
 
 }

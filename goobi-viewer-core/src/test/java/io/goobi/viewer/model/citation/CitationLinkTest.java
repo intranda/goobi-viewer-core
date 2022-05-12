@@ -78,9 +78,7 @@ public class CitationLinkTest extends AbstractSolrEnabledTest {
         viewManager.setCurrentImageOrder(2);
 
         CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI_TOPSTRUCT)
-                .setPrefix("https://viewer.goobi.io/resolver?id=")
-                .setSuffix("&page=")
-                .setAppendImageNumberToSuffix(true);
+                .setPattern("https://viewer.goobi.io/resolver?id={value}&page={page}");
         Assert.assertEquals("https://viewer.goobi.io/resolver?id=" + PI_KLEIUNIV + "&page=2", link.getUrl(viewManager));
     }
 
