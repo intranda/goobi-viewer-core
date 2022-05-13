@@ -203,10 +203,6 @@ public class BrowseElement implements Serializable {
             structElements.add(tempElement.createStub());
             topStructElement = tempElement;
         }
-        // TODO this should be obsolete
-        //        if (structElement.isWork()) {
-        //            topStructElement = structElement;
-        //        }
 
         // Determine Solr document type. Must happen before certain things, such as label generation.
         docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));

@@ -167,10 +167,11 @@ public class SearchHit implements Comparable<SearchHit> {
      * 
      * @param type
      * @param browseElement
+     * @param doc
      * @param searchTerms
      * @param locale
      */
-    private SearchHit(HitType type, BrowseElement browseElement, Map<String, Set<String>> searchTerms, Locale locale) {
+    private SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale) {
         this.type = type;
         this.translatedType = type != null ? ViewerResourceBundle.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale) : null;
         this.browseElement = browseElement;
@@ -179,6 +180,7 @@ public class SearchHit implements Comparable<SearchHit> {
         if (browseElement != null) {
             // Add self to owner hits to avoid adding self to child hits
             this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
+            this.ownerDocs.put(Long.toString(browseElement.getIddoc()), doc);
             if (searchTerms != null) {
                 addLabelHighlighting();
             } else {
@@ -285,7 +287,7 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
 
-        SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
+        SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale);
         hit.populateFoundMetadata(doc, ownerAlreadyHasMetadata,
                 ignoreAdditionalFields, translateAdditionalFields, oneLineAdditionalFields);
         hit.proximitySearchDistance = proximitySearchDistance;
@@ -450,14 +452,18 @@ public class SearchHit implements Comparable<SearchHit> {
             if (!hitPages.isEmpty()) {
                 for (CMSPage page : hitPages.keySet()) {
                     int count = 0;
-                    SearchHit cmsPageHit = new SearchHit(HitType.CMS, new BrowseElement(browseElement.getPi(), 1,
-                            ViewerResourceBundle.getTranslation(page.getMenuTitle(), locale), null, locale, null, page.getRelativeUrlPath()),
+                    SearchHit cmsPageHit = new SearchHit(HitType.CMS,
+                            new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation(page.getMenuTitle(), locale), null,
+                                    locale, null, page.getRelativeUrlPath()),
+                            null,
                             searchTerms, locale);
                     children.add(cmsPageHit);
                     for (String text : hitPages.get(page)) {
                         cmsPageHit.getChildren()
-                                .add(new SearchHit(HitType.CMS, new BrowseElement(browseElement.getPi(), 1, page.getMenuTitle(), text, locale, null,
-                                        page.getRelativeUrlPath()), searchTerms, locale));
+                                .add(new SearchHit(HitType.CMS,
+                                        new BrowseElement(browseElement.getPi(), 1, page.getMenuTitle(), text, locale, null,
+                                                page.getRelativeUrlPath()),
+                                        null, searchTerms, locale));
                         count++;
                     }
                     hitTypeCounts.put(HitType.CMS, count);
@@ -521,11 +527,12 @@ public class SearchHit implements Comparable<SearchHit> {
             if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
                 SearchHit hit = new SearchHit(HitType.PAGE,
                         new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation("TEI", locale), null, locale, null, null),
+                        doc,
                         searchTerms,
                         locale);
                 for (String fragment : fulltextFragments) {
                     hit.getChildren()
-                            .add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, locale, null, null),
+                            .add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, locale, null, null), doc,
                                     searchTerms, locale));
                     count++;
                 }
@@ -631,14 +638,25 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerHits.put(ownerIddoc, ownerHit);
                             ownerDocs.put(ownerIddoc, ownerDoc);
                             populateHit = true;
-                            // logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
+                            // logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID"));
                         }
                     }
                     if (ownerHit == null) {
                         logger.error("No document found for IDDOC {}", ownerIddoc);
                         continue;
                     }
+                    // If the owner hit the is the main element, create an intermediary to avoid the child label being displayed twice
+                    if (ownerHit.equals(this)) {
+                        SearchHit newOwnerHit =
+                                createSearchHit(ownerDocs.get(ownerIddoc), null, null, locale, fulltext, searchTerms,
+                                        null, null, ignoreFields, translateFields, oneLineFields, null, proximitySearchDistance, thumbnailHandler);
+                        ownerHit.getChildren().add(newOwnerHit);
+                        ownerHit = newOwnerHit;
+                        ownerHits.put(ownerIddoc, newOwnerHit);
+                    }
+                    // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), ownerHit.getBrowseElement().getIddoc());
                     {
+
                         SearchHit childHit =
                                 createSearchHit(childDoc, ownerDocs.get(ownerIddoc),
                                         ownerHit.getBrowseElement().getExistingMetadataFields(), locale, fulltext, searchTerms, null,
