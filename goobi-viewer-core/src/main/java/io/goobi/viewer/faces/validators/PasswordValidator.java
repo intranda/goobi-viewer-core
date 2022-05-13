@@ -55,6 +55,7 @@ public class PasswordValidator implements Validator<String> {
      * @should return false if password empty
      * @should return false if password blank
      * @should return false if password too short
+     * @should return false if password too long
      * @return a boolean.
      */
     public static boolean validatePassword(String password) {
@@ -62,6 +63,10 @@ public class PasswordValidator implements Validator<String> {
             return false;
         }
         if (password.length() < 8) {
+            return false;
+        }
+        // Maximum length against potential long password DoS attacks
+        if (password.length() > 64) {
             return false;
         }
 

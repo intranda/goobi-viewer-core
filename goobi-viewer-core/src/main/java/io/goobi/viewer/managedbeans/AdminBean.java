@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -119,7 +120,11 @@ public class AdminBean implements Serializable {
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
 
+    /** Current password for password change */
+    private String currentPassword = null;
+    /** New password */
     private String passwordOne = "";
+    /** New password confirmation */
     private String passwordTwo = "";
     private String emailConfirmation = "";
     private boolean deleteUserContributions =
@@ -268,6 +273,10 @@ public class AdminBean implements Serializable {
         }
         if (user.getId() != null) {
             // Existing user
+            if (currentPassword != null && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
+                Messages.error("user_currentPasswordWrong");
+                return false;
+            }
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
                 if (!passwordOne.equals(passwordTwo)) {
                     Messages.error("user_passwordMismatch");
@@ -301,6 +310,9 @@ public class AdminBean implements Serializable {
             }
             if (DataManager.getInstance().getDao().addUser(user)) {
                 Messages.info("newUserCreated");
+                currentPassword = null;
+                passwordOne = "";
+                passwordTwo = "";
             } else {
                 Messages.error("errSave");
                 return false;
@@ -1444,6 +1456,20 @@ public class AdminBean implements Serializable {
      */
     public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
+    }
+
+    /**
+     * @return the currentPassword
+     */
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    /**
+     * @param currentPassword the currentPassword to set
+     */
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
     }
 
     /**
