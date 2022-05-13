@@ -246,9 +246,20 @@ public class Metadata implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @should return placeholders for every parameter for group metadata if masterValue empty
+     * @should return single placeholder for non group metadata if masterValue empty
      */
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
+            if (group) {
+                StringBuilder sb = new StringBuilder();
+                int index = 1;
+                for (int i = 0; i < params.size(); ++i) {
+                    sb.append('{').append(index).append('}');
+                    index += 2;
+                }
+                return sb.toString();
+            }
             return "{0}";
         }
 

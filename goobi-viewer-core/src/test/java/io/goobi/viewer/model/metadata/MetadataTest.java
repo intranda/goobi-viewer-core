@@ -144,7 +144,6 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertFalse(metadata.isBlank(null));
     }
-    
 
     /**
      * @see Metadata#isBlank(String)
@@ -160,7 +159,7 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         Assert.assertTrue(metadata.isBlank("789"));
     }
 
@@ -178,7 +177,7 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         Assert.assertFalse(metadata.isBlank("456"));
     }
 
@@ -227,7 +226,7 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         Assert.assertEquals(2, metadata.getValuesForOwner(null).size());
     }
 
@@ -245,9 +244,34 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         List<MetadataValue> mdValues = metadata.getValuesForOwner("456");
         Assert.assertEquals(1, mdValues.size());
         Assert.assertEquals("456", mdValues.get(0).getOwnerIddoc());
+    }
+
+    /**
+     * @see Metadata#getMasterValue()
+     * @verifies return placeholders for every parameter for group metadata if masterValue empty
+     */
+    @Test
+    public void getMasterValue_shouldReturnPlaceholdersForEveryParameterForGroupMetadataIfMasterValueEmpty() throws Exception {
+        List<MetadataParameter> params = new ArrayList<>(3);
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        Assert.assertEquals("{1}{3}{5}{7}{9}", new Metadata("foo", null, params).setGroup(true).getMasterValue());
+    }
+
+    /**
+     * @see Metadata#getMasterValue()
+     * @verifies return single placeholder for non group metadata if masterValue empty
+     */
+    @Test
+    public void getMasterValue_shouldReturnSinglePlaceholderForNonGroupMetadataIfMasterValueEmpty() throws Exception {
+        Assert.assertEquals("{0}", new Metadata().getMasterValue());
+
     }
 }
