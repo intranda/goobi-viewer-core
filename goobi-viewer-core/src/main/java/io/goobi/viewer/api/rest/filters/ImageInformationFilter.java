@@ -238,7 +238,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
         Integer maxWidth = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                 : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
         Integer maxHeight = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageHeight() : 
-            DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth()*info.getHeight()/info.getWidth() ;
+            DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth()*info.getHeight()/info.getWidth();
         
         if(info instanceof ImageInformation3) {
             ((ImageInformation3) info).setMaxWidth(maxWidth);

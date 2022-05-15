@@ -31,7 +31,7 @@ public interface AnnotationLister<T extends PersistentAnnotation> {
     
     public long getTotalAnnotationCount();
 
-    public List<T> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage ,String sortField, boolean sortDescending);    
+    public List<T> getAnnotations(int firstIndex, int items, String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage, String sortField, boolean sortDescending);
 
     public long getAnnotationCount(String textQuery, List<String> motivations, List<Long> generators, List<Long> creators, String targetPi, Integer targetPage);
 

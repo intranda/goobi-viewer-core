@@ -41,7 +41,6 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
-import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.translations.IPolyglott;
