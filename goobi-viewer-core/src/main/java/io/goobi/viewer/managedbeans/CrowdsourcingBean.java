@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -92,7 +98,7 @@ public class CrowdsourcingBean implements Serializable {
     protected UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
-    
+
     private CrowdsourcingStatus targetStatus = null;
 
     /**
@@ -326,7 +332,7 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * Returns the list of campaigns that are visible to the given user.
-     * 
+     *
      * @param user
      * @return
      * @throws DAOException
@@ -364,7 +370,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param user
      * @return
      * @throws DAOException
@@ -600,7 +606,7 @@ public class CrowdsourcingBean implements Serializable {
         if (this.targetCampaign != null &&  !this.targetCampaign.equals(targetCampaign)) {
             resetTarget();
         }
-        
+
         this.targetCampaign = targetCampaign;
     }
 
@@ -646,7 +652,7 @@ public class CrowdsourcingBean implements Serializable {
             setTargetIdentifier(pi);
         }
     }
-    
+
     public void setNextIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
             String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.ANNOTATE, getTargetIdentifier());
@@ -667,7 +673,7 @@ public class CrowdsourcingBean implements Serializable {
 
         }
     }
-    
+
     public void setNextIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
             String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.REVIEW, getTargetIdentifier());
@@ -978,21 +984,21 @@ public class CrowdsourcingBean implements Serializable {
     public Set<StatisticMode> getAvailableStatisticModes() {
         return EnumSet.allOf(StatisticMode.class);
     }
-    
+
     /**
      * @return the targetStatus
      */
     public CrowdsourcingStatus getTargetStatus() {
         return targetStatus;
     }
-    
+
     /**
      * @param targetStatus the targetStatus to set
      */
     public void setTargetStatus(CrowdsourcingStatus targetStatus) {
         this.targetStatus = targetStatus;
     }
-    
+
     public void setTargetStatus(String targetStatus) {
         this.targetStatus = CrowdsourcingStatus.forName(targetStatus);
     }

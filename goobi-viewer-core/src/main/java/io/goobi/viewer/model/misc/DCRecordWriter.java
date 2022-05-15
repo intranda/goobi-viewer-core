@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.misc;
 
@@ -34,13 +40,13 @@ import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * @author florian
- * 
+ *
  *         Creates a xml document representing a simple Dublin Core record. Each instance of this class creates a single record which can be filled
  *         with metadata and eventually written to the file system
  *
  */
 public class DCRecordWriter {
-    
+
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(DCRecordWriter.class);
 
@@ -60,7 +66,7 @@ public class DCRecordWriter {
 
     /**
      * Add a metadata element with namespace "dc" to the record element
-     * 
+     *
      * @param name
      * @param value
      */
@@ -74,7 +80,7 @@ public class DCRecordWriter {
 
     /**
      * Reads the value of the given metadata from the jdom document
-     * 
+     *
      * @param name
      * @return
      */
@@ -89,7 +95,7 @@ public class DCRecordWriter {
 
     /**
      * Get the base jdom2 document
-     * 
+     *
      * @return the jdom2 document representing the record
      */
     public Document getDocument() {
@@ -100,7 +106,7 @@ public class DCRecordWriter {
      * Writes the created jdom document to the given path. If the path denotes a directory, a new file will be created within the directory with the
      * filename being the "identifier" metadata value if it exists. Otherwise the "title" metadata value or the current timestamp if title doesn't
      * exist either
-     * 
+     *
      * @param path The path to the file (created if it doesn't exist, overwritten if it does) or the directory which should contain the file
      * @throws IOException if the parent directory of the given path doesn't exist, or writing the file fails for some other reason
      */

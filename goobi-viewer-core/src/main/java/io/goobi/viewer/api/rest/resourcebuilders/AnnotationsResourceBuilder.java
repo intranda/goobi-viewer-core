@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
@@ -72,7 +78,7 @@ public class AnnotationsResourceBuilder {
 
     /**
      * Default constructor
-     * 
+     *
      * @param urls TheApiUrlManager handling the creation of annotation urls/ids
      * @param request Used to check access to restricted annotations. May be null, which prevents delivering any annotations with accessconditions
      *            other than OPENACCESS
@@ -102,7 +108,7 @@ public class AnnotationsResourceBuilder {
         }
         int first = (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
-        
+
         List<IAnnotation> annotations = DataManager.getInstance().getDao().getAnnotations(0, Integer.MAX_VALUE, sortField, false, null)
                 .stream()
                 .filter(anno -> isAccessible(anno, request))
@@ -123,7 +129,7 @@ public class AnnotationsResourceBuilder {
      * @return
      */
     private boolean isAccessible(CrowdsourcingAnnotation anno, HttpServletRequest request) {
-        
+
         if(StringUtils.isBlank(anno.getAccessCondition()) ||  anno.getAccessCondition().equals(SolrConstants.OPEN_ACCESS_VALUE)) {
             return true;
         } else {
@@ -313,7 +319,7 @@ public class AnnotationsResourceBuilder {
         CrowdsourcingAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(id);
         return Optional.ofNullable(annotation).map(converter::getAsWebAnnotation);
     }
-    
+
     public Optional<WebAnnotation> getCommentWebAnnotation(long id) throws DAOException {
         Comment comment = DataManager.getInstance().getDao().getComment(id);
         return Optional.ofNullable(comment).map(converter::getAsWebAnnotation);

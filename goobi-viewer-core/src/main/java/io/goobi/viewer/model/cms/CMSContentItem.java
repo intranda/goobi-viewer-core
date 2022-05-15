@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms;
 
@@ -97,7 +103,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     /**
      * The different types if content items. The names of these types need to be entered into the cms-template xml files to define the type of content
      * item
-     * 
+     *
      * @author Florian Alpers
      *
      */
@@ -124,7 +130,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
-         * 
+         *
          * @param name
          * @return
          */
@@ -138,7 +144,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
         /**
          * Returns the required functionality object for this content item
-         * 
+         *
          * @return
          */
         public Functionality createFunctionality(CMSContentItem item) {
@@ -284,10 +290,10 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Column(name = "sorting")
     @Enumerated(EnumType.STRING)
     private Sorting sorting  = Sorting.alphanumeric;
-    
+
     /**
      * This object may contain item type specific functionality (methods and transient properties)
-     * 
+     *
      */
     @Transient
     private Functionality functionality = null;
@@ -307,7 +313,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     @Transient
     private List<Selectable<CMSCategory>> selectableCategories = null;
     /**
-     *  
+     *
      */
     @Transient
     private boolean visible = false;
@@ -367,7 +373,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setGroupBy(blueprint.groupBy);
         this.setGeoMap(blueprint.getGeoMap());
         this.setSlider(blueprint.slider);
-        this.setSorting(blueprint.sorting);   
+        this.setSorting(blueprint.sorting);
     }
 
     /**
@@ -423,7 +429,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      * {@inheritDoc}
      *
      * Returns a copy of this object's configuration. Use this to create content item instances of template items for pages.
-     * 
+     *
      * @should clone item correctly
      */
     @Override
@@ -577,7 +583,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public String getHtmlFragment() {
         return htmlFragment;
     }
-    
+
     public String getContent() {
         return Optional.ofNullable(getOwnerPageLanguageVersion())
                 .map(CMSPageLanguageVersion::getOwnerPage)
@@ -594,7 +600,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     public void setHtmlFragment(String htmlFragment) {
         this.htmlFragment = htmlFragment != null ? Normalizer.normalize(htmlFragment, Form.NFC) : "";
-        //replace unicode character u2028 (line separator) with java line break, because u2028 breaks mysql 
+        //replace unicode character u2028 (line separator) with java line break, because u2028 breaks mysql
         this.htmlFragment = this.htmlFragment.replace("" + '\u2028', "\n");
     }
 
@@ -882,23 +888,23 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     private List<CMSPage> loadNestedPages() throws DAOException {
         int size = getElementsPerPage();
         int offset = getListOffset();
-        
+
         AtomicInteger totalPages = new AtomicInteger(0);
         Stream<CMSPage> nestedPagesStream = DataManager.getInstance().getDao().getAllCMSPages().stream()
                 .filter(CMSPage::isPublished)
                 .filter(child -> getCategories().isEmpty() || !CollectionUtils.intersection(getCategories(), child.getCategories()).isEmpty())
                 .peek(child -> totalPages.incrementAndGet());
-        
-       
+
+
         if(isRandomizeItems()) {
             nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
         } else {
-            nestedPagesStream = nestedPagesStream.sorted(new CMSPage.PageComparator());     
+            nestedPagesStream = nestedPagesStream.sorted(new CMSPage.PageComparator());
         }
-        if(isPaginated()) {    
+        if(isPaginated()) {
             nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
         }
-        
+
         List<CMSPage> nestedPages = nestedPagesStream.collect(Collectors.toList());
         setNestedPagesCount((int) Math.ceil((totalPages.intValue()) / (double) size));
 
@@ -1462,7 +1468,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
         return new ArrayList<>();
     }
-    
+
     public String getIgnoreCollectionsAsJsonArray() {
         if (StringUtils.isNotBlank(ignoreCollections)) {
             String[] collections = ignoreCollections.split(",");
@@ -1780,7 +1786,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * 
+     *
      * @return true if {@link #groupBy} is not blank an grouping should therefore be done
      */
     public boolean isGroupBySelected() {
@@ -1843,31 +1849,31 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     public void setSlider(CMSSlider slider) {
         this.slider = slider;
     }
-    
+
     /**
      * The item with itemId {@link CMSPage#TOPBAR_SLIDER_ID} should never occur in any contentItem lists
-     * 
+     *
      * @return
      */
     public boolean appearInListings() {
         return !CMSPage.TOPBAR_SLIDER_ID.equals(this.itemId);
     }
-    
+
     public boolean isShowHitListOptions() {
         return Optional.ofNullable(getItemTemplate()).map(CMSContentItemTemplate::isHitListOptions).orElse(false);
     }
-    
+
     public boolean isRandomizeItems() {
         return Optional.ofNullable(getItemTemplate()).map(CMSContentItemTemplate::isRandomizeItems).orElse(false);
     }
-    
+
     /**
      * @return the sorting
      */
     public Sorting getSorting() {
         return sorting;
     }
-    
+
     /**
      * @param sorting the sorting to set
      */

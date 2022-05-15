@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.messages;
 
@@ -107,7 +113,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Registers a WatchService that checks for modified messages.properties files and tags them for reloading.
-     * 
+     *
      * @param path
      * @throws IOException
      * @throws InterruptedException
@@ -184,7 +190,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Returns a locale for the configured fallback language. Does not use FacesContext.
-     * 
+     *
      * @return Locale for the language code returned by the configuration getter
      * @should return locale for configured fallback language
      * @should return English if no fallback language configured
@@ -196,7 +202,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Loads resource bundles for the current locale and reloads them if the locale has since changed.
-     * 
+     *
      * @param inLocale
      * @return The selected locale
      */
@@ -253,7 +259,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @param locale
      * @return The resource bundle
      */
@@ -318,7 +324,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @param msg
      * @param params
      * @return
@@ -351,7 +357,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @param key
      * @param locale
      * @param useFallback
@@ -382,7 +388,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * <p>
      * getTranslation.
      * </p>
-     * 
+     *
      * @param key Message key to translate
      * @param locale Desired locale
      * @param useFallback If true, get default locale translation if there is none for the given locale
@@ -454,7 +460,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @param key
      * @param bundle
      * @return Translated message key
@@ -486,7 +492,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @param key
      * @param bundle
      * @return
@@ -614,7 +620,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @param servletContext
      * @return
      */
@@ -624,7 +630,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
         return allLocales;
     }
-    
+
     public static Locale getDefaultLocale(ServletContext servletContext) {
         if (defaultLocale == null) {
             defaultLocale = getDefaultLocaleFromFacesConfig(servletContext);
@@ -678,7 +684,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Get locales configured in faces-config, ordered by appearance in file
-     * 
+     *
      * @return a list of Locale objects, or null if the list could not be retrieved
      */
     public static List<Locale> getLocalesFromFacesConfig(ServletContext servletContext) {
@@ -698,7 +704,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             return getFacesLocales();
         }
     }
-    
+
     public static Locale getDefaultLocaleFromFacesConfig(ServletContext servletContext) {
         if (servletContext == null) {
             return getDefaultLocale();
@@ -726,7 +732,7 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     /**
      * Creates a local messages_xx.properties file for every locale in the given list, if not already present.
-     * 
+     *
      * @param locales
      * @should create files correctly
      */
@@ -770,7 +776,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         List<Element> localeElements = XmlTools.evaluateToElements("//ee:locale-config/ee:supported-locale", doc.getRootElement(), namespaces);
         return localeElements.stream().map(ele -> ele.getText()).map(Locale::forLanguageTag).collect(Collectors.toList());
     }
-    
+
     public static Locale getDefaultLocaleFromFile(Path facesConfigPath) throws FileNotFoundException, IOException, JDOMException {
         Document doc = XmlTools.readXmlFile(facesConfigPath);
         Namespace xsi = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
@@ -789,7 +795,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @return All message keys in the bundle
      */
     public static Set<String> getAllKeys() {
@@ -802,7 +808,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @return Set of message keys from local messages_*.properties
      */
     public static Set<String> getAllLocalKeys() {
@@ -820,7 +826,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * 
+     *
      * @param key Message key
      * @param value Message value
      * @param language ISO 639-1 language code

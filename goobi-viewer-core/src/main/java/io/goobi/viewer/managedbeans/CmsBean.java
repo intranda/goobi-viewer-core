@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -115,7 +121,7 @@ import io.goobi.viewer.solr.SolrTools;
 public class CmsBean implements Serializable {
 
     /**
-     * 
+     *
      */
     public static final String CMSPAGES_FILTER = "languageVersions-title_languageVersions-menuTitle_categories-name";
 
@@ -253,7 +259,7 @@ public class CmsBean implements Serializable {
 
     /**
      * Returns the most recently edited CMS pages from the lazy model, which should include all restrictions placed upon the current user.
-     * 
+     *
      * @param number Number of requested rows
      * @return
      */
@@ -395,7 +401,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param enabled
      * @return
      * @throws DAOException
@@ -435,7 +441,7 @@ public class CmsBean implements Serializable {
 
     /**
      * Persists the enabled/disabled status of all CMS tempaltes in the DB.
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -566,7 +572,7 @@ public class CmsBean implements Serializable {
     /**
      * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted privileges for that
      * property
-     * 
+     *
      * @param page
      * @param user
      * @throws IndexUnreachableException
@@ -580,7 +586,7 @@ public class CmsBean implements Serializable {
                 page.setSubThemeDiscriminatorValue(allowedSubThemeDiscriminatorValues.get(0));
             } else {
                 logger.error("User has no access to any subtheme discriminator values and can therefore not create a page");
-                //do something??			
+                //do something??
             }
         }
         if (!user.hasPrivilegeForAllCategories()) {
@@ -1059,7 +1065,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return the {@link #getCurrentPage()} if one is set, or an empty Optional if the current page is not a cmsPage (i.e. if
      *         {@link NavigationHelper#isCmsPage()} == false)
      */
@@ -1187,7 +1193,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getSelectedPageId() {
@@ -1199,7 +1205,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param id
      * @throws DAOException
      */
@@ -1625,7 +1631,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param hits
      * @param groupingField
      * @return
@@ -1659,7 +1665,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param hit
      * @param solrField
      * @return
@@ -2038,7 +2044,7 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param page
      * @return true if the given CMS page is mapped to any static page; otherwise
      * @throws DAOException
@@ -2705,7 +2711,7 @@ public class CmsBean implements Serializable {
     /**
      * For cms pages with {@link CMSPage#getWrapperElementClass()} return 'body_' followed by the wrapperElementClass. Otherwise return an empty
      * String
-     * 
+     *
      * @return
      */
     public String getCmsBodyClass() {
@@ -2718,7 +2724,7 @@ public class CmsBean implements Serializable {
 
     /**
      * getter for jsf
-     * 
+     *
      * @return
      */
     public String getCmsPagesFilter() {
@@ -2762,7 +2768,7 @@ public class CmsBean implements Serializable {
     public List<CMSNavigationItem> getActiveNavigationMenuItems() {
         return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
     }
-    
+
     public Collection<Sorting> getSortingModes() {
         return Arrays.asList(Sorting.values());
     }

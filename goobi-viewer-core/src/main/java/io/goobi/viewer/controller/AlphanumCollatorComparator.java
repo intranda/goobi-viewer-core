@@ -1,6 +1,3 @@
-
-package io.goobi.viewer.controller;
-
 /*
  * The Alphanum Algorithm is an improved sorting algorithm for strings
  * containing numbers.  Instead of sorting numbers in ASCII order like
@@ -25,6 +22,7 @@ package io.goobi.viewer.controller;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
+package io.goobi.viewer.controller;
 
 import java.text.Collator;
 import java.util.Comparator;

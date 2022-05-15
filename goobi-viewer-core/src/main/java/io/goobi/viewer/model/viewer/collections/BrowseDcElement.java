@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.viewer.collections;
 
@@ -67,7 +73,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @param number a long.
      * @param field a {@link java.lang.String} object.
      * @param sortField a {@link java.lang.String} object.
-     * @param splittingChar 
+     * @param splittingChar
      */
     public BrowseDcElement(String name, long number, String field, String sortField, String splittingChar, int displayNumberOfVolumesLevel) {
         this.name = name != null ? name.intern() : name;
@@ -188,7 +194,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     /**
      * Returns the message key for the collection description for the given language.
-     * 
+     *
      * @param language Requested language (ISO 639-1)
      * @return
      */
@@ -397,7 +403,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @return +({field}:{name} {field}:{name}.*) +(ISWORK:* ISANCHOR:*)
      */
     public String getSolrFilterQuery() {
@@ -405,7 +411,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @param servletPath
      * @return RSS feed URL for this collection
      * @throws ViewerConfigurationException

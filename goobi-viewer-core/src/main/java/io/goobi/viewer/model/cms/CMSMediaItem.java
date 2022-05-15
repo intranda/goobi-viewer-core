@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms;
 
@@ -87,7 +93,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     public static final String CONTENT_TYPE_VIDEO = "video";
     /** Constant <code>CONTENT_TYPE_AUDIO="audio"</code> */
     public static final String CONTENT_TYPE_AUDIO = "audio";
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_media_item_id")
@@ -142,7 +148,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.displayOrder = orig.displayOrder;
         this.categories = new ArrayList<>(orig.getCategories());
         this.lastModifiedTime = orig.lastModifiedTime;
-        
+
         for (CMSMediaItemMetadata origMetadata : orig.metadata) {
             CMSMediaItemMetadata copy = new CMSMediaItemMetadata(origMetadata);
             this.metadata.add(copy);
@@ -151,7 +157,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     /** {@inheritDoc} */
@@ -165,7 +171,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     /** {@inheritDoc} */
@@ -560,7 +566,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.goobi.viewer.model.viewer.BrowseElementInfo#
      * getDescription()
      */
@@ -578,7 +584,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * io.goobi.viewer.model.viewer.BrowseElementInfo#getIconURI(
      * )
@@ -594,7 +600,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
      * getIconURI(int, int)
      */
@@ -633,7 +639,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     /** {@inheritDoc} */
@@ -644,7 +650,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
      * getName(java.lang.String)
      */
@@ -658,7 +664,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
      * getDescription(java.lang.String)
      */
@@ -672,7 +678,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
      * getDisplayOrder()
      */
@@ -771,7 +777,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     /** {@inheritDoc} */

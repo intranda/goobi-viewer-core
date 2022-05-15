@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -245,7 +251,7 @@ public final class SearchHelper {
             hit.addCMSPageChildren();
             hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
             // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
-            // Collect Solr docs of child hits 
+            // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
@@ -556,7 +562,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param facetResults
      * @param splittingChar
      * @return
@@ -819,7 +825,7 @@ public final class SearchHelper {
 
     /**
      * Returns a Solr query suffix that filters out collections defined in the collection blacklist.
-     * 
+     *
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -1132,7 +1138,7 @@ public final class SearchHelper {
 
     /**
      * Builds regex for proximity search full-text snippets.
-     * 
+     *
      * @param searchTerm Search term containing multiple words
      * @param proximitySearchDistance Maximum distance between word
      * @return
@@ -1178,7 +1184,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param m
      * @param fulltext
      * @param searchTerm
@@ -1267,7 +1273,7 @@ public final class SearchHelper {
     /**
      * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
      * contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
-     * 
+     *
      * @param normalizedPhrase
      * @param normalizedTerm
      * @param maxDistance
@@ -1293,7 +1299,7 @@ public final class SearchHelper {
 
     /**
      * Recursively adds highlighting markup to all occurrences of the given term in the given phrase.
-     * 
+     *
      * @param phrase
      * @param term
      * @return
@@ -1333,7 +1339,7 @@ public final class SearchHelper {
 
     /**
      * Remove any diacritic characters and replace any non.letter and non-digit characters with space
-     * 
+     *
      * @param string
      * @return
      * @should preserve digits
@@ -1366,7 +1372,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param term
      * @param substitute
      * @return
@@ -1556,7 +1562,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param bmfc
      * @param startsWith
      * @param filterQuery
@@ -1706,7 +1712,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param bmfc
      * @param startsWith
      * @param filterQuery
@@ -2020,7 +2026,7 @@ public final class SearchHelper {
 
     /**
      * Remove '*' at the start or end of the given value
-     * 
+     *
      * @param value
      * @return
      */
@@ -2133,7 +2139,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @return
      */
@@ -2142,7 +2148,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @param prefix
      * @return modified field name
@@ -2558,7 +2564,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param searchTerms
      * @return
      */
@@ -2567,7 +2573,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param searchTerms
      * @param addOperators
      * @return
@@ -2605,7 +2611,7 @@ public final class SearchHelper {
      * @param boostTopLevelDocstructs
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * 
+     *
      */
     public static String buildFinalQuery(String rawQuery, String termQuery, boolean aggregateHits, boolean boostTopLevelDocstructs)
             throws IndexUnreachableException {
@@ -2900,7 +2906,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param accessCondition
      * @param escapeAccessCondition
      * @return
@@ -2916,7 +2922,7 @@ public final class SearchHelper {
 
     /**
      * Adds a fuzzy search token to the given term. The maximal Damerau-Levenshtein is calculated from term length
-     * 
+     *
      * @param term the search term
      * @return the given term with a fuzzy search token appended
      */
@@ -2948,7 +2954,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param term
      * @param distance
      * @return
@@ -2979,7 +2985,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param term Search term containing proximity search token
      * @return
      * @should remove token correctly
@@ -3002,7 +3008,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param query
      * @return
      * @should return 0 if query empty
@@ -3034,7 +3040,7 @@ public final class SearchHelper {
 
     /**
      * Determines whether the given string is a quoted search phrase, optionally with a proximity distance.
-     * 
+     *
      * @param s Search terms
      * @return true if phrase; false otherwise
      * @should detect phrase correctly
@@ -3052,7 +3058,7 @@ public final class SearchHelper {
     /**
      * Separate leading and trailing wildcard token ('*') from the actual term and return an array of length 3 with the values [leadingWildCard,
      * tokenWithoutWildcards, trailingWildcard] If leading/trailing wildcards are missing, the corresponding array entries are empty strings
-     * 
+     *
      * @param term
      * @return array of prefix, token, suffix
      */

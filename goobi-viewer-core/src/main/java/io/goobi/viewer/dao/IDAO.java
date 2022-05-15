@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.dao;
 
@@ -98,7 +104,7 @@ public interface IDAO {
      * @throws java.sql.SQLException if any.
      */
     boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
-    
+
     // User
 
     /**
@@ -355,7 +361,7 @@ public interface IDAO {
 
     /**
      * Get number of bookmark lists owned by the given user
-     * 
+     *
      * @param user
      * @return number of owned bookmark lists
      * @throws DAOException
@@ -693,7 +699,7 @@ public interface IDAO {
 
     /**
      * Returns all license types that match the given name list.
-     * 
+     *
      * @param names
      * @return a {@link io.goobi.viewer.model.security.LicenseType} object.
      * @throws DAOException in case of errors
@@ -757,7 +763,7 @@ public interface IDAO {
     public License getLicense(Long id) throws DAOException;
 
     /**
-     * 
+     *
      * @param licenseType
      * @return
      * @throws DAOException
@@ -766,7 +772,7 @@ public interface IDAO {
 
     /**
      * Returns the number of licenses that use the given license type.
-     * 
+     *
      * @param licenseType
      * @return
      * @throws DAOException
@@ -869,14 +875,14 @@ public interface IDAO {
     // CommentGroup
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
     public List<CommentGroup> getAllCommentGroups() throws DAOException;
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -970,7 +976,7 @@ public interface IDAO {
 
     /**
      * Get Comments created by a specific user
-     * 
+     *
      * @param user the creator/owner of the comment
      * @param maxResults maximum number of results to return
      * @param sortField class field to sort results by
@@ -1048,7 +1054,7 @@ public interface IDAO {
     public boolean deleteComment(Comment comment) throws DAOException;
 
     /**
-     * 
+     *
      * @param pi Record identifier
      * @param owner Comment creator
      * @return Number of affected rows
@@ -1058,7 +1064,7 @@ public interface IDAO {
 
     /**
      * Changes ownership of all comments from <code>fromUser</code> to <code>toUser</code>.
-     * 
+     *
      * @param fromUser
      * @param toUser
      * @return
@@ -1178,7 +1184,7 @@ public interface IDAO {
      * <p>
      * getDownloadJobsForPi.
      * </p>
-     * 
+     *
      * @param pi Record identifier
      * @return List of {@link DownloadJob}s for given record identfier
      * @throws DAOException
@@ -1385,7 +1391,7 @@ public interface IDAO {
     public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
 
     /**
-     * 
+     *
      * @param pi Record identifier
      * @return {@link CMSPage}
      * @throws DAOException
@@ -1524,7 +1530,7 @@ public interface IDAO {
 
     /**
      * Get a list of all {@link CMSMediaItem}s which contain the given category
-     * 
+     *
      * @param category
      * @return all containing cmsPages
      * @throws DAOException
@@ -1672,7 +1678,7 @@ public interface IDAO {
     public List<CMSCategory> getAllCategories() throws DAOException;
 
     /**
-     * 
+     *
      * @param category
      * @return
      * @throws DAOException
@@ -1680,7 +1686,7 @@ public interface IDAO {
     public long getCountPagesUsingCategory(CMSCategory category) throws DAOException;
 
     /**
-     * 
+     *
      * @param category
      * @return
      * @throws DAOException
@@ -1920,7 +1926,7 @@ public interface IDAO {
 
     /**
      * Deletes given user from the lists of annotators and reviewers an all campaign statistics.
-     * 
+     *
      * @param user
      * @return Number of affected campaigns
      * @throws DAOException
@@ -1929,7 +1935,7 @@ public interface IDAO {
 
     /**
      * Replaced <code>fromUser</code> with <code>toUser</code> in the lists of annotators and reviewers an all campaign statistics.
-     * 
+     *
      * @param fromUser
      * @param toUser
      * @return
@@ -1940,7 +1946,7 @@ public interface IDAO {
     // Misc
 
     /**
-     * 
+     *
      * @return true if accessible; false otherwise
      */
     public boolean checkAvailability();
@@ -2096,7 +2102,7 @@ public interface IDAO {
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException;
 
     /**
-     * 
+     *
      * @param userId
      * @return
      * @throws DAOException
@@ -2191,7 +2197,7 @@ public interface IDAO {
 
     /**
      * Get the {@link GeoMap} of the given mapId
-     * 
+     *
      * @param mapId
      * @return The GeoMap of the given id or else null
      */
@@ -2199,7 +2205,7 @@ public interface IDAO {
 
     /**
      * Get all {@link GeoMap}s in database
-     * 
+     *
      * @return A list of all stored GeoMaps
      * @throws DAOException
      */
@@ -2207,7 +2213,7 @@ public interface IDAO {
 
     /**
      * Add the given map to the database if no map of the same id already exists
-     * 
+     *
      * @param map
      * @return true if successful
      * @throws DAOException
@@ -2216,7 +2222,7 @@ public interface IDAO {
 
     /**
      * Update the given {@link GeoMap} in the database
-     * 
+     *
      * @param map
      * @return true if successful
      * @throws DAOException
@@ -2225,7 +2231,7 @@ public interface IDAO {
 
     /**
      * Delete the given {@link GeoMap} from the database
-     * 
+     *
      * @param map
      * @return true if successful
      * @throws DAOException
@@ -2234,7 +2240,7 @@ public interface IDAO {
 
     /**
      * Return a list of CMS-pages embedding the given map
-     * 
+     *
      * @param map
      * @return
      * @throws DAOException
@@ -2243,7 +2249,7 @@ public interface IDAO {
 
     /**
      * Return a list of CMS-pages embedding the given map in a sidebar widget
-     * 
+     *
      * @param map
      * @return
      * @throws DAOException
@@ -2259,7 +2265,7 @@ public interface IDAO {
 
     /**
      * Get a paginated list of {@link CMSRecordNote}s
-     * 
+     *
      * @param first
      * @param pageSize
      * @param sortField
@@ -2273,7 +2279,7 @@ public interface IDAO {
 
     /**
      * Get all {@link CMSRecordNote}s for the given pi
-     * 
+     *
      * @param pi The pi of the record.
      * @param displayedNotesOnly set to true to only return notes with {@link CMSRecordNote#isDisplayŃote()} set to true
      * @return
@@ -2283,7 +2289,7 @@ public interface IDAO {
 
     /**
      * Get all {@link CMSMultiRecordNote}s. To find notes relating to record, all notes must be check for matching query
-     * 
+     *
      * @param displayedNotesOnly
      * @return
      * @throws DAOException
@@ -2292,7 +2298,7 @@ public interface IDAO {
 
     /**
      * Get all persisted {@link CMSRecordNote}s
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -2300,7 +2306,7 @@ public interface IDAO {
 
     /**
      * Get a {@link CMSRecordNote} by its id property
-     * 
+     *
      * @param id
      * @return
      */
@@ -2308,7 +2314,7 @@ public interface IDAO {
 
     /**
      * Persist a new {@link CMSRecordNote}.
-     * 
+     *
      * @param note
      * @return
      */
@@ -2316,7 +2322,7 @@ public interface IDAO {
 
     /**
      * Updates an existing {@link CMSRecordNote}
-     * 
+     *
      * @param note
      * @return
      */
@@ -2324,7 +2330,7 @@ public interface IDAO {
 
     /**
      * Deletes an existing {@link CMSRecordNote}
-     * 
+     *
      * @param note
      * @return
      */
@@ -2414,7 +2420,7 @@ public interface IDAO {
     public Disclaimer getDisclaimer() throws DAOException;
 
     public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException;
-    
+
     public Long getNumRecordsWithComments(User user) throws DAOException;
 
     public List getNativeQueryResults(String query) throws DAOException;
@@ -2423,7 +2429,7 @@ public interface IDAO {
 
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
-     * 
+     *
      * @return the EntityManagerFactory
      */
     EntityManagerFactory getFactory();
@@ -2431,7 +2437,7 @@ public interface IDAO {
     /**
      * Get an EntityManager for a query or transaction. Must always be followed by {@link #close(EntityManager) close(EntityManager) Method} after the
      * query/transaction
-     * 
+     *
      * @return a new EntityManager
      */
     EntityManager getEntityManager();
@@ -2439,7 +2445,7 @@ public interface IDAO {
     /**
      * Either close the given EntityManager or do some other post query/transaction handling for the given EntityManager. Must be called after each
      * query/transaction.
-     * 
+     *
      * @param EntityManager em
      * @throws DAOException
      */
@@ -2455,7 +2461,7 @@ public interface IDAO {
 
     /**
      * Call {@link EntityTransaction#commit()} on the given transaction
-     * 
+     *
      * @param EntityTransaction et
      * @throws PersistenceException
      */
@@ -2463,7 +2469,7 @@ public interface IDAO {
 
     /**
      * Call {@link EntityTransaction#commit()} on the current transaction of the given EntityManager
-     * 
+     *
      * @param EntityManager em
      * @throws PersistenceException
      */
@@ -2471,7 +2477,7 @@ public interface IDAO {
 
     /**
      * Handling of exceptions occured during {@link #commitTransaction(EntityTransaction)}. Usually calls {@link EntityTransaction#rollback()}
-     * 
+     *
      * @param EntityTransaction et
      * @throws PersistenceException
      */
@@ -2480,7 +2486,7 @@ public interface IDAO {
     /**
      * Handling of exceptions occured during {@link #commitTransaction(EntityManager)} Usually calls {@link EntityTransaction#rollback()} on the
      * current transaction of the given EntityManager
-     * 
+     *
      * @param EntityManager et
      * @throws PersistenceException
      */

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -47,7 +53,7 @@ public class DynamicBean implements Serializable {
     private static final long serialVersionUID = -6628922677497179970L;
 
     private final static Logger logger = LoggerFactory.getLogger(DynamicBean.class);
-    
+
     private List<DynamicContent> components = new ArrayList<>();
     private HtmlPanelGroup formGroup = null;
     private HtmlPanelGroup headGroup = null;
@@ -55,7 +61,7 @@ public class DynamicBean implements Serializable {
     public void setFormGroup(HtmlPanelGroup group) {
         this.formGroup = group;
     }
-    
+
     /**
      * @param headGroup the headGroup to set
      */
@@ -73,7 +79,7 @@ public class DynamicBean implements Serializable {
         }
         return formGroup;
     }
-    
+
     /**
      * @return the formGroup
      * @throws DAOException
@@ -86,7 +92,7 @@ public class DynamicBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     private void loadHeadGroup() {
         this.headGroup = new HtmlPanelGroup();
@@ -99,7 +105,7 @@ public class DynamicBean implements Serializable {
 
     /**
      * @throws DAOException
-     * 
+     *
      */
     private void loadFormGroup() throws DAOException {
 
@@ -110,15 +116,15 @@ public class DynamicBean implements Serializable {
             UIComponent component = builder.build(content, this.formGroup);
             if(component == null) {
                 logger.error("Error loading component " + component);
-            } else {                
+            } else {
                 logger.trace("Added dynamic content " + component);
             }
         }
     }
-    
+
     public void addComponent(String id, String type, Map<String, Object> attributes ) {
         DynamicContentType contentType = DynamicContentType.valueOf(type.toUpperCase());
-        try {            
+        try {
             DynamicContent content = new DynamicContent(contentType, DynamicContentBuilder.getFilenameForType(contentType));
             content.setId(id);
             content.setAttributes(attributes);

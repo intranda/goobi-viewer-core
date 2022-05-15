@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.administration.legal;
 
@@ -29,7 +35,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 /**
  * Describes the locations in the viewer where a notification should be displayed. This can either be all pages or all record pages which may be
  * further restricted by a SOLR query condition
- * 
+ *
  * @author florian
  *
  */
@@ -39,7 +45,7 @@ public class DisplayScope implements Serializable {
 
     /**
      * The type of viewer-pages that are in scope
-     * 
+     *
      * @author florian
      *
      */
@@ -67,7 +73,7 @@ public class DisplayScope implements Serializable {
 
     /**
      * Creates a scope from a given PageScope and filterQuery. The filterQuery is only meaningful if the scope is PageScope.RECORD
-     * 
+     *
      * @param query
      */
     public DisplayScope(PageScope scope, String filter) {
@@ -125,7 +131,7 @@ public class DisplayScope implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param query
      * @param pi
      * @param searchIndex
@@ -147,7 +153,7 @@ public class DisplayScope implements Serializable {
 
     /**
      * Get the query to use in a SOLR search to deterimine whether a record should show the disclaimer
-     * 
+     *
      * @return a solr search query for the disclaimer
      */
     public String getQueryForSearch() {

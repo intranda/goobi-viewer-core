@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.filters;
 
@@ -63,7 +69,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
- * Filter for IIIF Image info.json requests. Sets the tile sizes, image sizes and maximum sizes 
+ * Filter for IIIF Image info.json requests. Sets the tile sizes, image sizes and maximum sizes
  * configured in config_viewer.xml
  * </p>
  */
@@ -116,7 +122,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                 List<Integer> imageSizes = getImageSizesFromConfig(mayZoom);
                 setImageSizes((ImageInformation) responseObject, imageSizes);
                 setMaxImageSizes((ImageInformation) responseObject, mayZoom);
-                if(mayZoom) {                    
+                if(mayZoom) {
                     List<ImageTile> tileSizes = getTileSizesFromConfig();
                     setTileSizes((ImageInformation) responseObject, tileSizes);
                 } else {
@@ -135,7 +141,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @return
      */
     private boolean isZoomingAllowed(ContainerRequestContext request) {
-        if(DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {            
+        if(DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {
             String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
             String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
             String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
@@ -229,21 +235,21 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * Write 
-     * 
+     * Write
+     *
      * @param info
      */
     private static void setMaxImageSizes(ImageInformation info, boolean mayZoom) {
-        
+
         Integer maxWidth = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                 : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
-        Integer maxHeight = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageHeight() : 
+        Integer maxHeight = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageHeight() :
             DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth()*info.getHeight()/info.getWidth();
-        
+
         if(info instanceof ImageInformation3) {
             ((ImageInformation3) info).setMaxWidth(maxWidth);
             ((ImageInformation3) info).setMaxHeight(maxHeight);
-        } else {            
+        } else {
             Optional<ImageProfile> profile = info.getProfiles().stream().filter(p -> p instanceof ImageProfile).map(p -> (ImageProfile) p).findFirst();
             profile.ifPresent(p -> {
                 if (maxWidth != null && maxWidth > 0) {
@@ -258,7 +264,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
     /**
      * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes. Values of imageSizes are interpreted as width
-     * 
+     *
      * @param responseObject
      * @param imageSizes
      */
@@ -276,7 +282,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param mayZoom 
+     * @param mayZoom
      * @param responseObject
      * @return
      * @throws ViewerConfigurationException
@@ -289,7 +295,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
         for (String string : sizeStrings) {
             try {
                 int size = Integer.parseInt(string);
-                if(size <= maxWidth) {                    
+                if(size <= maxWidth) {
                     sizes.add(size);
                 }
             } catch (NullPointerException | NumberFormatException e) {

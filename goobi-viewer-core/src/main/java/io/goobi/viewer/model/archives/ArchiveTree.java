@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.archives;
 
@@ -70,7 +76,7 @@ public class ArchiveTree implements Serializable {
         this.generate(new ArchiveEntry(orig.getRootElement(), null));
         this.getTreeViewForGroup(DEFAULT_GROUP);
     }
-    
+
     public void generate(ArchiveEntry root) {
         if (root == null) {
             throw new IllegalArgumentException("root may not be null");
@@ -192,7 +198,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param entry
      * @param maxDepth
      */
@@ -255,7 +261,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public ArchiveEntry getRootElement() {
@@ -263,7 +269,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param group
      * @return
      */
@@ -308,7 +314,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param collapseAllEntries If true, all invisible child children will also be collapsed
      */
     public void collapseAll(boolean collapseAllEntries) {
@@ -354,7 +360,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      * Get the hierarchical tree as a flat list
-     * 
+     *
      * @return
      */
 
@@ -369,7 +375,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return the {@link ArchiveEntry} with the given identifier if it exists in the tree; null otherwise
      * @param identifier
      */
@@ -378,7 +384,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param searchValue
      */
     public void search(String searchValue) {
@@ -403,7 +409,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param node
      * @param searchValue
      */
@@ -424,7 +430,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      * Return this node if it has the given identifier or the first of its descendents with the identifier
-     * 
+     *
      * @param identifier
      * @param topNode
      * @return

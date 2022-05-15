@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.viewer;
 
@@ -647,7 +653,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -934,7 +940,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @return The probable mimeType of the fulltext. If the fulltext is not yet loaded, it is loaded first
      * @throws ViewerConfigurationException
      */
@@ -1414,7 +1420,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * checks if the user has the privilege {@link IPrivilegeHolder.PRIV_ZOOM_IMAGES} If the check fails and
      * {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned
-     * 
+     *
      * @return true exactly if the user is allowed to zoom images. false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -1435,7 +1441,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -1495,7 +1501,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -1590,7 +1596,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @param load If true, ALTO will be loaded if altoText is null
      * @return
      * @throws ViewerConfigurationException
@@ -1747,7 +1753,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * List of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
      * (using coordinates), this method can be used to get all shape coordinates for these elemets for visualization.
-     * 
+     *
      * @return List of <code>/StructElement<code>s
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -1776,7 +1782,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * 
+     *
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException

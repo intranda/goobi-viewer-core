@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v2.cms;
 
@@ -60,7 +66,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class CMSMediaImageResource3 extends ImageResource {
 
-    
+
     public CMSMediaImageResource3(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
@@ -70,9 +76,9 @@ public class CMSMediaImageResource3 extends ImageResource {
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
 
         String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", "");
-        
+
         String requestUrl = new String(request.getRequestURL());
-        
+
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
 
@@ -82,9 +88,9 @@ public class CMSMediaImageResource3 extends ImageResource {
         if(parameterPathIndex > 0 && parameterPathIndex < imageRequestPath.length()) {
             imageParameterPath = imageRequestPath.substring(parameterPathIndex);
             requestUrl = requestUrl.substring(0, baseEndIndex + parameterPathIndex);
-        }         
+        }
         this.resourceURI = URI.create(requestUrl);
-        
+
         List<String> parts = Arrays.stream(imageParameterPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         if(parts.size() == 4) {
             //image request
@@ -109,12 +115,12 @@ public class CMSMediaImageResource3 extends ImageResource {
         Path file = folder.resolve(Paths.get(filename).getFileName());
         return PathConverter.toURI(file);
     }
-    
+
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
         //don't do anyhting. The resource url has already been set in constructor
     }
-    
+
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
@@ -123,7 +129,7 @@ public class CMSMediaImageResource3 extends ImageResource {
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
        return super.redirectToCanonicalImageInfo();
     }
-    
+
     @GET
     @javax.ws.rs.Path("/info.json")
     @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })
@@ -133,6 +139,6 @@ public class CMSMediaImageResource3 extends ImageResource {
         ImageInformation info = super.getInfoAsJson();
         return new ImageInformation3(info);
     }
-    
-    
+
+
 }

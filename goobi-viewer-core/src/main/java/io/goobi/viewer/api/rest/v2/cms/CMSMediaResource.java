@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v2.cms;
 
@@ -115,7 +121,7 @@ public class CMSMediaResource {
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
-    
+
 
     /**
      * <p>
@@ -202,7 +208,7 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
     @Produces("image/svg+xml")
@@ -227,7 +233,7 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
     @Produces("image/x-icon")
@@ -252,7 +258,7 @@ public class CMSMediaResource {
         }
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
     public String serveVideoContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
@@ -261,7 +267,7 @@ public class CMSMediaResource {
         Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
         return serveMediaContent("video", file);
     }
-    
+
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
     public String serveAudioContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
@@ -330,9 +336,9 @@ public class CMSMediaResource {
 
     /**
      * List all uplodaed media files
-     * 
+     *
      * @throws PresentationException
-     * 
+     *
      */
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
@@ -456,7 +462,7 @@ public class CMSMediaResource {
     /**
      * Return an Optional containing a {@link CMSCategory} for which the user has access rights if the user in a CmsAdmin but has limited category
      * rights If the user has unlimited category rights, return an empty optional
-     * 
+     *
      * @param user
      * @return
      * @throws DAOException
@@ -496,7 +502,7 @@ public class CMSMediaResource {
     /**
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
      * no user is logged in, NULL is returned
-     * 
+     *
      * @param session
      * @return
      */
@@ -535,7 +541,7 @@ public class CMSMediaResource {
     /**
      * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor The remaining items
      * will be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)}
-     * 
+     *
      * @author florian
      *
      */
@@ -599,7 +605,7 @@ public class CMSMediaResource {
         }
 
     }
-    
+
     private String serveMediaContent(String type, Path file) throws PresentationException, IndexUnreachableException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -280,7 +286,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
         ActiveDocumentBean adb = new ActiveDocumentBean();
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
-        
+
         adb.setImageToShow("1");
         adb.update();
         Assert.assertTrue(adb.isRecordLoaded());
@@ -290,12 +296,12 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("1-1");
         adb.update();
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrlRelativeToCurrentPage(1));
-        
+
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16");
         adb.update();
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/", adb.getPageUrlRelativeToCurrentPage(-1));
-        
+
         // Same in right-to-left
         adb.getViewManager().getTopStructElement().setRtl(true);
         // Next page (1 -> 2-3)
@@ -306,7 +312,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("16-17");
         adb.update();
         Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrlRelativeToCurrentPage(-1));
-        
+
     }
 
     /**

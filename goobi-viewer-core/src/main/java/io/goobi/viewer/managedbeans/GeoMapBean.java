@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -41,7 +47,7 @@ import io.goobi.viewer.model.maps.GeoMapMarker;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
- * 
+ *
  * @author florian
  *
  */
@@ -58,7 +64,7 @@ public class GeoMapBean implements Serializable {
     private List<GeoMap> loadedMaps = null;
 
     /**
-     * 
+     *
      */
     public GeoMapBean() {
         this.selectedLanguage = BeanUtils.getNavigationHelper().getLocaleString();
@@ -72,9 +78,9 @@ public class GeoMapBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * Sets the current map to a clone of the given map
-     * 
+     *
      * @param currentMap the currentMap to set
      */
     public void setCurrentMap(GeoMap currentMap) {
@@ -83,7 +89,7 @@ public class GeoMapBean implements Serializable {
 
     /**
      * If a GeoMap of the given mapId exists in the database, set the current map to a clone of that map
-     * 
+     *
      * @param mapId
      * @throws DAOException
      */
@@ -102,7 +108,7 @@ public class GeoMapBean implements Serializable {
 
     /**
      * Save the current map. Either add it to database if it has no id yet, or otherwise update it in the database
-     * 
+     *
      * @throws DAOException
      */
     public void saveCurrentMap() throws DAOException {
@@ -140,9 +146,9 @@ public class GeoMapBean implements Serializable {
     /**
      * If the current map has an id, restore the map from the database, removing all unsaved changes. If the current map exists but has no id, set the
      * current map to a new empty map
-     * 
+     *
      * @throws DAOException
-     * 
+     *
      */
     public void resetCurrentMap() throws DAOException {
         if (getCurrentMap() != null) {
@@ -156,7 +162,7 @@ public class GeoMapBean implements Serializable {
 
     /**
      * Sets the currentMap to a new empty {@link GeoMap}
-     * 
+     *
      * @return the pretty url to creating a new GeoMap
      */
     public void createEmptyCurrentMap() {
@@ -179,7 +185,7 @@ public class GeoMapBean implements Serializable {
 
     /**
      * Get a list of all {@link GeoMap}s from the databse. Note that the databse is queries at each method call
-     * 
+     *
      * @return a list of all stored GeoMaps
      * @throws DAOException
      */
@@ -234,7 +240,7 @@ public class GeoMapBean implements Serializable {
         .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_HEATMAP).build())
         .orElse("");
     }
-    
+
     public String getFeatureUrl() {
         return DataManager.getInstance().getRestApiManager().getDataApiManager()
         .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())

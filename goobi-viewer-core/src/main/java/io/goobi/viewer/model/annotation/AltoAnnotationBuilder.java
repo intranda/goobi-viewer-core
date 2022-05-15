@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.annotation;
 
@@ -50,12 +56,12 @@ public class AltoAnnotationBuilder {
 
     private AbstractApiUrlManager urls;
     private String format;
-    
+
     public AltoAnnotationBuilder(AbstractApiUrlManager urls, String format) {
         this.urls = urls;
         this.format = format;
     }
-    
+
     /**
      * <p>
      * createAnnotations.
@@ -124,7 +130,7 @@ public class AltoAnnotationBuilder {
     public AbstractAnnotation createAnnotation(GeometricData element, String pi, Integer pageNo, IResource canvas, boolean urlOnlyTarget) {
         String id = Optional.ofNullable(element.getId()).orElse(buildId(element));
         AbstractAnnotation anno;
-        if("oa".equalsIgnoreCase(format)) {            
+        if("oa".equalsIgnoreCase(format)) {
             anno = new OpenAnnotation(createAnnotationId(pi, pageNo, id));
             anno.setBody(new TextualResource(element.getContent()));
         } else {
@@ -135,9 +141,9 @@ public class AltoAnnotationBuilder {
         anno.setMotivation(Motivation.PAINTING);
         return anno;
     }
-    
+
     /**
-     * Method to construct alto element id if no id attribute is available 
+     * Method to construct alto element id if no id attribute is available
      * @param e
      * @return
      */

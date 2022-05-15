@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -151,7 +157,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isUserCommentsEnabled() {
@@ -163,7 +169,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param userCommentsEnabled
      * @throws DAOException
      */
@@ -177,7 +183,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -186,7 +192,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param user Current user
      * @return Filtered list of available {@link CommentGroup}s to the given user
      * @throws DAOException
@@ -214,14 +220,14 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void resetCurrentCommentGroupAction() {
         currentCommentGroup = null;
     }
 
     /**
-     * 
+     *
      */
     public void newCurrentCommentGroupAction() {
         logger.trace("newCurrentCommentGroupAction");
@@ -229,7 +235,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -264,7 +270,7 @@ public class AdminCommentBean implements Serializable {
         }
         return "";
     }
-    
+
 
     /**
      * <p>
@@ -288,7 +294,7 @@ public class AdminCommentBean implements Serializable {
     // Comments
 
     /**
-     * 
+     *
      */
     public void resetCurrentCommentAction() {
         currentComment = null;
@@ -381,7 +387,7 @@ public class AdminCommentBean implements Serializable {
 
     /**
      * Returns the ID of <code>currentCommentGroup</code>.
-     * 
+     *
      * @return currentCommentGroup.id
      */
     public Long getCurrentCommentGroupId() {
@@ -394,7 +400,7 @@ public class AdminCommentBean implements Serializable {
 
     /**
      * Sets <code>currentCommentGroup</code> by loading it from the DB via the given ID.
-     * 
+     *
      * @param id
      * @throws DAOException
      */
@@ -418,7 +424,7 @@ public class AdminCommentBean implements Serializable {
      * <p>
      * Getter for the field <code>selectedComment</code>.
      * </p>
-     * 
+     *
      * @return the selectedComment
      */
     public Comment getSelectedComment() {
@@ -429,7 +435,7 @@ public class AdminCommentBean implements Serializable {
      * <p>
      * Setter for the field <code>selectedComment</code>.
      * </p>
-     * 
+     *
      * @param selectedComment the selectedComment to set
      */
     public void setSelectedComment(Comment selectedComment) {

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -42,20 +48,20 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
 public class CmsDynamicContentBean implements Serializable{
 
     private static final Logger logger = LoggerFactory.getLogger(CmsDynamicContentBean.class);
-    
+
     private static final long serialVersionUID = 644204008911471246L;
     private HtmlPanelGroup topBarGroup = null;
     private CMSPage cmsPage = null;
-    
+
     @Deprecated //no longer needed to set
     public void setCmsPage(CMSPage page) {
         this.cmsPage = page;
     }
-    
+
     public HtmlPanelGroup getTopBarContent() {
         this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);
         if (topBarGroup == null) {
-            try {                
+            try {
                 loadTopBarContent();
             } catch(IllegalStateException e) {
                 logger.error("Error initializing topbar content: " + e.toString());
@@ -63,7 +69,7 @@ public class CmsDynamicContentBean implements Serializable{
         }
         return topBarGroup;
     }
-    
+
     /**
      * @param topBarGroup the topBarGroup to set
      */
@@ -72,7 +78,7 @@ public class CmsDynamicContentBean implements Serializable{
     }
 
     private void loadTopBarContent() {
-        
+
         this.topBarGroup = new HtmlPanelGroup();
         if(this.cmsPage == null) {
             throw new IllegalStateException("CMSPage must be set before loading content");
@@ -83,8 +89,8 @@ public class CmsDynamicContentBean implements Serializable{
                 logger.error("Error building slider compoenent from slider " + cmsPage.getTopBarSlider().getId());
             }
         }
-        
+
 
     }
-    
+
 }

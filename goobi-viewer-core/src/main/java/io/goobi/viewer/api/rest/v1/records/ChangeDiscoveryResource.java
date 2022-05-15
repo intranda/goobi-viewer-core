@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.records;
 
@@ -51,15 +57,15 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 public class ChangeDiscoveryResource {
 
     private final static String[] CONTEXT = { "http://iiif.io/api/discovery/0/context.json", "https://www.w3.org/ns/activitystreams" };
-    
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
     @Inject
     private ApiUrls apiUrlManager;
-    
-    
+
+
     /**
      * Provides a view of the entire list of all activities by linking to the first and last page of the collection. The pages contain the actual
      * activity entries and are provided by {@link #getPage(int) /iiif/discovery/activities/&lt;pageNo&gt;/}. This resource also contains a count of
@@ -72,7 +78,7 @@ public class ChangeDiscoveryResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags= {"records", "iiif"}, 
+            tags= {"records", "iiif"},
             summary = "Get a IIIF change discovery activity stream of all record changes")
     @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
     @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
@@ -82,7 +88,7 @@ public class ChangeDiscoveryResource {
         collection.setContext(CONTEXT);
         return collection;
     }
-    
+
     /**
      * Provides a partial list of {@link Activity Activities} along with links to the preceding and succeeding page as well as the parent collection
      * as provided by {@link #getAllChanges() /iiif/discovery/activities/} The number of Activities on the page is determined by
@@ -102,5 +108,5 @@ public class ChangeDiscoveryResource {
         page.setContext(CONTEXT);
         return page;
     }
-    
+
 }
