@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
@@ -86,7 +92,7 @@ public class ManifestBuilder extends AbstractBuilder {
     public ManifestBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
-    
+
 
     /**
      * <p>
@@ -144,7 +150,7 @@ public class ManifestBuilder extends AbstractBuilder {
         addMetadata(manifest, ele);
 
         addThumbnail(ele, manifest);
-        
+
         addLogo(ele, manifest);
         addLicences(manifest);
         addNavDate(ele, manifest);
@@ -240,7 +246,7 @@ public class ManifestBuilder extends AbstractBuilder {
             }
         }
     }
-    
+
     public void addSeeAlsos(AbstractPresentationModelElement2 manifest, StructElement ele) {
 
         if (ele.isLidoRecord()) {
@@ -265,18 +271,18 @@ public class ManifestBuilder extends AbstractBuilder {
             }
         }
     }
-    
+
     /**
      * @param page
      * @param canvas
      * @throws URISyntaxException
      */
     public void addRenderings(AbstractPresentationModelElement2 manifest, StructElement ele) {
-        
+
         this.getRenderings().forEach(link -> {
             try {
                 URI id = getLinkingPropertyUri(ele, link.target);
-                if(id != null) {                    
+                if(id != null) {
                     manifest.addRendering(link.getLinkingContent(id));
                 }
             } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
@@ -284,7 +290,7 @@ public class ManifestBuilder extends AbstractBuilder {
             }
         });
     }
-    
+
     private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws URISyntaxException, PresentationException, IndexUnreachableException {
 
         if(!LinkingTarget.VIEWER.equals(target) && ele.isAnchor()) {
@@ -293,7 +299,7 @@ public class ManifestBuilder extends AbstractBuilder {
         if(target.equals(LinkingTarget.PDF) && !ele.isHasImages()) {
             return null;
         }
-        
+
         URI uri = null;
         switch(target) {
             case VIEWER:
@@ -381,7 +387,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * Retrieves the logo url configured in webapi.iiif.logo. If the configured value is an absulute http(s) url, this url will be returned. If it is
      * any other absolute url a contentserver link to that url will be returned. If it is a non-absolute url, it will be considered a filepath within
      * the static images folder of the viewer theme and the appropriate url will be returned
-     * 
+     *
      * @return An optional containing the configured logo url, or an empty optional if no logo was configured
      * @throws ViewerConfigurationException
      */
@@ -411,7 +417,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
                 urlString = null;
             }
-            
+
         }
         return logos;
     }

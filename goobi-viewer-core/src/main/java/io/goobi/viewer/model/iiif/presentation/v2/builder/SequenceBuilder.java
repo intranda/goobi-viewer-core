@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
@@ -125,7 +131,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
-        
+
         Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
 
         sequence.addWithin(manifest);
@@ -133,19 +139,19 @@ public class SequenceBuilder extends AbstractBuilder {
         if (manifest != null) {
             manifest.setSequence(sequence);
         }
-        
+
         if(BuildMode.IIIF.equals(buildMode) || BuildMode.THUMBS.equals(buildMode)) {
 
             IPageLoader pageLoader = AbstractPageLoader.create(doc);
             Map<Integer, Canvas2> canvasMap = new HashMap<>();
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
                 PhysicalElement page = pageLoader.getPage(i);
-    
+
                 Canvas2 canvas = generateCanvas(doc.getPi(), page);
                 if (canvas != null && getBuildMode().equals(BuildMode.IIIF)) {
                     addSeeAlsos(canvas, page);
                     Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, false);
-    
+
                     merge(annotationMap, content);
                     canvasMap.put(i, canvas);
                 }
@@ -153,7 +159,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     sequence.addCanvas(canvas);
                 }
             }
-            
+
             if (getBuildMode().equals(BuildMode.IIIF)) {
                 try {
                     annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
@@ -295,7 +301,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * @return a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws PresentationException 
+     * @throws PresentationException
      */
     public PhysicalElement getPage(StructElement doc, int order) throws IndexUnreachableException, DAOException, PresentationException {
         IPageLoader loader = AbstractPageLoader.create(doc);// new LeanPageLoader(doc, 1);
@@ -562,7 +568,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     ImageInformation info = imageDelivery.getImages().getImageInformation(page);
                     size.setSize(info.getWidth(), info.getHeight());
                     /*
-                     * Catch NoClassDefFoundError which occurs if imageio-libs are missing. 
+                     * Catch NoClassDefFoundError which occurs if imageio-libs are missing.
                      * Currently this is true in a testing environment, so we just catch it here to pass the tests
                      */
                 } catch (NoClassDefFoundError | ContentLibException | URISyntaxException e) {

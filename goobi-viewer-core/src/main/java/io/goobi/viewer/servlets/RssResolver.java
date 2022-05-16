@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.servlets;
 
@@ -45,7 +51,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Servlet implementation class RssResolver
- * 
+ *
  * TODO: Removed deprecation marker because this servlet is still required for delivering RSS feeds for sidebar widget. The alternative, the rss REST-resource
  * delivers a json which need to be parsed and turned into html
  */
@@ -71,17 +77,17 @@ public class RssResolver extends HttpServlet {
         int maxHits;
         if (request.getParameterMap().get("max") != null && request.getParameterMap().get("max").length > 0) {
             maxHits = Integer.parseInt(request.getParameterMap().get("max")[0]);
-        } else {            
+        } else {
             maxHits = DataManager.getInstance().getConfiguration().getRssFeedItems();
         }
         logger.trace("RSS request language: {}", language);
-        
+
         String filterQuery = "";
         if (request.getParameterMap().get("filterQuery") != null && request.getParameterMap().get("filterQuery").length > 0) {
             filterQuery = request.getParameterMap().get("filterQuery")[0];
         }
         logger.trace("RSS request filter query: {}", filterQuery);
-        
+
         Long bookshelfId = null;
         if (request.getParameterMap().get("bookshelfId") != null) {
             try {

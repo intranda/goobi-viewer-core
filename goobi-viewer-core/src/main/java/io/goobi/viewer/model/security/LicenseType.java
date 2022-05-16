@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.security;
 
@@ -75,7 +81,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     public static final String LICENSE_TYPE_LEGAL_DISCLAIMER = "licenseType_disclaimer";
     private static final String LICENSE_TYPE_DESC_LEGAL_DISCLAIMER = "licenseType_disclaimer_desc";
 
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "license_type_id")
@@ -132,7 +138,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     }
 
     /**
-     * 
+     *
      * @param name License type name
      */
     public LicenseType(String name) {
@@ -269,7 +275,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     /**
      * Get the conditions referring to a SOLR query. This is either the substring in {} after QUERY: or the entire string if neither QUERY:{...} nor
      * FILENAME:{...} is part of the given string
-     * 
+     *
      * @param conditions
      * @return
      */
@@ -317,7 +323,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
                 return false;
         }
     }
-    
+
     /**
      * <p>
      * isCmsType.
@@ -340,7 +346,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /**
      * Checks whether only Solr documents of the UGC type have the access condition upon which this license type is based.
-     * 
+     *
      * @return the ugcType
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -500,7 +506,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /**
      * Returns the list of available privileges for adding to this license (using the working copy while editing).
-     * 
+     *
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
     public List<String> getAvailablePrivileges() {
@@ -509,7 +515,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /**
      * Returns the list of available privileges for adding to this license (using the given privileges list).
-     * 
+     *
      * @param privileges Privileges to be removed from the returned list
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      * @should only return priv view ugc if ugc type
@@ -531,7 +537,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /**
      * Returns a sorted list (according to PRIVS_RECORD) based on the given set of privileges.
-     * 
+     *
      * @return Sorted list of privileges contained in <code>privileges</code>
      */
     @Override
@@ -560,7 +566,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /**
      * Adds the given privilege to the working set.
-     * 
+     *
      * @param privilege
      * @return true if successful; false otherwise
      */
@@ -572,7 +578,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /**
      * Removes the given privilege from the working set.
-     * 
+     *
      * @param privilege
      * @return true if successful; false otherwise
      */
@@ -590,7 +596,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
 
     /**
      * Checks whether this license type has the given privilege in the working copy of the privilege list.
-     * 
+     *
      * @param privilege Privilege name to check
      * @return true if copy contains privilege; false otherwise
      */
@@ -897,7 +903,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     }
 
     /**
-     * 
+     *
      * @param query
      * @return
      */
@@ -942,7 +948,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     }
 
     /**
-     * 
+     *
      * @param licenseTypeName
      * @param licenseTypeDesc
      * @param privName
@@ -977,7 +983,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getFilterQueryPart(boolean negateFilterQuery) {
@@ -993,10 +999,10 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
                     .append('(')
                     .append(processedConditions)
                     /**
-                     * The following line is necessary if negateFilterQuery is true. In this case you get a query '(-CONDITION)' 
-                     * which never yields any results because queries MUST contain a positive expression in order to do so. 
+                     * The following line is necessary if negateFilterQuery is true. In this case you get a query '(-CONDITION)'
+                     * which never yields any results because queries MUST contain a positive expression in order to do so.
                      * So the '*:*' acts as a all-encompassing positive expression which has no logical effect (it's equivalent to 'or true')
-                     * Source: https://localcoder.org/weird-solr-lucene-behaviors-with-boolean-operators 
+                     * Source: https://localcoder.org/weird-solr-lucene-behaviors-with-boolean-operators
                      */
                     .append(" *:*")
                     .append("))")

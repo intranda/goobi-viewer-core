@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -424,7 +430,7 @@ public class FileTools {
      * Guess the content type (mimeType) of the resource found at the given uri. Content type if primarily guessed from the file extension of the last
      * url path part. If that type is 'text/plain' further analysis is done using the actual content to determine if the actual type is html or xml If
      * the type could not be determined from the file extension, the url response header is probed to return its 'Content-type'
-     * 
+     *
      * @param uri uri of the resource. May be a file uri, a relative uri (then assumed to be a relative file path) or a http(s) uri
      * @return The most likely mimeType of the resource found at the given uri
      * @throws IOException
@@ -468,7 +474,7 @@ public class FileTools {
     /**
      * Guess the content type of the given text, using {@link URLConnection#guessContentTypeFromName(String)} If no content type could be determined,
      * 'text/plain' is assumed
-     * 
+     *
      * @param content
      * @return
      */
@@ -497,10 +503,10 @@ public class FileTools {
     }
 
     /**
-     * 
+     *
      * Parses the given String as {@link java.nio.file.Path Path} and returns the lowest folder name as String. Returns an empty String if the given
      * path is empty or null
-     * 
+     *
      * @param pathString
      * @return The folder name, or an empty String if it could not be determined
      * @should return folder name correctly
@@ -516,10 +522,10 @@ public class FileTools {
     }
 
     /**
-     * 
+     *
      * Parses the given String as {@link java.nio.file.Path Path} and returns the last path element (the filename) as String. Returns an empty String
      * if the given path is empty or null
-     * 
+     *
      * @param pathString
      * @return The filename, or an empty String if it could not be determined
      * @throws FileNotFoundException
@@ -539,7 +545,7 @@ public class FileTools {
 
     /**
      * Creates a Path from the given URL in a way that word on Windows machines.
-     * 
+     *
      * @param urlString Relative or absolute path or URL, with or without protocol. If a URL parameter is in itself a complete URL, it must be escaped
      *            first!
      * @return Constructed Path

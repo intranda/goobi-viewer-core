@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.archives;
 
@@ -76,13 +82,13 @@ public class BasexEADParser {
     private List<ArchiveMetadataField> configuredFields;
 
     private Map<String, Entry<String, Boolean>> associatedRecordMap;
-    
+
 
     //    private List<StringPair> eventList;
     //    private List<String> editorList;
 
     /**
-     * 
+     *
      * @param configFilePath
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -114,7 +120,7 @@ public class BasexEADParser {
 
     /**
      * Get the database names and file names from the basex databases
-     * 
+     *
      * @return
      * @throws HTTPException
      * @throws IOException
@@ -156,7 +162,7 @@ public class BasexEADParser {
 
     /**
      * Loads the given database and parses the EAD document.
-     * 
+     *
      * @param database
      * @param document
      * @return Root element of the loaded tree
@@ -178,7 +184,7 @@ public class BasexEADParser {
 
     /**
      * Reads the hierarchy from the given EAD document.
-     * 
+     *
      * @param document
      * @return Root element of the tree
      * @should parse document correctly
@@ -195,9 +201,9 @@ public class BasexEADParser {
 
         return rootElement;
     }
-    
+
     /**
-     * 
+     *
      * @param database
      * @return
      * @throws IOException
@@ -222,7 +228,7 @@ public class BasexEADParser {
     /**
      * read the metadata for the current xml node. - create an {@link ArchiveEntry} - execute the configured xpaths on the current node - add the
      * metadata to one of the 7 levels - check if the node has sub nodes - call the method recursively for all sub nodes
-     * 
+     *
      * @param order
      * @param hierarchy
      * @param element
@@ -341,7 +347,7 @@ public class BasexEADParser {
 
     /**
      * Add the metadata to the configured level
-     * 
+     *
      * @param entry
      * @param emf
      * @param stringValue
@@ -395,7 +401,7 @@ public class BasexEADParser {
 
     /**
      * Parse the string response from the basex database into a xml document
-     * 
+     *
      * @param response
      * @return
      * @throws IOException
@@ -417,7 +423,7 @@ public class BasexEADParser {
     }
 
     /**
-     * 
+     *
      * @param node
      * @param searchValue
      */
@@ -438,7 +444,7 @@ public class BasexEADParser {
 
     /**
      * Loads fields from the given configuration node.
-     * 
+     *
      * @param metadataConfig
      * @return
      * @throws ConfigurationException

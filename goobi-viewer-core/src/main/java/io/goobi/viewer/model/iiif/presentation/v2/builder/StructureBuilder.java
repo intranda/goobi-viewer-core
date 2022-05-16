@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
@@ -123,7 +129,7 @@ public class StructureBuilder extends AbstractBuilder {
 
     /**
      * Generates the list of child ranges of the given range from the given elements which have the given parentiddoc
-     * 
+     *
      * @param elements
      * @param luceneId
      * @param range
@@ -168,23 +174,23 @@ public class StructureBuilder extends AbstractBuilder {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
 
-        
-        
+
+
         addRenderings(range, ele);
 
     }
-    
+
     /**
      * @param page
      * @param canvas
      * @throws URISyntaxException
      */
     public void addRenderings(AbstractPresentationModelElement2 range, StructElement ele) {
-        
+
         this.getRenderings().forEach(link -> {
             try {
                 URI id = getLinkingPropertyUri(ele, link.target);
-                if(id != null) {                    
+                if(id != null) {
                     range.addRendering(link.getLinkingContent(id));
                 }
             } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
@@ -192,13 +198,13 @@ public class StructureBuilder extends AbstractBuilder {
             }
         });
     }
-    
+
     private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws URISyntaxException, PresentationException, IndexUnreachableException {
 
         if(target.equals(LinkingTarget.PDF) && !ele.getTopStruct().isHasImages()) {
             return null;
         }
-        
+
         URI uri = null;
         switch(target) {
             case VIEWER:

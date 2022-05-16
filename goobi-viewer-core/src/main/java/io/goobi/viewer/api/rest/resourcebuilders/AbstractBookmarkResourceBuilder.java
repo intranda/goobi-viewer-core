@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
@@ -52,7 +58,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 public abstract class AbstractBookmarkResourceBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBookmarkResourceBuilder.class);
-    
+
     public abstract List<BookmarkList> getAllBookmarkLists() throws DAOException, IOException, RestApiException;
     public abstract SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException;
     public abstract SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException;
@@ -70,9 +76,9 @@ public abstract class AbstractBookmarkResourceBuilder {
             String pageString) throws DAOException, IOException, RestApiException;
     public abstract SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi)
             throws DAOException, IOException, RestApiException;
-            
+
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      * @throws IOException
@@ -81,10 +87,10 @@ public abstract class AbstractBookmarkResourceBuilder {
      * @deprecated not used anymore. Replaced by assigning share key
      */
     public abstract List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException, IllegalRequestException;
-    
+
     public abstract Collection2 createCollection(BookmarkList list, AbstractApiUrlManager urls);
-    
-    
+
+
     /**
      * <p>
      * getPageOrder.
@@ -104,7 +110,7 @@ public abstract class AbstractBookmarkResourceBuilder {
         }
         return order;
     }
-    
+
 
     public String getSharedBookmarkListForMirador(String key, AbstractApiUrlManager urls)
             throws DAOException, PresentationException, ContentNotFoundException, ViewerConfigurationException, IndexUnreachableException {
@@ -115,7 +121,7 @@ public abstract class AbstractBookmarkResourceBuilder {
             throw new ContentNotFoundException("No matching bookmark list found");
         }
     }
-    
+
     /**
      * Returns all public bookmark lists
      *
@@ -151,7 +157,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
 
-    
+
     /**
      * @param list
      * @return
@@ -181,7 +187,7 @@ public abstract class AbstractBookmarkResourceBuilder {
         return collection;
     }
 
-    
+
     /**
      * @param shareKey
      * @return
@@ -201,11 +207,11 @@ public abstract class AbstractBookmarkResourceBuilder {
         }
         throw new RestApiException("No access to bookmark list " + bookmarkList.getId() + " - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
-    
+
     /**
      * @param orig
-     * @throws IllegalRequestException 
-     * @throws DAOException 
+     * @throws IllegalRequestException
+     * @throws DAOException
      */
     public abstract void updateBookmarkList(BookmarkList orig) throws IllegalRequestException, DAOException;
 }

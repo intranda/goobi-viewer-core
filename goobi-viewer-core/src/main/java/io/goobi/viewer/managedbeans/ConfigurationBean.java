@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -987,7 +993,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public int getPageSelectDropdownDisplayMinPages() {
@@ -1106,7 +1112,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getRestApiUrlForIIIFPresention() {
@@ -1209,7 +1215,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return number of allowed metadata parameters for metadata configuration
      */
     public int getMetadataParamNumber() {
@@ -1217,7 +1223,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct list
      */
@@ -1288,7 +1294,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -1297,7 +1303,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return List of configured <code>DownloadOption</code> items
      */
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
@@ -1309,7 +1315,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -1318,7 +1324,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return String
      */
     public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
@@ -1326,7 +1332,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return String
      */
     public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
@@ -1334,7 +1340,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return String
      */
     public String getSidebarWidgetUsageCitationLinksImageIntroText() {
@@ -1342,7 +1348,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return List of available citation style names
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
@@ -1430,7 +1436,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<Integer> getSearchHitsPerPageValues() {
@@ -1438,7 +1444,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if user.anonymousUserEmailAddress is configured and valid; false otherwise
      */
     public boolean isAnonymousUserEmailAddressValid() {
@@ -1446,7 +1452,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<EmailRecipient> getFeedbackEmailRecipients() {
@@ -1454,7 +1460,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if default sorting field is 'RANDOM'; false otherwise
      */
     public boolean isDefaultSortFieldRandom() {
@@ -1496,34 +1502,34 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param facetField
      * @return
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
         return DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(facetField);
     }
-    
+
     public boolean useHeatmapForMapSearch() {
         return DataManager.getInstance().getConfiguration().useHeatmapForMapSearch();
     }
-    
+
     public GeoMapMarker getMarkerForMapSearch() {
         return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
     }
-    
+
     public boolean useHeatmapForFacetting() {
         return DataManager.getInstance().getConfiguration().useHeatmapForFacetting();
     }
-    
+
     public GeoMapMarker getMarkerForFacetting() {
         return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
     }
-    
+
     public boolean useHeatmapForCMSMaps() {
         return DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps();
     }
-    
+
     public GeoMapMarker getDefaultMarkerForCMSMaps() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
         GeoMapMarker marker = markers.stream().filter(m -> m.getName().equalsIgnoreCase("default")).findAny()

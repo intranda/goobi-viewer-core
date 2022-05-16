@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.downloads;
 
@@ -115,7 +121,7 @@ public class DownloadResource {
             throw new ContentNotFoundException("No PDF download job found for PI " + pi + " and LogId " + logId);
         }
     }
-    
+
     /**
      * Remove a download job from the database
      *
@@ -149,19 +155,19 @@ public class DownloadResource {
             throw new ContentNotFoundException("No PDF download job found for PI " + pi + " and LogId " + logId);
         }
     }
-    
+
     @PUT
     @Path(ApiUrls.DOWNLOADS_PDF_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Get the PDF download job for the given PI and divId, creating it if neccessary",
     description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
-    public String putPDFDownloadJob(            
+    public String putPDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, logId, email, PDFDownloadJob.TYPE);
-        
+
     }
 
     /**
@@ -188,7 +194,7 @@ public class DownloadResource {
             throw new ContentNotFoundException("No PDF download job found for identifier " + pi);
         }
     }
-    
+
     /**
      * Remove a download job from the database
      *
@@ -217,7 +223,7 @@ public class DownloadResource {
             throw new ContentNotFoundException("No PDF download job found for identifier " + pi);
         }
     }
-    
+
     @PUT
     @Path(ApiUrls.DOWNLOADS_PDF_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -225,13 +231,13 @@ public class DownloadResource {
     description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
 
     @DownloadBinding
-    public String putPDFDownloadJob(            
+    public String putPDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, "", email, PDFDownloadJob.TYPE);
-        
+
     }
-    
+
     /**
      * Get information about a specific downloadJob
      *
@@ -261,7 +267,7 @@ public class DownloadResource {
             throw new ContentNotFoundException("No EPUB download job found for PI " + pi + " and LogId " + logId);
         }
     }
-    
+
     /**
      * Remove a download job from the database
      *
@@ -295,19 +301,19 @@ public class DownloadResource {
             throw new ContentNotFoundException("No EPUB download job found for PI " + pi + " and LogId " + logId);
         }
     }
-    
+
     @PUT
     @Path(ApiUrls.DOWNLOADS_EPUB_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags= {"downloads"}, summary="Get the EPUB download job for the given PI and divId, creating it if neccessary",
     description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
-    public String putEPUBDownloadJob(            
+    public String putEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, logId, email, EPUBDownloadJob.TYPE);
-        
+
     }
 
     /**
@@ -334,7 +340,7 @@ public class DownloadResource {
             throw new ContentNotFoundException("No EPUB download job found for identifier " + pi);
         }
     }
-    
+
     /**
      * Remove a download job from the database
      *
@@ -370,13 +376,13 @@ public class DownloadResource {
     @Operation(tags= {"downloads"}, summary="Get the EPUB download job for the given PI, creating it if neccessary",
     description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
-    public String putEPUBDownloadJob(            
+    public String putEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, "", email, EPUBDownloadJob.TYPE);
-        
+
     }
-    
+
     /**
      * Get information about all download jobs of a type
      *
@@ -397,7 +403,7 @@ public class DownloadResource {
                 .collect(Collectors.toList());
         return downloadJobs;
     }
-    
+
     /**
      * Remove all jobs of from the database
      *
@@ -430,7 +436,7 @@ public class DownloadResource {
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * Get information about all download jobs of a type
      *
@@ -453,7 +459,7 @@ public class DownloadResource {
                 .collect(Collectors.toList());
         return downloadJobs;
     }
-    
+
     /**
      * Remove all jobs of a type from the database
      *
@@ -489,7 +495,7 @@ public class DownloadResource {
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * Get information about all download jobs of a type
      *
@@ -512,7 +518,7 @@ public class DownloadResource {
                 .collect(Collectors.toList());
         return downloadJobs;
     }
-    
+
     /**
      * Remove all jobs of a type from the database
      *
@@ -556,7 +562,7 @@ public class DownloadResource {
      * @param email
      * @param type
      * @return
-     * @throws ContentLibException 
+     * @throws ContentLibException
      */
     public String getOrCreateDownloadJob(String pi, String logId, String email, String type) throws ContentLibException {
         if (email == null || email.equals("-")) {
@@ -591,7 +597,7 @@ public class DownloadResource {
     /**
      * @param downloadPageUrl
      * @return
-     * @throws JsonProcessingException 
+     * @throws JsonProcessingException
      */
     private String getForwardToDownloadPageResponse(URI downloadPageUrl, DownloadJob job) throws JsonProcessingException {
         String jobString = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(job);

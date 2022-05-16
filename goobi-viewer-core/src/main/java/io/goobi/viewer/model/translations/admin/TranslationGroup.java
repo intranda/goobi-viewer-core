@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.translations.admin;
 
@@ -43,7 +49,7 @@ public class TranslationGroup {
         LOCAL_STRINGS;
 
         /**
-         * 
+         *
          * @param name
          * @return
          */
@@ -82,7 +88,7 @@ public class TranslationGroup {
 
     /**
      * Factory method.
-     * 
+     *
      * @param id unique ID number
      * @param type
      * @param name
@@ -96,7 +102,7 @@ public class TranslationGroup {
 
     /**
      * Private constructor.
-     * 
+     *
      * @param id
      * @param type
      * @param name
@@ -143,7 +149,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @param field Solr field
      * @param key Message key to find
      * @return true if message entry was found or added; false if no matching group item could be found
@@ -212,7 +218,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return Number of unique message keys across all groups
      * @should return correct count
      */
@@ -233,7 +239,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return Number of entries with no translations at all
      */
     public Integer getUntranslatedEntryCount() {
@@ -246,7 +252,7 @@ public class TranslationGroup {
 
     /**
      * Returns the number of entries which finished (non-zzz) translations for at least one but less than all languages.
-     * 
+     *
      * @return Number of partially translated entries
      */
     public Integer getPartiallyTranslatedEntryCount() {
@@ -255,7 +261,7 @@ public class TranslationGroup {
 
     /**
      * Returns the number of entries which finished (non-zzz) translations for all languages.
-     * 
+     *
      * @return Number of fully translated entries
      */
     public Integer getFullyTranslatedEntryCount() {
@@ -267,7 +273,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @param status
      * @return Count of entries with the given <code>status</code>
      */
@@ -287,7 +293,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return Percentage represented by untranslated entries
      */
     public double getUntranslatedEntryCountPercentage() {
@@ -295,7 +301,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return Percentage represented by partially translated entries
      */
     public double getPartiallyTranslatedEntryCountPercentage() {
@@ -303,7 +309,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return Percentage represented by fully translated entries
      */
     public double getFullyTranslatedEntryCountPercentage() {
@@ -311,7 +317,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return true if all entries are fully translated; false otherwise
      */
     public boolean isFullyTranslated() {
@@ -319,7 +325,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return true if all entries in the filtered list are fully translated; false otherwise
      */
     public boolean isAllFilteredEntriesFullyTranslated() {
@@ -333,7 +339,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return true if the allEntries list for this group is not empty; false otherwise
      * @should return true if group has entries
      * @should return false if group has no entries
@@ -344,7 +350,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return
      * @should filter by key correctly
      * @should filter by value correctly
@@ -373,7 +379,7 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @return Unique message keys across all groups
      */
     public List<MessageEntry> getAllEntries() {
@@ -506,13 +512,13 @@ public class TranslationGroup {
     }
 
     /**
-     * 
+     *
      * @param step Positive or negative increment
      * @should only select unfinished entries
      * @should select fully translated entries if all are fully translated
      * @should resume at the end when moving past first element
      * @should resume at the beginning when moving past last element
-     * 
+     *
      */
     void selectEntry(int step) {
         // logger.trace("selectEntry: {}", step);
@@ -582,11 +588,11 @@ public class TranslationGroup {
     /**
      * Check whether the application has write access to all local messages files as well as the containing folder if any languages have no local
      * message file. The tested languages are taken from {@link ViewerResourceBundle#getAllLocales()}
-     * 
+     *
      * @return true if all required access rights to edit messages are present. false otherwise
      */
     public static boolean isHasFileAccess() {
-        /* Using Files#isWritable(Path path) because it's supposedly more reliable for Unix systems with network folders 
+        /* Using Files#isWritable(Path path) because it's supposedly more reliable for Unix systems with network folders
          * Reports vary, though...
          */
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {

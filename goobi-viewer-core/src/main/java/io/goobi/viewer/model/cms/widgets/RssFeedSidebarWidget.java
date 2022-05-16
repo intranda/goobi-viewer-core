@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms.widgets;
 
@@ -23,9 +29,9 @@ import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * A subtype of {@link CustomSidebarWidget} to display a RSS feed of selected records. 
+ * A subtype of {@link CustomSidebarWidget} to display a RSS feed of selected records.
  * The default settings show a list of the five last imported records
- * 
+ *
  * @author florian
  *
  */
@@ -41,14 +47,14 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     private boolean descendingSorting = true;
     @Column(name = "num_entries")
     private int numEntries = 5;
-    
+
     /**
      * Empty default constructor
      */
     public RssFeedSidebarWidget() {
-        
+
     }
-    
+
     /**
      * Cloning constructor
      * @param o
@@ -60,7 +66,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
         this.descendingSorting = o.descendingSorting;
         this.numEntries = o.numEntries;
     }
-    
+
     /**
      * If this query is not empty only records matching this SOLR query are listed
      * @return the filterQuery
@@ -117,11 +123,11 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;
     }
-    
+
     @Override
     public CustomWidgetType getType() {
         return CustomWidgetType.WIDGET_RSSFEED;
     }
 
-    
+
 }

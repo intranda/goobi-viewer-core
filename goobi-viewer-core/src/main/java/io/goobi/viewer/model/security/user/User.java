@@ -1,17 +1,23 @@
-/**vaserserA
- * This file is part of the Goobi viewer - a content presentativaon and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.security.user;
 
@@ -204,7 +210,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * 
+     *
      * @param nickname
      */
     public User(String nickname) {
@@ -598,7 +604,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * 
+     *
      * @return true if there are CMS pages or campaigns created by this user; false otherwise
      */
     public boolean isCmsCreator() {
@@ -657,7 +663,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     /**
      * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. Otherwise build a resource url to
      * 'resources/images/backend/thumbnail_goobi_person.svg' from the request or the JSF-Context if no request is provided
-     * 
+     *
      * @param size
      * @param request
      * @return
@@ -676,7 +682,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * 
+     *
      * @param request
      * @return {@link #getAvatarUrl(int size, HttpServletRequest request)} with size={@link #AVATAR_DEFAULT_SIZE}
      */
@@ -1336,7 +1342,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * 
+     *
      * @return true if user email address equals the configured anonymous user address; false otherwise
      */
     public boolean isAnonymous() {
@@ -1509,7 +1515,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.
      * HttpSessionBindingEvent)
@@ -1530,7 +1536,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http
      * .HttpSessionBindingEvent)

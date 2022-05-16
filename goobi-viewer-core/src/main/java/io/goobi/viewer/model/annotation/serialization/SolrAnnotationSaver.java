@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.annotation.serialization;
 
@@ -42,19 +48,19 @@ public class SolrAnnotationSaver implements AnnotationSaver {
 
     private final static Logger logger = LoggerFactory.getLogger(SolrAnnotationSaver.class);
 
-    
+
     @Override
     public void save(PersistentAnnotation... annotations) throws IOException {
-        
+
         List<Target> targets = Arrays.stream(annotations)
                 .map(anno -> new Target(anno.getTargetPI(), anno.getTargetPageOrder()))
                 .distinct()
                 .collect(Collectors.toList());
-        
+
         for (Target target : targets) {
             reindexTarget(target);
         }
-        
+
     }
 
     protected void reindexTarget(Target target) {
@@ -65,17 +71,17 @@ public class SolrAnnotationSaver implements AnnotationSaver {
                 logger.warn("Error reindexing single page. Try reindexing entire record");
                 IndexerTools.triggerReIndexRecord(target.pi);
             }
-        } else {            
+        } else {
             IndexerTools.triggerReIndexRecord(target.pi);
         }
     }
-    
+
     static class Target {
         final String pi;
         final Integer page;
-        
+
         final static Map<String, Target> targetStore = new ConcurrentHashMap<>();
-        
+
         Target(String pi, Integer page) {
             if(StringUtils.isBlank(pi)) {
                 throw new IllegalArgumentException("Target pi must not be empty");
@@ -91,7 +97,7 @@ public class SolrAnnotationSaver implements AnnotationSaver {
         public String toString() {
             return this.pi + (this.page != null ? (" / " + this.page) : "");
         }
-        
+
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
          */
@@ -100,7 +106,7 @@ public class SolrAnnotationSaver implements AnnotationSaver {
             int hash = Objects.hash(this.pi, this.page);
             return hash;
         }
-        
+
         @Override
         public boolean equals(Object obj) {
             if(obj != null && obj.getClass().equals(Target.class)) {

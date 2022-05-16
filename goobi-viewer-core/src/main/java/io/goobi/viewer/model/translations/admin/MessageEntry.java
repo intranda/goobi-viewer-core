@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.translations.admin;
 
@@ -41,7 +47,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      * Factory method that creates a <code>MessageEntry</code> instance with values initialized for all given locales.
-     * 
+     *
      * @param keyPrefix Message key prefix (optional)
      * @param keySuffix Message key suffix (or entire key if no prefix)
      * @param allLocales List of locales
@@ -71,7 +77,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * 
+     *
      * @param key
      * @param values
      */
@@ -83,7 +89,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      * Constructor with a composite key.
-     * 
+     *
      * @param keyPrefix
      * @param keySuffix
      * @param values
@@ -127,7 +133,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should compare correctly
      */
     @Override
@@ -137,7 +143,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      * Returns the translation statusover all languages.
-     * 
+     *
      * @return appropriate {@link TranslationStatus}
      * @should return none status correctly
      * @should return partial status correctly
@@ -171,7 +177,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
 
     /**
      * Returns the translation status for the requested language.
-     * 
+     *
      * @param language Requested language
      * @return appropriate {@link TranslationStatus}
      * @should return correct status for language
@@ -227,7 +233,7 @@ public class MessageEntry implements Comparable<MessageEntry> {
     }
 
     /**
-     * 
+     *
      * @return true if keySuffix blank; false otherwise
      */
     public boolean isKeySuffixBlank() {

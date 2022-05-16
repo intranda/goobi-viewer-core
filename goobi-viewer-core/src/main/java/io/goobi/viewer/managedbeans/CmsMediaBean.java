@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -112,7 +118,7 @@ public class CmsMediaBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     private TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> initDataProvider() {
         TableDataProvider<CategorizableTranslatedSelectable<CMSMediaItem>> dataProvider =
@@ -428,7 +434,7 @@ public class CmsMediaBean implements Serializable {
             sbUri.append(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("cms/media/get/item/").append(item.getId());
             return sbUri.toString();
         }
-        
+
         switch(item.getContentType()) {
             case CMSMediaItem.CONTENT_TYPE_PDF:
             case CMSMediaItem.CONTENT_TYPE_XML:
@@ -442,13 +448,13 @@ public class CmsMediaBean implements Serializable {
                 return BeanUtils.getImageDeliveryBean()
                 .getThumbs()
                 .getThumbnailUrl(Optional.ofNullable(item), imageSize.width, imageSize.height);
-                
+
         }
     }
 
     /**
      * If both with and height are blank, return a size of 0x0, which will be interpreted as 'max' size for IIIF
-     * If one dimension is blank and the other not, fill the blank dimension with the configured maximal image size 
+     * If one dimension is blank and the other not, fill the blank dimension with the configured maximal image size
      * Otherwise return a size matching both arguments
      * @param width
      * @param height
@@ -538,7 +544,7 @@ public class CmsMediaBean implements Serializable {
     public boolean isVideo(CMSMediaItem item) {
         return item.getFileName().matches(getVideoFilter());
     }
-    
+
     /**
      * <p>
      * isAudio.
@@ -550,7 +556,7 @@ public class CmsMediaBean implements Serializable {
     public boolean isAudio(CMSMediaItem item) {
         return item.getFileName().matches(getAudioFilter());
     }
-    
+
     /**
      * <p>
      * isText.
@@ -589,7 +595,7 @@ public class CmsMediaBean implements Serializable {
         if (media == null) {
             return;
         }
-        
+
         if (categories != null) {
             if (BeanUtils.getUserBean().getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()
                     || categories.stream().anyMatch(Selectable::isSelected)) {
@@ -704,11 +710,11 @@ public class CmsMediaBean implements Serializable {
     public static String getImageFilter() {
         return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2|svg|ico)";
     }
-    
+
     public static String getVideoFilter() {
         return "(?i).*\\.(mp4|mpeg4|avi|mov|wmv)";
     }
-    
+
     public static String getAudioFilter() {
         return "(?i).*\\.(mp3|mpeg|wav|ogg|wma)";
     }

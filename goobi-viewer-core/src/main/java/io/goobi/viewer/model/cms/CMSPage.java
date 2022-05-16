@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms;
 
@@ -180,7 +186,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * whether the url to this page may contain additional path parameters at its end while still pointing to this page Should be true if this is a
      * search page, because search parameters are introduced to the url for an actual search Should not be true if this overrides a default page, but
      * should only do so if no parameters are present (for example if parameters indicate a search on the default search page)
-     * 
+     *
      */
     @Column(name = "may_contain_url_parameters")
     private boolean mayContainUrlParameters = true;
@@ -1040,9 +1046,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
         return item;
     }
-    
+
     public CMSContentItem getContentItem(String itemId) {
-        try {            
+        try {
             return getContentItemOrThrowException(itemId);
         } catch(CmsElementNotFoundException e) {
             return null;
@@ -1050,7 +1056,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     public String getContentItemText(String itemId) {
-        try {            
+        try {
             CMSContentItem item = getContentItemOrThrowException(itemId);
             if (item != null) {
                 switch (item.getType()) {
@@ -1076,7 +1082,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the current locale. Returns the LanguageVersion for the given
      * locale if it exists has {@link CMSPageStatus} Finished. Otherwise returns the LanguageVersion of the viewer's default language if it exists and
      * is Finished, or failing that the first available (non-global) finished language version
-     * 
+     *
      * @return
      * @throws CmsElementNotFoundException
      */
@@ -1089,7 +1095,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale. Returns the LanguageVersion for the given
      * locale if it exists has {@link CMSPageStatus} Finished. Otherwise returns the LanguageVersion of the viewer's default language if it exists and
      * is Finished, or failing that the first available (non-global) finished language version
-     * 
+     *
      * @param locale The
      * @return
      * @throws CmsElementNotFoundException
@@ -1109,7 +1115,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale, including unfinished ve)rsions. Returns the
      * LanguageVersion for the given locale if it exists. Otherwise returns the LanguageVersion of the viewer's default language if it exists, or
      * failing that the first available (non-global) language version
-     * 
+     *
      * @param locale The
      * @return
      * @throws CmsElementNotFoundException
@@ -1128,7 +1134,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the current locale, including unfinished versions. Returns
      * the LanguageVersion for the given locale if it exists. Otherwise returns the LanguageVersion of the viewer's default language if it exists, or
      * failing that the first available (non-global) language version
-     * 
+     *
      * @return
      * @throws CmsElementNotFoundException
      */
@@ -1854,7 +1860,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     /** {@inheritDoc} */
@@ -2077,7 +2083,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /**
      * Exports the contents of the given content item into the given hotfolder path for indexing. Only media, html and text content items can
      * currently be exported.
-     * 
+     *
      * @param item Content item to export
      * @param outputFolderPath Export path
      * @param namingScheme Naming scheme for export folders

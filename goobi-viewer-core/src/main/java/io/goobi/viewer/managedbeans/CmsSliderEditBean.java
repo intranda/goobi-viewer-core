@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -64,19 +70,19 @@ public class CmsSliderEditBean implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(CmsSliderEditBean.class);
 
     private static final String COLLECTION_FIELD = "DC";
-    
+
     private CMSSlider selectedSlider = null;
-    
+
     private List<Selectable<CMSCategory>> selectableCategories;
 
     private List<CMSCollection> cmsCollections;
-    
+
     private String collectionField;
-        
+
 
 
     /**
-     * 
+     *
      */
     public CmsSliderEditBean() {
         try {
@@ -88,7 +94,7 @@ public class CmsSliderEditBean implements Serializable {
             selectableCategories = Collections.emptyList();
         }
     }
-    
+
     /**
      * @param selectedSlider the selectedSlider to set
      */
@@ -96,7 +102,7 @@ public class CmsSliderEditBean implements Serializable {
         this.selectedSlider = selectedSlider;
         readCategories();
         setSolrField();
-        
+
     }
 
     private void setSolrField() {
@@ -106,22 +112,22 @@ public class CmsSliderEditBean implements Serializable {
             if(this.getAllCollectionFields().contains(solrField)) {
                 this.collectionField = solrField;
             }
-            
+
         }
     }
-    
+
     /**
      * Set the selected slider via id string
-     * @throws DAOException 
+     * @throws DAOException
      */
     public void setSliderId(String idString) throws DAOException {
         Long id = Long.parseLong(idString);
         setSelectedSlider(DataManager.getInstance().getDao().getSlider(id));
     }
-    
+
     /**
      * Set the selected slider via id
-     * @throws DAOException 
+     * @throws DAOException
      */
     public void setSliderId(long id) throws DAOException {
         setSelectedSlider(DataManager.getInstance().getDao().getSlider(id));
@@ -137,17 +143,17 @@ public class CmsSliderEditBean implements Serializable {
     public boolean isNewSlider() {
         return this.selectedSlider == null || this.selectedSlider.getId() == null;
     }
-    
+
     public void createSlider(SourceType type) {
         this.selectedSlider = new CMSSlider(type);
     }
 
-    
+
     /**
      * Persist the {@link #selectedSlider} to the database and return to slider overview page, ending the current jsf conversation
      */
     public String save() {
-        if(this.selectedSlider != null) { 
+        if(this.selectedSlider != null) {
             try {
                 if(this.selectedSlider.getStyle() == null) {
                     this.selectedSlider.setStyle("base");
@@ -169,13 +175,13 @@ public class CmsSliderEditBean implements Serializable {
                 Messages.error(null, "button__save__error", e.toString());
                 return "";
             }
-            
+
         }
         return "";//"pretty:adminCmsSliders";
 
     }
-    
-    
+
+
     public String getReturnUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() +  "/admin/cms/slider/";
     }
@@ -184,10 +190,10 @@ public class CmsSliderEditBean implements Serializable {
     public List<SourceType> getSourceTypes() {
         return Arrays.asList(SourceType.values());
     }
-    
+
     public List<CMSCollection> getAvailableCollections() {
         Locale locale = BeanUtils.getLocale();
-        if(cmsCollections == null) {            
+        if(cmsCollections == null) {
                 cmsCollections = getCollections(collectionField).stream()
 //                .map(collection -> collection.getLabel(BeanUtils.getLocale()))
                 .sorted( (c1, c2) -> ObjectUtils.compare(c1.getLabel(locale), c2.getLabel(locale)))
@@ -195,7 +201,7 @@ public class CmsSliderEditBean implements Serializable {
         }
         return cmsCollections;
     }
-    
+
     private static List<CMSCollection> getCollections(String field) {
         try {
             return DataManager.getInstance().getDao().getCMSCollections(field);
@@ -204,7 +210,7 @@ public class CmsSliderEditBean implements Serializable {
             return Collections.emptyList();
         }
     }
-    
+
     /**
      * Writes all selected categories of {@link #selectableCategories} to the {@link #selectedSlider} if both exist
      */
@@ -218,7 +224,7 @@ public class CmsSliderEditBean implements Serializable {
                     .collect(Collectors.toList()));
         }
     }
-    
+
     private void readCategories() {
         if(this.selectableCategories != null && this.selectedSlider != null) {
             this.selectableCategories.forEach(selCat -> {
@@ -231,18 +237,18 @@ public class CmsSliderEditBean implements Serializable {
             });
         }
     }
-    
+
     /**
      * @return the selectableCategories
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() {
         return selectableCategories;
     }
-    
+
     public void setStyleFromRequestParameter() {
         Map<String, String> params = FacesContext.getCurrentInstance().
                 getExternalContext().getRequestParameterMap();
-        
+
         String style = params.get("sliderStyle");
         if(StringUtils.isNotBlank(style) && this.selectedSlider != null) {
             selectedSlider.setStyle(style);
@@ -250,7 +256,7 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     public String getSliderSource() {
-        if(this.selectedSlider != null) {            
+        if(this.selectedSlider != null) {
             try {
                 List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
                 return new ObjectMapper().writeValueAsString(list);
@@ -262,14 +268,14 @@ public class CmsSliderEditBean implements Serializable {
             return "[]";
         }
     }
-    
+
     /**
      * @return the collectionField
      */
     public String getCollectionField() {
         return collectionField;
     }
-    
+
     /**
      * @param collectionField the collectionField to set
      */
@@ -277,7 +283,7 @@ public class CmsSliderEditBean implements Serializable {
         this.collectionField = collectionField;
         this.cmsCollections = null;
     }
-    
+
     public List<String> getAllCollectionFields() {
         List<String> collections = DataManager.getInstance().getConfiguration().getConfiguredCollections();
         return collections;

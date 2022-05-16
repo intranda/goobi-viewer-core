@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.metadata;
 
@@ -287,7 +293,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<StringPair> getSortFields() {
@@ -326,7 +332,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param ownerIddoc
      * @return Sublist of all values that belong to <code>ownerIddoc</code>; all values if <code>ownerIddoc</code> null
      * @should return all values if ownerIddoc null
@@ -569,7 +575,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param field Index field
      * @param value Field value
      * @param locale Optional locale for value translation
@@ -671,7 +677,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param ownerIddoc
      * @return
      * @should return true if all paramValues are empty
@@ -833,7 +839,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param se {@link StructElement}
      * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param sortFields Optional field/order pairs for sorting
@@ -945,7 +951,7 @@ public class Metadata implements Serializable {
     /**
      * Return all values from the given map for either the given key, or - preferably - the given key suffixed by "_LANG_{locale.language}", i.e. the
      * language specific values for that key ( = metadata field) The return value may be null if neither the key nor the suffix key is in the map
-     * 
+     *
      * @param metadataMap
      * @param key
      * @param locale
@@ -1134,7 +1140,7 @@ public class Metadata implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isHasChildren() {
@@ -1158,7 +1164,7 @@ public class Metadata implements Serializable {
     /**
      * @param indentation the indentation to set
      * @return this
-     * 
+     *
      */
     public Metadata setIndentation(int indentation) {
         this.indentation = indentation;

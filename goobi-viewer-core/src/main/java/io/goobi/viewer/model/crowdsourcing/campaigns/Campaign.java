@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
@@ -530,7 +536,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @return true if this campaign has at least one annotation; false otherwise
      */
     public boolean isHasAnnotations() {
@@ -711,7 +717,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @param user User for whom to check access
      * @return
      * @throws DAOException
@@ -1047,7 +1053,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public LocalDate getDateOnlyStart() {
@@ -1059,7 +1065,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @param dateStart
      */
     public void setDateOnlyStart(LocalDate dateStart) {
@@ -1127,7 +1133,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public LocalDate getDateOnlyEnd() {
@@ -1139,7 +1145,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @param dateEnd
      */
     public void setDateOnlyEnd(LocalDate dateEnd) {
@@ -1365,7 +1371,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
 
     /**
      * Return true if the campaign is ready for use. For this, the title in the default language must exists and there must be at least one question
-     * 
+     *
      */
     @JsonIgnore
     public boolean isReady() {
@@ -1612,7 +1618,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return true if boolean true and userGroup not null
      * @should return false if boolean false
@@ -1657,7 +1663,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param page
      * @param status
