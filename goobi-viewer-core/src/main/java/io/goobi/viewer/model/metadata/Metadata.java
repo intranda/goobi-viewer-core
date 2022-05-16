@@ -650,6 +650,18 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @return Number of params
+     */
+    public int getParamCount() {
+        if (params == null) {
+            return 0;
+        }
+
+        return params.size();
+    }
+
+    /**
      * Checks whether any parameter values are set. 'empty' seems to be a reserved word in JSF, so use 'blank'.
      *
      * @return true if all paramValues are empty or blank; false otherwise.

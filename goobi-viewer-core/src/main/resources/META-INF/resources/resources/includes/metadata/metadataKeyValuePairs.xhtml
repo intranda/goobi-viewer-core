@@ -25,7 +25,7 @@
 			<div class="metadata__element-wrapper">
 				<div class="metadata__element-level-#{metadata.indentation}">
 					<!-- Metadata value -->
-					<c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind0">
+					<c:forEach begin="0" end="#{metadata.paramCount - 1}" var="ind0">
 						<ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
 							<dl class="dl-horizontal metadata__element-dl">
 								<dt>
