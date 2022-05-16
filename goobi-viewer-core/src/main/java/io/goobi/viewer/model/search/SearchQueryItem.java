@@ -380,9 +380,10 @@ public class SearchQueryItem implements Serializable {
      * <p>
      * toggleDisplaySelectItems.
      * </p>
+     * 
      * @should set displaySelectItems false if searching in all fields
      * @should set displaySelectItems true if value count below threshold
-     *  @should set displaySelectItems false if value count above threshold
+     * @should set displaySelectItems false if value count above threshold
      */
     protected void toggleDisplaySelectItems() {
         if (field == null) {
@@ -562,6 +563,9 @@ public class SearchQueryItem implements Serializable {
                     boolean moreThanOneValue = false;
                     for (String value : valueSplit) {
                         value = value.trim();
+                        if (value.length() == 0) {
+                            continue;
+                        }
                         if (value.charAt(0) == '"') {
                             if (value.charAt(value.length() - 1) != '"') {
                                 // Do not allow " being only on the left
