@@ -256,7 +256,6 @@ public class Metadata implements Serializable {
      * @should return single placeholder for non group metadata if masterValue empty
      */
     public String getMasterValue() {
-        logger.trace("mastervalue for {}: '{}'", label, masterValue);
         if (StringUtils.isEmpty(masterValue)) {
             if (group) {
                 StringBuilder sb = new StringBuilder();
