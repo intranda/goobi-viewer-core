@@ -256,6 +256,7 @@ public class Metadata implements Serializable {
      * @should return single placeholder for non group metadata if masterValue empty
      */
     public String getMasterValue() {
+        logger.trace("mastervalue for {}: '{}'", label, masterValue);
         if (StringUtils.isEmpty(masterValue)) {
             if (group) {
                 StringBuilder sb = new StringBuilder();
@@ -383,7 +384,7 @@ public class Metadata implements Serializable {
 
         // Adopt indexes to list sizes, if necessary
         while (values.size() - 1 < valueIndex) {
-            MetadataValue mdValue = new MetadataValue(ownerStructElementIddoc + "_" + valueIndex, masterValue, this.label);
+            MetadataValue mdValue = new MetadataValue(ownerStructElementIddoc + "_" + valueIndex, getMasterValue(), this.label);
             values.add(mdValue);
         }
         MetadataValue mdValue = values.get(valueIndex);

@@ -717,8 +717,7 @@ public final class Configuration extends AbstractConfiguration {
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
-                .setSortField(
-                        sortField)
+                .setSortField(sortField)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -3389,15 +3388,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isAddHighwirePressMetaTags() {
         return getLocalBoolean("metadata.addHighwirePressMetaTags", false);
-    }
-
-    /**
-     *
-     * @return
-     * @should return correct value
-     */
-    public int getMetadataParamNumber() {
-        return getLocalInt("metadata.metadataParamNumber", 10);
     }
 
     /**

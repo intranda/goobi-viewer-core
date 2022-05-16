@@ -68,7 +68,7 @@
 	                             <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
 	                             <ui:repeat var="val" value="#{browseElementMetadata.values}">
 	                                 <h:outputFormat value="#{msg[val.masterValue]}" escape="false" styleClass="search-list__hit-text-value">
-	                                     <c:forEach begin="0" end="#{browseElementMetadata.paramCount}" var="ind">
+	                                     <c:forEach begin="0" end="#{browseElementMetadata.paramCount - 0}" var="ind">
 	                                         <f:param value="#{val.getComboValueShort(ind)}" />
 	                                     </c:forEach>
 	                                 </h:outputFormat>
@@ -91,7 +91,7 @@
                                     <h:outputText value="#{msg[eventMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
                                     <ui:repeat var="val" value="#{eventMetadata.values}">
                                         <h:outputFormat value="#{msg[val.masterValue]}" escape="false" styleClass="search-list__hit-text-value">
-                                            <c:forEach begin="0" end="#{eventMetadata.paramCount}" var="ind">
+                                            <c:forEach begin="0" end="#{eventMetadata.paramCount - 0}" var="ind">
                                                 <f:param value="#{val.getComboValueShort(ind)}" />
                                             </c:forEach>
                                         </h:outputFormat>

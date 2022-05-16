@@ -1218,8 +1218,9 @@ public class ConfigurationBean implements Serializable {
      *
      * @return number of allowed metadata parameters for metadata configuration
      */
+    @Deprecated
     public int getMetadataParamNumber() {
-        return DataManager.getInstance().getConfiguration().getMetadataParamNumber();
+        return 20;
     }
 
     /**
@@ -1227,13 +1228,9 @@ public class ConfigurationBean implements Serializable {
      * @return
      * @should return correct list
      */
+    @Deprecated
     public List<Integer> getMetadataParamNumberList() {
-        List<Integer> ret = new ArrayList<>(DataManager.getInstance().getConfiguration().getMetadataParamNumber());
-        for (int i = 0; i < DataManager.getInstance().getConfiguration().getMetadataParamNumber(); ++i) {
-            ret.add(i);
-        }
-
-        return ret;
+        return Collections.emptyList();
     }
 
     /**
