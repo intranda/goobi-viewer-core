@@ -1152,15 +1152,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getMetadataParamNumber()
-     * @verifies return correct value
-     */
-    @Test
-    public void getMetadataParamNumber_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getMetadataParamNumber());
-    }
-
-    /**
      * @see Configuration#isMetadataPdfEnabled()
      * @verifies return correct value
      */
@@ -2498,7 +2489,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
         Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
-
 
     /**
      * @see Configuration#getDisplayAdditionalMetadataOnelineFields()
