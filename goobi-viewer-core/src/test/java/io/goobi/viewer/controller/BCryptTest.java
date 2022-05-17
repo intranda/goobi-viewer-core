@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.controller;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,20 +32,49 @@ import io.goobi.viewer.AbstractTest;
 public class BCryptTest extends AbstractTest {
 
     /**
-     * @see BCrypt#checkpw(String,String)
-     * @verifies return true if passwords match
+     * @see BCrypt#hashpw(String,String)
+     * @verifies hash password correctly
      */
     @Test
-    public void checkpw_shouldReturnTrueIfPasswordsMatch() throws Exception {
-        Assert.assertTrue(new BCrypt().checkpw("foobar", "$2a$10$riYEc4vydN5ksUpw/c9e0uV643f4qRyeQ2u.NpXW1FOgI4JnIn5dy"));
-    }
-
-    /**
-     * @see BCrypt#checkpw(String,String)
-     * @verifies return false if passwords dont match
-     */
-    @Test
-    public void checkpw_shouldReturnFalseIfPasswordsDontMatch() throws Exception {
-        Assert.assertFalse(new BCrypt().checkpw("barfoo", "$2a$10$riYEc4vydN5ksUpw/c9e0uV643f4qRyeQ2u.NpXW1FOgI4JnIn5dy"));
+    public void hashpw_shouldHashPasswordCorrectly() throws Exception {
+        String salt = BCrypt.gensalt();
+        Set<String> used = new HashSet<>();
+        
+        // ASCII
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= 80; ++i) {
+            sb.append("A");
+            String hash = BCrypt.hashpw(sb.toString(), salt);
+            if (i < 73) {
+                Assert.assertFalse("Collision at password length " + i, used.contains(hash));
+            } else {
+                Assert.assertTrue(used.contains(hash));
+            }
+            used.add(hash);
+        }
+        // Umlauts
+        sb = new StringBuilder();
+        for (int i = 1; i <= 40; ++i) {
+            sb.append("Ä");
+            String hash = BCrypt.hashpw(sb.toString(), salt);
+            if (i < 37) {
+                Assert.assertFalse("Collision at password length " + i, used.contains(hash));
+            } else {
+                Assert.assertTrue(used.contains(hash));
+            }
+            used.add(hash);
+        }
+        // Symbols
+        sb = new StringBuilder();
+        for (int i = 1; i <= 30; ++i) {
+            sb.append("♠");
+            String hash = BCrypt.hashpw(sb.toString(), salt);
+            if (i < 25) {
+                Assert.assertFalse("Collision at password length " + i, used.contains(hash));
+            } else {
+                Assert.assertTrue(used.contains(hash));
+            }
+            used.add(hash);
+        }
     }
 }

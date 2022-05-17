@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.faces.validators;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -29,14 +31,19 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * Syntax validator for passwords addresses.
+ * Syntax validator for passwords.
  */
 @FacesValidator("passwordValidator")
 public class PasswordValidator implements Validator<String> {
+
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(PasswordValidator.class);
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
@@ -71,8 +78,15 @@ public class PasswordValidator implements Validator<String> {
         if (password.length() < 8) {
             return false;
         }
-        // Maximum length against potential long password DoS attacks
-        if (password.length() > 64) {
+
+        // Limit to 72 Bytes
+        try {
+            byte[] utf16Bytes = password.getBytes("UTF-8");
+            if (utf16Bytes.length > 72) {
+                return false;
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage());
             return false;
         }
 
