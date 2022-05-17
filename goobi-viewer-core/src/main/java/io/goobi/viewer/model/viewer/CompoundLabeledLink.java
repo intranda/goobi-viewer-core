@@ -108,7 +108,7 @@ public class CompoundLabeledLink extends LabeledLink {
                 collectionElement.addToNumber(1);
                 collectionElements.add(collectionElement);
             }
-            CollectionView.associateWithCMSCollections(collectionElements, field, splittingChar, displayNumberOfVolumesLevel);
+            CollectionView.associateWithCMSCollections(collectionElements, field);
             int subLinkWeight = weight;
             // Add collection hierarchy links with the same weight
             for (HierarchicalBrowseDcElement collectionElement : collectionElements) {

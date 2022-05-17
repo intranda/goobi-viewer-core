@@ -165,6 +165,10 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getName() {
         return name;
     }
+    
+    public String getField() {
+        return field;
+    }
 
     /**
      * <p>

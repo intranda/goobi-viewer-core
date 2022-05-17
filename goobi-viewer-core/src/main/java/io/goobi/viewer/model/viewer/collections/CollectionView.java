@@ -26,7 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -293,8 +295,8 @@ public class CollectionView {
      */
     public void associateElementsWithCMSData() {
         try {
-            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field, this.splittingChar, this.displayNumberOfVolumesLevel);
-        } catch (PresentationException | DAOException e) {
+            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
+        } catch (DAOException e) {
             logger.error("Failed to associate collections with media items: " + e.getMessage());
         }
     }
@@ -306,12 +308,12 @@ public class CollectionView {
      *
      * @param collections a {@link java.util.List} object.
      * @param solrField a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @return the 'collection' parameter
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField, String splittingChar, int displayNumberOfVolumesLevel)
-            throws DAOException, PresentationException {
+    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
+            throws DAOException {
         List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
         if (cmsCollections == null || cmsCollections.isEmpty()) {
             return collections;
@@ -321,12 +323,12 @@ public class CollectionView {
             if (StringUtils.isBlank(collectionName)) {
                 continue;
             }
-            HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null, splittingChar, displayNumberOfVolumesLevel);
-            int index = collections.indexOf(searchItem);
-            if (index > -1) {
-                HierarchicalBrowseDcElement element = collections.get(index);
-                element.setInfo(cmsCollection);
-            }
+            //include direct child elements to handle views which include children of visible elements (luzern theme e.g.)
+            Optional<HierarchicalBrowseDcElement> element = collections.stream()
+                    .flatMap(ele -> ele.getChildren(true).stream())
+                    .filter(ele -> ele.getName().equals(collectionName))
+                    .findAny();
+            element.ifPresent(ele -> ele.setInfo(cmsCollection));
         }
         return collections;
     }

@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.viewer.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
@@ -83,6 +85,16 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      */
     public List<HierarchicalBrowseDcElement> getChildren() {
         return children;
+    }
+    
+    public List<HierarchicalBrowseDcElement> getChildren(boolean includeMyself) {
+        if(includeMyself) {
+            List<HierarchicalBrowseDcElement> list = new ArrayList<HierarchicalBrowseDcElement>(this.children);
+            list.add(0, this);
+            return list;
+        } else {
+            return getChildren();
+        }
     }
 
     /**
