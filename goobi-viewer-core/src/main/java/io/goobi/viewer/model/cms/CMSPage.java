@@ -1436,7 +1436,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getPersistentUrl() {
         return persistentUrl;
     }
-
+    
     /**
      * <p>
      * Setter for the field <code>persistentUrl</code>.
