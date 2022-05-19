@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -197,6 +198,14 @@ public interface SearchInterface {
      */
     public long getHitsCount();
 
+    /**
+     * action to execute to change sort sort order of hits
+     * @return
+     * @throws IOException
+     */
+    public String changeSorting() throws IOException;
+
+    
     /**
      * Return the base url of the current search page, without any search parameters
      *
