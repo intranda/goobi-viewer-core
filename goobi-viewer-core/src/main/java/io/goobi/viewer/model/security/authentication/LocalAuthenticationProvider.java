@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
@@ -69,13 +70,31 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     public CompletableFuture<LoginResult> login(String email, String password) throws AuthenticationProviderException {
         HttpServletRequest request = BeanUtils.getRequest();
         HttpServletResponse response = BeanUtils.getResponse();
+
+        String ipAddress = NetTools.getIpAddress(request);
+        long delay = DataManager.getInstance().getSecurityManager().getDelayForIpAddress(ipAddress);
+        if (delay > 0) {
+            // TODO refuse with delay
+        }
+
         if (StringUtils.isNotEmpty(email)) {
+            delay = DataManager.getInstance().getSecurityManager().getDelayForUserName(email);
+            if (delay > 0) {
+                // TODO refuse with delay
+            }
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);
                 boolean refused = true;
                 if (user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null
                         && bcrypt.checkpw(password, user.getPasswordHash())) {
                     refused = false;
+                    // Reset failed failed login attempt penalty counters
+                    DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForUserName(email);
+                    DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForIpAddress(ipAddress);
+                } else {
+                    // Register failed attempt for user name and IP address
+                    DataManager.getInstance().getSecurityManager().addFailedLoginAttemptForUserName(email);
+                    DataManager.getInstance().getSecurityManager().addFailedLoginAttemptForIpAddress(ipAddress);
                 }
                 return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.ofNullable(user), refused));
             } catch (DAOException e) {

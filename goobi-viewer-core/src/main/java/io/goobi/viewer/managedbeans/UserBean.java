@@ -29,8 +29,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -126,6 +128,8 @@ public class UserBean implements Serializable {
 
     /** Reusable Random object. */
     Random random = new SecureRandom();
+
+    Map<String, Integer> loginAttempts = new HashMap<>();
 
     // private CompletableFuture<Optional<User>> loginFuture = null;
 
@@ -326,9 +330,9 @@ public class UserBean implements Serializable {
             if (result.isRefused()) {
                 Messages.error("errLoginWrong");
             } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
-                Messages.error("errLoginInactive");
+                Messages.error("errLoginWrong");
             } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
-                Messages.error("errLoginSuspended");
+                Messages.error("errLoginWrong");
             } else if (oUser.isPresent()) { //login successful
                 try {
                     User user = oUser.get();
@@ -1401,6 +1405,11 @@ public class UserBean implements Serializable {
     public boolean isAllowEmailChange() {
         return loggedInProvider != null && loggedInProvider.allowsEmailChange();
 
+    }
+
+    public boolean isRequireLoginCaptcha() {
+        // TODO
+        return false;
     }
 
     /**
