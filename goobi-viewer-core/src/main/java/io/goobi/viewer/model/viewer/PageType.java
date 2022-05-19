@@ -78,6 +78,7 @@ public enum PageType {
     adminUserTerms("admin/userterms"),
     adminCreateRecord("admin/record/new"),
     adminThemes("admin/themes"),
+    adminClients("admin/clients"),
     // admin/translations
     adminTranslations("admin/translations"),
     adminTranslationsNew("admin/translations/new"),
