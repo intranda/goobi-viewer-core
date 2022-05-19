@@ -39,6 +39,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.clients.ClientApplication;
@@ -86,6 +87,10 @@ public class ClientApplicationsResource {
         } else {
             ClientApplication client = new ClientApplication(clientIdentifier);
             client.setAccessStatus(AccessStatus.REQUESTED);
+            String ip = NetTools.getIpAddress(servletRequest);
+            if(StringUtils.isNotBlank(ip)) {
+                client.setClientIp(ip);
+            }
             if(dao.saveClientApplication(client)) {                
                 return createRegistrationResponse(client);
             } else {

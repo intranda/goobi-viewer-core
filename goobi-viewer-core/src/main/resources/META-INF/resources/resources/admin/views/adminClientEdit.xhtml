@@ -30,72 +30,91 @@
 
 			<!-- NOT CONFIGURED CLIENT -->
 			<ui:fragment rendered="#{client.registrationPending}">
-				<h2>#{msg.admin__clients__info__title}</h2>
-				<div class="admin__default-block mb-5">
-					<div class="row">
-						<div class="col-12">
-							#{msg.admin__clients__question_register}</div>
-					</div>
-					<div class="row">
-						<div class="col-4">#{msg.admin__clients__client_identifier}
+				<h:form>
+
+					<h2>#{msg.admin__clients__info__title}</h2>
+					<div class="admin__default-block mb-5">
+						<div class="row">
+							<div class="col-12">
+								#{msg.admin__clients__question_register}</div>
 						</div>
-						<div class="col-8">#{client.clientIdentifier}</div>
+						<div class="row">
+							<div class="col-4">#{msg.admin__clients__client_identifier}
+							</div>
+							<div class="col-8">#{client.clientIdentifier}</div>
+						</div>
+						<div class="row">
+							<div class="col-4">#{msg.admin__clients__date_requested}</div>
+							<div class="col-8">
+								<h:outputText value="#{client.dateRegistered}">
+									<f:converter converterId="localDateTimeConverter" />
+									<f:attribute name="pattern"
+										value="#{navigationHelper.dateTimePattern}" />
+								</h:outputText>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-4">#{msg.admin__clients__client_ip}</div>
+							<div class="col-8">#{client.clientIp}</div>
+						</div>
 					</div>
-					<div class="row">
-						<div class="col-4">#{msg.admin__clients__date_requested}</div>
-						<div class="col-8">#{client.dateRegistered}</div>
+
+
+					<div
+						class="row no-gutters justify-content-end admin__final-actions">
+						<h:commandButton class="btn btn--success"
+							value="#{msg.action__accept}"
+							action="#{adminClientsBean.accept(client)}">
+						</h:commandButton>
+						<h:commandButton class="btn btn--danger"
+							value="#{msg.action__reject}"
+							action="#{adminClientsBean.reject(client)}">
+						</h:commandButton>
 					</div>
-					<div class="row">
-						<div class="col-4">#{msg.admin__clients__client_ip}</div>
-						<div class="col-8">#{client.clientIp}</div>
-					</div>
-				</div>
 
-
-				<div class="row no-gutters justify-content-end admin__final-actions">
-					<h:commandButton class="btn btn--success" value="#{msg.action__accept}"
-						action="#{adminClientsBean.accept(client)}">
-					</h:commandButton>					
-					<h:commandButton class="btn btn--danger" value="#{msg.action__reject}"
-						action="#{adminClientsBean.reject(client)}">
-					</h:commandButton>
-				</div>
-
-
+				</h:form>
 			</ui:fragment>
 
 			<!-- CONFIGURED CLIENT -->
 			<ui:fragment rendered="#{!client.registrationPending}">
-				<h2>#{msg.admin__clients__info__title}</h2>
-				<div class="admin__default-block mb-5">
-					<div class="row">
-						<div class="col-4">#{msg.admin__clients__client_identifier}
+				<h:form>
+					<h2>#{msg.admin__clients__info__title}</h2>
+					<div class="admin__default-block mb-5">
+						<div class="row">
+							<div class="col-4">#{msg.admin__clients__client_identifier}
+							</div>
+							<div class="col-8">#{client.clientIdentifier}</div>
 						</div>
-						<div class="col-8">#{client.clientIdentifier}</div>
+						<div class="row">
+							<div class="col-4">#{msg.admin__clients__client_ip}</div>
+							<div class="col-8">#{client.clientIp}</div>
+						</div>
 					</div>
-					<div class="row">
-						<div class="col-4">#{msg.admin__clients__client_ip}</div>
-						<div class="col-8">#{client.clientIp}</div>
+
+					<h2>#{msg.admin__clients__settings__title}</h2>
+					<div class="admin__default-block mb-5">
+						<formComponent:textInputField
+							label="#{msg.admin__clients__client_name}" value="#{client.name}" 
+							helpText="#{msg.admin__clients__client_name__help}"/>
+						<formComponent:textInputField
+							label="#{msg.admin__clients__client_desc}"
+							value="#{client.description}"
+							helpText="#{msg.admin__clients__client_desc__help}" />
 					</div>
-				</div>
-				
-				<h2>#{msg.admin__clients__settings__title}</h2>
-				<div class="admin__default-block mb-5">
-					<formComponent:textInputField label="#{msg.admin__clients__client_name}" value="#{client.name}"/>
-					<formComponent:textInputField label="#{msg.admin__clients__client_desc}" value="#{client.description}"/>
-				</div>
-				
-				<div class="row no-gutters justify-content-end admin__final-actions">
-					<h:commandButton class="btn btn--default" value="#{msg.cancel}"
-						action="pretty:adminClients">
-					</h:commandButton>					
-					<h:commandButton class="btn btn--danger" value="#{msg.button__save}"
-						action="#{adminClientsBean.save(client)}">
-					</h:commandButton>
-				</div>
-				
+
+					<div
+						class="row no-gutters justify-content-end admin__final-actions">
+						<h:commandButton class="btn btn--default" value="#{msg.cancel}"
+							action="pretty:adminClients">
+						</h:commandButton>
+						<h:commandButton class="btn btn--danger"
+							value="#{msg.button__save}"
+							action="#{adminClientsBean.save(client)}">
+						</h:commandButton>
+					</div>
+				</h:form>
 			</ui:fragment>
-			
+
 
 		</div>
 	</ui:define>

@@ -210,6 +210,10 @@ public class ClientApplication {
         return StringUtils.isNotBlank(identifier) && identifier.equals(this.clientIdentifier);
     }
     
+    public boolean isRegistrationPending() {
+        return AccessStatus.REQUESTED.equals(this.getAccessStatus());
+    }
+    
     @Override
     public int hashCode() {
         if(this.clientIdentifier != null) {

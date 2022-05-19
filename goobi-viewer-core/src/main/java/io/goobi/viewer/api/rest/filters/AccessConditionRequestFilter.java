@@ -16,8 +16,6 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
@@ -32,25 +30,16 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.AbsoluteScale;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;

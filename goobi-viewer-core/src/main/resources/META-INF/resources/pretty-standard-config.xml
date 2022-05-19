@@ -961,8 +961,20 @@
         <view-id value="/resources/cms/adminCmsCollections.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsCollectionsBean.currentTab.refresh(cmsCollectionsBean.solrField)}</action>
-
     </url-mapping>
+	<url-mapping id="adminClients">
+        <pattern value="/admin/clients/" />
+        <view-id value="/resources/admin/views/adminClients.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminClientsEdit">
+        <pattern value="/admin/clients/#{clientId}/" />
+        <view-id value="/resources/admin/views/adminClientEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{adminClientsBean.setSelectedClientId(clientId)}</action>
+    </url-mapping>
+
+
     <url-mapping id="adminCmsEditCollection">
         <pattern value="/admin/cms/collections/edit/#{collectionName}/" />
         <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />

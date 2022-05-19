@@ -85,6 +85,22 @@ public class AdminClientsBean implements Serializable {
         return configuredClientsModel;
     }
     
+    public void setSelectedClientId(Long id) throws DAOException  {
+        if(id != null) {
+            this.setSelectedClient(dao.getClientApplication(id));
+        } else {
+            this.setSelectedClient(null);
+        }
+    }
+    
+    public Long getSelectedClientId() {
+        if(this.selectedClient != null) {
+            return this.selectedClient.getId();
+        } else {
+            return null;
+        }
+    }
+    
     /**
      * @param selectedClient the selectedClient to set
      */
@@ -109,7 +125,7 @@ public class AdminClientsBean implements Serializable {
         save(client);
     }
 
-    private void save(ClientApplication client) {
+    public void save(ClientApplication client) {
         try {            
             if(dao.saveClientApplication(client)) {
                 Messages.info(null, "admin__clients__save_client__success", client.getClientIdentifier());

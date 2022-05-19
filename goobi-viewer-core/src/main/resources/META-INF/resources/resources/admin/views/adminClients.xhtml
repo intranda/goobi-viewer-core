@@ -38,7 +38,7 @@
                       </h2>
                     </div>
                     <ui:repeat var="client" value="#{notConfiguredClients}">
-	                    <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
+	                    <a href="#{request.contextPath}/admin/clients/#{client.id}/"
 	                        class="row admin__license-unconfigured-entry">
 	                            <div class="col-10 -textlink">
 									#{client.clientIdentifier} (IP: #{client.clientIp})
@@ -83,29 +83,26 @@
                        <ui:repeat var="client" value="#{adminClientsBean.configuredClientsModel.paginatorList}">
                            <div class="row no-gutters admin__table-entry" role="row">
                                <div class="col-6 d-flex">
-                                   <div class="admin__table-img" role="presentation">
-                                   	<img src="#{user.getAvatarUrl(80)}" alt="User avatar" />
-                                   </div>
                                    <div class="admin__table-data" role="gridcell">
                                        <!-- CLIENT NAME -->
                                        <span class="admin__table-name">#{client.name}</span>
                                        <!-- CLIENT ID -->
                                        <span class="admin__table-name">#{msg.admin__clients__client_identifier }#{client.clientIdentifier}</span>
                                        <!-- EDIT -->
-                                       <a href="#{navigationHelper.applicationUrl}admin/clients/edit/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">
+                                       <a href="#{navigationHelper.applicationUrl}admin/clients/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">
                                           #{msg.edit}
                                        </a>
                                    </div>
                                </div>
 
-							<div class="col-3 d-flex align-items-center" role="gridcell">
+							<div class="col-2 d-flex align-items-center" role="gridcell">
                                    <span class="admin__table-ip-address">
                                        #{client.clientIp}
                                    </span>
                                </div>
 
 							<!-- REGISTERED DATE -->
-                               <div class="col-3 d-flex align-items-center" role="gridcell">
+                               <div class="col-2 d-flex align-items-center" role="gridcell">
                                    <span class="admin__table-last-login">
                                        <h:outputText value="#{client.dateRegistered}">
                                            <f:converter converterId="localDateTimeConverter" />
@@ -115,7 +112,7 @@
                                </div>
 
                                <!-- LAST LOGIN DATE -->
-                               <div class="col-3 d-flex align-items-center" role="gridcell">
+                               <div class="col-2 d-flex align-items-center" role="gridcell">
                                    <span class="admin__table-last-login">
                                        <h:outputText value="#{client.dateLastAccess}">
                                            <f:converter converterId="localDateTimeConverter" />
