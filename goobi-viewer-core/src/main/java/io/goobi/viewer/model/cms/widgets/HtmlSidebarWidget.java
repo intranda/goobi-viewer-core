@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms.widgets;
 
@@ -41,14 +47,14 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     @Column(name = "html_text", columnDefinition="LONGTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText htmlText = new TranslatedText(IPolyglott.getLocalesStatic());
-    
+
     /**
      * Empty default constructor
      */
     public HtmlSidebarWidget() {
-        
+
     }
-    
+
     /**
      * Cloning constructor
      * @param o
@@ -58,9 +64,9 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
         this.htmlText = new TranslatedText(o.htmlText);
         this.htmlText.setSelectedLocale(getSelectedLocale());
     }
-    
+
     /**
-     * 
+     *
      * @return the html text
      */
     public TranslatedText getHtmlText() {
@@ -71,12 +77,12 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     public boolean isComplete(Locale locale) {
         return super.isComplete(locale) && htmlText.isComplete(locale);
     }
-    
+
     @Override
     public boolean isEmpty(Locale locale) {
         return super.isEmpty(locale) && htmlText.isEmpty(locale);
     }
-    
+
     @Override
     public void setSelectedLocale(Locale locale) {
         super.setSelectedLocale(locale);
@@ -87,5 +93,5 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     public CustomWidgetType getType() {
         return CustomWidgetType.WIDGET_HTML;
     }
-    
+
 }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -63,11 +69,11 @@ public class DisclaimerBean implements Serializable {
 
     @Inject
     ActiveDocumentBean activeDocumentBean;
-    @Inject 
+    @Inject
     NavigationHelper navigationHelper;
     @Inject
     UserBean userBean;
-    
+
     /**
      * the {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} core license type derived from the dao
      */
@@ -85,11 +91,11 @@ public class DisclaimerBean implements Serializable {
      */
     private Optional<ConsentScope> currentConsentScope = Optional.empty();
     /**
-     * map storing PIs of records and whether the disclaimer applies to them 
+     * map storing PIs of records and whether the disclaimer applies to them
      */
     private Map<String, Boolean> recordApplicabilityMap = new HashMap<>();
-    
-    
+
+
     /**
      * Default constructor using the IDAO from the {@link DataManager} class
      */
@@ -99,7 +105,7 @@ public class DisclaimerBean implements Serializable {
 
     /**
      * Constructor for testing purposes
-     * 
+     *
      * @param dao the IDAO implementation to use
      */
     public DisclaimerBean(IDAO dao, SolrSearchIndex searchIndex) {
@@ -114,7 +120,7 @@ public class DisclaimerBean implements Serializable {
 
     /**
      * Get the stored disclaimer to display on a viewer web-page. Do not use for modifications
-     * 
+     *
      * @return the cookie banner stored in the DAO
      * @deprecated not needed if disclaimer is realized as a sweet alert which is created from {@link #getDisclaimerConfig()}
      */
@@ -168,16 +174,16 @@ public class DisclaimerBean implements Serializable {
      * Checks the currently logged in user. If it matches the user stored in this bean return the stored consentScope.
      * Otherwise check if a license of type {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} applies to the current user,
      * any of its user groups or the current ip.
-     * Then set the user stored in the bean to the current user and the stored consentScope to a consentScope from a license 
+     * Then set the user stored in the bean to the current user and the stored consentScope to a consentScope from a license
      * or from the disclaimer if there is no matching license.
      * Then return the stored consentScope
-     * 
+     *
      * @param disclaimer    must not be null
      * @return  the applying consentScope, never null
      * @throws DAOException
      */
     private ConsentScope getConsentScope(Disclaimer disclaimer) throws DAOException {
-        
+
         Optional<User> user = Optional.ofNullable(userBean).map(UserBean::getUser);
         if(user.equals(currentUser) && currentConsentScope.isPresent()) {
             return currentConsentScope.get();
@@ -187,7 +193,7 @@ public class DisclaimerBean implements Serializable {
             currentConsentScope = Optional.of(licenseToUse.map(License::getDisclaimerScope).orElse(disclaimer.getAcceptanceScope()));
             return currentConsentScope.get();
         }
-        
+
     }
 
     private List<License> getApplyingLicenses(Optional<User> user, LicenseType type) throws DAOException {
@@ -195,7 +201,7 @@ public class DisclaimerBean implements Serializable {
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
         String ipAddress = navigationHelper.getSessionIPAddress();
         List<IpRange> ipRanges = dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
-        
+
         List<License> applyingLicenses = licenses.stream()
         .filter(license -> {
            return user.map(u -> u.equals(license.getUser())).orElse(false)
@@ -203,7 +209,7 @@ public class DisclaimerBean implements Serializable {
                    || ipRanges.contains(license.getIpRange());
         })
         .collect(Collectors.toList());
- 
+
         return applyingLicenses.stream()
                 .filter(l -> {
                     return applyingLicenses.stream()
@@ -214,7 +220,7 @@ public class DisclaimerBean implements Serializable {
     }
 
 
-    
+
     private static IDAO retrieveDAO() {
         try {
             return DataManager.getInstance().getDao();
@@ -223,14 +229,14 @@ public class DisclaimerBean implements Serializable {
             return null;
         }
     }
-    
-    
+
+
     private static LicenseType getDisclaimerLicenseType(IDAO dao) {
         try {
             return dao.getLicenseType(LicenseType.LICENSE_TYPE_LEGAL_DISCLAIMER);
         } catch (DAOException e) {
             logger.error("Error initializing DisclaimerBean ", e);
             return null;
-        }    
+        }
     }
 }

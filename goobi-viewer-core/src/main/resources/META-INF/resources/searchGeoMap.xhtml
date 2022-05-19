@@ -46,7 +46,7 @@
 							<div id="geoMapSearch"></div>
 						</div>
 
-						<script>
+	          			<script type="text/javascript">	
 
 							viewerJS.initialized.subscribe(() => {
 							    
@@ -63,6 +63,7 @@
 									    },
 									    heatmap: {
 											showSearchResultsHeatmap: #{configurationBean.useHeatmapForMapSearch()},
+											mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
 									    },
 									    hitsLayer: {
 											markerIcon: #{configurationBean.markerForMapSearch.toJSONString()}

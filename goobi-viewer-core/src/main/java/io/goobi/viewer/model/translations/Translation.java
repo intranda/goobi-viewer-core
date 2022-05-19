@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.translations;
 
@@ -146,7 +152,7 @@ public class Translation {
             return "";
         }
     }
-    
+
     public static void setTranslation(List<Translation> translations, String lang, String value, String tag) {
         if (lang == null) {
             throw new IllegalArgumentException("lang may not be null");
@@ -260,19 +266,19 @@ public class Translation {
     public String toString() {
         return value;
     }
-    
+
     /**
      * Hash code is build from hashCode of language
      */
     @Override
     public int hashCode() {
-        if(this.language != null) {            
+        if(this.language != null) {
             return this.language.hashCode();
         } else {
             return 0;
         }
     }
-    
+
     /**
      * Two Translations are equal if they are of the same class and both tag and language match
      */
@@ -280,15 +286,15 @@ public class Translation {
     public boolean equals(Object obj) {
         if(obj != null && obj.getClass().equals(this.getClass())) {
             Translation other = (Translation)obj;
-            return StringUtils.equals(this.language, other.language) && 
+            return StringUtils.equals(this.language, other.language) &&
                     StringUtils.equals(this.tag, other.tag);
         } else {
             return false;
         }
     }
-    
+
     public boolean isEmpty() {
         return StringUtils.isBlank(getValue());
     }
-    
+
 }

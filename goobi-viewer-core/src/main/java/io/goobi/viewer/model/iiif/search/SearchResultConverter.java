@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.iiif.search;
 
@@ -291,8 +297,8 @@ public class SearchResultConverter {
      * @param query a regex; each match of the query within the alto document creates a {@link de.intranda.api.iiif.search.SearchHit} with one or more
      *            annotations referencing alto word or line elements
      * @return A result list containing hits for each mach of the query and annotations containing the hits
-     * @throws JDOMException 
-     * @throws IOException 
+     * @throws JDOMException
+     * @throws IOException
      */
     public AnnotationResultList getAnnotationsFromAlto(Path path, String query) throws IOException, JDOMException {
         AnnotationResultList results = new AnnotationResultList();
@@ -490,7 +496,7 @@ public class SearchResultConverter {
 
     /**
      * Create an annotation for the given metadata field in the given doc
-     * 
+     *
      * @param metadataField
      * @param doc
      * @return
@@ -524,7 +530,7 @@ public class SearchResultConverter {
 
     /**
      * Create an annotation from an ALTO element
-     * 
+     *
      * @param altoElement The alto xml element
      * @return An annotation representing the element
      */
@@ -556,7 +562,7 @@ public class SearchResultConverter {
 
     /**
      * Create a URI-only resource for a page. Either as a {@link SimpleResource} or a {@link SpecificResourceURI} if the page has a width and height
-     * 
+     *
      * @param pi PI of the work containing the page
      * @param pageNo page number (ORDER) of the page
      * @return A URI to a canvas resource
@@ -583,19 +589,19 @@ public class SearchResultConverter {
     private URI getMetadataAnnotationURI(String pi, String logId, String metadataField) {
         return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_METADATA).params(pi, logId, metadataField).query("format", "oa").build());
     }
-    
+
     private URI getPlaintextAnnotationURI(String pi, Integer pageNo) {
         return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_PLAINTEXT).params(pi, pageNo).query("format", "oa").build());
     }
-    
+
     private URI getAltoAnnotationURI(String pi, Integer pageNo, String elementId) {
         return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_ALTO).params(pi, pageNo, elementId).query("format", "oa").build());
     }
-    
+
     private URI getUGCAnnotationURI(String id) {
         return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_UGC).params(id).query("format", "oa").build());
     }
-    
+
     private URI getCommentAnnotationURI(String id) {
         return URI.create(urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(id).query("format", "oa").build());
     }

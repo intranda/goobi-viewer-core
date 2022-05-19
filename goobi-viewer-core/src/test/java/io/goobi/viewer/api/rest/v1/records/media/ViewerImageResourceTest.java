@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
@@ -183,14 +189,14 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.emptySet());
         DataManager.getInstance().getDao().addLicenseType(licenseType);
-        
+
         String urlImage = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params("PPNuag_foto_v4", "00000001.tif", REGION, "!5,5", ROTATION, QUALITY, FORMAT)
                 .build();
         String urlThumb = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params("PPNuag_foto_v4", "00000001.tif", REGION, "!1,1", ROTATION, QUALITY, FORMAT)
                 .build();
-        
+
         try (Response response = target(urlThumb)
                 .request()
                 .accept("image")
@@ -199,8 +205,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
         }
-        
-        
+
+
         try (Response response = target(urlImage)
                 .request()
                 .accept("image")
@@ -213,21 +219,21 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);
 
     }
-    
+
     @Test
     public void testGetImageOpenLicense() throws DAOException {
 
         LicenseType licenseType = new LicenseType("pdf_locked");
         licenseType.setOpenAccess(true);
         DataManager.getInstance().getDao().addLicenseType(licenseType);
-        
+
         String urlImage = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params("PPNuag_foto_v4", "00000001.tif", REGION, "!5,5", ROTATION, QUALITY, FORMAT)
                 .build();
         String urlThumb = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params("PPNuag_foto_v4", "00000001.tif", REGION, "!1,1", ROTATION, QUALITY, FORMAT)
                 .build();
-        
+
         try (Response response = target(urlThumb)
                 .request()
                 .accept("image")
@@ -236,8 +242,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
         }
-        
-        
+
+
         try (Response response = target(urlImage)
                 .request()
                 .accept("image")
@@ -246,10 +252,10 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
         }
-        
+
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);
     }
-    
+
     @Test
     public void testGetImageThumbnailLicense() throws DAOException {
 
@@ -257,7 +263,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
         licenseType.setOpenAccess(false);
         licenseType.setPrivileges(Collections.singleton(LicenseType.PRIV_VIEW_THUMBNAILS));
         DataManager.getInstance().getDao().addLicenseType(licenseType);
-        
+
         String urlImage = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
                 .params("PPNuag_foto_v4", "00000001.tif", REGION, "!5,5", ROTATION, QUALITY, FORMAT)
                 .build();
@@ -273,8 +279,8 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 200. Error message: " + new String(entity), 200, status);
         }
-        
-        
+
+
         try (Response response = target(urlImage)
                 .request()
                 .accept("image")
@@ -283,7 +289,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             byte[] entity = response.readEntity(byte[].class);
             assertEquals("Should return status 403. Error message: " + new String(entity), 403, status);
         }
-        
+
         DataManager.getInstance().getDao().deleteLicenseType(licenseType);
     }
 }

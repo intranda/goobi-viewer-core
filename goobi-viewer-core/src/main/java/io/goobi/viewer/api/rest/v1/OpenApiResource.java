@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1;
 
@@ -49,12 +55,12 @@ import io.swagger.v3.oas.models.servers.Server;
  */
 @Path("/openapi.json")
 public class OpenApiResource {
-    
+
     @Context
     Application application;
-    @Context 
+    @Context
     ServletConfig servletConfig;
-    
+
     private OpenAPI openApi;
 
     @GET
@@ -63,7 +69,7 @@ public class OpenApiResource {
         this.openApi = initSwagger(servletConfig, application, getApiUrls());
         return this.openApi;
     }
-    
+
     private OpenAPI initSwagger(ServletConfig servletConfig, ResourceConfig application, List<String> apiUrls) {
 
         try {
@@ -71,30 +77,30 @@ public class OpenApiResource {
                     .prettyPrint(true)
                     .readAllResources(false)
                     .resourcePackages(Stream.of("io.goobi.viewer.api.rest.v1").collect(Collectors.toSet()));
-            
-            
+
+
             OpenAPI openApi = new JaxrsOpenApiContextBuilder()
                     .servletConfig(servletConfig)
                     .application(application)
                     .openApiConfiguration(oasConfig)
                     .buildContext(true).read();
-            
+
             List<Server> servers = new ArrayList<>();
-            for (String url : apiUrls) {                
+            for (String url : apiUrls) {
                 Server server = new Server();
                 server.setUrl(url);
                 servers.add(server);
             }
             openApi.setServers(servers);
-            
+
             openApi.setInfo(getInfo());
-            
+
             return openApi;
         } catch (OpenApiConfigurationException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-    
+
     private List<String> getApiUrls() {
 
         return Arrays.asList(
@@ -121,5 +127,5 @@ public class OpenApiResource {
                         .url("https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE"));
         return info;
     }
-    
+
 }

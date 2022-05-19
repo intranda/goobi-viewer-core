@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.archives;
 
@@ -66,7 +72,7 @@ public class ArchiveEntry {
     private boolean expanded = false;
 
     private String associatedRecordPi;
-    
+
     private boolean containsImage = false;
 
     /* 1. metadata for Identity Statement Area */
@@ -124,7 +130,7 @@ public class ArchiveEntry {
 
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
         this.parentNode = parent;
-        
+
         this.id = orig.id;
         this.associatedRecordPi = orig.associatedRecordPi;
         this.containsImage = orig.containsImage;
@@ -134,7 +140,7 @@ public class ArchiveEntry {
         this.orderNumber = orig.orderNumber;
         this.hierarchyLevel = orig.hierarchyLevel;
         this.descriptionLevel = orig.descriptionLevel;
-        
+
         this.subEntryList = orig.subEntryList.stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList());
         this.accessAndUseAreaList = orig.accessAndUseAreaList; //flat copy, because effectively final
         this.alliedMaterialsAreaList = orig.alliedMaterialsAreaList; //flat copy, because effectively final
@@ -169,7 +175,7 @@ public class ArchiveEntry {
     }
 
     /**
-     * 
+     *
      * @param ignoreDisplayChildren
      * @return
      */
@@ -186,7 +192,7 @@ public class ArchiveEntry {
         }
         return list;
     }
-    
+
     public boolean isHasChildren() {
         return !subEntryList.isEmpty();
     }
@@ -307,7 +313,7 @@ public class ArchiveEntry {
     }
 
     /**
-     * 
+     *
      * @param offset
      */
     public void shiftHierarchy(int offset) {
@@ -359,7 +365,7 @@ public class ArchiveEntry {
     }
 
     /**
-     * 
+     *
      * @param visible
      */
     void setChildrenVisibility(boolean visible) {
@@ -731,19 +737,19 @@ public class ArchiveEntry {
     public String getAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
         return associatedRecordPi;
     }
-    
+
     /**
      * @param associatedRecordPi the associatedRecordPi to set
      */
     public void setAssociatedRecordPi(String associatedRecordPi) {
         this.associatedRecordPi = associatedRecordPi;
     }
-    
+
 
     /**
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
      * node itself will always be the last element, if included
-     * 
+     *
      * @param includeSelf
      * @return
      */
@@ -766,7 +772,7 @@ public class ArchiveEntry {
     public String toString() {
         return id;
     }
-    
+
 
     public boolean isContainsImage() {
         return this.containsImage;
@@ -775,7 +781,7 @@ public class ArchiveEntry {
     public void setContainsImage(boolean containsImage) {
         this.containsImage = containsImage;
     }
-    
+
     public String getFieldValue(String field) {
         return getAllAreaLists().stream().filter(entry -> entry.getLabel().equals(field))
                 .map(ArchiveMetadataField::getValue)

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.crowdsourcing;
 
@@ -51,7 +57,7 @@ import io.goobi.viewer.model.log.LogMessage;
 
 /**
  * Request filter to ensure only users with sufficient rights may access campaign resources
- * 
+ *
  * @author florian
  *
  */
@@ -65,12 +71,12 @@ public class CampaignItemLogResource {
     @Context
     private HttpServletResponse servletResponse;
 
-    
+
     protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
     protected AnnotationsResourceBuilder annoBuilder = null;
 
     private final Long campaignId;
-    
+
     /**
      * <p>
      * Constructor for CampaignItemResource.
@@ -86,7 +92,7 @@ public class CampaignItemLogResource {
         this.campaignId = campaignId;
         servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
-    
+
     @GET
     @Path("/{pi}/log")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -101,7 +107,7 @@ public class CampaignItemLogResource {
         }
         throw new ContentNotFoundException("No campaign found with id " + campaignId);
     }
-    
+
     @POST
     @Path("/{pi}/log")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -113,11 +119,11 @@ public class CampaignItemLogResource {
             CampaignLogMessage campaignMessage = campaign.addLogMessage(message, pi);
             DataManager.getInstance().getDao().updateCampaign(campaign);
             return new LogMessage(campaignMessage, servletRequest);
-        } else {            
+        } else {
             throw new ContentNotFoundException("No campaign found with id " + campaignId);
         }
     }
-    
+
     @DELETE
     @Path("/{pi}/log/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -128,11 +134,11 @@ public class CampaignItemLogResource {
         if (campaign != null) {
             campaign.deleteLogMessage(messageId);
             DataManager.getInstance().getDao().updateCampaign(campaign);
-        } else {            
+        } else {
             throw new ContentNotFoundException("No campaign found with id " + campaignId);
         }
     }
-    
+
     @GET
     @Path("/{pi}/log/{id}")
     @Produces({ MediaType.APPLICATION_JSON })

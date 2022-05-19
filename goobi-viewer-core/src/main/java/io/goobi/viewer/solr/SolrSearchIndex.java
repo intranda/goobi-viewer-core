@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.solr;
 
@@ -183,7 +189,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * 
+     *
      * @return true if test query executes without errors; false otherwise
      * @should return true if solr online
      * @should return false if solr offline
@@ -293,7 +299,7 @@ public class SolrSearchIndex {
             //             logger.trace("Solr query : {}", solrQuery.getQuery());
             //             logger.debug("range: {} - {}", first, first + rows);
             //             logger.debug("facetFields: {}", facetFields);
-            //             logger.debug("fieldList: {}", fieldList);                  
+            //             logger.debug("fieldList: {}", fieldList);
             QueryResponse resp = client.query(solrQuery);
             //             logger.debug("found: {}", resp.getResults().getNumFound());
             //                         logger.debug("fetched: {}", resp.getResults().size());
@@ -791,7 +797,7 @@ public class SolrSearchIndex {
 
     /**
      * Returns the number of hits for the given query and filter queries without actually returning any documents.
-     * 
+     *
      * @param query
      * @param filterQueries
      * @return
@@ -806,7 +812,7 @@ public class SolrSearchIndex {
     /**
      * Retrieves the repository name for the record with the given PI and persists it in a map. This method is package private to discourage clients
      * from constructing data file paths manually instead of using Helper methods.
-     * 
+     *
      * @param pi
      * @return Data repository name for the record with the given identifier; null if not in a repository
      * @throws PresentationException
@@ -823,7 +829,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param dataRepositoryName
      * @should update value correctly
@@ -834,7 +840,7 @@ public class SolrSearchIndex {
 
     /**
      * Retrieves the repository name for the record with the given PI from the index.
-     * 
+     *
      * @param pi
      * @return Data repository name for the record with the given identifier; null if not in a repository
      * @throws PresentationException
@@ -936,7 +942,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean pingSolrIndex() {
@@ -1092,7 +1098,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * 
+     *
      * @return A list of all SOLR fields without the multivalues flag
      * @throws SolrServerException
      * @throws IOException
@@ -1238,7 +1244,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param labelField
      * @param values
@@ -1302,7 +1308,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getSolrServerUrl() {
@@ -1314,8 +1320,8 @@ public class SolrSearchIndex {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param solrField
      * @param wktRegion
      * @param finalQuery
@@ -1323,14 +1329,14 @@ public class SolrSearchIndex {
      * @throws IndexUnreachableException
      */
     public String getHeatMap(String solrField, String wktRegion, String query, String filterQuery, Integer gridLevel) throws IndexUnreachableException {
-        
+
         HeatmapFacetMap facetMap = new HeatmapFacetMap(solrField)
                 .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
                 .setRegionQuery(wktRegion);
         if (gridLevel != null) {
             facetMap.setGridLevel(gridLevel);
         }
-      
+
         final JsonQueryRequest request = new JsonQueryRequest()
                 .setQuery(query)
                 .withFilter(filterQuery)
@@ -1341,7 +1347,7 @@ public class SolrSearchIndex {
             QueryResponse response = request.process(client);
             final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
             final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
-            if(heatmap != null) {                
+            if(heatmap != null) {
                 return getAsJson(heatmap);
             } else {
                 return "{}";

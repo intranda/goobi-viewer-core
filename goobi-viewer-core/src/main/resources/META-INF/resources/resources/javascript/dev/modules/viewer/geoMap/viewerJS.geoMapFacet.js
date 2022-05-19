@@ -134,11 +134,13 @@ var viewerJS = ( function ( viewer ) {
 
 	viewer.GeoMapFacet.prototype.initHeatmap = function () {
 		let heatmapQuery = this.config.heatmap.mainQuery;
+		let heatmapFacetQuery = this.config.heatmap.facetQuery;
 		
 		let heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.hitsLayer, {
 			field: "WKT_COORDS",
 			type: "clusters",
 			filterQuery: heatmapQuery,
+			facetQuery: heatmapFacetQuery,
 			labelField: this.config.heatmap.labelField,
 			queryAdapter: "goobiViewer"    
 		});

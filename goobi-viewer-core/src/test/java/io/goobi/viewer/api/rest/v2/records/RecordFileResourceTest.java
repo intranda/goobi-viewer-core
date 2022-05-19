@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v2.records;
 
@@ -71,7 +77,7 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getAlto(java.lang.String)}.
-     * 
+     *
      * @throws IOException
      * @throws JDOMException
      */
@@ -90,7 +96,7 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getPlaintext(java.lang.String)}.
-     * 
+     *
      * @throws IOException
      * @throws JDOMException
      */
@@ -109,7 +115,7 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getTEI(java.lang.String)}.
-     * 
+     *
      * @throws IOException
      * @throws JDOMException
      */
@@ -161,14 +167,14 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
             assertEquals("Should return status 404", 404, response.getStatus());
         }
     }
-    
+
     @Test
     public void testEscapeFilenamesInUrls() {
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.pdf[@enabled]", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
-        
+
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI_SPACE_IN_FILENAME, "1").build();
         try (Response response = target(url)
                 .request()

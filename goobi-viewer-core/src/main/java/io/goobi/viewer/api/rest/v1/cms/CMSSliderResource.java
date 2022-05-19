@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
@@ -66,17 +72,17 @@ import io.goobi.viewer.solr.SolrTools;
 public class CMSSliderResource {
 
     /**
-     * 
+     *
      */
 
     private static final Logger logger = LoggerFactory.getLogger(CMSSliderResource.class);
-    
+
     private final CMSSlider slider;
 
     public CMSSliderResource(@PathParam("sliderId") Long sliderId) throws DAOException {
         this.slider = DataManager.getInstance().getDao().getSlider(sliderId);
     }
-    
+
     public CMSSliderResource(CMSSlider slider) {
         this.slider = slider;
     }
@@ -115,7 +121,7 @@ public class CMSSliderResource {
         .map(this::getApiUrl)
         .collect(Collectors.toList());
     }
-    
+
     private CMSCategory getCategoryById(String idString) {
         try {
             Long id = Long.parseLong(idString);
@@ -125,7 +131,7 @@ public class CMSSliderResource {
             return null;
         }
     }
-    
+
     private static List<CMSPage> getPagesForCategory(CMSCategory category) {
         try {
             return DataManager.getInstance().getDao().getCMSPagesByCategory(category);
@@ -133,9 +139,9 @@ public class CMSSliderResource {
             logger.error(e.toString(), e);
             return Collections.emptyList();
         }
-        
+
     }
-    
+
     private List<URI> getMedia(List<String> categories) {
         return categories.stream()
                 .map(this::getCategoryById)
@@ -145,13 +151,13 @@ public class CMSSliderResource {
                 .map(this::getApiUrl)
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * @param category
      * @return
      */
     private static List<CMSMediaItem> getMediaForCategory(CMSCategory category) {
-        try {            
+        try {
             return DataManager.getInstance().getDao().getCMSMediaItemsByCategory(category);
         } catch (DAOException e) {
             logger.error(e.toString(), e);
@@ -163,7 +169,7 @@ public class CMSSliderResource {
         return DataManager.getInstance().getRestApiManager().getDataApiManager()
                 .map(urls -> urls.path("/cms/pages/{pageId}").params(page.getId()).buildURI()).orElse(null);
     }
-    
+
     private URI getApiUrl(CMSMediaItem media) {
         return DataManager.getInstance().getRestApiManager().getDataApiManager()
                 .map(urls -> urls.path(CMS_MEDIA, CMS_MEDIA_ITEM).params(media.getId()).buildURI()).orElse(null);
@@ -180,13 +186,13 @@ public class CMSSliderResource {
 
         //limit query to records only
         solrQuery = "+(" + solrQuery + ") +(ISWORK:* ISANCHOR:*)";
-        
+
         List<URI> manifests = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if(urls == null) {
             return Collections.emptyList();
         }
-        
+
         List<StringPair> sortFields = StringUtils.isBlank(sortField) ? null : SearchHelper.parseSortString(sortField, null);
         SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI)).getResults();
         for (SolrDocument doc : solrDocs) {
@@ -195,7 +201,7 @@ public class CMSSliderResource {
             manifests.add(uri);
         }
         return manifests;
-        
+
     }
 
     /**

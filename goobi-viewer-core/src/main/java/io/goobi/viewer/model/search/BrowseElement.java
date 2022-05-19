@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -143,7 +149,7 @@ public class BrowseElement implements Serializable {
 
     /**
      * Constructor for unit tests and special instances.
-     * 
+     *
      * @param pi
      * @param imageNo
      * @param label
@@ -151,7 +157,7 @@ public class BrowseElement implements Serializable {
      * @param locale
      * @param dataRepository
      * @param url Injected URL, overrides URL generation
-     * 
+     *
      * @should build overview page url correctly
      */
     BrowseElement(String pi, int imageNo, String label, String fulltext, Locale locale, String dataRepository, String url) {
@@ -203,10 +209,6 @@ public class BrowseElement implements Serializable {
             structElements.add(tempElement.createStub());
             topStructElement = tempElement;
         }
-        // TODO this should be obsolete
-        //        if (structElement.isWork()) {
-        //            topStructElement = structElement;
-        //        }
 
         // Determine Solr document type. Must happen before certain things, such as label generation.
         docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
@@ -329,7 +331,8 @@ public class BrowseElement implements Serializable {
 
         //..or if we have video or audio
         hasMedia = !hasImages && !isAnchor()
-                && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
+                && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("application")
+                        || this.mimeType.startsWith("text")/*sandboxed*/);
 
         showThumbnail = hasImages || hasMedia || isAnchor();
 
@@ -344,7 +347,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param structElement
      * @param topStructElement
      * @param anchorStructElement
@@ -431,7 +434,7 @@ public class BrowseElement implements Serializable {
     /**
      * Looks up LIDO events and search hit metadata for the given record topstruct element. Applies search hit value highlighting, if search terms are
      * provided.
-     * 
+     *
      * @param topStructElement Top structure element of the LIDO record
      * @param searchTerms Map containing all generated search terms
      * @throws IndexUnreachableException
@@ -491,7 +494,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param structElement
      * @param sortFields If manual sorting was used, display the sorting fields
      * @param ignoreFields Fields to be skipped
@@ -553,7 +556,7 @@ public class BrowseElement implements Serializable {
 
     /**
      * Adds metadata fields that aren't configured in <code>metadataList</code> but match give search terms. Applies highlighting to matched terms.
-     * 
+     *
      * @param structElement
      * @param searchTerms
      * @param ignoreFields Fields to be skipped
@@ -748,7 +751,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param se
      * @param locale
      * @return
@@ -830,7 +833,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param se
      * @param locale
      * @return
@@ -1015,7 +1018,7 @@ public class BrowseElement implements Serializable {
 
     /**
      * Returns the lowest <code>StructElementStub</code> in the list.
-     * 
+     *
      * @return last StructElementStub in the list
      */
     public StructElementStub getBottomStructElement() {
@@ -1097,7 +1100,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if doctype is GROUP; false otherwise
      */
     public boolean isGroup() {
@@ -1351,7 +1354,7 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param field Requested field name
      * @param locale Requested locale
      * @return

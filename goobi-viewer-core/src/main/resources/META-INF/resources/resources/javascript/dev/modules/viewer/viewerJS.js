@@ -74,6 +74,8 @@ var viewerJS = (function () {
   
         // init Bootstrap features
         viewerJS.helper.initBsFeatures();
+        
+        viewerJS.helper.initRestrictedInputFields();
 
         // init mobile Toggles for old responisive themes
         viewerJS.mobileToggles.init();

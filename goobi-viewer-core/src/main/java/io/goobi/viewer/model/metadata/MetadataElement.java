@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.metadata;
 
@@ -123,7 +129,7 @@ public class MetadataElement {
         }
 
         /**
-         * 
+         *
          * @param viewIndex Metadata view index
          * @return Message key for this tab
          * @should return correct message key
@@ -180,7 +186,7 @@ public class MetadataElement {
     private String selectedRecordLanguage;
 
     /**
-     * 
+     *
      * @param se StructElement
      * @param metadataViewIndex Metadata view index
      * @param sessionLocale
@@ -287,7 +293,7 @@ public class MetadataElement {
     }
 
     /**
-     * 
+     *
      * @return true if all available metadata fields for this element are marked as hidden; false otherwise
      * @should return true if metadata list empty
      * @should return true if all metadata fields blank
@@ -447,7 +453,7 @@ public class MetadataElement {
 
     /**
      * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
-     * 
+     *
      * @return true if all metadata are not configured as single string; false otherwise
      * @should return false if at least one metadata with same type not single string
      * @should return true if all metadata of same type single string
@@ -514,7 +520,7 @@ public class MetadataElement {
 
     /**
      * Returns the docstruct type or the group type if this is a record group.
-     * 
+     *
      * @return docstruct type if record; group type if group
      * @should return docstruct type if record
      * @should return group type if group

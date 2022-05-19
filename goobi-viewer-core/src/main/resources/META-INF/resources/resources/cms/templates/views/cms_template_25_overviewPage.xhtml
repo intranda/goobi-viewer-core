@@ -81,7 +81,7 @@
 														<span class="tpl-overviewpage__overview-metadata-value">
 															<h:outputFormat value="#{msg[val.masterValue]}"
 																escape="false">
-                                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                                <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
                                                                     <f:param value="#{val.getParamLabelWithColon(ind)}" />
                                                                     <f:param value="#{val.getComboValueShort(ind)}" />
                                                                 </c:forEach>
@@ -98,7 +98,7 @@
 														<span class="tpl-overviewpage__overview-metadata-value">
 															<h:outputFormat value="#{msg[val.masterValue]}"
 																escape="false">
-                                                                <c:forEach begin="0" end="#{configurationBean.metadataParamNumber - 1}" var="ind">
+                                                                <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
                                                                     <f:param value="#{val.getComboValueShort(ind)}" />
                                                                 </c:forEach>
 															</h:outputFormat>

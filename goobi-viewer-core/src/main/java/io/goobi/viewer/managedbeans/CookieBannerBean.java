@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -43,7 +49,7 @@ import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.cms.CMSPage;
 
 /**
- * This this the java backend class for enabling and configuring the cookie banner feature. 
+ * This this the java backend class for enabling and configuring the cookie banner feature.
  * This bean is view scoped, i.e. created fresh for each new page loaded
 **/
 @Named
@@ -120,7 +126,7 @@ public class CookieBannerBean implements Serializable {
     }
 
     /**
-     * Get the copy of the stored cookie banner for editing. 
+     * Get the copy of the stored cookie banner for editing.
      * Changes are persisted to the object stored in the database by calling {@link #save()}
      * @return  the cookie banner for editing
      */
@@ -165,7 +171,7 @@ public class CookieBannerBean implements Serializable {
         if (this.dao != null) {
             CookieBanner banner = dao.getCookieBanner();
             banner.setRequiresConsentAfter(LocalDateTime.now());
-            if(dao.saveCookieBanner(banner)) {                
+            if(dao.saveCookieBanner(banner)) {
                 if (this.editCookieBanner != null) {
                     this.editCookieBanner.setRequiresConsentAfter(LocalDateTime.now());
                     this.editCookieBanner.setId(banner.getId());
@@ -193,7 +199,7 @@ public class CookieBannerBean implements Serializable {
             }
         }
     }
-    
+
     /**
      * Check if the banner is active, i.e. should be displayed at all
      * @return true if the banner should be shown if appropriate
@@ -201,13 +207,13 @@ public class CookieBannerBean implements Serializable {
     public boolean isBannerActive() {
         return this.editCookieBanner.isActive();
     }
-    
+
     /**
-     * Return a json object to use a configuration object to the viewerJS.cookieBanner.js javascript 
+     * Return a json object to use a configuration object to the viewerJS.cookieBanner.js javascript
      * @return a json config object
      */
     public String getCookieBannerConfig() {
-        if(dao != null) {            
+        if(dao != null) {
             try {
                 CookieBanner banner = dao.getCookieBanner();
                 JSONObject json = new JSONObject();
@@ -228,7 +234,7 @@ public class CookieBannerBean implements Serializable {
             return "{}";
         }
     }
-    
+
     private List<Long> getCmsPageIdsToIgnore() {
         return this.cmsPageMap.keySet().stream().filter(p -> this.cmsPageMap.get(p)).map(CMSPage::getId).sorted().collect(Collectors.toList());
     }
@@ -267,6 +273,6 @@ public class CookieBannerBean implements Serializable {
         }
     }
 
-    
-    
+
+
 }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
@@ -53,7 +59,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 /**
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
  * are not executed sequentially or queued in any way, except through the limit of the internal thread pool (5 parallel tasks)
- * 
+ *
  * @author florian
  *
  */
@@ -67,7 +73,7 @@ public class TaskManager {
 
     /**
      * Create new JobManager
-     * 
+     *
      * @param jobLiveTime The guaranteed live time of jobs in the jobManager
      */
     public TaskManager(Duration jobLiveTime) {
@@ -145,12 +151,12 @@ public class TaskManager {
                 };
             case UPDATE_SITEMAP:
                 return (request, job) -> {
-                    
+
                     SitemapRequestParameters params = Optional.ofNullable(job.params)
                             .filter(p -> p instanceof SitemapRequestParameters)
                             .map(p -> (SitemapRequestParameters) p)
                             .orElse(null);
-                    
+
                     String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
                     String outputPath = params.getOutputPath();
                     if(StringUtils.isBlank(outputPath)) {

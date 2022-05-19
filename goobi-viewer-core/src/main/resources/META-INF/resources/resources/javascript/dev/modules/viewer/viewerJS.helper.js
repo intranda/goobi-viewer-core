@@ -579,6 +579,22 @@ var viewerJS = ( function( viewer ) {
 	    }
 	}
 
+	viewer.helper.initRestrictedInputFields = () => {
+		let $inputs = $("[data-input-restricted='url']");
+		$inputs.each( (index, element) => {
+			let notAllowedMessage = $(element).attr("data-input-restricted-message");
+			$(element).on("keypress", (e) => {
+				let character = e.originalEvent.key;
+				if(character) { 
+					if(character.match(/[\s#?]/)) {
+						e.preventDefault();
+						let message = notAllowedMessage.replace("{}", character);
+						viewer.swaltoasts.error(message);
+					}
+				}
+			});
+		});
+	}
 
     
     return viewer;

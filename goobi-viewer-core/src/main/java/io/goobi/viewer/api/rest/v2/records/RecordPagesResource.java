@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v2.records;
 
@@ -66,7 +72,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordPagesResource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(RecordPagesResource.class);
     @Context
     private HttpServletRequest servletRequest;
@@ -77,7 +83,7 @@ public class RecordPagesResource {
 
     private final String pi;
     private final Integer pageNo;
-    
+
     public RecordPagesResource(@Context HttpServletRequest request,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Order of the page") @PathParam("pageNo") Integer pageNo) {
@@ -87,7 +93,7 @@ public class RecordPagesResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PAGENO, pageNo);
 
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -98,7 +104,7 @@ public class RecordPagesResource {
             DAOException, IllegalPathSyntaxException, ContentLibException {
         return new CanvasBuilder(urls).build(pi, pageNo);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_MEDIA)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -113,7 +119,7 @@ public class RecordPagesResource {
                 .findAny()
                 .orElseThrow(() -> new ContentNotFoundException(String.format("No media annotations found for page %d in %s", pageNo, pi)));
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_MEDIA + "/{itemid}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -131,7 +137,7 @@ public class RecordPagesResource {
                 .findAny()
                 .orElseThrow(() -> new ContentNotFoundException(String.format("No media annotation found for page %d in %s", pageNo, pi)));
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -142,7 +148,7 @@ public class RecordPagesResource {
             DAOException, IllegalPathSyntaxException, ContentLibException {
         return new CanvasBuilder(urls).buildFulltextAnnotations(pi, pageNo);
     }
-    
+
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })

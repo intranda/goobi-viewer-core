@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
@@ -109,7 +115,7 @@ public class CampaignRecordStatistic implements Serializable {
 
     @Column(name = "total_pages", nullable = true)
     private Integer totalPages = null;
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -364,14 +370,14 @@ public class CampaignRecordStatistic implements Serializable {
             getReviewers().add(user);
         }
     }
-    
-    
+
+
     /**
      * Check both record status and all page status to check if any matches the given status
-     * 
+     *
      * @param status
-     * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any 
-     * {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true 
+     * @return false if status is null, otherwise true exactly if {@link #getStatus()} equals status or if any
+     * {@link CampaignRecordPageStatistic#getStatus()} of {@link #pageStatistics} returns true
      */
     public boolean containsPageStatus(CrowdsourcingStatus status) {
         if(status == null) {
@@ -383,7 +389,7 @@ public class CampaignRecordStatistic implements Serializable {
             return this.pageStatistics.values().stream().anyMatch(pageStatistic -> status.equals(pageStatistic.getStatus()));
         }
     }
-    
+
     /**
      * @return the totalPages
      */
@@ -400,7 +406,7 @@ public class CampaignRecordStatistic implements Serializable {
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
     }
-    
+
     /**
      * @return
      */
@@ -418,7 +424,7 @@ public class CampaignRecordStatistic implements Serializable {
             logger.error("Error retrieving page cound for " + query);
             return null;
         }
-        
+
     }
-    
+
 }

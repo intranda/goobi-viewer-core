@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.viewer;
 
@@ -415,11 +421,10 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(16, viewManager.getAllPages().size());
         assertEquals(1, viewManager.getFirstPageOrder());
         assertEquals(16, viewManager.getLastPageOrder());
-        
+
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(3, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(1, pages.get(0).intValue());
@@ -428,7 +433,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(1, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(1, pages.get(0).intValue());
@@ -437,7 +441,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(3, 3, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(7, pages.size());
             assertEquals(1, pages.get(0).intValue());
@@ -446,7 +449,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(16, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(12, pages.get(0).intValue());
@@ -455,7 +457,6 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(15, 2, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(5, pages.size());
             assertEquals(12, pages.get(0).intValue());
@@ -464,27 +465,24 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(10, 3, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(7, pages.size());
             assertEquals(7, pages.get(0).intValue());
             assertEquals(13, pages.get(6).intValue());
         }
-        
+
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(1, 8, false);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(16, pages.size());
             assertEquals(1, pages.get(0).intValue());
             assertEquals(16, pages.get(15).intValue());
         }
-        
+
         {
             List<Integer> pages = viewManager.getPageRangeAroundPage(1, 8, true);
             for (Integer integer : pages) {
-                System.out.println(integer);
             }
             assertEquals(17, pages.size());
             assertEquals(1, pages.get(0).intValue());

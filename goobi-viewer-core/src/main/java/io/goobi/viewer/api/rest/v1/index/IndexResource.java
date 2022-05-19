@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.index;
 
@@ -116,12 +122,12 @@ public class IndexResource {
         if (status == 200) {
             return "OK";
         }
-        
+
         return result[1];
     }
 
     /**
-     * 
+     *
      * @param query
      * @return
      * @throws IndexUnreachableException
@@ -151,7 +157,7 @@ public class IndexResource {
     }
 
     /**
-     * 
+     *
      * @param params
      * @return
      * @throws IndexUnreachableException
@@ -225,7 +231,7 @@ public class IndexResource {
     }
 
     /**
-     * 
+     *
      * @param expression
      * @return
      */
@@ -248,7 +254,7 @@ public class IndexResource {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IOException
      */
@@ -270,7 +276,7 @@ public class IndexResource {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IOException
      * @throws IndexUnreachableException
@@ -284,6 +290,7 @@ public class IndexResource {
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
             throws IOException, IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
@@ -302,8 +309,6 @@ public class IndexResource {
         }
         logger.debug("q: {}", finalQuery);
 
-        String facetQuery = "";
-
         return DataManager.getInstance()
                 .getSearchIndex()
                 .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
@@ -319,12 +324,18 @@ public class IndexResource {
             @Parameter(
                     description = "Coordinate string in WKT format describing the area within which to search. If not given, assumed to contain the whole world") @QueryParam("region") @DefaultValue("[\"-180 -90\" TO \"180 90\"]") String wktRegion,
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
+            @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField)
             throws IOException, IndexUnreachableException, PresentationException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = filterQuery;
         List<String> facetQueries = new ArrayList<>();
+
+        if(StringUtils.isNotBlank(facetQuery)) {
+            facetQueries.add(facetQuery);
+        }
+
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
                     new StringBuilder()
@@ -398,7 +409,7 @@ public class IndexResource {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      * @should create list correctly
@@ -447,7 +458,7 @@ public class IndexResource {
     }
 
     /**
-     * 
+     *
      * @param expr
      * @param solrUrl
      * @return

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -209,7 +215,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
-                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "])))",
+                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*)))",
                 suffix);
     }
 
@@ -222,7 +228,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null, null);
         // User has listing privilege for 'license type 1 name'
-        Assert.assertTrue(suffix.contains("(+ACCESSCONDITION:\"license type 1 name\" +(-YEAR:[* TO 3000]))"));
+        Assert.assertTrue(suffix.contains("(+ACCESSCONDITION:\"license type 1 name\" +(-YEAR:[* TO 3000] *:*))"));
     }
 
     /**
@@ -251,7 +257,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             // Regular IP address (has listing privilege for 'license type 3 name')
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4", null);
             Assert.assertTrue(suffix.contains(
-                    "+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "]))"));
+                    "+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*))"));
         }
     }
 
@@ -264,7 +270,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null, null);
         // Moving wall license with negated filter query
         Assert.assertTrue(suffix.contains(
-                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "]))"));
+                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*))"));
     }
 
     /**
@@ -1408,7 +1414,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * Verify that a search for 'DC:dctei' yields 65 results overall, and 4 results within 'FACET_VIEWERSUBTHEME:subtheme1' This also checks that the
      * queries built by {@link SearchHelper#buildFinalQuery(String, boolean, NavigationHelper)} are valid SOLR queries
-     * 
+     *
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -1427,7 +1433,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * Checks whether counts for each term equal to the value from the last iteration.
-     * 
+     *
      * @see SearchHelper#getFilteredTerms(BrowsingMenuFieldConfig,String,String,Comparator,boolean)
      * @verifies be thread safe when counting terms
      */

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.exceptions;
 
@@ -43,7 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceUnavailableExce
 
 /**
  * Copied from ContentServer to catch ContentServer exceptions
- * 
+ *
  * @author Florian Alpers
  *
  */
@@ -51,18 +57,18 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceUnavailableExce
 public class ContentExceptionMapper implements ExceptionMapper<ContentLibException>{
 
     private static final Logger logger = LoggerFactory.getLogger(ContentExceptionMapper.class);
-    
+
     @Context HttpServletResponse response;
     @Context HttpServletRequest request;
-    
+
     public ContentExceptionMapper() {
     }
-    
+
     public ContentExceptionMapper(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
     }
-    
+
     @Override
     public Response toResponse(ContentLibException e) {
         Response.Status status;
@@ -89,15 +95,15 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         }
         if(printStackTrace) {
             logger.error("Error on request {}: {}", request.getRequestURL(), e.toString());
-        } else {            
+        } else {
             logger.debug("Faulty request {}: {}", request.getRequestURL(), e.getMessage());
         }
-        
+
         String mediaType = MediaType.APPLICATION_JSON;
 
         return  Response.status(status).type(mediaType).entity(new ErrorMessage(status, e, printStackTrace)).build();
     }
-    
+
     @JsonInclude(Include.NON_NULL)
     public static class ErrorMessage {
 
@@ -109,25 +115,12 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         private String errorImage;
         @JsonProperty("stacktrace")
         private String stacktrace;
-        
+
         public ErrorMessage() {}
-        
+
         public ErrorMessage(Status status, Throwable e, boolean printStackTrace) {
             this.status = status.getStatusCode();
-            if(e != null) {                
-                this.message = e.getMessage();
-                if(printStackTrace) {
-                    this.stacktrace = ExceptionUtils.getStackTrace(e);
-                }
-            } else {
-                this.message = "unknown error";
-            }
-        }
-        
-        public ErrorMessage(Status status, Throwable e, String errorImage, boolean printStackTrace) {
-            this.status = status.getStatusCode();
-            this.errorImage = errorImage;
-            if(e != null) {                
+            if(e != null) {
                 this.message = e.getMessage();
                 if(printStackTrace) {
                     this.stacktrace = ExceptionUtils.getStackTrace(e);
@@ -137,8 +130,21 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
             }
         }
 
-        
-        
+        public ErrorMessage(Status status, Throwable e, String errorImage, boolean printStackTrace) {
+            this.status = status.getStatusCode();
+            this.errorImage = errorImage;
+            if(e != null) {
+                this.message = e.getMessage();
+                if(printStackTrace) {
+                    this.stacktrace = ExceptionUtils.getStackTrace(e);
+                }
+            } else {
+                this.message = "unknown error";
+            }
+        }
+
+
+
     }
 
 }
