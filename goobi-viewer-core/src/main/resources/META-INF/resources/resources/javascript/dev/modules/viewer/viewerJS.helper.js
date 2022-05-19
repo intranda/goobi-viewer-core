@@ -165,7 +165,7 @@ var viewerJS = ( function( viewer ) {
             }
             var bsAlert = '';
             
-            bsAlert += '<div role="alert" class="alert ' + type + ' alert-dismissible fade in">';
+            bsAlert += '<div role="alert" class="alert ' + type + ' alert-dismissible fade in show">';
             if ( dismissable ) {
                 bsAlert += '<button aria-label="Close" data-dismiss="alert" class="close" type="button"><span aria-hidden="true">×</span></button>';
             }
