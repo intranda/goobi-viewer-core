@@ -2945,4 +2945,9 @@ public class SearchBean implements SearchInterface, Serializable {
        return StringTools.encodeUrl(getCombinedFilterQuery());
    }
 
+@Override
+public String changeSorting() throws IOException {
+    return "pretty:newSearch5";
+}
+
 }
