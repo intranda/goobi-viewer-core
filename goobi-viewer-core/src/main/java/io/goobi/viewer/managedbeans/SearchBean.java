@@ -111,6 +111,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -189,6 +190,12 @@ public class SearchBean implements SearchInterface, Serializable {
     private boolean showReducedSearchOptions = false;
     /** Reusable Random object. */
     private Random random = new SecureRandom();
+
+    /**
+     * The current {@link ViewerPath} at the time {@link #executeSearch()} was last called. Used when returning to search list from record via the
+     * widget_searchResultNavigation widget
+     */
+    private Optional<ViewerPath> lastUsedSearchPage = Optional.empty();
 
     /**
      * Empty constructor.
@@ -822,6 +829,9 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
+        //remember the current page to return to hit list in widget_searchResultNavigation
+        this.lastUsedSearchPage = ViewHistory.getCurrentView(BeanUtils.getRequest());
+
         //        String currentQuery = SearchHelper.prepareQuery(searchString);
 
         if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
@@ -855,7 +865,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
-        if(this.currentSearch != null) {
+        if (this.currentSearch != null) {
             String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
             return query;
         } else {
@@ -867,7 +877,7 @@ public class SearchBean implements SearchInterface, Serializable {
         List<String> queries = new ArrayList<>();
         if (this.currentSearch != null) {
             String customQuery = this.currentSearch.getCustomFilterQuery();
-            if(StringUtils.isNotBlank(customQuery)) {
+            if (StringUtils.isNotBlank(customQuery)) {
                 queries.add(customQuery);
             }
         }
@@ -875,25 +885,25 @@ public class SearchBean implements SearchInterface, Serializable {
             List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
             queries.addAll(facetQueries);
         }
-        return  queries;
+        return queries;
     }
 
     public String getCombinedFilterQuery() {
         String query = "";
         if (this.currentSearch != null) {
             String customQuery = this.currentSearch.getCustomFilterQuery();
-            if(StringUtils.isNotBlank(customQuery)) {
+            if (StringUtils.isNotBlank(customQuery)) {
                 query += " +(" + customQuery + ")";
             }
         }
         if (this.facets != null) {
             List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
             String facetQuery = StringUtils.join(facetQueries, " " + this.advancedSearchGroupOperator + " ");
-            if(StringUtils.isNotBlank(facetQuery)) {
+            if (StringUtils.isNotBlank(facetQuery)) {
                 query += " +(" + facetQuery + ")";
             }
         }
-        return  query;
+        return query;
     }
 
     /** {@inheritDoc} */
@@ -2941,19 +2951,39 @@ public class SearchBean implements SearchInterface, Serializable {
     public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
         String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false);
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
-   }
+    }
 
-   public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
-       return StringTools.encodeUrl(getFinalSolrQuery());
-   }
+    public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
+        return StringTools.encodeUrl(getFinalSolrQuery());
+    }
 
-   public String getCombinedFilterQueryEscaped() {
-       return StringTools.encodeUrl(getCombinedFilterQuery());
-   }
+    public String getCombinedFilterQueryEscaped() {
+        return StringTools.encodeUrl(getCombinedFilterQuery());
+    }
 
-@Override
-public String changeSorting() throws IOException {
-    return "pretty:newSearch5";
-}
+    /**
+     * The url of the viewer page loaded when the last search operation was performed, stored ing {@link #lastUsedSearchPage} or the url of the
+     * default search or searchAdvanved page depending on the state of this bean
+     * 
+     * @return a URL string
+     */
+    public String getLastUsedSearchUrl() {
+        return this.lastUsedSearchPage
+                .map(view -> ServletUtils.getServletPathWithHostAsUrlFromRequest(BeanUtils.getRequest()) + view.getCombinedPrettyfiedUrl())
+                .orElse(getLastUsedDefaultSearchUrl());
+    }
+
+    private String getLastUsedDefaultSearchUrl() {
+        if (getActiveSearchType() == 1) {
+            return "pretty:searchAdvanced5";
+        } else {
+            return "pretty:newSearch5";
+        }
+    }
+
+    @Override
+    public String changeSorting() throws IOException {
+        return "pretty:newSearch5";
+    }
 
 }
