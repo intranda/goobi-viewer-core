@@ -24,7 +24,13 @@ package io.goobi.viewer.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SecurityManager {
+
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(SecurityManager.class);
 
     private static final int ATTEMPTS_BEFORE_CAPTCHA = 5;
 
@@ -111,10 +117,11 @@ public class SecurityManager {
 
         Integer count = failedLoginAttemptsUserNameMap.get(userName);
         if (count == null) {
-            count = 1;
+            count = 0;
         }
         failedLoginAttemptsUserNameMap.put(userName, ++count);
         lastLoginAttemptUserNameMap.put(userName, System.currentTimeMillis());
+        logger.debug("Failed login attempt for user name '{}', count now {}", NetTools.scrambleEmailAddress(userName), count);
     }
 
     /**
@@ -128,10 +135,11 @@ public class SecurityManager {
 
         Integer count = failedLoginAttemptsIpAddressMap.get(ipAddress);
         if (count == null) {
-            count = 1;
+            count = 0;
         }
         failedLoginAttemptsIpAddressMap.put(ipAddress, ++count);
         lastLoginAttemptIpAddressMap.put(ipAddress, System.currentTimeMillis());
+        logger.debug("Failed login attempt for IP address {}, count now {}", ipAddress, count);
     }
 
     /**
@@ -146,6 +154,7 @@ public class SecurityManager {
 
         failedLoginAttemptsUserNameMap.remove(userName);
         lastLoginAttemptUserNameMap.remove(userName);
+        logger.debug("Reset failed login attempts for user name '{}'", NetTools.scrambleEmailAddress(userName));
     }
 
     /**
@@ -160,6 +169,7 @@ public class SecurityManager {
 
         failedLoginAttemptsIpAddressMap.remove(ipAddress);
         lastLoginAttemptIpAddressMap.remove(ipAddress);
+        logger.debug("Reset failed login attempts for IP address {}", ipAddress);
     }
 
     /**
