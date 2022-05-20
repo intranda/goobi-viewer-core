@@ -1717,6 +1717,7 @@ public class CmsBean implements Serializable {
             SearchFacets facets = searchBean.getFacets();
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
+            searchBean.setLastUsedSearchPage();
             search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, !item.isNoSearchAggregation(),
                     DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
             searchBean.setCurrentSearch(search);

@@ -959,7 +959,7 @@
                 <executions>
                     <execution>
                         <id>checkstyle-check</id>
-                        <phase>validate</phase>
+                        <phase>verify</phase>
                         <configuration>
                             <encoding>UTF-8</encoding>
                             <failOnViolation>true</failOnViolation>
