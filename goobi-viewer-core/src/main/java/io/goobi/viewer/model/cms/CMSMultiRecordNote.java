@@ -186,7 +186,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
     public boolean matchesRecord(String pi) {
         
         //Can be called with empty pi, possibly by bots. In this case always return false
-        if(StringUtils.isBlank(pi)) {
+        if(StringUtils.isBlank(pi) || "-".equals(pi)) {
             return false;
         }
         
