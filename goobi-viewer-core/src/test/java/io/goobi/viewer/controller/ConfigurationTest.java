@@ -888,16 +888,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getStopwordsFilePath_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("src/test/resources/stopwords.txt", DataManager.getInstance().getConfiguration().getStopwordsFilePath());
     }
-    
-
-    /**
-     * @see Configuration#getUmlautsFilePath()
-     * @verifies return correct value
-     */
-    @Test
-    public void getUmlautsFilePath_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("src/test/resources/goobi_opacUmlaut.txt", DataManager.getInstance().getConfiguration().getUmlautsFilePath());
-    }
 
     /**
      * @see Configuration#getSubthemeMainTheme()

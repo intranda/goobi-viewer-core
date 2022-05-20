@@ -49,7 +49,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         Assert.assertNotNull(result);
         Assert.assertEquals("Sample_workflow", result.getTemplateName());
         Assert.assertEquals("PPN123", result.getIdentifier());
-        Assert.assertEquals("loreip_PPN123", result.getProcesstitle());
+        Assert.assertEquals("viewer_PPN123", result.getProcesstitle());
 
         Assert.assertNotNull(result.getMetadata());
         Assert.assertEquals("Lorem ipsum", result.getMetadata().get("TitleDocMain"));

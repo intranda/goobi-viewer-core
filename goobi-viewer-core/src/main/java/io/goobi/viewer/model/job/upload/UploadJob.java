@@ -21,11 +21,8 @@
  */
 package io.goobi.viewer.model.job.upload;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +32,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -173,7 +169,7 @@ public class UploadJob implements Serializable {
         ProcessCreationRequest ret = new ProcessCreationRequest();
         ret.setTemplateName(templateName);
         ret.setIdentifier(pi);
-        ret.setProcesstitle(createAtstsl(title, null) + "_" + pi);
+        ret.setProcesstitle("viewer_" + pi);
         ret.setLogicalDSType(docstruct);
 
         ret.setMetadata(new HashMap<>(2));
@@ -406,64 +402,6 @@ public class UploadJob implements Serializable {
         //        }
 
         setStatus(JobStatus.WAITING);
-    }
-
-    /**
-     * 
-     * @param title
-     * @param author
-     * @return
-     */
-    String createAtstsl(String title, String author) {
-        StringBuilder result = new StringBuilder(8);
-        if (author != null && author.trim().length() > 0) {
-            result.append(author.length() > 4 ? author.substring(0, 4) : author);
-            result.append(title.length() > 4 ? title.substring(0, 4) : title);
-        } else {
-            StringTokenizer titleWords = new StringTokenizer(title);
-            int wordNo = 1;
-            while (titleWords.hasMoreTokens() && wordNo < 5) {
-                String word = titleWords.nextToken();
-                switch (wordNo) {
-                    case 1:
-                        result.append(word.length() > 4 ? word.substring(0, 4) : word);
-                        break;
-                    case 2:
-                    case 3:
-                        result.append(word.length() > 2 ? word.substring(0, 2) : word);
-                        break;
-                    case 4:
-                        result.append(word.length() > 1 ? word.substring(0, 1) : word);
-                        break;
-                }
-                wordNo++;
-            }
-        }
-        String res = convertUmlaut(result.toString()).toLowerCase();
-        return res.replaceAll("[\\W]", ""); // delete umlauts etc.
-    }
-
-    /**
-     * 
-     * @param inString
-     * @return
-     */
-    static String convertUmlaut(String inString) {
-        String temp = inString;
-        String filename = DataManager.getInstance().getConfiguration().getUmlautsFilePath();
-
-        try (FileInputStream fis = new FileInputStream(filename); InputStreamReader isr = new InputStreamReader(fis, "UTF8");
-                BufferedReader in = new BufferedReader(isr);) {
-            String str;
-            while ((str = in.readLine()) != null) {
-                if (str.length() > 0) {
-                    temp = temp.replaceAll(str.split(" ")[0], str.split(" ")[1]);
-                }
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-        return temp;
     }
 
     /**

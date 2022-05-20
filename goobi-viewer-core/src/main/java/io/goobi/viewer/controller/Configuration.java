@@ -3749,18 +3749,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * getStopwordsFilePath.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getUmlautsFilePath() {
-        return getLocalString("umlautsFile");
-    }
-
-    /**
      * Returns the locally configured page type name for URLs (e.g. "bild" instead of default "image").
      *
      * @param type a {@link io.goobi.viewer.model.viewer.PageType} object.
