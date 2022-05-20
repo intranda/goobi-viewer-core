@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.model;
 
@@ -68,9 +74,9 @@ public class MediaItem {
         this.id = null;
         this.important = false;
         this.order = null;
-        
+
     }
-    
+
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
         this.label = source.getTranslationsForName();
         this.description = source.getTranslationsForDescription();
@@ -84,10 +90,10 @@ public class MediaItem {
 
     /**
      * @param source
-     * @return 
+     * @return
      */
     public static IContent getMediaResource(CMSMediaItem source) {
-        
+
         ImageContent image = new ImageContent(source.getIconURI());
         image.setFormat(Format.fromFilename(source.getFileName()));
         if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
@@ -95,17 +101,17 @@ public class MediaItem {
             image.setService(new ImageInformation(imageInfoURI.toString()));
         }
         return image;
-        
+
     }
 
-    
+
     /**
      * @return the id
      */
     public Long getId() {
         return id;
     }
-    
+
     /**
      * @return the label
      */
@@ -135,7 +141,7 @@ public class MediaItem {
         return link;
     }
 
-    
+
     /**
      * @return the tags
      */
@@ -149,7 +155,7 @@ public class MediaItem {
     public boolean isImportant() {
         return important;
     }
-    
+
     /**
      * @return the order
      */

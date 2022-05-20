@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.annotation.comments;
 
@@ -51,7 +57,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}
- * 
+ *
  * @author florian
  *
  */
@@ -66,7 +72,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     private final AnnotationLister<Comment> lister;
 
     /**
-     * 
+     *
      * @param saver
      * @param deleter
      * @param lister
@@ -80,7 +86,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
-     * 
+     *
      * @param text
      * @param creator
      * @param pi
@@ -128,7 +134,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
-     * 
+     *
      * @param comment
      * @param text
      * @param editor
@@ -178,7 +184,7 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      * Populates recipient and BCC lists for given from given user group owner and members.
-     * 
+     *
      * @param pi
      * @param notificator
      * @throws DAOException
@@ -214,7 +220,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
-     * 
+     *
      * @param comment
      */
     public void deleteComment(Comment comment) {
@@ -272,7 +278,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
-     * 
+     *
      * @param text
      * @param editor
      * @param pi
@@ -304,7 +310,7 @@ public class CommentManager implements AnnotationLister<Comment> {
     /**
      * Returns a list of email addresses that are configured (via comment views) to receive notifications for comments for the given record
      * identifier.
-     * 
+     *
      * @param pi
      * @return List of email addresses
      * @throws DAOException
@@ -342,7 +348,7 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      * Returns {@link UserGroup}s linked to {@link CommentGroup}s (non-core only) whose Solr query matches the given <code>pi</code>.
-     * 
+     *
      * @param pi
      * @return
      * @throws DAOException
@@ -370,8 +376,8 @@ public class CommentManager implements AnnotationLister<Comment> {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param commentGroup
      * @return
      * @throws PresentationException
@@ -395,7 +401,7 @@ public class CommentManager implements AnnotationLister<Comment> {
 
     /**
      * Checks whether the given user has access to any comment groups, whether via being admin or owner or member of any linked user group.
-     * 
+     *
      * @param user
      * @return true if user has access; false otherwise
      * @throws DAOException

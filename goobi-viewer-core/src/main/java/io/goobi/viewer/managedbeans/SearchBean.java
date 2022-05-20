@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -221,7 +227,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Dummy method for component cross-compatibility with CMS searches.
-     * 
+     *
      * @param subtheme
      * @return
      * @throws PresentationException
@@ -257,7 +263,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * {@inheritDoc}
      *
      * Action method for search buttons (simple search).
-     * 
+     *
      * @should not reset facets
      */
     @Override
@@ -527,7 +533,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Generates a Solr query string out of advancedQueryItems (does not contains facets or blacklists).
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @should construct query correctly
@@ -849,14 +855,14 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
-        if(this.currentSearch != null) { 
+        if(this.currentSearch != null) {
             String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
             return query;
         } else {
             return new Search().generateFinalSolrQuery(null, advancedSearchGroupOperator);
         }
     }
-    
+
     public List<String> getFilterQueries() {
         List<String> queries = new ArrayList<>();
         if (this.currentSearch != null) {
@@ -871,7 +877,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         return  queries;
     }
-    
+
     public String getCombinedFilterQuery() {
         String query = "";
         if (this.currentSearch != null) {
@@ -1252,7 +1258,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should escape critical chars
      * @should url escape string
      */
@@ -2601,7 +2607,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param subQuery
      * @param resultLimit
@@ -2837,7 +2843,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Display the geo facet map if there are any hits available with geo coordinates
-     * 
+     *
      * @return
      */
     public boolean isShowGeoFacetMap() {
@@ -2872,7 +2878,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @return
      */
@@ -2911,7 +2917,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return options correctly
      * @should use current random seed option instead of default
@@ -2931,18 +2937,23 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return ret;
     }
-    
+
     public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false); 
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false);
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
    }
-    
+
    public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
        return StringTools.encodeUrl(getFinalSolrQuery());
    }
-   
+
    public String getCombinedFilterQueryEscaped() {
        return StringTools.encodeUrl(getCombinedFilterQuery());
    }
+
+@Override
+public String changeSorting() throws IOException {
+    return "pretty:newSearch5";
+}
 
 }

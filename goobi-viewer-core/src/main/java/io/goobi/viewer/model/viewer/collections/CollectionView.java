@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.viewer.collections;
 
@@ -20,7 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -127,7 +135,7 @@ public class CollectionView {
                     if (!shouldOpenInOwnWindow(collectionName) && showAllHierarchyLevels) {
                         dc.setShowSubElements(true);
                     }
-                    
+
                     String applicationUrl = DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> urls.getApplicationUrl()).orElse(null);
 
                     // Set single record PI if collection has one one record
@@ -193,7 +201,7 @@ public class CollectionView {
      * <p>
      * calculateVisibleDcElements.
      * </p>
-     * 
+     *
      * @throws IllegalRequestException
      */
     public void calculateVisibleDcElements() throws IllegalRequestException {
@@ -287,8 +295,8 @@ public class CollectionView {
      */
     public void associateElementsWithCMSData() {
         try {
-            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field, this.splittingChar, this.displayNumberOfVolumesLevel);
-        } catch (PresentationException | DAOException e) {
+            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
+        } catch (DAOException e) {
             logger.error("Failed to associate collections with media items: " + e.getMessage());
         }
     }
@@ -300,12 +308,12 @@ public class CollectionView {
      *
      * @param collections a {@link java.util.List} object.
      * @param solrField a {@link java.lang.String} object.
-     * @return a {@link java.util.List} object.
+     * @return the 'collection' parameter
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField, String splittingChar, int displayNumberOfVolumesLevel)
-            throws DAOException, PresentationException {
+    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
+            throws DAOException {
         List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
         if (cmsCollections == null || cmsCollections.isEmpty()) {
             return collections;
@@ -315,12 +323,12 @@ public class CollectionView {
             if (StringUtils.isBlank(collectionName)) {
                 continue;
             }
-            HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null, splittingChar, displayNumberOfVolumesLevel);
-            int index = collections.indexOf(searchItem);
-            if (index > -1) {
-                HierarchicalBrowseDcElement element = collections.get(index);
-                element.setInfo(cmsCollection);
-            }
+            //include direct child elements to handle views which include children of visible elements (luzern theme e.g.)
+            Optional<HierarchicalBrowseDcElement> element = collections.stream()
+                    .flatMap(ele -> ele.getChildren(true).stream())
+                    .filter(ele -> ele.getName().equals(collectionName))
+                    .findAny();
+            element.ifPresent(ele -> ele.setInfo(cmsCollection));
         }
         return collections;
     }
@@ -581,7 +589,7 @@ public class CollectionView {
     }
 
     /**
-     * 
+     *
      * @param collection
      * @return
      */
@@ -807,7 +815,7 @@ public class CollectionView {
      * <p>
      * showAll.
      * </p>
-     * 
+     *
      * @throws IllegalRequestException
      */
     public void showAll() throws IllegalRequestException {
@@ -823,7 +831,7 @@ public class CollectionView {
      * <p>
      * hideAll.
      * </p>
-     * 
+     *
      * @throws IllegalRequestException
      */
     public void hideAll() throws IllegalRequestException {
@@ -1091,7 +1099,7 @@ public class CollectionView {
     }
 
     /**
-     * 
+     *
      * @param name Raw collection name
      * @return Translation for the current langauge; null of none found
      */
@@ -1148,7 +1156,7 @@ public class CollectionView {
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
     }
-    
+
     public static String getCollectionDefaultSortField(String name, Map<String, String> configuredSortFields) {
 
         String exactMatch = null;
@@ -1169,28 +1177,28 @@ public class CollectionView {
         }
         return "-";
     }
-    
+
     /**
      * @return the splittingChar
      */
     public String getSplittingChar() {
         return splittingChar;
     }
-    
+
     /**
      * @return the displayNumberOfVolumesLevel
      */
     public int getDisplayNumberOfVolumesLevel() {
         return displayNumberOfVolumesLevel;
     }
-    
+
     public HierarchicalBrowseDcElement getCollectionElement(String name) {
         return this.completeCollectionList.stream()
         .filter(e -> e.getName().equals(name))
         .findAny()
         .orElse(null);
     }
-    
+
     public HierarchicalBrowseDcElement getBaseElement() {
         if(StringUtils.isNotBlank(this.getBaseElementName())) {
             return getCollectionElement(getBaseElementName());

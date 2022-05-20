@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.toc;
 
@@ -201,7 +207,7 @@ public class TocMaker {
 
     /**
      * Builds a TOC tree for non-anchor and non-group documents. Adds clickable sibling elements, if so requested.
-     * 
+     *
      * @param doc
      * @param structElement
      * @param addAllSiblings
@@ -291,7 +297,7 @@ public class TocMaker {
 
     /**
      * A group is a series, etc.
-     * 
+     *
      * @param ret
      * @param groupIdField
      * @param groupIdValue
@@ -394,7 +400,7 @@ public class TocMaker {
 
     /**
      * Create a manually sorted map of docs, since the order can be contained in different GROUPORDER_* fields.
-     * 
+     *
      * @param groupMemberDocs
      * @param groupIdFields
      * @param groupIdValue
@@ -864,7 +870,7 @@ public class TocMaker {
             }
             Set<String> languages = new HashSet<>(value.getLanguages());
             languages.addAll(label.getLanguages());
-            // Replace master value placeholders in the label object 
+            // Replace master value placeholders in the label object
             Map<String, String> languageLabelMap = new HashMap<>();
             for (String language : languages) {
                 String langValue = label.getValue(language)
@@ -881,7 +887,7 @@ public class TocMaker {
         if (label.getValues().size() == 1) {
             return new SimpleMetadataValue(label.getValue().orElse(""));
         }
-        
+
         return label;
     }
 
@@ -934,7 +940,7 @@ public class TocMaker {
 
     /**
      * Returns the first value of the given field in the given doc.
-     * 
+     *
      * @param doc
      * @param field
      * @return
@@ -953,9 +959,9 @@ public class TocMaker {
     }
 
     /**
-     * 
+     *
      * Returns the first value of the given field in the given struct element
-     * 
+     *
      * @param doc
      * @param field
      * @return

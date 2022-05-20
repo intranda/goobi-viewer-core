@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.annotation;
 
@@ -64,7 +70,7 @@ public class AnnotationConverter {
 
     private static final Logger logger = LoggerFactory.getLogger(AnnotationConverter.class);
     private final AbstractApiUrlManager urls;
-    
+
     public AnnotationConverter() {
         this(DataManager.getInstance().getRestApiManager().getDataApiManager().orElseThrow(() -> new IllegalStateException("No api manager available")));
     }
@@ -104,7 +110,7 @@ public class AnnotationConverter {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             IResource resource;
-            try {                
+            try {
                 if (anno.getTarget().contains("SpecificResource")) {
                     resource = mapper.readValue(anno.getTarget(), SpecificResource.class);
                 } else {
@@ -240,8 +246,8 @@ public class AnnotationConverter {
         }
 
         return annotation;
-    } 
-    
+    }
+
     public PersistentAnnotation getAsPersistentAnnotation(WebAnnotation anno) {
         CrowdsourcingAnnotation pa = new CrowdsourcingAnnotation(anno, getPersistenceId(anno), getPI(anno.getTarget()).orElse(null), getPageNo(anno.getTarget()).orElse(null));
         return pa;
@@ -259,7 +265,7 @@ public class AnnotationConverter {
             return Optional.empty();
         }
     }
-    
+
     /**
      * @param target
      * @return
@@ -267,35 +273,35 @@ public class AnnotationConverter {
     private Optional<String> getPI(IResource target) {
         if(target.getId() != null) {
             String uri = target.getId().toString();
-            
+
             String pi = urls.parseParameter(urls.path(RECORDS_PAGES,  RECORDS_PAGES_CANVAS).build(), uri, "{pi}");
             if(StringUtils.isNotBlank(pi)) {
                 return Optional.of(pi);
             }
-            
+
             pi = urls.parseParameter(urls.path(RECORDS_RECORD,  RECORDS_MANIFEST).build(), uri, "{pi}");
             if(StringUtils.isNotBlank(pi)) {
                 return Optional.of(pi);
             }
-            
+
             pi = urls.parseParameter(urls.path(RECORDS_SECTIONS,  RECORDS_SECTIONS_RANGE).build(), uri, "{pi}");
             if(StringUtils.isNotBlank(pi)) {
                 return Optional.of(pi);
             }
-            
+
         }
         return Optional.empty();
     }
-    
+
     private Optional<String> getDivId(IResource target) {
         if(target.getId() != null) {
             String uri = target.getId().toString();
-            
+
             String id = urls.parseParameter(urls.path(RECORDS_SECTIONS,  RECORDS_SECTIONS_RANGE).build(), uri, "{divId}");
             if(StringUtils.isNotBlank(id)) {
                 return Optional.of(id);
             }
-            
+
         }
         return Optional.empty();
     }
@@ -333,11 +339,11 @@ public class AnnotationConverter {
 //                }
             }
         }
-        if(id != null) {            
+        if(id != null) {
             return id;
         } else {
             return null;
         }
     }
-    
+
 }

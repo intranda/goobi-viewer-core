@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -51,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -119,7 +126,11 @@ public class AdminBean implements Serializable {
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
 
+    /** Current password for password change */
+    private String currentPassword = null;
+    /** New password */
     private String passwordOne = "";
+    /** New password confirmation */
     private String passwordTwo = "";
     private String emailConfirmation = "";
     private boolean deleteUserContributions =
@@ -268,6 +279,10 @@ public class AdminBean implements Serializable {
         }
         if (user.getId() != null) {
             // Existing user
+            if (currentPassword != null && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
+                Messages.error("user_currentPasswordWrong");
+                return false;
+            }
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
                 if (!passwordOne.equals(passwordTwo)) {
                     Messages.error("user_passwordMismatch");
@@ -301,6 +316,9 @@ public class AdminBean implements Serializable {
             }
             if (DataManager.getInstance().getDao().addUser(user)) {
                 Messages.info("newUserCreated");
+                currentPassword = null;
+                passwordOne = "";
+                passwordTwo = "";
             } else {
                 Messages.error("errSave");
                 return false;
@@ -536,7 +554,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Adds currentUserRole to the map of UserRoles to be processed, marked as to save.
-     * 
+     *
      * @throws DAOException
      * @should add user if not yet in group
      */
@@ -592,7 +610,7 @@ public class AdminBean implements Serializable {
         }
 
         try {
-            //the userRoles don't match the keys of dirtyUserRoles after saving (dirtyUserRoles.get(userRole) returns null for the second entry), 
+            //the userRoles don't match the keys of dirtyUserRoles after saving (dirtyUserRoles.get(userRole) returns null for the second entry),
             //so dirty status for each user role is matched by the user behind the userGroup
             Map<User, String> dirtyUsers = dirtyUserRoles.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getUser(), e -> e.getValue()));
             for (User user : dirtyUsers.keySet()) {
@@ -664,7 +682,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Two SelectItemGroups for core and regular license types
      * @throws DAOException
      * @should group license types in select item groups correctly
@@ -719,7 +737,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param core
      * @return all license types in the database where this.core=core
      * @throws DAOException
@@ -877,7 +895,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param licenseType
      * @return true if at least one license uses the given license type; false otherwise
      * @throws DAOException
@@ -891,7 +909,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param licenseTypeName
      * @return
      * @throws IndexUnreachableException
@@ -905,7 +923,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param licenseTypeName
      * @return
      * @throws IndexUnreachableException
@@ -919,7 +937,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param licenseType
      * @return
      * @throws DAOException
@@ -931,7 +949,7 @@ public class AdminBean implements Serializable {
     // IpRange
 
     /**
-     * 
+     *
      * @return all IpRanges from the database
      * @throws DAOException
      */
@@ -1160,7 +1178,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns the user ID of <code>currentUser/code>.
-     * 
+     *
      * return <code>currentUser.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentUserId() {
@@ -1173,7 +1191,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Sets the current user by loading them from the DB via the given user ID.
-     * 
+     *
      * @param id
      * @throws DAOException
      */
@@ -1205,7 +1223,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns the user ID of <code>currentUserGroup/code>.
-     * 
+     *
      * return <code>currentUserGroup.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentUserGroupId() {
@@ -1218,7 +1236,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Sets <code>currentUserGroup/code> by loading it from the DB via the given ID.
-     * 
+     *
      * @param id
      * @throws DAOException
      */
@@ -1301,7 +1319,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns the user ID of <code>currentLicenseType/code>.
-     * 
+     *
      * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentLicenseTypeId() {
@@ -1314,7 +1332,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
-     * 
+     *
      * @param id
      * @throws DAOException
      */
@@ -1354,7 +1372,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns the user ID of <code>currentLicense/code>.
-     * 
+     *
      * return <code>currentLicense.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentLicenseId() {
@@ -1367,7 +1385,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Sets <code>currentLicense/code> by loading it from the DB via the given ID.
-     * 
+     *
      * @param id
      * @throws DAOException
      */
@@ -1401,7 +1419,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Returns the user ID of <code>currentIpRange/code>.
-     * 
+     *
      * return <code>currentIpRange.id</code> if loaded and has ID; null if not
      */
     public Long getCurrentIpRangeId() {
@@ -1414,7 +1432,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Sets <code>currentIpRange/code> by loading it from the DB via the given ID.
-     * 
+     *
      * @param id
      * @throws DAOException
      */
@@ -1444,6 +1462,20 @@ public class AdminBean implements Serializable {
      */
     public List<User> getPageUsers() {
         return lazyModelUsers.getPaginatorList();
+    }
+
+    /**
+     * @return the currentPassword
+     */
+    public String getCurrentPassword() {
+        return currentPassword;
+    }
+
+    /**
+     * @param currentPassword the currentPassword to set
+     */
+    public void setCurrentPassword(String currentPassword) {
+        this.currentPassword = currentPassword;
     }
 
     /**
@@ -1679,7 +1711,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return List of access condition values that have no corresponding license type in the database
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -1715,7 +1747,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param accessCondition
      * @return Number of records containing the given access condition value
      * @throws PresentationException
@@ -1728,7 +1760,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param accessCondition
      * @return
      */
@@ -1751,7 +1783,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param privilege
      * @return
      */
@@ -1760,7 +1792,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if at least one group is not fully translated; false otherwise
      */
     public boolean isDisplayTranslationsDashboardWidget() {
@@ -1774,7 +1806,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return All configured <code>TranslationGroup</code>s
      */
     public List<TranslationGroup> getConfiguredTranslationGroups() {
@@ -1788,7 +1820,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param field Index field that the translation groups should have as a key
      * @return List of TranslationGroups; null if not found
      * @should return correct groups
@@ -1798,7 +1830,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param field Solr field
      * @param key Message key
      * @return First <code>TranslationGroup</code> that contains the requested field+key; null if none found
@@ -1816,7 +1848,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param field Index field that the translation groups should have as a key
      * @return List of TranslationGroups; null if not found
      */
@@ -1873,7 +1905,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if at least one LOCAL_STRINGS type group is found in config; false otherwise
      */
     public boolean isNewMessageEntryModeAllowed() {
@@ -1906,7 +1938,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Saves currently selected message entry in the current translation group and returns to the translations overview page.
-     * 
+     *
      * @return Target page
      */
     public String saveSelectedMessageEntryAction() {
@@ -1920,7 +1952,7 @@ public class AdminBean implements Serializable {
 
     /**
      * Reset selected message entry and returns to the translations overview page.
-     * 
+     *
      * @return Target page
      */
     public String cancelSelectedMessageEntryAction() {
@@ -1933,7 +1965,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public int getCurrentTranslationGroupId() {
@@ -1947,7 +1979,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
     public void setCurrentTranslationGroupId(int id) {
@@ -1963,7 +1995,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Key of the currently selected entry; otherwise "-"
      */
     public String getCurrentTranslationMessageKey() {
@@ -1976,7 +2008,7 @@ public class AdminBean implements Serializable {
 
     /**
      * If <code>currentTranslationGroup</code> is set, looks up the message entry for the given key and pre-selects it.
-     * 
+     *
      * @param key Message key to select
      */
     public void setCurrentTranslationMessageKey(String key) {
@@ -1986,7 +2018,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isTranslationLocked() {
@@ -1994,7 +2026,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void lockTranslation() {
         if (translationGroupsEditorSession == null) {
@@ -2019,7 +2051,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void updateHotfolderFileCount() {
         logger.trace("updateHotfolderFileCount");
@@ -2027,7 +2059,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public int getHotfolderFileCount() {

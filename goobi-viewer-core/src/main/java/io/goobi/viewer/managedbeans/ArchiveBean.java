@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -91,7 +97,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return actual root element of the document, even if it's not in the displayed tree
      */
     public ArchiveEntry getTrueRoot() {
@@ -103,7 +109,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws BaseXException
      */
@@ -156,7 +162,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
-     * 
+     *
      * @param identifier Entry identifier
      * @param List of entries An empty list if the identified node has no ancestors or doesn't exist
      */
@@ -165,7 +171,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param entry
      * @return
      */
@@ -180,7 +186,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws BaseXException
      */
@@ -193,7 +199,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      * Executes search for searchString.
-     * 
+     *
      * @param resetSelectedEntry If true, selected entry will be set to null
      * @param collapseAll If true, all elements will be collapsed before expanding path to search hits
      * @throws BaseXException
@@ -249,7 +255,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getSelectedEntryId() {
@@ -262,7 +268,7 @@ public class ArchiveBean implements Serializable {
 
     /**
      * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
-     * 
+     *
      * @param id Entry ID
      * @throws BaseXException
      */
@@ -302,7 +308,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return the {@link ArchiveEntry} to display in the metadata section of the archives view. Either {@link ArchiveTree#getSelectedEntry()} or
      *         {@link ArchiveTree#getRootElement()} if the former is null
      */
@@ -405,10 +411,10 @@ public class ArchiveBean implements Serializable {
     public NodeType getNodeType(String name) {
         return DataManager.getInstance().getArchiveManager().getNodeType(name);
     }
-    
+
     public void updateArchives() {
         this.archiveManager.updateArchiveList();
-        
+
     }
 
 }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.servlets;
 
@@ -86,14 +92,14 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                             break;
                         case "maxWidth":
                             try {
-                                maxWidth = Integer.parseInt(values[0]);                                
+                                maxWidth = Integer.parseInt(values[0]);
                             } catch(NumberFormatException e) {
                                 logger.warn("'maxWidth' paraneter is not an integer: " + values[0]);
                             }
                             break;
                         case "maxHeight":
                             try {
-                                maxHeight = Integer.parseInt(values[0]);                                
+                                maxHeight = Integer.parseInt(values[0]);
                             } catch(NumberFormatException e) {
                                 logger.warn("'maxHeight' paraneter is not an integer: " + values[0]);
                             }
@@ -153,7 +159,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             OEmbedResponse oembedResponse;
             if(record.isRichResponse()) {
                 oembedResponse = new RichOEmbedResponse(record, maxWidth, maxHeight);
-            } else {                
+            } else {
                 // OEmbedResponse oembedResponse = new RichOEmbedResponse(record);
                 oembedResponse = new PhotoOEmbedResponse(record);
             }
@@ -161,13 +167,13 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             mapper.setSerializationInclusion(Include.NON_NULL);
             ret = mapper.writeValueAsString(oembedResponse);
             response.getWriter().write(ret);
-            
+
         } catch (SocketException e) {
             logger.trace("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
         } catch (IOException e) {
             if(GetAction.isClientAbort(e)) {
                 logger.trace("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
-            } else {                
+            } else {
                 logger.error(e.getMessage(), e);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             }
@@ -189,11 +195,11 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
         String[] urlSplit = url.split("/");
         logger.trace(Arrays.toString(urlSplit));
-        
+
         if(urlSplit.length > 0 && "embed".equals(urlSplit[0])) {
-            
+
             return new OEmbedRecord(origUrl);
-            
+
         } else {
             String pi = urlSplit[1];
             int page = Integer.valueOf(urlSplit[2]);
@@ -201,13 +207,13 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
             if (iddoc == 0) {
                 return null;
             }
-    
+
             OEmbedRecord ret = new OEmbedRecord();
             StructElement se = new StructElement(iddoc);
             ret.setStructElement(se);
             PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
             ret.setPhysicalElement(pe);
-    
+
             return ret;
         }
     }

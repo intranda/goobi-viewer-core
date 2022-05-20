@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
@@ -74,10 +80,10 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
             assertEquals("Should return status 404; answer; " + entity, 404, response.getStatus());
         }
     }
-    
+
     @Test
     public void testCallImageUrlForGif() throws UnsupportedEncodingException {
-        
+
         String filename = "lorelai.gif";
         String url = "https://viewer.goobi.io/api/v1/cms/media/files/" + filename;
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
@@ -88,10 +94,10 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         String resourceURI = resource.getResourceURI().toString();
         assertEquals(url, resourceURI);
     }
-    
+
     @Test
     public void testUrlencoding() throws UnsupportedEncodingException {
-        
+
         String filename = "ä (b) c";
         String filenameEnc = URLEncoder.encode(filename, "utf-8");
         CMSMediaItem media = new CMSMediaItem();
@@ -102,7 +108,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         //System.out.println(imageUrl);
         assertTrue(imageUrl.startsWith(apiUrl));
         assertTrue(imageUrl + " should contain " + filenameEnc, imageUrl.contains(filenameEnc));
-        
+
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(imageUrl));
@@ -111,8 +117,8 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         String resourceURI = resource.getResourceURI().toString();
         assertTrue(resourceURI.startsWith(apiUrl));
         assertTrue(resourceURI + " should contain " + filenameEnc, resourceURI.contains(filenameEnc));
-        
-        
+
+
     }
 
 }

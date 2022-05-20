@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
@@ -29,7 +35,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IAnnotation;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
@@ -51,25 +56,25 @@ import io.goobi.viewer.solr.SolrTools;
  *
  */
 public class AbstractAnnotationBuilder {
-    
+
     private final static Logger logger  = LoggerFactory.getLogger(AbstractAnnotationBuilder.class);
 
     public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
             SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS, SolrConstants.ACCESSCONDITION, SolrConstants.MD_ANNOTATION_ID};
 
-    
+
     private final AbstractBuilder restBuilder;
-    
+
     public AbstractAnnotationBuilder(AbstractApiUrlManager urls) {
         this.restBuilder = new AbstractBuilder(urls) {
         };
     }
-    
+
     public String getAnnotationQuery() {
         String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
         return query;
     }
-    
+
     public String getAnnotationQuery(String pi) {
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " " + getAnnotationQuery();
         return query;
@@ -79,12 +84,12 @@ public class AbstractAnnotationBuilder {
         String query = "+" + SolrConstants.ORDER + ":" + pageNo + " " + getAnnotationQuery(pi);
         return query;
     }
-    
+
     /**
      * Search for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only
      * included for backwards compatibility purposes. The correct identifier is MD_ANNOTATION_ID since it reflects the
      * original sql identifier
-     * 
+     *
      * @param iddoc
      * @return
      */
@@ -92,14 +97,14 @@ public class AbstractAnnotationBuilder {
         return "+(" + SolrConstants.MD_ANNOTATION_ID + ":annotation_" + id + " " + SolrConstants.IDDOC + ":" + id + ")";
     }
 
-    
+
     public List<SolrDocument> getAnnotationDocuments(String query, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         return getAnnotationDocuments(query, getDefaultSortFields(), request);
     }
-    
+
     /**
      * Return sort fields to sort results ascending after topstruct PI, then page order, then IDDOC;
-     * 
+     *
      * @return sort fields for PI_TOPSTRUCT, ORDER and IDDOC
      */
     private static List<StringPair> getDefaultSortFields() {
@@ -112,7 +117,7 @@ public class AbstractAnnotationBuilder {
     public List<SolrDocument> getAnnotationDocuments(String query, List<StringPair> sortFields,  HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         return getAnnotationDocuments(query, 0, SolrSearchIndex.MAX_HITS, sortFields, request);
     }
-        
+
     public List<SolrDocument> getAnnotationDocuments(String query, int first, int rows, List<StringPair> sortFields, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         if(sortFields ==  null) {
             sortFields = getDefaultSortFields();
@@ -123,13 +128,13 @@ public class AbstractAnnotationBuilder {
         }
         return hits.stream().filter(hit -> isAccessGranted(hit, query, request)).collect(Collectors.toList());
     }
-    
+
     public Optional<SolrDocument> getAnnotationDocument(long id, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         SolrDocument hit = DataManager.getInstance().getSearchIndex().getFirstDoc(getAnnotationQuery(id), Arrays.asList(UGC_SOLR_FIELDS));
         return Optional.ofNullable(hit);
     }
 
-    
+
     private static boolean isAccessGranted(SolrDocument doc, String query, HttpServletRequest request) {
         String accessCondition = SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION);
         if(StringUtils.isBlank(accessCondition) || "OPENACCESS".equalsIgnoreCase(accessCondition)) {
@@ -146,7 +151,7 @@ public class AbstractAnnotationBuilder {
             return false;
         }
     }
-    
+
     public long getAnnotationCount(HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(getAnnotationQuery(), SolrSearchIndex.MAX_HITS, null, Arrays.asList(SolrConstants.ACCESSCONDITION));
         if (hits.isEmpty()) {
@@ -154,15 +159,15 @@ public class AbstractAnnotationBuilder {
         }
         return hits.stream().filter(hit -> isAccessGranted(hit, getAnnotationQuery(), request)).count();
     }
-    
+
     protected AbstractBuilder getRestBuilder() {
         return restBuilder;
     }
-    
+
     public Optional<IAnnotation> getAnnotation(String idString){
         int underscoreIndex = idString.lastIndexOf("_");
         Long id = Long.parseLong(idString.substring(underscoreIndex > -1 ? underscoreIndex+1 : 0));
-       
+
         try {
             CrowdsourcingAnnotation pa = DataManager.getInstance().getDao().getAnnotation(id);
             return Optional.ofNullable(pa).map(a -> new AnnotationConverter().getAsWebAnnotation(a));

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -46,7 +52,7 @@ public class DisclaimerBeanTest extends AbstractTest {
     private NavigationHelper navigationHelper;
     private ActiveDocumentBean activeDocumentBean;
     private UserBean userBean;
-    
+
     @Before
     public void setup() throws DAOException, PresentationException, IndexUnreachableException {
         storedDisclaimer = new Disclaimer();
@@ -57,40 +63,40 @@ public class DisclaimerBeanTest extends AbstractTest {
         storedDisclaimer.getDisplayScope().setFilterQuery("PI:*");
         storedDisclaimer.setActive(true);
         storedDisclaimer.setAcceptanceScope(new ConsentScope("2d"));
-        
+
         dao = Mockito.mock(IDAO.class);
         Mockito.when(dao.getDisclaimer()).thenReturn(storedDisclaimer);
-        
+
         searchIndex = Mockito.mock(SolrSearchIndex.class);
         Mockito.when(searchIndex.getHitCount(Mockito.anyString())).thenReturn(1l);
-        
+
         navigationHelper = Mockito.mock(NavigationHelper.class);
         Mockito.when(navigationHelper.isDocumentPage()).thenReturn(true);
         Mockito.when(navigationHelper.getLocale()).thenReturn(Locale.GERMAN);
         Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(PageType.viewImage);
-        
+
         activeDocumentBean = Mockito.mock(ActiveDocumentBean.class);
         Mockito.when(activeDocumentBean.getPersistentIdentifier()).thenReturn("PI1");
 
         userBean = Mockito.mock(UserBean.class);
-        
-        
+
+
         bean = new DisclaimerBean(dao, searchIndex);
         bean.navigationHelper = navigationHelper;
         bean.activeDocumentBean = activeDocumentBean;
         bean.userBean = userBean;
     }
-    
+
     @Test
     public void testWriteJson() {
-        
+
         String string = bean.getDisclaimerConfig();
         assertTrue(StringUtils.isNotBlank(string));
         JSONObject json  = new JSONObject(string);
         assertEquals(storedDisclaimer.getText().getText(Locale.GERMAN), json.get("disclaimerText"));
         assertTrue(json.getBoolean("active"));
     }
-    
-    
+
+
 
 }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.crowdsourcing.questions;
 
@@ -80,7 +86,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 public class Question {
 
     private static final Logger logger = LoggerFactory.getLogger(Question.class);
-    
+
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";
     private static final String URI_ID_REGEX = "/crowdsourcing/campaigns/(\\d{1,19})/questions/(\\d{1,19})/?$";
@@ -113,10 +119,10 @@ public class Question {
     @Column(name = "metadata_fields", nullable = true, columnDefinition = "LONGTEXT")
     @Convert(converter = StringListConverter.class)
     private List<String> metadataFields  = new ArrayList<>();
- 
+
     @Transient
     private Map<String, Boolean> metadataFieldSelection = null;
-    
+
     /**
      * Empty constructor.
      */
@@ -162,7 +168,7 @@ public class Question {
 
     /**
      * Create a clone of the given question with the given campaign as owner
-     * 
+     *
      * @param q
      * @param campaign
      */
@@ -170,12 +176,12 @@ public class Question {
         this(orig);
         this.owner = campaign;
     }
-    
+
     /**
      * Call when metadata list changes
      */
     public void serializeMetadataFields() {
-        if(QuestionType.METADATA.equals(getQuestionType())) {            
+        if(QuestionType.METADATA.equals(getQuestionType())) {
             this.metadataFields = getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
         }
     }
@@ -310,38 +316,38 @@ public class Question {
     public int getTargetFrequency() {
         return targetFrequency;
     }
-    
+
     /**
      * @return the metadataFields
      */
     public List<String> getMetadataFields() {
         return metadataFields;
     }
-    
+
     /**
      * @param metadataFields the metadataFields to set
      */
     public void setMetadataFields(List<String> metadataFields) {
         this.metadataFields = new ArrayList<>(metadataFields);
     }
-    
+
     public void addMetadataField(String field) {
         this.metadataFields.add(field);
     }
-    
+
     public void removeMetadataField(String field) {
         this.metadataFields.remove(field);
     }
-    
+
     /**
      * @param metadataToAdd the metadataToAdd to set
      */
     public void setMetadataToAdd(String metadataToAdd) {
-        if(StringUtils.isNotBlank(metadataToAdd)) {            
+        if(StringUtils.isNotBlank(metadataToAdd)) {
             addMetadataField(metadataToAdd);
         }
     }
-    
+
     /**
      * @return the metadataToAdd
      */
@@ -350,10 +356,10 @@ public class Question {
     }
 
     /**
-     * 
+     *
      * @return a list of all "MD_" fields from solr
-     * @throws IOException 
-     * @throws SolrServerException 
+     * @throws IOException
+     * @throws SolrServerException
      */
     @JsonIgnore
     public List<String> getAvailableMetadataFields() throws IndexUnreachableException {
@@ -427,7 +433,7 @@ public class Question {
 
     /**
      * Currently only returns GND authority data.
-     * 
+     *
      * @return Normdata authority data if the question type is NORMDATA, otherwise null
      */
     @JsonProperty("authorityData")
@@ -438,15 +444,15 @@ public class Question {
 
         return null;
     }
-    
+
     /**
      * @return the metadataFieldSelection
-     * @throws IOException 
-     * @throws SolrServerException 
+     * @throws IOException
+     * @throws SolrServerException
      */
     public Map<String, Boolean> getMetadataFieldSelection() {
         if(this.metadataFieldSelection == null) {
-            try {                
+            try {
                 this.metadataFieldSelection = getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
             } catch(IndexUnreachableException e) {
                 //If the possible fields cannot be retrieved from solr, just show the already selected ones
@@ -456,7 +462,7 @@ public class Question {
         }
         return metadataFieldSelection;
     }
-    
+
     public List<String> getSelectedMetadataFields() throws SolrServerException, IOException {
         return this.getMetadataFieldSelection().entrySet().stream().filter(Entry::getValue).map(Entry::getKey).collect(Collectors.toList());
     }

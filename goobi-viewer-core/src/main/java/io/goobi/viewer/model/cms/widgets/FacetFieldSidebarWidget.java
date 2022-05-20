@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms.widgets;
 
@@ -27,7 +33,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * A subtype of {@link CustomSidebarWidget} to display a list of possible values of a given SOLR field and link to a search listing of items with a specific value
- * 
+ *
  * @author florian
  *
  */
@@ -41,17 +47,17 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     private String filterQuery = "";
     @Column(name = "num_entries")
     private int numEntries = 5;
-    
+
     /**
      * Empty default constructor
      */
     public FacetFieldSidebarWidget() {
-        
+
     }
-    
+
     /**
      * Cloning constructor
-     * 
+     *
      * @param o
      */
     public FacetFieldSidebarWidget(FacetFieldSidebarWidget o) {
@@ -60,7 +66,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
         this.filterQuery = o.filterQuery;
         this.numEntries = o.numEntries;
     }
-    
+
     /**
      * Contains the SOLR field holding the values to list
      * @return the facetField
@@ -76,8 +82,8 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
         this.facetField = facetField;
     }
     /**
-     * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()} 
-     * are listed that are contained in documents meeting this query. This is also true for the linked result lists  
+     * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()}
+     * are listed that are contained in documents meeting this query. This is also true for the linked result lists
      * @return the filterQuery
      */
     public String getFilterQuery() {
@@ -90,20 +96,20 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
     }
-    
+
     @Override
     public CustomWidgetType getType() {
         return CustomWidgetType.WIDGET_FIELDFACETS;
     }
-    
+
     /**
-     * 
+     *
      * @return the number of field values displayed in the widget
      */
     public int getNumEntries() {
         return numEntries;
     }
-    
+
     /**
      * Set the number of field values displayed in the widget
      * @param numEntries
@@ -111,7 +117,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     public void setNumEntries(int numEntries) {
         this.numEntries = numEntries;
     }
-    
+
     /**
      * Override default title to always show the selected facetField
      */

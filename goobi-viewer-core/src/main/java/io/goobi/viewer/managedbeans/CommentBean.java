@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -58,7 +64,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class CommentBean implements Serializable {
 
     /**
-     * 
+     *
      */
     private static final String REQUIRES_COMMENT_RIGHTS = "REQUIRES_COMMENT_RIGHTS";
     private static final long serialVersionUID = -3653100353345867739L;
@@ -76,7 +82,7 @@ public class CommentBean implements Serializable {
     private Map<String, Boolean> deleteCommentPermissionMap = new HashMap<>();
 
     /**
-     * 
+     *
      * @throws IndexUnreachableException
      * @throws DAOException
      */
@@ -90,7 +96,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param text
      * @param restricted
      * @throws AjaxResponseException
@@ -105,7 +111,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @throws PresentationException
      */
     public void editComment() throws PresentationException {
@@ -123,7 +129,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param original
      * @param text
      * @param restricted
@@ -144,7 +150,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -162,7 +168,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param annotation
      * @throws DAOException
      * @throws PresentationException
@@ -181,7 +187,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param startIndex
      * @param numItems
      * @param filter
@@ -196,7 +202,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      */
@@ -217,7 +223,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     private Long getCurrentUserId() {
@@ -225,7 +231,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param anno
      * @return
      */
@@ -234,7 +240,7 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param restricted
      * @return
      */
@@ -291,7 +297,7 @@ public class CommentBean implements Serializable {
     /**
      * Checks whether the current user may edit comments for the given record identifier, based on their admin status or membership in any user group
      * that has such permission via comment groups.
-     * 
+     *
      * @param pi Record identifier
      * @return
      * @throws DAOException
@@ -314,7 +320,7 @@ public class CommentBean implements Serializable {
     /**
      * Checks whether the current user may delete comments for the given record identifier, based on their admin status or membership in any user
      * group that has such permission via comment groups.
-     * 
+     *
      * @param pi Record identifier
      * @return
      * @throws DAOException
@@ -336,7 +342,7 @@ public class CommentBean implements Serializable {
 
     /**
      * Enables edit/delete privileges for the current session for the given record identifier, based on admin status or {@link CommentGroup} settings.
-     * 
+     *
      * @param pi
      * @throws DAOException
      * @throws PresentationException

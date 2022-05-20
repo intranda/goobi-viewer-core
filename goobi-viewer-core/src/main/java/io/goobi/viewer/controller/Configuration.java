@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -370,7 +376,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @should return correct value
      * @return Connector URL
      */
@@ -454,7 +460,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return all configured values
      */
@@ -483,7 +489,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param index
      * @param template
      * @return List of configured <code>Metadata</code> fields for the given template
@@ -530,7 +536,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Reads metadata configuration for the given template name if it's contained in the given template list.
-     * 
+     *
      * @param template Requested template name
      * @param templateList List of templates in which to look
      * @param fallbackToDefaultTemplate If true, the _DEFAULT template will be loaded if the given template is not found
@@ -569,7 +575,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Reads metadata configuration for the given template configuration item. Returns empty list if template is null.
-     * 
+     *
      * @param usingTemplate
      * @param topstructValueFallbackDefaultValue Default value for topstructValueFallback, if not explicitly configured
      * @return
@@ -601,7 +607,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Creates a {@link Metadata} instance from the given subnode configuration
-     * 
+     *
      * @param sub The subnode configuration
      * @param topstructValueFallbackDefaultValue
      * @param indentation
@@ -711,8 +717,7 @@ public final class Configuration extends AbstractConfiguration {
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
-                .setSortField(
-                        sortField)
+                .setSortField(sortField)
                 .setIndentation(indentation);
 
         // Recursively add nested metadata configurations
@@ -826,7 +831,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -859,7 +864,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return Boolean value
      * @should return correct value
      */
@@ -868,7 +873,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return List of available citation style names
      * @should return all configured values
      */
@@ -877,7 +882,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public Metadata getSidebarWidgetUsageCitationRecommendationSource() {
@@ -885,7 +890,7 @@ public final class Configuration extends AbstractConfiguration {
         try {
             sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.metadata");
         } catch (IllegalArgumentException e) {
-            // no or multiple occurrences 
+            // no or multiple occurrences
         }
         if (sub != null) {
             Metadata md = getMetadataFromSubnodeConfig(sub, false, 0);
@@ -896,7 +901,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return Boolean value
      * @should return correct value
      */
@@ -905,7 +910,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return String
      * @should return correct value
      */
@@ -914,7 +919,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return String
      * @should return correct value
      */
@@ -923,7 +928,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return String
      * @should return correct value
      */
@@ -932,7 +937,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return all configured values
      */
@@ -964,7 +969,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -974,7 +979,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Returns a list of configured page download options.
-     * 
+     *
      * @return List of configured <code>DownloadOption</code> items
      * @should return all configured elements
      */
@@ -995,7 +1000,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -1079,7 +1084,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -1363,7 +1368,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * url to rest api url for record media files. Always ends with a slash
-     * 
+     *
      * @return
      */
     public String getIIIFApiUrl() {
@@ -1618,7 +1623,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param type Value of the type attribute
      * @param normalize If true; field will be normalized
      * @return List of <field> elements filtered by type
@@ -1689,7 +1694,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param field
      * @return
      * @should return correct value
@@ -1736,7 +1741,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param field Advanced search field name
      * @param attribute Attribute name
      * @return
@@ -2094,7 +2099,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return all configured elements
      */
@@ -2295,7 +2300,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return Configured SMTP port number; -1 if not configured
      * @should return correct value
      */
@@ -2778,7 +2783,7 @@ public final class Configuration extends AbstractConfiguration {
      * <p>
      * getGeoFacetFields.
      * </p>
-     * 
+     *
      * @should return all values
      * @return a {@link java.util.List} object.
      */
@@ -2851,7 +2856,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param facetField
      * @return
      * @should return correct value
@@ -2862,7 +2867,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param facetField
      * @return
      * @should return correct value
@@ -2874,7 +2879,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
-     * 
+     *
      * @param facetField Facet field
      * @param property Element or attribute name to check
      * @param defaultValue Value that is returned if none was found
@@ -3390,15 +3395,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public int getMetadataParamNumber() {
-        return getLocalInt("metadata.metadataParamNumber", 10);
-    }
-
-    /**
      * <p>
      * useTiles.
      * </p>
@@ -3711,7 +3707,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return true if enabled or not configured; false otherwise
      * @should return correct value
      */
@@ -3819,7 +3815,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -3853,7 +3849,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getDefaultFeedbackEmailAddress() {
@@ -3958,7 +3954,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -3980,7 +3976,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -3989,7 +3985,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param template
      * @param fallbackToDefaultTemplate
      * @return
@@ -4474,7 +4470,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
-     * 
+     *
      * @return "temp_media" unless otherwise configured in "tempMediaFolder"
      */
     public String getTempMediaFolder() {
@@ -4637,7 +4633,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -4747,7 +4743,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @param path
      * @return
      */
@@ -4939,7 +4935,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return The SOLR field containing a rights url for a IIIF3 manifest if one is configured
      */
     public String getIIIFRightsField() {
@@ -4948,7 +4944,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * Uses {@link #getIIIFAttribution()} as fallback;
-     * 
+     *
      * @return the message key to use for the IIIF3 requiredStatement value if the statement should be added to manifests.
      */
     public String getIIIFRequiredValue() {
@@ -4956,7 +4952,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return the message key to use for the IIIF3 requiredStatement label. Default is "Attribution"
      */
     public String getIIIFRequiredLabel() {
@@ -4964,7 +4960,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return The list of configurations for IIIF3 providers
      * @throws PresentationException if a provider or a homepage configuration misses the url or label element
      */
@@ -4978,7 +4974,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -4987,7 +4983,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -5004,7 +5000,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -5013,7 +5009,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -5321,7 +5317,7 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * Find the template with the given name in the templateList. If no such template exists, find the template with name _DEFAULT. Failing that,
      * return null;
-     * 
+     *
      * @param templateList
      * @param template
      * @return
@@ -5350,7 +5346,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<LicenseDescription> getLicenseDescriptions() {
@@ -5402,7 +5398,7 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * config: <code>&#60;iiif use-version="3.0"&#62;&#60;/iiif&#62;</code>
-     * 
+     *
      * @return
      */
     public String getIIIFVersionToUse() {
@@ -5410,7 +5406,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should read config items correctly
      */
@@ -5454,7 +5450,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public boolean isDisplayAnnotationTextInImage() {
@@ -5462,7 +5458,7 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */

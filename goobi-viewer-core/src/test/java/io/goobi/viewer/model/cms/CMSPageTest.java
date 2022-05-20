@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms;
 
@@ -51,7 +57,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     AbstractApiUrlManager contentUrls;
     AbstractApiUrlManager dataUrls;
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -59,7 +65,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        
+
         contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager()
                 .orElseThrow(() -> new ViewerConfigurationException("urls.iiif must be configured to current rest api"));
         dataUrls = DataManager.getInstance().getRestApiManager().getDataApiManager()
@@ -207,7 +213,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
         String filename = media.getFileName();
         filename = URLEncoder.encode(filename, "utf-8");
-        
+
         String imageUrl = contentUrls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build()  + "/full/max/0/default.jpg";
         Assert.assertEquals(imageUrl, page.getContent(imageId).replaceAll("\\?.*", ""));
         Assert.assertEquals(componentName, page.getContent(componentId));

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
@@ -75,7 +81,7 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
                 fail(e.toString());
             }
         });
-        //        
+        //
     }
 
     /**
@@ -127,20 +133,20 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
         MediaList list = resource.getAllMedia("unitTest", 5, null, false);
         assertEquals(5, list.getMediaItems().size());
     }
-    
+
     @Test
     public void testGet2PriorityItems() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 2, 2, false);
         assertEquals(2, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
 
     }
-    
+
     @Test
     public void testGet1PriorityItem() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 2, 1, false);
         assertEquals(1, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
     }
-    
+
     @Test
     public void testDisplayOrder() throws DAOException {
         CMSMediaItem item1 = DataManager.getInstance().getDao().getCMSMediaItemByFilename("3.jpg");
@@ -149,17 +155,17 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
         item2.setDisplayOrder(1);
         DataManager.getInstance().getDao().updateCMSMediaItem(item1);
         DataManager.getInstance().getDao().updateCMSMediaItem(item2);
-        
+
         MediaList list = resource.getAllMedia("unitTest", 4, 0, true);
-        
+
         assertEquals(item1.getId(), list.getMediaItems().get(1).getId());
         assertEquals(item2.getId(), list.getMediaItems().get(0).getId());
-        
+
     }
-    
+
     /**
      * @param list
-     * @param index 
+     * @param index
      * @return
      */
     private String getLabel(MediaList list, int index) {

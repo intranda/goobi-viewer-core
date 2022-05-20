@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.media;
 
@@ -66,7 +72,7 @@ import io.goobi.viewer.messages.Messages;
 
 /**
  * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
- * 
+ *
  * @author florian
  *
  */
@@ -85,7 +91,7 @@ public class TempMediaFileResource {
 
     /**
      * Upload a file to the hotfolder
-     * 
+     *
      * @param uuid
      * @param enabled
      * @param filename
@@ -150,7 +156,7 @@ public class TempMediaFileResource {
 
     /**
      * Get a filename list of all uploaded files in the media directory of the given uuid
-     * 
+     *
      * @param uuid
      * @return a filename list of all uploaded files in the media directory of the given uuid
      */
@@ -191,7 +197,7 @@ public class TempMediaFileResource {
 
     /**
      * Delete all files uploaded for the given uuid
-     * 
+     *
      * @param uuid
      * @return a 200 response if deletion was successfull, otherwise 500
      */
@@ -237,7 +243,7 @@ public class TempMediaFileResource {
 
     /**
      * Get the appropriate media subfolder for the given uuid in the viewer hotfolder
-     * 
+     *
      * @param uuid
      * @return the folder for upload
      * @throws IOException

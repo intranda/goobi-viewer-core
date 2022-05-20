@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -24,12 +30,12 @@ import io.goobi.viewer.controller.StringTools;
 /**
  * Class for extracting the actual search term from a fuzzy search.
  * For creating a fuzzy search term see {@link SearchHelper#addFuzzySearchToken(String, String, String)}
- * 
+ *
  * @author florian
  *
  */
 public class FuzzySearchTerm {
-    
+
     /**
      * Don't use fuzzy search on search terms matching this pattern
      */
@@ -47,16 +53,16 @@ public class FuzzySearchTerm {
      */
     public static final String WORD_PATTERN = "[\\p{L}=-_\\d⸗¬]+";
 
-    
+
     private final String fullTerm;
     private final String term;
     private final boolean wildcardFront;
     private final boolean wildcardBack;
     private final int maxDistance;
-    
+
     public FuzzySearchTerm(String term) {
         this.fullTerm = term;
-        if(isFuzzyTerm(term)) {            
+        if(isFuzzyTerm(term)) {
             this.term = this.fullTerm.replaceAll("\\*?("+WORD_PATTERN+")\\*?~\\d", "$1").toLowerCase();
             this.maxDistance = Integer.parseInt(this.fullTerm.replaceAll("\\*?"+WORD_PATTERN+"\\*?~(\\d)", "$1"));
             wildcardBack = this.fullTerm.endsWith("*~"+this.maxDistance);
@@ -67,27 +73,27 @@ public class FuzzySearchTerm {
         }
         wildcardFront = this.fullTerm.startsWith("*");
     }
-    
+
     public String getFullTerm() {
         return fullTerm;
     }
-    
+
     public String getTerm() {
         return term;
     }
-    
+
     public int getMaxDistance() {
         return maxDistance;
     }
-    
+
     public boolean isWildcardBack() {
         return wildcardBack;
     }
-    
+
     public boolean isWildcardFront() {
         return wildcardFront;
     }
-    
+
     public static boolean isFuzzyTerm(String term) {
         return term.matches("\\*?"+WORD_PATTERN+"+\\*?~\\d");
     }
@@ -109,13 +115,13 @@ public class FuzzySearchTerm {
         } else if( Math.abs(text.length() - termToMatch.length()) <= this.maxDistance) {
             int distance = new DamerauLevenshtein(text, termToMatch).getSimilarity();
             return distance <= maxDistance;
-        } else {            
+        } else {
             return false;
         }
     }
 
     private String cleanup(String text) {
-        if(StringUtils.isNotBlank(text)) {            
+        if(StringUtils.isNotBlank(text)) {
             text = cleanHyphenations(text);
             text = StringTools.removeDiacriticalMarks(text);
             text = StringTools.replaceCharacterVariants(text);

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -41,7 +47,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  * Both urls are updated if the configuration changes. Also, if the configured url contains '/rest' that part is rewritten to '/api/v1' if the
  * rewritten url points to a goobi viewer v1 rest api.
  * </p>
- * 
+ *
  * @author florian
  *
  */
@@ -53,7 +59,7 @@ public class RestApiManager {
 
     /**
      * Create an instance directly using the unchanged given ApiUrlManagers
-     * 
+     *
      * @param dataApiManager
      * @param contentApiManager
      */
@@ -63,7 +69,7 @@ public class RestApiManager {
 
     /**
      * Create an instance based on configuration. Final urls may change from configured ones
-     * 
+     *
      * @param config
      */
     public RestApiManager(Configuration config) {
@@ -71,14 +77,14 @@ public class RestApiManager {
     }
 
     /**
-     * @param version 
+     * @param version
      * @return the dataApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint. Otherwise
      *         null is returned
      */
     public Optional<AbstractApiUrlManager> getDataApiManager() {
         return getDataApiManager(Version.v1);
     }
-    
+
     public Optional<AbstractApiUrlManager> getDataApiManager(Version version) {
         String apiUrl = this.config.getRestApiUrl();
         if(isLegacyUrl(apiUrl)) {
@@ -107,14 +113,14 @@ public class RestApiManager {
     }
 
     /**
-     * @param version 
+     * @param version
      * @return the contentApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
      *         Otherwise null is returned
      */
     public Optional<AbstractApiUrlManager> getContentApiManager() {
         return getContentApiManager(Version.v1);
     }
-    
+
     public Optional<AbstractApiUrlManager> getContentApiManager(Version version) {
         String apiUrl = this.config.getIIIFApiUrl();
         if(isLegacyUrl(apiUrl)) {
@@ -125,11 +131,11 @@ public class RestApiManager {
             return Optional.of(new ApiUrls(apiUrl));
         }
     }
-    
+
     public AbstractApiUrlManager getCMSMediaImageApiManager() {
         return getCMSMediaImageApiManager(Version.v1);
     }
-    
+
     public AbstractApiUrlManager getCMSMediaImageApiManager(Version version) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
             return getContentApiManager(version).orElse(null);
@@ -153,14 +159,14 @@ public class RestApiManager {
         return getDataApiManager(getVersionToUseForIIIF()).map(AbstractApiUrlManager::getApiUrl)
                 .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getRestApiUrl()));
     }
-    
+
     /**
      * @return the url to the content api to use for IIIF resources
      */
     public String getIIIFContentApiUrl() {
         return getIIIFContentApiUrl(getVersionToUseForIIIF());
     }
-    
+
     /**
      * @return the url to the content api to use for IIIF resources
      */
@@ -168,17 +174,17 @@ public class RestApiManager {
         return getContentApiManager(version).map(AbstractApiUrlManager::getApiUrl)
                 .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getIIIFApiUrl()));
     }
-    
+
     public AbstractApiUrlManager getIIIFDataApiManager() {
         return getDataApiManager(getVersionToUseForIIIF())
                 .orElse(getDataApiManager().orElse(null));
     }
-    
+
     public AbstractApiUrlManager getIIIFContentApiManager() {
         return getContentApiManager(getVersionToUseForIIIF())
                 .orElse(getContentApiManager().orElse(null));
     }
-    
+
     /**
      * @return
      */

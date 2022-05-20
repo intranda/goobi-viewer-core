@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -129,7 +135,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Generates a filter query for the selected hierarchical facets.
-     * 
+     *
      * @param advancedSearchGroupOperator
      * @return
      * @should generate query correctly
@@ -171,7 +177,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Generates a filter query for the selected non-hierarchical facets.
-     * 
+     *
      * @param includeRangeFacets
      * @return
      * @should generate query correctly
@@ -207,7 +213,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Generates a filter query for the selected subelement facets.
-     * 
+     *
      * @return
      * @should generate query correctly
      */
@@ -504,7 +510,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Constructs a list of facet items out of the given facet string.
-     * 
+     *
      * @param facetString String containing field:value pairs
      * @param facetItems List of facet items to which to add the parsed items
      * @param labelMap Map containing labels for a field:value pair if the facet field uses separate labels
@@ -558,7 +564,7 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param field
      * @return true if field is hierarchical; false otherwise
      */
@@ -582,7 +588,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
-     * 
+     *
      * @param field
      * @param updateValue
      * @param facetItems
@@ -774,7 +780,7 @@ public class SearchFacets implements Serializable {
     /**
      * Adds the min and max values from the search index for the given field to the bottomValues map. Min and max values are determined via an
      * alphanumeric comparator.
-     * 
+     *
      * @param field
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -828,7 +834,7 @@ public class SearchFacets implements Serializable {
      * Returns a URL encoded value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
      *
      * @return a {@link java.lang.String} object.
-     * 
+     *
      */
     public String getCurrentFacetStringPrefix() {
         return getCurrentFacetStringPrefix(true);
@@ -836,7 +842,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Returns the value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
-     * 
+     *
      * @param urlEncode
      * @return
      */
@@ -1148,7 +1154,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * Sets the feature of the geoFacettingfield to to given feature. A new GeoFacetItem is added to currentFacets if none exists yet
-     * 
+     *
      * @param feature
      */
     public void setGeoFacetFeature(String feature) {

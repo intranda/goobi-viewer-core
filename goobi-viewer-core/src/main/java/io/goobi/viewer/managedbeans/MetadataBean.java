@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -144,7 +150,7 @@ public class MetadataBean {
 
     /**
      * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)}
-     * 
+     *
      * @return the first metadata element list
      */
     public List<MetadataElement> getMetadataElementList() {
@@ -177,7 +183,7 @@ public class MetadataBean {
     /**
      * Returns a list of <code>MetadataElement</code>s for all structure elements contained on the given page (as opposed to just the immediate
      * hierarchy down to the first element that BEGINS on the current page, such as returned by <code>getMetadataElementList</code>.
-     * 
+     *
      * @param index Metadata view index
      * @param order Page number
      * @return List of <code>MetadataElement</code>s for all structure elements contained on the given page
@@ -278,7 +284,7 @@ public class MetadataBean {
 
     /**
      * Convenience method for the metadata page/link label key, depending on the document type.
-     * 
+     *
      * @return Message key for the label
      */
     public String getDefaultMetadataLabel() {
@@ -292,7 +298,7 @@ public class MetadataBean {
 
     /**
      * Convenience method for the sidebar metadata widget label key, depending on the document type.
-     * 
+     *
      * @return Message key for the label
      */
     public String getDefaultSidebarMetadataLabel() {
@@ -354,7 +360,7 @@ public class MetadataBean {
     }
 
     /**
-     * 
+     *
      * @return List of available <code>MetadataView</code>s
      */
     public List<MetadataView> getMetadataViews() {

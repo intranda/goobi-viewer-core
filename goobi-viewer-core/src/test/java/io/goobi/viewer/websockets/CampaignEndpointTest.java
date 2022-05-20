@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.websockets;
 
@@ -46,23 +52,23 @@ public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
     private final Session session1 = Mockito.mock(Session.class);
     private final Session session2 = Mockito.mock(Session.class);
     private final Session session3 = Mockito.mock(Session.class);
-    
+
     private final Basic remote1 = Mockito.spy(Basic.class);
-    private final Basic remote2 = Mockito.spy(Basic.class);    
+    private final Basic remote2 = Mockito.spy(Basic.class);
     private final Basic remote3 = Mockito.spy(Basic.class);
-    
+
     private final HttpSession httpSession1 = Mockito.mock(HttpSession.class);
     private final HttpSession httpSession2 = Mockito.mock(HttpSession.class);
     private final HttpSession httpSession3 = Mockito.mock(HttpSession.class);
-    
+
     private final EndpointConfig config1 = Mockito.mock(EndpointConfig.class);
     private final EndpointConfig config2 = Mockito.mock(EndpointConfig.class);
     private final EndpointConfig config3 = Mockito.mock(EndpointConfig.class);
-    
+
     private final CampaignEndpoint endpoint1 = new CampaignEndpoint();
     private final CampaignEndpoint endpoint2 = new CampaignEndpoint();
     private final CampaignEndpoint endpoint3 = new CampaignEndpoint();
-    
+
      @Before
      public void setup() throws Exception {
          super.setUp();
@@ -79,12 +85,12 @@ public class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
          endpoint2.onOpen(session2, config2);
          endpoint3.onOpen(session3, config3);
      }
-    
+
     @Test
     public void test() throws IOException, EncodeException, DAOException {
         endpoint1.onMessage(createMessage(1l, "PPN1234", 0));
         endpoint2.onMessage(createMessage(1l, "PPN1234", 2));
-        
+
         Mockito.verify(remote1).sendText("{\"2\":\"LOCKED\"}");
         Mockito.verify(remote2).sendText("{\"0\":\"LOCKED\"}");
 

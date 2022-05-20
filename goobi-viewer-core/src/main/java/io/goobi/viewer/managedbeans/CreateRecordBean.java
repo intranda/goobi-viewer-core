@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -44,7 +50,7 @@ import io.goobi.viewer.model.translations.language.Language;
 
 /**
  * Bean for uploading Dublin Core records.
- * 
+ *
  * @author florian
  *
  */
@@ -81,7 +87,7 @@ public class CreateRecordBean implements Serializable {
 
     /**
      * Get the path to a folder named <uuid>_tif within the temp_media directory
-     * 
+     *
      * @return a folder within the viewer temp_media directory
      */
     private Path getTempImagesDirectory() {
@@ -97,7 +103,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return the generated UUID for the current record
      */
     public String getUuid() {
@@ -217,14 +223,14 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * Add any uploaded images to the record, move the images folder frm temp_media to hotfolder 
+     * Add any uploaded images to the record, move the images folder frm temp_media to hotfolder
      * and write the record as Dublin Core xml to the viewer hotfolder
-     * 
+     *
      * @return  the url of the create record page to allow creating a new record
      */
     public String saveRecord() {
         DCRecordWriter writer = generateDCRecord();
-        
+
         try {
             if (Files.exists(tempImagesFolder)) {
                 addFiles(writer, tempImagesFolder);
@@ -244,7 +250,7 @@ public class CreateRecordBean implements Serializable {
 
     /**
      * Write filenames of files within mediaFolder as "dc:relation" metadata to writer
-     * 
+     *
      * @param writer
      * @param mediaFolder
      * @throws IOException
@@ -261,7 +267,7 @@ public class CreateRecordBean implements Serializable {
     }
 
     /**
-     * @return  A list of possible languages  to use for the record 
+     * @return  A list of possible languages  to use for the record
      */
     public List<Language> getPossibleLanguages() {
         List<Language> languages = DataManager.getInstance().getLanguageHelper().getMajorLanguages();
@@ -279,7 +285,7 @@ public class CreateRecordBean implements Serializable {
 
     /**
      * Create a {@link DCRecordWriter} instance containing all metadata of the bean as dc metadata
-     * 
+     *
      * @return the{@link DCRecordWriter}
      */
     protected DCRecordWriter generateDCRecord() {
@@ -307,14 +313,14 @@ public class CreateRecordBean implements Serializable {
 
     /**
      * Mark the record as not ready for indexing and delete all associated images
-     * 
+     *
      * @return  the url of the create record page
      */
     public String reset() {
         destroy();
         return "pretty:adminCreateRecord";
     }
-    
+
     /**
      * Delete the {@link #tempImagesFolder} with all contained files if it still exists.
      * Called when the user session ends

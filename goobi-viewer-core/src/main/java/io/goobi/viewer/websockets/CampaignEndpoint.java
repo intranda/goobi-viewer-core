@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.websockets;
 
@@ -170,7 +176,7 @@ public class CampaignEndpoint {
 
     /**
      * Send a message about all locked pages to all sessions which have the same campaignId and recordIdentifier
-     * 
+     *
      * @param sessionLock The lock of the broadcasting session
      * @throws IOException
      * @throws EncodeException
@@ -199,7 +205,7 @@ public class CampaignEndpoint {
 
     /**
      * Get all locked pages with the given campaignId and recordIdentifier which are not(!) locked by the given httpSessionId
-     * 
+     *
      * @param httpSessionId
      * @param campaignId
      * @param recordIdentifier
@@ -267,7 +273,7 @@ public class CampaignEndpoint {
 
     /**
      * Remove a registered crowdsourcing page lock after session end and notify the assiciated websocket session that the session has ended
-     * 
+     *
      * @param sessionId
      * @throws DAOException
      * @throws IOException
@@ -279,7 +285,7 @@ public class CampaignEndpoint {
 
     /**
      * Checks if the given http session id has a registerd lock
-     * 
+     *
      * @param sessionId
      * @return
      */
