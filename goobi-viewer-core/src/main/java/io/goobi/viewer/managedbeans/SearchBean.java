@@ -76,6 +76,7 @@ import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -830,7 +831,7 @@ public class SearchBean implements SearchInterface, Serializable {
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
         //remember the current page to return to hit list in widget_searchResultNavigation
-        this.lastUsedSearchPage = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        setLastUsedSearchPage();
 
         //        String currentQuery = SearchHelper.prepareQuery(searchString);
 
@@ -862,6 +863,14 @@ public class SearchBean implements SearchInterface, Serializable {
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, navigationHelper.getLocale(),
                 DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+    }
+
+    /**
+     * Set the current {@link ViewerPath} as the {@link #lastUsedSearchPage}
+     * This is where returning to search hit list from record will direct to
+     */
+    public void setLastUsedSearchPage() {
+        this.lastUsedSearchPage = ViewHistory.getCurrentView(BeanUtils.getRequest());
     }
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
@@ -2972,12 +2981,25 @@ public class SearchBean implements SearchInterface, Serializable {
                 .map(view -> ServletUtils.getServletPathWithHostAsUrlFromRequest(BeanUtils.getRequest()) + view.getCombinedPrettyfiedUrl())
                 .orElse(getLastUsedDefaultSearchUrl());
     }
+    
 
     private String getLastUsedDefaultSearchUrl() {
         if (getActiveSearchType() == 1) {
-            return "pretty:searchAdvanced5";
+            return PrettyUrlTools.getAbsolutePageUrl(
+                    "pretty:searchAdvanced5", 
+                    facets.getCurrentHierarchicalFacetString(),
+                    getExactSearchString(),
+                    getCurrentPage(),
+                    getSortString(),
+                    facets.getCurrentFacetString());
         } else {
-            return "pretty:newSearch5";
+            return PrettyUrlTools.getAbsolutePageUrl(
+                    "pretty:newSearch5", 
+                    facets.getCurrentHierarchicalFacetString(),
+                    getExactSearchString(),
+                    getCurrentPage(),
+                    getSortString(),
+                    facets.getCurrentFacetString());
         }
     }
 
