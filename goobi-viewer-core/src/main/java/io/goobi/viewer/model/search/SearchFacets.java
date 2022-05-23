@@ -1143,7 +1143,7 @@ public class SearchFacets implements Serializable {
      */
     public GeoFacetItem getGeoFacetting() {
         synchronized (lock) {
-            return this.currentFacets
+            return new ArrayList<>(this.currentFacets)
                     .stream()
                     .filter(f -> f instanceof GeoFacetItem)
                     .map(f -> (GeoFacetItem) f)
