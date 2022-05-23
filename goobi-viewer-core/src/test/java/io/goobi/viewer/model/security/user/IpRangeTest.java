@@ -99,4 +99,12 @@ public class IpRangeTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(ipRange.matchIp("192.168.1.10"));
         Assert.assertTrue(ipRange.matchIp("192.168.1.11"));
     }
+    
+    @Test
+    public void matchIp_shouldNotMatchAddresses() throws Exception {
+        IpRange ipRange = new IpRange();
+        ipRange.setSubnetMask("192.168.1.10/31");
+        Assert.assertFalse(ipRange.matchIp("192.168.1.9"));
+        Assert.assertFalse(ipRange.matchIp("192.168.2.11"));
+    }
 }

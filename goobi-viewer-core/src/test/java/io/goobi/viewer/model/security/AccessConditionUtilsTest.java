@@ -15,23 +15,31 @@
  */
 package io.goobi.viewer.model.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -405,4 +413,33 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         String[] licenseTypes = new String[] { "license type 1 name", "license type 4 name" };
         Assert.assertTrue(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Arrays.asList(licenseTypes)));
     }
+    
+    @Test
+    public void test_getApplyingLicenses_byIp() throws DAOException {
+        
+        LicenseType licenseType = new LicenseType();
+        
+        IpRange ipRangeMatch = new IpRange();
+        ipRangeMatch.setSubnetMask("192.168.0.10/32");
+        
+        IpRange ipRangeNoMatch = new IpRange();
+        ipRangeNoMatch.setSubnetMask("172.168.0.11/32");
+        
+        License license = new License();
+        license.setLicenseType(licenseType);
+        license.setIpRange(ipRangeMatch);
+        
+        IDAO dao = Mockito.mock(IDAO.class);
+        Mockito.when(dao.getLicenses(licenseType)).thenReturn(Arrays.asList(license));
+        Mockito.when(dao.getAllIpRanges()).thenReturn(Arrays.asList(ipRangeMatch, ipRangeNoMatch));
+        
+        List<License> licenses = AccessConditionUtils.getApplyingLicenses(Optional.empty(), "192.168.0.10", licenseType, dao);
+        assertFalse(licenses.isEmpty());
+        assertEquals(license, licenses.get(0));
+        
+        license.setIpRange(ipRangeNoMatch);
+        licenses = AccessConditionUtils.getApplyingLicenses(Optional.empty(), "192.168.0.10", licenseType, dao);
+        assertTrue(licenses.isEmpty());
+    }
+
 }

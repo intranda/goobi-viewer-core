@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,10 +39,13 @@ import org.jboss.weld.contexts.ContextNotActiveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Range;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -50,6 +54,7 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -1093,5 +1098,38 @@ public class AccessConditionUtils {
         }
 
         return false;
+    }
+    
+    /**
+     * List all licenses ("rights") that the given user and ipAddress is entitled to, either because they are directly 
+     * given to the user, a group the user belongs to or to the given ipAddress, whether or not the given user exists
+     * 
+     * @param user
+     * @param ipAddress
+     * @param type
+     * @param dao
+     * @return
+     * @throws DAOException
+     */
+    public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
+        List<License> licenses = dao.getLicenses(type);
+        List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
+        List<IpRange> ipRangesApplyingToGivenIp = dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
+        
+        List<License> applyingLicenses = licenses.stream()
+        .filter(license -> {
+           return user.map(u -> u.equals(license.getUser())).orElse(false)
+                   || userGroups.contains(license.getUserGroup())
+                   || ipRangesApplyingToGivenIp.stream().anyMatch(r -> r.getSubnetMask().equals(license.getIpRange().getSubnetMask()));
+        })
+        .collect(Collectors.toList());
+ 
+        return applyingLicenses.stream()
+                .filter(l -> {
+                    return applyingLicenses.stream()
+                    .filter(ol -> !ol.equals(l))
+                    .noneMatch(ol -> l.getLicenseType().getOverridingLicenseTypes().contains(ol.getLicenseType()));
+                })
+                .collect(Collectors.toList());
     }
 }
