@@ -28,13 +28,15 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class DisplayScopeTest {
+public class DisplayScopeTest extends AbstractSolrEnabledTest {
 
     @Test
     public void testClone() {
@@ -91,6 +93,15 @@ public class DisplayScopeTest {
             assertTrue(scope.appliesToPage(pageType, "PI1", searchIndex));
             assertFalse(scope.appliesToPage(pageType, "PI2", searchIndex));
         }
+    }
+    
+
+    @Test
+    public void testAppliesToPage_emptyArgs() throws PresentationException, IndexUnreachableException {
+        DisplayScope scope = new DisplayScope(PageScope.RECORD, "PI:1");
+        PageType pageType = PageType.viewImage;
+        SolrSearchIndex searchIndex = DataManager.getInstance().getSearchIndex();
+        assertFalse(scope.appliesToPage(pageType, "-", searchIndex));
     }
 
 }
