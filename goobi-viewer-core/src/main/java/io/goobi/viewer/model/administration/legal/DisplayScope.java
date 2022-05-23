@@ -141,7 +141,7 @@ public class DisplayScope implements Serializable {
      */
     private static boolean matchesFilter(String query, String pi, SolrSearchIndex searchIndex)
             throws PresentationException, IndexUnreachableException {
-        if (StringUtils.isBlank(pi)) {
+        if (StringUtils.isBlank(pi) || "-".matches(pi)) {
             return false;
         } else if (StringUtils.isBlank(query)) {
             return true;
