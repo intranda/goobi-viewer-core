@@ -77,7 +77,7 @@
         <sonar.java.target>11</sonar.java.target>
 
         <!-- Checkstyle -->
-        <checkstyle.max.violations>5301</checkstyle.max.violations>
+        <checkstyle.max.violations>4100</checkstyle.max.violations>
 
 
 		<!-- Manifest information -->
