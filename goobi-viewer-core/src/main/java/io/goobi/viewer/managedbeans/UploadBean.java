@@ -174,7 +174,7 @@ public class UploadBean implements Serializable {
             setCurrentUploadJob(null);
         }
 
-        return "";
+        return "user/upload?redirect=true";
     }
 
 }
