@@ -229,7 +229,7 @@ public class TOCElement implements Serializable {
 
         String url = new String(thumbnailUrl);
         if (StringUtils.isNotBlank(url)) {
-            Scale scale = new Scale.ScaleExact(width, height);
+            Scale scale = new Scale.ScaleToBox(width, height);
             try {
                 return BeanUtils.getImageDeliveryBean().getIiif().getModifiedIIIFFUrl(thumbnailUrl, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl));
             } catch (ViewerConfigurationException e) {
