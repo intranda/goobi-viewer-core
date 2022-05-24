@@ -941,7 +941,7 @@ public class SearchFacets implements Serializable {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
-
+        
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
@@ -950,7 +950,8 @@ public class SearchFacets implements Serializable {
 
         synchronized (lock) {
             //add current facets which have no hits. This may happen due to geomap facetting
-            for (IFacetItem currentItem : currentFacets) {
+            List<IFacetItem> currentFacetsLocal = new ArrayList<>(currentFacets);
+            for (IFacetItem currentItem : currentFacetsLocal) {
                 // Make a copy of the list to avoid concurrent modification
                 List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
                 if (!availableFacetItems.contains(currentItem)) {
