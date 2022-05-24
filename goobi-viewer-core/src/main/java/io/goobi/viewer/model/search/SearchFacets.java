@@ -439,7 +439,7 @@ public class SearchFacets implements Serializable {
      * @should return hyphen if currentFacets empty
      */
     public String getCurrentFacetString() {
-        String ret = generateFacetPrefix(currentFacets, true);
+        String ret = generateFacetPrefix(new ArrayList<>(currentFacets), true);
         if (StringUtils.isEmpty(ret)) {
             ret = "-";
         }
@@ -460,7 +460,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getCurrentFacetString(boolean urlEncode) {
-        String ret = generateFacetPrefix(currentFacets, true);
+        String ret = generateFacetPrefix(new ArrayList<>(currentFacets), true);
         if (StringUtils.isEmpty(ret)) {
             ret = "-";
         }
@@ -849,7 +849,7 @@ public class SearchFacets implements Serializable {
     public String getCurrentFacetStringPrefix(boolean urlEncode) {
         if (urlEncode) {
             try {
-                return URLEncoder.encode(generateFacetPrefix(currentFacets, true), SearchBean.URL_ENCODING);
+                return URLEncoder.encode(generateFacetPrefix(new ArrayList<>(currentFacets), true), SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
                 logger.error(e.getMessage());
             }
@@ -896,7 +896,7 @@ public class SearchFacets implements Serializable {
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
         logger.trace("removeFacetAction: {}", facetQuery);
-        String currentFacetString = generateFacetPrefix(currentFacets, false);
+        String currentFacetString = generateFacetPrefix(new ArrayList<>(currentFacets), false);
         if (currentFacetString.contains(facetQuery)) {
             currentFacetString = currentFacetString.replaceAll("(" + Pattern.quote(facetQuery) + ")(?=;|(?=/))", "").replace(";;;;", ";;");
             setCurrentFacetString(currentFacetString);
@@ -941,7 +941,7 @@ public class SearchFacets implements Serializable {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
-
+        
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
@@ -950,7 +950,8 @@ public class SearchFacets implements Serializable {
 
         synchronized (lock) {
             //add current facets which have no hits. This may happen due to geomap facetting
-            for (IFacetItem currentItem : currentFacets) {
+            List<IFacetItem> currentFacetsLocal = new ArrayList<>(currentFacets);
+            for (IFacetItem currentItem : currentFacetsLocal) {
                 // Make a copy of the list to avoid concurrent modification
                 List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
                 if (!availableFacetItems.contains(currentItem)) {

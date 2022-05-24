@@ -47,7 +47,7 @@ import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.download.DownloadJobTools;
+import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -26,7 +26,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.job.download.DownloadOption;
 
 @FacesConverter("downloadOptionConverter")
 @Deprecated

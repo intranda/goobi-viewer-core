@@ -33,6 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -224,15 +229,12 @@ public class TOCElement implements Serializable {
 
         String url = new String(thumbnailUrl);
         if (StringUtils.isNotBlank(url)) {
-            if (url.contains("width=")) {
-                url = url.replaceAll("width=\\d+", "width=" + width);
-            } else {
-                url = url + "&width=" + width;
-            }
-            if (url.contains("height=")) {
-                url = url.replaceAll("height=\\d+", "height=" + height);
-            } else {
-                url = url + "&height=" + height;
+            Scale scale = new Scale.ScaleExact(width, height);
+            try {
+                return BeanUtils.getImageDeliveryBean().getIiif().getModifiedIIIFFUrl(thumbnailUrl, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl));
+            } catch (ViewerConfigurationException e) {
+                logger.error("Cannot reach ImageDeliveryBean for iiif url generation");
+                return thumbnailUrl;
             }
         }
         return url;

@@ -19,19 +19,36 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.job;
 
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.job.JobStatus;
 
-/**
- * @author florian
- *
- */
-public class TaskManagerPDFRequest extends AbstractTaskManagerRequest {
+public enum JobStatus {
+    WAITING,
+    READY,
+    ERROR,
+    UNDEFINED,
+    INITIALIZED,
+    DELETED;
 
-    public TaskManagerPDFRequest() {
-        super("VIEWERPDF");
-        this.targetDir = DataManager.getInstance().getConfiguration().getDownloadFolder("pdf");
+    public static JobStatus getByName(String name) {
+        if (name != null) {
+            switch (name) {
+                case "WAITING":
+                    return WAITING;
+                case "READY":
+                    return READY;
+                case "ERROR":
+                    return ERROR;
+                case "UNDEFINED":
+                    return JobStatus.UNDEFINED;
+                case "INITIALIZED":
+                    return JobStatus.INITIALIZED;
+                case "DELETED":
+                    return JobStatus.DELETED;
+            }
+        }
+
+        return null;
     }
-
 }

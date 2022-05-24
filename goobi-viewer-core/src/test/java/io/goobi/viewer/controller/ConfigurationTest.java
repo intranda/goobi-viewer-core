@@ -43,8 +43,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
-import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -2617,6 +2617,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getWorkflowRestUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getWorkflowRestUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("https://example.com/goobi/api/", DataManager.getInstance().getConfiguration().getWorkflowRestUrl());
+    }
+
+    /**
      * @see Configuration#getTaskManagerRestUrl()
      * @verifies return correct value
      */
@@ -3151,5 +3160,59 @@ public class ConfigurationTest extends AbstractTest {
     public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
+    }
+
+    /**
+     * @see Configuration#isContentUploadEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isContentUploadEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isContentUploadEnabled());
+    }
+
+    /**
+     * @see Configuration#getContentUploadToken()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadToken_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("12345-GOOBI-WORKFLOW-REST-TOKEN-67890", DataManager.getInstance().getConfiguration().getContentUploadToken());
+    }
+
+    /**
+     * @see Configuration#getContentUploadDocstruct()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadDocstruct_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("manuscript", DataManager.getInstance().getConfiguration().getContentUploadDocstruct());
+    }
+
+    /**
+     * @see Configuration#getContentUploadTemplateName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadTemplateName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("Sample_workflow", DataManager.getInstance().getConfiguration().getContentUploadTemplateName());
+    }
+
+    /**
+     * @see Configuration#getContentUploadRejectionPropertyName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadRejectionPropertyName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("uploadRejected", DataManager.getInstance().getConfiguration().getContentUploadRejectionPropertyName());
+    }
+
+    /**
+     * @see Configuration#getContentUploadRejectionReasonPropertyName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadRejectionReasonPropertyName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("uploadRejectedInformation", DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName());
     }
 }
