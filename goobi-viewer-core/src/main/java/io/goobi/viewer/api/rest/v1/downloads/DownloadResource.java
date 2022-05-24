@@ -65,9 +65,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.DownloadBean;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.EPUBDownloadJob;
-import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.EPUBDownloadJob;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -98,7 +98,7 @@ public class DownloadResource {
      * @param type The jobtype, either pdf or epub
      * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
-     * @return A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
+     * @return A json representation of the {@link io.goobi.viewer.model.job.download.DownloadJob}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
@@ -175,7 +175,7 @@ public class DownloadResource {
      *
      * @param type The jobtype, either pdf or epub
      * @param identifier The job idenfier
-     * @return A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
+     * @return A json representation of the {@link io.goobi.viewer.model.job.download.DownloadJob}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
@@ -244,7 +244,7 @@ public class DownloadResource {
      * @param type The jobtype, either pdf or epub
      * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
-     * @return A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
+     * @return A json representation of the {@link io.goobi.viewer.model.job.download.DownloadJob}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
@@ -321,7 +321,7 @@ public class DownloadResource {
      *
      * @param type The jobtype, either pdf or epub
      * @param identifier The job idenfier
-     * @return A json representation of the {@link io.goobi.viewer.model.download.DownloadJob}
+     * @return A json representation of the {@link io.goobi.viewer.model.job.download.DownloadJob}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      */
@@ -387,7 +387,7 @@ public class DownloadResource {
      * Get information about all download jobs of a type
      *
      * @param type The jobtype, either pdf or epub
-     * @return An array of json representations of all {@link io.goobi.viewer.model.download.DownloadJob}s of the given type
+     * @return An array of json representations of all {@link io.goobi.viewer.model.job.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
@@ -441,7 +441,7 @@ public class DownloadResource {
      * Get information about all download jobs of a type
      *
      * @param type The jobtype, either pdf or epub
-     * @return An array of json representations of all {@link io.goobi.viewer.model.download.DownloadJob}s of the given type
+     * @return An array of json representations of all {@link io.goobi.viewer.model.job.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
@@ -500,7 +500,7 @@ public class DownloadResource {
      * Get information about all download jobs of a type
      *
      * @param type The jobtype, either pdf or epub
-     * @return An array of json representations of all {@link io.goobi.viewer.model.download.DownloadJob}s of the given type
+     * @return An array of json representations of all {@link io.goobi.viewer.model.job.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */

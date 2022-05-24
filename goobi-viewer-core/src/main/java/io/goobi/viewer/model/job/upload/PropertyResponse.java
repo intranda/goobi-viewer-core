@@ -19,20 +19,44 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.job.upload;
 
-import io.goobi.viewer.controller.DataManager;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-/**
- * @author florian
- *
- */
-public class TaskManagerEPUBRequest extends AbstractTaskManagerRequest {
+@JsonPropertyOrder({ "title", "value" })
+public class PropertyResponse {
+    private String title;
+    private String value;
 
-    public TaskManagerEPUBRequest() {
-        super("VIEWEREPUB");
-        this.targetDir = DataManager.getInstance().getConfiguration().getDownloadFolder("epub");
-
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
     }
 
+    /**
+     * @param title the title to set
+     * @return this;
+     */
+    public PropertyResponse setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     * @return this
+     */
+    public PropertyResponse setValue(String value) {
+        this.value = value;
+        return this;
+    }
 }

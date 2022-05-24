@@ -65,8 +65,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
-import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -1351,7 +1351,7 @@ public final class Configuration extends AbstractConfiguration {
      * getRestApiUrl.
      * </p>
      *
-     * @return The url to the viewer rest api as configured in the config_viewer. The url always ends with "/"
+     * @return The url to the viewer REST API as configured in the config_viewer. The url always ends with "/"
      */
     public String getRestApiUrl() {
         String urlString = getLocalString("urls.rest");
@@ -1379,6 +1379,10 @@ public final class Configuration extends AbstractConfiguration {
         return urlString;
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
         boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
         return use;
@@ -4627,6 +4631,23 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getWorkflowRestUrl.
+     * </p>
+     *
+     * @return The url to the Goobi workflow REST API as configured in the config_viewer. The url always ends with "/"
+     * @should return correct value
+     */
+    public String getWorkflowRestUrl() {
+        String urlString = getLocalString("urls.workflow", "localhost:8080/goobi/api/");
+        if (!urlString.endsWith("/")) {
+            urlString += "/";
+        }
+
+        return urlString;
+    }
+
+    /**
+     * <p>
      * getTaskManagerServiceUrl.
      * </p>
      *
@@ -5433,23 +5454,57 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
 
-    //    /**
-    //     *
-    //     * @return
-    //     * @should return correct value
-    //     */
-    //    public boolean isProximitySearchEnabled() {
-    //        return getLocalBoolean("search.proximity[@enabled]", false);
-    //    }
-    //
-    //
-    //    /**
-    //     *
-    //     * @return
-    //     * @should return correct value
-    //     */
-    //    public int getProximitySearchDistance() {
-    //        return getLocalInt("search.proximity[@distance]", 10);
-    //    }
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isContentUploadEnabled() {
+        return getLocalBoolean("upload[@enabled]", false);
+    }
 
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadToken() {
+        return getLocalString("upload.token");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadDocstruct() {
+        return getLocalString("upload.docstruct", "monograph");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadTemplateName() {
+        return getLocalString("upload.templateName");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadRejectionPropertyName() {
+        return getLocalString("upload.rejectionPropertyName");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getContentUploadRejectionReasonPropertyName() {
+        return getLocalString("upload.rejectionReasonPropertyName");
+    }
 }

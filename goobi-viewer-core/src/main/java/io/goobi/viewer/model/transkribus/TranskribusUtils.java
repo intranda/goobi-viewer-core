@@ -42,7 +42,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
-import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
+import io.goobi.viewer.model.job.JobStatus;
 
 /**
  * <p>
@@ -208,7 +208,7 @@ public class TranskribusUtils {
         Map<String, String> params = new HashMap<>(2);
         params.put("user", userName);
         params.put("pw", password);
-        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), null, params, null, null, null, null);
 
         return XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
     }
@@ -299,7 +299,7 @@ public class TranskribusUtils {
         params.put("JSESSIONID", sessionId);
         //        params.put("collName", collectionName);
 
-        return NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        return NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null, null, null);
     }
 
     /**
@@ -341,7 +341,7 @@ public class TranskribusUtils {
         //        params.put("userid", recipientUserId);
         //        params.put("role", "Editor");
         //        params.put("sendMail", String.valueOf(sendMail));
-        NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null, null, null);
         // Status 200 means success
         return true;
     }
@@ -386,7 +386,7 @@ public class TranskribusUtils {
         sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, StringTools.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", session.getSessionId());
-        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null, null, null);
         TranskribusJob job = new TranskribusJob();
         job.setPi(pi);
         job.setOwnerId(session.getUserId());
@@ -416,7 +416,7 @@ public class TranskribusUtils {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
+    protected static JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
             throws ClientProtocolException, IOException, HTTPException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");

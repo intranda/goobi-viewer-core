@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.job.download;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +30,9 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.DownloadJobTools;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 
 public class DownloadJobToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 

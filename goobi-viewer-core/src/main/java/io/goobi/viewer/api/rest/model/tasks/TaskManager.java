@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -122,9 +123,9 @@ public class TaskManager {
     private static int getActiveThreads(ExecutorService pool) {
         if (pool instanceof ThreadPoolExecutor) {
             return ((ThreadPoolExecutor) pool).getActiveCount();
-        } else {
-            return -1;
         }
+        
+        return -1;
     }
 
     public List<Task> getTasks(TaskType type) {
@@ -159,7 +160,7 @@ public class TaskManager {
 
                     String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
                     String outputPath = params.getOutputPath();
-                    if(StringUtils.isBlank(outputPath)) {
+                    if (StringUtils.isBlank(outputPath)) {
                         outputPath = request.getServletContext().getRealPath("/");
                     }
                     try {
@@ -177,6 +178,24 @@ public class TaskManager {
                     DataManager.getInstance().getSearchIndex().updateDataRepositoryNames(params.getPi(), params.getDataRepositoryName());
                     // Reset access condition and view limit for record
                     DataManager.getInstance().getRecordLockManager().emptyCacheForRecord(params.getPi());
+                };
+            case UPDATE_UPLOAD_JOBS:
+                return (request, job) -> {
+                    try {
+                        int count = 0;
+                        for (UploadJob uj : DataManager.getInstance().getDao().getAllUploadJobs()) {
+                            uj.updateStatus();
+                            DataManager.getInstance().getDao().updateUploadJob(uj);
+                            count++;
+                        }
+                        logger.debug("{} upload jobs checked.", count);
+                    } catch (DAOException e) {
+                        job.setError(e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        job.setError(e.getMessage());
+                    } catch (PresentationException e) {
+                        job.setError(e.getMessage());
+                    }
                 };
             default:
                 return (request, job) -> {
