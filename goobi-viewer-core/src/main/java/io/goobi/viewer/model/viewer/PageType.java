@@ -62,6 +62,7 @@ public enum PageType {
     //user
     user("user"),
     userSearches("user/searches", "label__user_searches"),
+    userContentUpload("user/upload", "user__upload_content"),
     //admin
     admin("admin"),
     adminUsers("admin/users"),

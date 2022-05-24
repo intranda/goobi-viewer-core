@@ -149,12 +149,12 @@
 							<!-- ACTION -->
 							<div class="form-group form-row content-upload-modal__action">
 								<div class="col-sm-12 d-flex justify-content-end">
-									<h:commandButton styleClass="btn btn--full"
+									<h:commandButton styleClass="btn btn--full" onclick="$(&quot;[data-loader='fullOverlay']&quot;).show();"
 										value="#{msg.submit}" pt:data-require-input="contentUploadInput"
-										action="#{uploadBean.createProcessAction}" />
+										action="#{uploadBean.createProcessAction}"  />
 								</div>
 							</div>
-
+														
 						</h:form>
 
 					</div>
