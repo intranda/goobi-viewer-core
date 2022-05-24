@@ -185,6 +185,7 @@ public class TaskManager {
                         int count = 0;
                         for (UploadJob uj : DataManager.getInstance().getDao().getAllUploadJobs()) {
                             uj.updateStatus();
+                            DataManager.getInstance().getDao().updateUploadJob(uj);
                             count++;
                         }
                         logger.debug("{} upload jobs checked.", count);
