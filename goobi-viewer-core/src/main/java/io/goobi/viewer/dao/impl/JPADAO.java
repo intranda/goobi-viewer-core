@@ -2710,17 +2710,21 @@ public class JPADAO implements IDAO {
     /**
      * {@inheritDoc}
      * 
-     * @should return all rows
+     * @should return rows with given status
      */
     @Override
-    public List<UploadJob> getAllUploadJobs() throws DAOException {
+    public List<UploadJob> getUploadJobsWithStatus(JobStatus status) throws DAOException {
+        if (status == null) {
+            throw new IllegalArgumentException("status may not be null");
+        }
+
         preQuery();
         EntityManager em = getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<UploadJob> cq = cb.createQuery(UploadJob.class);
             Root<UploadJob> root = cq.from(UploadJob.class);
-            cq.select(root);
+            cq.select(root).where(cb.equal(root.get("status"), status));
             return em.createQuery(cq).getResultList();
         } finally {
             close(em);

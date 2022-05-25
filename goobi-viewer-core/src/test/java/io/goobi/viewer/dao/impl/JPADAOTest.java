@@ -2279,13 +2279,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getAllUploadJobs()
-     * @verifies return all rows
+     * @see JPADAO#getUploadJobsWithStatus(JobStatus)
+     * @verifies return rows with given status
      */
     @Test
-    public void getAllUploadJobs_shouldReturnAllRows() throws Exception {
-        List<UploadJob> result = DataManager.getInstance().getDao().getAllUploadJobs();
-        Assert.assertEquals(2, result.size());
+    public void getUploadJobsWithStatus_shouldReturnRowsWithGivenStatus() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
     }
 
     /**

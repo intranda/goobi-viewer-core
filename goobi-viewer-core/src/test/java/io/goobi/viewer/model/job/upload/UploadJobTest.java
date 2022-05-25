@@ -67,7 +67,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
     public void updateStatus_shouldDoNothingIfResponseNull() throws Exception {
         UploadJob uj = new UploadJob();
         Assert.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
-        uj.updateStatus(null);
+        Assert.assertFalse(uj.updateStatus(null));
         Assert.assertEquals(JobStatus.UNDEFINED, uj.getStatus());
     }
 
@@ -81,7 +81,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(0);
         psr.setCreationDate(null);
-        uj.updateStatus(psr);
+        Assert.assertTrue(uj.updateStatus(psr));
         Assert.assertEquals(JobStatus.ERROR, uj.getStatus());
 
     }
@@ -102,7 +102,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         psr.getProperties()
                 .add(new PropertyResponse().setTitle(DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName())
                         .setValue("Not good enough"));
-        uj.updateStatus(psr);
+        Assert.assertTrue(uj.updateStatus(psr));
         Assert.assertEquals(JobStatus.ERROR, uj.getStatus());
         Assert.assertEquals("Not good enough", uj.getMessage());
     }
@@ -118,7 +118,7 @@ public class UploadJobTest extends AbstractSolrEnabledTest {
         ProcessStatusResponse psr = new ProcessStatusResponse();
         psr.setId(1);
         psr.setCreationDate(new Date());
-        uj.updateStatus(psr);
+        Assert.assertTrue(uj.updateStatus(psr));
         Assert.assertEquals(JobStatus.READY, uj.getStatus());
     }
 

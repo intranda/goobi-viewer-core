@@ -1264,10 +1264,11 @@ public interface IDAO {
 
     /**
      * 
-     * @return
+     * @param status {@link JobStatus}
+     * @return List of {@link UploadJob}s with given status
      * @throws DAOException
      */
-    public List<UploadJob> getAllUploadJobs() throws DAOException;
+    public List<UploadJob> getUploadJobsWithStatus(JobStatus status) throws DAOException;
 
     /**
      * 
