@@ -75,7 +75,12 @@
                                             </div>
 											<!-- TITLE -->
 											<div class="user-content-upload__table-entry-label" role="cell">
-												<h:outputText value="#{job.title}" />	
+                                                <ui:fragment rendered="#{job.online}">
+                                                    <a href="#{navigationHelper.applicationUrl}#{job.recordUrl}">#{job.title}</a>
+                                                </ui:fragment>
+											    <ui:fragment rendered="#{!job.online}">
+                                                    <h:outputText value="#{job.title}" />   
+											    </ui:fragment>
 											</div>
 
 											<!-- STATUS -->

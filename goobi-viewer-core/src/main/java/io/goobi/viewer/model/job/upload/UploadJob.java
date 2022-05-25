@@ -412,6 +412,22 @@ public class UploadJob implements Serializable {
     }
 
     /**
+     * 
+     * @return true if status is READY; false otherwise
+     */
+    public boolean isOnline() {
+        return JobStatus.READY == status;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getRecordUrl() {
+        return "piresolver?id=" + pi;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>id</code>.
      * </p>
