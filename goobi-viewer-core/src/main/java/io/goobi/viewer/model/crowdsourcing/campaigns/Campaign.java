@@ -1421,8 +1421,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getRandomizedTarget(CrowdsourcingStatus status, String piToIgnore) throws PresentationException, IndexUnreachableException {
-        User user = BeanUtils.getUserBean().getUser();
+    public String getRandomizedTarget(CrowdsourcingStatus status, String piToIgnore, User user) throws PresentationException, IndexUnreachableException {
         List<String> pis = getSolrQueryResults().stream()
                 .filter(result -> !result.equals(piToIgnore))
                 .filter(result -> isRecordStatus(result, status))
@@ -1444,8 +1443,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getNextTarget(CrowdsourcingStatus status, String currentPi) throws PresentationException, IndexUnreachableException {
-        User user = BeanUtils.getUserBean().getUser();
+    public String getNextTarget(CrowdsourcingStatus status, String currentPi, User user) throws PresentationException, IndexUnreachableException {
         List<String> piList = getSolrQueryResults().stream()
                 .filter(result -> isRecordStatus(result, status))
                 .filter(result -> isEligibleToEdit(result, status, user))

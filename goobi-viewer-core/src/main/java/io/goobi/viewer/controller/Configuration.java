@@ -103,7 +103,7 @@ import io.goobi.viewer.solr.SolrConstants;
  * Configuration class.
  * </p>
  */
-public final class Configuration extends AbstractConfiguration {
+public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
@@ -5506,5 +5506,9 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getContentUploadRejectionReasonPropertyName() {
         return getLocalString("upload.rejectionReasonPropertyName");
+    }
+    
+    public String getCrowdsourcingCampaignItemOrder() {
+        return getLocalString("campaigns.itemOrder", "fixed");
     }
 }
