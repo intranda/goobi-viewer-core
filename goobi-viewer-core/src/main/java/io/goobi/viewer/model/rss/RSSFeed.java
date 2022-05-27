@@ -147,7 +147,7 @@ public class RSSFeed {
             locale = Locale.forLanguageTag(language);
         }
         if (locale == null) {
-            locale = Locale.GERMANY;
+            locale = ViewerResourceBundle.getDefaultLocale();
         }
 
         logger.trace("RSS query: {}", query);
@@ -447,7 +447,7 @@ public class RSSFeed {
             locale = Locale.forLanguageTag(language);
         }
         if (locale == null) {
-            locale = Locale.GERMANY;
+            locale = ViewerResourceBundle.getDefaultLocale();
         }
 
         logger.trace("RSS query: {}", query);

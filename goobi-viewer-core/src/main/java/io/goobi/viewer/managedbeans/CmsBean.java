@@ -354,7 +354,7 @@ public class CmsBean implements Serializable {
             return FacesContext.getCurrentInstance().getViewRoot().getLocale();
         }
 
-        return Locale.GERMAN;
+        return ViewerResourceBundle.getDefaultLocale();
     }
 
     /**

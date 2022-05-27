@@ -613,7 +613,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return getAllLocales(servletContext);
             } catch (NullPointerException e) {
                 logger.warn("No faces context instance available");
-                allLocales = Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
+                allLocales = Arrays.asList( Locale.ENGLISH, Locale.GERMAN);
             }
         }
         return allLocales;
@@ -644,7 +644,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             FacesContext.getCurrentInstance().getApplication().getSupportedLocales().forEachRemaining(locales::add);
         } catch (NullPointerException e) {
             // logger.warn("No faces context instance available");
-            return Arrays.asList(Locale.GERMAN, Locale.ENGLISH);
+            return Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
         }
         return locales;
     }

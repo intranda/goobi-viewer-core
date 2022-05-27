@@ -392,7 +392,7 @@ public class BrowseBean implements Serializable {
             if (navigationHelper != null) {
                 locale = navigationHelper.getLocale();
             } else {
-                locale = Locale.GERMAN;
+                locale = ViewerResourceBundle.getDefaultLocale();
             }
 
             List<BrowseTerm> terms = null;
