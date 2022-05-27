@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.el.ValueExpression;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -603,10 +604,10 @@ public class BeanUtils {
         Object value = null;
         Application application = context.getApplication();
         if (application != null) {
-            ValueBinding vb = application.createValueBinding(expr);
+            ValueExpression vb = application.getExpressionFactory().createValueExpression(context.getELContext(), expr, String.class);
             if (vb != null) {
                 try {
-                    value = vb.getValue(context);
+                    value = vb.getValue(context.getELContext());
                 } catch (Exception e) {
                     logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
                 }
