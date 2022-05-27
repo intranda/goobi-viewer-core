@@ -296,9 +296,10 @@ public class UploadJob implements Serializable {
      * @throws IndexUnreachableException
      * 
      */
-    public void updateStatus() throws IndexUnreachableException, PresentationException {
-        updateStatus(getJobStatus(processId));
-        logger.debug("Job {}status: {}", getId(), getStatus());
+    public boolean updateStatus() throws IndexUnreachableException, PresentationException {
+        boolean ret = updateStatus(getJobStatus(processId));
+        logger.debug("Job {} status: {}", getId(), getStatus());
+        return ret;
     }
 
     /**
@@ -340,9 +341,11 @@ public class UploadJob implements Serializable {
     /**
      * <p>
      * updateStatus.
+     * </p>
      * 
      * @param psr {@link ProcessStatusResponse}
-     *            </p>
+     * @return true if status has changed; false otherwise
+     * 
      * @throws PresentationException
      * @throws IndexUnreachableException
      * 
@@ -353,17 +356,19 @@ public class UploadJob implements Serializable {
      * @should set status to ready if process completed
      * @should set status to ready if export step done
      */
-    void updateStatus(ProcessStatusResponse psr) throws IndexUnreachableException, PresentationException {
+    boolean updateStatus(ProcessStatusResponse psr) throws IndexUnreachableException, PresentationException {
         if (psr == null) {
             logger.warn("No status response, cannot update status.");
-            return;
+            return false;
         }
+
+        JobStatus oldStatus = status;
 
         // Process no longer exists
         if (psr.getId() == 0 || psr.getCreationDate() == null) {
             setStatus(JobStatus.ERROR);
             setMessage("Process not found in Goobi workflow.");
-            return;
+            return oldStatus != status;
         }
 
         // Process rejected + reason
@@ -381,13 +386,13 @@ public class UploadJob implements Serializable {
         if ("true".equals(rejected)) {
             setStatus(JobStatus.ERROR);
             setMessage(rejectedReason);
-            return;
+            return oldStatus != status;
         }
 
         // Process exported and in index
         if (DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.PI + ":" + pi + " -" + SolrConstants.DATEDELETED + ":*") > 0) {
             setStatus(JobStatus.READY);
-            return;
+            return oldStatus != status;
         }
 
         //        if (psr.isProcessCompleted()) {
@@ -402,6 +407,24 @@ public class UploadJob implements Serializable {
         //        }
 
         setStatus(JobStatus.WAITING);
+
+        return oldStatus != status;
+    }
+
+    /**
+     * 
+     * @return true if status is READY; false otherwise
+     */
+    public boolean isOnline() {
+        return JobStatus.READY == status;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getRecordUrl() {
+        return "piresolver?id=" + pi;
     }
 
     /**

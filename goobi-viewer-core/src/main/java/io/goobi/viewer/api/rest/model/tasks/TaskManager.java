@@ -52,6 +52,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
@@ -124,7 +125,7 @@ public class TaskManager {
         if (pool instanceof ThreadPoolExecutor) {
             return ((ThreadPoolExecutor) pool).getActiveCount();
         }
-        
+
         return -1;
     }
 
@@ -182,13 +183,16 @@ public class TaskManager {
             case UPDATE_UPLOAD_JOBS:
                 return (request, job) -> {
                     try {
-                        int count = 0;
-                        for (UploadJob uj : DataManager.getInstance().getDao().getAllUploadJobs()) {
-                            uj.updateStatus();
-                            DataManager.getInstance().getDao().updateUploadJob(uj);
-                            count++;
+                        int countChecked = 0;
+                        int countUpdated = 0;
+                        for (UploadJob uj : DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING)) {
+                            if (uj.updateStatus()) {
+                                DataManager.getInstance().getDao().updateUploadJob(uj);
+                                countUpdated++;
+                            }
+                            countChecked++;
                         }
-                        logger.debug("{} upload jobs checked.", count);
+                        logger.debug("{} upload jobs checked, {} updated.", countChecked, countUpdated);
                     } catch (DAOException e) {
                         job.setError(e.getMessage());
                     } catch (IndexUnreachableException e) {
