@@ -524,15 +524,15 @@ public class UserBean implements Serializable {
             try {
                 BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
                         .ifPresentOrElse(bean -> bean.invalidate(), () -> {
-                            throw new IllegalStateException("Cann access cmsBean to invalidate");
+                            throw new IllegalStateException("Cannot access cmsBean to invalidate");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
                         .ifPresentOrElse(bean -> bean.resetAccess(), () -> {
-                            throw new IllegalStateException("Cann access activeDocumentBean to resetAccess");
+                            throw new IllegalStateException("Cannot access activeDocumentBean to resetAccess");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
                         .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {
-                            throw new IllegalStateException("Cann access sessionBean to cleanSessionObjects");
+                            throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
             } catch (Throwable e) {
                 logger.warn(e.getMessage());
