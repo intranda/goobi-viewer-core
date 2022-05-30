@@ -155,7 +155,11 @@ public class NavigationHelper implements Serializable {
      */
     @PostConstruct
     public void init() {
-        locale = BeanUtils.getInitialLocale();
+        try {            
+            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        } catch(NullPointerException e) {
+            locale = ViewerResourceBundle.getFallbackLocale();
+        }
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");

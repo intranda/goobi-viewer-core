@@ -324,15 +324,14 @@ public class BeanUtils {
      * @return a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
      */
     public static NavigationHelper getNavigationHelper() {
-        NavigationHelper navigationHelper = (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
-        if (navigationHelper != null) {
-            try {
-                navigationHelper.getCurrentPage();
-            } catch (ContextNotActiveException e) {
-                navigationHelper = new NavigationHelper();
-            }
+        //Don't attempt to get navigationHelper outside of faces context. Otherwise a new navigationHelper entity will be constructed
+        //with false assumptions on current locale
+        if(FacesContext.getCurrentInstance() != null) {            
+            NavigationHelper navigationHelper = (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
+            return navigationHelper;
+        } else {
+            return null;
         }
-        return navigationHelper;
     }
 
     /**
