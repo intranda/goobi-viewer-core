@@ -2473,7 +2473,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return a boolean.
      * @throws DAOException
      */
-    public boolean isAllowUserComments() throws DAOException {
+    public synchronized boolean isAllowUserComments() throws DAOException {
         if (viewManager == null) {
             return false;
         }
