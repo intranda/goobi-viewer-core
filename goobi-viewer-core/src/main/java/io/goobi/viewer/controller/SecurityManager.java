@@ -40,6 +40,16 @@ public class SecurityManager {
     private final Map<String, Long> lastLoginAttemptIpAddressMap = new HashMap<>();
 
     /**
+     * Resets all maps. Used for unit tests.
+     */
+    public void reset() {
+        failedLoginAttemptsUserNameMap.clear();
+        lastLoginAttemptUserNameMap.clear();
+        failedLoginAttemptsIpAddressMap.clear();
+        lastLoginAttemptIpAddressMap.clear();
+    }
+
+    /**
      * 
      * @param ipAddress
      * @return

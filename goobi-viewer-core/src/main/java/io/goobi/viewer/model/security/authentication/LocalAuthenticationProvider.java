@@ -78,7 +78,6 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
         String ipAddress = NetTools.getIpAddress(request);
         long delay = DataManager.getInstance().getSecurityManager().getDelayForIpAddress(ipAddress);
-        logger.trace("delay for ip address {}: {}", ipAddress, delay);
         if (delay > 0) {
             // refuse with delay
             return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true).setDelay(delay));
