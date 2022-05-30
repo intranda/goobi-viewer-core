@@ -139,7 +139,7 @@ public interface IPolyglott {
      */
     public static Locale getCurrentLocale() {
         try {
-            return BeanUtils.getNavigationHelper().getLocale();
+            return BeanUtils.getInitialLocale();
         } catch(NullPointerException e) {
             return Locale.ENGLISH;
         }
