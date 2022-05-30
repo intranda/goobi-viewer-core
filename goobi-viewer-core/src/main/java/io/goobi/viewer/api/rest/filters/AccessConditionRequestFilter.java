@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.filters;
 
@@ -50,7 +56,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
  * <p>
  * Checks requests for access conditions. Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI}
  * and {@link #REQUIRED_PRIVILEGE} to appropriate values for the filter to work properly.
- * Additionally {@link FilterTools#ATTRIBUTE_LOGID} and {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request 
+ * Additionally {@link FilterTools#ATTRIBUTE_LOGID} and {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request
  * to check access to specific files or child documents
  * </p>
  */
@@ -74,17 +80,17 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     /** {@inheritDoc} */
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
-        
+
         String responseMediaType = MediaType.APPLICATION_JSON;
-        
+
         try {
                 String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
                 String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
 
-            if ( StringUtils.isBlank(filename) || 
-                      (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename) 
+            if ( StringUtils.isBlank(filename) ||
+                      (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename)
                     && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
                     && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename))
                 ) {
@@ -127,12 +133,12 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                 }
                 if(StringUtils.isBlank(pi)) {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
-                } else if(StringUtils.isNotBlank(contentFileName)) {              
-                    for (String privilege : privileges) {                        
+                } else if(StringUtils.isNotBlank(contentFileName)) {
+                    for (String privilege : privileges) {
                         access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege);
                     }
                 } else {
-                    for (String privilege : privileges) {  
+                    for (String privilege : privileges) {
                         access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request);
                     }
                 }
@@ -152,7 +158,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     /**
      * Read attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't
      * exist, return an empty array
-     * 
+     *
      * @param request
      * @return
      */

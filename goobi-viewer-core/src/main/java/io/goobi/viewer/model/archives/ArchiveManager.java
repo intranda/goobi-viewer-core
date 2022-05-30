@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.archives;
 
@@ -57,7 +63,7 @@ import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Loads and holds archive tree models. This class should have an application wide scope
- * 
+ *
  * @author florian
  *
  */
@@ -135,7 +141,7 @@ public class ArchiveManager {
 
     /**
      * Queries the list of databases from the basex server and updated the internal database list from it.
-     * 
+     *
      * @param eadParser
      * @return true if the internal list of databases was updated, either because a database was outdated, didn't exist before or doesn't exist
      *         anymore
@@ -232,7 +238,7 @@ public class ArchiveManager {
 
     /**
      * In the list of archive document search hits, find the id of the entry just before the given one
-     * 
+     *
      * @param entry
      * @param sortOrder 'asc' to get the preceding entry, 'desc' to get the succeeding one
      * @return the neighboring entry id if it exists
@@ -269,7 +275,7 @@ public class ArchiveManager {
 
     /**
      * Returns the entry hierarchy from the root down to the entry with the given identifier.
-     * 
+     *
      * @param identifier Entry identifier
      * @param List of entries An empty list if the identified node has no ancestors or doesn't exist
      */
@@ -342,7 +348,7 @@ public class ArchiveManager {
     }
 
     /**
-     * 
+     *
      * @return actual root element of the document, even if it's not in the displayed tree
      */
     private static ArchiveEntry getTrueRoot(ArchiveTree tree) {
@@ -379,7 +385,7 @@ public class ArchiveManager {
 
     /**
      * Check if the given resource is outdated compared to the last updated date from the basex server
-     * 
+     *
      * @param resource
      * @return true if the resource in basex is newer than the given one
      * @throws IOException if the basex server is not reachable

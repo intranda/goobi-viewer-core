@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.metadata;
 
@@ -144,7 +150,6 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(1, metadata.getValues().size());
         Assert.assertFalse(metadata.isBlank(null));
     }
-    
 
     /**
      * @see Metadata#isBlank(String)
@@ -160,7 +165,7 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         Assert.assertTrue(metadata.isBlank("789"));
     }
 
@@ -178,7 +183,7 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         Assert.assertFalse(metadata.isBlank("456"));
     }
 
@@ -227,7 +232,7 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         Assert.assertEquals(2, metadata.getValuesForOwner(null).size());
     }
 
@@ -245,9 +250,34 @@ public class MetadataTest extends AbstractTest {
         Assert.assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
-        
+
         List<MetadataValue> mdValues = metadata.getValuesForOwner("456");
         Assert.assertEquals(1, mdValues.size());
         Assert.assertEquals("456", mdValues.get(0).getOwnerIddoc());
+    }
+
+    /**
+     * @see Metadata#getMasterValue()
+     * @verifies return placeholders for every parameter for group metadata if masterValue empty
+     */
+    @Test
+    public void getMasterValue_shouldReturnPlaceholdersForEveryParameterForGroupMetadataIfMasterValueEmpty() throws Exception {
+        List<MetadataParameter> params = new ArrayList<>(3);
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        params.add(new MetadataParameter());
+        Assert.assertEquals("{1}{3}{5}{7}{9}", new Metadata("foo", null, params).setGroup(true).getMasterValue());
+    }
+
+    /**
+     * @see Metadata#getMasterValue()
+     * @verifies return single placeholder for non group metadata if masterValue empty
+     */
+    @Test
+    public void getMasterValue_shouldReturnSinglePlaceholderForNonGroupMetadataIfMasterValueEmpty() throws Exception {
+        Assert.assertEquals("{0}", new Metadata().getMasterValue());
+
     }
 }

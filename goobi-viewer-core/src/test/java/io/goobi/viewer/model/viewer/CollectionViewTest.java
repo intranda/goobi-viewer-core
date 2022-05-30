@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.viewer;
 
@@ -133,13 +139,13 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
-        
+
         CollectionView col = new CollectionView("foo", getTestProvider());
         HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
         element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");
         Assert.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
     }
-    
+
     /**
      * @see CollectionView#getCollectionUrl(HierarchicalBrowseDcElement,String,String)
      * @verifies escape critical url chars in collection name
@@ -150,7 +156,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("foo/bar", 2, SolrConstants.DC, null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
         Assert.assertEquals("/search/-/-/1/-/foo%3AfooU002Fbar/", col.getCollectionUrl(element));
     }
-    
+
     @Test
     public void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
         CMSPage page = new CMSPage();
@@ -168,7 +174,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         CMSMediaItem mediaItem = DataManager.getInstance().getDao().getCMSMediaItem(1l);
         assertEquals(mediaItem.getIconURI(), element.getInfo().getIconURI());
     }
-    
+
 
     /**
      * @see Configuration#getCollectionDefaultSortField(String)
@@ -180,7 +186,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("SORT_TITLE", CollectionView.getCollectionDefaultSortField("collection1", sortFields));
     }
 
-    
+
 
     /**
      * @see Configuration#getCollectionDefaultSortField(String)

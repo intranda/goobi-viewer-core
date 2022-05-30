@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -85,7 +91,7 @@ public class StringTools {
 
     /**
      * Escpae url for submitted form data. A space is encoded as '+'.
-     * 
+     *
      * @param string String to encode
      * @return URL-encoded string
      */
@@ -184,7 +190,7 @@ public class StringTools {
 
     /**
      * Replaces characters in included in <code>replace</code> with characters in <code>replaceWith</code> in the given string.
-     * 
+     *
      * @param str
      * @param replace
      * @param replaceWith
@@ -278,7 +284,7 @@ public class StringTools {
 
     /**
      * Use this method to log user-controller variables that may contain pattern-breaking characters such as line breaks and tabs.
-     * 
+     *
      * @param s String to clean
      * @return String sans any logger pattern-breaking characters
      * @should remove chars correctly
@@ -338,7 +344,7 @@ public class StringTools {
     }
 
     /**
-     * 
+     *
      * @param input
      * @return
      */
@@ -382,14 +388,14 @@ public class StringTools {
 
     /**
      * Checks whether given string already contains URL-encoded characters.
-     * 
+     *
      * @param s String to check
      * @param charset Charset for URL decoding
      * @return true if decoded string differs from original; false otherwise
      * @throws UnsupportedEncodingException
      * @should return true if string contains url encoded characters
      * @should return false if string not encoded
-     * 
+     *
      */
     public static boolean isStringUrlEncoded(String s, String charset) throws UnsupportedEncodingException {
         if (StringUtils.isEmpty(s)) {
@@ -580,7 +586,7 @@ public class StringTools {
 
         return ret;
     }
-    
+
 
     /**
      * <p>
@@ -667,7 +673,7 @@ public class StringTools {
     }
 
     /**
-     * 
+     *
      * @param value
      * @return true if value null, empty or starts with 0x1; false otherwise
      * @should return true if value null or empty
@@ -684,7 +690,7 @@ public class StringTools {
     }
 
     /**
-     * 
+     *
      * @param values All values to check
      * @return List of values that match <code>regex</code>
      * @should return all matching values
@@ -705,7 +711,7 @@ public class StringTools {
 
         return ret;
     }
-    
+
     /**
      * Try to parse the given string as integer.
      * @param s the string to parse
@@ -715,7 +721,7 @@ public class StringTools {
         if(StringUtils.isBlank(s)) {
             return Optional.empty();
         } else {
-            try {                
+            try {
                 int i = Integer.parseInt(s);
                 return Optional.of(i);
             } catch(NumberFormatException e) {
@@ -723,7 +729,7 @@ public class StringTools {
             }
         }
     }
-    
+
     public static int[] getIntegerRange(String range) {
         int page;
         int page2 = Integer.MAX_VALUE;

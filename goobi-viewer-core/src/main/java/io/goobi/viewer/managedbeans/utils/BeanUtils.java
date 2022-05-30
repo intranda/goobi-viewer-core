@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans.utils;
 
@@ -20,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.el.ValueExpression;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
@@ -108,7 +115,7 @@ public class BeanUtils {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static HttpSession getSession() {
@@ -189,7 +196,7 @@ public class BeanUtils {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static Locale getInitialLocale() {
@@ -317,15 +324,14 @@ public class BeanUtils {
      * @return a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
      */
     public static NavigationHelper getNavigationHelper() {
-        NavigationHelper navigationHelper = (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
-        if (navigationHelper != null) {
-            try {
-                navigationHelper.getCurrentPage();
-            } catch (ContextNotActiveException e) {
-                navigationHelper = new NavigationHelper();
-            }
+        //Don't attempt to get navigationHelper outside of faces context. Otherwise a new navigationHelper entity will be constructed
+        //with false assumptions on current locale
+        if(FacesContext.getCurrentInstance() != null) {            
+            NavigationHelper navigationHelper = (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
+            return navigationHelper;
+        } else {
+            return null;
         }
-        return navigationHelper;
     }
 
     /**
@@ -440,7 +446,7 @@ public class BeanUtils {
         if (bean != null) {
             return (SessionBean) bean;
         }
-        
+
         return new SessionBean();
     }
 
@@ -597,10 +603,10 @@ public class BeanUtils {
         Object value = null;
         Application application = context.getApplication();
         if (application != null) {
-            ValueBinding vb = application.createValueBinding(expr);
+            ValueExpression vb = application.getExpressionFactory().createValueExpression(context.getELContext(), expr, String.class);
             if (vb != null) {
                 try {
-                    value = vb.getValue(context);
+                    value = vb.getValue(context.getELContext());
                 } catch (Exception e) {
                     logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
                 }

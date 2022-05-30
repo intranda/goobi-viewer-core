@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.solr;
 
@@ -264,33 +270,33 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("Otto", result.get("MD_AUTHOR:Schubert, Otto"));
         Assert.assertEquals("Gottlob Heinrich", result.get("MD_AUTHOR:Heinse, Gottlob Heinrich"));
     }
-    
+
     @Test
     public void getSpellingSuggestions() throws IndexUnreachableException {
         List<String> suggestions = DataManager.getInstance()
         .getSearchIndex().querySpellingSuggestions("tier", 0.7f, false);
         assertEquals(1, suggestions.size());
         assertTrue(suggestions.contains("thier"));
-        
+
         suggestions = DataManager.getInstance()
                 .getSearchIndex().querySpellingSuggestions("tier", 0.5f, false);
                 assertEquals(10, suggestions.size());
                 assertTrue(suggestions.contains("thier"));
                 assertTrue(suggestions.contains("teil"));
-        
+
     }
-    
+
     @Test
     public void test_getHeatMap() throws IndexUnreachableException {
-        
+
         String world = "[\"-180 -90\" TO \"180 90\"]";
         String query = "*:*";
-        
+
         String string = DataManager.getInstance()
         .getSearchIndex().getHeatMap("WKT_COORDS", world, query, "", 1);
         assertNotNull(string);
         JSONObject json = new JSONObject(string);
-        
+
         assertEquals(1, json.get("gridLevel"));
         assertEquals(8, json.get("columns"));
         assertEquals(4, json.get("rows"));
@@ -298,7 +304,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         assertEquals(180.0, json.getDouble("maxX"), 0.0);
         assertEquals(-90.0, json.getDouble("minY"), 0.0);
         assertEquals(90.0, json.getDouble("maxY"), 0.0);
-        
+
         JSONArray rows = json.getJSONArray("counts_ints2D");
         assertEquals(4, rows.length());
         assertEquals(8, rows.getJSONArray(0).length());

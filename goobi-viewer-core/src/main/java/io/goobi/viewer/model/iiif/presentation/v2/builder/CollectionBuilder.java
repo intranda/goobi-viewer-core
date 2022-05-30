@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
@@ -83,7 +89,7 @@ public class CollectionBuilder extends AbstractBuilder {
      */
     private static Map<String, String> facetFieldMap = new HashMap<>();
 //    private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
-    
+
     /**
      * <p>
      * Constructor for CollectionBuilder.
@@ -115,7 +121,7 @@ public class CollectionBuilder extends AbstractBuilder {
      */
     public Collection2 generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar, final List<String> ignoreCollections)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
-        
+
         CollectionView collectionView = getCollectionView(collectionField, facetField, splittingChar);
         collectionView.setIgnore(ignoreCollections);
 //        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
@@ -169,7 +175,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 collection.addCollection(child);
             }
         }
-        
+
         return collection;
     }
 
@@ -260,7 +266,7 @@ public class CollectionBuilder extends AbstractBuilder {
                 BrowseElementInfo info = baseElement.getInfo();
                 if (info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {
                     collection.setLabel(info.getTranslationsForName());
-                    if(info instanceof CMSCollection) {                        
+                    if(info instanceof CMSCollection) {
                         collection.setDescription(info.getTranslationsForDescription());
                     }
                 } else {
@@ -306,10 +312,10 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collection
      */
     private void addRenderings(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, Collection2 collection) {
-        
+
         this.getRenderings().forEach(link -> {
             URI id = getLinkingPropertyUri(baseElement, collectionView, link.target);
-            if(id != null) {                
+            if(id != null) {
                 collection.addRendering(link.getLinkingContent(id));
             }
         });
@@ -323,7 +329,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @return
      */
     private URI getLinkingPropertyUri(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, LinkingTarget target) {
-        
+
         URI uri = null;
         switch(target) {
             case VIEWER:
@@ -335,20 +341,20 @@ public class CollectionBuilder extends AbstractBuilder {
 
 
     /**
-     * Add a taglist service to the collection and all subcollections. 
+     * Add a taglist service to the collection and all subcollections.
      * The taglist service provides a list of
-     * 
+     *
      * @param collection
      * @param collectionField
      * @param groupingField
      * @throws IndexUnreachableException
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public void addTagListService(Collection2 collection, String collectionField, final String facetField, String label) throws IndexUnreachableException, IllegalRequestException {
         CollectionView view = getCollectionView(collectionField, facetField, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         addTagListService(collection, view, label);
         collection.collections.forEach(c -> addTagListService(c, view, label));
-        
+
     }
 
     /**
@@ -361,10 +367,10 @@ public class CollectionBuilder extends AbstractBuilder {
                     TagListService tagsService = new TagListService(label, urls.path(ApiUrls.CONTEXT).build());
                     tagsService.setTags(ele.getFacetValues());
                     collection.addService(tagsService);
-                    
+
                 });
             }
-        
+
     }
 
     /**
@@ -377,7 +383,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param splittingChar a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public CollectionView getCollectionView(String collectionField, final String groupingField, final String splittingChar)
             throws IndexUnreachableException, IllegalRequestException {
@@ -398,18 +404,18 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param splittingChar
      * @return
      * @throws IndexUnreachableException
-     * @throws IllegalRequestException 
+     * @throws IllegalRequestException
      */
     public CollectionView createCollectionView(String collectionField, final String facetField, final String splittingChar)
             throws IndexUnreachableException, IllegalRequestException {
         CollectionView view = new CollectionView(collectionField,
                 () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, splittingChar));
         view.populateCollectionList();
-        
+
         String key = collectionField + "::" + facetField;
         BeanUtils.getSessionBean().put(key, view);
         return view;
-        
+
     }
 
     /**

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v2.records.media;
 
@@ -73,9 +79,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 @AccessConditionBinding
 @CORSBinding
 public class RecordsFilesImageResource extends ImageResource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(RecordsFilesImageResource.class);
-    
+
     /**
      * @param request
      * @param directory
@@ -111,7 +117,7 @@ public class RecordsFilesImageResource extends ImageResource {
             request.setAttribute("iiif-format", parts.get(3));
             int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
             if(maxUnzoomedImageWidth > 0 &&
-                    (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) || 
+                    (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) ||
                     scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
                 request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, new String[] {IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES});
             }
@@ -120,7 +126,7 @@ public class RecordsFilesImageResource extends ImageResource {
             request.setAttribute("iiif-info", true);
         }
     }
-    
+
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
@@ -133,7 +139,7 @@ public class RecordsFilesImageResource extends ImageResource {
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-        
+
         if(context.getProperty("param:metsSource") != null) {
             try {
                 String metsSource = context.getProperty("param:metsSource").toString();
@@ -142,12 +148,12 @@ public class RecordsFilesImageResource extends ImageResource {
             } catch (URISyntaxException e) {
                 logger.error("Failed to convert metsSource " + context.getProperty("metsSource") + " to mets URI");
             }
-            
+
         }
-        
+
         return super.getPdf();
     }
-    
+
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
@@ -156,7 +162,7 @@ public class RecordsFilesImageResource extends ImageResource {
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
        return super.redirectToCanonicalImageInfo();
     }
-    
+
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
         super.createResourceURI(request, directory, filename);
@@ -166,7 +172,7 @@ public class RecordsFilesImageResource extends ImageResource {
         } catch (UnsupportedEncodingException e) {
         }
     }
-    
+
     @GET
     @javax.ws.rs.Path("/info.json")
     @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })

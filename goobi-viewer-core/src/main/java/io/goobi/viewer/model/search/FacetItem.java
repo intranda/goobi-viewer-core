@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -68,7 +74,7 @@ public class FacetItem implements Serializable, IFacetItem {
 
     /**
      * Constructor that doesn't parse the link; for testing purposes.
-     * 
+     *
      * @param hierarchical
      */
     FacetItem(boolean hierarchical) {
@@ -107,10 +113,10 @@ public class FacetItem implements Serializable, IFacetItem {
         this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
     }
 
-    
+
     /**
      * Internal constructor.
-     * 
+     *
      * @param link {@link String}
      * @param label {@link String}
      * @param translatedLabel {@link String}
@@ -172,7 +178,7 @@ public class FacetItem implements Serializable, IFacetItem {
 
     /**
      * Extracts field name and value(s) from the given link string.
-     * 
+     *
      * @should set label to value if label empty
      */
     void parseLink() {
@@ -401,7 +407,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * 
+     *
      * @param value
      * @return
      * @should escape value correctly

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
@@ -46,16 +52,16 @@ import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
  * if other tasks are running) the status changes to {@link TaskStatus#STARTED}. After processing ends
  * the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depedning on whether
  * an error occured which may be recorded in the {@link #exception} property.
- * 
+ *
  * @author florian
  *
  */
 @JsonInclude(Include.NON_EMPTY)
 public class Task {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(Task.class);
     private static final AtomicLong idCounter = new AtomicLong(0);
-    
+
     public static enum Accessibility {
         /**
          * Anyone may access this task
@@ -74,7 +80,7 @@ public class Task {
          */
         TOKEN;
     }
-    
+
     public static enum TaskType {
         /**
          * Send emails to all search owners if their searches have changed results
@@ -85,22 +91,24 @@ public class Task {
          */
         SEARCH_EXCEL_EXPORT,
         /**
-         * Update the application sitemap 
+         * Update the application sitemap
          */
         UPDATE_SITEMAP,
         /**
          * Update data repository names of a record
          */
-        UPDATE_DATA_REPOSITORY_NAMES;
+        UPDATE_DATA_REPOSITORY_NAMES,
+        /** Update uploaded processes status. */
+        UPDATE_UPLOAD_JOBS;
     }
-    
+
     public static enum TaskStatus {
         CREATED,
         STARTED,
         COMPLETE,
         ERROR
     }
-    
+
     public final long id;
     public final TaskType type;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -115,7 +123,7 @@ public class Task {
     public Optional<String> sessionId = Optional.empty();
     @JsonIgnore
     public final TaskParameter params;
-    
+
     public Task(TaskParameter params, BiConsumer<HttpServletRequest, Task> work) {
         this.type = params.type;
         this.work = work;
@@ -125,7 +133,7 @@ public class Task {
         this.params = params;
     }
 
-    
+
     public void doTask(HttpServletRequest request) {
         logger.debug("Started Task '{}'", this);
         this.sessionId = Optional.ofNullable(request).map(r -> r.getSession().getId());
@@ -136,17 +144,18 @@ public class Task {
         }
         logger.debug("Finished Task '{}'", this);
     }
-    
+
     public void setError(String error) {
         this.status = TaskStatus.ERROR;
         this.exception = Optional.ofNullable(error);
     }
-    
+
     public static Accessibility getAccessibility(TaskType type) {
         switch(type) {
-            case NOTIFY_SEARCH_UPDATE: 
+            case NOTIFY_SEARCH_UPDATE:
             case UPDATE_SITEMAP:
             case UPDATE_DATA_REPOSITORY_NAMES:
+            case UPDATE_UPLOAD_JOBS:
                 return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;
@@ -154,11 +163,11 @@ public class Task {
                 return Accessibility.ADMIN;
         }
     }
-    
+
     public String getErrorMessage() {
         return exception.orElse(null);
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -166,5 +175,5 @@ public class Task {
     public String toString() {
         return "Task " + this.id + "; Type: " + this.type + "; Status: " + this.status;
     }
-    
+
 }

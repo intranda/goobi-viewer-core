@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -149,7 +155,11 @@ public class NavigationHelper implements Serializable {
      */
     @PostConstruct
     public void init() {
-        locale = BeanUtils.getInitialLocale();
+        try {            
+            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        } catch(NullPointerException e) {
+            locale = ViewerResourceBundle.getFallbackLocale();
+        }
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
@@ -235,7 +245,7 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Produce an identifier string for a cms page to use for identifying the page in the navigation bar
-     * 
+     *
      * @param cmsPage
      * @return
      */
@@ -754,7 +764,7 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getDateTimePattern() {
@@ -1023,10 +1033,10 @@ public class NavigationHelper implements Serializable {
     /**
      * Get the subthemeDiscriminator value either from a property of the currently loaded CMS page or the currently loaded document in the
      * activeDocumentbean if the current page is a docmentPage.
-     * 
+     *
      * @return the subtheme name determined from current cmsPage or current document. If {@link Configuration#getSubthemeDiscriminatorField} is blank,
      *         always return an empty string
-     * 
+     *
      */
     public String determineCurrentSubThemeDiscriminatorValue() {
         // Automatically set the sub-theme discriminator value to the
@@ -1582,14 +1592,14 @@ public class NavigationHelper implements Serializable {
         String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
         return ipAddress;
     }
-    
-    
+
+
     public Optional<String> getSessionId() {
         return Optional.ofNullable(FacesContext.getCurrentInstance())
         .map(FacesContext::getExternalContext)
         .map(extCtx -> extCtx.getSessionId(false));
     }
-    
+
     /**
      * <p>
      * getStatusMapValue.
@@ -1667,7 +1677,7 @@ public class NavigationHelper implements Serializable {
 
     /**
      * Returns a simple translation for the given language (or current language, if none given).
-     * 
+     *
      * @param msgKey Message key to translate
      * @param language Optional desired language
      * @param escape If true the return string will be Java-escaped
@@ -1957,7 +1967,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Get the path to a viewer resource relative to the root path ("/viewer") If it exists, the resource from the theme, otherwise from the core If
      * the resource exists neither in theme nor core. An Exception will be thrown
-     * 
+     *
      * @param path The resource path relative to the first "resources" directory
      * @return
      */
@@ -2037,15 +2047,15 @@ public class NavigationHelper implements Serializable {
         }
         return path;
     }
-    
+
     public String getCurrentTime() {
         return Long.toString(System.currentTimeMillis());
     }
-    
+
     public String returnTo(String page) {
         return page;
     }
-    
+
     public String getTranslationsAsJson(List<String> keys) {
         Locale locale = getLocale();
         JSONObject json = new JSONObject();
@@ -2055,7 +2065,7 @@ public class NavigationHelper implements Serializable {
         }
         return json.toString();
     }
-    
+
     public List<Integer> getRange(long from, long to) {
         List<Integer> range = IntStream.range((int)from, (int)to+1).boxed().collect(Collectors.toList());
         return range;

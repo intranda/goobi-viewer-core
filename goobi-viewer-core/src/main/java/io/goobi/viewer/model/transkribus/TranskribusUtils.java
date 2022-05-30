@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.transkribus;
 
@@ -36,7 +42,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
-import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
+import io.goobi.viewer.model.job.JobStatus;
 
 /**
  * <p>
@@ -112,7 +118,7 @@ public class TranskribusUtils {
             logger.error("No viewer session");
             return null;
         }
-        
+
         // Check and create the default viewer instance collection
         String viewerCollectionId =
                 getCollectionId(restApiUrl, viewerSession.getSessionId(),
@@ -202,7 +208,7 @@ public class TranskribusUtils {
         Map<String, String> params = new HashMap<>(2);
         params.put("user", userName);
         params.put("pw", password);
-        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), null, params, null, null, null, null);
 
         return XmlTools.getDocumentFromString(response, StringTools.DEFAULT_ENCODING);
     }
@@ -213,7 +219,7 @@ public class TranskribusUtils {
     //        OAuthClientRequest request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE).setResponseType(ResponseType.CODE.name()
     //                .toLowerCase()).setClientId(clientId).setRedirectURI(Helper.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
     //                .setState(oAuthState).setScope("openid email").buildQueryMessage();
-    //      
+    //
     //    }
 
     /**
@@ -293,7 +299,7 @@ public class TranskribusUtils {
         params.put("JSESSIONID", sessionId);
         //        params.put("collName", collectionName);
 
-        return NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        return NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null, null, null);
     }
 
     /**
@@ -335,7 +341,7 @@ public class TranskribusUtils {
         //        params.put("userid", recipientUserId);
         //        params.put("role", "Editor");
         //        params.put("sendMail", String.valueOf(sendMail));
-        NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null, null, null);
         // Status 200 means success
         return true;
     }
@@ -380,7 +386,7 @@ public class TranskribusUtils {
         sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, StringTools.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", session.getSessionId());
-        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null);
+        String response = NetTools.getWebContentPOST(sbUrl.toString(), params, null, null, null, null, null);
         TranskribusJob job = new TranskribusJob();
         job.setPi(pi);
         job.setOwnerId(session.getUserId());
@@ -410,7 +416,7 @@ public class TranskribusUtils {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
+    protected static JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
             throws ClientProtocolException, IOException, HTTPException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");

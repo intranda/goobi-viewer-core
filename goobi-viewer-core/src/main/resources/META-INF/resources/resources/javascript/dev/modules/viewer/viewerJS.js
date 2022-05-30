@@ -57,7 +57,7 @@ var viewerJS = (function () {
         $.extend(true, _defaults, config);
         if(_debug)console.log("init ", _defaults);
         // detect current browser
-        _defaults.browser = viewerJS.helper.getCurrentBrowser();
+        _defaults.browser = getCurrentBrowser();
 
         // write theme name to viewer object so submodules can use it
         viewer.theme = _defaults.theme;
@@ -74,6 +74,8 @@ var viewerJS = (function () {
   
         // init Bootstrap features
         viewerJS.helper.initBsFeatures();
+        
+        viewerJS.helper.initRestrictedInputFields();
 
         // init mobile Toggles for old responisive themes
         viewerJS.mobileToggles.init();
@@ -114,7 +116,6 @@ var viewerJS = (function () {
         this.pageScroll.scrollToFragment();
         
         // init some image methods
-        viewer.loadThumbnails();
         viewer.initFragmentNavigation();
         viewer.initStoreScrollPosition();
         viewer.initSidebarCollapseable();

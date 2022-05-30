@@ -7,39 +7,62 @@
 	<persistence-unit name="intranda_viewer_tomcat" transaction-type="JTA">
         <jta-data-source>java:comp/env/viewer</jta-data-source>
 
-		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
+        <class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
+        <class>io.goobi.viewer.dao.converter.NumberListConverter</class>
+        <class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
+        <class>io.goobi.viewer.dao.converter.StringListConverter</class>
+        <class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
+        <class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
+        <class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+        <class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
+        <class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
+        <class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
+        <class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
         <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
 		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
         <class>io.goobi.viewer.model.annotation.comments.CommentGroup</class>
-		<class>io.goobi.viewer.model.bookmark.BookmarkList</class>
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
+        <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
         <class>io.goobi.viewer.model.cms.CMSContentItem</class>
         <class>io.goobi.viewer.model.cms.CMSCollection</class>
         <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
         <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSPage</class>
         <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
         <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
+        <class>io.goobi.viewer.model.cms.CMSRecordNote</class>
+        <class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
+        <class>io.goobi.viewer.model.cms.CMSSlider</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
         <class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
 		<class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
 		<class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
-		<class>io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget</class>
 		<class>io.goobi.viewer.model.cms.widgets.PageListSidebarWidget</class>
-        <class>io.goobi.viewer.model.maps.GeoMap</class>
-        <class>io.goobi.viewer.model.maps.MapTranslation</class>
+        <class>io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
-		<class>io.goobi.viewer.model.download.DownloadJob</class>
-		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
-		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
+		<class>io.goobi.viewer.model.job.download.DownloadJob</class>
+		<class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
+		<class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
+        <class>io.goobi.viewer.model.job.upload.UploadJob</class>
+        <class>io.goobi.viewer.model.log.LogMessage</class>
+        <class>io.goobi.viewer.model.maps.GeoMap</class>
+        <class>io.goobi.viewer.model.maps.MapTranslation</class>
 		<class>io.goobi.viewer.model.search.Search</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
@@ -49,30 +72,8 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
-		<class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
-		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
-		<class>io.goobi.viewer.model.log.LogMessage</class>
-		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
-		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
-		<class>io.goobi.viewer.dao.converter.NumberListConverter</class>
-		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
-		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
-		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
-		<class>io.goobi.viewer.model.cms.CMSSlider</class>
 		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
-		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
-		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
-		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
-		<class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
-		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
-		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
-		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
 		<class>io.goobi.viewer.model.clients.ClientApplication</class>
 
 		<properties>
@@ -101,36 +102,51 @@
 
 	<persistence-unit name="intranda_viewer_test" transaction-type="RESOURCE_LOCAL">
 
-		<!-- <class>io.goobi.viewer.model.annotation.AnnotationElement</class> -->
-		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
+        <class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
+        <class>io.goobi.viewer.dao.converter.NumberListConverter</class>
+        <class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
+        <class>io.goobi.viewer.dao.converter.StringListConverter</class>
+        <class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
+        <class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
+        <class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+        <class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
+        <class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
+        <class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
+        <class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
         <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
-		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
+        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+        <class>io.goobi.viewer.model.annotation.comments.Comment</class>
         <class>io.goobi.viewer.model.annotation.comments.CommentGroup</class>
-        <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.bookmark.Bookmark</class>
+        <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
-		<class>io.goobi.viewer.model.cms.CMSContentItem</class>
-		<class>io.goobi.viewer.model.cms.CMSCollection</class>
-		<class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.CMSContentItem</class>
+        <class>io.goobi.viewer.model.cms.CMSCollection</class>
+        <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
         <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSPage</class>
         <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
         <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElement</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithQuery</class>
-        <class>io.goobi.viewer.model.cms.CMSSidebarElementWithSearch</class>
+        <class>io.goobi.viewer.model.cms.CMSRecordNote</class>
+        <class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
+        <class>io.goobi.viewer.model.cms.CMSSlider</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
-		<class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
-		<class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
-		<class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
-		<class>io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget</class>
-		<class>io.goobi.viewer.model.cms.widgets.PageListSidebarWidget</class>
-        <class>io.goobi.viewer.model.maps.GeoMap</class>
-        <class>io.goobi.viewer.model.maps.MapTranslation</class>
+        <class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
+        <class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
+        <class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
+        <class>io.goobi.viewer.model.cms.widgets.PageListSidebarWidget</class>
+        <class>io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
+        <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.Campaign</class>
+        <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
@@ -173,6 +189,24 @@
 		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
 		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
 		<class>io.goobi.viewer.model.clients.ClientApplication</class>
+        <class>io.goobi.viewer.model.job.download.DownloadJob</class>
+        <class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
+        <class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
+        <class>io.goobi.viewer.model.job.upload.UploadJob</class>
+        <class>io.goobi.viewer.model.log.LogMessage</class>
+        <class>io.goobi.viewer.model.maps.GeoMap</class>
+        <class>io.goobi.viewer.model.maps.MapTranslation</class>
+        <class>io.goobi.viewer.model.search.Search</class>
+        <class>io.goobi.viewer.model.security.License</class>
+        <class>io.goobi.viewer.model.security.LicenseType</class>
+        <class>io.goobi.viewer.model.security.Role</class>
+        <class>io.goobi.viewer.model.security.user.IpRange</class>
+        <class>io.goobi.viewer.model.security.user.User</class>
+        <class>io.goobi.viewer.model.security.user.UserGroup</class>
+        <class>io.goobi.viewer.model.security.user.UserRole</class>
+        <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+        <class>io.goobi.viewer.model.translations.Translation</class>
+        <class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />

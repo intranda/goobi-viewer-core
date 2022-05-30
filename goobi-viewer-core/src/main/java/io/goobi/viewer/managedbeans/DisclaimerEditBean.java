@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -55,7 +61,7 @@ public class DisclaimerEditBean implements Serializable {
 
     /**
      * Constructor for testing purposes
-     * 
+     *
      * @param dao the IDAO implementation to use
      */
     public DisclaimerEditBean(IDAO dao) {
@@ -84,7 +90,7 @@ public class DisclaimerEditBean implements Serializable {
 
     /**
      * Activate/deactivate the disclaimer. Applies directly to the persisted object
-     * 
+     *
      * @param active
      * @throws DAOException
      */
@@ -101,7 +107,7 @@ public class DisclaimerEditBean implements Serializable {
 
     /**
      * Check if the banner is active, i.e. should be displayed at all
-     * 
+     *
      * @return true if the banner should be shown if appropriate
      */
     public boolean isDisclaimerActive() {
@@ -110,7 +116,7 @@ public class DisclaimerEditBean implements Serializable {
 
     /**
      * Set the {@link Disclaimer#getRequiresConsentAfter()} to the current time. Applies directly to the persisted object
-     * 
+     *
      * @throws DAOException
      */
     public void resetUserConsent() throws DAOException {
@@ -143,7 +149,7 @@ public class DisclaimerEditBean implements Serializable {
             return new Disclaimer();
         }
     }
-    
+
 
     private IDAO retrieveDAO() {
         try {

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.authorities;
 
@@ -55,16 +61,16 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * Resolver for normdata authority resources identified by their escaped url
- * 
+ *
  * @author florian
  *
  */
 @javax.ws.rs.Path(AUTHORITY)
 @ViewerRestServiceBinding
 public class AuthorityResource {
-    
+
     private final static Logger logger = LoggerFactory.getLogger(AuthorityResource.class);
-    
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -72,7 +78,7 @@ public class AuthorityResource {
 
     public AuthorityResource() {
     }
-    
+
     @GET
     @javax.ws.rs.Path(AUTHORITY_RESOLVER)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -166,14 +172,14 @@ public class AuthorityResource {
                 jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
         }
-        
-        try {            
+
+        try {
             return jsonArray.toString();
         } catch(NoSuchMethodError e) {
             throw new PresentationException("Error creating json of normdata from " + url);
         }
     }
-    
+
     static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
         JSONObject jsonObj = new JSONObject();
         String translation = ViewerResourceBundle.getTranslation(normData.getKey(), locale);

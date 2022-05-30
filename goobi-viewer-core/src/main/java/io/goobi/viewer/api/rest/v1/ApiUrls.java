@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1;
 
@@ -27,7 +33,7 @@ import io.goobi.viewer.controller.DataManager;
 public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String API = "/api/v1";
-    
+
     public static final String CACHE = "/cache";
     public static final String CACHE_RECORD = "/{pi}";
 
@@ -41,7 +47,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String INDEX_STATISTICS = "/statistics";
     public static final String INDEX_SPATIAL_HEATMAP = "/spatial/heatmap/{solrField}";
     public static final String INDEX_SPATIAL_SEARCH = "/spatial/search/{solrField}";
-    
+
     public static final String MONITORING = "/monitoring";
     public static final String MONITORING_CORE_VERSION = "/version/core";
 
@@ -128,7 +134,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2 = "/{subfolder}/{subsubfolder}/{auxfilename}";
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT = "//{subfolder}/{subsubfolder}/{auxfilename}";
 
-    
+
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";
@@ -162,23 +168,23 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String USERS_USER_AVATAR_IMAGE = "/users/{userId}/avatar";
     public static final String USERS_USER_AVATAR_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
-    
+
     public static final String USERS_CURRENT = "/current";
 
     public static final String AUTHORITY = "/authority";
     public static final String AUTHORITY_RESOLVER = "/resolver";
 
     public static final String OPENSEARCH = "/opensearch";
-    
+
     public static final String SEARCH = "/search";
     public static final String SEARCH_HIT_CHILDREN = "/hit/{id}/{numChildren}";
 
     public static final String TASKS = "/tasks";
     public static final String TASKS_TASK = "/{id}";
-    
+
     public static final String CONTEXT = "/context";
-    
-    
+
+
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";
     public static final String CROWDSOURCING_CAMPAIGN_RECORDS = "/records/{pi}";
@@ -197,7 +203,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String LOCALIZATION_VOCABS = "/vocabularies";
     public static final String LOCALIZATION_VOCABS_FILE = "/vocabularies/{filename}";
     public static final String LOCALIZATION_TRANSLATIONS = "/translations";
-    
+
     public static final String CMS = "/cms";
     public static final String CMS_MEDIA = "/cms/media";
     public static final String CMS_MEDIA_ITEM = "/{id}";
@@ -217,7 +223,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String TEMP_MEDIA_FILES = "/temp/files";
     public static final String TEMP_MEDIA_FILES_FOLDER = "/{folder}";
     public static final String TEMP_MEDIA_FILES_FILE = "/{folder}/{filename}";
-    
+
     public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
     public static final String TEMP_MEDIA_FILES_FILE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 

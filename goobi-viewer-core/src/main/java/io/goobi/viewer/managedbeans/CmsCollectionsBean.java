@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -137,7 +143,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if the if translations for the values of <code>solrField</code> and <code>solrFieldValue</code> are not or only partially
      *         translated; false if they are fully translated
      * @should return false if solrField not among configured translation groups
@@ -175,7 +181,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if number of available collections is greater than 1; false otherwise
      * @should return false if only one collection field is configured
      */
@@ -186,7 +192,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Returns the {@link MessageEntry} representing existing translations for the current value of <code>solrFieldValue</code>. Use for the info
      * widget in the collection administration.
-     * 
+     *
      * @return {@link MessageEntry} containing the translations for <code>solrFieldValue</code>; empty {@link MessageEntry} if none found
      * @should return empty MessageEntry if none found
      */
@@ -220,7 +226,7 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param solrField
      * @return
      */
@@ -377,7 +383,7 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      * Loads existing or creates a new <code>CMSCollection</code> for the current <code>solrfield</code> and the given <code>collectionName</code>.
-     * 
+     *
      * @param collectionName Collection field value
      * @throws DAOException
      */
@@ -665,7 +671,7 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      * Sets the value of <code>imageMode</code> depending on the properties of <code>currentCollection</code>.
-     * 
+     *
      * @should set imageMode correctly
      */
     public void initImageMode() {
@@ -698,7 +704,7 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      * Initializes the collection tree for the given index field name.
-     * 
+     *
      * @param field
      * @throws IllegalRequestException
      * @throws IndexUnreachableException
@@ -713,7 +719,7 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      * Initializes the collection tree for the current <code>solrField</code>, but only if not yet loaded.
-     * 
+     *
      * @throws IllegalRequestException
      * @throws IndexUnreachableException
      */

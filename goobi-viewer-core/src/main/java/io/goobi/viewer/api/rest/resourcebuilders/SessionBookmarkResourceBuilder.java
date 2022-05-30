@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
@@ -46,11 +52,11 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     private static final Logger logger = LoggerFactory.getLogger(SessionBookmarkResourceBuilder.class);
 
     private final HttpSession session;
-    
+
     public SessionBookmarkResourceBuilder(HttpSession session) {
         this.session = session;
     }
-    
+
     /**
      * Returns the session stored bookmark list, creating a new empty one if needed
      *
@@ -227,7 +233,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
             int count = DataManager.getInstance().getBookmarkManager().getBookmarkList(session).map(bs -> bs.getItems().size()).orElse(0);
             return count;
     }
-    
+
 
 
     /**
@@ -250,7 +256,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
             throw new RestApiException("Bookmark list " + id + " is not publicly accessible", HttpServletResponse.SC_FORBIDDEN);
         }
     }
-    
+
     /**
      * @param shareKey
      * @return
@@ -288,7 +294,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     public SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException {
         throw new IllegalRequestException("Cannot add additional session bookmark lists");
     }
-    
+
     @Override
     public SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException {
         throw new IllegalRequestException("Cannot add additional session bookmark lists");

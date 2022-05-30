@@ -460,6 +460,7 @@ public class BCrypt {
      * @param password the password to hash
      * @param salt the salt to hash with (perhaps generated using BCrypt.gensalt)
      * @return the hashed password
+     * @should hash password correctly
      */
     public static String hashpw(String password, String salt) {
         BCrypt B;

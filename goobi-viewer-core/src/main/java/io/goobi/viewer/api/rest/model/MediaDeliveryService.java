@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.model;
 
@@ -86,7 +92,7 @@ public class MediaDeliveryService {
         if (cachingResponseCode.isPresent()) {
             Integer code = cachingResponseCode.get();
             if (code.equals(HttpServletResponse.SC_NOT_MODIFIED)) {
-                response.setHeader("ETag", eTag); // Required in 304.                
+                response.setHeader("ETag", eTag); // Required in 304.
             }
             response.sendError(code);
             return;
@@ -288,7 +294,7 @@ public class MediaDeliveryService {
     /**
      * Returns a status code for a response indicating cached content If the return value is empty, the no caching can be achieved and the request
      * needs to continue
-     * 
+     *
      * @param request
      * @param response
      * @param lastModified
@@ -328,7 +334,7 @@ public class MediaDeliveryService {
 
     /**
      * Returns true if the given match header matches the given value.
-     * 
+     *
      * @param matchHeader The match header.
      * @param toMatch The value to be matched.
      * @return True if the given match header matches the given value.
@@ -342,7 +348,7 @@ public class MediaDeliveryService {
     /**
      * Returns a substring of the given string value from the given begin index to the given end index as a long. If the substring is empty, then -1
      * will be returned
-     * 
+     *
      * @param value The string value to return a substring as long for.
      * @param beginIndex The begin index of the substring to be returned as long.
      * @param endIndex The end index of the substring to be returned as long.
@@ -355,7 +361,7 @@ public class MediaDeliveryService {
 
     /**
      * Returns true if the given accept header accepts the given value.
-     * 
+     *
      * @param acceptHeader The accept header.
      * @param toAccept The value to be accepted.
      * @return True if the given accept header accepts the given value.
@@ -378,7 +384,7 @@ public class MediaDeliveryService {
 
         /**
          * Construct a byte range.
-         * 
+         *
          * @param start Start of the byte range.
          * @param end End of the byte range.
          * @param total Total length of the byte source.
@@ -392,7 +398,7 @@ public class MediaDeliveryService {
 
         /**
          * Creates a "full" section spanning the entire content
-         * 
+         *
          * @param total
          */
         public Section(long total) {

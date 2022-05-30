@@ -13,35 +13,38 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.exceptions;
 
 /**
- * @author florian
- *
+ * <p>
+ * DownloadException class.
+ * </p>
  */
-public class AbstractTaskManagerRequest {
+public class UploadException extends PresentationException {
 
-    private final String jobtype;
-    private final String type;
-    public String goobiId;
-    public String sourceDir;
-    public String targetDir;
-    public String pi;
-    public String logId;
-    public String language;
-    
-    public AbstractTaskManagerRequest(String type) {
-        this.jobtype = "VIEWERDOWNLOAD";
-        this.type = type;
+    private static final long serialVersionUID = -3366820357175081598L;
+
+    /**
+     * <p>
+     * Constructor for UploadException.
+     * </p>
+     *
+     * @param string a {@link java.lang.String} object.
+     * @param e a {@link java.lang.Throwable} object.
+     */
+    public UploadException(String string, Throwable e) {
+        super(string, e);
     }
 
-    public String getJobtype() {
-        return jobtype;
+    /**
+     * <p>
+     * Constructor for UploadException.
+     * </p>
+     *
+     * @param string a {@link java.lang.String} object.
+     */
+    public UploadException(String string) {
+        super(string);
     }
 
-    public String getType() {
-        return type;
-    }
-    
-    
 }

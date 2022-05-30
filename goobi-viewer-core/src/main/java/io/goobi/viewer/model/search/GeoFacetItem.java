@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -35,11 +41,11 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  *
  */
 public class GeoFacetItem implements IFacetItem {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(GeoFacetItem.class);
     public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2], "", "");
-    
-    
+
+
     private GeoCoordinateFeature feature = null;
     private String solrField;
 
@@ -53,23 +59,23 @@ public class GeoFacetItem implements IFacetItem {
             this.feature = null;
         } else if(!orig.feature.hasVertices()) {
             this.feature = NO_AREA;
-        } else {            
+        } else {
             this.feature = new GeoCoordinateFeature(orig.getFeature(), orig.getSearchPredicate(), orig.getSearchAreaShape());
         }
     }
-    
+
     public String getFeature() {
         return hasArea() ? feature.getFeatureAsString() : "";
     }
-    
+
     public boolean hasFeature() {
         return feature != null;
     }
-    
+
     public boolean hasArea() {
         return feature != null && feature.hasVertices();
     }
-    
+
     public String getSearchPredicate() {
         if(this.feature != null) {
             return this.feature.getPredicate();
@@ -77,7 +83,7 @@ public class GeoFacetItem implements IFacetItem {
             return "";
         }
     }
-    
+
     public String getSearchAreaShape() {
         if(this.feature != null) {
             return this.feature.getShape();
@@ -85,16 +91,16 @@ public class GeoFacetItem implements IFacetItem {
             return "";
         }
     }
-    
-    
+
+
     /**
      * Sets {@link #currentGeoFacettingFeature} and sets the matching search string to the WKT_COORDS facet if available
-     * 
+     *
      * @param feature
      */
     public void setFeature(String feature) {
             try {
-                if(StringUtils.isNotBlank(feature)) {            
+                if(StringUtils.isNotBlank(feature)) {
                     this.feature = new GeoCoordinateFeature(feature, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
                 } else {
                     this.feature = NO_AREA;
@@ -108,11 +114,11 @@ public class GeoFacetItem implements IFacetItem {
     public void setFeatureFromContext() {
         Map<String, String> params = FacesContext.getCurrentInstance().
                 getExternalContext().getRequestParameterMap();
-        
+
         String feature = params.get("feature");
         setFeature(feature);
     }
-    
+
     public String getFacetQuery() {
         if(isActive() && feature != null && feature.hasVertices()) {
             return solrField + ":" + getValue();
@@ -120,11 +126,11 @@ public class GeoFacetItem implements IFacetItem {
             return "";
         }
     }
-    
+
     public String getValue() {
         return "\"" + feature.getSearchString() + "\"";
     }
-    
+
     public boolean isActive() {
         return StringUtils.isNotBlank(solrField);
     }
@@ -146,20 +152,20 @@ public class GeoFacetItem implements IFacetItem {
     public String getSolrField() {
         return solrField;
     }
-    
+
     public void clear() {
         this.feature = null;
     }
 
     /**
      * Create a polygon feature from the given vertices
-     * 
+     *
      * @param vertices
      */
     public void setVertices(double[][] vertices) {
         if(vertices == null || vertices.length == 0) {
             this.feature = NO_AREA;
-        } else {            
+        } else {
             this.feature = new GeoCoordinateFeature(vertices, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
         }
     }

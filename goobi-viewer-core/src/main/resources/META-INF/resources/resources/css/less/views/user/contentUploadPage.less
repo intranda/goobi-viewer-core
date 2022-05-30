@@ -1,0 +1,84 @@
+/* ==============================================================
+   Content User Upload Page
+   ==============================================================*/
+
+.user-content-upload {
+	&__table {
+    	background: #fff;
+    	border: 1px solid #ccc;
+    	margin-bottom: 2rem;
+  	}
+	&__table-title {
+		display: grid;
+		grid-template-columns: 2fr 2fr 1fr;
+		gap: 10px;
+		padding: 1rem 2rem;
+		border-bottom: 1px solid #6f6f6f;
+		font-weight: 600;
+		font-size: 1.6rem;
+	}
+	&__table-title-status,
+	&__table-title-title,
+	&__table-title-date {
+		display: flex;
+	}
+	&__table-title-status {
+		justify-content: center;
+	}
+	&__table-finished-job-link {
+		&:hover {
+			text-decoration: none;
+		}
+	}
+	&__table-entry {
+		display: grid;
+		grid-template-columns: 2fr 2fr 1fr;
+		grid-template-rows: minmax(20px, 1fr);
+		gap: 10px;
+		padding: 1rem 2rem;
+		transition: background 0.2s ease;
+    	&:hover {
+			background: #f7f7f7;
+    	}
+	    &-status {
+			font-size: 25px;
+			text-align: center;
+	    }
+	    &-label {
+	      word-break: break-word;
+	    }
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.user-content-upload {
+		&__table-title {
+			display: none;
+		}
+		&__table-entry {
+			grid-template-columns: 1fr;
+			&:nth-child(odd) {
+			background: #f7f7f7;
+			}
+		}
+		&__table-entry-action-link {
+			opacity: 1;
+		}
+		.admin__search-input-wrapper {
+			margin-top: 0.5rem;
+		}
+		&__table-entry-status {
+			text-align: left;
+		}
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

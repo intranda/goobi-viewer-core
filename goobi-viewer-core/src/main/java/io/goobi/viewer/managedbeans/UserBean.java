@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -306,7 +312,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param provider
      * @param result
      * @param loginRequest
@@ -518,15 +524,15 @@ public class UserBean implements Serializable {
             try {
                 BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
                         .ifPresentOrElse(bean -> bean.invalidate(), () -> {
-                            throw new IllegalStateException("Cann access cmsBean to invalidate");
+                            throw new IllegalStateException("Cannot access cmsBean to invalidate");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
                         .ifPresentOrElse(bean -> bean.resetAccess(), () -> {
-                            throw new IllegalStateException("Cann access activeDocumentBean to resetAccess");
+                            throw new IllegalStateException("Cannot access activeDocumentBean to resetAccess");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
                         .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {
-                            throw new IllegalStateException("Cann access sessionBean to cleanSessionObjects");
+                            throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
             } catch (Throwable e) {
                 logger.warn(e.getMessage());
@@ -555,7 +561,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param user
      * @return
      */
@@ -1118,7 +1124,7 @@ public class UserBean implements Serializable {
 
     /**
      * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
-     * 
+     *
      * @return always true (do not change since that would break rendered conditions on security questions in xhtml)
      * @should not reset securityQuest if not yet answered
      */
@@ -1283,7 +1289,7 @@ public class UserBean implements Serializable {
     /**
      * Checks whether the logged in user has access to the admin backend via being an admin or having CMS/campaign/comments access. Result is
      * persisted for the duration of the session.
-     * 
+     *
      * @return the hasAdminBackendAccess
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -1399,7 +1405,7 @@ public class UserBean implements Serializable {
 
     /**
      * Check if the current user is required to agree to the terms of use
-     * 
+     *
      * @return true if a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
      */
     public boolean mustAgreeToTermsOfUse() {

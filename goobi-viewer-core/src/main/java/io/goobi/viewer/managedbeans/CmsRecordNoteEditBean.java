@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -41,7 +47,6 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
-import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -65,12 +70,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private Locale selectedLocale = BeanUtils.getLocale();
     private MetadataElement metadataElement = null;
     private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsRecordNotes.getName();
-    
+
     private String currentNoteType = RECORD_NOTE_TYPE_SINGLE;
-    
-    private static final String RECORD_NOTE_TYPE_SINGLE = "SINGLE"; 
+
+    private static final String RECORD_NOTE_TYPE_SINGLE = "SINGLE";
     private static final String RECORD_NOTE_TYPE_MULTI = "MULTI";
-    
+
     /**
      * @return the note
      */
@@ -105,7 +110,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public void setRecordIdentifier(String pi) {
         setNote(new CMSSingleRecordNote(pi));
     }
-    
+
     public void setRecordQuery(String query) {
         setNote(new CMSMultiRecordNote(query));
     }
@@ -113,7 +118,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public String getRecordIdentifier() {
         return Optional.ofNullable(this.note).filter(note -> note instanceof CMSSingleRecordNote).map(n -> ((CMSSingleRecordNote)note).getRecordPi()).orElse("");
     }
-    
+
     public String getRecordQuery() {
         return Optional.ofNullable(this.note).filter(note -> note instanceof CMSMultiRecordNote).map(n -> ((CMSMultiRecordNote)note).getQuery()).orElse("");
     }
@@ -133,7 +138,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @return true if {@link #note} is not null, because it always has a record identifier
      */
     public boolean isRecordSelected() {
@@ -142,7 +147,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     /**
      * Save the selected note to the database
-     * 
+     *
      * @return false if saving was not successful
      */
     public boolean save() {
@@ -175,7 +180,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     /**
-     * 
+     *
      * @return true if either no note has been created yet (record identifier not yet entered) or if the note has not been persisted yet.
      */
     public boolean isNewNote() {
@@ -250,12 +255,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      */
     @Override
     public boolean isComplete(Locale locale) {
-        
+
         if(this.note != null) {
             if(IPolyglott.getDefaultLocale().equals(locale)) {
                 return this.note.getNoteTitle().isComplete(locale) && this.note.getNoteText().isComplete(locale);
             } else {
-                return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale())) && 
+                return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale())) &&
                        (this.note.getNoteText().isComplete(locale) || !this.note.getNoteText().isComplete(IPolyglott.getDefaultLocale()));
             }
         } else {
@@ -300,7 +305,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * Set all note texts to the given locale unless the note texts are not filled ("valid") for the defaultLocale. In this case set them to the
      * defaultLocale
-     * 
+     *
      * @param note2
      * @return the given locale if texts are valid for the default locale, otherwise the default locale
      */
@@ -325,18 +330,18 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public String getCurrentNoteType() {
         return currentNoteType;
     }
-    
+
     /**
      * @param currentNoteType the currentNoteType to set
      */
     public void setCurrentNoteType(String currentNoteType) {
         this.currentNoteType = currentNoteType;
     }
-    
+
     public boolean isMultiRecordNote() {
         return this.note != null && this.note instanceof CMSMultiRecordNote;
     }
-    
+
     public boolean isSingleRecordNote() {
         return this.note != null && this.note instanceof CMSSingleRecordNote;
     }

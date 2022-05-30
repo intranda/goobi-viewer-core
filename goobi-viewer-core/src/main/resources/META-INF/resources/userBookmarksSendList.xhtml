@@ -11,10 +11,10 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('userBookmarksListSendList', true, false)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('bookmarkList_session_mail_sendList', true, false)}" />
             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,navigationHelper.applicationUrl.concat(userBean.loggedIn ? 'user/bookmarks' : 'bookmarks'),1)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_session_mail_sendList,2)}" />
-		</f:metadata>
+		</f:metadata> 
     </ui:define>
 
     <ui:define name="breadcrumbs">

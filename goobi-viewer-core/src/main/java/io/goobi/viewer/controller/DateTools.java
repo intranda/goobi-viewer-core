@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -94,7 +100,7 @@ public class DateTools {
     public static DateTimeFormatter formatterISO8601BasicDateTime = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     /** Constant <code>formatterJavaUtilDateToString</code> */
     public static DateTimeFormatter formatterJavaUtilDateToString = DateTimeFormatter.ofPattern("EEE MMM dd hh:mm:ss zzz yyyy");
-    
+
     public static DateTimeFormatter formatterYearOnly = DateTimeFormatter.ofPattern("yyyy");
 
     /**
@@ -157,7 +163,7 @@ public class DateTools {
     }
 
     /**
-     * 
+     *
      * @param millis
      * @param utc
      * @return
@@ -168,7 +174,7 @@ public class DateTools {
     }
 
     /**
-     * 
+     *
      * @param ldt
      * @param utc
      * @return
@@ -183,7 +189,7 @@ public class DateTools {
     }
 
     /**
-     * 
+     *
      * @param dateString
      * @param fromUTC
      * @return
@@ -299,7 +305,7 @@ public class DateTools {
     }
 
     /**
-     * 
+     *
      * @param dateToConvert
      * @param utc
      * @return
@@ -312,7 +318,7 @@ public class DateTools {
     }
 
     /**
-     * 
+     *
      * @param dateToConvert
      * @return
      */
@@ -326,7 +332,7 @@ public class DateTools {
     }
 
     /**
-     * 
+     *
      * @param date java.util.Date
      * @param formatter
      * @param utc
@@ -343,7 +349,7 @@ public class DateTools {
     }
 
     /**
-     * 
+     *
      * @param localDateTime
      * @param formatter
      * @param utc

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -39,25 +45,25 @@ public class GeoCoordinateFeature {
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_POINTS = 3;
-    
+
     public static final String RELATION_PREDICATE_ISWITHIN = "ISWITHIN";
     public static final String RELATION_PREDICATE_INTERSECTS = "INTERSECTS";
     public static final String RELATION_PREDICATE_CONTAINS = "CONTAINS";
     public static final String RELATION_PREDICATE_ISDISJOINTTO = "ISDISJOINTTO";
-    
+
     public static final String SHAPE_POLYGON = "POLYGON";
 
-    
+
     private final JSONObject feature;
     private final String predicate;
     private final String shape;
-    
+
     public GeoCoordinateFeature(String featureString, String predicate, String shape) throws JSONException {
         this.feature = new JSONObject(featureString);
         this.predicate = predicate;
         this.shape = shape;
     }
-    
+
     /**
      * Initialize as a polygon feature with the given points as vertices
      * @param vertices
@@ -75,17 +81,17 @@ public class GeoCoordinateFeature {
         this.feature = json;
         this.predicate = predicate;
         this.shape = shape;
-        
+
     }
 
     public String getFeatureAsString() {
         return this.feature.toString();
     }
-    
+
     public String getType() {
         return feature.getString("type");
     }
-    
+
     public double[][] getVertices() {
         JSONArray vertices =  feature.getJSONArray("vertices");
         double[][] points = new double[vertices.length()][2];
@@ -95,9 +101,9 @@ public class GeoCoordinateFeature {
         }
         return points;
     }
-    
+
     public String getSearchString() {
-        
+
         double[][] points = getVertices();
         String pointString = Arrays.stream(points).map(p -> Double.toString(p[1]) + " " + Double.toString(p[0])).collect(Collectors.joining(", "));
 
@@ -107,33 +113,33 @@ public class GeoCoordinateFeature {
                 .replace("$S", this.shape)
                 .replace("$V", pointString);
         return searchString;
-        
+
     }
-    
+
     public static String getPredicate(String searchString) {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
-        
+
         if(matcher.find()) {
             String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
             return relation;
         }
         return RELATION_PREDICATE_ISWITHIN;
     }
-    
+
     public static String getShape(String searchString) {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
-        
+
         if(matcher.find()) {
             String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
             return shape;
         }
         return SHAPE_POLYGON;
     }
-    
+
     public static double[][] getGeoSearchPoints(String searchString) {
-        
+
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
-        
+
         if(matcher.find()) {
             String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
             String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
@@ -141,7 +147,7 @@ public class GeoCoordinateFeature {
             String[] strPoints = allPoints.split(", ");
             double[][] points = new double[strPoints.length][2];
             for (int i = 0; i < strPoints.length; i++) {
-                try {                    
+                try {
                     String[] strPoint = strPoints[i].split(" ");
                     points[i] = new double[]{Double.parseDouble(strPoint[0]), Double.parseDouble(strPoint[1])};
                 } catch(NumberFormatException e) {
@@ -152,7 +158,7 @@ public class GeoCoordinateFeature {
         } else {
             return new double[0][2];
         }
-        
+
     }
 
     /**
@@ -161,18 +167,18 @@ public class GeoCoordinateFeature {
     public boolean hasVertices() {
         return getVertices().length > 0;
     }
-    
+
     /**
-     * 
+     *
      */
     public String getShape() {
        return this.shape;
     }
-    
+
     public String getPredicate() {
         return this.predicate;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */

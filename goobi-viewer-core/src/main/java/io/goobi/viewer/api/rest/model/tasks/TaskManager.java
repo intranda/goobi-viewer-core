@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
@@ -46,6 +52,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -53,7 +61,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 /**
  * Manages (possibly timeconsuming) {@link Task tasks} within the viewer which can be triggered and monitored via the {@link TasksResource}. The tasks
  * are not executed sequentially or queued in any way, except through the limit of the internal thread pool (5 parallel tasks)
- * 
+ *
  * @author florian
  *
  */
@@ -67,7 +75,7 @@ public class TaskManager {
 
     /**
      * Create new JobManager
-     * 
+     *
      * @param jobLiveTime The guaranteed live time of jobs in the jobManager
      */
     public TaskManager(Duration jobLiveTime) {
@@ -116,9 +124,9 @@ public class TaskManager {
     private static int getActiveThreads(ExecutorService pool) {
         if (pool instanceof ThreadPoolExecutor) {
             return ((ThreadPoolExecutor) pool).getActiveCount();
-        } else {
-            return -1;
         }
+
+        return -1;
     }
 
     public List<Task> getTasks(TaskType type) {
@@ -145,15 +153,15 @@ public class TaskManager {
                 };
             case UPDATE_SITEMAP:
                 return (request, job) -> {
-                    
+
                     SitemapRequestParameters params = Optional.ofNullable(job.params)
                             .filter(p -> p instanceof SitemapRequestParameters)
                             .map(p -> (SitemapRequestParameters) p)
                             .orElse(null);
-                    
+
                     String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
                     String outputPath = params.getOutputPath();
-                    if(StringUtils.isBlank(outputPath)) {
+                    if (StringUtils.isBlank(outputPath)) {
                         outputPath = request.getServletContext().getRealPath("/");
                     }
                     try {
@@ -171,6 +179,27 @@ public class TaskManager {
                     DataManager.getInstance().getSearchIndex().updateDataRepositoryNames(params.getPi(), params.getDataRepositoryName());
                     // Reset access condition and view limit for record
                     DataManager.getInstance().getRecordLockManager().emptyCacheForRecord(params.getPi());
+                };
+            case UPDATE_UPLOAD_JOBS:
+                return (request, job) -> {
+                    try {
+                        int countChecked = 0;
+                        int countUpdated = 0;
+                        for (UploadJob uj : DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING)) {
+                            if (uj.updateStatus()) {
+                                DataManager.getInstance().getDao().updateUploadJob(uj);
+                                countUpdated++;
+                            }
+                            countChecked++;
+                        }
+                        logger.debug("{} upload jobs checked, {} updated.", countChecked, countUpdated);
+                    } catch (DAOException e) {
+                        job.setError(e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        job.setError(e.getMessage());
+                    } catch (PresentationException e) {
+                        job.setError(e.getMessage());
+                    }
                 };
             default:
                 return (request, job) -> {

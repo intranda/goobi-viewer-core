@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest;
 
@@ -133,7 +139,7 @@ public abstract class AbstractApiUrlManager {
             }
             return path;
         }
-        
+
         public URI buildURI() {
             return URI.create(this.build());
         }
@@ -160,7 +166,7 @@ public abstract class AbstractApiUrlManager {
         }
 
         /**
-         * 
+         *
          * @param urlString
          * @param pathParams
          * @return
@@ -179,7 +185,7 @@ public abstract class AbstractApiUrlManager {
                     break;
                 }
             }
-            
+
             //remove trailing slash if the url contains a dot in the last path segment
             if (urlString.matches(".*\\.\\w+\\/")) {
                 urlString = urlString.substring(0, urlString.length() - 1);
@@ -192,7 +198,7 @@ public abstract class AbstractApiUrlManager {
 
     /**
      * Calls the identical method inside the inline class ApiPathParams. For testing purposes.
-     * 
+     *
      * @param urlString
      * @param pathParams
      * @return
@@ -222,7 +228,7 @@ public abstract class AbstractApiUrlManager {
 
         @Override
         public ApiPathQueries query(String key, Object value) {
-            if(value != null) {                
+            if(value != null) {
                 this.queries.put(key, value);
             }
             return this;
@@ -259,7 +265,7 @@ public abstract class AbstractApiUrlManager {
             this("", "", "");
         };
 
-        
+
         public ApiInfo(String name, String version, String specification) {
             this.name = name;
             this.version = version;
@@ -285,7 +291,7 @@ public abstract class AbstractApiUrlManager {
             return new ApiInfo();
         }
     }
-    
+
     public enum Version  {
             v1,
             v2;

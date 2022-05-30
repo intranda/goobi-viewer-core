@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.viewer;
 
@@ -87,7 +93,7 @@ import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
-import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
@@ -400,7 +406,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param page
      * @param pageType
      * @return
@@ -759,7 +765,7 @@ public class ViewManager implements Serializable {
 
     /**
      * return the current image format if argument is 'MASTER', or the argument itself otherwise
-     * 
+     *
      * @param format
      * @return
      */
@@ -926,7 +932,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param width
      * @param height
      * @return
@@ -1121,7 +1127,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      */
@@ -1351,7 +1357,7 @@ public class ViewManager implements Serializable {
     /**
      * Main method for setting the current page(s) in this ViewManager. If the given String cannot be parsed to an integer the current image order is
      * set to 1
-     * 
+     *
      * @param currentImageOrderString A string containing a single page number or a range of two pages
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -1483,7 +1489,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return Last page number
      */
     public int getLastPageOrder() {
@@ -1494,7 +1500,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return First page number
      */
     public int getFirstPageOrder() {
@@ -2165,7 +2171,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param privilege Privilege name to check
      * @return true if current user has the privilege for this record; false otherwise
      * @throws IndexUnreachableException
@@ -2246,7 +2252,7 @@ public class ViewManager implements Serializable {
     /**
      * Convenience method that checks whether only the metadata view link is displayed for this record (i.e. criteria for all other links are not
      * met).
-     * 
+     *
      * @return
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -2302,7 +2308,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if object view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2312,7 +2318,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if calendar view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2323,7 +2329,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if TOC view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2336,7 +2342,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if thumbnail view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2348,7 +2354,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if metadata view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2360,7 +2366,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if full-text view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2376,7 +2382,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if external full-text link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2391,7 +2397,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if NER view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2402,7 +2408,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if NER view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2474,7 +2480,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2526,7 +2532,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -2585,7 +2591,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if any of this record's pages has an image and user has access rights; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2780,8 +2786,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @return the probable mimeType of the fulltext of the current page. Loads the fulltext of that page if neccessary
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2831,7 +2837,7 @@ public class ViewManager implements Serializable {
 
     /**
      * List all files in {@link Configuration#getOrigContentFolder()} for which accecss is granted and which are not hidden per config
-     * 
+     *
      * @return the list of downloadable filenames. If no downloadable resources exists, an empty list is returned
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -3732,7 +3738,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @should return correct url
@@ -3833,7 +3839,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IOException
      * @throws IndexUnreachableException
@@ -3844,7 +3850,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IOException
      * @throws IndexUnreachableException
@@ -3855,7 +3861,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param outputFormat Output format (html or text)
      * @return Generated citation string for the selected style
      * @throws IOException
@@ -3921,7 +3927,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getArchiveEntryIdentifier() {
@@ -3935,7 +3941,7 @@ public class ViewManager implements Serializable {
 
     /**
      * Creates an instance of ViewManager loaded with the record with the given identifier.
-     * 
+     *
      * @param pi Record identifier
      * @return
      * @throws PresentationException
@@ -3961,7 +3967,7 @@ public class ViewManager implements Serializable {
 
         return ret;
     }
-    
+
     /**
      * Returns an integer list such that
      * <ul>
@@ -3980,13 +3986,13 @@ public class ViewManager implements Serializable {
      * @throws IllegalArgumentException     If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
      */
     public List<Integer> getPageRangeAroundPage(int pageOrder, int range, boolean fillToSize) throws IndexUnreachableException {
-        
+
         if(pageOrder < pageLoader.getFirstPageOrder() || pageOrder > pageLoader.getLastPageOrder()) {
             throw new IllegalArgumentException("the given pageOrder must be within the range of page numbers of the current record. The given pageOrder is " + pageOrder);
         } else if(range < 0) {
             throw new IllegalArgumentException("the given range must not be less than zero. It is " + range);
         }
-        
+
         int firstPage = pageOrder;
         int lastPage = pageOrder;
         int numPages = 2*range+1;
@@ -3997,7 +4003,7 @@ public class ViewManager implements Serializable {
                 changed = true;
             }
             if(lastPage < pageLoader.getLastPageOrder()) {
-                lastPage++; 
+                lastPage++;
                 changed = true;
             }
             if(!changed) {

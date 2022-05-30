@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -344,7 +350,7 @@ public class BrowseBean implements Serializable {
 
     /**
      * Action method for JSF.
-     * 
+     *
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -386,7 +392,7 @@ public class BrowseBean implements Serializable {
             if (navigationHelper != null) {
                 locale = navigationHelper.getLocale();
             } else {
-                locale = Locale.GERMAN;
+                locale = ViewerResourceBundle.getDefaultLocale();
             }
 
             List<BrowseTerm> terms = null;
@@ -471,7 +477,7 @@ public class BrowseBean implements Serializable {
             browseTermListEscaped = new ArrayList<>(browseTermList.size());
             browseTermHitCountList = new ArrayList<>(browseTermList.size());
 
-            // Get terms for the current page 
+            // Get terms for the current page
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
             terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, useFilterQuery, 0, SolrSearchIndex.MAX_HITS,
                     new BrowseTermComparator(locale));
@@ -508,7 +514,7 @@ public class BrowseBean implements Serializable {
 
     /**
      * Selects a filter string for automatic redirecting, prioritizing letters, followed by numbers and finally by the first available filter.
-     * 
+     *
      * @return Selected filter string
      * @should return first available alphabetical filter if available
      * @should return numerical filter if available
@@ -581,7 +587,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if <code>browsingMenuField</code> is set and configured to be translated; false otherwise
      */
     public boolean isBrowsingMenuFieldTranslated() {
@@ -997,7 +1003,7 @@ public class BrowseBean implements Serializable {
 
     /**
      * TODO translation from DB
-     * 
+     *
      * @param colletionField
      * @param collectionValue
      * @return
@@ -1032,7 +1038,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param field Collection field name
      * @param value Collection raw name
      * @return
@@ -1052,7 +1058,7 @@ public class BrowseBean implements Serializable {
 
         return null;
     }
-    
+
     public long getRecordCount(String collectionField, String collectionName) {
         CollectionView view = this.getOrCreateCollection(collectionField);
         return Optional.ofNullable(view.getCollectionElement(collectionName))

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -70,6 +76,7 @@ import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -105,6 +112,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -185,6 +193,12 @@ public class SearchBean implements SearchInterface, Serializable {
     private Random random = new SecureRandom();
 
     /**
+     * The current {@link ViewerPath} at the time {@link #executeSearch()} was last called. Used when returning to search list from record via the
+     * widget_searchResultNavigation widget
+     */
+    private Optional<ViewerPath> lastUsedSearchPage = Optional.empty();
+
+    /**
      * Empty constructor.
      */
     public SearchBean() {
@@ -221,7 +235,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Dummy method for component cross-compatibility with CMS searches.
-     * 
+     *
      * @param subtheme
      * @return
      * @throws PresentationException
@@ -257,7 +271,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * {@inheritDoc}
      *
      * Action method for search buttons (simple search).
-     * 
+     *
      * @should not reset facets
      */
     @Override
@@ -527,7 +541,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Generates a Solr query string out of advancedQueryItems (does not contains facets or blacklists).
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @should construct query correctly
@@ -816,6 +830,9 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
+        //remember the current page to return to hit list in widget_searchResultNavigation
+        setLastUsedSearchPage();
+
         //        String currentQuery = SearchHelper.prepareQuery(searchString);
 
         if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
@@ -848,20 +865,27 @@ public class SearchBean implements SearchInterface, Serializable {
                 DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
     }
 
+    /**
+     * Set the current {@link ViewerPath} as the {@link #lastUsedSearchPage} This is where returning to search hit list from record will direct to
+     */
+    public void setLastUsedSearchPage() {
+        this.lastUsedSearchPage = ViewHistory.getCurrentView(BeanUtils.getRequest());
+    }
+
     public String getFinalSolrQuery() throws IndexUnreachableException {
-        if(this.currentSearch != null) { 
+        if (this.currentSearch != null) {
             String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
             return query;
-        } else {
-            return new Search().generateFinalSolrQuery(null, advancedSearchGroupOperator);
         }
+
+        return new Search().generateFinalSolrQuery(null, advancedSearchGroupOperator);
     }
-    
+
     public List<String> getFilterQueries() {
         List<String> queries = new ArrayList<>();
         if (this.currentSearch != null) {
             String customQuery = this.currentSearch.getCustomFilterQuery();
-            if(StringUtils.isNotBlank(customQuery)) {
+            if (StringUtils.isNotBlank(customQuery)) {
                 queries.add(customQuery);
             }
         }
@@ -869,25 +893,25 @@ public class SearchBean implements SearchInterface, Serializable {
             List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
             queries.addAll(facetQueries);
         }
-        return  queries;
+        return queries;
     }
-    
+
     public String getCombinedFilterQuery() {
         String query = "";
         if (this.currentSearch != null) {
             String customQuery = this.currentSearch.getCustomFilterQuery();
-            if(StringUtils.isNotBlank(customQuery)) {
+            if (StringUtils.isNotBlank(customQuery)) {
                 query += " +(" + customQuery + ")";
             }
         }
         if (this.facets != null) {
             List<String> facetQueries = this.facets.generateFacetFilterQueries(this.advancedSearchGroupOperator, true, true);
             String facetQuery = StringUtils.join(facetQueries, " " + this.advancedSearchGroupOperator + " ");
-            if(StringUtils.isNotBlank(facetQuery)) {
+            if (StringUtils.isNotBlank(facetQuery)) {
                 query += " +(" + facetQuery + ")";
             }
         }
-        return  query;
+        return query;
     }
 
     /** {@inheritDoc} */
@@ -1252,7 +1276,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should escape critical chars
      * @should url escape string
      */
@@ -1704,18 +1728,19 @@ public class SearchBean implements SearchInterface, Serializable {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
 
-        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
-            //            return currentSearch.getHits().get(currentHitIndex + 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
-                    searchTerms, BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
-                    proximitySearchDistance, BeanUtils.getRequest());
+        List<String> filterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
+        // Add customFilterQuery to filter queries so that CMS filter queries are also applied
+        if (StringUtils.isNotBlank(customFilterQuery)) {
+            filterQueries.add(customFilterQuery);
         }
-        //        return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-        return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery), searchTerms,
-                BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance,
-                BeanUtils.getRequest());
+        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
+            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
+                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
+        }
+        return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
+                SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
     }
 
     /**
@@ -1738,18 +1763,21 @@ public class SearchBean implements SearchInterface, Serializable {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
 
+        List<String> filterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
+        // Add customFilterQuery to filter queries so that CMS filter queries are also applied
+        if (StringUtils.isNotBlank(customFilterQuery)) {
+            filterQueries.add(customFilterQuery);
+        }
         if (currentHitIndex > 0) {
             //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
-                    searchTerms, BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
-                    proximitySearchDistance, BeanUtils.getRequest());
+            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(), filterQueries,
+                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
         } else if (currentSearch.getHitsCount() > 0) {
             //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
-            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), SearchHelper.generateQueryParams(termQuery),
-                    searchTerms, BeanUtils.getLocale(), true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
-                    proximitySearchDistance, BeanUtils.getRequest());
+            return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
+                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
         }
 
         return null;
@@ -2601,7 +2629,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param subQuery
      * @param resultLimit
@@ -2837,7 +2865,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Display the geo facet map if there are any hits available with geo coordinates
-     * 
+     *
      * @return
      */
     public boolean isShowGeoFacetMap() {
@@ -2872,7 +2900,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @return
      */
@@ -2884,7 +2912,7 @@ public class SearchBean implements SearchInterface, Serializable {
         return getFieldFacetValues(field, num, "");
     }
 
-    public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException, PresentationException {
+    public List<FacetItem> getFieldFacetValues(String field, int num, String filterQuery) throws IndexUnreachableException {
         try {
             num = num <= 0 ? Integer.MAX_VALUE : num;
             String query = "+(ISWORK:* OR ISANCHOR:*) " + SearchHelper.getAllSuffixes();
@@ -2911,7 +2939,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return options correctly
      * @should use current random seed option instead of default
@@ -2931,19 +2959,56 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return ret;
     }
-    
+
     public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false); 
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false);
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
-   }
-    
-   public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
-       return StringTools.encodeUrl(getFinalSolrQuery());
-   }
-   
-   public String getCombinedFilterQueryEscaped() {
-       return StringTools.encodeUrl(getCombinedFilterQuery());
-   }
+    }
+
+    public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
+        return StringTools.encodeUrl(getFinalSolrQuery());
+    }
+
+    public String getCombinedFilterQueryEscaped() {
+        return StringTools.encodeUrl(getCombinedFilterQuery());
+    }
+
+    /**
+     * The url of the viewer page loaded when the last search operation was performed, stored ing {@link #lastUsedSearchPage} or the url of the
+     * default search or searchAdvanved page depending on the state of this bean
+     * 
+     * @return a URL string
+     */
+    public String getLastUsedSearchUrl() {
+        return this.lastUsedSearchPage
+                .map(view -> ServletUtils.getServletPathWithHostAsUrlFromRequest(BeanUtils.getRequest()) + view.getCombinedPrettyfiedUrl())
+                .orElse(getLastUsedDefaultSearchUrl());
+    }
+
+    private String getLastUsedDefaultSearchUrl() {
+        if (getActiveSearchType() == 1) {
+            return PrettyUrlTools.getAbsolutePageUrl(
+                    "pretty:searchAdvanced5",
+                    facets.getCurrentHierarchicalFacetString(),
+                    getExactSearchString(),
+                    getCurrentPage(),
+                    getSortString(),
+                    facets.getCurrentFacetString());
+        }
+
+        return PrettyUrlTools.getAbsolutePageUrl(
+                "pretty:newSearch5",
+                facets.getCurrentHierarchicalFacetString(),
+                getExactSearchString(),
+                getCurrentPage(),
+                getSortString(),
+                facets.getCurrentFacetString());
+    }
+
+    @Override
+    public String changeSorting() throws IOException {
+        return "pretty:newSearch5";
+    }
 
 @Override
 public String changeSorting() throws IOException {
