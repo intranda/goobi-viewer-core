@@ -97,7 +97,7 @@ public class SecurityManager {
      * @return
      */
     long getDelay(int attempts, long lastAttempt) {
-        long delay = attempts * 2 * 1000; // TODO delay progression
+        long delay = attempts * 3 * 1000; // TODO tweak delay progression?
         long now = System.currentTimeMillis();
         if (now - lastAttempt >= delay) {
             return 0;

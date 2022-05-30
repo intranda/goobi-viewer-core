@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
@@ -43,6 +45,9 @@ import io.goobi.viewer.model.security.user.User;
  * @author Florian Alpers
  */
 public class LocalAuthenticationProvider implements IAuthenticationProvider {
+    
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(LocalAuthenticationProvider.class);
 
     /** Constant <code>TYPE_LOCAL="local"</code> */
     public static final String TYPE_LOCAL = "local";
@@ -73,14 +78,17 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
 
         String ipAddress = NetTools.getIpAddress(request);
         long delay = DataManager.getInstance().getSecurityManager().getDelayForIpAddress(ipAddress);
+        logger.trace("delay for ip address {}: {}", ipAddress, delay);
         if (delay > 0) {
-            // TODO refuse with delay
+            // refuse with delay
+            return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true).setDelay(delay));
         }
 
         if (StringUtils.isNotEmpty(email)) {
             delay = DataManager.getInstance().getSecurityManager().getDelayForUserName(email);
             if (delay > 0) {
-                // TODO refuse with delay
+                // refuse with delay
+                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true).setDelay(delay));
             }
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);

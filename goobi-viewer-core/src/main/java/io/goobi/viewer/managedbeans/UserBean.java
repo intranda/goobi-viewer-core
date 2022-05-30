@@ -328,7 +328,14 @@ public class UserBean implements Serializable {
         try {
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
             if (result.isRefused()) {
-                Messages.error("errLoginWrong");
+                if (result.getDelay() > 0) {
+                    String msg =
+                            ViewerResourceBundle.getTranslation("errLoginDelay", navigationHelper != null ? navigationHelper.getLocale() : null)
+                                    .replace("{0}", String.valueOf((int) Math.ceil(result.getDelay() / 1000.0)));
+                    Messages.error(msg);
+                } else {
+                    Messages.error("errLoginWrong");
+                }
             } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
                 Messages.error("errLoginWrong");
             } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
