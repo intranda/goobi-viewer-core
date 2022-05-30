@@ -3010,9 +3010,4 @@ public class SearchBean implements SearchInterface, Serializable {
         return "pretty:newSearch5";
     }
 
-@Override
-public String changeSorting() throws IOException {
-    return "pretty:newSearch5";
-}
-
 }
