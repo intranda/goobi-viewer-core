@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.goobi.viewer.model.security.user.User;
-import net.sf.saxon.lib.Logger;
 
 /**
  * <p>
