@@ -32,34 +32,26 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public class JsfMessagesNotificator implements ChangeNotificator {
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyCreation(de.intranda.api.annotation.wa.WebAnnotation)
-     */
+    /** {@inheritDoc} */
     @Override
-    public void notifyCreation(PersistentAnnotation annotation, Locale locale) {
+    public void notifyCreation(PersistentAnnotation annotation, Locale locale, String viewerRootUrl) {
         Messages.info(null, "Successfully created comment '{}'", annotation.getBody().toString());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyEdit(de.intranda.api.annotation.wa.WebAnnotation, de.intranda.api.annotation.wa.WebAnnotation)
-     */
+    /** {@inheritDoc} */
     @Override
-    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale) {
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale, String viewerRootUrl) {
         Messages.info(null, "Successfully changed comment '{}' to '{}'", oldAnnotation.getBody().toString(), newAnnotation.getBody().toString());
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyDeletion(de.intranda.api.annotation.wa.WebAnnotation)
-     */
+    /** {@inheritDoc} */
     @Override
     public void notifyDeletion(PersistentAnnotation annotation, Locale locale) {
         Messages.info(null, "Successfully deleted comment '{}'", annotation.getBody().toString());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyError(java.lang.Exception)
-     */
+    /** {@inheritDoc} */
     @Override
     public void notifyError(Exception exception, Locale locale) {
         Messages.error("Error changing notification: " + exception.getMessage().toString());
