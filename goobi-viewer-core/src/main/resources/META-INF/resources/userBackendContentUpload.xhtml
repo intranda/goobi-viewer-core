@@ -76,7 +76,7 @@
 											<!-- TITLE -->
 											<div class="user-content-upload__table-entry-label" role="cell">
                                                 <ui:fragment rendered="#{job.online}">
-                                                    <a href="#{navigationHelper.applicationUrl}#{job.recordUrl}">#{job.title}</a>
+                                                    <a href="#{navigationHelper.applicationUrl}#{job.recordUrl}" target="_blank">#{job.title}</a>
                                                 </ui:fragment>
 											    <ui:fragment rendered="#{!job.online}">
                                                     <h:outputText value="#{job.title}" />   
