@@ -31,8 +31,34 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public interface ChangeNotificator {
 
-    public void notifyCreation(PersistentAnnotation annotation, Locale locale);
-    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale);
+    /**
+     * 
+     * @param annotation
+     * @param locale
+     * @param viewerRootUrl
+     */
+    public void notifyCreation(PersistentAnnotation annotation, Locale locale, String viewerRootUrl);
+    
+    /**
+     * 
+     * @param oldAnnotation
+     * @param newAnnotation
+     * @param locale
+     * @param viewerRootUrl
+     */
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale, String viewerRootUrl);
+    
+    /**
+     * 
+     * @param annotation
+     * @param locale
+     */
     public void notifyDeletion(PersistentAnnotation annotation, Locale locale);
+    
+    /**
+     * 
+     * @param exception
+     * @param locale
+     */
     public void notifyError(Exception exception, Locale locale);
 }
