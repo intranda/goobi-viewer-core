@@ -42,13 +42,10 @@
 	                         <ul>
 	                             <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
 	                                 <li>
-	                                     <h:outputLink value="#{struct.url}" rendered="#{(browseElement.hasImages or browseElement.hasMedia) or browseElement.anchor}">
-	                                         <f:passThroughAttribute name="aria-label" value="#{msg[browseElement.label]}"/>
+	                                 	<h:outputLink value="#{struct.getUrl(browseElement.determinePageType())}">
+	                                 		<f:passThroughAttribute name="aria-label" value="#{msg[browseElement.label]}"/>
 	                                         <h:outputText value="#{msg[struct.docStructType]}" />
-	                                     </h:outputLink>
-	                                     <h:outputLink value="#{struct.metadataUrl}" rendered="#{!(browseElement.hasImages or browseElement.hasMedia) and !browseElement.anchor}">
-	                                         <h:outputText value="#{msg[struct.docStructType]}" />
-	                                     </h:outputLink>
+	                                 	</h:outputLink>
 	                                 </li>
 	                             </ui:repeat>
 	                         </ul>
