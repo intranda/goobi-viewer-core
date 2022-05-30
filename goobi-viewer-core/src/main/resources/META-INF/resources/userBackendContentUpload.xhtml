@@ -64,6 +64,9 @@
 
 									<!-- INDIVIDUAL JOB ROWS -->
 									<ui:repeat var="job" value="#{uploadBean.lazyModelUploadJobs.paginatorList}">
+									
+									<ui:fragment rendered="#{!job.online}">
+									
 										<div class="user-content-upload__table-entry" role="row">
                                             <!-- DATE -->
                                             <div class="user-content-upload__table-entry-date" role="cell">
@@ -75,12 +78,7 @@
                                             </div>
 											<!-- TITLE -->
 											<div class="user-content-upload__table-entry-label" role="cell">
-                                                <ui:fragment rendered="#{job.online}">
-                                                    <a href="#{navigationHelper.applicationUrl}#{job.recordUrl}" target="_blank">#{job.title}</a>
-                                                </ui:fragment>
-											    <ui:fragment rendered="#{!job.online}">
                                                     <h:outputText value="#{job.title}" />   
-											    </ui:fragment>
 											</div>
 
 											<!-- STATUS -->
@@ -96,6 +94,45 @@
                                                 </ui:fragment>
 											</div>
 										</div>
+										
+										</ui:fragment>
+										
+										<ui:fragment rendered="#{job.online}">
+											<a class="user-content-upload__table-finished-job-link" href="#{navigationHelper.applicationUrl}#{job.recordUrl}" target="_blank">
+										
+										
+											<div class="user-content-upload__table-entry" role="row">
+	                                            <!-- DATE -->
+	                                            <div class="user-content-upload__table-entry-date" role="cell">
+	                                                <h:outputText value="#{job.dateCreated}">
+	                                                    <f:converter converterId="localDateTimeConverter" />
+	                                                    <f:attribute name="pattern"
+	                                                        value="#{navigationHelper.dateTimePattern}" />
+	                                                </h:outputText>
+	                                            </div>
+												<!-- TITLE -->
+												<div class="user-content-upload__table-entry-label" role="cell">
+	                                                    <i class="fa fa-external-link-square" aria-hidden="true"></i>
+	                                                    <h:outputText value=" #{job.title}" />   
+												</div>
+	
+												<!-- STATUS -->
+												<div class="user-content-upload__table-entry-status" role="cell">
+													<ui:fragment rendered="#{job.status eq 'WAITING'}">
+													    <i class="fa fa-hourglass-start" aria-label="#{msg.waiting}"></i>
+													</ui:fragment>
+	                                                <ui:fragment rendered="#{job.status eq 'READY'}">
+	                                                    <i class="fa fa-check" aria-label="#{msg.ready}"></i>
+	                                                </ui:fragment>
+	                                                <ui:fragment rendered="#{job.status eq 'ERROR'}">
+	                                                    <i class="fa fa-times" aria-label="#{msg.error}" title="#{job.message}" data-placement="bottom"></i>
+	                                                </ui:fragment>
+												</div>
+											</div>
+											</a>
+											
+											</ui:fragment>
+										
 									</ui:repeat>
 								</div>
 							</div>
