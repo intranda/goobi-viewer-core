@@ -35,6 +35,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -46,6 +47,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -110,7 +112,7 @@ public class CalendarBean implements Serializable {
     private void init() {
         // PostConstruct methods may not throw exceptions
         logger.trace("init");
-        try {
+        try (Time time = DataManager.getInstance().getTiming().takeTime("init calendar bean")) {
             getDefaultDates();
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here");
@@ -688,6 +690,10 @@ public class CalendarBean implements Serializable {
             logger.debug("IndexUnreachableException thrown here");
         }
     }
+    
+    public void resetAllActiveYears() {
+        this.allActiveYears = null;
+    }
 
     /**
      * This method returns a list of all active years. <br />
@@ -700,47 +706,48 @@ public class CalendarBean implements Serializable {
      */
     public List<CalendarItemYear> getAllActiveYears() throws PresentationException, IndexUnreachableException {
         if (allActiveYears == null) {
-            allActiveYears = new ArrayList<>();
-            List<String> fields = new ArrayList<>();
-            fields.add(SolrConstants._CALENDAR_YEAR);
-            fields.add(SolrConstants._CALENDAR_DAY);
-            StringBuilder sbSearchString = new StringBuilder();
-            if (collection != null && !collection.isEmpty()) {
-                sbSearchString.append(SolrConstants._CALENDAR_DAY)
-                        .append(":* AND ")
-                        .append(SolrConstants.DC)
-                        .append(':')
-                        .append(collection)
-                        .append('*')
-                        .append(docstructFilterQuery);
-            } else {
-                sbSearchString.append(SolrConstants._CALENDAR_DAY).append(":*").append(docstructFilterQuery);
-            }
-            sbSearchString.append(SearchHelper.getAllSuffixes());
-
-            logger.trace("getAllActiveYears query: {}", sbSearchString.toString());
-            QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
-
-            FacetField facetFieldDay = resp.getFacetField(SolrConstants._CALENDAR_DAY);
-            List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
-            Map<Integer, Integer> yearCountMap = new HashMap<>();
-            for (Count day : dayCounts) {
-                int year = Integer.valueOf(day.getName().substring(0, 4));
-                Integer count = yearCountMap.get(year);
-                if (count == null) {
-                    count = 0;
+            try (Time time = DataManager.getInstance().getTiming().takeTime("getAllActiveYears")) {
+                allActiveYears = new ArrayList<>();
+                List<String> fields = new ArrayList<>();
+                fields.add(SolrConstants._CALENDAR_YEAR);
+                fields.add(SolrConstants._CALENDAR_DAY);
+                StringBuilder sbSearchString = new StringBuilder();
+                if (collection != null && !collection.isEmpty()) {
+                    sbSearchString.append(SolrConstants._CALENDAR_DAY)
+                            .append(":* AND ")
+                            .append(SolrConstants.DC)
+                            .append(':')
+                            .append(collection)
+                            .append('*')
+                            .append(docstructFilterQuery);
+                } else {
+                    sbSearchString.append(SolrConstants._CALENDAR_DAY).append(":*").append(docstructFilterQuery);
                 }
-                yearCountMap.put(year, (int) (count + day.getCount()));
-            }
+                sbSearchString.append(SearchHelper.getAllSuffixes());
 
-            List<Integer> years = new ArrayList<>(yearCountMap.keySet());
-            Collections.sort(years);
-            for (int year : years) {
-                CalendarItemYear item = new CalendarItemYear(String.valueOf(year), year, yearCountMap.get(year));
-                allActiveYears.add(item);
+                logger.trace("getAllActiveYears query: {}", sbSearchString.toString());
+                QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
+
+                FacetField facetFieldDay = resp.getFacetField(SolrConstants._CALENDAR_DAY);
+                List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
+                Map<Integer, Integer> yearCountMap = new HashMap<>();
+                for (Count day : dayCounts) {
+                    int year = Integer.valueOf(day.getName().substring(0, 4));
+                    Integer count = yearCountMap.get(year);
+                    if (count == null) {
+                        count = 0;
+                    }
+                    yearCountMap.put(year, (int) (count + day.getCount()));
+                }
+
+                List<Integer> years = new ArrayList<>(yearCountMap.keySet());
+                Collections.sort(years);
+                for (int year : years) {
+                    CalendarItemYear item = new CalendarItemYear(String.valueOf(year), year, yearCountMap.get(year));
+                    allActiveYears.add(item);
+                }
             }
         }
-
         return allActiveYears;
     }
 

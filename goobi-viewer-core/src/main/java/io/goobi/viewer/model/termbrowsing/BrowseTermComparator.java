@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Custom string comparator for browsing terms (case-insensitive, ignores brackets, natural sorting).
@@ -51,7 +52,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
         if (locale != null) {
             this.locale = locale;
         } else {
-            this.locale = Locale.GERMAN;
+            this.locale = ViewerResourceBundle.getDefaultLocale();
         }
         // comparator = new AlphanumCollatorComparator(Collator.getInstance(this.locale));
         try {

@@ -93,7 +93,7 @@ import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
-import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;

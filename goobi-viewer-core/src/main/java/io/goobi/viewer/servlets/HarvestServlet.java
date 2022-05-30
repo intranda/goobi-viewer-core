@@ -55,8 +55,8 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.DownloadJob.JobStatus;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.misc.Harvestable;
 
 /**

@@ -1,0 +1,40 @@
+/* ==============================================================
+   Content User Upload Modal
+   ==============================================================*/
+
+.content-upload-modal {
+	&__file-upload-button {
+		input[type=file]::file-selector-button {
+			display: inline-block;
+			font-weight: 400;
+			color: #212529;
+			user-select: none;
+			padding: .6rem 1.2rem;
+			font-size: 1.6rem;
+			line-height: 1.2;
+			border-radius: none;
+			border-width: 1px;
+			border-style: solid;
+			border-color: @btnDefaultBorder;
+			background-color: @btnDefaultBgc;
+			cursor: pointer;
+			&:hover,
+			&:active,
+			&:focus {
+				background-color: @btnDefaultHoverBgc;
+			}
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -89,10 +89,11 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.DownloadJob.JobStatus;
-import io.goobi.viewer.model.download.EPUBDownloadJob;
-import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.EPUBDownloadJob;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
@@ -2263,6 +2264,39 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(job);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
         Assert.assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
+    }
+
+    /**
+     * @see JPADAO#getUploadJobsForCreatorId(Long)
+     * @verifies return rows in correct order
+     */
+    @Test
+    public void getUploadJobsForCreatorId_shouldReturnRowsInCorrectOrder() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(1L);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(2), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(1), result.get(1).getId());
+    }
+
+    /**
+     * @see JPADAO#getUploadJobsWithStatus(JobStatus)
+     * @verifies return rows with given status
+     */
+    @Test
+    public void getUploadJobsWithStatus_shouldReturnRowsWithGivenStatus() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
+    }
+
+    /**
+     * @see JPADAO#getUploadJobsForCreatorId(Long)
+     * @verifies return empty list if creatorId null
+     */
+    @Test
+    public void getUploadJobsForCreatorId_shouldReturnEmptyListIfCreatorIdNull() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(null);
+        Assert.assertTrue(result.isEmpty());
     }
 
     @Test

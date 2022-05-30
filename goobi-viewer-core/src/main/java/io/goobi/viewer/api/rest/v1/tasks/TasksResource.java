@@ -79,7 +79,7 @@ public class TasksResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details")
     public Task addTask(TaskParameter desc) throws WebApplicationException {
-        if (desc.type == null) {
+        if (desc == null || desc.type == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
         if (isAuthorized(desc.type, Optional.empty(), request)) {

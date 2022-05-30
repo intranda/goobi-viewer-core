@@ -96,7 +96,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(PUBLISHED, comment.getPublicationStatus());
         assertEquals(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 comment.getDateCreated().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 1000l);
-        Mockito.verify(notificator, Mockito.times(1)).notifyCreation(Mockito.any(), Mockito.any());
+        Mockito.verify(notificator, Mockito.times(1)).notifyCreation(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli());
-        Mockito.verify(notificator, Mockito.times(1)).notifyEdit(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(notificator, Mockito.times(1)).notifyEdit(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test

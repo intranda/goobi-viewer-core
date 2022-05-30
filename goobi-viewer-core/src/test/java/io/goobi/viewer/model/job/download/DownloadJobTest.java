@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.job.download;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,6 +39,8 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 
 public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -108,7 +110,7 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
-    @Test
+    @Test 
     public void testPutDownloadJobAnswer() throws JsonProcessingException {
         String pi = "18979459_1830";
         String logid = "LOG_0004";

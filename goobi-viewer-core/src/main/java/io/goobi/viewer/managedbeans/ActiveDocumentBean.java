@@ -81,10 +81,10 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.DownloadOption;
-import io.goobi.viewer.model.download.EPUBDownloadJob;
-import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.DownloadOption;
+import io.goobi.viewer.model.job.download.EPUBDownloadJob;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
@@ -2473,7 +2473,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return a boolean.
      * @throws DAOException
      */
-    public boolean isAllowUserComments() throws DAOException {
+    public synchronized boolean isAllowUserComments() throws DAOException {
         if (viewManager == null) {
             return false;
         }

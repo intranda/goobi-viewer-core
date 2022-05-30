@@ -42,8 +42,8 @@ public class PasswordValidatorTest {
      * @verifies return false if password empty
      */
     @Test
-    public void validatePassword_shouldReturnFalseIfPasswordEmpty() throws Exception {
-        Assert.assertFalse(PasswordValidator.validatePassword(""));
+    public void validatePassword_shouldReturnTrueIfPasswordEmpty() throws Exception {
+        Assert.assertTrue(PasswordValidator.validatePassword(""));
     }
 
     /**

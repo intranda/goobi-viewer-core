@@ -29,9 +29,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -397,6 +401,33 @@ public class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         User user = new User();
         campaign.getUserGroup().setOwner(user);
         Assert.assertFalse(CrowdsourcingBean.isAllowed(user, campaign));
+    }
+    
+    @Test
+    public void test_ItemOrderConfiguration() throws PresentationException, IndexUnreachableException, DAOException {
+        IDAO dao = Mockito.mock(IDAO.class);
+        Configuration config = Mockito.mock(Configuration.class);
+        Campaign campaign = Mockito.spy(Campaign.class);
+        CrowdsourcingBean bean = new CrowdsourcingBean(config, dao);
+        bean.setTargetCampaign(campaign);
+        
+        UserBean userBean = new UserBean();
+        userBean.setUser(DataManager.getInstance().getDao().getUser(1l));
+        bean.userBean = userBean;
+        bean.init();
+        
+        Mockito.when(config.getCrowdsourcingCampaignItemOrder()).thenReturn("fixed");
+        bean.setNextIdentifierForAnnotation();
+        Mockito.verify(campaign, Mockito.times(1)).getNextTarget(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(campaign, Mockito.times(0)).getRandomizedTarget(Mockito.any(), Mockito.any(), Mockito.any());
+
+        
+        Mockito.when(config.getCrowdsourcingCampaignItemOrder()).thenReturn("random");
+        bean.setNextIdentifierForAnnotation();
+        Mockito.verify(campaign, Mockito.times(1)).getRandomizedTarget(Mockito.any(), Mockito.any(), Mockito.any());
+        //unchanged
+        Mockito.verify(campaign, Mockito.times(1)).getNextTarget(Mockito.any(), Mockito.any(), Mockito.any());
+
     }
 
 }

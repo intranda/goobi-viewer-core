@@ -25,38 +25,37 @@
  */
 var viewerJS = ( function( viewer ) {
     'use strict';
-    
-    var _notFound;
-    var _accessDenied;
-    
+
     // load images with error handling
-    viewer.thumbnailImageLoaded = new rxjs.Subject();
-    viewer.loadThumbnails = function() {
-        _notFound = currentPath + '/resources/themes/' + viewer.theme + '/images/image_not_found.png';
-        _accessDenied = currentPath + '/resources/themes/' + viewer.theme + '/images/thumbnail_access_denied.jpg';
+    viewer.loadThumbnails = function(notFoundImage, accessDeniedImage) {
+        this.notFound = notFoundImage;
+        this.accessDenied = accessDeniedImage;
+        this.thumbnailImageLoaded = new rxjs.Subject();
         
-        $('[data-viewer-thumbnail="thumbnail"]').each(function() {
-            var element = this;
-            var source = element.src
-            var dataSource = element.dataset.src; 
-            if(dataSource && !source) { 
-                 _loadImage(element, dataSource);            
-            }else if (source) {                   
-                   var onErrorCallback = function() {
-                       _loadImage(element, element.src)
-                   }
-                   //reload image if error event occurs
-                   $(element).one("error", onErrorCallback)
-                   //if image is already loaded but has not width, assume error and also reload
-                   if(element.complete && element.naturalWidth === 0) {
-                       $(element).off("error", onErrorCallback);
-                       _loadImage(element, element.src)
-                   }
-            }
-        });
+        $('[data-viewer-thumbnail="thumbnail"]').each((index, element) => this.load(element));
     }
     
-    function _loadImage(element, source) {
+    viewer.loadThumbnails.prototype.load = function(element) {
+    	var source = element.src
+        var dataSource = element.dataset.src; 
+        if(dataSource && !source) { 
+             this.loadImage(element, dataSource);            
+        }else if (source) {     
+               var onErrorCallback = () => {
+                   this.loadImage(element, element.src)
+               }
+               //reload image if error event occurs
+               $(element).one("error", onErrorCallback)
+               //if image is already loaded but has not width, assume error and also reload
+               if(element.complete && element.naturalWidth === 0) {
+                   $(element).off("error", onErrorCallback);
+                   this.loadImage(element, element.src)
+               }
+        }
+    }
+    
+    
+    viewer.loadThumbnails.prototype.loadImage = function(element, source) {
 		//Hide broken image icon while loading by either setting style.display to "none" or setting empty alt attribute
 		//first solution hides whole image, the latter only its content
 		let alt = element.alt;
@@ -70,30 +69,30 @@ var viewerJS = ( function( viewer ) {
                 responseType: 'blob'
             },
         })
-        .done(function(blob) {
+        .done((blob) => {
+        
             var url = window.URL || window.webkitURL;
             element.src = url.createObjectURL(blob);
             element.alt = alt;
             element.style.display = display;
-            viewer.thumbnailImageLoaded.next(element);
+            this.thumbnailImageLoaded.next(element);
         })
-        .fail(function(error) {
-            console.log("loading image failed with  error ", error, error.status);
+        .fail((error) => {
             var status = error.status;
                 switch(status) {
                     case 403:
-                        element.src = _accessDenied;
+                        element.src = this.accessDenied;
                         break;
                     case 500:
                     case 404:
-                        element.src = _notFound;
+                        element.src = this.notFound;
                         break;
                     default:
                          element.src = source;
                 }
                 element.alt = alt;
                 element.style.display = display;
-                viewer.thumbnailImageLoaded.next(element);
+                this.thumbnailImageLoaded.next(element);
             });  
     }
     

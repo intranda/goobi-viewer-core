@@ -433,6 +433,14 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return getSortUrl("-", false);
     }
 
+    public String changeSorting() throws IOException {
+        String sortString = getSearchBean().getSortString();
+        String url = getSortUrl(sortString, false);
+        FacesContext.getCurrentInstance().getExternalContext()
+        .redirect(url);
+        return "";
+    }
+    
     /**
      * <p>
      * getSortUrl.

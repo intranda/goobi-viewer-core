@@ -98,6 +98,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         String textCleaned = checkAndCleanScripts(text, creator, pi, pageOrder);
         Comment comment = new Comment(pi, pageOrder, creator, textCleaned, license, publicationStatus);
         comment.setPublicationStatus(publicationStatus);
+        String viewerRootUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
         try {
             saver.save(comment);
             notificators.parallelStream().forEach(n -> {
@@ -112,7 +113,7 @@ public class CommentManager implements AnnotationLister<Comment> {
                                 Set<String> usedAddresses = new HashSet<>();
                                 for (UserGroup group : groups) {
                                     populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
-                                    n.notifyCreation(comment, BeanUtils.getLocale());
+                                    n.notifyCreation(comment, BeanUtils.getLocale(), viewerRootUrl);
                                 }
                             } catch (DAOException e) {
                                 logger.error(e.getMessage());
@@ -125,7 +126,7 @@ public class CommentManager implements AnnotationLister<Comment> {
                     });
                     fileChangedObserver.start();
                 } else {
-                    n.notifyCreation(comment, BeanUtils.getLocale());
+                    n.notifyCreation(comment, BeanUtils.getLocale(), viewerRootUrl);
                 }
             });
         } catch (IOException e) {
@@ -147,6 +148,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         editedComment.setText(textCleaned);
         editedComment.setPublicationStatus(publicationStatus);
         editedComment.setDateModified(LocalDateTime.now());
+        String viewerRootUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
         try {
             saver.save(editedComment);
             notificators.parallelStream().forEach(n -> {
@@ -161,7 +163,7 @@ public class CommentManager implements AnnotationLister<Comment> {
                                 Set<String> usedAddresses = new HashSet<>();
                                 for (UserGroup group : groups) {
                                     populateRecipientsForGroup(group, (CommentMailNotificator) n, usedAddresses);
-                                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+                                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale(), viewerRootUrl);
                                 }
                             } catch (DAOException e) {
                                 logger.error(e.getMessage());
@@ -174,7 +176,7 @@ public class CommentManager implements AnnotationLister<Comment> {
                     });
                     fileChangedObserver.start();
                 } else {
-                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale());
+                    n.notifyEdit(comment, editedComment, BeanUtils.getLocale(), viewerRootUrl);
                 }
             });
         } catch (IOException e) {

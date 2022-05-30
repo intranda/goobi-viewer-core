@@ -91,7 +91,9 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
-import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
@@ -102,7 +104,6 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
-import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 
@@ -2704,6 +2705,114 @@ public class JPADAO implements IDAO {
         }
     }
 
+    // UploadJob
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return rows with given status
+     */
+    @Override
+    public List<UploadJob> getUploadJobsWithStatus(JobStatus status) throws DAOException {
+        if (status == null) {
+            throw new IllegalArgumentException("status may not be null");
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<UploadJob> cq = cb.createQuery(UploadJob.class);
+            Root<UploadJob> root = cq.from(UploadJob.class);
+            cq.select(root).where(cb.equal(root.get("status"), status));
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return rows in correct order
+     * @should return empty list if creatorId null
+     */
+    @Override
+    public List<UploadJob> getUploadJobsForCreatorId(Long creatorId) throws DAOException {
+        if (creatorId == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<UploadJob> cq = cb.createQuery(UploadJob.class);
+            Root<UploadJob> root = cq.from(UploadJob.class);
+            cq.select(root).where(cb.equal(root.get("creatorId"), creatorId)).orderBy(cb.desc(root.get("dateCreated")));
+
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addUploadJob(UploadJob uploadJob) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(uploadJob);
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            logger.trace(e.getMessage(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateUploadJob(UploadJob uploadJob) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(uploadJob);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteUploadJob(UploadJob uploadJob) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            UploadJob o = em.getReference(UploadJob.class, uploadJob.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
     /**
      * @see io.goobi.viewer.dao.IDAO#getCMSTemplateEnabled(java.lang.String)
      * @should return correct value
@@ -4804,7 +4913,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @should sort correctly
      * @should throw IllegalArgumentException if sortField unknown
      */
@@ -6497,4 +6606,5 @@ public class JPADAO implements IDAO {
         String filterString = join.append(where).toString();
         return filterString;
     }
+
 }

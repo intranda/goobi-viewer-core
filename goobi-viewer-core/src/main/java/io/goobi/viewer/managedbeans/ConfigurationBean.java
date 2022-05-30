@@ -46,7 +46,7 @@ import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
-import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -1058,12 +1058,23 @@ public class ConfigurationBean implements Serializable {
     /**
      * <p>
      * isShowSearchInItem.
-     * </p>
+     * </p
      *
      * @return a boolean.
      */
     public boolean isShowSearchInItem() {
         return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
+    }
+    
+    /**
+     * <p>
+     * isContentUploadEnabled.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isContentUploadEnabled() {
+        return DataManager.getInstance().getConfiguration().isContentUploadEnabled();
     }
 
     /**

@@ -184,6 +184,12 @@ public class CMSMultiRecordNote extends CMSRecordNote {
      * @return
      */
     public boolean matchesRecord(String pi) {
+        
+        //Can be called with empty pi, possibly by bots. In this case always return false
+        if(StringUtils.isBlank(pi) || "-".equals(pi)) {
+            return false;
+        }
+        
         String solrQuery = getQueryForSearch();
         String singleRecordQuery = "+({1}) +{2}".replace("{1}", solrQuery).replace("{2}", "PI:" + pi);
 

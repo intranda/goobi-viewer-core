@@ -2652,7 +2652,9 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
-        sbQuery.append("+(").append(rawQuery).append(")");
+        if(StringUtils.isNotBlank(rawQuery)) {            
+            sbQuery.append("+(").append(rawQuery).append(")");
+        }
 
         // Boosting
         if (boostTopLevelDocstructs) {
