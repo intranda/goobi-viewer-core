@@ -64,6 +64,7 @@ var cmsJS = ( function( cms ) {
         this.geoMap = new viewerJS.GeoMap({
             language: this.config.displayLanguage,
             layer : {
+            	language: this.config.displayLanguage,
 	            popover: this.config.popover,
 	            emptyMarkerMessage: this.config.msg.emptyMarker,
 	            allowMovingFeatures: this.config.allowEditFeatures,
