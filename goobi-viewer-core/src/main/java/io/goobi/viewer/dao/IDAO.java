@@ -2489,6 +2489,8 @@ public interface IDAO {
     public boolean saveClientApplication(ClientApplication client) throws DAOException;
     
     public boolean deleteClientApplication(long id) throws DAOException;
+
+    public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException;
     
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
@@ -2554,6 +2556,7 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
 
 
 }

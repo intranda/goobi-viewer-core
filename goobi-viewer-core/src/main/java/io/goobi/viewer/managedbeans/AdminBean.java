@@ -1100,6 +1100,15 @@ public class AdminBean implements Serializable {
                 Messages.error("license_licenseSaveFailure");
                 error = true;
             }
+        } else if (currentLicense.getClientId() != null) {
+            // IpRange
+            logger.trace("client id:{} ", currentLicense.getClientId());
+            if (DataManager.getInstance().getDao().save) {
+                Messages.info("license_licenseSaveSuccess");
+            } else {
+                Messages.error("license_licenseSaveFailure");
+                error = true;
+            }
         } else {
             logger.trace("nothing");
             Messages.error("license_licenseSaveFailure");

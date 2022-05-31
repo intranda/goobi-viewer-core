@@ -57,6 +57,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.administration.legal.ConsentScope;
+import io.goobi.viewer.model.clients.ClientApplication;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
@@ -78,6 +79,8 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(License.class);
+    
+    public static final Long ALL_CLIENTS_ID = -1l;
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -136,6 +139,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @ManyToOne
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
+    
+    @Column(name = "client_id")
+    private Long clientId;
 
     @Column(name = "date_start")
     private LocalDateTime start;
@@ -1006,5 +1012,27 @@ public class License implements IPrivilegeHolder, Serializable {
 
     public ConsentScope getDisclaimerScope() {
         return disclaimerScope;
+    }
+    
+    /**
+     * @return the client
+     */
+    public Long getClientId() {
+        return clientId;
+    }
+    
+    public ClientApplication getClient() throws DAOException {
+        if(clientId != null) {
+            return DataManager.getInstance().getDao().getClientApplication(clientId);
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * @param client the client to set
+     */
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 }

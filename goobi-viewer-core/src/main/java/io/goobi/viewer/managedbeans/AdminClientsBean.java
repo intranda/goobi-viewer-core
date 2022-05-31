@@ -233,5 +233,12 @@ public class AdminClientsBean implements Serializable {
                 .filter(c -> c.getAccessStatus().equals(AccessStatus.REQUESTED))
                 .collect(Collectors.toList());
     }
+    
+    public List<ClientApplication> getAllAcceptedClients() throws DAOException {
+        return dao.getAllClientApplications()
+                .stream()
+                .filter(c -> c.getAccessStatus().equals(AccessStatus.GRANTED))
+                .collect(Collectors.toList());
+    }
 
 }

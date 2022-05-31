@@ -6634,6 +6634,21 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+    
+    @Override
+    public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM ClientApplication c WHERE c.clientIdentifier =: clientId");
+            q.setParameter("clientId", clientId);
+            return (ClientApplication) q.getSingleResult();
+        } catch(NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
 
     @Override
     public boolean saveClientApplication(ClientApplication client) throws DAOException {

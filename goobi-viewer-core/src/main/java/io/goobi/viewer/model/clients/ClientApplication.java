@@ -29,6 +29,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.License;
 
 /**
@@ -43,6 +45,11 @@ import io.goobi.viewer.model.security.License;
 @Table(name = "client_applications")
 public class ClientApplication {
 
+
+    /**
+     * 
+     */
+    private static final String GENERAL_CLIENT_IDENTIFIER = "74b2b989-753f-4eea-a3f9-8fa7243f3966";
 
     /** Unique database ID. */
     @Id
@@ -231,5 +238,19 @@ public class ClientApplication {
         } else {
             return false;
         }
+    }
+
+    /**
+     * @throws DAOException 
+     * 
+     */
+    public static void addGeneralClientApplicationToDB() throws DAOException {
+        
+        ClientApplication client = DataManager.getInstance().getDao().getClientApplicationByClientId(GENERAL_CLIENT_IDENTIFIER);
+        if(client == null) {            
+            client = new ClientApplication(GENERAL_CLIENT_IDENTIFIER);
+            DataManager.getInstance().getDao().saveClientApplication(client);
+        }
+        
     }
 }
