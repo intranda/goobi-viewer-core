@@ -279,11 +279,11 @@ public class AdminBean implements Serializable {
         }
         if (user.getId() != null) {
             // Existing user
-            if (currentPassword != null && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
-                Messages.error("user_currentPasswordWrong");
-                return false;
-            }
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
+                if (currentPassword != null && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
+                    Messages.error("user_currentPasswordWrong");
+                    return false;
+                }
                 if (!passwordOne.equals(passwordTwo)) {
                     Messages.error("user_passwordMismatch");
                     return false;
