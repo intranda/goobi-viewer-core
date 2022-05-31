@@ -175,14 +175,14 @@
 												infoClass="cms-module__option-message-status success"
 												warnClass="cms-module__option-message-status warning"
 												errorClass="cms-module__option-message-status danger" />
-											<h:inputSecret id="feedbackSecurityQuestion"
+											<h:inputText id="feedbackSecurityQuestion"
 												styleClass="form-control" autocomplete="off"
 												pt:data-require-input-text="feedbackInput"
 												pt:aria-labelledby="feedback-modal__feedbackSecurityQuestion"
 												pt:autocomplete="new-password"
 												value="#{userBean.securityAnswer}" required="true"
 												requiredMessage="#{msg.user__security_question_required_msg}">
-						                	</h:inputSecret>
+						                	</h:inputText>
 										</div>
 									</div>
 								</ui:fragment>
