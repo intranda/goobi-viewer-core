@@ -34,9 +34,13 @@ public class SecurityManager {
 
     private static final int ATTEMPTS_BEFORE_CAPTCHA = 5;
 
+    /** Map containing failed login attempt counters for user names. */
     private final Map<String, Integer> failedLoginAttemptsUserNameMap = new HashMap<>();
+    /** Map containing last failed login attempt time stamps for user names. */
     private final Map<String, Long> lastLoginAttemptUserNameMap = new HashMap<>();
+    /** Map containing failed login attempt counters for IP addresses. */
     private final Map<String, Integer> failedLoginAttemptsIpAddressMap = new HashMap<>();
+    /** Map containing last failed login attempt time stamps for IP addresses. */
     private final Map<String, Long> lastLoginAttemptIpAddressMap = new HashMap<>();
 
     /**
@@ -51,8 +55,8 @@ public class SecurityManager {
 
     /**
      * 
-     * @param ipAddress
-     * @return
+     * @param ipAddress IP address to check
+     * @return true if captcha is appropriate; false otherwise
      */
     public boolean isRequireCaptcha(String ipAddress) {
         if (failedLoginAttemptsIpAddressMap.get(ipAddress) == null) {
@@ -64,7 +68,7 @@ public class SecurityManager {
 
     /**
      * 
-     * @param userName
+     * @param userName User name / e-mail address to check
      * @return
      */
     public long getDelayForUserName(String userName) {
@@ -78,12 +82,12 @@ public class SecurityManager {
         int attempts = failedLoginAttemptsUserNameMap.get(userName);
         long lastAttempt = lastLoginAttemptUserNameMap.get(userName);
 
-        return getDelay(attempts, lastAttempt);
+        return getDelay(attempts, lastAttempt, System.currentTimeMillis());
     }
 
     /**
      * 
-     * @param ipAddress
+     * @param ipAddress IP address to check
      * @return
      */
     public long getDelayForIpAddress(String ipAddress) {
@@ -97,18 +101,22 @@ public class SecurityManager {
         int attempts = failedLoginAttemptsIpAddressMap.get(ipAddress);
         long lastAttempt = lastLoginAttemptIpAddressMap.get(ipAddress);
 
-        return getDelay(attempts, lastAttempt);
+        return getDelay(attempts, lastAttempt, System.currentTimeMillis());
     }
 
     /**
+     * Calculates login delay given the number of failed attempts and the last attempt timestamp.
      * 
-     * @param attempts
-     * @param lastAttempt
-     * @return
+     * @param attempts Total number of failed attempts
+     * @param lastAttempt Millis of the last attempt
+     * @param now Current millis
+     * @return Delay in millis
+     * @should return zero if attempts zero
+     * @should return zero if time between lastAttempt and now larger than delay
+     * @should return delay if time between lastAttempt and now smaller than delay
      */
-    long getDelay(int attempts, long lastAttempt) {
-        long delay = attempts * 3 * 1000; // TODO tweak delay progression?
-        long now = System.currentTimeMillis();
+    static long getDelay(int attempts, long lastAttempt, long now) {
+        long delay = attempts * 3 * 1000;
         if (now - lastAttempt >= delay) {
             return 0;
         }
@@ -117,8 +125,9 @@ public class SecurityManager {
     }
 
     /**
+     * Adds to the failed attempts counter for the given user name.
      * 
-     * @param userName
+     * @param userName User name / e-mail address
      */
     public void addFailedLoginAttemptForUserName(String userName) {
         if (userName == null) {
@@ -135,8 +144,9 @@ public class SecurityManager {
     }
 
     /**
+     * Adds to the failed attempts counter for the given IP address.
      * 
-     * @param ipAddress
+     * @param ipAddress IP address
      */
     public void addFailedLoginAttemptForIpAddress(String ipAddress) {
         if (ipAddress == null) {
@@ -153,9 +163,9 @@ public class SecurityManager {
     }
 
     /**
-     * Removes failed login attempt history for given user.
+     * Removes failed login attempt history for given user name.
      * 
-     * @param user
+     * @param userName User name / e-mail address
      */
     public void resetFailedLoginAttemptForUserName(String userName) {
         if (userName == null) {
@@ -170,7 +180,7 @@ public class SecurityManager {
     /**
      * Removes failed login attempt history for given IP address.
      * 
-     * @param ipAddress
+     * @param ipAddress IP address
      */
     public void resetFailedLoginAttemptForIpAddress(String ipAddress) {
         if (ipAddress == null) {
@@ -180,19 +190,5 @@ public class SecurityManager {
         failedLoginAttemptsIpAddressMap.remove(ipAddress);
         lastLoginAttemptIpAddressMap.remove(ipAddress);
         logger.debug("Reset failed login attempts for IP address {}", ipAddress);
-    }
-
-    /**
-     * @return the failedLoginAttemptsUserNameMap
-     */
-    public Map<String, Integer> getFailedLoginAttemptsUserNameMap() {
-        return failedLoginAttemptsUserNameMap;
-    }
-
-    /**
-     * @return the failedLoginAttemptsIpAddressMap
-     */
-    public Map<String, Integer> getFailedLoginAttemptsIpAddressMap() {
-        return failedLoginAttemptsIpAddressMap;
     }
 }
