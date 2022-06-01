@@ -69,7 +69,6 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.model.clients.ClientApplication;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSContentItem;
@@ -100,6 +99,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -6640,7 +6640,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT c FROM ClientApplication c WHERE c.clientIdentifier =: clientId");
+            Query q = em.createQuery("SELECT c FROM ClientApplication c WHERE c.clientIdentifier = :clientId");
             q.setParameter("clientId", clientId);
             return (ClientApplication) q.getSingleResult();
         } catch(NoResultException e) {

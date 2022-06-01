@@ -62,17 +62,15 @@ public interface IPrivilegeHolder {
     public static final String PRIV_GENERATE_IIIF_MANIFEST = "GENERATE_IIIF_MANIFEST";
     /** Constant <code>PRIV_ZOOM_IMAGES="ZOOM_IMAGES"</code> */
     public static final String PRIV_ZOOM_IMAGES = "ZOOM_IMAGES";
-    /** Constant <code>PRIV_VIEW_IN_CLIENT="PRIV_VIEW_IN_CLIENT"</code> */
-    public static final String PRIV_VIEW_IN_CLIENT = "PRIV_VIEW_IN_CLIENT";
-    /** Constant <code>PRIV_VIEW_IN_WEB_BROWSER="PRIV_VIEW_IN_WEB_BROWSER"</code> */
-    public static final String PRIV_VIEW_IN_WEB_BROWSER = "PRIV_VIEW_IN_WEB_BROWSER";
+    /** Constant <code>PRIV_DOWNLOAD_BORN_DIGITAL_FILES="PRIV_DOWNLOAD_BORN_DIGITAL_FILES"</code> */
+    public static final String PRIV_DOWNLOAD_BORN_DIGITAL_FILES = "PRIV_DOWNLOAD_BORN_DIGITAL_FILES";
     
     
     /** Constant array containing all constants for record privileges. */
     public static final String[] PRIVS_RECORD =
             { PRIV_LIST, PRIV_VIEW_THUMBNAILS, PRIV_VIEW_IMAGES, PRIV_VIEW_VIDEO, PRIV_VIEW_AUDIO, PRIV_VIEW_FULLTEXT, PRIV_ZOOM_IMAGES,
                     PRIV_DOWNLOAD_IMAGES, PRIV_DOWNLOAD_ORIGINAL_CONTENT, PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF, PRIV_DOWNLOAD_METADATA,
-                    PRIV_GENERATE_IIIF_MANIFEST, PRIV_VIEW_UGC, PRIV_VIEW_IN_CLIENT, PRIV_VIEW_IN_WEB_BROWSER };
+                    PRIV_GENERATE_IIIF_MANIFEST, PRIV_VIEW_UGC, PRIV_DOWNLOAD_BORN_DIGITAL_FILES };
 
     // Role privileges
     /** Constant <code>PRIV_DELETE_OCR_PAGE="DELETE_OCR_PAGE"</code> */

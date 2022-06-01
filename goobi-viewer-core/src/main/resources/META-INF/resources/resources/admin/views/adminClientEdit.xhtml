@@ -100,6 +100,15 @@
 							label="#{msg.admin__clients__client_desc}"
 							value="#{client.description}"
 							helpText="#{msg.admin__clients__client_desc__help}" />
+							
+						<formComponent:textInputField
+							label="#{msg.admin__clients__client_ip_range}"
+							value="#{client.subnetMask}"
+							helpText="#{msg.admin__clients__client_ip_range__help}" 
+							validatorId="subnetMaskValidator"
+							validatorMessage="#{msg.admin__clients__client_ip_range_invalid}"/>
+
+							
 					</div>
 
 					<div
@@ -112,6 +121,7 @@
 							action="#{adminClientsBean.save(client)}">
 						</h:commandButton>
 					</div>
+
 				</h:form>
 			</ui:fragment>
 

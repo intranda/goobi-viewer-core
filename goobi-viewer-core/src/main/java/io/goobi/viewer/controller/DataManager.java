@@ -47,6 +47,7 @@ import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
 import io.goobi.viewer.model.translations.language.LanguageHelper;
 import io.goobi.viewer.modules.IModule;
@@ -102,6 +103,8 @@ public final class DataManager {
     private final TaskManager restApiJobManager;
 
     private ArchiveManager archiveManager = null;
+    
+    private ClientApplicationManager clientManager = null;
 
     /**
      * <p>
@@ -533,5 +536,14 @@ public final class DataManager {
             }
         }
         return archiveManager;
+    }
+    
+    public ClientApplicationManager getClientManager() throws DAOException {
+        if(this.clientManager == null) {
+            synchronized (lock) {
+                this.clientManager = new ClientApplicationManager(dao);
+            }
+        }
+        return this.clientManager;
     }
 }

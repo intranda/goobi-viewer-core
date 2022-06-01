@@ -43,10 +43,9 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.annotation.comments.CommentGroup;
-import io.goobi.viewer.model.clients.ClientApplication;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.UserTools;
 
 /**
@@ -90,7 +89,7 @@ public class ContextListener implements ServletContextListener {
             // Add anonymous user
             UserTools.checkAndCreateAnonymousUser();
             // add general clientapplication (representing all clients)
-            ClientApplication.addGeneralClientApplicationToDB();
+            DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
         } catch (Throwable e) {
             logger.error(e.getMessage(), e);
         }

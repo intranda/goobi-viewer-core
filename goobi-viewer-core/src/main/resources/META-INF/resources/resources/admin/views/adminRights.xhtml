@@ -48,6 +48,14 @@
 	                                            <ui:fragment rendered="#{license.ipRange != null}">
 	                                                <h2 class="col-12"><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h2>
 	                                            </ui:fragment>
+	                                            <ui:fragment rendered="#{license.client != null}">
+	                                            	<ui:fragment rendered="#{license.client == adminClientsBean.allClients}">
+	                                            		<h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{msg.all_clients}</h2>
+	                                            	</ui:fragment>
+	                                            	<ui:fragment rendered="#{license.client != adminClientsBean.allClients}">
+		                                                <h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{license.client.name} (#{license.client.clientIdentifier})</h2>
+	                                            	</ui:fragment>
+	                                            </ui:fragment>
 	                                        </div>
 	                                        <!-- DATA -->
 	                                        <dl class="row">

@@ -42,8 +42,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.clients.ClientApplication;
-import io.goobi.viewer.model.clients.ClientApplication.AccessStatus;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.swagger.v3.oas.annotations.Operation;
 
 /**
@@ -56,9 +57,7 @@ public class ClientApplicationsResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientApplicationsResource.class);
     
-    public static final String CLIENT_IDENTIFIER_HEADER = "goobi-viewer-client-identifier";
 
-    public static final String CLIENT_SESSION_ATTRIBUTE = "registered-client";
     
     private final IDAO dao;
     
@@ -80,31 +79,23 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
     public String register() throws ContentLibException, DAOException {
-        String clientIdentifier = getClientIdentifier(servletRequest);
-        Optional<ClientApplication> existingClient = getClientByClientIdentifier(clientIdentifier);
+        String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
+        Optional<ClientApplication> existingClient = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier);
         if(existingClient.isPresent()) {
             throw new IllegalRequestException("Client with this machine identifier is already registered");
         } else {
-            ClientApplication client = new ClientApplication(clientIdentifier);
-            client.setAccessStatus(AccessStatus.REQUESTED);
-            String ip = NetTools.getIpAddress(servletRequest);
-            if(StringUtils.isNotBlank(ip)) {
-                client.setClientIp(ip);
-            }
-            if(dao.saveClientApplication(client)) {                
-                return createRegistrationResponse(client);
-            } else {
-                throw new DAOException("Failed to persist client");
-            }
+            ClientApplication client = DataManager.getInstance().getClientManager().persistNewClient(clientIdentifier, servletRequest);
+            return createRegistrationResponse(client);
         }
     }
+
     
     @GET
     @javax.ws.rs.Path(CLIENTS_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Request", tags = { "clients" })
     public String request() throws ContentLibException, DAOException {
-        String clientIdentifier = getClientIdentifier(servletRequest);
+        String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
         if(StringUtils.isBlank(clientIdentifier)) {
             throw new IllegalRequestException("Missing client idenifier in header");
         }
@@ -112,9 +103,9 @@ public class ClientApplicationsResource {
         if(session == null) {
             throw new IllegalStateException("No http session available for request");
         }
-        Optional<ClientApplication> client = getClientByClientIdentifier(clientIdentifier);
+        Optional<ClientApplication> client = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier);
         if(client.isPresent()) {
-            boolean allowed = registerClientInSession(client.get(), session);
+            boolean allowed = ClientApplicationManager.registerClientInSession(client.get(), session);
             return createRequestResponse(client.get(), allowed);
         } else {
             throw new IllegalRequestException("No client registered with given identifier. Please register the client first");
@@ -133,18 +124,6 @@ public class ClientApplicationsResource {
         return obj.toString();
     }
 
-    /**
-     * @param client
-     * @param session
-     */
-    private boolean registerClientInSession(ClientApplication client, HttpSession session) {
-        if(AccessStatus.GRANTED.equals(client.getAccessStatus())) {            
-            session.setAttribute(CLIENT_SESSION_ATTRIBUTE, client);
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     /**
      * @param client
@@ -156,23 +135,5 @@ public class ClientApplicationsResource {
         return obj.toString();
     }
 
-    /**
-     * @param clientIdentifier
-     * @return
-     * @throws DAOException 
-     */
-    private Optional<ClientApplication> getClientByClientIdentifier(String clientIdentifier) throws DAOException {
-        return dao.getAllClientApplications().stream()
-                .filter(c -> c.matchesClientIdentifier(clientIdentifier))
-                .findAny();
-    }
 
-    /**
-     * @param servletRequest2
-     * @return
-     */
-    private String getClientIdentifier(HttpServletRequest request) {
-       return request.getHeader(CLIENT_IDENTIFIER_HEADER);
-    }
-    
 }

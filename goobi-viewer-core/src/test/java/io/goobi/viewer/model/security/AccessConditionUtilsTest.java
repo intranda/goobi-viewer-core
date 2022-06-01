@@ -45,6 +45,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
@@ -63,7 +64,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsEmpty() throws Exception {
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(new ArrayList<LicenseType>(), new HashSet<String>(),
-                IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null, null));
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null, Optional.empty(), null));
     }
 
     /**
@@ -73,7 +74,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccess() throws Exception {
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(),
-                new HashSet<>(Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", null));
+                new HashSet<>(Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", Optional.empty(), null));
     }
 
     /**
@@ -93,12 +94,12 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add(SolrConstants.OPEN_ACCESS_VALUE);
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
 
         recordAccessConditions.add("type1");
         recordAccessConditions.add("type2");
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
     }
 
     /**
@@ -122,7 +123,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         recordAccessConditions.add("condition2");
 
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
     }
 
     /**
@@ -145,7 +146,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         recordAccessConditions.add("type2");
 
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
     }
 
     /**
@@ -171,13 +172,14 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("license type 3 name");
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
-                "127.0.0.1", null));
+                "127.0.0.1", Optional.empty(), null));
 
         // localhost always gets access now
         //        recordAccessConditions.add("license type 1 name");
         //        Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
         //                "127.0.0.1", null));
     }
+
 
     /**
      * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
@@ -196,7 +198,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("license type 1 name");
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
-                "11.22.33.44", null));
+                "11.22.33.44", Optional.empty(), null));
     }
 
     /**

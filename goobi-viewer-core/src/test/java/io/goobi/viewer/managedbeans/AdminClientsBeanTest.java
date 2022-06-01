@@ -26,8 +26,8 @@ import org.mockito.Mockito;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
-import io.goobi.viewer.model.clients.ClientApplication;
-import io.goobi.viewer.model.clients.ClientApplication.AccessStatus;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 
 /**
  * @author florian

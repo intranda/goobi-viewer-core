@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,11 +58,11 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.administration.legal.ConsentScope;
-import io.goobi.viewer.model.clients.ClientApplication;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -140,8 +141,9 @@ public class License implements IPrivilegeHolder, Serializable {
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
     
-    @Column(name = "client_id")
-    private Long clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private ClientApplication client;
 
     @Column(name = "date_start")
     private LocalDateTime start;
@@ -1018,21 +1020,27 @@ public class License implements IPrivilegeHolder, Serializable {
      * @return the client
      */
     public Long getClientId() {
-        return clientId;
+        return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
     }
     
     public ClientApplication getClient() throws DAOException {
-        if(clientId != null) {
-            return DataManager.getInstance().getDao().getClientApplication(clientId);
-        } else {
-            return null;
-        }
+        return this.client;
     }
     
     /**
      * @param client the client to set
      */
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClient(ClientApplication client) {
+        this.client = client;
+    }
+    
+    /**
+     * @param client the client to set
+     * @throws DAOException 
+     */
+    public void setClientId(Long clientId) throws DAOException {
+        if(clientId != null) {            
+            this.client = DataManager.getInstance().getDao().getClientApplication(clientId);
+        }
     }
 }

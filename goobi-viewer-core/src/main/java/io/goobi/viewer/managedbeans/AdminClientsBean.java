@@ -16,7 +16,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,8 +37,9 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.clients.ClientApplication;
-import io.goobi.viewer.model.clients.ClientApplication.AccessStatus;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 
 /**
  * @author florian
@@ -63,15 +63,23 @@ public class AdminClientsBean implements Serializable {
     
     private TableDataProvider<ClientApplication> configuredClientsModel;
     
+    private final ClientApplication allClients;
+    
     public AdminClientsBean(IDAO dao, int listEntriesPerPage) {
         this.dao = dao;
         configuredClientsModel = createDataTableProvider(listEntriesPerPage);
+        try {
+            this.allClients = dao.getClientApplicationByClientId(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
+        } catch (DAOException e) {
+            throw new IllegalStateException("Unable to load all clients instance from database");
+        }
     }
     
     public AdminClientsBean() {
         try {
             dao = DataManager.getInstance().getDao();
             configuredClientsModel = createDataTableProvider(LIST_ENTRIES_PER_PAGE);
+            this.allClients = dao.getClientApplicationByClientId(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
         } catch (DAOException e) {
             logger.error(e.toString(), e);
             throw new IllegalStateException("Cannot initialize bean without connection to dao");
@@ -239,6 +247,13 @@ public class AdminClientsBean implements Serializable {
                 .stream()
                 .filter(c -> c.getAccessStatus().equals(AccessStatus.GRANTED))
                 .collect(Collectors.toList());
+    }
+    
+    /**
+     * @return the allClients
+     */
+    public ClientApplication getAllClients() {
+        return allClients;
     }
 
 }

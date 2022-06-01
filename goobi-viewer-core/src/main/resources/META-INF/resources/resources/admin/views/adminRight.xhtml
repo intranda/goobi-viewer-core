@@ -56,7 +56,7 @@
                                             <f:ajax listener="#{adminBean.currentLicense.setUser(null)}" />
                                             <f:ajax listener="#{adminBean.currentLicense.setUserGroup(null)}" />
                                             <f:ajax listener="#{adminBean.currentLicense.setIpRange(null)}" />
-                                            <f:ajax listener="#{adminBean.currentLicense.setClientId(null)}" />
+                                            <f:ajax listener="#{adminBean.currentLicense.setClient(null)}" />
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
@@ -104,14 +104,14 @@
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminBean.currentLicense.type == 'client' or adminBean.currentLicense.clientId != null}"
+                                             rendered="#{adminBean.currentLicense.type == 'client' or adminBean.currentLicense.client != null}"
                                              value="#{adminBean.currentLicense.clientId}"
                                              styleClass="form-control"
                                              immediate="true"
                                              disabled="#{adminBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItem itemLabel="#{msg.all_clients}" itemValue="#{-1}"/>
+                                             <f:selectItem itemLabel="#{msg.all_clients}" itemValue="#{adminClientsBean.allClients.id}"/>
                                              <f:selectItems var="client" value="#{adminClientsBean.allAcceptedClients}" itemLabel="#{client.name} (#{client.clientIdentifier})" itemValue="#{client.id}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
@@ -125,7 +125,7 @@
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
-                                             rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null or adminBean.currentLicense.clientId != null}"
+                                             rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null or adminBean.currentLicense.client != null}"
                                              value="#{adminBean.currentLicense.licenseType}"
                                              styleClass="form-control"
                                              immediate="true"
