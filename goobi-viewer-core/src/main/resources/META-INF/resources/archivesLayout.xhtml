@@ -24,11 +24,13 @@
 
 				<!-- LOGO OF INSTITUTION -->
 				<div class="archives__header-brand">
-					<a href="#{request.contextPath}/" title="{msg.home}"> <img
-						src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/fullscreen_logo.png"
-						alt="Logo" />
+					<a href="#{request.contextPath}/" title="{msg.home}"> 
+						<img src="#{adminThemesBean.getFullscreenLogo(&quot;images/template/fullscreen_logo.png&quot;, 300, 40)}" alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
 					</a>
 				</div>
+
+
+
 
 				<!-- ARCHIVE TITLE -->
 				<div class="archives__top-title">
