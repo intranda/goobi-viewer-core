@@ -5511,4 +5511,21 @@ public class Configuration extends AbstractConfiguration {
     public String getCrowdsourcingCampaignItemOrder() {
         return getLocalString("campaigns.itemOrder", "fixed");
     }
+    
+    public int getGeomapAnnotationZoom() {
+        return getLocalInt("campaigns.annotations.geoCoordinates.zoom", 7);
+    }
+    
+    public int getCrowdsourcingCampaignGeomapZoom() {
+        return getLocalInt("campaigns.geoMap.zoom", 7);
+    }
+    
+    public String getCrowdsourcingCampaignGeomapLngLat() {
+        return getLocalString("campaigns.geoMap.lngLat", "11.073397, 49.451993");
+    }
+    
+    public String getCrowdsourcingCampaignGeomapTilesource() {
+        return getLocalString("campaigns.geoMap.tilesource", "mapbox");
+
+    }
 }

@@ -21,7 +21,7 @@
 					<div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div>
 					<plaintextQuestion if="{question.questionType == 'PLAINTEXT'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion>
 					<richtextQuestion if="{question.questionType == 'RICHTEXT'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion>
-					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion>
+					<geoLocationQuestion if="{question.questionType == 'GEOLOCATION_POINT'}" question="{question}" item="{this.item}" index="{index}" geomap="{this.opts.geomap}"></geoLocationQuestion>
 					<authorityResourceQuestion if="{question.questionType == 'NORMDATA'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion>
 					<metadataQuestion if="{question.questionType == 'METADATA'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion>
 				</div>
