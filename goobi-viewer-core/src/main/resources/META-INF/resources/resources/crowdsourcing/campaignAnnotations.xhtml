@@ -89,10 +89,12 @@
 										<!-- ANNOTATION CONTENT -->
 										<div class="col-12 col-lg-6 d-flex" style="flex-direction: column;" role="gridcell">
 											<div class="annotation__label">
-												#{annotation.targetPI}
-												<h:outputText
-													rendered="#{annotation.targetPageOrder != null}"
-													value=", #{msg.page} #{annotation.targetPageOrder}" />
+												<a href="#{navigationHelper.objectUrl}#{annotation.targetLink}">
+													#{annotation.targetPI}
+													<h:outputText
+														rendered="#{annotation.targetPageOrder != null}"
+														value=", #{msg.page} #{annotation.targetPageOrder}" />
+												</a>
 											</div>
 											<div id="annotation_body_#{annotation.id}"
 												class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
