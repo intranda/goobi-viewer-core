@@ -26,11 +26,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.exceptions.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +91,36 @@ public class ClientApplicationsResource {
         }
     }
 
+    
+    @PUT
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Request", tags = { "clients" })
+    public void setClient(String data) throws ContentLibException, DAOException {
+        if(StringUtils.isNotBlank(data)) {
+            try {                
+                Optional<ClientApplication> client = getClientApplicationFromJson(data);
+                if(client.isPresent()) {
+                    
+                }
+            } catch(JSONException e) {
+                
+            }
+            
+        }
+    }
+
+    private Optional<ClientApplication> getClientApplicationFromJson(String data) throws DAOException {
+        JSONObject object = new JSONObject(data);
+        if(object.has("id")) {                    
+            Number id = object.getNumber("id");
+            return Optional.ofNullable(dao.getClientApplication(id.longValue()));
+        } else if(object.has("clientIdentifier")) {                    
+            String clientIdentifier = object.getString("clientIdentifier");
+            return Optional.ofNullable(dao.getClientApplicationByClientId(clientIdentifier));
+        } else {
+            return Optional.empty();
+        }
+    }
     
     @GET
     @javax.ws.rs.Path(CLIENTS_REQUEST)
