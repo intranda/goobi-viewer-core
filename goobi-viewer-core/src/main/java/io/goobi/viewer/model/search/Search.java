@@ -291,13 +291,12 @@ public class Search implements Serializable {
 
         // Apply current facets
         String subElementQueryFilterSuffix = "";
-        if(facets != null) {
+        if (facets != null) {
             subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
             if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
                 subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
             }
         }
-
 
         String finalQuery = query + subElementQueryFilterSuffix;
 
@@ -335,7 +334,7 @@ public class Search implements Serializable {
         List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
-        if(facets.getGeoFacetting().isActive()) {
+        if (facets.getGeoFacetting().isActive()) {
             allFacetFields.add("BOOL_WKT_COORDS");
         }
 
@@ -438,10 +437,10 @@ public class Search implements Serializable {
                 fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT,
                         SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.BOOL_IMAGEAVAILABLE,
                         SolrConstants.MIMETYPE);
-                maxResults = DataManager.getInstance().getConfiguration().useHeatmapForFacetting() ? 0 : Integer.MAX_VALUE;
+                maxResults = DataManager.getInstance().getConfiguration().useHeatmapForFacetting() ? 0 : 100000; // limit max docs to avoid OOM
             }
 
-            // Actual search
+            // Search for hit count + facets
             resp = DataManager.getInstance()
                     .getSearchIndex()
                     .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, activeFacetFilterQueries, params);
@@ -475,10 +474,6 @@ public class Search implements Serializable {
         }
 
         // Collect available facets
-        //        String language = null;
-        //        if (locale != null) {
-        //            language = locale.getLanguage().toUpperCase();
-        //        }
         for (FacetField facetField : resp.getFacetFields()) {
             if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                 continue;
@@ -518,12 +513,19 @@ public class Search implements Serializable {
         }
 
         List<StringPair> useSortFields = getAllSortFields();
+        // Actual hits for listing
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
         this.hits.addAll(hits);
     }
 
+    /**
+     * 
+     * @param solrField
+     * @param results
+     * @return
+     */
     private static List<Location> getLocations(String solrField, SolrDocumentList results) {
         List<Location> locations = new ArrayList<>();
         for (SolrDocument doc : results) {
@@ -541,7 +543,6 @@ public class Search implements Serializable {
                                         DataManager.getInstance().getUrlBuilder())))
                         .collect(Collectors.toList()));
             } catch (IllegalArgumentException e) {
-                System.out.println("\"" + doc.getFieldValue(solrField) + "\"");
                 logger.error("Error parsing field {} of document {}: {}", solrField, doc.get("IDDOC"), e.getMessage());
                 logger.error(e.toString(), e);
             }
@@ -549,6 +550,11 @@ public class Search implements Serializable {
         return locations;
     }
 
+    /**
+     * 
+     * @param o
+     * @return
+     */
     protected static List<IArea> getLocations(Object o) {
         List<IArea> locs = new ArrayList<>();
         if (o == null) {
@@ -584,6 +590,12 @@ public class Search implements Serializable {
         return points.toArray(new double[points.size()][2]);
     }
 
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
     protected static double[] parsePoint(Object x, Object y) {
         if (x instanceof Number) {
             double[] loc = new double[2];
@@ -597,6 +609,7 @@ public class Search implements Serializable {
                 loc[1] = Double.parseDouble((String) y);
                 return loc;
             } catch (NumberFormatException e) {
+                logger.debug(e.getMessage());
             }
         }
         throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
