@@ -243,9 +243,11 @@ public class IndexerTools {
     private static Collection<? extends IndexAugmenter> getAllAugmenters(String pi, Integer page) throws DAOException {
         List<IndexAugmenter> augmenters = new ArrayList<>();
         augmenters.addAll(DataManager.getInstance().getModules());
-        List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
-        IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
-        augmenters.add(annoAugmenter);
+        
+        //Don't index crowdsourcing campaign annotations. At least some (authority data) cause an exception when indexing
+//        List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
+//        IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
+//        augmenters.add(annoAugmenter);
 
         if (page != null) {
             // Only add comments if a page number is given, or else NPE
