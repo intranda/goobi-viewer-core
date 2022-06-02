@@ -128,7 +128,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private final String urn;
     private String purlPart;
     /** Media mime type. */
-    private String mimeType = MimeType.IMAGE.getName();
+    private String mimeType = BaseMimeType.IMAGE.getName();
     /** Actual image/video width (if available). */
     private int width = 0;
     /** Actual image/video height (if available). */
@@ -300,7 +300,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
-        MimeType mimeType = MimeType.getByName(this.mimeType);
+        BaseMimeType mimeType = BaseMimeType.getByName(this.mimeType);
         if (mimeType == null) {
             logger.error("Page {} of record '{}' has unknown mime-type: {}", orderLabel, pi, this.mimeType);
             return "";
@@ -527,7 +527,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public static String getFullMimeType(String baseType, String fileName) {
-        if (baseType.equals(MimeType.IMAGE.getName())) {
+        if (baseType.equals(BaseMimeType.IMAGE.getName())) {
             //            return baseType + "/jpeg";
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
             if (ImageFileFormat.PNG.equals(fileFormat)) {
@@ -549,6 +549,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     @Deprecated
     public String getFullMimeType() {
         return getDisplayMimeType();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getBaseMimeType() {
+        BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
+        if (baseMimeType != null) {
+            return baseMimeType.getName();
+        }
+
+        return BaseMimeType.IMAGE.getName();
     }
 
     /**
@@ -1317,7 +1330,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getPageLinkLabel() {
-        MimeType mimeType = MimeType.getByName(this.mimeType);
+        BaseMimeType mimeType = BaseMimeType.getByName(this.mimeType);
         if (mimeType == null) {
             return "viewImage";
         }
@@ -1346,7 +1359,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
         // Prevent access if mime type incompatible
-        if (!MimeType.OBJECT.equals(MimeType.getByName(mimeType))) {
+        if (!BaseMimeType.OBJECT.equals(BaseMimeType.getByName(mimeType))) {
             return false;
         }
 
@@ -1373,7 +1386,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermissionImage() throws IndexUnreachableException, DAOException {
         // logger.trace("AccessPermissionImage");
         // Prevent access if mime type incompatible
-        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
 
@@ -1400,7 +1413,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public boolean isAccessPermissionObject() throws IndexUnreachableException, DAOException {
         // Prevent access if mime type incompatible
-        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
 
@@ -1469,7 +1482,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
         // Prevent access if mime type incompatible
-        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
 

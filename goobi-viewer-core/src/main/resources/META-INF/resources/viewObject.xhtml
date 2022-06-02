@@ -48,33 +48,34 @@
                 </ui:include>
 
                 <!-- IMAGE CONTROLS -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType != 'video' and activeDocumentBean.viewManager.currentPage.mimeType != 'audio'}">
+                <h:panelGroup
+                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType != 'audio'}">
                     <viewerComponent:imageControls />
                 </h:panelGroup>
 
                 <!-- VIEW IMAGE -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image'}">
                     <ui:insert name="viewImage">
                         <ui:include src="/resources/includes/object/image.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW VIDEO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'video'}">
                     <ui:insert name="viewVideo">
                         <ui:include src="/resources/includes/object/video.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW AUDIO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'audio'}">
                     <ui:insert name="viewAudio">
                         <ui:include src="/resources/includes/object/audio.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:insert>
@@ -82,7 +83,7 @@
 
                 <!-- TODO -->
                 <!-- VIEW TEXT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'text'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'text'}">
                     <ui:insert name="viewText">
                         <ui:include src="/resources/includes/object/text.xhtml" />
                     </ui:insert>
