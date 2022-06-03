@@ -128,4 +128,8 @@ public class ClientApplicationManager {
         }
 
     }
+    
+    public boolean isNotAllClients(ClientApplication client) {
+        return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> id != getAllClients().getId()).orElse(true);
+    }
 }

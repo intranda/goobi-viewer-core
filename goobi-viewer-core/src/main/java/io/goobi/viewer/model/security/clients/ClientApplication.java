@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -36,11 +35,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -49,8 +52,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 import io.goobi.viewer.solr.SolrConstants;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * @author florian
@@ -69,36 +72,47 @@ public class ClientApplication  implements ILicensee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_application_id")
+    @Schema(description = "The internal database identifier of the client", example="2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
     
+    @Schema(description = "The internal identifier/secret of the client", example=" 0D219Z74-F764-4CAD-8361-D9964FD1B186", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "client_identifier")
-    private String clientIdentifier = "";
+    private String clientIdentifier;
     
-    
+    @Schema(description = "The IP under which the client first requested registration", example="192.168.172.13", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "client_ip")
-    private String clientIp = "";
+    private String clientIp;
     
+    @Schema(description = "The name to be displayed for the client", example="Windows Desktop 1", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "name")
-    private String name = "";
+    private String name;
     
+    @Schema(description = "A description of the client", example="Die Treppe rauf, vorne links", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "description")
-    private String description = "";
+    private String description;
     
+    @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access", example="2022-05-19T11:55:16Z", type="date", format="ISO 8601",  accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_registered")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateRegistered = LocalDateTime.now();
     
+    @Schema(description = "The last time the client sent a request to the server", example="2022-05-19T11:55:16Z", type="date", format="ISO 8601",  accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_last_access")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateLastAccess = LocalDateTime.now();
     
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example="168.192.0.1/16", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "subnet_mask")
     private String subnetMask;
 
+    @Schema(description = "The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges", example="GRANTED", accessMode = Schema.AccessMode.READ_WRITE, allowableValues = {"GRANTED, DENIED"})
     @Column(name = "access_status")
     @Enumerated(EnumType.STRING)
     private AccessStatus accessStatus;
     
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @PrivateOwned
+    @JsonIgnore
     private List<License> licenses = new ArrayList<>();
     
     public static enum AccessStatus {
@@ -113,6 +127,19 @@ public class ClientApplication  implements ILicensee {
      */
     public ClientApplication() {
         
+    }
+    
+    public ClientApplication(ClientApplication source) {
+        this.id = source.getId();
+        this.clientIdentifier = source.getClientIdentifier();
+        this.accessStatus = source.getAccessStatus();
+        this.clientIp = source.getClientIp();
+        this.dateLastAccess = source.getDateLastAccess();
+        this.dateRegistered = source.getDateRegistered();
+        this.name = source.getName();
+        this.description = source.getDescription();
+        this.subnetMask = source.getSubnetMask();
+        this.licenses = new ArrayList<>(source.getLicenses());
     }
     
     /**
@@ -239,6 +266,7 @@ public class ClientApplication  implements ILicensee {
         return StringUtils.isNotBlank(identifier) && identifier.equals(this.clientIdentifier);
     }
     
+    @JsonIgnore
     public boolean isRegistrationPending() {
         return AccessStatus.REQUESTED.equals(this.getAccessStatus());
     }

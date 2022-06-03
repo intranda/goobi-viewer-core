@@ -231,6 +231,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String EXTERNAL_IMAGES_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
     public static final String CLIENTS = "/clients";
+    public static final String CLIENTS_CLIENT = "/{id}";
     public static final String CLIENTS_REGISTER = "/register";
     public static final String CLIENTS_REQUEST = "/request";
 
