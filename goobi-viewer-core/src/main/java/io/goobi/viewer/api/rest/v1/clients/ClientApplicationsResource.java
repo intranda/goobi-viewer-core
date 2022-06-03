@@ -141,6 +141,7 @@ public class ClientApplicationsResource {
     @ApiResponse(responseCode = "200",
             description = "Any changes requested have been persisted. The current state of the client is contained within the response body as JSON")
     @ApiResponse(responseCode = "400", description = "The body is not a valid JSON object or contains invalid data")
+    @ApiResponse(responseCode = "401", description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' or 'clientIdentifier' was found in database")
     @ApiResponse(responseCode = "500", description = "In interal error occured")
     public ClientApplication setClient(ClientApplication requestedClient) throws DAOException, ContentNotFoundException {
@@ -189,6 +190,8 @@ public class ClientApplicationsResource {
     @AuthorizationBinding
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a list of all registered clients", tags = { "clients" })
+    @ApiResponse(responseCode = "401", description = "No authorization for access to this resource. See documentation about accessing protected resources")
+    @ApiResponse(responseCode = "500", description = "In interal error occured")
     public List<ClientApplication> getAllClients() throws DAOException {
         return dao.getAllClientApplications().stream().filter(clientManager::isNotAllClients).collect(Collectors.toList());
     }
@@ -204,6 +207,7 @@ public class ClientApplicationsResource {
     @AuthorizationBinding
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the client with the given database id", tags = { "clients" })
+    @ApiResponse(responseCode = "401", description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' was found in database")
     @ApiResponse(responseCode = "500", description = "In interal error occured")
     public ClientApplication getClient(@PathParam("id") @Parameter(description = "client database id") Long id) throws DAOException, ContentNotFoundException {
