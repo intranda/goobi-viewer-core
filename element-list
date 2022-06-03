@@ -30,6 +30,7 @@ io.goobi.viewer.api.rest.v1.search
 io.goobi.viewer.api.rest.v1.services
 io.goobi.viewer.api.rest.v1.tasks
 io.goobi.viewer.api.rest.v2
+io.goobi.viewer.api.rest.v2.annotations
 io.goobi.viewer.api.rest.v2.cms
 io.goobi.viewer.api.rest.v2.collections
 io.goobi.viewer.api.rest.v2.media
@@ -69,7 +70,6 @@ io.goobi.viewer.model.cms.widgets.type
 io.goobi.viewer.model.crowdsourcing
 io.goobi.viewer.model.crowdsourcing.campaigns
 io.goobi.viewer.model.crowdsourcing.questions
-io.goobi.viewer.model.download
 io.goobi.viewer.model.export
 io.goobi.viewer.model.glossary
 io.goobi.viewer.model.iiif.discovery
@@ -78,6 +78,9 @@ io.goobi.viewer.model.iiif.presentation.v3.builder
 io.goobi.viewer.model.iiif.search
 io.goobi.viewer.model.iiif.search.model
 io.goobi.viewer.model.iiif.search.parser
+io.goobi.viewer.model.job
+io.goobi.viewer.model.job.download
+io.goobi.viewer.model.job.upload
 io.goobi.viewer.model.jsf
 io.goobi.viewer.model.log
 io.goobi.viewer.model.maps
@@ -102,6 +105,7 @@ io.goobi.viewer.model.translations.admin
 io.goobi.viewer.model.translations.language
 io.goobi.viewer.model.urlresolution
 io.goobi.viewer.model.viewer
+io.goobi.viewer.model.viewer.collections
 io.goobi.viewer.model.viewer.object
 io.goobi.viewer.model.viewer.pageloader
 io.goobi.viewer.model.viewer.themes
