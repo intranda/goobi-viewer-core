@@ -68,6 +68,7 @@
    
    viewer.GeoMapCms.prototype.init = function(view, features) {
 	    this.geoMap.init(view);
+	    this.config.map.layer.language = this.config.map.language;
     	this.layer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.layer)
 
 		//when clicking on features with an associated link, open that link

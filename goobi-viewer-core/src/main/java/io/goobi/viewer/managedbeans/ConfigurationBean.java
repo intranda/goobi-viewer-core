@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -27,6 +33,8 @@ import javax.faces.annotation.FacesConfig;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +48,7 @@ import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
-import io.goobi.viewer.model.download.DownloadOption;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -987,7 +995,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public int getPageSelectDropdownDisplayMinPages() {
@@ -1052,12 +1060,23 @@ public class ConfigurationBean implements Serializable {
     /**
      * <p>
      * isShowSearchInItem.
-     * </p>
+     * </p
      *
      * @return a boolean.
      */
     public boolean isShowSearchInItem() {
         return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
+    }
+    
+    /**
+     * <p>
+     * isContentUploadEnabled.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isContentUploadEnabled() {
+        return DataManager.getInstance().getConfiguration().isContentUploadEnabled();
     }
 
     /**
@@ -1106,7 +1125,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getRestApiUrlForIIIFPresention() {
@@ -1209,25 +1228,22 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return number of allowed metadata parameters for metadata configuration
      */
+    @Deprecated
     public int getMetadataParamNumber() {
-        return DataManager.getInstance().getConfiguration().getMetadataParamNumber();
+        return 20;
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct list
      */
+    @Deprecated
     public List<Integer> getMetadataParamNumberList() {
-        List<Integer> ret = new ArrayList<>(DataManager.getInstance().getConfiguration().getMetadataParamNumber());
-        for (int i = 0; i < DataManager.getInstance().getConfiguration().getMetadataParamNumber(); ++i) {
-            ret.add(i);
-        }
-
-        return ret;
+        return Collections.emptyList();
     }
 
     /**
@@ -1288,7 +1304,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -1297,7 +1313,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return List of configured <code>DownloadOption</code> items
      */
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
@@ -1309,7 +1325,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @should return correct value
      */
@@ -1318,7 +1334,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return String
      */
     public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
@@ -1326,7 +1342,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return String
      */
     public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
@@ -1334,7 +1350,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return String
      */
     public String getSidebarWidgetUsageCitationLinksImageIntroText() {
@@ -1342,7 +1358,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return List of available citation style names
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
@@ -1430,7 +1446,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<Integer> getSearchHitsPerPageValues() {
@@ -1438,7 +1454,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if user.anonymousUserEmailAddress is configured and valid; false otherwise
      */
     public boolean isAnonymousUserEmailAddressValid() {
@@ -1446,7 +1462,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public List<EmailRecipient> getFeedbackEmailRecipients() {
@@ -1454,7 +1470,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if default sorting field is 'RANDOM'; false otherwise
      */
     public boolean isDefaultSortFieldRandom() {
@@ -1496,38 +1512,58 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param facetField
      * @return
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
         return DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(facetField);
     }
-    
+
     public boolean useHeatmapForMapSearch() {
         return DataManager.getInstance().getConfiguration().useHeatmapForMapSearch();
     }
-    
+
     public GeoMapMarker getMarkerForMapSearch() {
         return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
     }
-    
+
     public boolean useHeatmapForFacetting() {
         return DataManager.getInstance().getConfiguration().useHeatmapForFacetting();
     }
-    
+
     public GeoMapMarker getMarkerForFacetting() {
         return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
     }
-    
+
     public boolean useHeatmapForCMSMaps() {
         return DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps();
     }
-    
+
     public GeoMapMarker getDefaultMarkerForCMSMaps() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
         GeoMapMarker marker = markers.stream().filter(m -> m.getName().equalsIgnoreCase("default")).findAny()
                 .orElse(new GeoMapMarker("default"));
         return marker;
+    }
+    
+    public int getGeomapAnnotationZoom() {
+        return DataManager.getInstance().getConfiguration().getGeomapAnnotationZoom();
+    }
+    
+    public String getCampaignGeomapInitialViewAsJson() {
+        int zoom = DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapZoom();
+        String lngLatString = DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapLngLat();
+        
+        JSONArray lngLatArray = new JSONArray("[" + lngLatString + "]");
+        JSONObject view = new JSONObject();
+        view.put("zoom", zoom);
+        view.put("center", lngLatArray);
+        
+        return view.toString();
+    }
+    
+    public String getCampaignGeomapTilesource() {
+        return DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapTilesource();
     }
 }

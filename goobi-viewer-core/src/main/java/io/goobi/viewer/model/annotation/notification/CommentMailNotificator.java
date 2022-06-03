@@ -1,26 +1,29 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.annotation.notification;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -29,11 +32,10 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * @author florian
@@ -50,7 +52,7 @@ public class CommentMailNotificator implements ChangeNotificator {
     }
 
     /**
-     * 
+     *
      * @param recipients
      */
     public void setRecipients(List<String> recipients) {
@@ -71,48 +73,64 @@ public class CommentMailNotificator implements ChangeNotificator {
         this.bcc = bcc;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyCreation(io.goobi.viewer.model.annotation.PersistentAnnotation)
+    /**
+     * 
+     * @param viewerRootUrl
+     * @param annotation
+     * @return Hyperlink element containing the record and page URL
+     * @should build element correctly
      */
+    static String buildRecordUrlElement(String viewerRootUrl, PersistentAnnotation annotation) {
+        if (viewerRootUrl == null) {
+            return "";
+        }
+        if (annotation == null) {
+            return "";
+        }
+
+        String url = viewerRootUrl.trim() + (viewerRootUrl.trim().endsWith("/") ? "" : "/") + PageType.viewObject.getName() + '/'
+                + annotation.getTargetPI()
+                + '/' + annotation.getTargetPageOrder() + '/';
+
+        return "<a href=\"" + url + "\">" + url + "</a><br/><br/>";
+    }
+
+    /** {@inheritDoc} */
     @Override
-    public void notifyCreation(PersistentAnnotation annotation, Locale locale) {
+    public void notifyCreation(PersistentAnnotation annotation, Locale locale, String viewerRootUrl) {
 
         String subject = ViewerResourceBundle.getTranslation("commentNewNotificationEmailSubject", locale);
         subject = subject.replace("{0}", getCreator(annotation))
                 .replace("{1}", annotation.getTargetPI())
                 .replace("{2}", String.valueOf(annotation.getTargetPageOrder()));
-        String body = ViewerResourceBundle.getTranslation("commentNewNotificationEmailBody", locale);
+        String url = buildRecordUrlElement(viewerRootUrl, annotation);
+        String body = url + ViewerResourceBundle.getTranslation("commentNewNotificationEmailBody", locale);
         body = body.replace("{0}", annotation.getContentString());
         sendEmailNotifications(subject, body);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyEdit(io.goobi.viewer.model.annotation.PersistentAnnotation, io.goobi.viewer.model.annotation.PersistentAnnotation)
-     */
+    /** {@inheritDoc} */
     @Override
-    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale) {
+    public void notifyEdit(PersistentAnnotation oldAnnotation, PersistentAnnotation newAnnotation, Locale locale, String viewerRootUrl) {
 
         String subject = ViewerResourceBundle.getTranslation("commentChangedNotificationEmailSubject", locale);
         subject = subject.replace("{0}", getCreator(newAnnotation))
                 .replace("{1}", newAnnotation.getTargetPI())
                 .replace("{2}", String.valueOf(newAnnotation.getTargetPageOrder()));
-        String body = ViewerResourceBundle.getTranslation("commentChangedNotificationEmailBody", locale);
+        String url = buildRecordUrlElement(viewerRootUrl, newAnnotation);
+        String body = url + ViewerResourceBundle.getTranslation("commentChangedNotificationEmailBody", locale);
         body = body.replace("{0}", oldAnnotation.getContentString()).replace("{1}", newAnnotation.getContentString());
         sendEmailNotifications(subject, body);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyDeletion(io.goobi.viewer.model.annotation.PersistentAnnotation)
-     */
+    /** {@inheritDoc} */
     @Override
     public void notifyDeletion(PersistentAnnotation annotation, Locale locale) {
 
         //no notification
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.annotation.notification.ChangeNotificator#notifyError(java.lang.Exception)
-     */
+    /** {@inheritDoc} */
     @Override
     public void notifyError(Exception exception, Locale locale) {
 

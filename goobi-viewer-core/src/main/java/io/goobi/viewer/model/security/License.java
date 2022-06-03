@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.security;
 
@@ -176,7 +182,7 @@ public class License implements IPrivilegeHolder, Serializable {
     @Column(name="legal_disclaimer_scope", nullable = true)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope disclaimerScope = new ConsentScope();
-    
+
     @Transient
     private String type;
 
@@ -206,7 +212,7 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /**
      * Adds the given privilege to the working set.
-     * 
+     *
      * @param privilege
      * @return true if successful; false otherwise
      */
@@ -218,7 +224,7 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /**
      * Removes the given privilege from the working set.
-     * 
+     *
      * @param privilege
      * @return true if successful; false otherwise
      */
@@ -509,7 +515,7 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /**
      * Returns the list of available record privileges for adding to this license (using the working copy while editing).
-     * 
+     *
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      */
     public List<String> getAvailablePrivileges() {
@@ -518,7 +524,7 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /**
      * Returns the list of available record privileges for adding to this license (using the given privileges list).
-     * 
+     *
      * @return Values in IPrivilegeHolder.PRIVS_RECORD minus the privileges already added
      * @should return cms privileges if licenseType cms type
      * @should only return priv view ugc if licenseType ugc type
@@ -537,7 +543,7 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * 
+     *
      * @param excludePrivileges
      * @param sourcePrivileges
      * @return
@@ -562,7 +568,7 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /**
      * Returns a sorted list (according to the static array of privileges, either for records or CMS) based on the given set of privileges.
-     * 
+     *
      * @param privileges Listed privileges
      * @param sourcePrivileges List containing the desired order
      * @return Sorted list of privileges contained in <code>privileges</code>
@@ -588,7 +594,7 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -606,7 +612,7 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -620,7 +626,7 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -997,7 +1003,7 @@ public class License implements IPrivilegeHolder, Serializable {
     public void setPrivilegesCopy(Set<String> privilegesCopy) {
         this.privilegesCopy = privilegesCopy;
     }
-    
+
     public ConsentScope getDisclaimerScope() {
         return disclaimerScope;
     }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -1408,7 +1414,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * Verify that a search for 'DC:dctei' yields 65 results overall, and 4 results within 'FACET_VIEWERSUBTHEME:subtheme1' This also checks that the
      * queries built by {@link SearchHelper#buildFinalQuery(String, boolean, NavigationHelper)} are valid SOLR queries
-     * 
+     *
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -1427,7 +1433,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * Checks whether counts for each term equal to the value from the last iteration.
-     * 
+     *
      * @see SearchHelper#getFilteredTerms(BrowsingMenuFieldConfig,String,String,Comparator,boolean)
      * @verifies be thread safe when counting terms
      */

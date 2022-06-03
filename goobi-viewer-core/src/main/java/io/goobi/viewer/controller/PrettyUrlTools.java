@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -45,7 +51,7 @@ public class PrettyUrlTools {
             String logId = doc.containsKey(SolrConstants.LOGID) ? doc.getFirstValue(SolrConstants.LOGID).toString() : "";
             String thumbPageNo = doc.containsKey(SolrConstants.THUMBPAGENO) ? doc.getFirstValue(SolrConstants.THUMBPAGENO).toString() : "";
             if(StringUtils.isNotBlank(logId)) {
-                return getRecordURI(pi, thumbPageNo, logId, pageType);                
+                return getRecordURI(pi, thumbPageNo, logId, pageType);
             } else {
                 return getRecordURI(pi, pageType);
             }
@@ -53,8 +59,8 @@ public class PrettyUrlTools {
             return "";
         }
     }
-    
-    
+
+
     public static PageType getPreferredPageType(SolrDocument doc) {
         if(!doc.containsKey(SolrConstants.PI)) {
             throw new IllegalArgumentException("Can only get preferred pageType from main record document, i.e. one containing a PI field");
@@ -67,20 +73,20 @@ public class PrettyUrlTools {
         PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false);
         return pageType;
     }
-    
+
     public static List<String> getSolrFieldsToDeterminePageType() {
         return Arrays.asList(
-                SolrConstants.PI, 
-                SolrConstants.ISANCHOR, 
-                SolrConstants.ISWORK, 
-                SolrConstants.LOGID, 
-                SolrConstants.THUMBPAGENO, 
+                SolrConstants.PI,
+                SolrConstants.ISANCHOR,
+                SolrConstants.ISWORK,
+                SolrConstants.LOGID,
+                SolrConstants.THUMBPAGENO,
                 SolrConstants.BOOL_IMAGEAVAILABLE,
                 SolrConstants.DOCTYPE,
                 SolrConstants.DOCSTRCT,
                 SolrConstants.MIMETYPE);
     }
-    
+
     public static String getRecordURI(String pi, PageType pageType) {
         String prettyId = "";
         switch(pageType) {
@@ -95,24 +101,24 @@ public class PrettyUrlTools {
             default:
                 prettyId = "image1";
         }
-        
+
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(pi);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
-    
+
     public static String getRelativePageUrl(String prettyId, Object... parameters) {
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId)
                 .getPatternParser().getMappedURL(parameters);
         return mappedUrl.toString();
     }
-    
+
     public static String getAbsolutePageUrl(String prettyId, Object... parameters) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + getRelativePageUrl(prettyId, parameters);
     }
 
-    
+
     public static String getRecordURI(String pi, String imageNo, String logId, PageType pageType) {
         String prettyId = "";
         imageNo = StringUtils.isNotBlank(imageNo) ? imageNo : "-";
@@ -129,7 +135,7 @@ public class PrettyUrlTools {
             default:
                 prettyId = "image3";
         }
-        
+
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(pi, imageNo, logId);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();

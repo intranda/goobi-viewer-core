@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.cms;
 
@@ -45,9 +51,9 @@ public class CMSSlider implements Serializable {
     public static final int MAX_ENTRIES_MIN = 1;
     public static final int MAX_ENTRIES_MAX = 30;
     public static final int MAX_ENTRIES_DEFAULT = 10;
-    
+
     private static final long serialVersionUID = -3029283417613875012L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "slider_id")
@@ -87,23 +93,23 @@ public class CMSSlider implements Serializable {
         this.collections = new ArrayList<>(o.collections);
         this.style = o.style;
     }
-    
+
     /**
      * persistence constructor
      */
     public CMSSlider() {
-        
+
     }
-    
+
     /**
      * Default constructor. Provides the source type which should be treated as final
-     * 
+     *
      * @param type
      */
     public CMSSlider(SourceType type) {
         this.sourceType = type;
     }
-    
+
     /**
      * @return the id
      */
@@ -182,30 +188,30 @@ public class CMSSlider implements Serializable {
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
-    
+
     /**
      * @return the style
      */
     public String getStyle() {
         return style;
     }
-    
+
     /**
      * @param style the style to set
      */
     public void setStyle(String style) {
         this.style = style;
     }
-    
+
     /**
      * @return the sourceType
      */
     public SourceType getSourceType() {
         return sourceType;
     }
-    
+
     /**
-     * 
+     *
      * @return true if either {@link #solrQuery}, {@link #collections} or {@link #categories} is empty, depending on the {@link sourceType}
      */
     public boolean isEmpty() {
@@ -221,15 +227,15 @@ public class CMSSlider implements Serializable {
                 return true;
         }
     }
-    
+
     public static enum SourceType {
         RECORDS("label__records"), //has solrQuery
         COLLECTIONS("cms_collections"), //has collections
         PAGES("label__cms_pages"), //has categories
         MEDIA("cms_overviewMedia"); //has categories
-    
+
         private final String label;
-        
+
         private SourceType(String label) {
             this.label = label;
         }
@@ -238,38 +244,38 @@ public class CMSSlider implements Serializable {
             return label;
         }
     }
-    
+
     /**
      * @return the sortField
      */
     public String getSortField() {
         return sortField;
     }
-    
+
     /**
      * @param sortField the sortField to set
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
-    
+
     /**
      * @param maxEntries the maxEntries to set
      */
     public void setMaxEntries(int maxEntries) {
         this.maxEntries = maxEntries;
     }
-    
+
     /**
      * @return the maxEntries
      */
     public int getMaxEntries() {
         return maxEntries;
     }
-    
+
     public List<Integer> getMaxEntriesOptions() {
         return IntStream.range(MAX_ENTRIES_MIN, MAX_ENTRIES_MAX + 1).boxed().collect(Collectors.toList());
     }
-    
+
 
 }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -37,8 +43,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
-import io.goobi.viewer.model.download.DownloadOption;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -1143,15 +1149,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isAddHighwirePressMetaTags_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags());
-    }
-
-    /**
-     * @see Configuration#getMetadataParamNumber()
-     * @verifies return correct value
-     */
-    @Test
-    public void getMetadataParamNumber_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getMetadataParamNumber());
     }
 
     /**
@@ -2492,7 +2489,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
         Assert.assertEquals("MD_LANGUAGE", results.get(2));
     }
-    
 
     /**
      * @see Configuration#getDisplayAdditionalMetadataOnelineFields()
@@ -2618,6 +2614,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getReCaptchaSiteKey_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("6LetEyITAAAAAEAj7NTxgRXR6S_uhZrk9rn5HyB3", DataManager.getInstance().getConfiguration().getReCaptchaSiteKey());
+    }
+
+    /**
+     * @see Configuration#getWorkflowRestUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getWorkflowRestUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("https://example.com/goobi/api/", DataManager.getInstance().getConfiguration().getWorkflowRestUrl());
     }
 
     /**
@@ -3155,5 +3160,59 @@ public class ConfigurationTest extends AbstractTest {
     public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
+    }
+
+    /**
+     * @see Configuration#isContentUploadEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isContentUploadEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isContentUploadEnabled());
+    }
+
+    /**
+     * @see Configuration#getContentUploadToken()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadToken_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("12345-GOOBI-WORKFLOW-REST-TOKEN-67890", DataManager.getInstance().getConfiguration().getContentUploadToken());
+    }
+
+    /**
+     * @see Configuration#getContentUploadDocstruct()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadDocstruct_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("manuscript", DataManager.getInstance().getConfiguration().getContentUploadDocstruct());
+    }
+
+    /**
+     * @see Configuration#getContentUploadTemplateName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadTemplateName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("Sample_workflow", DataManager.getInstance().getConfiguration().getContentUploadTemplateName());
+    }
+
+    /**
+     * @see Configuration#getContentUploadRejectionPropertyName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadRejectionPropertyName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("uploadRejected", DataManager.getInstance().getConfiguration().getContentUploadRejectionPropertyName());
+    }
+
+    /**
+     * @see Configuration#getContentUploadRejectionReasonPropertyName()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentUploadRejectionReasonPropertyName_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("uploadRejectedInformation", DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName());
     }
 }

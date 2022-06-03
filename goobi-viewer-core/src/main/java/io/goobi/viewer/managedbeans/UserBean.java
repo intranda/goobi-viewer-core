@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -23,8 +29,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -120,6 +128,8 @@ public class UserBean implements Serializable {
 
     /** Reusable Random object. */
     Random random = new SecureRandom();
+
+    Map<String, Integer> loginAttempts = new HashMap<>();
 
     // private CompletableFuture<Optional<User>> loginFuture = null;
 
@@ -306,7 +316,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param provider
      * @param result
      * @param loginRequest
@@ -318,11 +328,18 @@ public class UserBean implements Serializable {
         try {
             Optional<User> oUser = result.getUser().filter(u -> u.isActive() && !u.isSuspended());
             if (result.isRefused()) {
-                Messages.error("errLoginWrong");
+                if (result.getDelay() > 0) {
+                    String msg =
+                            ViewerResourceBundle.getTranslation("errLoginDelay", navigationHelper != null ? navigationHelper.getLocale() : null)
+                                    .replace("{0}", String.valueOf((int) Math.ceil(result.getDelay() / 1000.0)));
+                    Messages.error(msg);
+                } else {
+                    Messages.error("errLoginWrong");
+                }
             } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
-                Messages.error("errLoginInactive");
+                Messages.error("errLoginWrong");
             } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
-                Messages.error("errLoginSuspended");
+                Messages.error("errLoginWrong");
             } else if (oUser.isPresent()) { //login successful
                 try {
                     User user = oUser.get();
@@ -518,15 +535,15 @@ public class UserBean implements Serializable {
             try {
                 BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
                         .ifPresentOrElse(bean -> bean.invalidate(), () -> {
-                            throw new IllegalStateException("Cann access cmsBean to invalidate");
+                            throw new IllegalStateException("Cannot access cmsBean to invalidate");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
                         .ifPresentOrElse(bean -> bean.resetAccess(), () -> {
-                            throw new IllegalStateException("Cann access activeDocumentBean to resetAccess");
+                            throw new IllegalStateException("Cannot access activeDocumentBean to resetAccess");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
                         .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {
-                            throw new IllegalStateException("Cann access sessionBean to cleanSessionObjects");
+                            throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
             } catch (Throwable e) {
                 logger.warn(e.getMessage());
@@ -555,7 +572,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param user
      * @return
      */
@@ -1118,7 +1135,7 @@ public class UserBean implements Serializable {
 
     /**
      * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
-     * 
+     *
      * @return always true (do not change since that would break rendered conditions on security questions in xhtml)
      * @should not reset securityQuest if not yet answered
      */
@@ -1283,7 +1300,7 @@ public class UserBean implements Serializable {
     /**
      * Checks whether the logged in user has access to the admin backend via being an admin or having CMS/campaign/comments access. Result is
      * persisted for the duration of the session.
-     * 
+     *
      * @return the hasAdminBackendAccess
      * @throws DAOException
      * @throws IndexUnreachableException
@@ -1397,9 +1414,14 @@ public class UserBean implements Serializable {
 
     }
 
+    public boolean isRequireLoginCaptcha() {
+        // TODO
+        return false;
+    }
+
     /**
      * Check if the current user is required to agree to the terms of use
-     * 
+     *
      * @return true if a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
      */
     public boolean mustAgreeToTermsOfUse() {

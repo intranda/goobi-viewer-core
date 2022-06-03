@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller.imaging;
 
@@ -179,7 +185,7 @@ public class ThumbnailHandler {
                     .params(pi, "full", size, "0", "default", "jpg")
                     .build();
         }
-        
+
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
             return getThumbnailUrl(doc, width, height);
@@ -887,7 +893,7 @@ public class ThumbnailHandler {
 
     /**
      * Get the thumbnailUrl for a IIIF image identifier with default size
-     * 
+     *
      * @param baseUri IIIF image identifier
      * @return
      */
@@ -897,7 +903,7 @@ public class ThumbnailHandler {
 
     /**
      * Get the thumbnailUrl for a IIIF image identifier
-     * 
+     *
      * @param baseUri IIIF image identifier
      * @param width thumbnail width
      * @param height thumbnail height
@@ -909,7 +915,7 @@ public class ThumbnailHandler {
 
     /**
      * Get the square thumbnailUrl for a IIIF image identifier with default size
-     * 
+     *
      * @param baseUri IIIF image identifier
      * @return
      */
@@ -919,7 +925,7 @@ public class ThumbnailHandler {
 
     /**
      * Get the square thumbnailUrl for a IIIF image identifier
-     * 
+     *
      * @param baseUri IIIF image identifier
      * @param size thumbnail size
      * @return
@@ -930,7 +936,7 @@ public class ThumbnailHandler {
 
     /**
      * Get the thumbnailUrl for a IIIF image identifier
-     * 
+     *
      * @param baseUri IIIF image identifier
      * @param width thumbnail width
      * @param height thumbnail height
@@ -1100,7 +1106,7 @@ public class ThumbnailHandler {
      * Creates a {@link Scale} representing the given width and height. If both values are greater than 0, a scale is returned which scaled the image
      * to fit a box of the given size. If just of width and height is greater than 0, a scale is returned to that value; if both values are 0 or less,
      * the full (max) image scale is returned
-     * 
+     *
      * @param width
      * @param height
      * @return An instance of {@link Scale} which represents the given values for width and height

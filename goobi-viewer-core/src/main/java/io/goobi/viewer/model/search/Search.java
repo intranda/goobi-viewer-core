@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.search;
 
@@ -172,7 +178,7 @@ public class Search implements Serializable {
     /**
      * cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient fields set. In particular
      * with empty {@link #hits}
-     * 
+     *
      * @param blueprint
      */
     public Search(Search blueprint) {
@@ -282,22 +288,21 @@ public class Search implements Serializable {
         String termQuery = null;
 
         String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, false);
-        
+
         // Apply current facets
         String subElementQueryFilterSuffix = "";
-        if(facets != null) {
+        if (facets != null) {
             subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
             if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
                 subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
             }
         }
 
-
         String finalQuery = query + subElementQueryFilterSuffix;
-        
+
         return finalQuery;
     }
-    
+
     /**
      * <p>
      * execute.
@@ -329,10 +334,10 @@ public class Search implements Serializable {
         List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
-        if(facets.getGeoFacetting().isActive()) {
+        if (facets.getGeoFacetting().isActive()) {
             allFacetFields.add("BOOL_WKT_COORDS");
         }
-        
+
         String termQuery = null;
         if (boostTopLevelDocstructs && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
@@ -432,10 +437,10 @@ public class Search implements Serializable {
                 fieldList = Arrays.asList(SolrConstants.IDDOC, SolrConstants.WKT_COORDS, SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT,
                         SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.BOOL_IMAGEAVAILABLE,
                         SolrConstants.MIMETYPE);
-                maxResults = DataManager.getInstance().getConfiguration().useHeatmapForFacetting() ? 0 : Integer.MAX_VALUE;
+                maxResults = DataManager.getInstance().getConfiguration().useHeatmapForFacetting() ? 0 : 100000; // limit max docs to avoid OOM
             }
 
-            // Actual search
+            // Search for hit count + facets
             resp = DataManager.getInstance()
                     .getSearchIndex()
                     .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, activeFacetFilterQueries, params);
@@ -469,10 +474,6 @@ public class Search implements Serializable {
         }
 
         // Collect available facets
-        //        String language = null;
-        //        if (locale != null) {
-        //            language = locale.getLanguage().toUpperCase();
-        //        }
         for (FacetField facetField : resp.getFacetFields()) {
             if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                 continue;
@@ -512,12 +513,19 @@ public class Search implements Serializable {
         }
 
         List<StringPair> useSortFields = getAllSortFields();
+        // Actual hits for listing
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
         this.hits.addAll(hits);
     }
 
+    /**
+     * 
+     * @param solrField
+     * @param results
+     * @return
+     */
     private static List<Location> getLocations(String solrField, SolrDocumentList results) {
         List<Location> locations = new ArrayList<>();
         for (SolrDocument doc : results) {
@@ -535,7 +543,6 @@ public class Search implements Serializable {
                                         DataManager.getInstance().getUrlBuilder())))
                         .collect(Collectors.toList()));
             } catch (IllegalArgumentException e) {
-                System.out.println("\"" + doc.getFieldValue(solrField) + "\"");
                 logger.error("Error parsing field {} of document {}: {}", solrField, doc.get("IDDOC"), e.getMessage());
                 logger.error(e.toString(), e);
             }
@@ -543,6 +550,11 @@ public class Search implements Serializable {
         return locations;
     }
 
+    /**
+     * 
+     * @param o
+     * @return
+     */
     protected static List<IArea> getLocations(Object o) {
         List<IArea> locs = new ArrayList<>();
         if (o == null) {
@@ -578,6 +590,12 @@ public class Search implements Serializable {
         return points.toArray(new double[points.size()][2]);
     }
 
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
     protected static double[] parsePoint(Object x, Object y) {
         if (x instanceof Number) {
             double[] loc = new double[2];
@@ -591,6 +609,7 @@ public class Search implements Serializable {
                 loc[1] = Double.parseDouble((String) y);
                 return loc;
             } catch (NumberFormatException e) {
+                logger.debug(e.getMessage());
             }
         }
         throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
@@ -872,7 +891,7 @@ public class Search implements Serializable {
 
     /**
      * Returns a list of currently selected sort fields with any configured static sort fields.
-     * 
+     *
      * @return A list of both static and selected fields
      * @should return all fields
      */

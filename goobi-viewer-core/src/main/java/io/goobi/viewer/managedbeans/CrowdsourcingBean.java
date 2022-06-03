@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -48,7 +54,9 @@ import org.slf4j.LoggerFactory;
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -65,6 +73,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.ReviewMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItemOrder;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -92,7 +101,7 @@ public class CrowdsourcingBean implements Serializable {
     protected UserBean userBean;
 
     private TableDataProvider<Campaign> lazyModelCampaigns;
-    
+
     private CrowdsourcingStatus targetStatus = null;
 
     /**
@@ -107,7 +116,26 @@ public class CrowdsourcingBean implements Serializable {
     private String targetIdentifier;
     /** Current page of the current record. */
     private int targetPage;
+    
+    private final Configuration viewerConfig;
+    private final IDAO dao;
 
+    public CrowdsourcingBean() {
+        this.viewerConfig = DataManager.getInstance().getConfiguration();
+        try {
+            this.dao = DataManager.getInstance().getDao();
+        } catch (DAOException e) {
+            throw new IllegalStateException("Cannot get instance of DAO");
+        }
+    }
+    
+    public CrowdsourcingBean(Configuration viewerConfig, IDAO dao) {
+        this.viewerConfig = viewerConfig;
+        this.dao = dao;
+    }
+    
+    
+    
     /**
      * Initialize all campaigns as lazily loaded list
      */
@@ -129,7 +157,7 @@ public class CrowdsourcingBean implements Serializable {
                         if (userBean.getUser() != null && !userBean.getUser().isSuperuser()) {
                             filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
                         }
-                        return DataManager.getInstance().getDao().getCampaigns(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        return dao.getCampaigns(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
                     }
@@ -145,7 +173,7 @@ public class CrowdsourcingBean implements Serializable {
                             if (userBean.getUser() != null && !userBean.getUser().isSuperuser()) {
                                 filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
                             }
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCampaignCount(filters));
+                            numCreatedPages = Optional.ofNullable(dao.getCampaignCount(filters));
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of campaigns", e);
                         }
@@ -181,7 +209,7 @@ public class CrowdsourcingBean implements Serializable {
         if (userBean.getUser() != null && !userBean.getUser().isSuperuser()) {
             filters.put("groupOwner", String.valueOf(userBean.getUser().getId()));
         }
-        return DataManager.getInstance().getDao().getCampaignCount(filters);
+        return dao.getCampaignCount(filters);
     }
 
     /**
@@ -242,7 +270,7 @@ public class CrowdsourcingBean implements Serializable {
      */
     public String deleteCampaignAction(Campaign campaign) throws DAOException {
         if (campaign != null) {
-            if (DataManager.getInstance().getDao().deleteCampaign(campaign)) {
+            if (dao.deleteCampaign(campaign)) {
                 Messages.info("admin__crowdsoucing_campaign_deleteSuccess");
                 lazyModelCampaigns.update();
             }
@@ -301,7 +329,7 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<Campaign> getAllCampaigns() throws DAOException {
-        List<Campaign> pages = DataManager.getInstance().getDao().getAllCampaigns();
+        List<Campaign> pages = dao.getAllCampaigns();
         return pages;
     }
 
@@ -326,7 +354,7 @@ public class CrowdsourcingBean implements Serializable {
 
     /**
      * Returns the list of campaigns that are visible to the given user.
-     * 
+     *
      * @param user
      * @return
      * @throws DAOException
@@ -364,7 +392,7 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param user
      * @return
      * @throws DAOException
@@ -463,13 +491,13 @@ public class CrowdsourcingBean implements Serializable {
         selectedCampaign.setDateUpdated(now);
         if (selectedCampaign.getId() != null) {
             try {
-                success = DataManager.getInstance().getDao().updateCampaign(selectedCampaign);
+                success = dao.updateCampaign(selectedCampaign);
             } catch (PersistenceException e) {
                 logger.error("Updating campaign " + selectedCampaign + " in database failed ", e);
                 success = false;
             }
         } else {
-            success = DataManager.getInstance().getDao().addCampaign(selectedCampaign);
+            success = dao.addCampaign(selectedCampaign);
         }
         if (success) {
             Messages.info("admin__crowdsourcing_campaign_save_success");
@@ -560,7 +588,7 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void setSelectedCampaignId(String id) throws DAOException {
         if (id != null) {
-            Campaign campaign = DataManager.getInstance().getDao().getCampaign(Long.parseLong(id));
+            Campaign campaign = dao.getCampaign(Long.parseLong(id));
             setSelectedCampaign(campaign);
         } else {
             setSelectedCampaign(null);
@@ -600,7 +628,7 @@ public class CrowdsourcingBean implements Serializable {
         if (this.targetCampaign != null &&  !this.targetCampaign.equals(targetCampaign)) {
             resetTarget();
         }
-        
+
         this.targetCampaign = targetCampaign;
     }
 
@@ -627,53 +655,39 @@ public class CrowdsourcingBean implements Serializable {
      */
     public void setTargetCampaignId(String id) throws NumberFormatException, DAOException {
         if (id != null) {
-            Campaign campaign = DataManager.getInstance().getDao().getCampaign(Long.parseLong(id));
+            Campaign campaign = dao.getCampaign(Long.parseLong(id));
             setTargetCampaign(campaign);
         } else {
             setTargetCampaign(null);
         }
     }
 
-    /**
-     * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for annotating
-     *
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public void setRandomIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
-        if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getRandomizedTarget(CrowdsourcingStatus.ANNOTATE, getTargetIdentifier());
-            setTargetIdentifier(pi);
-        }
-    }
-    
     public void setNextIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.ANNOTATE, getTargetIdentifier());
+            CampaignItemOrder order = CampaignItemOrder.of(viewerConfig.getCrowdsourcingCampaignItemOrder()).orElse(CampaignItemOrder.FIXED);
+            String pi = getNextTargetIdentifier(getTargetCampaign(), getTargetIdentifier(), CrowdsourcingStatus.ANNOTATE, order);
             setTargetIdentifier(pi);
         }
     }
 
-    /**
-     * Sets the {@link #targetIdentifier} to a random identifier/pi for the {@link #targetCampaign} which is eligible for reviewing
-     *
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public void setRandomIdentifierForReview() throws PresentationException, IndexUnreachableException {
-        if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getRandomizedTarget(CrowdsourcingStatus.REVIEW, getTargetIdentifier());
-            setTargetIdentifier(pi);
-
-        }
-    }
-    
     public void setNextIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
-            String pi = getTargetCampaign().getNextTarget(CrowdsourcingStatus.REVIEW, getTargetIdentifier());
+            CampaignItemOrder order = CampaignItemOrder.of(viewerConfig.getCrowdsourcingCampaignItemOrder()).orElse(CampaignItemOrder.FIXED);
+            String pi = getNextTargetIdentifier(getTargetCampaign(), getTargetIdentifier(), CrowdsourcingStatus.REVIEW, order);
             setTargetIdentifier(pi);
         }
     }
+
+    private String getNextTargetIdentifier(Campaign campaign, String currentIdentifier, CrowdsourcingStatus status, CampaignItemOrder ordering) throws PresentationException, IndexUnreachableException {
+        switch(ordering) {
+            case RANDOM: 
+                return  campaign.getRandomizedTarget(status, currentIdentifier, userBean.getUser());
+            case FIXED:
+            default:
+                return campaign.getNextTarget(status, currentIdentifier, userBean.getUser());
+        }
+    }
+
 
     /**
      * removes the target identifier (pi) from the bean, so that pi can be targeted again by random target resolution
@@ -978,21 +992,21 @@ public class CrowdsourcingBean implements Serializable {
     public Set<StatisticMode> getAvailableStatisticModes() {
         return EnumSet.allOf(StatisticMode.class);
     }
-    
+
     /**
      * @return the targetStatus
      */
     public CrowdsourcingStatus getTargetStatus() {
         return targetStatus;
     }
-    
+
     /**
      * @param targetStatus the targetStatus to set
      */
     public void setTargetStatus(CrowdsourcingStatus targetStatus) {
         this.targetStatus = targetStatus;
     }
-    
+
     public void setTargetStatus(String targetStatus) {
         this.targetStatus = CrowdsourcingStatus.forName(targetStatus);
     }

@@ -13,19 +13,35 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
-
-import io.goobi.viewer.controller.DataManager;
+package io.goobi.viewer.model.job.download;
 
 /**
  * @author florian
  *
  */
-public class TaskManagerPDFRequest extends AbstractTaskManagerRequest {
+public class AbstractTaskManagerRequest {
 
-    public TaskManagerPDFRequest() {
-        super("VIEWERPDF");
-        this.targetDir = DataManager.getInstance().getConfiguration().getDownloadFolder("pdf");
+    private final String jobtype;
+    private final String type;
+    public String goobiId;
+    public String sourceDir;
+    public String targetDir;
+    public String pi;
+    public String logId;
+    public String language;
+    
+    public AbstractTaskManagerRequest(String type) {
+        this.jobtype = "VIEWERDOWNLOAD";
+        this.type = type;
     }
+
+    public String getJobtype() {
+        return jobtype;
+    }
+
+    public String getType() {
+        return type;
+    }
+    
     
 }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.dao.impl;
 
@@ -85,7 +91,9 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
-import io.goobi.viewer.model.download.DownloadJob;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
@@ -96,7 +104,6 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
-import io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 
@@ -182,7 +189,7 @@ public class JPADAO implements IDAO {
     /**
      * <p>
      * Get a new {@link EntityManager} from the {@link JPADAO#factory}
-     * 
+     *
      * </p>
      *
      * @return {@link javax.persistence.EntityManager} for the current thread
@@ -196,7 +203,7 @@ public class JPADAO implements IDAO {
 
     /**
      * Operation to call after a query or other kind of transaction is complete
-     * 
+     *
      * @param em
      * @throws DAOException
      */
@@ -350,9 +357,9 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * 
+     *
      * Remove characters from the parameter that may be used to modify the sql query itself. Also puts the parameter to upper case
-     * 
+     *
      * @param param The parameter to sanitize
      * @param addWildCards if true, add '%' to the beginning and end of param
      * @return the sanitized parameter
@@ -693,7 +700,7 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * (non-Javadoc)
-     * 
+     *
      * @see io.goobi.viewer.dao.IDAO#updateUserGroup(io.goobi.viewer.model.security.user.UserGroup)
      * @should set id on new license
      */
@@ -1991,7 +1998,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should sort results correctly
      * @should filter results correctly
      * @should apply target pi filter correctly
@@ -2042,7 +2049,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should sort correctly
      */
     @SuppressWarnings("unchecked")
@@ -2522,7 +2529,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return all objects
      */
     @SuppressWarnings("unchecked")
@@ -2540,7 +2547,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * 
+     *
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -2559,7 +2566,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct object
      */
     @Override
@@ -2578,7 +2585,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct object
      */
     @Override
@@ -2606,7 +2613,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct object
      */
     @Override
@@ -2687,6 +2694,114 @@ public class JPADAO implements IDAO {
         try {
             startTransaction(em);
             DownloadJob o = em.getReference(DownloadJob.class, downloadJob.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    // UploadJob
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return rows with given status
+     */
+    @Override
+    public List<UploadJob> getUploadJobsWithStatus(JobStatus status) throws DAOException {
+        if (status == null) {
+            throw new IllegalArgumentException("status may not be null");
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<UploadJob> cq = cb.createQuery(UploadJob.class);
+            Root<UploadJob> root = cq.from(UploadJob.class);
+            cq.select(root).where(cb.equal(root.get("status"), status));
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return rows in correct order
+     * @should return empty list if creatorId null
+     */
+    @Override
+    public List<UploadJob> getUploadJobsForCreatorId(Long creatorId) throws DAOException {
+        if (creatorId == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<UploadJob> cq = cb.createQuery(UploadJob.class);
+            Root<UploadJob> root = cq.from(UploadJob.class);
+            cq.select(root).where(cb.equal(root.get("creatorId"), creatorId)).orderBy(cb.desc(root.get("dateCreated")));
+
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addUploadJob(UploadJob uploadJob) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(uploadJob);
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            logger.trace(e.getMessage(), e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateUploadJob(UploadJob uploadJob) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(uploadJob);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteUploadJob(UploadJob uploadJob) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            UploadJob o = em.getReference(UploadJob.class, uploadJob.getId());
             em.remove(o);
             commitTransaction(em);
             return true;
@@ -3010,7 +3125,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct result
      */
     @Override
@@ -3985,7 +4100,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct count
      * @should filter correctly
      * @should filter for users correctly
@@ -4069,7 +4184,7 @@ public class JPADAO implements IDAO {
 
     /**
      * Universal method for returning the row count for the given class and filter string.
-     * 
+     *
      * @param className
      * @param filter Filter query string
      * @return
@@ -4091,7 +4206,7 @@ public class JPADAO implements IDAO {
 
     /**
      * Universal method for returning the row count for the given class and filters.
-     * 
+     *
      * @param className
      * @param staticFilterQuery Optional filter query in case the fuzzy filters aren't sufficient
      * @param filters
@@ -4136,7 +4251,7 @@ public class JPADAO implements IDAO {
      */
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return
      */
     @Override
@@ -4238,7 +4353,7 @@ public class JPADAO implements IDAO {
     /**
      * Helper method to get the only result of a query. In contrast to {@link javax.persistence.Query#getSingleResult()} this does not throw an
      * exception if no results are found. Instead, it returns an empty Optional
-     * 
+     *
      * @throws ClassCastException if the first result cannot be cast to the expected type
      * @throws NonUniqueResultException if the query matches more than one result
      * @param q the query to perform
@@ -4670,7 +4785,7 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * Check if the database contains a table of the given name. Used by backward-compatibility routines
-     * 
+     *
      * @throws SQLException
      */
     @Override
@@ -4737,7 +4852,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct rows
      */
     @SuppressWarnings({ "unchecked", "unused" })
@@ -4776,7 +4891,7 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * Get all annotations associated with the work of the given pi
-     * 
+     *
      * @should return correct rows
      */
     @SuppressWarnings("unchecked")
@@ -4798,6 +4913,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
+     * 
      * @should sort correctly
      * @should throw IllegalArgumentException if sortField unknown
      */
@@ -4958,7 +5074,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct rows
      */
     @SuppressWarnings({ "unchecked", "unused" })
@@ -4998,7 +5114,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct rows
      */
     @SuppressWarnings({ "unchecked", "unused" })
@@ -5086,7 +5202,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @should return correct rows
      * @should filter by campaign name correctly
      */
@@ -6097,8 +6213,8 @@ public class JPADAO implements IDAO {
         try {
             Query query =
                     em.createNativeQuery(
-                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id = :userId")
-                            .setParameter("userId", user.getId());
+                            "SELECT COUNT(DISTINCT target_pi) FROM annotations_comments WHERE annotations_comments.creator_id = ?1")
+                            .setParameter(1, user.getId());
             return (Long) query.getSingleResult();
         } finally {
             close(em);
@@ -6200,7 +6316,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * 
+     *
      * @param staticFilterQuery
      * @param filters
      * @param params
@@ -6285,7 +6401,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * 
+     *
      * @param staticFilterQuery
      * @param filters
      * @param params
@@ -6396,7 +6512,7 @@ public class JPADAO implements IDAO {
 
     /**
      * Builds a query string to filter a query across several tables
-     * 
+     *
      * @param filters The filters to use
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
@@ -6461,7 +6577,7 @@ public class JPADAO implements IDAO {
                                 .append(".id = ")
                                 .append(tableKey)
                                 .append(".ownerPage.id)");
-                        //                            if(joinTable.equalsIgnoreCase("CMSPageLanguageVersion")) {                                
+                        //                            if(joinTable.equalsIgnoreCase("CMSPageLanguageVersion")) {
                         //                                join.append(" AND ")
                         //                                .append(" (").append(tableKey).append(".language = :lang) ");
                         //                            }
@@ -6490,4 +6606,5 @@ public class JPADAO implements IDAO {
         String filterString = join.append(where).toString();
         return filterString;
     }
+
 }

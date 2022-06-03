@@ -89,10 +89,12 @@
 										<!-- ANNOTATION CONTENT -->
 										<div class="col-12 col-lg-6 d-flex" style="flex-direction: column;" role="gridcell">
 											<div class="annotation__label">
-												#{annotation.targetPI}
-												<h:outputText
-													rendered="#{annotation.targetPageOrder != null}"
-													value=", #{msg.page} #{annotation.targetPageOrder}" />
+												<a href="#{navigationHelper.objectUrl}#{annotation.targetLink}">
+													#{annotation.targetPI}
+													<h:outputText
+														rendered="#{annotation.targetPageOrder != null}"
+														value=", #{msg.page} #{annotation.targetPageOrder}" />
+												</a>
 											</div>
 											<div id="annotation_body_#{annotation.id}"
 												class="annotation__body__content_wrapper">#{contentBean.cleanUpValue(annotation.body.toString())}</div>
@@ -100,12 +102,12 @@
 												contentid="annotation_body_#{annotation.id}" />
 											<div>
 												<!-- TODO INLINE CSS -->
-												<button
+												<a
 													href="#{navigationHelper.objectUrl}#{annotation.targetLink}"
-													class="btn btn--clear admin__table-action-link"
+													class="admin__table-action-link"
 													style="padding-right: 1.4rem;" target="_blank"
 													aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}
-												</button>
+												</a> 
 											</div>
 										</div>
 										<!-- CAMPAIGN -->
@@ -143,6 +145,11 @@
                             riot.mount( "annotationBody", {
                                 currentlang: "#{navigationHelper.localeString}",
                                 resturl: "#{configurationBean.restApiUrlV1}",
+                                geomap : {
+                                    initialView : {
+                                        zoom: #{configurationBean.geomapAnnotationZoom},
+                                    },
+                                }
                             } );
 						})
 						console.log("rest url = ", "#{configurationBean.restApiUrlV1}");

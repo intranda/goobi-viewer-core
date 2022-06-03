@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -236,7 +242,7 @@ public class AnnotationBean implements Serializable {
     /**
      * Setter for {@link SelectionManager#setSelectAll(boolean) exportSelection#setSelectAll(boolean)} is placed here to avoid jsf confusing it with
      * setting a value of the map
-     * 
+     *
      * @param select
      */
     public void setSelectAll(boolean select) {
@@ -246,7 +252,7 @@ public class AnnotationBean implements Serializable {
     /**
      * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} is placed here to avoid jsf confusing it with getting a value
      * of the map
-     * 
+     *
      * @param select
      * @return always false to deselect the select all button when loading the page
      */
@@ -256,7 +262,7 @@ public class AnnotationBean implements Serializable {
 
     /**
      * Create an excel sheet and write it to download stream
-     * 
+     *
      * @throws IOException
      */
     public void downloadSelectedAnnotations() throws IOException {

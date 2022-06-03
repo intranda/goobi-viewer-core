@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.annotation;
 
@@ -123,21 +129,21 @@ public abstract class PersistentAnnotation {
 
     @Column(name = "access_condition", nullable = true)
     private String accessCondition;
-    
+
     @Column(name = "publication_status")
     @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.CREATING;
 
      @Transient
      private User creator = null;
-    
+
     /**
      * empty constructor
      */
     public PersistentAnnotation() {
         this.dateCreated = LocalDateTime.now();
     }
-    
+
     public PersistentAnnotation(PersistentAnnotation source) {
         this.id = source.id;
         this.accessCondition = source.accessCondition;
@@ -283,7 +289,7 @@ public abstract class PersistentAnnotation {
         }
         return this.creator;
     }
-    
+
     public Optional<User> getCreatorIfPresent() {
         try {
             return Optional.ofNullable(getCreator());
@@ -301,7 +307,7 @@ public abstract class PersistentAnnotation {
      */
     public void setCreator(User creator) {
         this.creator = creator;
-        if(creator != null) {            
+        if(creator != null) {
             this.creatorId = creator.getId();
         }
     }
@@ -657,7 +663,7 @@ public abstract class PersistentAnnotation {
         this.accessCondition = accessCondition;
     }
 
-    
+
     /**
      * @param c
      * @param targetPI2
@@ -683,15 +689,15 @@ public abstract class PersistentAnnotation {
         sb.append("\n\t").append("GeneratorId:").append(getGeneratorId());
         sb.append("\n\t").append("CreatorId:").append(getCreatorId());
         sb.append("\n\t").append("ReviewerId:").append(getReviewerId());
-        
+
         return sb.toString();
 
     }
-    
+
     public String getDisplayDate(LocalDateTime date) {
         return DateTools.format(date, DateTools.formatterDEDateTime, false);
     }
-    
+
     /**
      * Checks whether the user with the given ID is allowed to edit this comment (i.e. the annotation belongs to this (proper) user.
      *
@@ -704,21 +710,21 @@ public abstract class PersistentAnnotation {
     public boolean mayEdit(User user) {
         return this.creatorId != null && user != null && this.creatorId.equals(user.getId());
     }
-    
+
     /**
      * @return the publicationStatus
      */
     public PublicationStatus getPublicationStatus() {
         return publicationStatus;
     }
-    
+
     /**
      * @param publicationStatus the publicationStatus to set
      */
     public void setPublicationStatus(PublicationStatus publicationStatus) {
         this.publicationStatus = publicationStatus;
     }
-    
+
     @Override
     public int hashCode() {
         if(id == null) {
@@ -727,7 +733,7 @@ public abstract class PersistentAnnotation {
             return id.hashCode();
         }
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if(obj != null && obj.getClass().equals(this.getClass())) {

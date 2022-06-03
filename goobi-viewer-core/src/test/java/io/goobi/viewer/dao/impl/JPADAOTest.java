@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.dao.impl;
 
@@ -83,10 +89,11 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.DownloadJob.JobStatus;
-import io.goobi.viewer.model.download.EPUBDownloadJob;
-import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.EPUBDownloadJob;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
@@ -2065,7 +2072,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * Should return 2 results: user1 by its name and user 2 by its user group
-     * 
+     *
      * @see JPADAO#getUserCount(Map)
      * @verifies filter correctly
      */
@@ -2257,6 +2264,39 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(job);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
         Assert.assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
+    }
+
+    /**
+     * @see JPADAO#getUploadJobsForCreatorId(Long)
+     * @verifies return rows in correct order
+     */
+    @Test
+    public void getUploadJobsForCreatorId_shouldReturnRowsInCorrectOrder() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(1L);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(2), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(1), result.get(1).getId());
+    }
+
+    /**
+     * @see JPADAO#getUploadJobsWithStatus(JobStatus)
+     * @verifies return rows with given status
+     */
+    @Test
+    public void getUploadJobsWithStatus_shouldReturnRowsWithGivenStatus() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(Long.valueOf(1), result.get(0).getId());
+    }
+
+    /**
+     * @see JPADAO#getUploadJobsForCreatorId(Long)
+     * @verifies return empty list if creatorId null
+     */
+    @Test
+    public void getUploadJobsForCreatorId_shouldReturnEmptyListIfCreatorIdNull() throws Exception {
+        List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(null);
+        Assert.assertTrue(result.isEmpty());
     }
 
     @Test

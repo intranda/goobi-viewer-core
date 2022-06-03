@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.security.authentication;
 
@@ -23,9 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
@@ -36,6 +45,9 @@ import io.goobi.viewer.model.security.user.User;
  * @author Florian Alpers
  */
 public class LocalAuthenticationProvider implements IAuthenticationProvider {
+    
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(LocalAuthenticationProvider.class);
 
     /** Constant <code>TYPE_LOCAL="local"</code> */
     public static final String TYPE_LOCAL = "local";
@@ -63,13 +75,33 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     public CompletableFuture<LoginResult> login(String email, String password) throws AuthenticationProviderException {
         HttpServletRequest request = BeanUtils.getRequest();
         HttpServletResponse response = BeanUtils.getResponse();
+
+        String ipAddress = NetTools.getIpAddress(request);
+        long delay = DataManager.getInstance().getSecurityManager().getDelayForIpAddress(ipAddress);
+        if (delay > 0) {
+            // refuse with delay
+            return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true).setDelay(delay));
+        }
+
         if (StringUtils.isNotEmpty(email)) {
+            delay = DataManager.getInstance().getSecurityManager().getDelayForUserName(email);
+            if (delay > 0) {
+                // refuse with delay
+                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true).setDelay(delay));
+            }
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);
                 boolean refused = true;
                 if (user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null
                         && bcrypt.checkpw(password, user.getPasswordHash())) {
                     refused = false;
+                    // Reset failed failed login attempt penalty counters
+                    DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForUserName(email);
+                    DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForIpAddress(ipAddress);
+                } else {
+                    // Register failed attempt for user name and IP address
+                    DataManager.getInstance().getSecurityManager().addFailedLoginAttemptForUserName(email);
+                    DataManager.getInstance().getSecurityManager().addFailedLoginAttemptForIpAddress(ipAddress);
                 }
                 return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.ofNullable(user), refused));
             } catch (DAOException e) {

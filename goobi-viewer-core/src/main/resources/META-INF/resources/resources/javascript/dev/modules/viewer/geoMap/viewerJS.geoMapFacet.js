@@ -119,6 +119,7 @@ var viewerJS = ( function ( viewer ) {
 
 	viewer.GeoMapFacet.prototype.initHitsLayer = function (features) {
 		//console.log("init hits layer ", this.config.map.hitsLayer);
+		this.config.map.hitsLayer.language = this.config.map.language;
 		let hitsLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.hitsLayer)
 		hitsLayer.init(features, false);
 		hitsLayer.onFeatureClick.subscribe(f => {
@@ -149,6 +150,7 @@ var viewerJS = ( function ( viewer ) {
 	}
 
 	viewer.GeoMapFacet.prototype.initDrawLayer = function() {
+		this.config.map.areaLayer.language = this.config.map.language;
 		let drawLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.areaLayer);
 		if(this.area) {	                    	    
 			switch(this.area.type) {

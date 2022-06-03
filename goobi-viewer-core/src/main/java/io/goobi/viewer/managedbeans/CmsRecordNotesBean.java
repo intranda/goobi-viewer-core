@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -47,9 +53,9 @@ import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 
 /**
- * 
+ *
  * Bean used for listing and retrieving {@link CMSRecordNote}s
- * 
+ *
  * @author florian
  *
  */
@@ -64,20 +70,20 @@ public class CmsRecordNotesBean implements Serializable{
     private static final int DEFAULT_ROWS_PER_PAGE = 10;
 
     public static final String PI_TITLE_FILTER = "PI_OR_TITLE";
-    
+
     @Inject
     private ImageDeliveryBean images;
-    
+
     @Inject
     private NavigationHelper navigationHelper;
-    
+
     private TableDataProvider<CMSRecordNote> dataProvider;
-    
+
     public CmsRecordNotesBean() {
-        
+
     }
 
-    
+
     /**
      * @param images2
      */
@@ -91,39 +97,39 @@ public class CmsRecordNotesBean implements Serializable{
             initDataProvider();
         }
     }
-    
+
     /**
      * @return the dataProvider
      */
     public TableDataProvider<CMSRecordNote> getDataProvider() {
         return dataProvider;
     }
-    
+
     /**
      * get the thumbnail url for the record related to the note
-     * 
+     *
      * @param note
      * @return
-     * @throws ViewerConfigurationException 
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
     public String getThumbnailUrl(CMSSingleRecordNote note) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if(StringUtils.isNotBlank(note.getRecordPi())) {
             return images.getThumbs().getThumbnailUrl(note.getRecordPi());
         } else {
             return "";
-        }    
+        }
     }
-    
+
     /**
      * get the thumbnail url for the record related to the note for given width and height
-     * 
+     *
      * @param note
      * @return
-     * @throws ViewerConfigurationException 
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
     public String getThumbnailUrl(CMSSingleRecordNote note, int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if(StringUtils.isNotBlank(note.getRecordPi())) {
@@ -132,7 +138,7 @@ public class CmsRecordNotesBean implements Serializable{
             return "";
         }
     }
-    
+
     public boolean deleteNote(CMSRecordNote note) throws DAOException {
         if(note != null && note.getId() != null) {
             return DataManager.getInstance().getDao().deleteRecordNote(note);
@@ -140,15 +146,15 @@ public class CmsRecordNotesBean implements Serializable{
             return false;
         }
     }
-    
+
     public String getRecordUrl(CMSSingleRecordNote note)  {
-       if(note != null) {           
+       if(note != null) {
            return navigationHelper.getImageUrl() + "/" + note.getRecordPi() + "/";
        } else {
            return "";
        }
     }
-    
+
     private void initDataProvider() {
         dataProvider = new TableDataProvider<>(new TableDataSource<CMSRecordNote>() {
 
@@ -197,14 +203,14 @@ public class CmsRecordNotesBean implements Serializable{
             dataProvider.addFilter(PI_TITLE_FILTER);
             //            lazyModelPages.addFilter("CMSCategory", "name");
     }
-    
+
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
         List<CMSRecordNote> notes = new ArrayList<>();
         notes.addAll(DataManager.getInstance().getDao().getRecordNotesForPi(pi, true));
         notes.addAll(DataManager.getInstance().getDao().getAllMultiRecordNotes(true).stream().filter(note -> note.matchesRecord(pi)).collect(Collectors.toList()));
         return notes;
     }
-    
+
     public String getSearchUrlForNote(CMSMultiRecordNote note)  {
         String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
         return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");

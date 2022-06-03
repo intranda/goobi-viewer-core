@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.controller;
 
@@ -96,7 +102,9 @@ public final class DataManager {
     private final TaskManager restApiJobManager;
 
     private ArchiveManager archiveManager = null;
-    
+
+    private SecurityManager securityManager = null;
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -120,7 +128,7 @@ public final class DataManager {
         return dm;
     }
 
-    private DataManager() {             
+    private DataManager() {
         restApiJobManager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
     }
 
@@ -487,7 +495,7 @@ public final class DataManager {
     }
 
     /**
-     * 
+     *
      */
     public void resetTiming() {
         this.timing = new TimeAnalysis();
@@ -517,15 +525,29 @@ public final class DataManager {
     public TaskManager getRestApiJobManager() {
         return restApiJobManager;
     }
-    
+
     public ArchiveManager getArchiveManager() {
-        if(archiveManager == null) {
+        if (archiveManager == null) {
             synchronized (lock) {
-                archiveManager =  new ArchiveManager(getConfiguration().isArchivesEnabled() ? getConfiguration().getBaseXUrl() : "", 
+                archiveManager = new ArchiveManager(getConfiguration().isArchivesEnabled() ? getConfiguration().getBaseXUrl() : "",
                         getConfiguration().getArchiveNodeTypes(),
                         getSearchIndex());
             }
         }
         return archiveManager;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public SecurityManager getSecurityManager() {
+        if (securityManager == null) {
+            synchronized (lock) {
+                securityManager = new SecurityManager();
+            }
+        }
+
+        return securityManager;
     }
 }

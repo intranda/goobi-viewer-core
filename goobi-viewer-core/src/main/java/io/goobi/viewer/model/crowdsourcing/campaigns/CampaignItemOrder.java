@@ -13,20 +13,30 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.download;
+package io.goobi.viewer.model.crowdsourcing.campaigns;
 
-import io.goobi.viewer.controller.DataManager;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author florian
  *
  */
-public class TaskManagerEPUBRequest extends AbstractTaskManagerRequest {
+public enum CampaignItemOrder {
 
-    public TaskManagerEPUBRequest() {
-        super("VIEWEREPUB");
-        this.targetDir = DataManager.getInstance().getConfiguration().getDownloadFolder("epub");
-
-    }
+    RANDOM,
+    FIXED;
     
+    public static Optional<CampaignItemOrder> of(String string) {
+        if(StringUtils.isBlank(string)) {
+            return Optional.empty();
+        } else {
+            try {                
+                return Optional.of(CampaignItemOrder.valueOf(string.toUpperCase()));
+            } catch(IllegalArgumentException e) {
+                return Optional.empty();
+            }
+        }
+    }
 }

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -28,7 +34,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.Query;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +87,8 @@ public class UserDataBean implements Serializable {
 
     /**
      * Initialize all campaigns as lazily loaded list
-     * @throws DAOException 
+     * 
+     * @throws DAOException
      */
     @PostConstruct
     public void init() throws DAOException {
@@ -94,27 +100,31 @@ public class UserDataBean implements Serializable {
         }
     }
 
-
+    @SuppressWarnings("rawtypes")
     private TableDataProvider<PersistentAnnotation> initLazyModel(AnnotationLister lister) {
         TableDataProvider<PersistentAnnotation> model = new TableDataProvider<>(new TableDataSource<PersistentAnnotation>() {
 
             private Optional<Long> numCreatedPages = Optional.empty();
 
+            @SuppressWarnings("unchecked")
             @Override
             public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
                     Map<String, String> filters) {
-                    if (StringUtils.isBlank(sortField)) {
-                        sortField = "id";
-                        sortOrder = SortOrder.DESCENDING;
-                    }
-                    List<PersistentAnnotation> ret = lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null, Collections.singletonList(userBean.getUser().getId()), null, null, sortField, sortOrder.asBoolean());
-                    return ret;
+                if (StringUtils.isBlank(sortField)) {
+                    sortField = "id";
+                    sortOrder = SortOrder.DESCENDING;
+                }
+                List<PersistentAnnotation> ret = lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null,
+                        Collections.singletonList(userBean.getUser().getId()), null, null, sortField, sortOrder.asBoolean());
+                return ret;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 if (!numCreatedPages.isPresent()) {
-                    numCreatedPages = Optional.ofNullable(lister.getAnnotationCount(filters.get("targetPI_body_campaign_dateCreated"), null, null, Collections.singletonList(userBean.getUser().getId()), null, null));
+                    numCreatedPages = Optional.ofNullable(lister.getAnnotationCount(filters.get("targetPI_body_campaign_dateCreated"), null, null,
+                            Collections.singletonList(userBean.getUser().getId()), null, null));
                 }
                 return numCreatedPages.orElse(0l);
             }
@@ -148,7 +158,7 @@ public class UserDataBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -159,8 +169,6 @@ public class UserDataBean implements Serializable {
 
         return DataManager.getInstance().getDao().getAnnotationsForUserId(userBean.getUser().getId(), null, null, false);
     }
-
-
 
     /**
      * Deletes the given persistent user search.
@@ -196,11 +204,10 @@ public class UserDataBean implements Serializable {
     public TableDataProvider<PersistentAnnotation> getLazyModelAnnotations() {
         return lazyModelAnnotations;
     }
-    
+
     public TableDataProvider<PersistentAnnotation> getLazyModelComments() {
         return lazyModelComments;
     }
-
 
     public long getNumBookmarkLists(User user) throws DAOException {
         return DataManager.getInstance().getDao().getBookmarkListCount(user);
@@ -212,9 +219,10 @@ public class UserDataBean implements Serializable {
 
     public long getNumComments(User user) throws DAOException {
         // TODO filter via PI whitelist here?
+        logger.trace("getNumComments");
         return DataManager.getInstance().getDao().getCommentCount(null, user, null);
     }
-    
+
     public long getNumAnnotations(User user) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
@@ -230,17 +238,17 @@ public class UserDataBean implements Serializable {
             return 0;
         }
         return getNumAnnotations(userBean.getUser());
-   }
-    
+    }
+
     public long getCommentCount() throws DAOException {
         if (userBean == null || userBean.getUser() == null) {
             return 0;
         }
         return getNumComments(userBean.getUser());
-   }
+    }
 
     /**
-     * 
+     *
      * @param user
      * @param numEntries
      * @return

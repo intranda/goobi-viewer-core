@@ -54,9 +54,10 @@
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
 	<hotfolder>hotfolder</hotfolder>
-	<!-- Folders for generated download files -->
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
+    <!-- umlautsFile: location of the goobi_opacUmlaut.txt file for process title creation -->
+    <umlautsFile>src/test/resources/goobi_opacUmlaut.txt</umlautsFile>
 	<!-- dbPersistenceUnit: Name of the JPA persistence unit defined in persistence.xml. 
 		This element is optional and usually does not need to be configured. Default 
 		is 'intranda_viewer_tomcat'. -->
@@ -73,9 +74,6 @@
 			<!-- Path to ESE record via OAI for linking in bibliographic data -->
 			<ese>ese_value</ese>
 		</metadata>
-
-		<!-- taskManager: Url of local taskManager for pdf-download -->
-		<taskManager>taskmanager_url/</taskManager>
 
 		<!-- solr: URL to the Solr index core -->
 		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
@@ -94,6 +92,12 @@
 		
  		<iiif useForCmsMedia="true">https://viewer.goobi.io/api/v1/</iiif>
 		<rest>http://localhost:8080/viewer/api/v1/</rest>
+        
+        <!-- workflow: REST service URL of Goobi workflow -->
+        <workflow>https://example.com/goobi/api</workflow>
+
+        <!-- taskManager: Url of local taskManager for pdf-download -->
+        <taskManager>taskmanager_url/</taskManager>
 
 		<download>https://viewer.goobi.io/download/</download>
 		
@@ -805,9 +809,6 @@
 
 		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
 		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>
-		
-        <!-- metadataParamNumber: Number of possible parameters for metadata elements (for all metadata lists). Default ist 10. -->
-        <metadataParamNumber>5</metadataParamNumber>
         
         <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
 	    	of available license types when a user is asked to selec a license -->
@@ -1151,6 +1152,20 @@
             <key regex="true">user_retrieveAccountNewPasswordEmail.*</key>
         </group>
     </translations>
+    
+    <!-- upload/@enabled: If true, users are allowed to upload content for processing in Goobi workflow -->
+    <upload enabled="true">
+        <!-- token: Goobi workflow API authorization token. -->
+        <token>12345-GOOBI-WORKFLOW-REST-TOKEN-67890</token>
+        <!-- docstruct: Document type to be used when creating a new process from uploaded data. Default is 'monograph'. -->
+        <docstruct>manuscript</docstruct>
+        <!-- templateName: Goobi workflow template name for process creation (required). -->
+        <templateName>Sample_workflow</templateName>
+        <!-- rejectionPropertyName: Goobi worklow process property name indicating whether the uploaded process was rejected. -->
+        <rejectionPropertyName>uploadRejected</rejectionPropertyName>
+        <!-- rejectionReasonPropertyName: Goobi worklow process property name containing the reason for rejection. -->
+        <rejectionReasonPropertyName>uploadRejectedInformation</rejectionReasonPropertyName>
+    </upload>
 
 	<!-- Transkribus settings (enabled: default false) -->
 	<transkribus enabled="true">

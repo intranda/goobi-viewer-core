@@ -3,6 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
@@ -31,7 +32,9 @@
                 <h:inputText 
                     id="prettyUrl" 
                     value="#{cmsBean.selectedPage.persistentUrl}" 
-                    styleClass="form-control" />
+                    styleClass="form-control"
+                    pt:data-input-restricted="url"
+                    pt:data-input-restricted-message="#{msg.alert__character_not_allowed_in_url}" />
             </h:panelGroup>
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.cms_page_pretty_url_help}</span>

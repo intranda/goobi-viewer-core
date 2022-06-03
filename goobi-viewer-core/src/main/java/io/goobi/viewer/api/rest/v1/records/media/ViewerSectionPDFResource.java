@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
@@ -48,7 +54,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
 
     private final String divId;
     private String filename;
-    
+
     /**
      * @param request
      * @param type
@@ -66,7 +72,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
     }
-    
+
     @GET
     @Path(ApiUrls.RECORDS_SECTIONS_PDF)
     @Produces("application/pdf")
@@ -76,7 +82,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
         return super.getPdf(divId);
     }
-    
+
     @GET
     @Path(ApiUrls.RECORDS_SECTIONS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })

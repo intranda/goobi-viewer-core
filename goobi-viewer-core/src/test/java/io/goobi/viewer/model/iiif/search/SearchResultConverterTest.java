@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.iiif.search;
 
@@ -93,9 +99,9 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 
         SearchHit hit = converter.convertCommentToHit(queryRegex, pi, comment);
-        
+
         String url = urls.path(ANNOTATIONS, ANNOTATIONS_COMMENT).params(comment.getId()).query("format", "oa").toString();
-        
+
         Assert.assertNotNull(hit);
         Assert.assertEquals(url, hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());
@@ -153,7 +159,7 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
         SearchHit hit = converter.convertMetadataToHit(queryRegex, SolrConstants.TITLE, doc);
 
         String annoUrl = urls.path(ApiUrls.ANNOTATIONS, ApiUrls.ANNOTATIONS_METADATA).params(pi, logId, "MD_TITLE").query("format", "oa").build();
-        
+
         Assert.assertNotNull(hit);
         Assert.assertEquals(annoUrl, hit.getAnnotations().get(0).getId().toString());
         Assert.assertEquals("in", hit.getMatch());
@@ -168,13 +174,13 @@ public class SearchResultConverterTest extends AbstractSolrEnabledTest {
     /**
      * Test method for
      * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromAlto(de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument, java.lang.String)}.
-     * @throws JDOMException 
-     * @throws IOException 
+     * @throws JDOMException
+     * @throws IOException
      */
     @Test
     public void testGetAnnotationsFromAlto() throws IOException, JDOMException {
 
-        
+
         String query = "Hollywood";
         String queryRegex = AbstractSearchParser.getQueryRegex(query);
 

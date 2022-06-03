@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.viewer;
 
@@ -122,7 +128,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Like {@link #StructElement(long, SolrDocument)}, but get the lucene Id from the SolrDocument
-     * 
+     *
      * @param doc
      * @throws IndexUnreachableException
      */
@@ -189,7 +195,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Initializes class properties from the given doc.
-     * 
+     *
      * @param doc SolrDocument
      * @throws IndexUnreachableException
      */
@@ -355,7 +361,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * 
+     *
      * @return
      */
     public Long getParentLuceneId() {
@@ -506,7 +512,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @returns the identifier of the record to which this struct element belongs.
      * @should return pi if topstruct
      * @should retriveve pi from topstruct if not topstruct
-     * 
+     *
      */
     @Override
     public String getPi() {
@@ -709,7 +715,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -720,7 +726,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * 
+     *
      * @param privilege Privilege name to check
      * @return true if current user has the privilege for this record; false otherwise. Also return false if no record was found
      * @throws IndexUnreachableException
@@ -1002,7 +1008,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         /**
          * Constructor.
-         * 
+         *
          * @param label
          * @param shape
          * @param coords

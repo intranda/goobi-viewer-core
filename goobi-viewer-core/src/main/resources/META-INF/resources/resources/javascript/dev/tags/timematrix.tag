@@ -34,10 +34,9 @@
 	<label if="{!loading && manifests.length == 0}">{translate("hitsZero")}</label>
 	<div each="{manifest in manifests}" class="timematrix__content">
 			<div class="timematrix__img">
-			<a href="{getViewerUrl(manifest)}"> <img src="{getImageUrl(manifest)}"
+			<a href="{getViewerUrl(manifest)}"> <img ref="image" data-src="{getImageUrl(manifest)}"
 				class="timematrix__image" data-viewer-thumbnail="thumbnail"  alt="" aria-hidden="true"
-				onError="this.onerror=null;this.src='/viewer/resources/images/access_denied.png'"
-				onLoad="{imageLoaded}" />
+				onLoad="$(this).parents('.timematrix__img').css('background', 'transparent')" />
 					<div class="timematrix__text">	
 						<p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p>
 					</div>
@@ -50,6 +49,20 @@
 		this.manifests = [];
 		this.loading = true;
 	
+		this.on( 'updated', function() {
+		    if(this.refs.image) {
+		        if(Array.isArray(this.refs.image)) {		            
+				    this.refs.image.forEach(ele => {
+				        if(!ele.src) {			            
+				        	viewerJS.thumbnailLoader.load(ele);
+				        }
+				    })
+		        } else {
+		            viewerJS.thumbnailLoader.load(this.refs.image)
+		        }
+		    }
+		});
+		
 	    this.on( 'mount', function() {
 	        
 	        let restoredValues = this.restoreValues();
@@ -180,11 +193,7 @@
 	            $( this ).addClass( 'top' );
 	        } );
 	    }
-	    
-	    imageLoaded(event) {
-	    	$(event.target).parents('.timematrix__img').css("background", "transparent");
-	    }
-	    
+
 	    translate(key) {
 	        return this.opts.msg[key];
 	    }
@@ -211,7 +220,8 @@
 	        let string = JSON.stringify(json);
 	        sessionStorage.setItem("viewer_timematrix", string);
 	    }
-	
+
+	    
 	</script> 
 
 </timematrix>

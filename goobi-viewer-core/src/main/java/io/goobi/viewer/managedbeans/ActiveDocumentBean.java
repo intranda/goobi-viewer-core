@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.managedbeans;
 
@@ -75,10 +81,10 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
-import io.goobi.viewer.model.download.DownloadJob;
-import io.goobi.viewer.model.download.DownloadOption;
-import io.goobi.viewer.model.download.EPUBDownloadJob;
-import io.goobi.viewer.model.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.DownloadOption;
+import io.goobi.viewer.model.job.download.EPUBDownloadJob;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
@@ -238,7 +244,7 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * TODO This can cause NPEs if called while update() is running.
-     * 
+     *
      * @throws IndexUnreachableException
      * @should reset lastReceivedIdentifier
      */
@@ -301,7 +307,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param pi @throws PresentationException @throws RecordNotFoundException @throws RecordDeletedException @throws
      *            IndexUnreachableException @throws DAOException @throws ViewerConfigurationException @throws RecordLimitExceededException @throws
      */
@@ -554,7 +560,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return true if the 'imageToShow' part of the url matches {@link #DOUBLE_PAGE_PATTERN}, i.e. if the url suggests that double page mode is
      *         expected
      */
@@ -1271,7 +1277,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
@@ -1326,7 +1332,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
@@ -1841,7 +1847,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws ClientProtocolException
      * @throws IOException
@@ -2256,7 +2262,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean, but refreshed each time the
      * PI changes
-     * 
+     *
      * @return
      * @throws PresentationException
      * @throws DAOException
@@ -2357,7 +2363,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public void toggleDownloadImageModal() {
         downloadImageModalVisible = !downloadImageModalVisible;
@@ -2371,7 +2377,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
+     *
      */
     public DownloadOption getSelectedDownloadOption() {
         if (selectedDownloadOptionLabel == null) {
@@ -2407,7 +2413,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     //    /**
-    //     * 
+    //     *
     //     * @return ViewManager.doublePageMode; false if ViewManager is null
     //     */
     //    public boolean isDoublePageMode() {
@@ -2420,7 +2426,7 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * This method augments the setter <code>ViewManager.setDoublePageMode(boolean)</code> with URL modifications to reflect the mode.
-     * 
+     *
      * @param doublePageMode The doublePageMode to set
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -2467,7 +2473,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return a boolean.
      * @throws DAOException
      */
-    public boolean isAllowUserComments() throws DAOException {
+    public synchronized boolean isAllowUserComments() throws DAOException {
         if (viewManager == null) {
             return false;
         }

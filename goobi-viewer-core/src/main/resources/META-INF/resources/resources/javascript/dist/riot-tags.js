@@ -260,7 +260,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
 });
 
 
-riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
+riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
 
 this.on("mount", () => {
     if(this.opts.contentid) {
@@ -396,8 +396,8 @@ this.on("mount", () => {
 	        mapId: "geomap_" + this.opts.annotationid,
 	        fixed: true,
 	        clusterMarkers: false,
+	        initialView : this.opts.initialview,
 	    };
-	console.log("mounted geomap annotation ", this);
     this.geoMap = new viewerJS.GeoMap(this.config);
     let view = this.feature.view;
     let features = [this.feature];
@@ -1027,7 +1027,7 @@ riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" clas
 });
 
 
-riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion><metadataquestion if="{question.questionType == \'METADATA\'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion></div></div><campaignitemlog if="{item.showLog}" item="{item}"></campaignItemLog><div if="{!item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{!item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{savePageAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save_page⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitPageForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_page_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReviewForPage}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReviewForPage}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReviewForPage}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate(⁗action__reject_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
+riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations__content-wrapper"> {Crowdsourcing.translate(⁗crowdsourcing__error__no_item_available⁗)} </div><div if="{opts.pi}" class="crowdsourcing-annotations__content-wrapper"><span if="{this.loading}" class="crowdsourcing-annotations__loader-wrapper"><img riot-src="{this.opts.loaderimageurl}"></span></span><div class="crowdsourcing-annotations__content-left"><imageview if="{this.item}" id="mainImage" source="{this.item.getCurrentCanvas()}" item="{this.item}"></imageView></div><div if="{this.item}" class="crowdsourcing-annotations__content-right"><div class="crowdsourcing-annotations__questions-wrapper"><div each="{question, index in this.item.questions}" onclick="{setActive}" class="crowdsourcing-annotations__question-wrapper {question.isRegionTarget() ? \'area-selector-question\' : \'\'} {question.active ? \'active\' : \'\'}"><div class="crowdsourcing-annotations__question-wrapper-description">{Crowdsourcing.translate(question.text)}</div><plaintextquestion if="{question.questionType == \'PLAINTEXT\'}" question="{question}" item="{this.item}" index="{index}"></plaintextQuestion><richtextquestion if="{question.questionType == \'RICHTEXT\'}" question="{question}" item="{this.item}" index="{index}"></richtextQuestion><geolocationquestion if="{question.questionType == \'GEOLOCATION_POINT\'}" question="{question}" item="{this.item}" index="{index}" geomap="{this.opts.geomap}"></geoLocationQuestion><authorityresourcequestion if="{question.questionType == \'NORMDATA\'}" question="{question}" item="{this.item}" index="{index}"></authorityResourceQuestion><metadataquestion if="{question.questionType == \'METADATA\'}" question="{question}" item="{this.item}" index="{index}"></metadataQuestion></div></div><campaignitemlog if="{item.showLog}" item="{item}"></campaignItemLog><div if="{!item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{saveAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{!item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReview}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReview}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate(⁗action__reject_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && !item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-annotate"><button onclick="{savePageAnnotations}" class="crowdsourcing-annotations__options-wrapper__option btn btn--default" id="save">{Crowdsourcing.translate(⁗button__save_page⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{item.isReviewActive()}" onclick="{submitPageForReview}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__submit_page_for_review⁗)}</button><button if="{!item.isReviewActive()}" onclick="{saveAndAcceptReviewForPage}" class="options-wrapper__option btn btn--success" id="review">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div><div if="{item.pageStatisticMode && item.isReviewActive() && item.isReviewMode()}" class="crowdsourcing-annotations__options-wrapper crowdsourcing-annotations__options-wrapper-review"><button onclick="{acceptReviewForPage}" class="options-wrapper__option btn btn--success" id="accept">{Crowdsourcing.translate(⁗action__accept_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button onclick="{rejectReviewForPage}" class="options-wrapper__option btn btn--default" id="reject">{Crowdsourcing.translate(⁗action__reject_page_review⁗)}</button><div>{Crowdsourcing.translate(⁗label__or⁗)}</div><button if="{this.opts.nextitemurl}" onclick="{skipItem}" class="options-wrapper__option btn btn--link" id="skip">{Crowdsourcing.translate(⁗action__skip_item⁗)}</button></div></div></div>', '', '', function(opts) {
 
 	this.itemSource = this.opts.restapiurl + "crowdsourcing/campaigns/" + this.opts.campaign + "/" + this.opts.pi + "/";
 	this.annotationSource = this.itemSource + "annotations/";
@@ -1517,6 +1517,11 @@ this.question = this.opts.question;
 this.annotationToMark = null;
 this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.reviewMode;
 
+const DEFAULT_VIEW = {
+    zoom: 5,
+    center: [11.073397, 49.451993]
+};
+
 this.on("mount", function() {
 	this.opts.item.onItemInitialized( () => {
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);
@@ -1610,6 +1615,7 @@ this.initMap = function() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
         language: Crowdsourcing.translator.language,
+        tilesource: this.opts.geomap.tilesource,
         layer: {
 	        allowMovingFeatures: !this.opts.item.isReviewMode(),
 	        popover: undefined,
@@ -1625,10 +1631,8 @@ this.initMap = function() {
 	        }
         }
     })
-    let initialView = {
-        zoom: 5,
-        center: [11.073397, 49.451993]
-    };
+
+    let initialView = $.extend(true, {}, DEFAULT_VIEW, this.opts.geomap.initialView);
     this.geoMap.init(initialView);
     this.geoMap.initGeocoder(this.refs.geocoder, {placeholder: Crowdsourcing.translate("ADDRESS")});
     this.geoMap.layers.forEach(l => l.onFeatureMove.subscribe(feature => this.moveFeature(feature)));
@@ -2697,6 +2701,7 @@ this.getType = function(layer) {
 
 this.initHitsLayer = function(map) {
     console.log("opts ", this.opts);
+    this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
@@ -3728,9 +3733,23 @@ this.getPageStatus = function(index) {
 }.bind(this)
 
 });
-riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematrix__loader" ref="loader"><img if="{loading}" riot-src="{opts.contextPath}resources/images/infinity_loader.svg" class="img-fluid" alt="Timematrix Loader"></span></div><div class="timematrix__selection"><div id="locateTimematrix"><div class="timematrix__bar"><div class="timematrix__period"><span>{translate(⁗timematrix__timePeriod⁗)}:</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_start\')}" class="timematrix__selectionRangeInput" ref="inputStartYear" riot-value="{this.startYear}" maxlength="4"> &#xA0;<span>-</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_end\')}" class="timematrix__selectionRangeInput" ref="inputEndYear" riot-value="{this.endYear}" maxlength="4"></div><div class="timematrix__hitsForm"><div class="timematrix__hitsInput"><span>{translate(⁗timematrix__maxResults⁗)}: &#xA0;</span><input onchange="{updateHitsPerPage}" type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" riot-value="{this.maxHits}" placeholder="" maxlength="5" aria-label="{translate(\'aria_label__timeline_hits\')}"></div></div></div><div id="slider-range" ref="sliderRange"></div><button type="submit" ref="setTimematrix" class="btn btn--full setTimematrix">{translate(⁗timematrix__calculate⁗)}</button></div></div><div class="timematrix__objects"><label if="{!loading && manifests.length == 0}">{translate(⁗hitsZero⁗)}</label><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img riot-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onerror="this.onerror=null;this.src=\'/viewer/resources/images/access_denied.png\'" onload="{imageLoaded}"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematrix__loader" ref="loader"><img if="{loading}" riot-src="{opts.contextPath}resources/images/infinity_loader.svg" class="img-fluid" alt="Timematrix Loader"></span></div><div class="timematrix__selection"><div id="locateTimematrix"><div class="timematrix__bar"><div class="timematrix__period"><span>{translate(⁗timematrix__timePeriod⁗)}:</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_start\')}" class="timematrix__selectionRangeInput" ref="inputStartYear" riot-value="{this.startYear}" maxlength="4"> &#xA0;<span>-</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_end\')}" class="timematrix__selectionRangeInput" ref="inputEndYear" riot-value="{this.endYear}" maxlength="4"></div><div class="timematrix__hitsForm"><div class="timematrix__hitsInput"><span>{translate(⁗timematrix__maxResults⁗)}: &#xA0;</span><input onchange="{updateHitsPerPage}" type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" riot-value="{this.maxHits}" placeholder="" maxlength="5" aria-label="{translate(\'aria_label__timeline_hits\')}"></div></div></div><div id="slider-range" ref="sliderRange"></div><button type="submit" ref="setTimematrix" class="btn btn--full setTimematrix">{translate(⁗timematrix__calculate⁗)}</button></div></div><div class="timematrix__objects"><label if="{!loading && manifests.length == 0}">{translate(⁗hitsZero⁗)}</label><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img ref="image" data-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onload="$(this).parents(\'.timematrix__img\').css(\'background\', \'transparent\')"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 		this.manifests = [];
 		this.loading = true;
+
+		this.on( 'updated', function() {
+		    if(this.refs.image) {
+		        if(Array.isArray(this.refs.image)) {
+				    this.refs.image.forEach(ele => {
+				        if(!ele.src) {
+				        	viewerJS.thumbnailLoader.load(ele);
+				        }
+				    })
+		        } else {
+		            viewerJS.thumbnailLoader.load(this.refs.image)
+		        }
+		    }
+		});
 
 	    this.on( 'mount', function() {
 
@@ -3855,10 +3874,6 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 	            $( '.ui-slider-handle' ).removeClass( 'top' );
 	            $( this ).addClass( 'top' );
 	        } );
-	    }.bind(this)
-
-	    this.imageLoaded = function(event) {
-	    	$(event.target).parents('.timematrix__img').css("background", "transparent");
 	    }.bind(this)
 
 	    this.translate = function(key) {

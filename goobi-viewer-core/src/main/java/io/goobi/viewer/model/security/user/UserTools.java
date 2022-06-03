@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.security.user;
 
@@ -39,7 +45,7 @@ public class UserTools {
     /**
      * Deletes given user from the database and removes any database rows that reference this user (only those that are of use to this user - public
      * content such as comments must be deleted separetely).
-     * 
+     *
      * @param user User to delete
      * @return true if successful; false otherwise
      * @throws DAOException
@@ -64,7 +70,7 @@ public class UserTools {
     }
 
     /**
-     * 
+     *
      * @param user Owner of groups to delete
      * @return
      * @throws DAOException
@@ -113,7 +119,7 @@ public class UserTools {
     }
 
     /**
-     * 
+     *
      * @param owner
      * @return
      * @throws DAOException
@@ -136,7 +142,7 @@ public class UserTools {
     }
 
     /**
-     * 
+     *
      * @param owner
      * @return
      * @throws DAOException
@@ -161,7 +167,7 @@ public class UserTools {
 
     /**
      * Deletes all public content created by this the given user.
-     * 
+     *
      * @param user
      * @throws DAOException
      * @should delete all user public content correctly
@@ -190,7 +196,7 @@ public class UserTools {
 
     /**
      * Moves all public content from the given user to an anonymous user.
-     * 
+     *
      * @param user
      * @throws DAOException
      * @should anonymize all user public content correctly
@@ -221,7 +227,7 @@ public class UserTools {
     }
 
     /**
-     * 
+     *
      * @return
      * @throws DAOException
      */
@@ -251,7 +257,7 @@ public class UserTools {
     }
 
     /**
-     * 
+     *
      * @param nickname
      * @param userId
      * @return

@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.maps;
 
@@ -166,7 +172,7 @@ public class GeoMap {
 
     /**
      * Clone constructor
-     * 
+     *
      * @param blueprint
      */
     public GeoMap(GeoMap blueprint) {
@@ -369,15 +375,15 @@ public class GeoMap {
                 case SOLR_QUERY:
                     if(DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
                         //No features required since they will be loaded dynamically with the heatmap
-                        return "[]";    
-                    } else {                        
+                        return "[]";
+                    } else {
                         Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
                         String ret = features.stream()
                                 .distinct()
                                 .map(GeoMapFeature::getJsonObject)
                                 .map(Object::toString)
                                 .collect(Collectors.joining(","));
-                        
+
                         return "[" + ret + "]";
                     }
                 default:
@@ -401,11 +407,11 @@ public class GeoMap {
                 features.addAll(getGeojsonPoints(doc, field, markerTitleField, null));
             }
         }
-         
+
         Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
                 .stream()
                 .collect(Collectors.groupingBy(Function.identity()));
-            
+
             features = featureMap.entrySet().stream()
                 .map(e -> {
                     GeoMapFeature f = e.getKey();
@@ -413,7 +419,7 @@ public class GeoMap {
                     return f;
                 })
                 .collect(Collectors.toList());
-        
+
         return features;
     }
 
@@ -432,12 +438,12 @@ public class GeoMap {
                 GeoMapFeature feature = new GeoMapFeature();
                 feature.setTitle(title);
                 feature.setDescription(desc);
-                
+
                 Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point);
                 matcher.find();
                 Double lat = Double.valueOf(matcher.group(1));
                 Double lng = Double.valueOf(matcher.group(2));
-                
+
                 JSONObject json = new JSONObject();
                 json.put("type", "Feature");
                 JSONObject geom = new JSONObject();
@@ -446,7 +452,7 @@ public class GeoMap {
                 json.put("geometry", geom);
                 feature.setJson(json.toString());
                 docFeatures.add(feature);
-            } else {                
+            } else {
                 docFeatures.addAll(createFeaturesFromJson(title, desc, point));
             }
             } catch(JSONException | NumberFormatException e) {
@@ -509,7 +515,7 @@ public class GeoMap {
     public String getSolrQueryEncoded() {
         return StringTools.encodeUrl(getSolrQuery());
     }
-    
+
     /**
      * @param solrQuery the solrQuery to set
      */
@@ -524,7 +530,7 @@ public class GeoMap {
 
     /**
      * Link to the html page to render for oembed
-     * 
+     *
      * @return
      */
     public URI getOEmbedLink() {

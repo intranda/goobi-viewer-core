@@ -133,6 +133,11 @@
                             riot.mount( "annotationBody", {
                                 currentlang: "#{navigationHelper.localeString}",
                                 resturl: "#{configurationBean.restApiUrlV1}",
+                                geomap : {
+                                    initialView : {
+                                        zoom: #{configurationBean.geomapAnnotationZoom},
+                                    },
+                                }
                             } );
 						});
                         </script>
