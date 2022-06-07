@@ -90,18 +90,19 @@
                                     <span class="">#{client.description}</span>
                                     <!-- CLIENT ID -->
                                     <span class="">(#{client.clientIdentifier})</span>
-                                    <!-- EDIT -->
-                                    <a href="#{navigationHelper.applicationUrl}admin/clients/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">
-                                       #{msg.edit}
-                                    </a>
-                                    <!-- DELETE -->
-                                    <button
-                                        class="admin__boxed-entry-actions-delete -redlink"
-                                        jsf:onclick="if ( !confirm( &quot;#{msg.admin__clients__delete_client__confirm}&quot; ) ) { return false };"
-                                        jsf:action="#{adminClientsBean.delete(client)}">
-                                        <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{client.clientIdentifier}" />
-                                        #{msg.delete}
-                                    </button>
+                                    <!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
+                                    <div class="admin__table-actions-wrapper">
+	                                    <!-- EDIT -->
+	                                    <a href="#{navigationHelper.applicationUrl}admin/clients/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">#{msg.edit}</a>
+	                                    <!-- DELETE -->
+	                                    <button
+	                                        class="admin__table-action-link -redlink"
+	                                        jsf:onclick="if ( !confirm( &quot;#{msg.admin__clients__delete_client__confirm}&quot; ) ) { return false };"
+	                                        jsf:action="#{adminClientsBean.delete(client)}">
+	                                        <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{client.clientIdentifier}" />
+	                                        #{msg.delete}
+	                                    </button>
+									</div>
                                 </div>
                             </div>
 
