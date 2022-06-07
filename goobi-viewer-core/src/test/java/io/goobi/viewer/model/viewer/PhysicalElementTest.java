@@ -33,8 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ContextMocker;
 
 public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -46,7 +44,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
 
         FacesContext facesContext = ContextMocker.mockFacesContext();
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
@@ -80,5 +77,41 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(0, page.getImageWidth());
         Assert.assertEquals(0, page.getImageHeight());
         Assert.assertTrue(page.isAdaptImageViewHeight());
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return mimeType if already full mime type
+     */
+    @Test
+    public void getFullMimeType_shouldReturnMimeTypeIfAlreadyFullMimeType() throws Exception {
+        Assert.assertEquals("application/pdf", PhysicalElement.getFullMimeType("application/pdf", "foo.bar"));
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return mimeType if not image
+     */
+    @Test
+    public void getFullMimeType_shouldReturnMimeTypeIfNotImage() throws Exception {
+        Assert.assertEquals("application", PhysicalElement.getFullMimeType("application", "foo.bar"));
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return png image mime type from file name
+     */
+    @Test
+    public void getFullMimeType_shouldReturnPngImageMimeTypeFromFileName() throws Exception {
+        Assert.assertEquals("image/png", PhysicalElement.getFullMimeType("image", "foo.png"));
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return jpeg if not png
+     */
+    @Test
+    public void getFullMimeType_shouldReturnJpegIfNotPng() throws Exception {
+        Assert.assertEquals("image/jpeg", PhysicalElement.getFullMimeType("image", "foo.bmp"));
     }
 }

@@ -522,13 +522,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * getFullMimeType.
      * </p>
      *
-     * @param baseType a {@link java.lang.String} object.
+     * @param mimeType a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @should return mimeType if already full mime type
+     * @should return mimeType if not image
+     * @should return png image mime type from file name
+     * @should return jpeg if not png
      */
-    public static String getFullMimeType(String baseType, String fileName) {
-        if (baseType.equals(BaseMimeType.IMAGE.getName())) {
-            //            return baseType + "/jpeg";
+    public static String getFullMimeType(String mimeType, String fileName) {
+        if (mimeType == null) {
+            return "";
+        }
+
+        // Already full mime type
+        if (mimeType.contains("/")) {
+            return mimeType;
+        }
+        if (mimeType.equals(BaseMimeType.IMAGE.getName())) {
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
             if (ImageFileFormat.PNG.equals(fileFormat)) {
                 return fileFormat.getMimeType();
@@ -536,19 +547,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return ImageFileFormat.JPG.getMimeType();
         }
 
-        return baseType;
-    }
-
-    /**
-     * <p>
-     * getFullMimeType.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getFullMimeType() {
-        return getDisplayMimeType();
+        return mimeType;
     }
 
     /**
