@@ -159,6 +159,7 @@ public class ClientApplicationsResource {
                     }
                     ClientApplication tempClient = new ClientApplication(databaseClient);
                     updateClient(tempClient, requestedClient);
+                    tempClient.initializeSubnetMask();
                     dao.saveClientApplication(tempClient);
                     return tempClient;
                 } else {

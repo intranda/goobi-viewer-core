@@ -29,7 +29,7 @@
 				var="client"></c:set>
 
 			<!-- NOT CONFIGURED CLIENT -->
-			<ui:fragment rendered="#{client.registrationPending}">
+			<ui:fragment rendered="#{client.registrationPendingOrDenied}">
 				<h:form>
 
 					<h2>#{msg.admin__clients__info__title}</h2>
@@ -75,7 +75,7 @@
 			</ui:fragment>
 
 			<!-- CONFIGURED CLIENT -->
-			<ui:fragment rendered="#{!client.registrationPending}">
+			<ui:fragment rendered="#{!client.registrationPendingOrDenied}">
 				<h:form>
 					<h2>#{msg.admin__clients__info__title}</h2>
 					<div class="admin__default-block mb-5">
@@ -112,7 +112,7 @@
 
 					<div
 						class="row no-gutters justify-content-end admin__final-actions">
-						<h:commandButton styleClass="btn admin__cancel-button" value="#{msg.cancel}"
+						<h:commandButton styleClass="btn admin__cancel-button" value="#{msg.cancel}" immediate="true"
 							action="pretty:adminClients">
 						</h:commandButton>
 						<h:commandButton styleClass="btn btn--success"

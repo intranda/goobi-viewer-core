@@ -38,6 +38,7 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
+import org.checkerframework.common.returnsreceiver.qual.This;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -271,6 +272,11 @@ public class ClientApplication  implements ILicensee {
         return AccessStatus.REQUESTED.equals(this.getAccessStatus());
     }
     
+    @JsonIgnore
+    public boolean isRegistrationPendingOrDenied() {
+        return AccessStatus.REQUESTED.equals(this.getAccessStatus()) || AccessStatus.DENIED.equals(this.getAccessStatus());
+    }
+    
     @Override
     public int hashCode() {
         if(this.clientIdentifier != null) {
@@ -415,6 +421,15 @@ public class ClientApplication  implements ILicensee {
             return false;
         }
 
+    }
+
+    /**
+     * If no subnet mask has been set, use the clientIp if available with a '/32' mask
+     */
+    public void initializeSubnetMask() {
+        if(subnetMask == null && StringUtils.isNotBlank(clientIp)) {
+            subnetMask = clientIp + "/32";
+        }
     }
     
 }

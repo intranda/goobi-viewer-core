@@ -125,12 +125,14 @@ public class AdminClientsBean implements Serializable {
     
     public void accept(ClientApplication client) {
         client.setAccessStatus(AccessStatus.GRANTED);
+        client.initializeSubnetMask();
         save(client);
     }
     
-    public void reject(ClientApplication client) {
+    public String reject(ClientApplication client) {
         client.setAccessStatus(AccessStatus.DENIED);
         save(client);
+        return "pretty:adminClients";
     }
 
     public void save(ClientApplication client) {
@@ -144,6 +146,20 @@ public class AdminClientsBean implements Serializable {
             logger.error(e.toString(), e);
             Messages.error(null, "admin__clients__save_client__error", client.getClientIdentifier());
         }
+    }
+    
+    public String delete(ClientApplication client) {
+        try {            
+            if(dao.deleteClientApplication(client.getId())) {
+                Messages.info(null, "admin__clients__delete_client__success", client.getClientIdentifier());
+            } else {
+                Messages.error(null, "admin__clients__delete_client__error", client.getClientIdentifier());
+            }
+        } catch(DAOException e) {
+            logger.error(e.toString(), e);
+            Messages.error(null, "admin__clients__delete_client__error", client.getClientIdentifier());
+        }
+        return "pretty:adminClients";
     }
 
     private TableDataProvider<ClientApplication> createDataTableProvider(int entriesPerPage) {
@@ -159,6 +175,7 @@ public class AdminClientsBean implements Serializable {
                     //get all configured clients
                     List<ClientApplication> list = dao.getAllClientApplications();
                     stream = list.stream()
+                            .filter(c -> AccessStatus.NON_APPLICABLE != c.getAccessStatus())
                             .filter(c -> AccessStatus.REQUESTED != c.getAccessStatus());
                     
                     //filters
@@ -172,9 +189,9 @@ public class AdminClientsBean implements Serializable {
                     //sorting
                     int sortDirectionFactor = SortOrder.DESCENDING.equals(sortOrder) ? -1 : 1; // desc - asc
                     if ("name".equals(sortField)) {
-                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * c1.getName().compareTo(c2.getName()));
+                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getName(), c2.getName()));
                     } else if("ip".equals(sortField)) {
-                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * c1.getClientIp().compareTo(c2.getClientIp()));
+                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIp(), c2.getClientIp()));
                     }
                     
                     //from-to
@@ -249,11 +266,19 @@ public class AdminClientsBean implements Serializable {
                 .collect(Collectors.toList());
     }
     
+    public List<ClientApplication> getAllConfiguredClients() throws DAOException {
+        return dao.getAllClientApplications()
+                .stream()
+                .filter(c -> c.getAccessStatus().equals(AccessStatus.DENIED) || c.getAccessStatus().equals(AccessStatus.GRANTED))
+                .collect(Collectors.toList());
+    }
+    
     /**
      * @return the allClients
      */
     public ClientApplication getAllClients() {
         return allClients;
     }
+
 
 }

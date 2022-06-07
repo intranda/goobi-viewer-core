@@ -2,7 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -52,6 +52,7 @@
             </ui:fragment>
 
             <!-- CONFIGURED CLIENTS -->
+            <ui:fragment rendered="#{not empty adminClientsBean.allConfiguredClients}">
                 <div class="admin__table-tools">
                     <!-- PAGINATOR -->
                     <div class="admin__table-paginator">
@@ -78,7 +79,7 @@
                         <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_last_access}</div>
                     </div>
 
-
+					<h:form>
                     <ui:repeat var="client" value="#{adminClientsBean.configuredClientsModel.paginatorList}">
                         <div class="row no-gutters admin__table-entry" role="row">
                             <div class="col-6 d-flex">
@@ -93,6 +94,14 @@
                                     <a href="#{navigationHelper.applicationUrl}admin/clients/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">
                                        #{msg.edit}
                                     </a>
+                                    <!-- DELETE -->
+                                    <button
+                                        class="admin__boxed-entry-actions-delete -redlink"
+                                        jsf:onclick="if ( !confirm( &quot;#{msg.admin__clients__delete_client__confirm}&quot; ) ) { return false };"
+                                        jsf:action="#{adminClientsBean.delete(client)}">
+                                        <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{client.clientIdentifier}" />
+                                        #{msg.delete}
+                                    </button>
                                 </div>
                             </div>
 
@@ -124,8 +133,9 @@
 
                         </div>
                     </ui:repeat>
+                    </h:form>
                 </div>
-           
+           </ui:fragment>
 		</div>
     </ui:define>
 </ui:composition>
