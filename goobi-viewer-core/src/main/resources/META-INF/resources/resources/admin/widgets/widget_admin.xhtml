@@ -38,13 +38,18 @@
                             </h:outputLink>
                         </li>
 						<li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
-							<h:outputLink
+							<c:set scope="view"
+								value="#{adminClientsBean.notConfiguredClients}"
+								var="notConfiguredClients"></c:set> <h:outputLink
 								value="#{navigationHelper.getPageUrl('adminClients')}/">
 								<i class="fa fa-desktop" aria-hidden="true"></i>
 								<span>#{msg.admin__clients__title}</span>
+								<ui:fragment rendered="#{not empty notConfiguredClients}">
+									<span class="admin-widget__counter">#{notConfiguredClients.size()}</span>
+								</ui:fragment>
 							</h:outputLink>
 						</li>
-                        <li class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenseType' ? 'active' : '' or
+						<li class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenseType' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
                                 <i class="fa fa-key" aria-hidden="true"></i>
@@ -94,7 +99,9 @@
                             </h:outputLink>
                         </li>
                     </ui:fragment>
+
 				</ul>
+
             </h:form>
         </div>
     </composite:implementation>
