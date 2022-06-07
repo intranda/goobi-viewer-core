@@ -53,6 +53,7 @@
 
             <!-- CONFIGURED CLIENTS -->
             <ui:fragment rendered="#{not empty adminClientsBean.allConfiguredClients}">
+					<h:form>
                 <div class="admin__table-tools">
                     <!-- PAGINATOR -->
                     <div class="admin__table-paginator">
@@ -79,7 +80,6 @@
                         <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_last_access}</div>
                     </div>
 
-					<h:form>
                     <ui:repeat var="client" value="#{adminClientsBean.configuredClientsModel.paginatorList}">
                         <div class="row no-gutters admin__table-entry" role="row">
                             <div class="col-6 d-flex">
@@ -133,8 +133,8 @@
 
                         </div>
                     </ui:repeat>
-                    </h:form>
                 </div>
+                    </h:form>
            </ui:fragment>
 		</div>
     </ui:define>
