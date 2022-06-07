@@ -111,7 +111,7 @@
                                              disabled="#{adminBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItem itemLabel="#{msg.all_clients}" itemValue="#{adminClientsBean.allClients.id}"/>
+                                             <f:selectItem itemLabel="#{msg.admin__right_all_clients}" itemValue="#{adminClientsBean.allClients.id}"/>
                                              <f:selectItems var="client" value="#{adminClientsBean.allAcceptedClients}" itemLabel="#{client.name} (#{client.clientIdentifier})" itemValue="#{client.id}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
