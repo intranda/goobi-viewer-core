@@ -87,8 +87,13 @@
                             </h:outputLink>
                         </li>
                     </ui:fragment>
+                    <li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
+                             <h:outputLink value="#{navigationHelper.getPageUrl('adminClients')}/">
+                                <i class="fa fa-exchange" aria-hidden="true"></i>
+                                <span>#{msg.admin__clients__title}</span>
+                            </h:outputLink>
+                        </li>
                     </ul>
-
             </h:form>
         </div>
     </composite:implementation>
