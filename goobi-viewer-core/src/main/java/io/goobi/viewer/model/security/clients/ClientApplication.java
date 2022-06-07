@@ -73,22 +73,22 @@ public class ClientApplication  implements ILicensee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_application_id")
-    @Schema(description = "The internal database identifier of the client", example="2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The internal database identifier of the client. Cannot be altered but used to identify the client to change.", example="2", type = "long")
     private Long id;
     
-    @Schema(description = "The internal identifier/secret of the client", example=" 0D219Z74-F764-4CAD-8361-D9964FD1B186", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The internal identifier/secret of the client. Cannot be altered but used to identify the client to change.", example=" 0D219Z74-F764-4CAD-8361-D9964FD1B186")
     @Column(name = "client_identifier")
     private String clientIdentifier;
     
-    @Schema(description = "The IP under which the client first requested registration", example="192.168.172.13", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The IP under which the client first requested registration", example="192.168.172.13")
     @Column(name = "client_ip")
     private String clientIp;
     
-    @Schema(description = "The name to be displayed for the client", example="Windows Desktop 1", accessMode = Schema.AccessMode.READ_WRITE)
+    @Schema(description = "The name to be displayed for the client", example="Windows Desktop 1")
     @Column(name = "name")
     private String name;
     
-    @Schema(description = "A description of the client", example="Die Treppe rauf, vorne links", accessMode = Schema.AccessMode.READ_WRITE)
+    @Schema(description = "A description of the client", example="second workplace, right aisle")
     @Column(name = "description")
     private String description;
     
@@ -102,7 +102,7 @@ public class ClientApplication  implements ILicensee {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateLastAccess = LocalDateTime.now();
     
-    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example="168.192.0.1/16", accessMode = Schema.AccessMode.READ_WRITE)
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example="192.168.0.1/16", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "subnet_mask")
     private String subnetMask;
 
