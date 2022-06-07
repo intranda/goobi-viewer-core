@@ -106,6 +106,8 @@ public final class DataManager {
     
     private ClientApplicationManager clientManager = null;
 
+    private SecurityManager securityManager = null;
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -528,9 +530,9 @@ public final class DataManager {
     }
 
     public ArchiveManager getArchiveManager() {
-        if(archiveManager == null) {
+        if (archiveManager == null) {
             synchronized (lock) {
-                archiveManager =  new ArchiveManager(getConfiguration().isArchivesEnabled() ? getConfiguration().getBaseXUrl() : "",
+                archiveManager = new ArchiveManager(getConfiguration().isArchivesEnabled() ? getConfiguration().getBaseXUrl() : "",
                         getConfiguration().getArchiveNodeTypes(),
                         getSearchIndex());
             }
@@ -545,5 +547,18 @@ public final class DataManager {
             }
         }
         return this.clientManager;
+    }
+    /**
+     * 
+     * @return
+     */
+    public SecurityManager getSecurityManager() {
+        if (securityManager == null) {
+            synchronized (lock) {
+                securityManager = new SecurityManager();
+            }
+        }
+
+        return securityManager;
     }
 }

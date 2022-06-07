@@ -26,6 +26,11 @@ this.question = this.opts.question;
 this.annotationToMark = null;
 this.addMarkerActive = !this.question.isRegionTarget() && !this.opts.item.reviewMode;
 
+const DEFAULT_VIEW = {
+    zoom: 5,
+    center: [11.073397, 49.451993] //long, lat
+};
+
 this.on("mount", function() {
 	this.opts.item.onItemInitialized( () => {	    
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.GeoJson(anno), this.addAnnotation, this.updateAnnotation, this.focusAnnotation);	    
@@ -134,6 +139,7 @@ initMap() {
     this.geoMap = new viewerJS.GeoMap({
         mapId : "geoMap_" + this.opts.index,
         language: Crowdsourcing.translator.language,
+        tilesource: this.opts.geomap.tilesource,
         layer: {
 	        allowMovingFeatures: !this.opts.item.isReviewMode(),
 	        popover: undefined,
@@ -149,10 +155,8 @@ initMap() {
 	        }
         }
     })
-    let initialView = {
-        zoom: 5,
-        center: [11.073397, 49.451993] //long, lat
-    };
+
+    let initialView = $.extend(true, {}, DEFAULT_VIEW, this.opts.geomap.initialView);
     this.geoMap.init(initialView);
     this.geoMap.initGeocoder(this.refs.geocoder, {placeholder: Crowdsourcing.translate("ADDRESS")});
     this.geoMap.layers.forEach(l => l.onFeatureMove.subscribe(feature => this.moveFeature(feature)));

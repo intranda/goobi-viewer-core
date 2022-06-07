@@ -562,9 +562,7 @@ public class NetTools {
         }
 
         // logger.trace("Pre-parsed IP address(es): {}", address);
-        return
-
-        parseMultipleIpAddresses(address);
+        return parseMultipleIpAddresses(address);
     }
 
     /**

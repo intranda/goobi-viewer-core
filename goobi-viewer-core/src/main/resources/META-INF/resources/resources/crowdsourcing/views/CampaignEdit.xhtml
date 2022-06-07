@@ -25,15 +25,7 @@
 		<f:view contentType="text/html" encoding="utf-8">
 			<ui:fragment
 				rendered="#{crowdsourcingBean.targetCampaign.isUserAllowedAction(userBean.user, crowdsourcingBean.targetRecordStatus)}">
-				<campaignItem restapiurl="#{request.contextPath}/api/v1/"
-					campaign="#{crowdsourcingBean.targetCampaignId}"
-					pi="#{crowdsourcingBean.targetIdentifier}"
-					loaderimageurl="#{request.contextPath}/resources/images/infinity_loader.svg"
-					nextitemurl="#{crowdsourcingBean.getNextItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetStatus)}"
-					itemstatus="#{crowdsourcingBean.targetStatus}"
-					currentuserid="#{userBean.user.id}"
-					currentusername="#{userBean.user.displayName}"
-					currentuseravatar="#{userBean.user.avatarUrl}" />
+				<campaignItem />
 			</ui:fragment>
 		</f:view>
 
@@ -50,7 +42,21 @@
 	        Crowdsourcing.setFrameColors(["#e74c3c","#2980b9","#2ecc71","#f1c40f","#e67e22", "#a569bd", "#7fb3d5", "#229954"]);
 	        Crowdsourcing.translator = new viewerJS.Translator("#{configurationBean.restApiUrl}".replace("/rest", "/api/v1"), "#{navigationHelper.locale}");
 	    	Crowdsourcing.translator.init(messageKeys)
-	    	.then(() => riot.mount("campaignItem"));
+	    	.then(() => riot.mount("campaignItem", {
+	    	    	restapiurl:"#{request.contextPath}/api/v1/",
+					campaign:"#{crowdsourcingBean.targetCampaignId}",
+					pi:"#{crowdsourcingBean.targetIdentifier}",
+					loaderimageurl:"#{request.contextPath}/resources/images/infinity_loader.svg",
+					nextitemurl:"#{crowdsourcingBean.getNextItemUrl(crowdsourcingBean.targetCampaign, crowdsourcingBean.targetStatus)}",
+					itemstatus:"#{crowdsourcingBean.targetStatus}",
+					currentuserid:"#{userBean.user.id}",
+					currentusername:"#{userBean.user.displayName}",
+					currentuseravatar:"#{userBean.user.avatarUrl}",
+					geomap: {
+					    tilesource: "#{configurationBean.campaignGeomapTilesource}",
+					    initialView: #{configurationBean.campaignGeomapInitialViewAsJson}
+					}
+	    	}));
         	
         </script>
 

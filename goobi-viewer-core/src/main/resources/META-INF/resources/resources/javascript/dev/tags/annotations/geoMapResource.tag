@@ -11,8 +11,8 @@ this.on("mount", () => {
 	        mapId: "geomap_" + this.opts.annotationid,
 	        fixed: true,
 	        clusterMarkers: false,
+	        initialView : this.opts.initialview,
 	    };
-	console.log("mounted geomap annotation ", this);
     this.geoMap = new viewerJS.GeoMap(this.config);
     let view = this.feature.view;
     let features = [this.feature];

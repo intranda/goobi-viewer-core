@@ -44,6 +44,7 @@ public class LoginResult {
     private final Optional<User> user;
     private final boolean refused;
     private final AuthenticationProviderException exception;
+    private long delay = 0;
     private Object redirectLock = new Object();
 
     /**
@@ -160,5 +161,23 @@ public class LoginResult {
      */
     public boolean isRefused() {
         return refused;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public long getDelay() {
+        return delay;
+    }
+
+    /**
+     * 
+     * @param delay
+     * @return this
+     */
+    public LoginResult setDelay(long delay) {
+        this.delay = delay;
+        return this;
     }
 }

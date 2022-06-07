@@ -15,7 +15,10 @@
  */
 package io.goobi.viewer.api.rest.v1.clients;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CLIENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CLIENTS_CLIENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CLIENTS_REGISTER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CLIENTS_REQUEST;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,9 +37,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.exceptions.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +52,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.faces.validators.SubnetMaskValidator;
 import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

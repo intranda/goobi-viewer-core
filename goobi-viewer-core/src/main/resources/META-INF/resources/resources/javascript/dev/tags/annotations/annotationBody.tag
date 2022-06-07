@@ -1,7 +1,7 @@
 <annotationBody>
 	<plaintextResource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" ></plaintextResource>
 	<htmltextResource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource>
-	<geoMapResource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}"></geoMapResource>
+	<geoMapResource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialView="{this.opts.geomap.initialView}"></geoMapResource>
 	<authorityResource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource>
 	<datasetResource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>
 <script>

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>22.05-SNAPSHOT</version>
+	<version>22.06-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -86,7 +86,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.4.0</ics.version>
+		<ics.version>3.4.1</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.2.2</iiif-api-model.version>
@@ -136,7 +136,7 @@
         <jsoup.version>1.15.1</jsoup.version>
         <junit.version>4.13.2</junit.version>
         <mariadb-java-client.version>2.7.5</mariadb-java-client.version>
-        <mockito.version>4.5.1</mockito.version>
+        <mockito.version>4.6.1</mockito.version>
         <mockserver.version>5.13.2</mockserver.version>
         <oauth.version>1.0.2</oauth.version>
         <omnifaces.version>3.13.3</omnifaces.version>
@@ -953,7 +953,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>10.2</version>
+                        <version>10.3</version>
                     </dependency>
                 </dependencies>
                 <executions>
