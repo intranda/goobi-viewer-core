@@ -399,7 +399,8 @@ public enum PageType {
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;
         }
-        if ("application".equals(mimeType)) {
+
+        if (BaseMimeType.APPLICATION.equals(BaseMimeType.getByName(mimeType))) {
             return PageType.viewMetadata;
         }
         if (Boolean.TRUE.equals(anchorOrGroup)) {
