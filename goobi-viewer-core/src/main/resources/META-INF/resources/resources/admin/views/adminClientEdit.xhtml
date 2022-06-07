@@ -33,19 +33,18 @@
 				<h:form>
 
 					<h2>#{msg.admin__clients__info__title}</h2>
-					<div class="admin__default-block mb-5">
-						<div class="row">
-							<div class="col-12">
+					<div class="admin__default-block mb-5 -warning">
+						<div class="d-flex flex-wrap flex-md-nowrap">
+							<div class="admin__clients-edit-info-text">
 								#{msg.admin__clients__question_register}</div>
 						</div>
-						<div class="row">
-							<div class="col-4">#{msg.admin__clients__client_identifier}
-							</div>
-							<div class="col-8">#{client.clientIdentifier}</div>
+						<div class="d-flex flex-wrap flex-md-nowrap">
+							<div class="admin__clients-edit-label">#{msg.admin__clients__client_identifier}:</div>
+							<div class="admin__clients-edit-data">#{client.clientIdentifier}</div>
 						</div>
-						<div class="row">
-							<div class="col-4">#{msg.admin__clients__date_requested}</div>
-							<div class="col-8">
+						<div class="d-flex flex-wrap flex-md-nowrap">
+							<div class="admin__clients-edit-label">#{msg.admin__clients__date_requested}:</div>
+							<div class="admin__clients-edit-data">
 								<h:outputText value="#{client.dateRegistered}">
 									<f:converter converterId="localDateTimeConverter" />
 									<f:attribute name="pattern"
@@ -53,15 +52,15 @@
 								</h:outputText>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-4">#{msg.admin__clients__client_ip}</div>
-							<div class="col-8">#{client.clientIp}</div>
+						<div class="d-flex flex-wrap flex-md-nowrap">
+							<div class="admin__clients-edit-label">#{msg.admin__clients__client_ip}:</div>
+							<div class="admin__clients-edit-data">#{client.clientIp}</div>
 						</div>
 					</div>
 
 
 					<div
-						class="row no-gutters justify-content-end admin__final-actions">
+						class="row no-gutters justify-content-around admin__final-actions">
 						<h:commandButton class="btn btn--success"
 							value="#{msg.action__accept}"
 							action="#{adminClientsBean.accept(client)}">
@@ -81,13 +80,13 @@
 					<h2>#{msg.admin__clients__info__title}</h2>
 					<div class="admin__default-block mb-5">
 						<div class="row">
-							<div class="col-4">#{msg.admin__clients__client_identifier}
+							<div class="col-2 col-md-2 admin__clients-edit-label-formatted">#{msg.admin__clients__client_identifier}:
 							</div>
-							<div class="col-8">#{client.clientIdentifier}</div>
+							<div class="col-10 col-md-10">#{client.clientIdentifier}</div>
 						</div>
 						<div class="row">
-							<div class="col-4">#{msg.admin__clients__client_ip}</div>
-							<div class="col-8">#{client.clientIp}</div>
+							<div class="col-2 col-md-2 admin__clients-edit-label-formatted">#{msg.admin__clients__client_ip}:</div>
+							<div class="col-10 col-md-10">#{client.clientIp}</div>
 						</div>
 					</div>
 
@@ -113,14 +112,15 @@
 
 					<div
 						class="row no-gutters justify-content-end admin__final-actions">
-						<h:commandButton class="btn btn--default" value="#{msg.cancel}"
+						<h:commandButton styleClass="btn admin__cancel-button" value="#{msg.cancel}"
 							action="pretty:adminClients">
 						</h:commandButton>
-						<h:commandButton class="btn btn--danger"
+						<h:commandButton styleClass="btn btn--success"
 							value="#{msg.button__save}"
 							action="#{adminClientsBean.save(client)}">
 						</h:commandButton>
 					</div>
+
 
 				</h:form>
 			</ui:fragment>

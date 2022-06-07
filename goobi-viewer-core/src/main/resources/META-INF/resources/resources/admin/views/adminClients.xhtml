@@ -31,7 +31,7 @@
 
 			<!-- NOT CONFIGURED CLIENTS -->
             <ui:fragment rendered="#{not empty notConfiguredClients}">
-                <div class="admin__default-block mb-5">
+                <div class="admin__default-block mb-5 -danger">
                     <div class="row">
                       <h2 class="col-12">
                           #{msg.admin__clients__not_configured_clients}
@@ -52,79 +52,79 @@
             </ui:fragment>
 
             <!-- CONFIGURED CLIENTS -->
-			<div class="admin__content-inner-content">
-                   <div class="admin__table-tools">
-                       <!-- PAGINATOR -->
-                       <div class="admin__table-paginator">
-                           <viewerComponent:dataTablePaginator tableValues="#{adminClientsBean.configuredClientsModel}" />
-                       </div>
-                       <!-- FILTER -->
-                       <div class="admin__table-filter">
-                           <viewerComponent:dataTableColumnFilter key="admin__clients__search" filter="#{adminClientsBean.configuredClientsModel.getFilter('name_ip_identifier')}"/>
-                       </div>
-                   </div>
+                <div class="admin__table-tools">
+                    <!-- PAGINATOR -->
+                    <div class="admin__table-paginator">
+                        <viewerComponent:dataTablePaginator tableValues="#{adminClientsBean.configuredClientsModel}" />
+                    </div>
+                    <!-- FILTER -->
+                    <div class="admin__table-filter">
+                        <viewerComponent:dataTableColumnFilter key="admin__clients__search" filter="#{adminClientsBean.configuredClientsModel.getFilter('name_ip_identifier')}"/>
+                    </div>
+                </div>
 
-                   <div id="new-table-clients" class="admin__table-content" role="grid" aria-label="#{msg.admin__clients__title}: #{msg.aria_label__table__actions}">
-                       <div class="row no-gutters admin__table-title" role="row">
-                           <div class="col-6 d-flex -sorting-arrow-trigger">
-                               <viewerComponent:sortingArrow filterType="name" colHeading="#{msg.admin__clients__column_information}" list="#{adminClientsBean.configuredClientsModel}" />
-                           </div>
-                           
-                           <div class="col-2 d-flex -sorting-arrow-trigger">
-							<viewerComponent:sortingArrow filterType="ip" colHeading="#{msg.admin__clients__column_ip}" list="#{adminClientsBean.configuredClientsModel}" />
-                           </div>
-                           
-                           <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_registered}</div>
-                           
-                           <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_last_access}</div>
-                       </div>
+                <div id="new-table-clients" class="admin__table-content" role="grid" aria-label="#{msg.admin__clients__title}: #{msg.aria_label__table__actions}">
+                    <div class="row no-gutters admin__table-title" role="row">
+                        <div class="col-6 d-flex -sorting-arrow-trigger">
+                            <viewerComponent:sortingArrow filterType="name" colHeading="#{msg.admin__clients__column_information}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
+                        
+                        <div class="col-2 d-flex -sorting-arrow-trigger">
+				<viewerComponent:sortingArrow filterType="ip" colHeading="#{msg.admin__clients__column_ip}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
+                        
+                        <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_registered}</div>
+                        
+                        <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_last_access}</div>
+                    </div>
 
 
-                       <ui:repeat var="client" value="#{adminClientsBean.configuredClientsModel.paginatorList}">
-                           <div class="row no-gutters admin__table-entry" role="row">
-                               <div class="col-6 d-flex">
-                                   <div class="admin__table-data" role="gridcell">
-                                       <!-- CLIENT NAME -->
-                                       <span class="admin__table-name">#{client.name}</span>
-                                       <!-- CLIENT ID -->
-                                       <span class="admin__table-name">#{msg.admin__clients__client_identifier }#{client.clientIdentifier}</span>
-                                       <!-- EDIT -->
-                                       <a href="#{navigationHelper.applicationUrl}admin/clients/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">
-                                          #{msg.edit}
-                                       </a>
-                                   </div>
-                               </div>
+                    <ui:repeat var="client" value="#{adminClientsBean.configuredClientsModel.paginatorList}">
+                        <div class="row no-gutters admin__table-entry" role="row">
+                            <div class="col-6 d-flex">
+                                <div class="admin__table-data" role="gridcell">
+                                    <!-- CLIENT NAME -->
+                                    <span class="admin__table-name admin__clients-table-client-name">#{client.name}</span>
+                                    <!-- CLIENT DESCRIPTION -->
+                                    <span class="">#{client.description}</span>
+                                    <!-- CLIENT ID -->
+                                    <span class="">(#{client.clientIdentifier})</span>
+                                    <!-- EDIT -->
+                                    <a href="#{navigationHelper.applicationUrl}admin/clients/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">
+                                       #{msg.edit}
+                                    </a>
+                                </div>
+                            </div>
 
-							<div class="col-2 d-flex align-items-center" role="gridcell">
-                                   <span class="admin__table-ip-address">
-                                       #{client.clientIp}
-                                   </span>
-                               </div>
+				<div class="col-2 d-flex align-items-center" role="gridcell">
+                                <span class="admin__table-ip-address">
+                                    #{client.clientIp}
+                                </span>
+                            </div>
 
-							<!-- REGISTERED DATE -->
-                               <div class="col-2 d-flex align-items-center" role="gridcell">
-                                   <span class="admin__table-last-login">
-                                       <h:outputText value="#{client.dateRegistered}">
-                                           <f:converter converterId="localDateTimeConverter" />
-                                           <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                                       </h:outputText>
-                                   </span>
-                               </div>
+				<!-- REGISTERED DATE -->
+                            <div class="col-2 d-flex align-items-center" role="gridcell">
+                                <span class="admin__table-last-login">
+                                    <h:outputText value="#{client.dateRegistered}">
+                                        <f:converter converterId="localDateTimeConverter" />
+                                        <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                    </h:outputText>
+                                </span>
+                            </div>
 
-                               <!-- LAST LOGIN DATE -->
-                               <div class="col-2 d-flex align-items-center" role="gridcell">
-                                   <span class="admin__table-last-login">
-                                       <h:outputText value="#{client.dateLastAccess}">
-                                           <f:converter converterId="localDateTimeConverter" />
-                                           <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                                       </h:outputText>
-                                   </span>
-                               </div>
+                            <!-- LAST LOGIN DATE -->
+                            <div class="col-2 d-flex align-items-center" role="gridcell">
+                                <span class="admin__table-last-login">
+                                    <h:outputText value="#{client.dateLastAccess}">
+                                        <f:converter converterId="localDateTimeConverter" />
+                                        <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                    </h:outputText>
+                                </span>
+                            </div>
 
-                           </div>
-                       </ui:repeat>
-                   </div>
-               </div>
+                        </div>
+                    </ui:repeat>
+                </div>
            
 		</div>
     </ui:define>

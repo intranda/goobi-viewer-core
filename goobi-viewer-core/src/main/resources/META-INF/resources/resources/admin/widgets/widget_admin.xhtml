@@ -37,6 +37,13 @@
                                 <span>#{msg.admin__ip_ranges}</span>
                             </h:outputLink>
                         </li>
+						<li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.getPageUrl('adminClients')}/">
+								<i class="fa fa-desktop" aria-hidden="true"></i>
+								<span>#{msg.admin__clients__title}</span>
+							</h:outputLink>
+						</li>
                         <li class="admin-widget__licences-link #{navigationHelper.currentPage == 'adminLicenseType' ? 'active' : '' or
                                      navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
@@ -87,13 +94,7 @@
                             </h:outputLink>
                         </li>
                     </ui:fragment>
-                    <li class="admin-widget__clients-link #{navigationHelper.currentPage == 'adminClients' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminClients')}/">
-                                <i class="fa fa-exchange" aria-hidden="true"></i>
-                                <span>#{msg.admin__clients__title}</span>
-                            </h:outputLink>
-                        </li>
-                    </ul>
+				</ul>
             </h:form>
         </div>
     </composite:implementation>
