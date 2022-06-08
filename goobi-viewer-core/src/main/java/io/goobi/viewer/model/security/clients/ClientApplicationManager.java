@@ -15,17 +15,21 @@
  */
 package io.goobi.viewer.model.security.clients;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 
 /**
@@ -34,6 +38,8 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
  */
 public class ClientApplicationManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClientApplicationManager.class);
+    
     /**
      * client identifier for the core clientApplication representing all clients
      */
@@ -75,8 +81,16 @@ public class ClientApplicationManager {
         return allClients;
     }
     
-    public static boolean registerClientInSession(ClientApplication client, HttpSession session) {
-        if(AccessStatus.GRANTED.equals(client.getAccessStatus())) {            
+    public boolean registerClientInSession(ClientApplication client, HttpSession session) {
+        if(AccessStatus.GRANTED.equals(client.getAccessStatus())) {    
+            if(getClientFromSession(session).isEmpty()) {
+                try {
+                    client.setDateLastAccess(LocalDateTime.now());
+                    dao.saveClientApplication(client);
+                } catch (DAOException e) {
+                    logger.error("Error updating client in database ",e);
+                }
+            }
             session.setAttribute(CLIENT_SESSION_ATTRIBUTE, client);
             return true;
         } else {
