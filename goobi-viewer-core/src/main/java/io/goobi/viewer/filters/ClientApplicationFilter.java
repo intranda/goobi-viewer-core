@@ -72,7 +72,7 @@ public class ClientApplicationFilter implements Filter {
                 try {
                     ClientApplication client = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier).orElse(null);
                     if(client != null) {
-                        if(ClientApplicationManager.registerClientInSession(client, ((HttpServletRequest) request).getSession())) {                            
+                        if(clientManager.registerClientInSession(client, ((HttpServletRequest) request).getSession())) {                            
                             logger.trace("Registered client " + client.getName() + " in http session");
                         } else {
                             logger.trace("Client " + client.getName() + " attempts to register but client rights are not granted for this client");

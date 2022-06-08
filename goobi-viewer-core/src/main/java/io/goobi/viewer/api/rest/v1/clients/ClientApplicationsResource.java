@@ -116,7 +116,7 @@ public class ClientApplicationsResource {
         }
         Optional<ClientApplication> client = DataManager.getInstance().getClientManager().getClientByClientIdentifier(clientIdentifier);
         if (client.isPresent()) {
-            boolean allowed = ClientApplicationManager.registerClientInSession(client.get(), session);
+            boolean allowed = this.clientManager.registerClientInSession(client.get(), session);
             return createRequestResponse(client.get(), allowed);
         } else {
             throw new IllegalRequestException("No client registered with given identifier. Please register the client first");
