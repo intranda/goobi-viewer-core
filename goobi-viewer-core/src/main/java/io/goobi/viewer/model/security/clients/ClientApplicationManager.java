@@ -33,6 +33,8 @@ import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 
 /**
+ * Class managing registration and log-in of {@link ClientApplication}s 
+ * 
  * @author florian
  *
  */
@@ -53,14 +55,19 @@ public class ClientApplicationManager {
     private final IDAO dao;
     private ClientApplication allClients;
     
+    /**
+     * General constructor 
+     * @param dao   The database storing the {@link ClientApplication}s
+     * @throws DAOException
+     */
     public ClientApplicationManager(IDAO dao) throws DAOException {
         this.dao = dao;
         this.allClients = dao.getClientApplicationByClientId(GENERAL_CLIENT_IDENTIFIER);
     }
     
     /**
+     * To be called on server startup. If the database contains no {@link ClientApplication} representing all clients, add it to the database
      * @throws DAOException 
-     * 
      */
     public void addGeneralClientApplicationToDB() throws DAOException {
         
@@ -75,12 +82,21 @@ public class ClientApplicationManager {
     }
     
     /**
+     * Get the {@link ClientApplication} representing all clients created in {@link #addGeneralClientApplicationToDB()}
      * @return the allClients
      */
     public ClientApplication getAllClients() {
         return allClients;
     }
     
+    /**
+     * Store the given client in the given session to consider it for access condition checks. 
+     * The client is only stored if it has {@link AccessStatus#GRANTED} 
+     * If the session doesn't contain the client yet, its {@link ClientApplication#getDateLastAccess()} is updated and the client saved to database
+     * @param client    the client to register
+     * @param session   the session to store the client
+     * @return  true if registration was successfull
+     */
     public boolean registerClientInSession(ClientApplication client, HttpSession session) {
         if(AccessStatus.GRANTED.equals(client.getAccessStatus())) {    
             if(getClientFromSession(session).isEmpty()) {
@@ -98,6 +114,11 @@ public class ClientApplicationManager {
         }
     }
     
+    /**
+     * Get the client stored in the given session by {@link #registerClientInSession(ClientApplication, HttpSession)}, if any
+     * @param session   the session possibly containing the client
+     * @return  An optional containing the client if one exists
+     */
     public static Optional<ClientApplication> getClientFromSession(HttpSession session) {
         Object client = session.getAttribute(CLIENT_SESSION_ATTRIBUTE);
         if(client != null && client instanceof ClientApplication) {
@@ -109,8 +130,9 @@ public class ClientApplicationManager {
     
 
     /**
+     * Get the client with the given {@link ClientApplication#getClientIdentifier()} from the database
      * @param clientIdentifier
-     * @return
+     * @return  An optional containing the client if one matches the identifier
      * @throws DAOException 
      */
     public Optional<ClientApplication> getClientByClientIdentifier(String clientIdentifier) throws DAOException {
@@ -120,14 +142,21 @@ public class ClientApplicationManager {
     }
 
     /**
-     * @param servletRequest2
-     * @return
+     * The the client identifier from a request header
+     * @param servletRequest
+     * @return  The identifier or null if non is in the header
      */
     public static String getClientIdentifier(HttpServletRequest request) {
        return request.getHeader(ClientApplicationManager.CLIENT_IDENTIFIER_HEADER);
     }
     
-
+    /**
+     * Create a new {@link ClientApplication} with the given identifier and IP of the given request and store it in the database
+     * @param clientIdentifier  the identifier transmitted by the client
+     * @param request   the request made by the client
+     * @return  The newly persisted client
+     * @throws DAOException
+     */
     public ClientApplication persistNewClient(String clientIdentifier, HttpServletRequest request) throws DAOException {
         ClientApplication client = new ClientApplication(clientIdentifier);
         client.setAccessStatus(AccessStatus.REQUESTED);
@@ -143,6 +172,11 @@ public class ClientApplicationManager {
 
     }
     
+    /**
+     * check if the given client is the client instance representing all clients
+     * @param client
+     * @return  true if the client does not represent all clients
+     */
     public boolean isNotAllClients(ClientApplication client) {
         return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> id != getAllClients().getId()).orElse(true);
     }

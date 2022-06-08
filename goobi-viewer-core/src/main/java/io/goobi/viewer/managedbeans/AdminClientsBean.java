@@ -42,6 +42,8 @@ import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 
 /**
+ * Backing bean for pages adminClientEdit.xhtml and adminClients.xhtml
+ * 
  * @author florian
  *
  */
@@ -62,24 +64,24 @@ public class AdminClientsBean implements Serializable {
     private ClientApplication selectedClient = null;
     
     private TableDataProvider<ClientApplication> configuredClientsModel;
-    
-    private final ClientApplication allClients;
-    
-    public AdminClientsBean(IDAO dao, int listEntriesPerPage) {
+        
+    /**
+     * Constructor for testing
+     * @param dao
+     * @param listEntriesPerPage
+     */
+    AdminClientsBean(IDAO dao, int listEntriesPerPage) {
         this.dao = dao;
         configuredClientsModel = createDataTableProvider(listEntriesPerPage);
-        try {
-            this.allClients = dao.getClientApplicationByClientId(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
-        } catch (DAOException e) {
-            throw new IllegalStateException("Unable to load all clients instance from database");
-        }
     }
     
+    /**
+     * Publi no-args constructor
+     */
     public AdminClientsBean() {
         try {
             dao = DataManager.getInstance().getDao();
             configuredClientsModel = createDataTableProvider(LIST_ENTRIES_PER_PAGE);
-            this.allClients = dao.getClientApplicationByClientId(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
         } catch (DAOException e) {
             logger.error(e.toString(), e);
             throw new IllegalStateException("Cannot initialize bean without connection to dao");
@@ -87,12 +89,18 @@ public class AdminClientsBean implements Serializable {
     }
     
     /**
+     * Get the model used for paginated listing configured clients 
      * @return the configuredClientsModel
      */
     public TableDataProvider<ClientApplication> getConfiguredClientsModel() {
         return configuredClientsModel;
     }
     
+    /**
+     * Set the client currently being edited by its database id. 
+     * @param id    database id. If null or not matching an existing client, the selected client will be null
+     * @throws DAOException
+     */
     public void setSelectedClientId(Long id) throws DAOException  {
         if(id != null) {
             this.setSelectedClient(dao.getClientApplication(id));
@@ -101,6 +109,10 @@ public class AdminClientsBean implements Serializable {
         }
     }
     
+    /**
+     * Get the id of the client currently being edited
+     * @return  client database id or null if no client is selected
+     */
     public Long getSelectedClientId() {
         if(this.selectedClient != null) {
             return this.selectedClient.getId();
@@ -110,6 +122,7 @@ public class AdminClientsBean implements Serializable {
     }
     
     /**
+     * Set the currently edited client
      * @param selectedClient the selectedClient to set
      */
     public void setSelectedClient(ClientApplication selectedClient) {
@@ -117,23 +130,38 @@ public class AdminClientsBean implements Serializable {
     }
     
     /**
+     * Get the currently edited client
      * @return the selectedClient
      */
     public ClientApplication getSelectedClient() {
         return selectedClient;
     }
     
+    /**
+     * 'Accept' a registered client by setting its {@link ClientApplication#getAccessStatus()} to {@link AccessStatus#GRANTED}
+     * 
+     * @param client
+     */
     public void accept(ClientApplication client) {
         client.setAccessStatus(AccessStatus.GRANTED);
         client.initializeSubnetMask();
         save(client);
     }
     
+    /**
+     * 'Regect a registered client by calling {@link #delete(ClientApplication)} on it
+     * @param client
+     * @return  pretty url of admin/clients overview page
+     */
     public String reject(ClientApplication client) {
         delete(client);
         return "pretty:adminClients";
     }
 
+    /**
+     * Save the given client to database
+     * @param client
+     */
     public void save(ClientApplication client) {
         try {            
             if(dao.saveClientApplication(client)) {
@@ -147,6 +175,11 @@ public class AdminClientsBean implements Serializable {
         }
     }
     
+    /**
+     * Delete given client from database
+     * @param client
+     * @return
+     */
     public String delete(ClientApplication client) {
         try {            
             if(dao.deleteClientApplication(client.getId())) {
@@ -256,6 +289,11 @@ public class AdminClientsBean implements Serializable {
         return provider;
     }
 
+    /**
+     * Get a list of all clients with {@link AccessStatus#REQUESTED}
+     * @return
+     * @throws DAOException
+     */
     public List<ClientApplication> getNotConfiguredClients() throws DAOException {
         return dao.getAllClientApplications()
                 .stream()
@@ -263,6 +301,11 @@ public class AdminClientsBean implements Serializable {
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Get a list of all clients with {@link AccessStatus#GRANTED}
+     * @return
+     * @throws DAOException
+     */
     public List<ClientApplication> getAllAcceptedClients() throws DAOException {
         return dao.getAllClientApplications()
                 .stream()
@@ -270,6 +313,11 @@ public class AdminClientsBean implements Serializable {
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Get a list of all clients with {@link AccessStatus#GRANTED} pr {@link AccessStatus#DENIED}
+     * @return
+     * @throws DAOException
+     */
     public List<ClientApplication> getAllConfiguredClients() throws DAOException {
         return dao.getAllClientApplications()
                 .stream()
@@ -278,10 +326,13 @@ public class AdminClientsBean implements Serializable {
     }
     
     /**
+     * Get the internally created client representing all clients for access rights purposes
+     * 
      * @return the allClients
+     * @throws DAOException 
      */
-    public ClientApplication getAllClients() {
-        return allClients;
+    public ClientApplication getAllClients() throws DAOException {
+        return DataManager.getInstance().getClientManager().getAllClients();
     }
 
 
