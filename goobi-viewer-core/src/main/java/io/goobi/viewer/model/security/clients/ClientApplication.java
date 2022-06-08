@@ -73,22 +73,22 @@ public class ClientApplication  implements ILicensee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_application_id")
-    @Schema(description = "The internal database identifier of the client. Cannot be altered but used to identify the client to change.", example="2", type = "long")
+    @Schema(description = "The internal database identifier of the client", example="2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
     
-    @Schema(description = "The internal identifier/secret of the client. Cannot be altered but used to identify the client to change.", example=" 0D219Z74-F764-4CAD-8361-D9964FD1B186")
+    @Schema(description = "The internal identifier/secret of the client", example="0D219Z74-F764-4CAD-8361-D9964FD1B186", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "client_identifier")
     private String clientIdentifier;
     
-    @Schema(description = "The IP under which the client first requested registration", example="192.168.172.13")
+    @Schema(description = "The IP under which the client first requested registration", example="192.168.172.13", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "client_ip")
     private String clientIp;
     
-    @Schema(description = "The name to be displayed for the client", example="Windows Desktop 1")
+    @Schema(description = "The name to be displayed for the client", example="Windows Desktop 1", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "name")
     private String name;
     
-    @Schema(description = "A description of the client", example="second workplace, right aisle")
+    @Schema(description = "A description of the client", example="second workplace, right aisle", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "description")
     private String description;
     
