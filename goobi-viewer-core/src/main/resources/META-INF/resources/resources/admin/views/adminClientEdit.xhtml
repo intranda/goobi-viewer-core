@@ -74,59 +74,88 @@
 				</h:form>
 			</ui:fragment>
 
-			<!-- CONFIGURED CLIENT -->
 			<ui:fragment rendered="#{!client.registrationPendingOrDenied}">
-				<h:form>
-					<h2>#{msg.admin__clients__info__title}</h2>
-					<div class="admin__default-block mb-5">
-						<div class="row">
-							<div class="col-2 col-md-2 admin__clients-edit-label-formatted">#{msg.admin__clients__client_identifier}:
+			<div class="admin__content-wrapper">
+
+				<div class="admin__content-main -sticky -refreshHCsticky">
+					<h:form>
+						<h2>#{msg.admin__clients__settings__title}</h2>
+						<div class="admin__default-block mb-5">
+
+							<formComponent:textInputField
+								label="#{msg.admin__clients__client_name}"
+								value="#{client.name}"
+								helpText="#{msg.admin__clients__client_name__help}" />
+							<formComponent:textInputField
+								label="#{msg.admin__clients__client_desc}"
+								value="#{client.description}" textArea="true"
+								helpText="#{msg.admin__clients__client_desc__help}" />
+
+							<formComponent:textInputField
+								label="#{msg.admin__clients__client_ip_range}"
+								value="#{client.subnetMask}" required="true"
+								helpText="#{msg.admin__clients__client_ip_range__help}"
+								validatorId="subnetMaskValidator"
+								validatorMessage="#{msg.admin__clients__client_ip_range_invalid}" />
+						</div>
+
+						<div
+							class="row no-gutters justify-content-end admin__final-actions">
+							<h:commandButton styleClass="btn admin__cancel-button"
+								value="#{msg.cancel}" immediate="true"
+								action="pretty:adminClients">
+							</h:commandButton>
+							<h:commandButton styleClass="btn btn--success"
+								value="#{msg.button__save}"
+								action="#{adminClientsBean.save(client)}">
+							</h:commandButton>
+						</div>
+					</h:form>
+
+				</div>
+
+				<!-- SIDEBAR START -->
+				<div class="admin__content-side">
+					<!-- CONFIGURED CLIENT -->
+						<h:form>
+							<div class="admin__default-block mb-5">
+								<h2>#{msg.admin__clients__info__title}</h2>
+								<div class="admin__information-grid">
+								<div class="admin__information-grid-cell">
+									<div class="admin__information-grid-label">#{msg.admin__clients__client_identifier}:</div>
+									<div class="admin__information-grid-value">#{client.clientIdentifier}</div>
+								</div>
+								<div class="admin__information-grid-cell">
+									<div class="admin__information-grid-label">#{msg.admin__clients__client_ip}:</div>
+									<div class="admin__information-grid-value">#{client.clientIp}</div>
+								</div>
+								<div class="admin__information-grid-cell">
+									<div class="admin__information-grid-label">#{msg.admin__clients__date_registered}:</div>
+									<div class="admin__information-grid-value">
+										<h:outputText value="#{client.dateRegistered}">
+											<f:converter converterId="localDateTimeConverter" />
+											<f:attribute name="pattern"
+												value="#{navigationHelper.dateTimePattern}" />
+										</h:outputText>
+									</div>
+								</div>
+								<div class="admin__information-grid-cell">
+									<div class="admin__information-grid-label">#{msg.admin__clients__date_last_access}:</div>
+									<div class="admin__information-grid-value">
+										<h:outputText value="#{client.dateLastAccess}">
+											<f:converter converterId="localDateTimeConverter" />
+											<f:attribute name="pattern"
+												value="#{navigationHelper.dateTimePattern}" />
+										</h:outputText>
+									</div>
+								</div>
+								</div>
 							</div>
-							<div class="col-10 col-md-10">#{client.clientIdentifier}</div>
-						</div>
-						<div class="row">
-							<div class="col-2 col-md-2 admin__clients-edit-label-formatted">#{msg.admin__clients__client_ip}:</div>
-							<div class="col-10 col-md-10">#{client.clientIp}</div>
-						</div>
-					</div>
-
-					<h2>#{msg.admin__clients__settings__title}</h2>
-					<div class="admin__default-block mb-5">
-						<formComponent:textInputField
-							label="#{msg.admin__clients__client_name}" value="#{client.name}" 
-							helpText="#{msg.admin__clients__client_name__help}"/>
-						<formComponent:textInputField
-							label="#{msg.admin__clients__client_desc}"
-							value="#{client.description}"
-							textArea="true"
-							helpText="#{msg.admin__clients__client_desc__help}" />
-							
-						<formComponent:textInputField
-							label="#{msg.admin__clients__client_ip_range}"
-							value="#{client.subnetMask}"
-							required="true"
-							helpText="#{msg.admin__clients__client_ip_range__help}" 
-							validatorId="subnetMaskValidator"
-							validatorMessage="#{msg.admin__clients__client_ip_range_invalid}"/>
-
-					</div>
-
-					<div
-						class="row no-gutters justify-content-end admin__final-actions">
-						<h:commandButton styleClass="btn admin__cancel-button" value="#{msg.cancel}" immediate="true"
-							action="pretty:adminClients">
-						</h:commandButton>
-						<h:commandButton styleClass="btn btn--success"
-							value="#{msg.button__save}"
-							action="#{adminClientsBean.save(client)}">
-						</h:commandButton>
-					</div>
-
-
-				</h:form>
+						</h:form>
+					<!-- SIDEBAR EOL -->
+				</div>
+			</div>
 			</ui:fragment>
-
-
 		</div>
 	</ui:define>
 </ui:composition>
