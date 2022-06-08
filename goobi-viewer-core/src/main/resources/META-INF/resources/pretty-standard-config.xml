@@ -975,7 +975,7 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="adminClientsEdit">
-        <pattern value="/admin/clients/#{clientId}/" />
+        <pattern value="/admin/clients/edit/#{clientId}/" />
         <view-id value="/resources/admin/views/adminClientEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{adminClientsBean.setSelectedClientId(clientId)}</action>

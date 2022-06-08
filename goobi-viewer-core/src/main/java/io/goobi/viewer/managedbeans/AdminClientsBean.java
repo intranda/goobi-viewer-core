@@ -130,8 +130,7 @@ public class AdminClientsBean implements Serializable {
     }
     
     public String reject(ClientApplication client) {
-        client.setAccessStatus(AccessStatus.DENIED);
-        save(client);
+        delete(client);
         return "pretty:adminClients";
     }
 
