@@ -188,9 +188,15 @@ public class AdminClientsBean implements Serializable {
                     //sorting
                     int sortDirectionFactor = SortOrder.DESCENDING.equals(sortOrder) ? -1 : 1; // desc - asc
                     if ("name".equals(sortField)) {
-                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getName(), c2.getName()));
+                        System.out.println("TEST"); 
+                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getName(), c2.getName()))
+                                       .sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIdentifier(), c2.getClientIdentifier()));
                     } else if("ip".equals(sortField)) {
                         stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIp(), c2.getClientIp()));
+                    } else if("dateRegistered".equals(sortField)) {
+                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * c1.getDateRegistered().compareTo(c2.getDateRegistered()));
+                    } else if("dateLastAccess".equals(sortField)) {
+                        stream = stream.sorted((c1,c2) -> sortDirectionFactor * c1.getDateLastAccess().compareTo(c2.getDateLastAccess()));
                     }
                     
                     //from-to
@@ -214,7 +220,7 @@ public class AdminClientsBean implements Serializable {
                         stream = dao.getAllClientApplications().stream();
                         
                         //filters
-                        for (String  filterName : filters.keySet()) {
+                        for (String filterName : filters.keySet()) {
                             String filterValue = filters.get(filterName);
                             if(StringUtils.isNotBlank(filterValue)) {                            
                                 stream = stream.filter(c -> matchesFilter(c, filterName, filterValue));

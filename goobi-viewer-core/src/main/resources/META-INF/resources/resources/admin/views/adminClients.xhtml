@@ -72,12 +72,16 @@
                         </div>
                         
                         <div class="col-2 d-flex -sorting-arrow-trigger">
-				<viewerComponent:sortingArrow filterType="ip" colHeading="#{msg.admin__clients__column_ip}" list="#{adminClientsBean.configuredClientsModel}" />
+							<viewerComponent:sortingArrow filterType="ip" colHeading="#{msg.admin__clients__column_ip}" list="#{adminClientsBean.configuredClientsModel}" />
                         </div>
                         
-                        <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_registered}</div>
+                        <div class="col-2 d-flex -sorting-arrow-trigger">
+							<viewerComponent:sortingArrow filterType="dateRegistered" colHeading="#{msg.admin__clients__date_registered}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
                         
-                        <div class="col-2 d-flex" role="columnheader">#{msg.admin__clients__date_last_access}</div>
+                        <div class="col-2 d-flex -sorting-arrow-trigger">
+							<viewerComponent:sortingArrow filterType="dateLastAccess" colHeading="#{msg.admin__clients__date_last_access}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
                     </div>
 
                     <ui:repeat var="client" value="#{adminClientsBean.configuredClientsModel.paginatorList}">

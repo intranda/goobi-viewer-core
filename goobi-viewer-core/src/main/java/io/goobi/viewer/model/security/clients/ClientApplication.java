@@ -93,12 +93,12 @@ public class ClientApplication  implements ILicensee {
     private String description;
     
     @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access", example="2022-05-19T11:55:16Z", type="date", format="ISO 8601",  accessMode = Schema.AccessMode.READ_ONLY)
-    @Column(name = "date_registered")
+    @Column(name = "date_registered", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateRegistered = LocalDateTime.now();
     
     @Schema(description = "The last time the client sent a request to the server", example="2022-05-19T11:55:16Z", type="date", format="ISO 8601",  accessMode = Schema.AccessMode.READ_ONLY)
-    @Column(name = "date_last_access")
+    @Column(name = "date_last_access", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateLastAccess = LocalDateTime.now();
     
