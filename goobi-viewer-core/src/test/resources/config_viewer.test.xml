@@ -539,9 +539,9 @@
         <!-- fuzzy/@enabled: If true, fuzzy search will be applied. Default is false. -->
         <fuzzy enabled="false" />
         
-        <!-- proximity/@enabled: If true, fuzzy search will be applied. Default is false. -->
-        <!-- proximity/@distance: Maximum number of term spaces between terms. Default is 10. -->
-        <proximity enabled="false" distance="20" />
+        <!-- useFacetsAsExpandQuery: If true, currently selected facets will be used to build the expand query to produce child hits,
+            even if no search terms were given. Default is false. -->
+        <useFacetsAsExpandQuery>true</useFacetsAsExpandQuery>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->

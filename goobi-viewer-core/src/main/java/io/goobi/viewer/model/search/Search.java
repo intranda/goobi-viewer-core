@@ -73,6 +73,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Persistable search query.
@@ -503,13 +504,23 @@ public class Search implements Serializable {
         // Hits for the current page
         int from = (page - 1) * hitsPerPage;
 
-        // Search for child hits only if initial search query is not empty (empty query means collection listing)
+        // Expand query (child hits)
+        String useExpandQuery = "";
         if (StringUtils.isNotEmpty(expandQuery)) {
-            String useExpandQuery = expandQuery + subElementQueryFilterSuffix;
-            if (StringUtils.isNotEmpty(useExpandQuery)) {
-                logger.trace("Expand query: {}", useExpandQuery);
-                params.putAll(SearchHelper.getExpandQueryParams(useExpandQuery));
+            // Search for child hits only if initial search query is not empty (empty query means collection listing)
+            useExpandQuery = expandQuery + subElementQueryFilterSuffix;
+        } else if (!activeFacetFilterQueries.isEmpty() && DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery()) {
+            // If explicitly configured to use facets for expand query to produce child hits
+            StringBuilder sb = new StringBuilder();
+            for (String q : activeFacetFilterQueries) {
+                sb.append(" +").append(q);
             }
+            sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+            useExpandQuery = sb.toString();
+        }
+        if (StringUtils.isNotEmpty(useExpandQuery)) {
+            logger.trace("Expand query: {}", useExpandQuery);
+            params.putAll(SearchHelper.getExpandQueryParams(useExpandQuery));
         }
 
         List<StringPair> useSortFields = getAllSortFields();
