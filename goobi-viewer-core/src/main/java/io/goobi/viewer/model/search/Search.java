@@ -511,12 +511,7 @@ public class Search implements Serializable {
             useExpandQuery = expandQuery + subElementQueryFilterSuffix;
         } else if (!activeFacetFilterQueries.isEmpty() && DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery()) {
             // If explicitly configured to use facets for expand query to produce child hits
-            StringBuilder sb = new StringBuilder();
-            for (String q : activeFacetFilterQueries) {
-                sb.append(" +").append(q);
-            }
-            sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
-            useExpandQuery = sb.toString();
+            useExpandQuery = SearchHelper.buildExpandQueryFromFacets(activeFacetFilterQueries);
         }
         if (StringUtils.isNotEmpty(useExpandQuery)) {
             logger.trace("Expand query: {}", useExpandQuery);

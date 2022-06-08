@@ -2652,7 +2652,7 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
-        if(StringUtils.isNotBlank(rawQuery)) {            
+        if (StringUtils.isNotBlank(rawQuery)) {
             sbQuery.append("+(").append(rawQuery).append(")");
         }
 
@@ -3071,4 +3071,27 @@ public final class SearchHelper {
         return new String[] { prefix, cleanedTerm, suffix };
     }
 
+    /**
+     * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
+     * 
+     * @param facetQueries List of individual facet queries
+     * @return Expand query
+     * @should return empty string if list null or empty
+     * @should construct query correctly
+     */
+    public static String buildExpandQueryFromFacets(List<String> facetQueries) {
+        if (facetQueries == null || facetQueries.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String q : facetQueries) {
+            if (q != null && q.length() > 0) {
+                sb.append(" +").append(q);
+            }
+        }
+        sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+
+        return sb.toString().trim();
+    }
 }

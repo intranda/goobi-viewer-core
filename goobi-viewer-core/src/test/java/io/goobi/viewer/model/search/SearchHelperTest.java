@@ -1720,4 +1720,27 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         int size = !values.isEmpty() ? Integer.valueOf(values.get(0)) : 0;
         Assert.assertTrue(size > 0);
     }
+
+    /**
+     * @see SearchHelper#buildExpandQueryFromFacets(List)
+     * @verifies return empty string if list null or empty
+     */
+    @Test
+    public void buildExpandQueryFromFacets_shouldReturnEmptyStringIfListNullOrEmpty() throws Exception {
+        Assert.assertEquals("", SearchHelper.buildExpandQueryFromFacets(null));
+        Assert.assertEquals("", SearchHelper.buildExpandQueryFromFacets(Collections.emptyList()));
+    }
+
+    /**
+     * @see SearchHelper#buildExpandQueryFromFacets(List)
+     * @verifies construct query correctly
+     */
+    @Test
+    public void buildExpandQueryFromFacets_shouldConstructQueryCorrectly() throws Exception {
+        List<String> facets = new ArrayList<>(2);
+        facets.add("FOO:bar");
+        facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
+        Assert.assertEquals("+FOO:bar +(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*) +DOCTYPE:DOCSTRCT",
+                SearchHelper.buildExpandQueryFromFacets(facets));
+    }
 }
