@@ -155,6 +155,7 @@
 				                      <h2 class="col-12">
 				                          #{msg.admin__clients__not_configured_clients}
 				                      </h2>
+				                      <p class="col-12">#{msg.admin__dashboard_clients_text}:</p> 
 				                    </div>
 				                    <ui:repeat var="client" value="#{notConfiguredClients}">
 					                    <a href="#{request.contextPath}/admin/clients/#{client.id}/"

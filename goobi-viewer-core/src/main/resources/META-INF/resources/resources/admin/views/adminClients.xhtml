@@ -52,7 +52,7 @@
             </ui:fragment>
 
             <!-- CONFIGURED CLIENTS -->
-            <ui:fragment rendered="#{not empty adminClientsBean.allConfiguredClients}">
+            <ui:fragment>
 					<h:form>
                 <div class="admin__table-tools">
                     <!-- PAGINATOR -->
@@ -87,9 +87,9 @@
                                     <!-- CLIENT NAME -->
                                     <span class="admin__table-name admin__clients-table-client-name">#{client.name}</span>
                                     <!-- CLIENT DESCRIPTION -->
-                                    <span class="">#{client.description}</span>
+                                    <span class="admin__table-additional-info">#{client.description}</span>
                                     <!-- CLIENT ID -->
-                                    <span class="">(#{client.clientIdentifier})</span>
+                                    <span class="font-italic">(#{client.clientIdentifier})</span>
                                     <!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
                                     <div class="admin__table-actions-wrapper">
 	                                    <!-- EDIT -->
@@ -138,5 +138,25 @@
                     </h:form>
            </ui:fragment>
 		</div>
+		
+		            <script type="text/javascript">
+
+		            
+		            viewerJS.jsfAjax.success.subscribe(function() {
+		    			
+		    			if($('.admin__table-entry').length == 0) {
+		    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+		    			}
+		            });
+		            
+
+		                // Create no entries found message
+		    			if($('.admin__table-entry').length == 0) {
+		    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+		    			}
+
+		            </script>
+		
+		
     </ui:define>
 </ui:composition>
