@@ -33,6 +33,8 @@ import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 
 /**
+ * Unit tests for {@link ClientApplicationsResource}
+ * 
  * @author florian
  *
  */
@@ -50,7 +52,7 @@ public class ClientApplicationsResourceTest  extends AbstractRestApiTest {
         }
         
         try(Response response = target()
-                .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "2"))
+                .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "12345"))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -60,7 +62,7 @@ public class ClientApplicationsResourceTest  extends AbstractRestApiTest {
         
         ClientApplication client = new ClientApplication("12345");
         try(Response response = target()
-                .path(CLIENTS)
+                .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "12345"))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .put(Entity.entity(client, MediaType.APPLICATION_JSON))) {
@@ -88,7 +90,7 @@ public class ClientApplicationsResourceTest  extends AbstractRestApiTest {
     @Test
     public void test_getClient() {
         try(Response response = target()
-                .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "2"))
+                .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "1234-abcd-4321"))
                 .request()
                 .header("token", "test")
                 .accept(MediaType.APPLICATION_JSON)
@@ -108,12 +110,12 @@ public class ClientApplicationsResourceTest  extends AbstractRestApiTest {
         assertEquals(AccessStatus.REQUESTED, databaseClient.getAccessStatus());
         assertNotEquals("100.200.10.20/2", databaseClient.getSubnetMask());
         
-        ClientApplication client = new ClientApplication("1234-abcd-4321");
+        ClientApplication client = new ClientApplication();
         client.setAccessStatus(AccessStatus.GRANTED);
         client.setSubnetMask("100.200.10.20/2");
         
         try(Response response = target()
-                .path(CLIENTS)
+                .path(CLIENTS + CLIENTS_CLIENT.replace("{id}", "1234-abcd-4321"))
                 .request()
                 .header("token", "test")
                 .accept(MediaType.APPLICATION_JSON)

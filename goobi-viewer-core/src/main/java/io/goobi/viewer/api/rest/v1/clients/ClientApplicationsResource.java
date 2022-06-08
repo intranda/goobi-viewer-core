@@ -194,7 +194,7 @@ public class ClientApplicationsResource {
     @javax.ws.rs.Path(CLIENTS_CLIENT)
     @AuthorizationBinding
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Get the client with the given database id", tags = { "clients" }, description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
+    @Operation(summary = "Get the client with the given client identifier", tags = { "clients" }, description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
     @ApiResponse(responseCode = "401", description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given 'id' was found in database")
     @ApiResponse(responseCode = "500", description = "In interal error occured")
