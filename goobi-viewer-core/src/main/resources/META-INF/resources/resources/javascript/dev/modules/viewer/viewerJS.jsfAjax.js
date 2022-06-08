@@ -84,8 +84,6 @@ var viewerJS = ( function ( viewer ) {
                         case 'success':
                         	// init Bootstrap features
                             viewerJS.helper.initBsFeatures();
-                            // load thumbnails
-                            viewer.loadThumbnails();
                             // init tinyMCE
                             let isTiny = data.responseText.includes("tinyMCE");
                             if(isTiny) {

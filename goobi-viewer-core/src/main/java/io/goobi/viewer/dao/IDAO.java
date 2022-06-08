@@ -67,6 +67,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -2480,6 +2481,17 @@ public interface IDAO {
 
     public int executeUpdate(String string) throws DAOException;
 
+    
+    public List<ClientApplication> getAllClientApplications() throws DAOException;
+    
+    public ClientApplication getClientApplication(long id) throws DAOException;
+    
+    public boolean saveClientApplication(ClientApplication client) throws DAOException;
+    
+    public boolean deleteClientApplication(long id) throws DAOException;
+
+    public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException;
+    
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *
@@ -2544,6 +2556,7 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
 
 
 }

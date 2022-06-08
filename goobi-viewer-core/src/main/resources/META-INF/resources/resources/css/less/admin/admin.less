@@ -686,8 +686,10 @@
 		flex: 1;
 		margin-right: 2rem;
 		font-weight: 600;
+		color: @black;
 		&:hover {
 			text-decoration: none;
+			// color: @black;
 			.admin__table-sorting-arrow-hidden {
 				opacity: 1;
 			}
@@ -763,6 +765,7 @@
 		font-size: 1.4rem;
 		transition: opacity 0.2s ease;
 		margin-right: 1.4rem;
+		padding: 0;
 	}
 	&__table-email {
 		font-size: 1.4rem;
@@ -871,7 +874,23 @@
 	&__did-you-know-text {
 		margin-bottom: 0;
 	}
-
+	&__information-grid {
+		display: grid;
+		grid-template-rows: 1fr;
+		gap: 1rem;
+	}
+	&__information-cell {
+		
+	}
+	&__information-grid-label {
+		font-weight: 700;
+	}
+	&__information-grid-value {
+	//	margin-bottom: 1rem;
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
 
 	/* ADMIN FORMS */
 	&__form-label {}

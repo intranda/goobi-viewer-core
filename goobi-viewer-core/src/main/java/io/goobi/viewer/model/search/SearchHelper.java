@@ -84,6 +84,8 @@ import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
@@ -901,7 +903,7 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), privilege);
+                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -911,6 +913,7 @@ public final class SearchHelper {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
+     * @param client 
      * @param privilege Privilege to check
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -923,7 +926,7 @@ public final class SearchHelper {
      * @should construct suffix correctly if moving wall license
      * @should construct suffix correctly for alternate privilege
      */
-    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, String privilege)
+    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, Optional<ClientApplication> client, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
         // No restrictions for admins
@@ -964,7 +967,7 @@ public final class SearchHelper {
             }
 
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, null)) {
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart(false));
@@ -976,7 +979,7 @@ public final class SearchHelper {
                         continue;
                     }
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress,
+                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
                             null)) {
                         query.append(overridingLicenseType.getFilterQueryPart(false));
                         usedLicenseTypes.add(overridingLicenseType.getName());

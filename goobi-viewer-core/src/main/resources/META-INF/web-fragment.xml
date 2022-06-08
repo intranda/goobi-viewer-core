@@ -49,6 +49,7 @@
         <param-value>true</param-value>
     </context-param>
 
+
     <filter>
         <filter-name>HttpResponseFilter</filter-name>
         <filter-class>io.goobi.viewer.filters.HttpResponseFilter</filter-class>
@@ -66,6 +67,18 @@
     </filter>
     <filter-mapping>
         <filter-name>LoginFilter</filter-name>
+        <url-pattern>*.xhtml</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    
+    
+    <filter>
+        <filter-name>ClientApplicationFilter</filter-name>
+        <filter-class>io.goobi.viewer.filters.ClientApplicationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ClientApplicationFilter</filter-name>
         <url-pattern>*.xhtml</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>

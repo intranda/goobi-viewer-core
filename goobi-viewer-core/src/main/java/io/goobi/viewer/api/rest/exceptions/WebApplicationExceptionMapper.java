@@ -88,13 +88,13 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             status = Status.INTERNAL_SERVER_ERROR;
         } else if (e instanceof RuntimeException) {
             status = Status.INTERNAL_SERVER_ERROR;
-            logger.error("Error on request {};\t ERROR MESSAGE: {} (method: {})", request.getRequestURL(), e.getMessage(), request.getMethod());
+            logger.error("Error on request {};\t ERROR MESSAGE: {} (method: {})", request.getRequestURI(), e.getMessage(), request.getMethod());
         } else if (e instanceof PresentationException) {
             status = Status.INTERNAL_SERVER_ERROR;
-            logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURL(), e.getMessage());
+            logger.error("Error on request {};\t ERROR MESSAGE: {}", request.getRequestURI(), e.getMessage());
         } else if (e instanceof IndexUnreachableException) {
             status = Status.INTERNAL_SERVER_ERROR;
-            logger.error("Error on request {};\t SOLR is not responding; ERROR MESSAGE: {}", request.getRequestURL(), e.getMessage());
+            logger.error("Error on request {};\t SOLR is not responding; ERROR MESSAGE: {}", request.getRequestURI(), e.getMessage());
         } else {
             //unknown error. Probably request error
             status = Status.BAD_REQUEST;

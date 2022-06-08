@@ -72,8 +72,9 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-        <class>io.goobi.viewer.model.translations.Translation</class>
 		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
+		<class>io.goobi.viewer.model.translations.Translation</class>
+		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -150,6 +151,44 @@
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
+        <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
+		<class>io.goobi.viewer.model.download.DownloadJob</class>
+		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
+		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
+		<class>io.goobi.viewer.model.search.Search</class>
+		<class>io.goobi.viewer.model.security.License</class>
+		<class>io.goobi.viewer.model.security.LicenseType</class>
+		<class>io.goobi.viewer.model.security.Role</class>
+		<class>io.goobi.viewer.model.security.user.IpRange</class>
+		<class>io.goobi.viewer.model.security.user.User</class>
+		<class>io.goobi.viewer.model.security.user.UserGroup</class>
+		<class>io.goobi.viewer.model.security.user.UserRole</class>
+		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+		<class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
+		<class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
+		<class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
+		<class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
+		<class>io.goobi.viewer.model.log.LogMessage</class>
+		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
+		<class>io.goobi.viewer.dao.converter.StringListConverter</class>
+		<class>io.goobi.viewer.dao.converter.NumberListConverter</class>
+		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
+		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
+		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
+		<class>io.goobi.viewer.model.cms.CMSSlider</class>
+		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
+		<class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
+		<class>io.goobi.viewer.model.translations.Translation</class>
+		<class>io.goobi.viewer.dao.converter.SimpleMediaHolderConverter</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
+		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
+		<class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
+		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
+		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
+		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
         <class>io.goobi.viewer.model.job.download.DownloadJob</class>
         <class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
         <class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
