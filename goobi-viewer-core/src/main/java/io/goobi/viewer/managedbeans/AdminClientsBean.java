@@ -188,7 +188,6 @@ public class AdminClientsBean implements Serializable {
                     //sorting
                     int sortDirectionFactor = SortOrder.DESCENDING.equals(sortOrder) ? -1 : 1; // desc - asc
                     if ("name".equals(sortField)) {
-                        System.out.println("TEST"); 
                         stream = stream.sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getName(), c2.getName()))
                                        .sorted((c1,c2) -> sortDirectionFactor * StringUtils.compare(c1.getClientIdentifier(), c2.getClientIdentifier()));
                     } else if("ip".equals(sortField)) {
