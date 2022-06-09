@@ -44,7 +44,8 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
     Set<String> recordAccessConditions = new HashSet<>();
     
     @Before
-    public void setup() throws DAOException {
+    public void setup() throws Exception {
+        super.setUp();
         lt = new LicenseType();
         lt.setName("license type 1 name");
  
