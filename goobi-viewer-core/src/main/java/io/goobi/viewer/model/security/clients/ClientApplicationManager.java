@@ -93,6 +93,13 @@ public class ClientApplicationManager {
     }
 
     /**
+     * @param allClients the allClients to set
+     */
+    public void setAllClients(ClientApplication allClients) {
+        this.allClients = allClients;
+    }
+    
+    /**
      * Store the given client in the given session to consider it for access condition checks. The client is only stored if it has
      * {@link AccessStatus#GRANTED} If the session doesn't contain the client yet, its {@link ClientApplication#getDateLastAccess()} is updated and
      * the client saved to database

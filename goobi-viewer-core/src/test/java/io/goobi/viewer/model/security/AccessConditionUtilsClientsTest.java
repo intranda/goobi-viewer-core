@@ -30,6 +30,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 
 /**
  * @author florian
@@ -57,9 +58,14 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
         recordAccessConditions.add(lt.getName());
         
-        DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
-        allClients = DataManager.getInstance().getClientManager().getAllClients();
+        allClients = new ClientApplication(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
         new ArrayList<>(allClients.getLicenses()).forEach(l -> allClients.removeLicense(l));
+        ClientApplicationManager manager = new ClientApplicationManager(DataManager.getInstance().getDao());
+        manager.setAllClients(allClients);
+        DataManager.getInstance().setClientManager(manager);
+        
+//        DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
+//        allClients = DataManager.getInstance().getClientManager().getAllClients();
     }
     
     

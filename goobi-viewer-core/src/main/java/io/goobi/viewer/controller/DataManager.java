@@ -561,4 +561,8 @@ public final class DataManager {
 
         return securityManager;
     }
+    
+    public void setClientManager(ClientApplicationManager manager) {
+        this.clientManager = manager;
+    }
 }
