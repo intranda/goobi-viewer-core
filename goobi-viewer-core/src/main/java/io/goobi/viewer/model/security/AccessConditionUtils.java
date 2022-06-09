@@ -262,7 +262,7 @@ public class AccessConditionUtils {
             for (String pageFileName : requiredAccessConditions.keySet()) {
                 Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
                 boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), query);
+                        privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
                 ret.put(pageFileName, access);
             }
             return ret;
@@ -298,7 +298,7 @@ public class AccessConditionUtils {
                 }
             }
             boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
-                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), query);
+                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
             return access;
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -402,7 +402,7 @@ public class AccessConditionUtils {
                 }
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), originalQuery);
+                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -480,7 +480,7 @@ public class AccessConditionUtils {
                         String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
                         if (logid != null) {
                             ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
-                                    NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), query));
+                                    NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query));
                         }
                     }
                     //                    long end = System.nanoTime();
@@ -604,7 +604,7 @@ public class AccessConditionUtils {
                 }
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), query);
+                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             return false;
@@ -635,7 +635,7 @@ public class AccessConditionUtils {
             }
         }
         return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
-                NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), query);
+                NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
     }
 
     /**

@@ -903,7 +903,7 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), ClientApplicationManager.getClientFromSession(request.getSession()), privilege);
+                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
