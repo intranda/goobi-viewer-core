@@ -965,7 +965,7 @@
 						<id>checkstyle-check</id>
 						<phase>verify</phase>
 						<configuration>
-							<checkstyle.skip>${skipCheckstyle}</checkstyle.skip>
+							<skip>${skipCheckstyle}</skip>
 							<encoding>UTF-8</encoding>
 							<failOnViolation>true</failOnViolation>
 							<failsOnError>false</failsOnError>
