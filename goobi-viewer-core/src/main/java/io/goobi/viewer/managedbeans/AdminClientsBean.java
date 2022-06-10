@@ -352,8 +352,8 @@ public class AdminClientsBean implements Serializable {
      * @return  true if the session contains a clientApplication with the accessStatus {@link AccessStatus#GRANTED} and if the request ip matches the client's subnet mask
      */
     public boolean isLoggedInClientAccepted() {
-        return ClientApplicationManager.getClientFromSession(BeanUtils.getSession())
-                .map(client -> AccessStatus.GRANTED.equals(client.getAccessStatus()) && client.matchIp(NetTools.getIpAddress(BeanUtils.getRequest())))
+        return ClientApplicationManager.getClientFromRequest(BeanUtils.getRequest())
+                .map(client -> client.mayLogIn(BeanUtils.getRequest()))
                 .orElse(false);
     }
 }

@@ -925,7 +925,7 @@ public class AccessConditionUtils {
                 }
 
                 //check clientApplication
-                if (client.isPresent() && client.get().matchIp(remoteAddress) && !client.get().isRegistrationPendingOrDenied()) {
+                if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                     //check if specific client matches access conditions
                     if (client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
                         accessMap.put(key, Boolean.TRUE);

@@ -158,7 +158,7 @@
 				                      <p class="col-12">#{msg.admin__dashboard_clients_text}:</p> 
 				                    </div>
 				                    <ui:repeat var="client" value="#{notConfiguredClients}">
-					                    <a href="#{request.contextPath}/admin/clients/#{client.id}/"
+					                    <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
 					                        class="row admin__license-unconfigured-entry">
 					                            <div class="col-8 -textlink">
 													#{client.clientIdentifier} (IP: #{client.clientIp})

@@ -65,6 +65,18 @@ public class ClientApplicationManager {
         this.dao = dao;
         this.allClients = dao.getClientApplicationByClientId(GENERAL_CLIENT_IDENTIFIER);
     }
+    
+    /**
+     * Internal use for mocking
+     */
+    public ClientApplicationManager() {
+        try {
+            this.dao = DataManager.getInstance().getDao();
+            this.allClients = dao.getClientApplicationByClientId(GENERAL_CLIENT_IDENTIFIER);
+        } catch (DAOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     /**
      * To be called on server startup. If the database contains no {@link ClientApplication} representing all clients, add it to the database
