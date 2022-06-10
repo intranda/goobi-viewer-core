@@ -1192,8 +1192,8 @@ public class SearchBean implements SearchInterface, Serializable {
             List<String> preparedTerms = new ArrayList<>(termsSplit.length);
             for (int i = 0; i < termsSplit.length; ++i) {
                 String term = termsSplit[i].trim();
-                String unescapedTerm = SearchHelper.cleanUpSearchTerm(term);
-                term = ClientUtils.escapeQueryChars(unescapedTerm);
+                term = SearchHelper.cleanUpSearchTerm(term);
+                String unescapedTerm = term;
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
                     if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
@@ -1203,7 +1203,10 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     logger.trace("term: {}", term);
                     if (!"\\|\\|".equals(term)) {
-                        preparedTerms.add(term);
+                        // Avoid duplicate terms
+                        if (!preparedTerms.contains(term)) {
+                            preparedTerms.add(term);
+                        }
                         for (String field : searchTerms.keySet()) {
                             searchTerms.get(field).add(unescapedTerm);
                         }
