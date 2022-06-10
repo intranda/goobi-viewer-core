@@ -35,17 +35,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
-import org.checkerframework.common.returnsreceiver.qual.This;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
-
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -530,4 +529,21 @@ public class ClientApplication  implements ILicensee {
         }
     }
     
+    /**
+     * Check if the client is allowed to log in
+     * @param request
+     * @return  true exactly if the access status is {@link AccessStatus#GRANTED} and the request's ip-address is within the client's IP range
+     */
+    public boolean mayLogIn(HttpServletRequest request) {
+       return mayLogIn(NetTools.getIpAddress(request));
+    }
+    
+    /**
+     * Check if the client is allowed to log in
+     * @param request
+     * @return  true exactly if the access status is {@link AccessStatus#GRANTED} and the given ip-address is within the client's IP range
+     */
+    public boolean mayLogIn(String ip) {
+       return AccessStatus.GRANTED.equals(getAccessStatus()) && matchIp(ip);
+    }
 }

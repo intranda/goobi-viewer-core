@@ -25,11 +25,13 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 
 /**
@@ -55,17 +57,19 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
         license.setPrivileges(Collections.singleton(IPrivilegeHolder.PRIV_LIST));
         
         client = new ClientApplication("12345");
+        client.setAccessStatus(AccessStatus.GRANTED);
 
         recordAccessConditions.add(lt.getName());
         
         allClients = new ClientApplication(ClientApplicationManager.GENERAL_CLIENT_IDENTIFIER);
         new ArrayList<>(allClients.getLicenses()).forEach(l -> allClients.removeLicense(l));
-        ClientApplicationManager manager = new ClientApplicationManager(DataManager.getInstance().getDao());
+        ClientApplicationManager manager = new ClientApplicationManager(DataManager.getInstance().getDao()) {
+            public ClientApplication getAllClientsFromDatabase() {
+                return allClients;
+            };
+        };
         manager.setAllClients(allClients);
         DataManager.getInstance().setClientManager(manager);
-        
-//        DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
-//        allClients = DataManager.getInstance().getClientManager().getAllClients();
     }
     
     
