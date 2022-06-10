@@ -31,7 +31,7 @@ pipeline {
     }
     stage('build release') {
       when {
-        branch tag "v*"
+        tag "v*"
       }
       steps {
               sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false -DfailOnSnapshot=true clean verify -U'
