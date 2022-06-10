@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<composite:interface />
+	<composite:implementation>
+	
+	<style>
+		.client_status_icon.-rejected {
+		  background: red;
+		}
+		.client_status_icon.-accepted {
+		  background: green;
+		}
+		.client_status_icon {
+		  width: 1.5rem;
+		  height: 1.5rem;
+		  background: grey;
+		  border-radius: 0.75rem;
+		  border: 1px solid #444;
+		}
+	
+	</style>
+	
+		<ui:fragment rendered="#{adminClientsBean.clientLoggedIn}">
+			<ui:fragment rendered="#{adminClientsBean.loggedInClientAccepted}">
+				<div class="client_status_icon -accepted" title="#{msg.info__client_application_accepted}"/>
+			</ui:fragment>
+			<ui:fragment rendered="#{!adminClientsBean.loggedInClientAccepted}">
+				<div class="client_status_icon -rejected" title="#{msg.info__client_application_rejected}"/>
+			</ui:fragment>
+		</ui:fragment>
+	</composite:implementation>
+</ui:composition>

@@ -32,15 +32,21 @@ var viewerJS = ( function( viewer ) {
         this.accessDenied = accessDeniedImage;
         this.thumbnailImageLoaded = new rxjs.Subject();
         
-        $('[data-viewer-thumbnail="thumbnail"]').each((index, element) => this.load(element));
+        viewer.jsfAjax.success.subscribe(() => this.loadAll());
+		this.loadAll();
     }
+    
+    viewer.loadThumbnails.prototype.loadAll = function() {
+   		$('[data-viewer-thumbnail="thumbnail"]').each((index, element) => this.load(element));
+    }
+    
     
     viewer.loadThumbnails.prototype.load = function(element) {
     	var source = element.src
         var dataSource = element.dataset.src; 
         if(dataSource && !source) { 
              this.loadImage(element, dataSource);            
-        }else if (source) {     
+        } else if (source) {     
                var onErrorCallback = () => {
                    this.loadImage(element, element.src)
                }

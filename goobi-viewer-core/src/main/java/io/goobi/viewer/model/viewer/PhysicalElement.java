@@ -1509,7 +1509,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
-        return isAccessPermissionObject();
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+        }
+        logger.trace("FacesContext not found");
+
+        return false;
     }
 
     /**

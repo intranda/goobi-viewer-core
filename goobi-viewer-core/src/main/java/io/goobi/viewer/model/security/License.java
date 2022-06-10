@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -78,6 +80,8 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(License.class);
+    
+    public static final Long ALL_CLIENTS_ID = -1l;
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -136,6 +140,10 @@ public class License implements IPrivilegeHolder, Serializable {
     @ManyToOne
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
+    
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private ClientApplication client;
 
     @Column(name = "date_start")
     private LocalDateTime start;
@@ -1006,5 +1014,33 @@ public class License implements IPrivilegeHolder, Serializable {
 
     public ConsentScope getDisclaimerScope() {
         return disclaimerScope;
+    }
+    
+    /**
+     * @return the client
+     */
+    public Long getClientId() {
+        return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
+    }
+    
+    public ClientApplication getClient() throws DAOException {
+        return this.client;
+    }
+    
+    /**
+     * @param client the client to set
+     */
+    public void setClient(ClientApplication client) {
+        this.client = client;
+    }
+    
+    /**
+     * @param client the client to set
+     * @throws DAOException 
+     */
+    public void setClientId(Long clientId) throws DAOException {
+        if(clientId != null) {            
+            this.client = DataManager.getInstance().getDao().getClientApplication(clientId);
+        }
     }
 }

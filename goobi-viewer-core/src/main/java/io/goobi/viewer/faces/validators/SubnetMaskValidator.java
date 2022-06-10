@@ -30,6 +30,7 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.net.util.SubnetUtils;
 
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -44,9 +45,7 @@ public class SubnetMaskValidator implements Validator<String> {
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-        try {
-            new SubnetUtils(value);
-        } catch (IllegalArgumentException e) {
+        if(!NetTools.isValidSubnetMask(value)) {
             FacesMessage msg = new FacesMessage(ViewerResourceBundle.getTranslation("admin__ip_range_err_invalid_subnet_mask", null), "");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);

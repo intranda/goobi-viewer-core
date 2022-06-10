@@ -142,6 +142,39 @@
                                     </div>
                                 </h:form>
                             </ui:fragment>
+                            
+                            <!-- CLIENTS -->
+
+							<c:set scope="view"
+								value="#{adminClientsBean.notConfiguredClients}"
+								var="notConfiguredClients"></c:set> 
+                            <ui:fragment rendered="#{not empty notConfiguredClients}">
+
+ 								<div class="admin__boxed-entry -no-actions -w33 -warning">
+				                    <div class="row">
+				                      <h2 class="col-12">
+				                          #{msg.admin__clients}
+				                      </h2>
+				                      <p class="col-12">#{msg.admin__dashboard_clients_text}:</p> 
+				                    </div>
+				                    <ui:repeat var="client" value="#{notConfiguredClients}">
+					                    <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
+					                        class="row admin__license-unconfigured-entry">
+					                            <div class="col-8 -textlink">
+													#{client.clientIdentifier} (IP: #{client.clientIp})
+					                            </div>
+					                            <div class="col-4 d-flex justify-content-end">
+					                            	<span>#{msg.admin__clients__configure_client}</span>
+					                            </div>
+					                            
+					                            
+					                            
+					                 	</a>
+				                 	</ui:repeat>
+                                
+                                </div>
+                                
+                            </ui:fragment>
 
                             <!-- COLLECTION DESCRIPTION IMPORT -->
                             <h:panelGroup layout="block" rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}" id="collectionImportWidget" styleClass="admin__boxed-entry -no-actions -w33 -danger" >

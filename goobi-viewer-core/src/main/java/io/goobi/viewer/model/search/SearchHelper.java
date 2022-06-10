@@ -84,6 +84,8 @@ import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
@@ -901,7 +903,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), privilege);
+                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
+                        ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -911,6 +914,7 @@ public final class SearchHelper {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
+     * @param client
      * @param privilege Privilege to check
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -923,7 +927,7 @@ public final class SearchHelper {
      * @should construct suffix correctly if moving wall license
      * @should construct suffix correctly for alternate privilege
      */
-    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, String privilege)
+    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, Optional<ClientApplication> client, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
         // No restrictions for admins
@@ -964,7 +968,7 @@ public final class SearchHelper {
             }
 
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, null)) {
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart(false));
@@ -976,7 +980,7 @@ public final class SearchHelper {
                         continue;
                     }
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress,
+                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
                             null)) {
                         query.append(overridingLicenseType.getFilterQueryPart(false));
                         usedLicenseTypes.add(overridingLicenseType.getName());
@@ -2652,7 +2656,7 @@ public final class SearchHelper {
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
-        if(StringUtils.isNotBlank(rawQuery)) {            
+        if (StringUtils.isNotBlank(rawQuery)) {
             sbQuery.append("+(").append(rawQuery).append(")");
         }
 
@@ -2873,6 +2877,7 @@ public final class SearchHelper {
      * @param s The term to clean up.
      * @return Cleaned up term.
      * @should remove illegal chars correctly
+     * @should remove trailing punctuation
      * @should preserve truncation
      * @should preserve negation
      */
@@ -2894,6 +2899,28 @@ public final class SearchHelper {
             // s = s.replace(".", "");
             s = s.replace("(", "");
             s = s.replace(")", "");
+
+            // Remove trailing punctuation
+            boolean done = false;
+            while (s.length() > 1) {
+                if (done) {
+                    break;
+                }
+                char last = s.charAt(s.length() - 1);
+                switch (last) {
+                    case '.':
+                    case ',':
+                    case ':':
+                    case ';':
+                        s = s.substring(0, s.length() - 1);
+                        break;
+                    default:
+                        done = true;
+                        break;
+                }
+
+            }
+
             if (addNegation) {
                 s = '-' + s;
             } else if (addLeftTruncation) {
@@ -3071,4 +3098,27 @@ public final class SearchHelper {
         return new String[] { prefix, cleanedTerm, suffix };
     }
 
+    /**
+     * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
+     * 
+     * @param facetQueries List of individual facet queries
+     * @return Expand query
+     * @should return empty string if list null or empty
+     * @should construct query correctly
+     */
+    public static String buildExpandQueryFromFacets(List<String> facetQueries) {
+        if (facetQueries == null || facetQueries.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String q : facetQueries) {
+            if (q != null && q.length() > 0) {
+                sb.append(" +").append(q);
+            }
+        }
+        sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+
+        return sb.toString().trim();
+    }
 }
