@@ -101,11 +101,12 @@
 	                                    <!-- DELETE -->
 	                                    <button
 	                                        class="admin__table-action-link -redlink"
-	                                        jsf:onclick="if ( !confirm( &quot;#{msg.admin__clients__delete_client__confirm}&quot; ) ) { return false };"
-	                                        jsf:action="#{adminClientsBean.delete(client)}">
+	                                        data-delete="client-#{client.id}"
+	                                        type="button">
 	                                        <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{client.clientIdentifier}" />
-	                                        #{msg.delete}
+	                                    	#{msg.delete}
 	                                    </button>
+	                                    
 									</div>
                                 </div>
                             </div>
@@ -137,15 +138,28 @@
                             </div>
 
                         </div>
+                        
+						<h:commandScript name="deleteClient" action="#{adminClientsBean.delete(client)}" render="@form"
+							onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
+
+						<!-- SWEET ALERT NOTIFICATION ON DELETE REQUEST -->
+			            <script type="text/javascript">
+							$('[data-delete="client-#{client.id}"]').on('click', function() {
+								viewerJS.notifications.confirm('', '' ,'', '#{msg.admin__clients__delete_client__confirm}<br/>"#{client.name}" ')
+									.then((result) => deleteClient())
+									.catch(() => {});
+							});
+			            </script>
+                        
                     </ui:repeat>
-		            <script type="text/javascript">
+                    
+			            <script type="text/javascript">
+			                // Create no entries found message
+			    			if($('.admin__table-entry').length == 0) {
+			    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			    			}
+				        </script>
 
-		                // Create no entries found message
-		    			if($('.admin__table-entry').length == 0) {
-		    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
-		    			}
-
-		            </script>
                 </div>
                     </h:form>
            </ui:fragment>
