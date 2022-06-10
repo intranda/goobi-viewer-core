@@ -925,13 +925,13 @@ public class AccessConditionUtils {
                 }
 
                 //check clientApplication
-                if (client.isPresent() && client.get().matchIp(remoteAddress)) {
+                if (client.isPresent() && client.get().matchIp(remoteAddress) && !client.get().isRegistrationPendingOrDenied()) {
                     //check if specific client matches access conditions
                     if (client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
                         accessMap.put(key, Boolean.TRUE);
                     } else {
                         //check if accesscondition match for all clients
-                        ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClients();
+                        ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
                         if (allClients != null && allClients.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
                             accessMap.put(key, Boolean.TRUE);
                         }

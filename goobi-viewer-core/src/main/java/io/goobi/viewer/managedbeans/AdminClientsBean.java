@@ -29,11 +29,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
 import io.goobi.viewer.messages.Messages;
@@ -335,5 +339,21 @@ public class AdminClientsBean implements Serializable {
         return DataManager.getInstance().getClientManager().getAllClients();
     }
 
-
+    /**
+     * Check if the current session is with a client application, i.e. if client requests contain the client-application-id header
+     * @return  true if session belongs to a client application
+     */
+    public boolean isClientLoggedIn() {
+        return !ClientApplicationManager.getClientFromSession(BeanUtils.getSession()).isEmpty();
+    }
+    
+    /**
+     * Check if a client application is logged in that is applicable for access privileges
+     * @return  true if the session contains a clientApplication with the accessStatus {@link AccessStatus#GRANTED} and if the request ip matches the client's subnet mask
+     */
+    public boolean isLoggedInClientAccepted() {
+        return ClientApplicationManager.getClientFromSession(BeanUtils.getSession())
+                .map(client -> AccessStatus.GRANTED.equals(client.getAccessStatus()) && client.matchIp(NetTools.getIpAddress(BeanUtils.getRequest())))
+                .orElse(false);
+    }
 }

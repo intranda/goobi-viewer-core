@@ -100,16 +100,14 @@ public class ClientApplicationManager {
     }
     
     /**
-     * Store the given client in the given session to consider it for access condition checks. The client is only stored if it has
-     * {@link AccessStatus#GRANTED} If the session doesn't contain the client yet, its {@link ClientApplication#getDateLastAccess()} is updated and
+     * Store the given client in the given session to consider it for access condition checks. If the session doesn't contain the client yet, its {@link ClientApplication#getDateLastAccess()} is updated and
      * the client saved to database
      * 
      * @param client the client to register
      * @param session the session to store the client
-     * @return true if registration was successfull
+     * @return true if the client is granted access rights, else false
      */
     public boolean registerClientInSession(ClientApplication client, HttpSession session) {
-        if (AccessStatus.GRANTED.equals(client.getAccessStatus())) {
             if (getClientFromSession(session).isEmpty()) {
                 try {
                     client.setDateLastAccess(LocalDateTime.now());
@@ -119,10 +117,7 @@ public class ClientApplicationManager {
                 }
             }
             session.setAttribute(CLIENT_SESSION_ATTRIBUTE, client);
-            return true;
-        } else {
-            return false;
-        }
+            return !client.isRegistrationPendingOrDenied();
     }
 
     /**
@@ -208,5 +203,18 @@ public class ClientApplicationManager {
      */
     public boolean isNotAllClients(ClientApplication client) {
         return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> id != getAllClients().getId()).orElse(true);
+    }
+
+    /**
+     * Load the "all clients" ClientApplication directly from the database, so it comes with all licenses
+     * @return the client
+     */
+    public ClientApplication getAllClientsFromDatabase() {
+        try {
+            return dao.getClientApplicationByClientId(GENERAL_CLIENT_IDENTIFIER);
+        } catch (DAOException e) {
+            logger.error("Error retrieveing 'all_clients' from database", e);
+            return this.allClients;
+        }
     }
 }
