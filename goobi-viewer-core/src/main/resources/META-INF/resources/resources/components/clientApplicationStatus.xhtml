@@ -6,30 +6,20 @@
 
 	<composite:interface />
 	<composite:implementation>
-	
-	<style>
-		.client_status_icon.-rejected {
-		  background: red;
-		}
-		.client_status_icon.-accepted {
-		  background: green;
-		}
-		.client_status_icon {
-		  width: 1.5rem;
-		  height: 1.5rem;
-		  background: grey;
-		  border-radius: 0.75rem;
-		  border: 1px solid #444;
-		}
-	
-	</style>
-	
 		<ui:fragment rendered="#{adminClientsBean.clientLoggedIn}">
+			<!-- CLIENT IS REGISTERED/CONNECTED -->
 			<ui:fragment rendered="#{adminClientsBean.loggedInClientAccepted}">
-				<div class="client_status_icon -accepted" title="#{msg.info__client_application_accepted}"/>
+					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_accepted}">
+						<i class="client-status__icon-status -accepted" aria-hidden="true"></i>
+						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
+					</div>
 			</ui:fragment>
+			<!-- CLIENT IS NOT REGISTERED/CONNECTED -->
 			<ui:fragment rendered="#{!adminClientsBean.loggedInClientAccepted}">
-				<div class="client_status_icon -rejected" title="#{msg.info__client_application_rejected}"/>
+					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_rejected}">
+						<i class="client-status__icon-status -rejected" aria-hidden="true"></i>
+						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
+					</div>
 			</ui:fragment>
 		</ui:fragment>
 	</composite:implementation>
