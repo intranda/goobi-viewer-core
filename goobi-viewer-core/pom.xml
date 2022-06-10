@@ -80,6 +80,7 @@
 
 		<!-- Checkstyle -->
 		<checkstyle.max.violations>4100</checkstyle.max.violations>
+		<skipCheckstyle>true</skipCheckstyle>
 
 
 		<!-- Manifest information -->
@@ -964,6 +965,7 @@
 						<id>checkstyle-check</id>
 						<phase>verify</phase>
 						<configuration>
+							<checkstyle.skip>${skipCheckstyle}</checkstyle.skip>
 							<encoding>UTF-8</encoding>
 							<failOnViolation>true</failOnViolation>
 							<failsOnError>false</failsOnError>
