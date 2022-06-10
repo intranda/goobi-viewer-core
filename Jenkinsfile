@@ -19,9 +19,22 @@ pipeline {
         sh 'git clean -fdx'
       }
     }
-    stage('build') {
+    stage('build develop') {
+      when {
+        not {
+          anyOf { branch 'master'; tag "v*" }
+        }
+      }
       steps {
               sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false clean verify -U'
+      }
+    }
+    stage('build release') {
+      when {
+        tag "v*"
+      }
+      steps {
+              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false -DfailOnSnapshot=true clean verify -U'
       }
     }
     stage('sonarcloud') {
