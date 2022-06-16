@@ -4905,7 +4905,10 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getIIIFDescriptionFields() {
         return getLocalList("webapi.iiif.descriptionFields.field", new ArrayList<>());
-
+    }
+    
+    public List<String> getIIIFLabelFields() {
+        return getLocalList("webapi.iiif.labelFields.field", new ArrayList<>());
     }
 
     public List<Locale> getIIIFTranslationLocales() {
@@ -5011,6 +5014,22 @@ public class Configuration extends AbstractConfiguration {
 
     public String getLabelIIIFRenderingAlto() {
         return getLocalString("webapi.iiif.rendering.alto.label", null);
+    }
+    
+    public boolean isVisibleIIIFSeeAlsoMets() {
+        return getLocalBoolean("webapi.iiif.seeAlso.mets[@enabled]", true);
+    }
+    
+    public String getLabelIIIFSeeAlsoMets() {
+        return getLocalString("webapi.iiif.seeAlso.mets.label", "METS/MODS");
+    }
+    
+    public boolean isVisibleIIIFSeeAlsoLido() {
+        return getLocalBoolean("webapi.iiif.seeAlso.lido[@enabled]", true);
+    }
+    
+    public String getLabelIIIFSeeAlsoLido() {
+        return getLocalString("webapi.iiif.seeAlso.lido.label", "LIDO");
     }
 
     /**
