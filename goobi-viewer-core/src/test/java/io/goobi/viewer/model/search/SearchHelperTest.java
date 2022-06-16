@@ -1356,6 +1356,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void cleanUpSearchTerm_shouldRemoveIllegalCharsCorrectly() throws Exception {
         Assert.assertEquals("a", SearchHelper.cleanUpSearchTerm("(a)"));
     }
+    
+
+    /**
+     * @see SearchHelper#cleanUpSearchTerm(String)
+     * @verifies remove trailing punctuation
+     */
+    @Test
+    public void cleanUpSearchTerm_shouldRemoveTrailingPunctuation() throws Exception {
+        Assert.assertEquals("a", SearchHelper.cleanUpSearchTerm("a,:;"));
+    }
 
     /**
      * @see SearchHelper#cleanUpSearchTerm(String)

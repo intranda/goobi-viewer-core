@@ -140,26 +140,25 @@
                             <!-- SELECT TEXT -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages}">
 	                            <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
-	                                <li class="image-controls__action select-text">
-	                                    <span>#{msg.pageSelectDropdown}</span>
-	                                </li>
+	                                    <span class="image-controls__select-text">#{msg.pageSelectDropdown}</span>
 	                            </ui:fragment>
 	                            <!-- SELECT -->
 	                            <li class="image-controls__action select">
 	                                <div class="custom-control custom-control--select">
-	                                        <!-- Image view select -->
-	                                        <h:selectOneMenu id="pageDropdown" rendered="#{navigationHelper.currentPage != 'fulltext'}"
-	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
-                                                <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
-	                                        </h:selectOneMenu>
-	                                        <!-- Full-text view select -->
-	                                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
-	                                            onchange="location.href='#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}' + $(this).val(); + '/';"
-	                                            value="#{activeDocumentBean.viewManager.dropdownSelected}">
-                                                <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
-	                                        </h:selectOneMenu>
+	                                    <!-- Image view select -->
+	                                    <h:selectOneMenu id="pageDropdown" rendered="#{navigationHelper.currentPage != 'fulltext'}"
+	                                        value="#{activeDocumentBean.viewManager.dropdownSelected}">
+                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                                            <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
+	                                    </h:selectOneMenu>
+	                                    <!-- Full-text view select -->
+	                                    <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
+	                                        onchange="location.href='#{activeDocumentBean.getPageUrlByType(navigationHelper.currentView)}' + $(this).val(); + '/';"
+	                                        value="#{activeDocumentBean.viewManager.dropdownSelected}">
+	                                        <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
+                                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
+                                            <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__select_page}"/>
+	                                    </h:selectOneMenu>
 	                                </div>
 	                            </li>
                             </ui:fragment>

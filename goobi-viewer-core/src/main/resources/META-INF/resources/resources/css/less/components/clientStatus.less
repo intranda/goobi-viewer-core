@@ -1,0 +1,52 @@
+/* ==============================================================
+	CLIENT STATUS styles
+   ==============================================================*/
+/* CLIENT APPLICATION STATUS */
+
+.client-status {
+	&__icon-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+	&__icon-client {
+		font-size: 16px;
+	}
+	&__icon-status {
+		position: absolute;
+		right: -8px;
+		top: -6px;
+		z-index: 1111;
+		border-radius: 20px;
+		padding: 3px;
+		display: inline-block;
+		font: normal normal normal 9px/1 FontAwesome;
+		text-rendering: auto;
+		color: white;
+		line-height: 7px;
+		&.-accepted {
+			background-color: @greenBar;
+			&::before {
+				content: "\f1e6";
+			}
+		}
+		&.-rejected {
+			background-color: @redBar;
+			&::before {
+				content: "\f00d";
+			}
+		}
+	}
+}
+		
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

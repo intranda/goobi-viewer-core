@@ -903,7 +903,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), privilege);
+                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
+                        ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -913,7 +914,7 @@ public final class SearchHelper {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
-     * @param client 
+     * @param client
      * @param privilege Privilege to check
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -2876,6 +2877,7 @@ public final class SearchHelper {
      * @param s The term to clean up.
      * @return Cleaned up term.
      * @should remove illegal chars correctly
+     * @should remove trailing punctuation
      * @should preserve truncation
      * @should preserve negation
      */
@@ -2897,6 +2899,28 @@ public final class SearchHelper {
             // s = s.replace(".", "");
             s = s.replace("(", "");
             s = s.replace(")", "");
+
+            // Remove trailing punctuation
+            boolean done = false;
+            while (s.length() > 1) {
+                if (done) {
+                    break;
+                }
+                char last = s.charAt(s.length() - 1);
+                switch (last) {
+                    case '.':
+                    case ',':
+                    case ':':
+                    case ';':
+                        s = s.substring(0, s.length() - 1);
+                        break;
+                    default:
+                        done = true;
+                        break;
+                }
+
+            }
+
             if (addNegation) {
                 s = '-' + s;
             } else if (addLeftTruncation) {

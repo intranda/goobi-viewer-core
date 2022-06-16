@@ -308,6 +308,7 @@ var viewerJS = ( function( viewer ) {
         			imagePath : this.geoMap.config.iconPath + "/"
         		});
         		icon.options.iconUrl = this.config.markerIcon.highlightIcon;
+				icon.options.iconRetinaUrl = this.config.markerIcon.highlightIcon;
         		//console.log("use hightlight icon ", icon);
         		return icon; 
         		} else {
