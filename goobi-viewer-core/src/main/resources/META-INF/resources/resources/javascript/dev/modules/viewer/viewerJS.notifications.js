@@ -185,7 +185,49 @@ var viewerJS = ( function( viewer ) {
 	});
 	$(document).ready(() => showJsfMessagesAsSweetAlert());
 
-
+	//confirmation dialogs for jsf control elements
+	function initJsfConfirmationDialogs() {
+		let dialogs = $('[data-require-confirmation="true"]');
+				
+		console.log("dialogs", dialogs);
+		$('[data-require-confirmation="true"]')
+		.each((index,element) => {
+						
+			//store the original (jsf) event in the element. If initJsfConfirmationDialogs gets retriggered due to ajax without the element 
+			//being changed, the original jsf-call is kept as the original event
+			element.originalEvent = element.originalEvent ? element.originalEvent : element.onclick;
+			element.onclick = e => {
+				//data-confirmation-text attribute
+				let confirmationText = e.target.dataset.confirmationText
+				if(e.confirmed) {
+				 	//if this event has been dispatched from the code below, the action has been confirmed and may be carried out
+					if(element.originalEvent) {
+						//if an original  (jsf) event exists, carry it out
+						element.originalEvent(e);
+					} else {
+						//otherwise the element must be of type submit, so request a form submit from the element
+						let form = $(element).closest("form").get(0);
+						form.requestSubmit(element);
+					}			
+					return true;
+				} else {
+					//show confirmation dialog. If it is confirmed, fire a new click event with the 'confirmed' property
+					viewer.notifications.confirm(confirmationText)
+					.then(() => {
+						let event = new Event("click");
+						event.confirmed = true;
+						element.dispatchEvent(event);
+					})
+					.catch(() => {});
+					return false;
+				}
+			}
+		});
+	}
+	viewer.jsfAjax.success.subscribe(e => {
+		initJsfConfirmationDialogs(); 
+	});
+	$(document).ready(() => initJsfConfirmationDialogs());
     
     return viewer;
     
