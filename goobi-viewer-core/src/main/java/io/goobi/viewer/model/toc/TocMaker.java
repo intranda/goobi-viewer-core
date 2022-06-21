@@ -835,9 +835,11 @@ public class TocMaker {
                     } else if (param.getAltKey() != null && doc.getFirstValue(param.getAltKey()) != null) {
                         // Translate alternative index field value, if available
                         value = ViewerResourceBundle.getTranslations(String.valueOf(doc.getFirstValue(param.getAltKey())));
-                    } else {
+                    } else if(StringUtils.isNotBlank(param.getDefaultValue())){
                         // Translate key, if no index field found
-                        value = ViewerResourceBundle.getTranslations(param.getKey().toString());
+                        value = ViewerResourceBundle.getTranslations(param.getDefaultValue());
+                    } else {
+                        value = new SimpleMetadataValue();
                     }
                     break;
                 case FIELD:

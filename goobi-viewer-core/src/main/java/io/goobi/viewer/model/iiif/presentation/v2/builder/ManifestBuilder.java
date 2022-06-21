@@ -52,6 +52,7 @@ import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -144,7 +145,8 @@ public class ManifestBuilder extends AbstractBuilder {
     public void populate(StructElement ele, final AbstractPresentationModelElement2 manifest)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
         this.getAttributions().forEach(attr -> manifest.addAttribution(attr));
-        manifest.setLabel(new SimpleMetadataValue(ele.getLabel()));
+        IMetadataValue label = getLabel(ele).orElse(new SimpleMetadataValue(ele.getLabel()));
+        manifest.setLabel(label);
         getDescription(ele).ifPresent(desc -> manifest.setDescription(desc));
 
         addMetadata(manifest, ele);
@@ -248,23 +250,25 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     public void addSeeAlsos(AbstractPresentationModelElement2 manifest, StructElement ele) {
-
-        if (ele.isLidoRecord()) {
+        
+        if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
             /*LIDO*/
             try {
                 LinkingContent resolver = new LinkingContent(new URI(getLidoResolverUrl(ele)));
                 resolver.setFormat(Format.TEXT_XML);
-                resolver.setLabel(new SimpleMetadataValue("LIDO"));
+                IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
+                resolver.setLabel(label);
                 manifest.addSeeAlso(resolver);
             } catch (URISyntaxException e) {
                 logger.error("Unable to retrieve lido resolver url for {}", ele);
             }
-        } else {
+        } else if(DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoMets()) {
             /*METS/MODS*/
             try {
                 LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
                 metsResolver.setFormat(Format.TEXT_XML);
-                metsResolver.setLabel(new SimpleMetadataValue("METS/MODS"));
+                IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoMets());
+                metsResolver.setLabel(label);
                 manifest.addSeeAlso(metsResolver);
             } catch (URISyntaxException e) {
                 logger.error("Unable to retrieve mets resolver url for {}", ele);
@@ -318,6 +322,13 @@ public class ManifestBuilder extends AbstractBuilder {
             case PDF:
                 String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, ele.getLabel());
                 uri = URI.create(pdfDownloadUrl);
+                break;
+            case METS:
+                uri = new URI(getMetsResolverUrl(ele));
+                break;
+            case LIDO:
+                uri = new URI(getLidoResolverUrl(ele));
+                break;
         }
         return uri;
     }

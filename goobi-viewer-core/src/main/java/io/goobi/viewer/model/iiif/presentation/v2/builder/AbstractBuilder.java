@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -519,18 +520,19 @@ public abstract class AbstractBuilder {
      * @return a {@link java.util.List} object.
      */
     public List<String> getSolrFieldList() {
-        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+        Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
         for (String string : REQUIRED_SOLR_FIELDS) {
-            if (!fields.contains(string)) {
                 fields.add(string);
-            }
         }
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-        if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
+        if (StringUtils.isNotBlank(navDateField)) {
             fields.add(navDateField);
         }
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
-        return fields;
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFLabelFields());
+
+        return new ArrayList<>(fields);
     }
 
     /**
@@ -560,6 +562,28 @@ public abstract class AbstractBuilder {
      */
     protected Optional<IMetadataValue> getDescription(StructElement ele) {
         List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
+        for (String field : fields) {
+            Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
+                md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                return md;
+            });
+            if (optional.isPresent()) {
+                return optional;
+            }
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * <p>
+     * getDescription.
+     * </p>
+     *
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link java.util.Optional} object.
+     */
+    protected Optional<IMetadataValue> getLabel(StructElement ele) {
+        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFLabelFields();
         for (String field : fields) {
             Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
                 md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -297,19 +298,21 @@ public class DataRetriever {
      * @return a {@link java.util.List} object.
      */
     public List<String> getSolrFieldList() {
-        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+        Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
         for (String string : REQUIRED_SOLR_FIELDS) {
-            if (!fields.contains(string)) {
                 fields.add(string);
-            }
         }
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-        if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
+        if (StringUtils.isNotBlank(navDateField)) {
             fields.add(navDateField);
         }
-        return fields;
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
+        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFLabelFields());
+        
+        return new ArrayList<>(fields);
     }
-
+    
     /**
      * @param displayFields
      * @param allLocales

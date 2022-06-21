@@ -230,7 +230,9 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     private AbstractPresentationModelElement3 populateData(StructElement ele, final AbstractPresentationModelElement3 manifest)
             throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
-        manifest.setLabel(ele.getMultiLanguageDisplayLabel());
+        
+        IMetadataValue label = getLabel(ele).orElse(ele.getMultiLanguageDisplayLabel());
+        manifest.setLabel(label);
         getDescription(ele).ifPresent(desc -> manifest.setDescription(desc));
 
         manifest.addThumbnail(getThumbnail(ele));
@@ -259,11 +261,13 @@ public class ManifestBuilder extends AbstractBuilder {
     private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele) {
 
         // metadata document
-        if (ele.isLidoRecord()) {
-            LabeledResource resolver = new LabeledResource(getLidoResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.lido-schema.org", null);
+        if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
+            LabeledResource resolver = new LabeledResource(getLidoResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.lido-schema.org", label);
             manifest.addSeeAlso(resolver);
-        } else {
-            LabeledResource resolver = new LabeledResource(getMetsResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.loc.gov/METS/", null);
+        } else if(DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoMets()) {
+            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoMets());
+            LabeledResource resolver = new LabeledResource(getMetsResolverUrl(ele), "Dataset", Format.TEXT_XML.getLabel(), "http://www.loc.gov/METS/", label);
             manifest.addSeeAlso(resolver);
         }
 
