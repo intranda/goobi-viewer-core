@@ -210,6 +210,8 @@ public class SolrConstants {
     public static final String LOGID = "LOGID";
     /** Constant <code>METADATATYPE="METADATATYPE"</code> */
     public static final String METADATATYPE = "METADATATYPE";
+    /** Constant <code>MONTHDAY="MONTHDAY"</code> */
+    public static final String MONTHDAY = "MONTHDAY";
     /** Constant <code>NORMDATATERMS="NORMDATATERMS"</code> */
     public static final String NORMDATATERMS = "NORMDATATERMS";
     /** Constant <code>MIMETYPE="MIMETYPE"</code> */
@@ -339,6 +341,5 @@ public class SolrConstants {
 
     public static final String SORT_RANDOM = "RANDOM";
     public static final String SORT_RELEVANCE = "RELEVANCE";
-
 
 }

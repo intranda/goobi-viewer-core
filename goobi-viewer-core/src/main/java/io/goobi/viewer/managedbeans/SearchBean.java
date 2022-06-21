@@ -370,12 +370,31 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Search using currently set search string
      *
-     * @return a {@link java.lang.String} object.
+     * @return Target outcome
      */
     public String searchDirect() {
         logger.trace("searchDirect");
         resetSearchResults();
         //facets.resetCurrentFacetString();
+        return "pretty:newSearch5";
+    }
+
+    /**
+     * Executes a search for any content tagged with today's month and day.
+     * 
+     * @return Target outcome
+     */
+    public String searchToday() {
+        logger.trace("searchToday");
+        resetSearchResults();
+        resetSearchParameters();
+        facets.resetSliderRange();
+        facets.resetCurrentFacetString();
+        generateSimpleSearchString(searchString);
+
+        String query = SolrConstants.MONTHDAY + ":" + DateTools.formatterMonthDayOnly.format(LocalDateTime.now());
+        setExactSearchString(query);
+
         return "pretty:newSearch5";
     }
 
