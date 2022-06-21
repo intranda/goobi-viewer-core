@@ -2443,9 +2443,11 @@ public final class SearchHelper {
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
      * @param queryGroups a {@link java.util.List} object.
+     * @param additionalFields Optinal additional fields to return
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, List<SearchQueryGroup> queryGroups) {
+    public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, List<SearchQueryGroup> queryGroups,
+            List<String> additionalFields) {
         List<String> ret = new ArrayList<>();
         // logger.trace("searchType: {}", searchType);
         switch (searchType) {
@@ -2510,6 +2512,10 @@ public final class SearchHelper {
                     ret.add(searchFilter.getField());
                 }
                 break;
+        }
+
+        if (additionalFields != null) {
+            ret.addAll(additionalFields);
         }
 
         return ret;

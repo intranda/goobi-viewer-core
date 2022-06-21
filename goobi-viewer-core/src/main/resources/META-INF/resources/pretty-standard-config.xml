@@ -187,7 +187,16 @@
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
-
+    <url-mapping id="searchtoday">
+        <pattern value="/searchtoday/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.searchToday}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(0}</action>
+    </url-mapping>
 
 	<url-mapping id="searchcalendar">
 		<pattern value="/searchcalendar/" />
@@ -196,7 +205,8 @@
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
-		<action onPostback="false">#{calendarBean.resetAllActiveYears()}</action>
+		<action onPostback="false">#{calendarBean.resetAllActiveYears}</action>
+        <action onPostback="false">#{calendarBean.resetCurrentSelection}</action>
 	</url-mapping>
     <url-mapping id="searchcalendar1">
         <pattern value="/searchcalendar/#{selectYear:calendarBean.selectYear}/" />
@@ -205,7 +215,7 @@
         <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
         <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
-        <action onPostback="false">#{calendarBean.resetAllActiveYears()}</action>
+        <action onPostback="false">#{calendarBean.resetAllActiveYears}</action>
     </url-mapping>
 	<url-mapping id="searchgeomap">
 		<pattern value="/searchgeomap/" />
@@ -267,6 +277,7 @@
     <url-mapping id="newSearch1">
         <pattern value="/search/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.search}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
         <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>

@@ -21,7 +21,9 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,7 +37,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.view.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -690,7 +693,7 @@ public class CalendarBean implements Serializable {
             logger.debug("IndexUnreachableException thrown here");
         }
     }
-    
+
     public void resetAllActiveYears() {
         this.allActiveYears = null;
     }
@@ -773,8 +776,9 @@ public class CalendarBean implements Serializable {
      * @param selectYear the selectYear to set
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws IOException
      */
-    public void setSelectYear(String selectYear) throws PresentationException, IndexUnreachableException {
+    public void setSelectYear(String selectYear) throws PresentationException, IndexUnreachableException, IOException {
         logger.trace("setSelectYear: {}", selectYear);
         if (this.selectYear == null || !this.selectYear.equals(selectYear)) {
             this.selectYear = selectYear;
@@ -785,8 +789,24 @@ public class CalendarBean implements Serializable {
             for (CalendarItemYear year : getAllActiveYears()) {
                 if (year.getName().equals(selectYear)) {
                     setCurrentYear(year);
+                    selectYearListener();
                 }
             }
+        }
+    }
+
+    /**
+     * Forwards to the URL containing the selected year.
+     */
+    public void selectYearListener() {
+        // logger.trace("selectYearListener");
+        try {
+            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:searchcalendar1", getSelectYear());
+            FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .redirect(url);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
     }
 
@@ -878,8 +898,9 @@ public class CalendarBean implements Serializable {
                 continue;
             }
             int monthNumber = Integer.parseInt(monthCount.getName().substring(4));
-            if (monthCount.getCount() > 0)
-                logger.trace(monthCount.getName() + ": " + monthCount.getCount());
+            //            if (monthCount.getCount() > 0) {
+            //                logger.trace("{}: {}", monthCount.getName(), monthCount.getCount());
+            //            }
             switch (monthNumber) {
                 case 1:
                     jan.setHits((int) monthCount.getCount());
@@ -889,7 +910,7 @@ public class CalendarBean implements Serializable {
                     break;
                 case 3:
                     mar.setHits((int) monthCount.getCount());
-                    break;
+                    //                    break;
                 case 4:
                     apr.setHits((int) monthCount.getCount());
                     break;
