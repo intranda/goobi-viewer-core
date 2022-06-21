@@ -2516,4 +2516,16 @@ public class ActiveDocumentBean implements Serializable {
 
         return viewManager.isAllowUserComments();
     }
+    
+    /**
+     * Check if the current page should initialize a WebSocket
+     * @return true if a document is loaded and it contains the field {@link SolrConstants.ACCESSCONDITION_CONCURRENTUSE}
+     */
+    public boolean isRequiresWebSocket() {
+        if(viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
+            return viewManager.getTopStructElement().getMetadataFields().containsKey(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
+        } else {
+            return false;
+        }
+    }
 }
