@@ -1102,12 +1102,12 @@ public class ViewManager implements Serializable {
     public boolean isFilesOnly() throws IndexUnreachableException, DAOException {
         // TODO check all files for mime type?
         if (filesOnly == null) {
-            if (MimeType.APPLICATION.getName().equals(mainMimeType)) {
+            if (BaseMimeType.APPLICATION.getName().equals(mainMimeType)) {
                 filesOnly = true;
             } else {
                 boolean childIsFilesOnly = isChildFilesOnly();
                 PhysicalElement firstPage = pageLoader.getPage(pageLoader.getFirstPageOrder());
-                filesOnly = childIsFilesOnly || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(MimeType.APPLICATION.getName()));
+                filesOnly = childIsFilesOnly || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(BaseMimeType.APPLICATION.getName()));
             }
 
         }
@@ -1136,7 +1136,7 @@ public class ViewManager implements Serializable {
         if (currentStructElement != null && (currentStructElement.isAnchor() || currentStructElement.isGroup())) {
             try {
                 String mimeType = currentStructElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
-                if (MimeType.APPLICATION.getName().equals(mimeType)) {
+                if (BaseMimeType.APPLICATION.getName().equals(mimeType)) {
                     childIsFilesOnly = true;
                 }
             } catch (PresentationException e) {
@@ -2143,7 +2143,7 @@ public class ViewManager implements Serializable {
             if (topStructElement == null || !topStructElement.isWork() || !isHasPages()) {
                 return false;
             }
-            if (!MimeType.isImageOrPdfDownloadAllowed(topStructElement.getMetadataValue(SolrConstants.MIMETYPE))) {
+            if (!BaseMimeType.isImageOrPdfDownloadAllowed(topStructElement.getMetadataValue(SolrConstants.MIMETYPE))) {
                 return false;
             }
         } catch (IndexUnreachableException e) {

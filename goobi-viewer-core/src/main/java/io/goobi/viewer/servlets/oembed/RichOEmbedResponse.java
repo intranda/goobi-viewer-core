@@ -22,7 +22,7 @@
 package io.goobi.viewer.servlets.oembed;
 
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.viewer.MimeType;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 
 /**
  * <p>
@@ -93,7 +93,7 @@ public class RichOEmbedResponse extends OEmbedResponse {
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append("<div>");
-            MimeType mimeType = MimeType.getByName(record.getPhysicalElement().getMimeType());
+            BaseMimeType mimeType = BaseMimeType.getByName(record.getPhysicalElement().getMimeType());
             if (mimeType != null) {
                 switch (mimeType) {
                     case IMAGE:

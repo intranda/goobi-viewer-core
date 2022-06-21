@@ -36,7 +36,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.viewer.MimeType;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -67,7 +67,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assert.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
-        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, true, MimeType.IMAGE.getName(), 1, -1);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, true, BaseMimeType.IMAGE.getName(), 1, -1);
         Assert.assertNotNull(tocElements);
         Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
         Assert.assertEquals(111, tocElements.get(TOC.DEFAULT_GROUP).size()); // 1 anchor + 104 elements of volume 306653648_1891 + 6 sibling volume top elements
@@ -96,7 +96,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assert.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
-        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, false, MimeType.IMAGE.getName(), 1, -1);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, false, BaseMimeType.IMAGE.getName(), 1, -1);
         Assert.assertNotNull(tocElements);
         Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
         Assert.assertEquals(105, tocElements.get(TOC.DEFAULT_GROUP).size()); // 1 anchor + 104 elements of volume ZDB026544598_0001
@@ -119,7 +119,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertTrue(iddoc > 0);
         StructElement structElement = new StructElement(iddoc);
         TOC toc = new TOC();
-        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 1, -1);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, BaseMimeType.IMAGE.getName(), 1, -1);
         Assert.assertNotNull(tocElements);
         Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
         Assert.assertEquals(8, tocElements.get(TOC.DEFAULT_GROUP).size());
@@ -142,7 +142,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         TOC toc = new TOC();
         {
             // Page 1
-            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 1, 3);
+            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, BaseMimeType.IMAGE.getName(), 1, 3);
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
             Assert.assertEquals(4, tocElements.get(TOC.DEFAULT_GROUP).size());
@@ -154,7 +154,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             // Page 2
-            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 2, 3);
+            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, BaseMimeType.IMAGE.getName(), 2, 3);
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
             Assert.assertEquals(4, tocElements.get(TOC.DEFAULT_GROUP).size());
@@ -166,7 +166,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             // Page 3
-            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, MimeType.IMAGE.getName(), 3, 3);
+            Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, BaseMimeType.IMAGE.getName(), 3, 3);
             Assert.assertNotNull(tocElements);
             Assert.assertNotNull(tocElements.get(TOC.DEFAULT_GROUP));
             Assert.assertEquals(2, tocElements.get(TOC.DEFAULT_GROUP).size());
@@ -182,7 +182,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void generateToc_shouldThrowIllegalArgumentExceptionIfStructElementIsNull() throws Exception {
-        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), null, true, MimeType.IMAGE.getName(), 1, -1);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), null, true, BaseMimeType.IMAGE.getName(), 1, -1);
     }
 
     /**
@@ -193,7 +193,7 @@ public class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void generateToc_shouldThrowIllegalArgumentExceptionIfTocIsNull() throws Exception {
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
         Assert.assertTrue(iddoc > 0);
-        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(null, new StructElement(iddoc), true, MimeType.IMAGE.getName(), 1, -1);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(null, new StructElement(iddoc), true, BaseMimeType.IMAGE.getName(), 1, -1);
     }
 
     /**
