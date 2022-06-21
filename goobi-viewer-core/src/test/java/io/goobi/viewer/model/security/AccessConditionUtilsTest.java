@@ -364,6 +364,58 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
             String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
             Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
     }
+    
+    @Test
+    public void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
+        {            
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpeg");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jpeg\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.png");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.png\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jp2");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jp2\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpg");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jpg\"", result);
+        }
+    }
+    
+    @Test
+    public void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() throws Exception {
+        {            
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.gltf");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.gltf\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.glb");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.glb\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.obj");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.obj\"", result);
+        }
+    }
+    
+    @Test
+    public void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() throws Exception {
+        {            
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "SM.1.6.001");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":SM.1.6.001.*", result);
+        }
+    }
 
     /**
      * @see AccessConditionUtils#generateAccessCheckQuery(String,String)

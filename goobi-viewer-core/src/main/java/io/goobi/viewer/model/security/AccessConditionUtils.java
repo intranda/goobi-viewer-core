@@ -166,6 +166,7 @@ public class AccessConditionUtils {
             case "mp3":
             case "ogg":
             case "ogv":
+            case "flv":
                 sbQuery.append(" +").append(useFileField).append(':');
                 // Escape whitespaces etc. for wildcard searches
                 sbQuery.append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
@@ -196,12 +197,20 @@ public class AccessConditionUtils {
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "":
-                // Escape whitespaces etc. for wildcard searches
-                sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
+            case "tif":
+            case "tiff":
+            case "jpg":
+            case "jpeg":
+            case "png":
+            case "jp2":
+            case "obj":
+            case "gltf":
+            case "glb":
+                sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
                 break;
             default:
-                sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
+                // Escape whitespaces etc. for wildcard searches
+                sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(simpleFileName)).append(".*");
                 break;
         }
 

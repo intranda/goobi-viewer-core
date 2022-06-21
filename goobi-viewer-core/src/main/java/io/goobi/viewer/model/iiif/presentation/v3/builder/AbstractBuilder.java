@@ -377,6 +377,28 @@ public abstract class AbstractBuilder {
         }
         return Optional.empty();
     }
+    
+    /**
+     * <p>
+     * getDescription.
+     * </p>
+     *
+     * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @return a {@link java.util.Optional} object.
+     */
+    protected Optional<IMetadataValue> getLabel(StructElement ele) {
+        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFLabelFields();
+        for (String field : fields) {
+            Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
+                md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+                return md;
+            });
+            if (optional.isPresent()) {
+                return optional;
+            }
+        }
+        return Optional.empty();
+    }
 
     /**
      * <p>

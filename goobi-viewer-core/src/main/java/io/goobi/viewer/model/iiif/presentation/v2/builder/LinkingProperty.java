@@ -49,7 +49,9 @@ public class LinkingProperty {
         PLAINTEXT(Format.TEXT_PLAIN, DcType.TEXT),
         ALTO(Format.TEXT_XML, DcType.TEXT),
         PDF(Format.APPLICATION_PDF, DcType.IMAGE),
-        VIEWER(Format.TEXT_HTML, DcType.INTERACTIVE_RESOURCE);
+        VIEWER(Format.TEXT_HTML, DcType.INTERACTIVE_RESOURCE),
+        METS(Format.TEXT_XML, DcType.TEXT),
+        LIDO(Format.TEXT_XML, DcType.TEXT);
 
         public final Format mimeType;
         public final DcType type;
