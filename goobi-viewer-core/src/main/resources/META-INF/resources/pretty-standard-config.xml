@@ -198,7 +198,16 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
 		<action onPostback="false">#{calendarBean.resetAllActiveYears()}</action>
 	</url-mapping>
-		<url-mapping id="searchgeomap">
+    <url-mapping id="searchcalendar1">
+        <pattern value="/searchcalendar/#{selectYear:calendarBean.selectYear}/" />
+        <view-id value="/searchCalendar.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
+        <action onPostback="false">#{calendarBean.resetAllActiveYears()}</action>
+    </url-mapping>
+	<url-mapping id="searchgeomap">
 		<pattern value="/searchgeomap/" />
 		<view-id value="/searchGeoMap.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>

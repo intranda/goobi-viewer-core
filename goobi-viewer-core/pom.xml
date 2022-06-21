@@ -69,6 +69,7 @@
 		<maven.compiler.release>11</maven.compiler.release>
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
+		<failOnSnapshot>false</failOnSnapshot>
 
 
 		<!-- Sonar -->
@@ -722,7 +723,14 @@
 								<requireMavenVersion>
 									<version>3.3.9</version>
 								</requireMavenVersion>
+								<requireReleaseDeps>
+									<message>No Snapshots Allowed!</message>
+									 <excludes>
+										 <exclude>de.undercouch:citeproc-java</exclude>
+									 </excludes>
+								</requireReleaseDeps>
 							</rules>
+							<fail>${failOnSnapshot}</fail>
 						</configuration>
 					</execution>
 				</executions>
