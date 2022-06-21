@@ -869,14 +869,26 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setCustomFilterQuery(customFilterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
 
+        // When searching in MONTHDAY, add a term so that an expand query is created
+        if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
+            searchTerms.put(SolrConstants.MONTHDAY, Collections.singleton(searchStringInternal.substring(SolrConstants.MONTHDAY.length() + 1)));
+            logger.trace("monthday terms: {}", searchTerms.get(SolrConstants.MONTHDAY).iterator().next());
+        }
+
         // Add search hit aggregation parameters, if enabled
         if (!searchTerms.isEmpty()) {
+            List<String> additionalExpandQueryfields = Collections.emptyList();
+            // Add MONTHDAY to the list of expand query fields
+            if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
+                additionalExpandQueryfields = Collections.singletonList(SolrConstants.MONTHDAY);
+            }
             String expandQuery = activeSearchType == 1
                     ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator,
                             DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
                     : SearchHelper.generateExpandQuery(
-                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
-                            phraseSearch, proximitySearchDistance);
+                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups,
+                                    additionalExpandQueryfields),
+                            searchTerms, phraseSearch, proximitySearchDistance);
             currentSearch.setExpandQuery(expandQuery);
         }
 
