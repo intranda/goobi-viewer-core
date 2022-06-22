@@ -189,7 +189,6 @@ var viewerJS = ( function( viewer ) {
 	function initJsfConfirmationDialogs() {
 		let dialogs = $('[data-require-confirmation="true"]');
 				
-		console.log("dialogs", dialogs);
 		$('[data-require-confirmation="true"]')
 		.each((index,element) => {
 						
