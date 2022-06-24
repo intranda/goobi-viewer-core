@@ -83,7 +83,7 @@
                                                 <button
                                                     class="admin__boxed-entry-actions-delete -redlink"
                                                     data-require-confirmation="true"
-                                                    data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_map, map.getTitle(navigationHelper.localeString).orElse(''))}"
+                                                    data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_map, map.title)}"
                                                     jsf:action="#{geoMapBean.deleteMap(map)}"
                                                     aria-label="#{msg.delete}: #{map.title}" >
                                                     #{msg.delete}
