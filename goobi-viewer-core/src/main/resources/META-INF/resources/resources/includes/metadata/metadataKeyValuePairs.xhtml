@@ -27,7 +27,7 @@
 					<!-- Metadata value -->
 					<c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind0">
 						<ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
-							<dl class="dl-horizontal metadata__element-dl">
+							<dl class="dl-horizontal metadata__element-dl metadata__key-value-pairs-list">
 								<dt>
 									<h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
 								</dt>
