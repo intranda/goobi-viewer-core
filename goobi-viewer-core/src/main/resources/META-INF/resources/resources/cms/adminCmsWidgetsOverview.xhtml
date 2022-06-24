@@ -178,7 +178,7 @@
 	                                                <button
 	                                                    class="admin__boxed-entry-actions-delete -redlink"
 	                                                    data-require-confirmation="true"
-	                                                    data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_widget__delete_this_widget, widget.title.getValue(navigationHelper.locale).orElse(''))}"
+	                                                    data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_widget__delete_this_widget, widget.title.getTextOrDefault())}"
 	                                                    jsf:action="#{cmsSidebarWidgetsBean.deleteWidget(widget.id)}"
 	                                                    aria-label="#{msg.delete}: #{widget.title.getValue(navigationHelper.locale).orElse('')}" >
 	                                                    #{msg.delete}
