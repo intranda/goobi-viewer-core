@@ -69,12 +69,15 @@
                                         aria-label="#{msg.edit}: #{slider.name}">#{msg.edit}</a>
 	                                        <ui:fragment rendered="#{empty cmsSliderBean.getEmbeddingCmsPages(slider)}">
 	                                        <!-- DELETE -->
-	                                        <h:commandLink 
-	                                        	styleClass="admin__boxed-entry-actions-delete -redlink" 
-	                                        	onclick="if ( !confirm( &quot;#{msg.cms__sliders__delete}&quot; ) ) { return false };"
-	                                        	action="#{cmsSliderBean.deleteSlider(slider)}" 
-	                                        	aria-label="#{msg.delete}: #{slider.name}"
-	                                        	title="#{msg.cms__sliders__delete}">#{msg.delete}</h:commandLink>
+                                            <button
+                                                class="admin__boxed-entry-actions-delete -redlink"
+                                                data-require-confirmation="true"
+                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__sliders__delete, slider.name)}"
+                                                jsf:action="#{cmsSliderBean.deleteSlider(slider)}"
+                                                aria-label="#{msg.delete}: #{slider.name}" >
+                                                #{msg.delete}
+                                            </button>
+	                                        	
 	                                        </ui:fragment>
                                         </div>
                                     </div>
