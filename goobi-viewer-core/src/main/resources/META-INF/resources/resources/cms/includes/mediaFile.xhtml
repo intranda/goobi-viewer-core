@@ -3,7 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-    
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
@@ -270,6 +270,16 @@
                     <button type="button" class="btn btn--clean abort" data-action="cancel">#{msg.button__abort}</button>
                     <h:commandLink actionListener="#{cmsMediaBean.deleteMedia(media)}" value="#{msg.button__delete}" styleClass="btn btn--clean delete">
                     </h:commandLink>
+
+<!--                     <button -->
+<!--                         class="admin__boxed-entry-actions-delete -redlink delete" -->
+<!--                         data-require-confirmation="true" -->
+<!--                         data-confirmation-text="Delete this media file" -->
+<!--                         jsf:action="#{cmsMediaBean.deleteMedia(media)}" -->
+<!--                         aria-label="#{msg.delete}" > -->
+<!--                         #{msg.delete} -->
+<!--                     </button> -->
+                    
                     <h:commandLink actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}" onclick="$(this).siblings('.abort').click()" value="#{msg.button__save}" styleClass="btn btn--clean">
                         <f:ajax execute="edit-fields" render="display-fields edit-fields language-select :messages" />
                     </h:commandLink>
