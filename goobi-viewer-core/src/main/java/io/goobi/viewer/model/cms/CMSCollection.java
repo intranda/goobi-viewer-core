@@ -555,6 +555,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /** {@inheritDoc} */
     @Override
     public URI getIconURI() {
+        logger.debug("getIconURI: {}", getRepresentativeWork().isPresent() ? getRepresentativeWorkPI() : "none for " +  getSolrFieldValue());
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work)))
                 .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(getDefaultIcon(getSolrFieldValue())));
 
