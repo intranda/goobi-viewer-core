@@ -207,7 +207,7 @@ var viewerJS = ( function( viewer ) {
 						//otherwise the element must be of type submit, so request a form submit from the element
 						let form = $(element).closest("form").get(0);
 						form.requestSubmit(element);
-					}		
+					}
 				})
 				.catch(() => {});
 				//return false to this event to stop submit action
