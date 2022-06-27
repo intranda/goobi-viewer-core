@@ -191,6 +191,7 @@ public class TempMediaFileResource {
             }
 
         } catch (Throwable e) {
+            logger.error("Error retgrieving uploaded files: " + e.toString(), e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(errorMessage("Unknown error: " + e.toString())).build();
         }
     }

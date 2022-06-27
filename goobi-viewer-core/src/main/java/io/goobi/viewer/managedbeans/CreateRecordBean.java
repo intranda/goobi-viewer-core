@@ -77,7 +77,6 @@ public class CreateRecordBean implements Serializable {
      * Constructor. Generates a random uuid for the record
      */
     public CreateRecordBean() {
-        String languageCode = BeanUtils.getNavigationHelper().getLocale().getLanguage();
         this.language = "";
 
         this.uuid = createUUID();
