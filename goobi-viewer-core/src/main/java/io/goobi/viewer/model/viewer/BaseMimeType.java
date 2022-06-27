@@ -67,7 +67,6 @@ public enum BaseMimeType {
         
         if (name.contains("/")) {
             name = name.substring(0, name.indexOf("/"));
-            logger.error("extracted: " + name);
         }
         for (BaseMimeType o : BaseMimeType.values()) {
             if (o.getName().equals(name)) {
