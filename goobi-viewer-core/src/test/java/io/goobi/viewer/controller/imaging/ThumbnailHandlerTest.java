@@ -372,4 +372,72 @@ public class ThumbnailHandlerTest extends AbstractTest {
         Assert.assertEquals("max", ThumbnailHandler.getSize(0, 0));
     }
 
+    /**
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return image thumbnail path correctly
+     */
+    @Test
+    public void getImagePath_shouldReturnImageThumbnailPathCorrectly() throws Exception {
+        Assert.assertEquals("00000001.tif",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("image/tiff").build()));
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return audio thumbnail path correctly
+     */
+    @Test
+    public void getImagePath_shouldReturnAudioThumbnailPathCorrectly() throws Exception {
+        // Page thumbnail
+        Assert.assertEquals("00000001.tif",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("audio/mpeg3").build()));
+        // Default thumbnail
+        Assert.assertEquals("https://example/com/viewer/thumbnail_audio.jpg",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setMimeType("audio").build()));
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return video thumbnail path correctly
+     */
+    @Test
+    public void getImagePath_shouldReturnVideoThumbnailPathCorrectly() throws Exception {
+        // Page thumbnail
+        Assert.assertEquals("00000001.tif",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("video").build()));
+        // Default thumbnail
+        Assert.assertEquals("https://example/com/viewer/thumbnail_video.jpg",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setMimeType("video/webm").build()));
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return pdf thumbnail path correctly
+     */
+    @Test
+    public void getImagePath_shouldReturnPdfThumbnailPathCorrectly() throws Exception {
+        Assert.assertEquals("https://example/com/viewer/thumbnail_epub.jpg",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/pdf").build()));
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return 3d object thumbnail path correctly
+     */
+    @Test
+    public void getImagePath_shouldReturn3dObjectThumbnailPathCorrectly() throws Exception {
+        Assert.assertEquals("https://example/com/viewer/thumbnail_3d.png",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/object").build()));
+        Assert.assertEquals("https://example/com/viewer/thumbnail_3d.png",
+                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                        .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("object").build()));
+    }
+
 }
