@@ -655,7 +655,7 @@ public class ThumbnailHandler {
         }
 
         String thumbnailUrl = null;
-
+        
         // TODO use enum
         switch (page.getBaseMimeType()) {
             case "image":
