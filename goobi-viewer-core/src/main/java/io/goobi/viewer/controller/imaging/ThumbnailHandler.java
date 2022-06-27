@@ -57,6 +57,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
@@ -655,7 +656,7 @@ public class ThumbnailHandler {
         }
 
         String thumbnailUrl = null;
-        
+
         // TODO use enum
         switch (page.getBaseMimeType()) {
             case "image":
@@ -744,36 +745,39 @@ public class ThumbnailHandler {
                 default:
                     // TODO use enum
                     String mimeType = getMimeType(doc).orElse("unknown");
-                    switch (mimeType) {
-                        case "image":
-                        case "image/png":
-                        case "image/jpg":
-                        case "image/jpeg":
-                        case "image/tiff":
-                        case "image/jp2":
-                            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                            break;
-                        case "video":
-                        case "text":
-                            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                            if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
-                                thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
-                            }
-                            break;
-                        case "audio":
-                            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-                            if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
-                                thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
-                            }
-                            break;
-                        case "application":
-                        case "application/pdf":
-                            thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
-                            break;
-                        case "application/object":
-                        case "object":
-                            thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
-                            break;
+                    BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
+                    if (baseMimeType != null) {
+                        switch (baseMimeType.getName()) {
+                            case "image":
+                                thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                                break;
+                            case "video":
+                            case "text":
+                                thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                                if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
+                                    thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                                }
+                                break;
+                            case "audio":
+                                thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                                if (StringUtils.isEmpty(thumbnailUrl) || !isImageMimeType(thumbnailUrl)) {
+                                    thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                                }
+                                break;
+                            case "application":
+                                switch (mimeType) {
+                                    case "application/pdf":
+                                        thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                                        break;
+                                    case "application/object":
+                                        thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                                        break;
+                                }
+                                break;
+                            case "object":
+                                thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                                break;
+                        }
                     }
             }
         }
@@ -784,7 +788,7 @@ public class ThumbnailHandler {
      * @param thumbnailUrl
      * @return
      */
-    private boolean isImageMimeType(String thumbnailUrl) {
+    private static boolean isImageMimeType(String thumbnailUrl) {
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl);
         return format != null;
     }
