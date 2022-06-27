@@ -136,7 +136,6 @@ var cmsJS = ( function( cms ) {
             
             // toggle add new item accordeon
             $( 'body' ).off('click.toggle-items').on( 'click.toggle-items', '[data-toggle="available-items"]', function() {
-                console.log("click");
             	if ( $( this ).hasClass( 'in' ) ) {
             		$( this ).toggleClass( 'in' );
                 	$( this ).parent().find( '.cms-menu__available-items-toggle' ).slideToggle( 'fast', function() {

@@ -73,6 +73,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.StructureBuilder;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -359,7 +360,7 @@ public class IIIFPresentation2ResourceBuilder {
     public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows)
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false, request);
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, request, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         logger.trace("getManifestForQuery: {}", finalQuery);
 
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");

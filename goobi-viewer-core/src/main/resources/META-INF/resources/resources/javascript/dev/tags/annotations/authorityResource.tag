@@ -40,7 +40,6 @@
 	    let normdataList = [];
 	    $.each( jsonResponse, (i, object ) => {
             $.each( object, ( property, value ) => {
-                console.log()
                 let stringValue = value.map(v => v.text).join("; ");
                 normdataList.push({property: property, value:stringValue});
             });

@@ -77,7 +77,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         this.buttonFilesSelected = function(e) {
             this.files = [];
             for (var f of e.target.files) {
-                console.log("selected file "+ f.name);
                 this.files.push(f);
                 var sizeUnit = 'KB';
                 var size = f.size / 1000;
@@ -343,7 +342,6 @@ riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if
 	    let normdataList = [];
 	    $.each( jsonResponse, (i, object ) => {
             $.each( object, ( property, value ) => {
-                console.log()
                 let stringValue = value.map(v => v.text).join("; ");
                 normdataList.push({property: property, value:stringValue});
             });
@@ -1500,7 +1498,6 @@ this.lastCanvases = function() {
 }.bind(this)
 
 this.toPageNumber = function(e) {
-    console.log("Change in ", e.target, e.target.value);
     let page = parseInt(e.target.value);
     if(page > 0 && page <= this.getTotalImageCount()) {
     	this.load(page-1);
@@ -1983,7 +1980,6 @@ riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowds
 	this.on("mount", function() {
 	    this.initOriginalMetadata(this.question);
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Metadata(anno, this.originalData), this.update, this.update, this.focusAnnotation);
-	    console.log("mounted ", this);
 		    this.opts.item.onImageOpen(function() {
 		        switch(this.question.targetSelector) {
 		            case Crowdsourcing.Question.Selector.WHOLE_PAGE:
@@ -2157,10 +2153,6 @@ riot.tag2('progressbar', '<div class="goobi-progress-bar-wrapper"><div class="go
 	this.getRelativeWidth = function(value) {
 		    let barWidth = value/this.opts.total*this.totalBarWidth;
 		    return barWidth + "px";
-	}.bind(this)
-
-	this.loaded = function() {
-	    console.log("on load");
 	}.bind(this)
 
 });
@@ -2372,7 +2364,6 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
             		$( '[data-show="thumbs"]' ).attr( 'title', opts.msg.showThumbs ).tooltip( '_fixTitle' ).tooltip( 'show' );
         		}
 
-        		console.log("controls", this.controls);
         		for (let control of this.controls) {
         		    control.classList.toggle( 'faded' );
         		};
@@ -2700,7 +2691,6 @@ this.getType = function(layer) {
 }.bind(this)
 
 this.initHitsLayer = function(map) {
-    console.log("opts ", this.opts);
     this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
 	hitsLayer.init(this.opts.features, false);
@@ -2913,7 +2903,6 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="{language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul><div class="tab-content"><div class="tab-pane active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="input_form__actions"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
 
  	this.on("mount", () => {
- 	    console.log("mount metadataEditor ", this.opts);
  	    this.currentLanguage = this.opts.currentLanguage;
  	    this.updateMetadataList(this.opts.metadata);
  	    this.focusInput();
@@ -3889,7 +3878,6 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 	        let string = sessionStorage.getItem("viewer_timematrix");
 	        if(string) {
 	            let json = JSON.parse(string);
-	            console.log("restoreValues", json);
 	            return json;
 	        } else {
 	            return undefined;
@@ -3898,7 +3886,6 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 
 	    this.storeValues = function() {
 	        let json = {startYear: this.startYear, endYear: this.endYear, maxHits: this.maxHits}
-	        console.log("store values ", json);
 	        let string = JSON.stringify(json);
 	        sessionStorage.setItem("viewer_timematrix", string);
 	    }.bind(this)

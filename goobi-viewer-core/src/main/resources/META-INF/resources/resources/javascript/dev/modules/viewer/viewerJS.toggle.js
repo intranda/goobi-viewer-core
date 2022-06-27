@@ -36,19 +36,17 @@ var viewerJS = ( function( viewer ) {
                         let checked = $(element).is(":checked");
                         let $target = $(target);
                         if(action && checked && $target.length > 0) {
-	          console.log(action, $target)
                             switch(action) {
                                 case "hide":
                                     $target.hide();
                                     break;
-                                case "show":
+                                case "show": 
                                     $target.show();
                                     break;
                             }
                             let toggleSelector = "input[data-toggle-target='"+target+"']";
                             $("body").on("change", toggleSelector, (event) => {
                                 if($(event.target).is(":checked")) {
-	                  console.log("toggle visibility of ", $target);
                                     $target.animate({
                                         height: "toggle",
                                         opacity: "toggle"

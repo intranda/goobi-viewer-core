@@ -64,7 +64,6 @@
  <script>
     
  	this.on("mount", () => {
- 	    console.log("mount metadataEditor ", this.opts);
  	    this.currentLanguage = this.opts.currentLanguage;
  	    this.updateMetadataList(this.opts.metadata);
  	    this.focusInput();

@@ -96,6 +96,7 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -2316,8 +2317,8 @@ public class SearchBean implements SearchInterface, Serializable {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
 
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
-        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, searchString, true,
-                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, searchString,
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Locale locale = navigationHelper.getLocale();
         int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
 
@@ -2521,7 +2522,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
-        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, null, true, false);
+        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         return DataManager.getInstance().getSearchIndex().getHitCount(query);
     }
 
@@ -2995,7 +2996,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false);
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
     }
 
