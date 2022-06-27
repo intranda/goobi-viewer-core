@@ -281,14 +281,16 @@ public class Search implements Serializable {
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
             boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false,
+                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
     public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator) throws IndexUnreachableException {
         return generateFinalSolrQuery(facets, advancedSearchGroupOperator, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
-    
-    public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator, SearchAggregationType aggregationType) throws IndexUnreachableException {
+
+    public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator, SearchAggregationType aggregationType)
+            throws IndexUnreachableException {
         String currentQuery = SearchHelper.prepareQuery(this.query);
         String termQuery = null;
 
@@ -464,7 +466,7 @@ public class Search implements Serializable {
                     }
                 }
                 if (facets.getGeoFacetting().isActive()) {
-                    this.hasGeoLocationHits = resp.getFacetField("BOOL_WKT_COORDS").getValueCount() > 0;
+                    this.hasGeoLocationHits = resp.getFacetField("BOOL_WKT_COORDS").getValues().stream().anyMatch(c -> c.getName().equalsIgnoreCase("true"));
                     if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap()) {
                         this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                         this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
@@ -479,24 +481,26 @@ public class Search implements Serializable {
         }
 
         // Collect available facets
-        for (FacetField facetField : resp.getFacetFields()) {
-            if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
-                continue;
-            }
-            Map<String, Long> facetResult = new TreeMap<>();
-            for (Count count : facetField.getValues()) {
-                if (StringUtils.isEmpty(count.getName())) {
-                    logger.warn("Facet for {} has no name, skipping...", facetField.getName());
+        if (resp.getFacetFields() != null) {
+            for (FacetField facetField : resp.getFacetFields()) {
+                if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                     continue;
                 }
-                facetResult.put(count.getName(), count.getCount());
+                Map<String, Long> facetResult = new TreeMap<>();
+                for (Count count : facetField.getValues()) {
+                    if (StringUtils.isEmpty(count.getName())) {
+                        logger.warn("Facet for {} has no name, skipping...", facetField.getName());
+                        continue;
+                    }
+                    facetResult.put(count.getName(), count.getCount());
+                }
+                // Use non-FACET_ field names outside of the actual faceting query
+                String fieldName = SearchHelper.defacetifyField(facetField.getName());
+                facets.getAvailableFacets()
+                        .put(fieldName,
+                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale,
+                                        facets.getLabelMap()));
             }
-            // Use non-FACET_ field names outside of the actual faceting query
-            String fieldName = SearchHelper.defacetifyField(facetField.getName());
-            facets.getAvailableFacets()
-                    .put(fieldName,
-                            FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale,
-                                    facets.getLabelMap()));
         }
 
         int lastPage = getLastPage(hitsPerPage);
@@ -525,7 +529,7 @@ public class Search implements Serializable {
         List<StringPair> useSortFields = getAllSortFields();
         List<SearchHit> hits = Collections.emptyList();
         // Actual hits for listing
-        switch(aggregationType) {
+        switch (aggregationType) {
             case AGGREGATE_TO_TOPSTRUCT:
                 hits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);

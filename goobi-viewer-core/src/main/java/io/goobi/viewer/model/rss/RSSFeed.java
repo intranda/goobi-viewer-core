@@ -780,7 +780,7 @@ public class RSSFeed {
             query = createQuery(query, null, subtheme, servletRequest, false);
             if (StringUtils.isNotBlank(query)) {
                 query = SearchHelper.buildFinalQuery(query, null, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
-                        servletRequest, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+                        servletRequest, SearchAggregationType.NO_AGGREGATION);
             }
 
             // Optional faceting
