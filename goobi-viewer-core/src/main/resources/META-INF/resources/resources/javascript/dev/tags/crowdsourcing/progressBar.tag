@@ -21,10 +21,7 @@
 		    let barWidth = value/this.opts.total*this.totalBarWidth;
 		    return barWidth + "px"; 
 	}
-	
-	loaded() {
-	    console.log("on load");
-	}
+
 
 </script>
 

@@ -32,7 +32,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
                     "@context": context
             }
         }
-        console.log("new authority resource ", this.body);
     }
     crowdsourcing.Annotation.AuthorityResource.prototype = Object.create(crowdsourcing.Annotation.prototype);
     

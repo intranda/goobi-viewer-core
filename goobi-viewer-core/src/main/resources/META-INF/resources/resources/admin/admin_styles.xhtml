@@ -342,7 +342,6 @@
 	//<![CDATA[   
     $('.backend-styles__copy').on('click', function() {
     	  value = $(this).closest('.backend-styles__code').find("pre").text();
-    	console.log(value); 
     	  var $temp = $("<textarea>");
     	  $("body").append($temp);
     	  $temp.val(value).select();

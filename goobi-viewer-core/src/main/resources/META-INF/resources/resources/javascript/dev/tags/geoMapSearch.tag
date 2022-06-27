@@ -288,7 +288,6 @@ getType(layer) {
 }
 
 initHitsLayer(map) {
-    console.log("opts ", this.opts);
     this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
 	hitsLayer.init(this.opts.features, false);
