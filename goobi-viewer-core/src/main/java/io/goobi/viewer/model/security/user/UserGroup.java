@@ -427,7 +427,7 @@ public class UserGroup implements ILicensee, Serializable {
      * @throws DAOException
      */
     public boolean isHasMembers() throws DAOException {
-        return getMemberCount() > 0;
+        return getMemberCount() > 1;
     }
 
     /**
