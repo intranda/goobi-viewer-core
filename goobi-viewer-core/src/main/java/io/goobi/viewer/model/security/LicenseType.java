@@ -81,7 +81,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     public static final String LICENSE_TYPE_LEGAL_DISCLAIMER = "licenseType_disclaimer";
     private static final String LICENSE_TYPE_DESC_LEGAL_DISCLAIMER = "licenseType_disclaimer_desc";
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "license_type_id")
@@ -999,10 +998,10 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
                     .append('(')
                     .append(processedConditions)
                     /**
-                     * The following line is necessary if negateFilterQuery is true. In this case you get a query '(-CONDITION)'
-                     * which never yields any results because queries MUST contain a positive expression in order to do so.
-                     * So the '*:*' acts as a all-encompassing positive expression which has no logical effect (it's equivalent to 'or true')
-                     * Source: https://localcoder.org/weird-solr-lucene-behaviors-with-boolean-operators
+                     * The following line is necessary if negateFilterQuery is true. In this case you get a query '(-CONDITION)' which never yields
+                     * any results because queries MUST contain a positive expression in order to do so. So the '*:*' acts as a all-encompassing
+                     * positive expression which has no logical effect (it's equivalent to 'or true') Source:
+                     * https://localcoder.org/weird-solr-lucene-behaviors-with-boolean-operators
                      */
                     .append(" *:*")
                     .append("))")

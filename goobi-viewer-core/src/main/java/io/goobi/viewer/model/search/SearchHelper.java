@@ -996,6 +996,15 @@ public final class SearchHelper {
 
         return query.toString();
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public static String getMovingWallQuery() {
+        return "-" + SolrConstants.DATE_PUBLICRELEASEDATE + ":[* TO NOW/DATE]";
+    }
+
 
     /**
      * TODO This method might be quite expensive.
