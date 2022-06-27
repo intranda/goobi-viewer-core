@@ -59,6 +59,7 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -653,7 +654,7 @@ public class SolrTools {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
 
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, null, false, false);
+        filterQuery = SearchHelper.buildFinalQuery(filterQuery, null, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
                 DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
         if (qr != null) {

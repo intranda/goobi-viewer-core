@@ -86,6 +86,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
@@ -187,7 +188,7 @@ public class IndexResource {
             Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
-        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.includeChildHits, params.boostTopLevelDocstructs);
+        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.boostTopLevelDocstructs, params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
         logger.trace("query: {}", query);
 

@@ -56,6 +56,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
@@ -778,8 +779,8 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if (StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, null, false, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
-                        servletRequest);
+                query = SearchHelper.buildFinalQuery(query, null, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                        servletRequest, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             }
 
             // Optional faceting
@@ -810,8 +811,8 @@ public class RSSFeed {
             }
             query = createQuery(query, null, subtheme, servletRequest, false);
             if (StringUtils.isNotBlank(query)) {
-                query = SearchHelper.buildFinalQuery(query, null, true, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
-                        servletRequest);
+                query = SearchHelper.buildFinalQuery(query, null, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                        servletRequest, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             }
 
             // Optional faceting

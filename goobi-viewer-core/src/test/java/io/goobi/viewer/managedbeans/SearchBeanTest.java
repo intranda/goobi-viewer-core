@@ -39,6 +39,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchQueryGroup;
@@ -798,7 +799,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.getCurrentSearch().setPage(1);
         sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
         sb.getCurrentSearch().setSortString("SORT_TITLE");
-        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true, false);
+        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, 0, null, true, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals(18, sb.getCurrentSearch().getHitsCount());
 
         sb.findCurrentHitIndex("PPN9462", 1, true);
