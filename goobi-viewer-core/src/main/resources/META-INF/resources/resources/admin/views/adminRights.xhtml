@@ -50,7 +50,7 @@
 	                                            </ui:fragment>
 	                                            <ui:fragment rendered="#{license.client != null}">
 	                                            	<ui:fragment rendered="#{license.client == adminClientsBean.allClients}">
-	                                            		<h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{msg.all_clients}</h2>
+	                                            		<h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{msg.admin__right_all_clients}</h2>
 	                                            	</ui:fragment>
 	                                            	<ui:fragment rendered="#{license.client != adminClientsBean.allClients}">
 		                                                <h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{license.client.name} (#{license.client.clientIdentifier})</h2>
