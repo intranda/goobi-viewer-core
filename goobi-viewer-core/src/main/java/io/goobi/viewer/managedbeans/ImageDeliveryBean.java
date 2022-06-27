@@ -556,7 +556,7 @@ public class ImageDeliveryBean implements Serializable {
         return cmsMediaPath;
     }
 
-    private String getTempMediaPath() throws ViewerConfigurationException {
+    private String getTempMediaPath() {
         if (tempMediaPath == null) {
             init();
         }
@@ -607,7 +607,5 @@ public class ImageDeliveryBean implements Serializable {
     public void setPdf(PdfHandler pdf) {
         this.pdf = pdf;
     }
-
-
 
 }

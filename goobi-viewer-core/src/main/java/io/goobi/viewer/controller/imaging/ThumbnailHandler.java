@@ -643,23 +643,22 @@ public class ThumbnailHandler {
     /**
      * @param page
      * @return
+     * @should return image thumbnail path correctly
+     * @should return audio thumbnail path correctly
+     * @should return video thumbnail path correctly
+     * @should return pdf thumbnail path correctly
+     * @should return 3d object thumbnail path correctly
      */
-    private String getImagePath(PhysicalElement page) {
+    String getImagePath(PhysicalElement page) {
         if (page == null) {
             return "";
         }
 
         String thumbnailUrl = null;
-
-        String mimeType = page.getMimeType();
+        
         // TODO use enum
-        switch (mimeType) {
+        switch (page.getBaseMimeType()) {
             case "image":
-            case "image/png":
-            case "image/jpg":
-            case "image/jpeg":
-            case "image/tiff":
-            case "image/jp2":
                 thumbnailUrl = page.getFilepath();
                 break;
             case "video":
@@ -676,10 +675,15 @@ public class ThumbnailHandler {
                 }
                 break;
             case "application":
-            case "application/pdf":
-                thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                switch (page.getMimeType()) {
+                    case "application/pdf":
+                        thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                        break;
+                    case "application/object":
+                        thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                        break;
+                }
                 break;
-            case "application/object":
             case "object":
                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                 break;
@@ -781,8 +785,8 @@ public class ThumbnailHandler {
      * @return
      */
     private boolean isImageMimeType(String thumbnailUrl) {
-       ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl);
-       return format != null;
+        ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(thumbnailUrl);
+        return format != null;
     }
 
     private static Optional<DocType> getDocType(StructElement structElement) {
@@ -863,7 +867,7 @@ public class ThumbnailHandler {
                 String contentType = item.getContentType();
                 String filename = item.getFileName();
                 String imageApiUrl = getCMSMediaImageApiUrl(filename);
-                switch(contentType) {
+                switch (contentType) {
                     case CMSMediaItem.CONTENT_TYPE_VIDEO:
                     case CMSMediaItem.CONTENT_TYPE_AUDIO:
                     case CMSMediaItem.CONTENT_TYPE_PDF:

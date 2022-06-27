@@ -84,12 +84,16 @@
                                                 <!-- EDIT -->
                                                 <a href="#{navigationHelper.applicationUrl}admin/crowdsourcing/campaigns/edit/#{campaign.id}/"
                                                     class="admin__table-action-link" aria-label="#{msg.edit}: #{campaign.getTitle(navigationHelper.locale, true)}">#{msg.edit}</a>
-                                                <!-- Delete link -->
-                                                <button class="admin__table-action-link -redlink"
-                                                    jsf:onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_campaign_deleteConfirmationText}&quot; ) ) { return false };"
-                                                    jsf:action="#{crowdsourcingBean.deleteCampaignAction(campaign)}" title="#{msg.delete}" alt="#{msg.delete}">
-                                                    #{msg.delete}
-                                                </button>
+		                                        <!-- DELETE -->
+	                                            <button
+	                                                class="admin__table-action-link -redlink"
+	                                                data-require-confirmation="true"
+	                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__crowdsourcing_campaign_deleteConfirmationText, campaign.getTitle(navigationHelper.locale, true))}"
+	                                                jsf:action="#{crowdsourcingBean.deleteCampaignAction(campaign)}"
+	                                                aria-label="#{msg.delete} #{campaign.getTitle(navigationHelper.locale, true)}" >
+	                                                #{msg.delete}
+	                                            </button>
+                                                
                                             </div>
                                         </div>
                                     </div>

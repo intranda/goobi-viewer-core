@@ -116,14 +116,17 @@
 	                                            <div class="col-3 d-flex justify-content-end">
 	                                                <!-- EDIT -->
 	                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.displayName} #{license.userGroup.name} #{license.ipRange.name}">#{msg.edit}</a>
-	
-	                                                <!-- DELETE -->
-	                                                <button 
-	                                                	class="admin__boxed-entry-actions-delete -redlink"
-	                                                    jsf:onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-	                                                    jsf:action="#{adminBean.deleteLicenseAction(license)}">
-	                                                    #{msg.delete}
-	                                                </button>
+	                                                
+                                                    <!-- DELETE -->
+		                                            <button
+		                                                class="admin__boxed-entry-actions-delete -redlink"
+		                                                data-require-confirmation="true"
+		                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__right__delete_warning, msg[license.licenseType.name])}"
+		                                                jsf:action="#{adminBean.deleteLicenseAction(license)}"
+		                                                aria-label="#{msg.delete} #{msg[license.licenseType.name]}" >
+		                                                #{msg.delete}
+		                                            </button>
+	                                                
 	                                            </div>
 	                                        </div>
                                         </div>

@@ -114,4 +114,28 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getFullMimeType_shouldReturnJpegIfNotPng() throws Exception {
         Assert.assertEquals("image/jpeg", PhysicalElement.getFullMimeType("image", "foo.bmp"));
     }
+
+    /**
+     * @see PhysicalElement#getBaseMimeType()
+     * @verifies return correct base mime type
+     */
+    @Test
+    public void getBaseMimeType_shouldReturnCorrectBaseMimeType() throws Exception {
+        Assert.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("image/tiff").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.AUDIO.getName(), new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.VIDEO.getName(), new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.APPLICATION.getName(),
+                new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(), new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.OBJECT.getName(), new PhysicalElementBuilder().setMimeType("object").build().getBaseMimeType());
+    }
+
+    /**
+     * @see PhysicalElement#getBaseMimeType()
+     * @verifies return image if base mime type not found
+     */
+    @Test
+    public void getBaseMimeType_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
+        Assert.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
+    }
 }
