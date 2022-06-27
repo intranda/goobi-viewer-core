@@ -65,6 +65,7 @@ public enum PageType {
     userContentUpload("user/upload", "user__upload_content"),
     //admin
     admin("admin"),
+    adminDashboard("admin/"),
     adminUsers("admin/users"),
     adminUser("admin/users"),
     adminUserNew("admin/users/new"),
