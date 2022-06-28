@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -35,7 +35,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
  * @author florian
  *
  */
-public class CanvasBuilderTest extends AbstractTest {
+public class CanvasBuilderTest extends AbstractSolrEnabledTest {
 
     ApiUrls urls = new ApiUrls("http://localhost:8080/viewer/api/v2");
     CanvasBuilder builder = new CanvasBuilder(urls);
