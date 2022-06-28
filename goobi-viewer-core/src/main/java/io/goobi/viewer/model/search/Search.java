@@ -124,10 +124,6 @@ public class Search implements Serializable {
 
     @Column(name = "page", nullable = false)
     private int page;
-    //
-    //    @Deprecated
-    //    @Column(name = "collection")
-    //    private String hierarchicalFacetString;
 
     @Column(name = "filter")
     private String facetString;
