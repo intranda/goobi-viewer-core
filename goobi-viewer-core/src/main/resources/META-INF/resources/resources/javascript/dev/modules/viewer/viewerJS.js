@@ -583,6 +583,14 @@ var viewerJS = (function () {
 	        //no bootstrap defined
 	    }
 	});
+	
+	
+    // CONTENT ITEMS JS DRAFT
+	$(document).ready(function(){
+		
+		new SimpleLightbox({elements: '.lightbox-test a'});
+
+	});
 
 
     // global object for tinymce config
