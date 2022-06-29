@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_general_content_items" version="2015-01-14">
+    <name>cms__template_34__contentItems</name>
+    <description>cms__template_01__description</description>
+    <icon>cms_template_01_generic.png</icon>
+    <html>cms_template_34_contentItems.xhtml</html>
+    <options>    
+        <topBarSlider>true</topBarSlider>
+    </options>
+    <content>
+        <item id="text01" order="1" label="cms__template_01__textblock__label" type="HTML" mandatory="true" />
+<!--         <item id="image01" order="2" label="cms__template_01__textblock_image__label" type="MEDIA" mandatory="false" /> -->
+        <item id="image02" order="2" label="cms__template_01__textblock_image__label" type="CONTENTITEMIMAGE" mandatory="false" />
+    </content>
+</cms_page_template>
