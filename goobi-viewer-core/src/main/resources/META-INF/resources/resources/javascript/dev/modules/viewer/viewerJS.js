@@ -330,7 +330,6 @@ var viewerJS = (function () {
                 viewer.tinyConfig.setup = function (ed) {
                     // listen to changes on tinymce input fields
                     ed.on('init', function (e) {
-                        console.log("init ", e);
                         viewerJS.stickyElements.refresh.next();
                     });
                     

@@ -91,13 +91,17 @@
                                             <!-- SHOW -->
                                             <!-- TODO INLINE CSS -->
                                             <a href="#{navigationHelper.objectUrl}#{annotation.targetLink}" class="admin__table-action-link" style="padding-right: 1.4rem;" target="_blank" aria-label="#{msg.admin__crowdsourcing_annotation} #{msg.show} (#{annotation.targetPI})">#{msg.show}</a>
-
-                                            <!-- DELETE -->
+                                            
+	                                        <!-- DELETE -->
                                             <button
-                                            	jsf:styleClass="btn btn--clear admin__table-action-link -redlink"
-                                                jsf:onclick="if ( !confirm( &quot;#{msg.admin__crowdsourcing_annotation_deleteConfirmationText}&quot; ) ) { return false };"
-                                                jsf:action="#{annotationBean.deleteAnnotationAction(annotation)}">#{msg.delete}
+                                                class="btn btn--clear admin__table-action-link -redlink"
+                                                data-require-confirmation="true"
+                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__crowdsourcing_annotation_deleteConfirmationText)}"
+                                                jsf:action="#{annotationBean.deleteAnnotationAction(annotation)}"
+                                                aria-label="#{msg.delete} #{msg.admin__crowdsourcing_annotation} (#{annotation.targetPI})" >
+                                                #{msg.delete}
                                             </button>
+                                            
                                         </div>
                                     </div>
                                     <div class="col-2 d-flex" role="gridcell">

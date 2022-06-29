@@ -78,14 +78,17 @@
                                             </ui:fragment>
                                         </div>
                                         <div class="entity_list__item__controls">
+                                            <h:outputLink styleClass="admin__boxed-entry-actions-edit" value="#{geoMapBean.getEditMapUrl(map)}">#{msg.edit}</h:outputLink>
                                             <ui:fragment rendered="#{!geoMapBean.isInUse(map)}">
                                                 <button
-													class="btn btn--clean delete" onclick="if ( !confirm( &quot;#{msg.confirm__delete_map}&quot; ) ) { return false };"
-													jsf:action="#{geoMapBean.deleteMap(map)}">
-													#{msg.delete}
-												</button>
+                                                    class="admin__boxed-entry-actions-delete -redlink"
+                                                    data-require-confirmation="true"
+                                                    data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_map, map.title)}"
+                                                    jsf:action="#{geoMapBean.deleteMap(map)}"
+                                                    aria-label="#{msg.delete}: #{map.title}" >
+                                                    #{msg.delete}
+                                                </button>
                                             </ui:fragment>
-                                            <h:outputLink styleClass="btn btn--link" value="#{geoMapBean.getEditMapUrl(map)}">#{msg.edit}</h:outputLink>
                                         </div>
                                     </div>
                                     <div class="entity_list__item__area area__right">

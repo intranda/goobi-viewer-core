@@ -99,7 +99,6 @@ var viewerJS = (function(viewer) {
 			    switch (keyCode) {
 			        case _backwardKey:
 			            if (doubleKeypress && viewer.paginator.config.first) {
-			                console.log("first");
 			                viewer.paginator.config.first();
 			            } 
 			            else if (viewer.paginator.config.previous) {

@@ -35,7 +35,6 @@ var Crowdsourcing = ( function(crowdsourcing) {
             }
         }
         $.extend(this.body.data, originalData);
-        console.log("initialied metadata annotation ", this);
     }
     
     crowdsourcing.Annotation.Metadata.prototype = Object.create(crowdsourcing.Annotation.prototype);

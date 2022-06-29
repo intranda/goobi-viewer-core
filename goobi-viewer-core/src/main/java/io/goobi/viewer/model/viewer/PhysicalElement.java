@@ -553,6 +553,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      * 
      * @return
+     * @should return correct base mime type
+     * @should return image if base mime type not found
      */
     public String getBaseMimeType() {
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);

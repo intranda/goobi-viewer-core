@@ -39,9 +39,11 @@
 		&__event {}
 		&__element-dl,
 		&__event-dl {
+			grid-row-gap: 0rem;
 			dt {
 			}
 			dd {
+				grid-column-start: unset;
 			}
 		}
 		&__element-value,
@@ -152,6 +154,15 @@
 			dt {
 			}
 		}
+		&__wrapper {
+			&.-isBoxed {
+				padding: 0rem;
+				.metadata__ungrouped-wrapper {
+				}
+				.metadata__element-wrapper-single {
+				}
+			}
+		}
 		&__heading {
 			padding-left: 0rem;
 			background: transparent;
@@ -188,6 +199,9 @@
 	            }
 	        }
 	    }
+	}
+	.metadata__title-wrapper + .metadata__element-wrapper .metadata__elements-h2:first-child {
+		margin-top: 0;
 	}
 }
 

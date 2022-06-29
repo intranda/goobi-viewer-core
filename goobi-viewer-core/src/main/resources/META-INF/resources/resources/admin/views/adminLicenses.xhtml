@@ -130,16 +130,19 @@
 	                                                
 	                                                <!-- EDIT -->
 	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
-	
-	                                                <!-- DELETE -->
-	                                                <button
-	                                                    class="admin__boxed-entry-actions-delete -redlink"
-	                                                	aria-label="TEST#{msg.delete}: #{licenseType.name}"
-	                                                	jsf:rendered="#{!adminBean.isLicenseTypeInUse(licenseType)}"
-	                                                    jsf:onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-	                                                    jsf:action="#{adminBean.deleteLicenseTypeAction(licenseType)}">
-	                                                    #{msg.delete}
-	                                                </button>
+	                                                
+			                                        <!-- DELETE -->
+		                                            <button
+		                                                class="admin__boxed-entry-actions-delete -redlink"
+		                                                data-require-confirmation="true"
+		                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.license_licenseType_deleteConfirmationText, licenseType.name)}"
+		                                                jsf:rendered="#{!adminBean.isLicenseTypeInUse(licenseType)}"
+		                                                jsf:action="#{adminBean.deleteLicenseTypeAction(licenseType)}"
+		                                                aria-label="#{msg.delete}: #{licenseType.name}" >
+		                                                #{msg.delete}
+		                                            </button>
+
+
 	                                            </div>
 	                                        </div>
 	                                    </div>

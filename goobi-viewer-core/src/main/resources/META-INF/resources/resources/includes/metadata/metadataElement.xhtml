@@ -59,8 +59,8 @@
                                             <dt title="#{metadata.label}">
                                                 <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                             </dt>
-                                            <dd>
-                                                <ui:repeat value="#{metadata.values}" var="val">
+                                            <ui:repeat value="#{metadata.values}" var="val">
+                                            	<dd>
                                                     <span class="metadata__element-value">
                                                         <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                             <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
@@ -68,8 +68,8 @@
                                                             </c:forEach>
                                                         </h:outputFormat>
                                                     </span>
-                                                </ui:repeat>
-                                            </dd>
+                                            	</dd>
+                                            </ui:repeat>
                                         </dl>
                                     </h:panelGroup>
 

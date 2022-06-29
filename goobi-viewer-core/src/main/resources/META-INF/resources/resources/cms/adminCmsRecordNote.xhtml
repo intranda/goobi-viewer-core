@@ -382,7 +382,6 @@
 
 	        viewerJS.jsfAjax.success.pipe(rxjs.operators.merge(rxjs.fromEvent(window, "load")))
 	        .subscribe(e => {
-	            console.log("set checkboxes");
 				$("[data-target='isChecked'] input").prop("checked", true);
 				$("[data-target='blurIfUnchecked'] input").prop("checked", false);
 	        })
