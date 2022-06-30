@@ -8,11 +8,26 @@
 
     <!-- CONTENT TYPE MEDIA -->
     <!-- AREA FOR AJAX REFRESH -->
-    <h:panelGroup id="contentItemImage" styleClass="cms-module__option-group" rendered="#{contentItem.type == 'CONTENTITEMIMAGE'}" layout="block">
-        <div class="cms-module__option-label">
-            <label for="">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
-        </div>
-        <div class="cms-module__option-control">
+    <h:panelGroup id="contentItemImage" styleClass="admin__content-item-single" rendered="#{contentItem.type == 'CONTENTITEMIMAGE'}" layout="block">
+    
+    <div class="admin__content-item-order-wrapper">
+    	<div class="admin__content-item-order-arrow-up"><i class="fa fa-arrow-up" aria-hidden="true"></i></div>
+	    <div class="admin__content-item-order-number">2</div>
+	    <div class="admin__content-item-order-arrow-down"><i class="fa fa-arrow-down" aria-hidden="true"></i></div>
+    </div>
+
+        <div class="admin__content-item-single-inner">
+        
+        
+        	<div class="admin__content-item-header">
+            	<h2 class="admin__content-item-heading">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}</h2>
+            	<div class="admin__content-item-options">
+            		<div class="admin__content-item-option-size">100 %</div>
+            		<div class="admin__content-item-option-size">50 %</div>
+            		<div class="admin__content-item-option-lightbox">Lightbox</div>
+            	</div>
+			</div>
+
             <!-- MEDIA FILE -->
             <ui:fragment rendered="#{contentItem.mediaItem != null}">
                 <ui:include src="/resources/cms/includes/mediaFile.xhtml">
@@ -38,14 +53,14 @@
                     <f:ajax render="contentMediaGroup" />
                 </h:commandLink>
             </div>
-
-            <!-- HELP -->
-            <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_media_file}</span>
-        </div>
-        <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                <i class="fa fa-question-circle" aria-hidden="true"></i>
-            </button>
+            
+            
+            
+            
         </div>
     </h:panelGroup>
+    
+    
+    
+    
 </ui:composition>

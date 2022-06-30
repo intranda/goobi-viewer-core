@@ -132,15 +132,7 @@
 <!--             </div> -->
 
             <!-- metadata item privacy status -->
-            <div class="page-metadata-item page-metadata-item-privacy-status">
-                <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
 
-                <h:selectOneRadio value="#{cmsBean.selectedPage.published}" layout="pageDirection" id="pageMetadataItemPrivacyStatusRadioTable">
-                    <f:ajax event="valueChange" />
-                    <f:selectItem id="select_private" itemLabel="#{msg.cms_pageMetadata_private}" itemValue="#{false}"></f:selectItem>
-                    <f:selectItem id="select_public" itemLabel="#{msg.cms_pageMetadata_public}" itemValue="#{true}"></f:selectItem>
-                </h:selectOneRadio>
-            </div>
 
             <!-- metadata item action -->
             <div class="page-metadata-item page-metadata-item-action">
@@ -216,6 +208,26 @@
         		
         		</div>
         		
+				<div class="admin__default-block">
+		            <div class="page-metadata-item page-metadata-item-privacy-status">
+		                <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
+
+                            <div class="admin__radio-switch">
+                                <h:selectOneRadio group="movingWallToggle" value="#{cmsBean.selectedPage.published}"
+                                    immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
+                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                </h:selectOneRadio>
+                                <h:selectOneRadio group="movingWallToggle" value="#{cmsBean.selectedPage.published}"
+                                    immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
+                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                </h:selectOneRadio>
+                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                            </div>
+		                
+		                
+		            </div>
+		        </div>
+
 
 				<div class="admin__default-block">
 		            <div class="page-metadata-item page-metadata-item__categories">
@@ -345,8 +357,19 @@
         		</div>
         		
         		
-        		
-        		
+        	<div class="admin__default-block">
+				<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRelatedPi.xhtml" />
+			</div>
+			
+			<div class="admin__default-block">
+                <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePrettyUrl.xhtml" />
+				<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeUrlParams.xhtml" />
+			</div>
+			
+           	<div class="admin__default-block">
+            	<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCssClass.xhtml" />
+            </div>
+                                                           
 
         		
     </composite:implementation>

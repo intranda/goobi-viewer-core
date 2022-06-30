@@ -2,9 +2,52 @@
 	Global style declarations for Admin Backend
    ==============================================================*/
 
+/* ADMIN BACKEND STYLING */
+.admin__content-item {
+	&-wrapper {}
+	&-single {
+		display: flex;
+		width: 100%;
+		// background: #f5f5f5;
+		padding: 1rem;
+	}
+	&-heading {
+		font-size: 25px;
+		margin-bottom: 2rem;
+	}
+	&-header {
+		display: flex;
+	}
+	&-single-inner {
+		// display: flex;
+		flex-grow: 1;
+	}
+	&-order-wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 50px;
+	}
+	&-options {
+		margin-left: auto;
+		display: flex;
+		div {
+			margin-right: 1rem;
+		}
+	}
+	&-option-size {
+		width: 50px;
+		padding: 3px;
+		border-radius: 2px;
+		background: #eee;
+	}
+}
+
+
+
 .content-items {
 
-/* GENERAL LAYOUT */
+/* GENERAL LAYOUT FRONTEND */
 	&__all-items-container {
 		--content-item-h-gap: 2rem;
 		--content-item-v-gap: 3.5rem;
@@ -24,6 +67,8 @@
 	}
 }
 
+
+/* DIFFERENT CONTENT ITEMS LAYOUT FRONTEND */
 .content-item {
 	&__type-heading {
 		h2 {
