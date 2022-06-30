@@ -195,7 +195,8 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            HttpServletRequest request, int proximitySearchDistance) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            HttpServletRequest request, int proximitySearchDistance)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, request,
                 false, proximitySearchDistance);
     }
@@ -287,7 +288,7 @@ public final class SearchHelper {
             }
 
             SearchHit hit =
-                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields, 
+                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields,
                             ignoreFields, translateFields, oneLineFields, null, proximitySearchDistance, thumbs);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
@@ -299,7 +300,7 @@ public final class SearchHelper {
 
         return ret;
     }
-    
+
     /**
      * Main search method for aggregated search.
      *
@@ -529,7 +530,8 @@ public final class SearchHelper {
         if (boostTopLevelDocstructs) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
-        finalQuery = buildFinalQuery(finalQuery, termQuery, boostTopLevelDocstructs, aggregateHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
+        finalQuery = buildFinalQuery(finalQuery, termQuery, boostTopLevelDocstructs,
+                aggregateHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale,
@@ -1083,11 +1085,13 @@ public final class SearchHelper {
             }
 
             // Moving wall license type, use negated filter query
-            if (licenseType.isMovingWall() && StringUtils.isNotBlank(licenseType.getProcessedConditions())) {
+            if (licenseType.isMovingWall()) {
                 logger.trace("License type '{}' is a moving wall", licenseType.getName());
-                query.append(licenseType.getFilterQueryPart(true));
+                query.append(licenseType.getMovingWallFilterQueryPart());
                 // Do not continue; with the next license type here because the user may have full access to the moving wall license,
                 // in which case it should also be added with a non-negated filter query
+            } else {
+                query.append(licenseType.getFilterQueryPart(true));
             }
 
             // License type contains listing privilege
@@ -1126,15 +1130,14 @@ public final class SearchHelper {
 
         return query.toString();
     }
-    
+
     /**
      * 
      * @return
      */
     public static String getMovingWallQuery() {
-        return "-" + SolrConstants.DATE_PUBLICRELEASEDATE + ":[* TO NOW/DATE]";
+        return SolrConstants.DATE_PUBLICRELEASEDATE + ":[* TO NOW/DATE]";
     }
-
 
     /**
      * TODO This method might be quite expensive.

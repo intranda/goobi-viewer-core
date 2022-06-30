@@ -53,6 +53,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
@@ -1009,6 +1010,28 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         }
 
         return new StringBuilder().append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"').toString();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getMovingWallFilterQueryPart() {
+        // Do not append empty sub-query
+        return new StringBuilder().append(" (+")
+                .append(SolrConstants.ACCESSCONDITION)
+                .append(":\"")
+                .append(name)
+                .append("\" +(")
+                .append(SearchHelper.getMovingWallQuery())
+                /**
+                 * The following line is necessary if negateFilterQuery is true. In this case you get a query '(-CONDITION)' which never yields any
+                 * results because queries MUST contain a positive expression in order to do so. So the '*:*' acts as a all-encompassing positive
+                 * expression which has no logical effect (it's equivalent to 'or true') Source:
+                 * https://localcoder.org/weird-solr-lucene-behaviors-with-boolean-operators
+                 */
+                .append(" *:*))")
+                .toString();
     }
 
     /* (non-Javadoc)
