@@ -1089,14 +1089,12 @@ public final class SearchHelper {
                 logger.trace("License type '{}' is a moving wall", licenseType.getName());
                 query.append(licenseType.getMovingWallFilterQueryPart());
                 // Do not continue; with the next license type here because the user may have full access to the moving wall license,
-                // in which case it should also be added with a non-negated filter query
-            } else {
-                query.append(licenseType.getFilterQueryPart(true));
+                // in which case it should also be added without a date restriction
             }
 
             // License type contains listing privilege
             if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(privilege)) {
-                query.append(licenseType.getFilterQueryPart(false));
+                query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
                 continue;
             }
@@ -1105,7 +1103,7 @@ public final class SearchHelper {
                     new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                query.append(licenseType.getFilterQueryPart(false));
+                query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
             } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
                 // If there are overriding license types for which the user has listing permission, ignore the current license type
@@ -1116,7 +1114,7 @@ public final class SearchHelper {
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
                             new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
                             null)) {
-                        query.append(overridingLicenseType.getFilterQueryPart(false));
+                        query.append(overridingLicenseType.getFilterQueryPart());
                         usedLicenseTypes.add(overridingLicenseType.getName());
                         logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
                                 overridingLicenseType.getName(), licenseType.getName());

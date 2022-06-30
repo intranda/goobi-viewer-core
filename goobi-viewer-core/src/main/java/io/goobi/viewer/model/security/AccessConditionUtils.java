@@ -56,6 +56,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -986,7 +987,6 @@ public class AccessConditionUtils {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should remove license types whose names do not match access conditions
-     * @should remove license types whose condition query excludes the given pi
      * @should not remove moving wall license types to open access if condition query excludes given pi
      */
     static Map<String, List<LicenseType>> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
@@ -1003,16 +1003,12 @@ public class AccessConditionUtils {
                 continue;
             }
             // Check whether the license type contains conditions that exclude the given record, in that case disregard this license type
-            if (StringUtils.isNotEmpty(licenseType.getProcessedConditions()) && StringUtils.isNotEmpty(query)) {
-                String conditions = licenseType.getProcessedConditions();
-                // logger.trace("License conditions: {}", conditions);
-                StringBuilder sbQuery = new StringBuilder().append("+(").append(query).append(')');
-                if (conditions.charAt(0) == '-' || conditions.charAt(0) == '+') {
-                    sbQuery.append(' ').append(conditions);
-                } else {
-                    // Make sure the condition query is not optional (starts with + or -)
-                    sbQuery.append(" +(").append(conditions).append(')');
-                }
+            if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)) {
+                StringBuilder sbQuery = new StringBuilder().append("+(")
+                        .append(query)
+                        .append(") +(")
+                        .append(SearchHelper.getMovingWallQuery())
+                        .append(')');
                 logger.trace("License relevance query: {}", StringTools.stripPatternBreakingChars(sbQuery.toString()));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
