@@ -77,18 +77,16 @@ public class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
         }
     }
 
-    // TODO: Update test index with DATE_PUBLICRELEASEDATE, then comment back in
-    // @Test
-    // public void testGetPdf_refuseAccess() {
-    //     String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI_ACCESS_RESTRICTED).build();
-    //     System.out.println(url);
-    //     try (Response response = target(url)
-    //             .request()
-    //             .header("x-forwarded-for", "1.2.3.4")
-    //             .accept("application/pdf")
-    //             .get()) {
-    //         assertEquals("Should return status 403", 403, response.getStatus());
-    //     }
-    // }
+    @Test
+    public void testGetPdf_refuseAccess() {
+        String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI_ACCESS_RESTRICTED).build();
+        try (Response response = target(url)
+                .request()
+                .header("x-forwarded-for", "1.2.3.4")
+                .accept("application/pdf")
+                .get()) {
+            assertEquals("Should return status 403", 403, response.getStatus());
+        }
+    }
 
 }

@@ -35,6 +35,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.ViewManager;
 
@@ -239,26 +240,25 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertTrue(adb.isRecordLoaded());
     }
 
-    // TODO: Update test index with DATE_PUBLICRELEASEDATE, then comment back in
-    //    /**
-    //     * @see ActiveDocumentBean#update()
-    //     * @verifies throw RecordNotFoundException if listing not allowed by default
-    //     */
-    //    @Test(expected = RecordNotFoundException.class)
-    //    public void update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault() throws Exception {
-    //        ActiveDocumentBean adb = new ActiveDocumentBean();
-    //
-    //        // Record will be released by a moving wall in 2041
-    //        adb.setPersistentIdentifier("557335825");
-    //        adb.setImageToShow("1");
-    //
-    //        // Override config setting so that localhost doesn't get full access
-    //        DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
-    //        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
-    //
-    //        adb.update();
-    //        Assert.fail();
-    //    }
+    /**
+     * @see ActiveDocumentBean#update()
+     * @verifies throw RecordNotFoundException if listing not allowed by default
+     */
+    @Test(expected = RecordNotFoundException.class)
+    public void update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault() throws Exception {
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+
+        // Record will be released by a moving wall in 2041
+        adb.setPersistentIdentifier("557335825");
+        adb.setImageToShow("1");
+
+        // Override config setting so that localhost doesn't get full access
+        DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+
+        adb.update();
+        Assert.fail();
+    }
 
     /**
      * @see ActiveDocumentBean#getPageUrlRelativeToCurrentPage(int)
