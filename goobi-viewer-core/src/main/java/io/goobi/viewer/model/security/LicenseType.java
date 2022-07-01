@@ -53,9 +53,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
-import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
@@ -80,7 +80,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     private static final String LICENSE_TYPE_DESC_CMS = "licenseType_cms_desc";
     public static final String LICENSE_TYPE_LEGAL_DISCLAIMER = "licenseType_disclaimer";
     private static final String LICENSE_TYPE_DESC_LEGAL_DISCLAIMER = "licenseType_disclaimer_desc";
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -252,36 +251,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * <p>
-     * getProcessedConditions.
-     * </p>
-     *
-     * @should replace NOW/YEAR with the current year if not using a date field
-     * @return a {@link java.lang.String} object.
-     */
-    public String getProcessedConditions() {
-        String conditions = this.conditions;
-        // Remove file name conditions
-        conditions = getQueryConditions(conditions);
-        // Convert "NOW/YEAR"
-        conditions = SolrTools.getProcessedConditions(conditions);
-
-        return conditions.trim();
-    }
-
-    /**
-     * Get the conditions referring to a SOLR query. This is either the substring in {} after QUERY: or the entire string if neither QUERY:{...} nor
-     * FILENAME:{...} is part of the given string
-     *
-     * @param conditions
-     * @return
-     */
-    private static String getQueryConditions(String conditions) {
-        String queryConditions = conditions == null ? "" : conditions;
-        return queryConditions;
     }
 
     /**
@@ -986,30 +955,31 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      *
      * @return
      */
-    public String getFilterQueryPart(boolean negateFilterQuery) {
-        String processedConditions = getProcessedConditions();
-        if (StringUtils.isNotBlank(processedConditions)) {
-            // Do not append empty sub-query
-            return new StringBuilder().append(" (+")
-                    .append(SolrConstants.ACCESSCONDITION)
-                    .append(":\"")
-                    .append(name)
-                    .append("\" ")
-                    .append(negateFilterQuery ? '-' : '+')
-                    .append('(')
-                    .append(processedConditions)
-                    /**
-                     * The following line is necessary if negateFilterQuery is true. In this case you get a query '(-CONDITION)'
-                     * which never yields any results because queries MUST contain a positive expression in order to do so.
-                     * So the '*:*' acts as a all-encompassing positive expression which has no logical effect (it's equivalent to 'or true')
-                     * Source: https://localcoder.org/weird-solr-lucene-behaviors-with-boolean-operators
-                     */
-                    .append(" *:*")
-                    .append("))")
-                    .toString();
-        }
-
+    public String getFilterQueryPart() {
         return new StringBuilder().append(" ").append(SolrConstants.ACCESSCONDITION).append(":\"").append(name).append('"').toString();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getMovingWallFilterQueryPart() {
+        // Do not append empty sub-query
+        return new StringBuilder().append(" (+")
+                .append(SolrConstants.ACCESSCONDITION)
+                .append(":\"")
+                .append(name)
+                .append("\" +")
+                .append(SearchHelper.getMovingWallQuery())
+                /**
+                 * The following line is necessary if negateFilterQuery is true. In this case you get a query '(-CONDITION)' which never yields any
+                 * results because queries MUST contain a positive expression in order to do so. So the '*:*' acts as a all-encompassing positive
+                 * expression which has no logical effect (it's equivalent to 'or true') Source:
+                 * https://localcoder.org/weird-solr-lucene-behaviors-with-boolean-operators
+                 */
+                // .append(" *:*))")
+                .append(')')
+                .toString();
     }
 
     /* (non-Javadoc)
@@ -1021,7 +991,6 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         StringBuilder sb = new StringBuilder("LicenceType: ").append(getName()).append(":\t");
         sb.append("moving wall: ").append(isMovingWall());
         sb.append("\topenaccess: ").append(isOpenAccess());
-        sb.append("\tconditions: ").append(conditions);
         sb.append("\n\t").append("Privileges: ").append(StringUtils.join(getPrivileges(), ", "));
         return sb.toString();
     }

@@ -126,6 +126,8 @@ public class SolrConstants {
     public static final String CURRENTNOSORT = "CURRENTNOSORT";
     /** Constant <code>DATAREPOSITORY="DATAREPOSITORY"</code> */
     public static final String DATAREPOSITORY = "DATAREPOSITORY";
+    /** Moving wall public release date. */
+    public static final String DATE_PUBLICRELEASEDATE = "DATE_PUBLICRELEASEDATE";
     /** Constant <code>DATECREATED="DATECREATED"</code> */
     public static final String DATECREATED = "DATECREATED";
     /** Constant <code>DATEDELETED="DATEDELETED"</code> */
