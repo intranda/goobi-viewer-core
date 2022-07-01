@@ -97,13 +97,14 @@ public class GravatarUserAvatar implements UserAvatar {
     }
 
     /**
-     *
+     * Gravatar requires MD5.
+     * 
      * @param message
      * @return
      */
     static String md5Hex(String message) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("MD5"); //NOSONAR
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException e) {
             logger.error(e.getMessage());

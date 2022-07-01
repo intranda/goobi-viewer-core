@@ -15,7 +15,6 @@
  */
 package io.goobi.viewer.model.security.clients;
 
-import java.net.http.HttpRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -30,7 +29,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
 
 /**
@@ -65,7 +63,7 @@ public class ClientApplicationManager {
         this.dao = dao;
         this.allClients = dao.getClientApplicationByClientId(GENERAL_CLIENT_IDENTIFIER);
     }
-    
+
     /**
      * Internal use for mocking
      */
@@ -110,26 +108,28 @@ public class ClientApplicationManager {
     public void setAllClients(ClientApplication allClients) {
         this.allClients = allClients;
     }
-    
+
     /**
-     * Store the given client in the given session to consider it for access condition checks. If the session doesn't contain the client yet, its {@link ClientApplication#getDateLastAccess()} is updated and
-     * the client saved to database
+     * Store the given client in the given session to consider it for access condition checks. If the session doesn't contain the client yet, its
+     * {@link ClientApplication#getDateLastAccess()} is updated and the client saved to database
      * 
      * @param client the client to register
      * @param session the session to store the client
      * @return true if the client is granted access rights, else false
      */
     public boolean registerClientInSession(ClientApplication client, HttpSession session) {
-            if (getClientFromSession(session).isEmpty()) {
-                try {
-                    client.setDateLastAccess(LocalDateTime.now());
-                    dao.saveClientApplication(client);
-                } catch (DAOException e) {
-                    logger.error("Error updating client in database ", e);
-                }
+        if (getClientFromSession(session).isEmpty()) {
+            try {
+                client.setDateLastAccess(LocalDateTime.now());
+                dao.saveClientApplication(client);
+            } catch (DAOException e) {
+                logger.error("Error updating client in database ", e);
             }
+        }
+        if (session != null) {
             session.setAttribute(CLIENT_SESSION_ATTRIBUTE, client);
-            return !client.isRegistrationPendingOrDenied();
+        }
+        return !client.isRegistrationPendingOrDenied();
     }
 
     /**
@@ -150,11 +150,12 @@ public class ClientApplicationManager {
 
     /**
      * Get the client stored in the given request calling {@link #getClientFromSession(HttpSession)} on the requests session, if any
-     * @param request   the request from which to get the client. If null, an empty Optional will be returned
-     * @return  An optional containing the client if one exists
+     * 
+     * @param request the request from which to get the client. If null, an empty Optional will be returned
+     * @return An optional containing the client if one exists
      */
     public static Optional<ClientApplication> getClientFromRequest(HttpServletRequest request) {
-        if(request != null) {
+        if (request != null) {
             return getClientFromSession(request.getSession());
         }
         return Optional.empty();
@@ -201,10 +202,9 @@ public class ClientApplicationManager {
         }
         if (dao.saveClientApplication(client)) {
             return client;
-        } else {
-            throw new DAOException("Failed to persist client");
         }
 
+        throw new DAOException("Failed to persist client");
     }
 
     /**
@@ -219,6 +219,7 @@ public class ClientApplicationManager {
 
     /**
      * Load the "all clients" ClientApplication directly from the database, so it comes with all licenses
+     * 
      * @return the client
      */
     public ClientApplication getAllClientsFromDatabase() {

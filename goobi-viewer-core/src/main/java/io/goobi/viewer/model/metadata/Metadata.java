@@ -644,11 +644,9 @@ public class Metadata implements Serializable {
      * @return a boolean.
      */
     public boolean hasParam(String paramName) {
-        if (params != null) {
-            for (MetadataParameter param : params) {
-                if (param.getKey().equals(paramName)) {
-                    return true;
-                }
+        for (MetadataParameter param : params) {
+            if (param.getKey().equals(paramName)) {
+                return true;
             }
         }
 
@@ -660,10 +658,6 @@ public class Metadata implements Serializable {
      * @return Number of params
      */
     public int getParamCount() {
-        if (params == null) {
-            return 0;
-        }
-
         return params.size();
     }
 

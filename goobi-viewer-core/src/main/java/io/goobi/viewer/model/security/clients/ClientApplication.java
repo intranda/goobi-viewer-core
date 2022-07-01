@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.model.security.clients;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,82 +59,88 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * @author florian
  *
- * This class represents clients accessing the viewer not through web-browsers but
- * using dedicated client-applications which must register with the server to view any data
- * but which may also enjoy unique viewing rights via dedicated {@link License Licenses}
+ *         This class represents clients accessing the viewer not through web-browsers but using dedicated client-applications which must register
+ *         with the server to view any data but which may also enjoy unique viewing rights via dedicated {@link License Licenses}
  *
  */
 @Entity
 @Table(name = "client_applications")
-public class ClientApplication  implements ILicensee {
+public class ClientApplication implements ILicensee, Serializable {
 
-    
+    private static final long serialVersionUID = -6806071337346935488L;
+
     /** Unique database ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "client_application_id")
-    @Schema(description = "The internal database identifier of the client", example="2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The internal database identifier of the client", example = "2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
-    
+
     /**
      * A secret a client needs to pass to the server to identify itself
      */
-    @Schema(description = "The internal identifier/secret of the client", example="0D219Z74-F764-4CAD-8361-D9964FD1B186", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The internal identifier/secret of the client", example = "0D219Z74-F764-4CAD-8361-D9964FD1B186",
+            accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "client_identifier")
     private String clientIdentifier;
-    
+
     /**
      * The IP under which the client first requested registration
      */
-    @Schema(description = "The IP under which the client first requested registration", example="192.168.172.13", accessMode = Schema.AccessMode.READ_WRITE)
+    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13",
+            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR
     @Column(name = "client_ip")
     private String clientIp;
-    
+
     /**
      * The name to be displayed for the client
      */
-    @Schema(description = "The name to be displayed for the client", example="Windows Desktop 1", accessMode = Schema.AccessMode.READ_WRITE)
+    @Schema(description = "The name to be displayed for the client", example = "Windows Desktop 1", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "name")
     private String name;
-    
+
     /**
      * A description of the client
      */
-    @Schema(description = "A description of the client", example="second workplace, right aisle", accessMode = Schema.AccessMode.READ_WRITE)
+    @Schema(description = "A description of the client", example = "second workplace, right aisle", accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "description")
     private String description;
-    
+
     /**
      * The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access
      */
-    @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access", example="2022-05-19T11:55:16Z", type="date", format="ISO 8601",  accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The time at which the client was granted or denied access, or if not yet happened, the time at which it first requested access",
+            example = "2022-05-19T11:55:16Z", type = "date", format = "ISO 8601", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_registered", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateRegistered = LocalDateTime.now();
-    
+
     /**
      * The last time the client sent a request to the server
      */
-    @Schema(description = "The last time the client sent a request to the server", example="2022-05-19T11:55:16Z", type="date", format="ISO 8601",  accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "The last time the client sent a request to the server", example = "2022-05-19T11:55:16Z", type = "date",
+            format = "ISO 8601", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_last_access", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
     private LocalDateTime dateLastAccess = LocalDateTime.now();
-    
+
     /**
      * An IP Subnet mask. If present, the client may only log in if its current IP matches the mask
      */
-    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example="192.168.0.1/16", accessMode = Schema.AccessMode.READ_WRITE)
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16",
+            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR
     @Column(name = "subnet_mask")
     private String subnetMask;
 
     /**
      * The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges
      */
-    @Schema(description = "The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges", example="GRANTED", accessMode = Schema.AccessMode.READ_WRITE, allowableValues = {"GRANTED, DENIED"})
+    @Schema(description = "The access status of the client. Only clients with access status 'GRANTED' benefit from client privileges",
+            example = "GRANTED", accessMode = Schema.AccessMode.READ_WRITE, allowableValues = { "GRANTED, DENIED" })
     @Column(name = "access_status")
     @Enumerated(EnumType.STRING)
     private AccessStatus accessStatus;
-    
+
     /**
      * List of {@link License Licenses} this client is privileged to
      */
@@ -141,9 +148,10 @@ public class ClientApplication  implements ILicensee {
     @PrivateOwned
     @JsonIgnore
     private List<License> licenses = new ArrayList<>();
-    
+
     /**
-     * Status describing if the client is eligible to receive viewing privileges 
+     * Status describing if the client is eligible to receive viewing privileges
+     * 
      * @author florian
      *
      */
@@ -161,21 +169,21 @@ public class ClientApplication  implements ILicensee {
          */
         GRANTED,
         /**
-         * The client has explicitly been denied access to viewing privileges. 
-         * Not used currently
+         * The client has explicitly been denied access to viewing privileges. Not used currently
          */
         DENIED,
     }
-    
+
     /**
      * internal constructor for deserializing from database
      */
     public ClientApplication() {
-        
+
     }
-    
+
     /**
      * Cloning constructor
+     * 
      * @param source
      */
     public ClientApplication(ClientApplication source) {
@@ -190,9 +198,10 @@ public class ClientApplication  implements ILicensee {
         this.subnetMask = source.getSubnetMask();
         this.licenses = new ArrayList<>(source.getLicenses());
     }
-    
+
     /**
      * constructor to create a new ClientApplication from a client request
+     * 
      * @param identifier the client identifier
      */
     public ClientApplication(String identifier) {
@@ -201,6 +210,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #id}
+     * 
      * @return the {@link #id}
      */
     public Long getId() {
@@ -209,22 +219,25 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Set the {@link #id}
+     * 
      * @param id the {@link #id} to set
      */
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
      * Get the current {@link #accessStatus}
+     * 
      * @return the {@link #accessStatus}
      */
     public AccessStatus getAccessStatus() {
         return accessStatus;
     }
-    
+
     /**
      * Set the {@link #accessStatus}
+     * 
      * @param accessStatus the {@link #accessStatus} to set
      */
     public void setAccessStatus(AccessStatus accessStatus) {
@@ -233,14 +246,16 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #clientIdentifier}
+     * 
      * @return the {@link #clientIdentifier}
      */
     public String getClientIdentifier() {
         return clientIdentifier;
     }
-    
+
     /**
      * Set the {@link #clientIdentifier}
+     * 
      * @param clientIdentifier the {@link #clientIdentifier} to set
      */
     public void setClientIdentifier(String clientIdentifier) {
@@ -249,6 +264,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #clientIp}
+     * 
      * @return the {@link #clientIp}
      */
     public String getClientIp() {
@@ -257,6 +273,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Set the {@link #clientIp}
+     * 
      * @param clientIp the {@link #clientIp} to set
      */
     public void setClientIp(String clientIp) {
@@ -265,6 +282,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #dateRegistered}
+     * 
      * @return the {@link #dateRegistered}
      */
     public LocalDateTime getDateRegistered() {
@@ -273,6 +291,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #dateRegistered}
+     * 
      * @param dateRegistered the {@link #dateRegistered} to set
      */
     public void setDateRegistered(LocalDateTime dateRegistered) {
@@ -281,6 +300,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #dateLastAccess}
+     * 
      * @return the {@link #dateLastAccess}
      */
     public LocalDateTime getDateLastAccess() {
@@ -289,6 +309,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Set the {@link #dateLastAccess}
+     * 
      * @param dateLastAccess the {@link #dateLastAccess} to set
      */
     public void setDateLastAccess(LocalDateTime dateLastAccess) {
@@ -297,6 +318,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #name}
+     * 
      * @return the {@link #name}
      */
     public String getName() {
@@ -305,6 +327,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Set the {@link #name}
+     * 
      * @param name the {@link #name} to set
      */
     public void setName(String name) {
@@ -313,6 +336,7 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Get the {@link #description}
+     * 
      * @return the {@link #description}
      */
     public String getDescription() {
@@ -321,80 +345,84 @@ public class ClientApplication  implements ILicensee {
 
     /**
      * Set the {@link #description}
+     * 
      * @param description the {@link #description} to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      * Check if the given identifier matches this instances {@link #clientIdentifier}
+     * 
      * @param identifier
      * @return true if the given identifier is not null and equals this instances {@link #clientIdentifier}
      */
     public boolean matchesClientIdentifier(String identifier) {
         return StringUtils.isNotBlank(identifier) && identifier.equals(this.clientIdentifier);
     }
-    
+
     /**
      * Check if this client requires approval of its registration
-     * @return  true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED}
+     * 
+     * @return true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED}
      */
     @JsonIgnore
     public boolean isRegistrationPending() {
         return AccessStatus.REQUESTED.equals(this.getAccessStatus());
     }
-    
+
     /**
      * Check if this client requires approval of its registration or this approval has been denied
-     * @return  true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED} or {@link AccessStatus#DENIED}
+     * 
+     * @return true if the {@link #accessStatus} is {@link AccessStatus#REQUESTED} or {@link AccessStatus#DENIED}
      */
     @JsonIgnore
     public boolean isRegistrationPendingOrDenied() {
         return AccessStatus.REQUESTED.equals(this.getAccessStatus()) || AccessStatus.DENIED.equals(this.getAccessStatus());
     }
-    
+
     /**
      * Use hash code of the {@link #clientIdentifier}
      */
     @Override
     public int hashCode() {
-        if(this.clientIdentifier != null) {
+        if (this.clientIdentifier != null) {
             return this.clientIdentifier.hashCode();
-        } else {
-            return 0;
         }
+        
+        return 0;
     }
-    
+
     /**
      * Two clients are equal if heir {@link #clientIdentifier}s are equals
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            ClientApplication other = (ClientApplication)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            ClientApplication other = (ClientApplication) obj;
             return Objects.equals(other.clientIdentifier, this.clientIdentifier);
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
-    
     /**
      * Get the {@link License}s this client is privileged to
+     * 
      * @return the licenses
      */
     public List<License> getLicenses() {
         return Collections.unmodifiableList(this.licenses);
     }
-    
+
     /**
      * Add a {@link License} to the {@link #licenses}
      */
     public boolean addLicense(License license) {
         return this.licenses.add(license);
     }
-    
+
     /**
      * Remove {@link License} from the {@link #licenses}
      */
@@ -402,17 +430,19 @@ public class ClientApplication  implements ILicensee {
     public boolean removeLicense(License license) {
         return this.licenses.remove(license);
     }
-    
+
     /**
      * Get the {@link #subnetMask}
+     * 
      * @return the {@link #subnetMask}
      */
     public String getSubnetMask() {
         return subnetMask;
     }
-    
+
     /**
      * Set the {@link #subnetMask}
+     * 
      * @param subnetMask the {@link #subnetMask} to set
      */
     public void setSubnetMask(String subnetMask) {
@@ -422,10 +452,10 @@ public class ClientApplication  implements ILicensee {
     /**
      * Check if this client has the privilege of the given privilegeName via its {@link #licenses}
      * 
-     * @param conditionList     List of access condition names to satisfy
-     * @param privilegeName     The privilege to check for
-     * @param pi                PI of a record to check 
-     * @return  true if the privilege should be granted to the client
+     * @param conditionList List of access condition names to satisfy
+     * @param privilegeName The privilege to check for
+     * @param pi PI of a record to check
+     * @return true if the privilege should be granted to the client
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -452,7 +482,7 @@ public class ClientApplication  implements ILicensee {
         return permissionMap.isEmpty() || permissionMap.containsValue(true);
         // return !permissionMap.containsValue(false);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
@@ -486,7 +516,7 @@ public class ClientApplication  implements ILicensee {
 
         return false;
     }
-    
+
     /**
      * Check if the given ip matches the {@link #subnetMask} of this client
      *
@@ -494,12 +524,12 @@ public class ClientApplication  implements ILicensee {
      * @return a boolean.
      */
     public boolean matchIp(String inIp) {
-        
+
         // Without subnet mask, allow access from all IPs
-        if(StringUtils.isBlank(subnetMask)) {
+        if (StringUtils.isBlank(subnetMask)) {
             return true;
         }
-        
+
         if (inIp.equals(NetTools.ADDRESS_LOCALHOST_IPV6)) {
             inIp = NetTools.ADDRESS_LOCALHOST_IPV4;
         }
@@ -524,26 +554,28 @@ public class ClientApplication  implements ILicensee {
      * If no subnet mask has been set, use the clientIp if available with a '/32' mask
      */
     public void initializeSubnetMask() {
-        if(subnetMask == null && StringUtils.isNotBlank(clientIp)) {
+        if (subnetMask == null && StringUtils.isNotBlank(clientIp)) {
             subnetMask = clientIp + "/32";
         }
     }
-    
+
     /**
      * Check if the client is allowed to log in
+     * 
      * @param request
-     * @return  true exactly if the access status is {@link AccessStatus#GRANTED} and the request's ip-address is within the client's IP range
+     * @return true exactly if the access status is {@link AccessStatus#GRANTED} and the request's ip-address is within the client's IP range
      */
     public boolean mayLogIn(HttpServletRequest request) {
-       return mayLogIn(NetTools.getIpAddress(request));
+        return mayLogIn(NetTools.getIpAddress(request));
     }
-    
+
     /**
      * Check if the client is allowed to log in
+     * 
      * @param request
-     * @return  true exactly if the access status is {@link AccessStatus#GRANTED} and the given ip-address is within the client's IP range
+     * @return true exactly if the access status is {@link AccessStatus#GRANTED} and the given ip-address is within the client's IP range
      */
     public boolean mayLogIn(String ip) {
-       return AccessStatus.GRANTED.equals(getAccessStatus()) && matchIp(ip);
+        return AccessStatus.GRANTED.equals(getAccessStatus()) && matchIp(ip);
     }
 }
