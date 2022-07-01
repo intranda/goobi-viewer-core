@@ -92,6 +92,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     private String name;
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
+    @Deprecated
     @Column(name = "conditions")
     private String conditions;
     @Column(name = "open_access")
@@ -361,6 +362,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      *
      * @return the conditions
      */
+    @Deprecated
     public String getConditions() {
         return conditions;
     }
@@ -372,6 +374,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      *
      * @param conditions the conditions to set
      */
+    @Deprecated
     public void setConditions(String conditions) {
         this.conditions = conditions;
     }
