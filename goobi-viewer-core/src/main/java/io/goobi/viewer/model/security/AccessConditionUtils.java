@@ -995,7 +995,7 @@ public class AccessConditionUtils {
             return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
         }
 
-        //         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
+        // logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
         Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
             // logger.trace("{}, moving wall: {}", licenseType.getName(), licenseType.isMovingWall());
@@ -1006,12 +1006,15 @@ public class AccessConditionUtils {
             if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)) {
                 StringBuilder sbQuery = new StringBuilder().append("+(")
                         .append(query)
-                        .append(") +(")
+                        .append(") +")
+                        .append(licenseType.getFilterQueryPart().trim())
+                        .append(" -(")
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
                 logger.trace("License relevance query: {}", StringTools.stripPatternBreakingChars(sbQuery.toString()));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
+                    logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
+                            licenseType.getName(), query);
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
                         logger.trace(
@@ -1022,7 +1025,7 @@ public class AccessConditionUtils {
                         continue;
                     }
                 }
-                logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
+                logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(),
                         StringTools.stripPatternBreakingChars(query));
             }
 

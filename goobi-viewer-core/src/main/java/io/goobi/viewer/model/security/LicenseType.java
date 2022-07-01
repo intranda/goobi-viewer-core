@@ -92,6 +92,8 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     private String name;
     @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
+    @Column(name = "conditions")
+    private String conditions;
     @Column(name = "open_access")
     private boolean openAccess = false;
     @Column(name = "core")
@@ -350,6 +352,28 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
             }
         }
         return ugcType;
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>conditions</code>.
+     * </p>
+     *
+     * @return the conditions
+     */
+    public String getConditions() {
+        return conditions;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>conditions</code>.
+     * </p>
+     *
+     * @param conditions the conditions to set
+     */
+    public void setConditions(String conditions) {
+        this.conditions = conditions;
     }
 
     /**

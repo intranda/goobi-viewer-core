@@ -232,20 +232,15 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      * @verifies not remove moving wall license types to open access if condition query excludes given pi
      */
     @Test
-    public void getRelevantLicenseTypesOnly_shouldNotRemoveWallLicenseTypesToOpenAccessIfConditionQueryExcludesGivenPi() throws Exception {
-        List<LicenseType> allLicenseTypes = new ArrayList<>();
-
+    public void getRelevantLicenseTypesOnly_shouldNotRemoveMovingWallLicenseTypesToOpenAccessIfConditionQueryExcludesGivenPi() throws Exception {
         LicenseType lt = new LicenseType();
-        allLicenseTypes.add(lt);
         lt.setName("type1");
         lt.setMovingWall(true);
 
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("type1");
-
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005";
-        Map<String, List<LicenseType>> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
-                query, Collections.singletonMap("", Boolean.FALSE));
+        Map<String, List<LicenseType>> ret =
+                AccessConditionUtils.getRelevantLicenseTypesOnly(Collections.singletonList(lt), Collections.singleton("type1"),
+                        query, Collections.singletonMap("", Boolean.FALSE));
         Assert.assertNotNull(ret);
         Assert.assertNotNull(ret.get(""));
         Assert.assertEquals(1, ret.get("").size());
@@ -462,5 +457,4 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         licenses = AccessConditionUtils.getApplyingLicenses(Optional.empty(), "192.168.0.10", licenseType, dao);
         assertTrue(licenses.isEmpty());
     }
-
 }
