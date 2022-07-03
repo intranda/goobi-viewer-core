@@ -155,7 +155,6 @@
 		<swagger.version>2.2.1</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
-		<xerces.version>2.12.2</xerces.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 	</properties>
@@ -657,17 +656,6 @@
 			<artifactId>weld-servlet-shaded</artifactId>
 			<version>${weld-servlet-shaded.version}</version>
 		</dependency>
-		<!-- Do not remove until migrating to current Solr version -->
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>${xerces.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xmlParserAPIs</artifactId>
-			<version>${xmlParserAPIs.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>com.coveo</groupId>
 			<artifactId>saml-client</artifactId>
@@ -751,10 +739,6 @@
 							<ignoredUnusedDeclaredDependencies>
 								<!-- JSTL is used within JSF for example c:forEach -->
 								<ignoredUnusedDeclaredDependency>javax.servlet:jstl</ignoredUnusedDeclaredDependency>
-
-								<!-- xerces is a dependency from the old Solr version. It can be removed when updating to Solr 8 -->
-								<ignoredUnusedDeclaredDependency>xerces:xmlParserAPIs</ignoredUnusedDeclaredDependency>
-								<ignoredUnusedDeclaredDependency>xerces:xercesImpl</ignoredUnusedDeclaredDependency>
 
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
