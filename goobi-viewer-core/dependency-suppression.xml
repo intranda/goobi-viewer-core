@@ -110,6 +110,7 @@
         <cve>CVE-2021-23382</cve>
         <vulnerabilityName>1064600</vulnerabilityName>
         <vulnerabilityName>1070012</vulnerabilityName>
+        <vulnerabilityName>CVE-2021-23368</vulnerabilityName>
     </suppress>
     
 
@@ -154,6 +155,8 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:npm/glob\-parent@.*$</packageUrl>
         <vulnerabilityName>1067329</vulnerabilityName>
+        <vulnerabilityName>CVE-2020-28469</vulnerabilityName>
+        <vulnerabilityName>CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')</vulnerabilityName>
     </suppress>
 
 
@@ -167,14 +170,4 @@
         <cve>CVE-2017-16058</cve>
     </suppress>
 
-
-
-    <!-- Comes via grunt-riot which is used in the development environment but not in production -->
-    <suppress>
-        <notes><![CDATA[
-        file name: glob-parent:3.1.0
-        ]]></notes>
-        <packageUrl regex="true">^pkg:npm/glob\-parent@.*$</packageUrl>
-        <vulnerabilityName>CWE-400: Uncontrolled Resource Consumption ('Resource Exhaustion')</vulnerabilityName>
-    </suppress>
 </suppressions>

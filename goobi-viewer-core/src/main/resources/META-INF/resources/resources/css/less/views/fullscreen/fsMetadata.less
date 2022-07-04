@@ -154,6 +154,15 @@
 			dt {
 			}
 		}
+		&__wrapper {
+			&.-isBoxed {
+				padding: 0rem;
+				.metadata__ungrouped-wrapper {
+				}
+				.metadata__element-wrapper-single {
+				}
+			}
+		}
 		&__heading {
 			padding-left: 0rem;
 			background: transparent;
@@ -190,6 +199,9 @@
 	            }
 	        }
 	    }
+	}
+	.metadata__title-wrapper + .metadata__element-wrapper .metadata__elements-h2:first-child {
+		margin-top: 0;
 	}
 }
 

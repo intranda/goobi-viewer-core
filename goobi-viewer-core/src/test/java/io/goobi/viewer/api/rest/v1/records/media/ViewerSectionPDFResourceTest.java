@@ -91,5 +91,4 @@ public class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
             assertEquals("Should return status 403", 403, response.getStatus());
         }
     }
-
 }

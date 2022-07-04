@@ -987,7 +987,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals(Long.valueOf(1), licenseType.getId());
             Assert.assertEquals("license type 1 name", licenseType.getName());
             Assert.assertEquals("license type 1 desc", licenseType.getDescription());
-            Assert.assertEquals("-YEAR:[* TO 3000]", licenseType.getConditions());
             Assert.assertEquals(false, licenseType.isOpenAccess());
             Assert.assertEquals(1, licenseType.getPrivileges().size());
             Assert.assertEquals(1, licenseType.getOverridingLicenseTypes().size());

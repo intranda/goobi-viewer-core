@@ -94,7 +94,7 @@
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.2.2</iiif-api-model.version>
-		<normdataimporter.version>1.9.1</normdataimporter.version>
+		<normdataimporter.version>1.9.2</normdataimporter.version>
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
@@ -149,13 +149,12 @@
 		<prettyfaces.version>3.5.1.Final</prettyfaces.version>
 		<rome.version>1.18.0</rome.version>
 		<slf4j.version>1.7.36</slf4j.version>
-		<log4j.version>2.17.2</log4j.version>
+		<log4j.version>2.18.0</log4j.version>
 		<solr.version>8.11.1</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
 		<swagger.version>2.2.1</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
-		<xerces.version>2.12.2</xerces.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 	</properties>
@@ -657,17 +656,6 @@
 			<artifactId>weld-servlet-shaded</artifactId>
 			<version>${weld-servlet-shaded.version}</version>
 		</dependency>
-		<!-- Do not remove until migrating to current Solr version -->
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>${xerces.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xmlParserAPIs</artifactId>
-			<version>${xmlParserAPIs.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>com.coveo</groupId>
 			<artifactId>saml-client</artifactId>
@@ -751,10 +739,6 @@
 							<ignoredUnusedDeclaredDependencies>
 								<!-- JSTL is used within JSF for example c:forEach -->
 								<ignoredUnusedDeclaredDependency>javax.servlet:jstl</ignoredUnusedDeclaredDependency>
-
-								<!-- xerces is a dependency from the old Solr version. It can be removed when updating to Solr 8 -->
-								<ignoredUnusedDeclaredDependency>xerces:xmlParserAPIs</ignoredUnusedDeclaredDependency>
-								<ignoredUnusedDeclaredDependency>xerces:xercesImpl</ignoredUnusedDeclaredDependency>
 
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
@@ -965,7 +949,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.3</version>
+						<version>10.3.1</version>
 					</dependency>
 				</dependencies>
 				<executions>
