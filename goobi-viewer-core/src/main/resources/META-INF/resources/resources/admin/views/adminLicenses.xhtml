@@ -100,12 +100,6 @@
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
-
-	                                            <!-- CONDITIONS -->
-	                                            <ui:fragment rendered="#{licenseType.conditions != null and licenseType.conditions != ''}">
-	                                                <dt class="col-sm-4">#{msg.license_conditions}:</dt>
-	                                                <dd class="col-sm-8">#{licenseType.conditions}</dd>
-	                                            </ui:fragment>
 	
 	                                            <!-- FUNCTIONS -->
 	                                            <ui:fragment rendered="#{!licenseType.openAccess}">
