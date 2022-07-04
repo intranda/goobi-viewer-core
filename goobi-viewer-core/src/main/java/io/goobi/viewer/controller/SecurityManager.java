@@ -116,7 +116,7 @@ public class SecurityManager {
      * @should return delay if time between lastAttempt and now smaller than delay
      */
     static long getDelay(int attempts, long lastAttempt, long now) {
-        long delay = attempts * 3 * 1000;
+        long delay = attempts * 3 * 1000L;
         if (now - lastAttempt >= delay) {
             return 0;
         }

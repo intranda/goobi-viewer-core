@@ -29,7 +29,6 @@ var viewerJS = ( function( viewer ) {
 	        var currTrigger = $( this ); 
 	            $( currTrigger ).next( '.sidebar-menu__submenu' ).slideToggle('fast');
 	            $( currTrigger ).toggleClass('-active');
-	            console.log('clicked');
 	        });
     });
 

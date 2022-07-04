@@ -115,16 +115,10 @@ public class CanvasBuilder extends AbstractBuilder {
         Canvas3 canvas = new Canvas3(canvasUri);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
 
-        switch (page.getMimeType()) {
-            case "image":
-                addImageResource(canvas, page);
-            case "audio":
-            case "video":
-            case "text":
-            case "object":
-            case "application":
-            default:
-                //not implemented
+        if(page.getMimeType().matches("(?i)image(\\/.*)?")) {
+            addImageResource(canvas, page);            
+        } else {
+            //not implemented
         }
 
         canvas.addAnnotations(getFulltextAnnotationsReference(page));
@@ -238,9 +232,13 @@ public class CanvasBuilder extends AbstractBuilder {
             canvas.setWidth(page.getImageWidth());
             canvas.setHeight(page.getImageHeight());
         } else {
-            ImageInformation info = images.getImageInformation(page);
-            canvas.setWidth(info.getWidth());
-            canvas.setHeight(info.getHeight());
+            try {                
+                ImageInformation info = images.getImageInformation(page);
+                canvas.setWidth(info.getWidth());
+                canvas.setHeight(info.getHeight());
+            } catch(ContentLibException e) {
+                logger.warn("Cannot set canvas size", e);
+            }
         }
 
         if (page.isHasImage()) {

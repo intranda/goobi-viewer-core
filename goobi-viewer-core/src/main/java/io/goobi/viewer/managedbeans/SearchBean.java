@@ -96,6 +96,7 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -370,12 +371,31 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Search using currently set search string
      *
-     * @return a {@link java.lang.String} object.
+     * @return Target outcome
      */
     public String searchDirect() {
         logger.trace("searchDirect");
         resetSearchResults();
         //facets.resetCurrentFacetString();
+        return "pretty:newSearch5";
+    }
+
+    /**
+     * Executes a search for any content tagged with today's month and day.
+     * 
+     * @return Target outcome
+     */
+    public String searchToday() {
+        logger.trace("searchToday");
+        resetSearchResults();
+        resetSearchParameters();
+        facets.resetSliderRange();
+        facets.resetCurrentFacetString();
+        generateSimpleSearchString(searchString);
+
+        String query = SolrConstants.MONTHDAY + ":" + DateTools.formatterMonthDayOnly.format(LocalDateTime.now());
+        setExactSearchString(query);
+
         return "pretty:newSearch5";
     }
 
@@ -850,14 +870,26 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setCustomFilterQuery(customFilterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
 
+        // When searching in MONTHDAY, add a term so that an expand query is created
+        if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
+            searchTerms.put(SolrConstants.MONTHDAY, Collections.singleton(searchStringInternal.substring(SolrConstants.MONTHDAY.length() + 1)));
+            logger.trace("monthday terms: {}", searchTerms.get(SolrConstants.MONTHDAY).iterator().next());
+        }
+
         // Add search hit aggregation parameters, if enabled
         if (!searchTerms.isEmpty()) {
+            List<String> additionalExpandQueryfields = Collections.emptyList();
+            // Add MONTHDAY to the list of expand query fields
+            if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
+                additionalExpandQueryfields = Collections.singletonList(SolrConstants.MONTHDAY);
+            }
             String expandQuery = activeSearchType == 1
                     ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator,
                             DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
                     : SearchHelper.generateExpandQuery(
-                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
-                            phraseSearch, proximitySearchDistance);
+                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups,
+                                    additionalExpandQueryfields),
+                            searchTerms, phraseSearch, proximitySearchDistance);
             currentSearch.setExpandQuery(expandQuery);
         }
 
@@ -1192,8 +1224,8 @@ public class SearchBean implements SearchInterface, Serializable {
             List<String> preparedTerms = new ArrayList<>(termsSplit.length);
             for (int i = 0; i < termsSplit.length; ++i) {
                 String term = termsSplit[i].trim();
-                String unescapedTerm = SearchHelper.cleanUpSearchTerm(term);
-                term = ClientUtils.escapeQueryChars(unescapedTerm);
+                term = SearchHelper.cleanUpSearchTerm(term);
+                String unescapedTerm = term;
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
                     if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
@@ -1203,7 +1235,10 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     logger.trace("term: {}", term);
                     if (!"\\|\\|".equals(term)) {
-                        preparedTerms.add(term);
+                        // Avoid duplicate terms
+                        if (!preparedTerms.contains(term)) {
+                            preparedTerms.add(term);
+                        }
                         for (String field : searchTerms.keySet()) {
                             searchTerms.get(field).add(unescapedTerm);
                         }
@@ -2282,8 +2317,8 @@ public class SearchBean implements SearchInterface, Serializable {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
 
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
-        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, searchString, true,
-                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, searchString,
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Locale locale = navigationHelper.getLocale();
         int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
 
@@ -2487,7 +2522,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
-        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, null, true, false);
+        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         return DataManager.getInstance().getSearchIndex().getHitCount(query);
     }
 
@@ -2961,7 +2996,7 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, true, false);
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
     }
 

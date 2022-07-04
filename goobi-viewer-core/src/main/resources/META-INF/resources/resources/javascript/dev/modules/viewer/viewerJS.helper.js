@@ -512,6 +512,7 @@ var viewerJS = ( function( viewer ) {
     	}
     	return map;
     }
+ 
 
 	viewer.helper.compareNumerical = (a, b) => {
 	    let ia = parseInt(a);

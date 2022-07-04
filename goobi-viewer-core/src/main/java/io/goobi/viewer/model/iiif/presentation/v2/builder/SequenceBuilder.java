@@ -78,7 +78,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
-import io.goobi.viewer.model.viewer.MimeType;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -394,7 +394,7 @@ public class SequenceBuilder extends AbstractBuilder {
         if (target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
             return null;
         }
-        if (target.equals(LinkingTarget.PDF) && !(MimeType.IMAGE.getName().equals(page.getMimeType()))) {
+        if (target.equals(LinkingTarget.PDF) && !(BaseMimeType.IMAGE.getName().equals(page.getMimeType()))) {
             return null;
         }
 
@@ -477,7 +477,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
         }
 
-        if (MimeType.AUDIO.getName().equals(page.getMimeType())) {
+        if (BaseMimeType.AUDIO.getName().equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, true));
             annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.AUDIO.name()));
             OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
@@ -499,7 +499,7 @@ public class SequenceBuilder extends AbstractBuilder {
 
         AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, true));
         videoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.VIDEO.name()));
-        if (MimeType.VIDEO.getName().equals(page.getMimeType())) {
+        if (BaseMimeType.VIDEO.getName().equals(page.getMimeType())) {
             OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
             annotation.setMotivation(Motivation.PAINTING);
             annotation.setTarget(canvas);
@@ -515,7 +515,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
 
         }
-        if (MimeType.SANDBOXED_HTML.getName().equals(page.getMimeType())) {
+        if (BaseMimeType.SANDBOXED_HTML.getName().equals(page.getMimeType())) {
             try {
                 OpenAnnotation annotation = new OpenAnnotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
                 annotation.setMotivation(Motivation.PAINTING);

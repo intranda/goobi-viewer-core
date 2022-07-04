@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -67,6 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DamerauLevenshtein;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
@@ -84,6 +87,8 @@ import io.goobi.viewer.model.search.SearchHit.HitType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
@@ -167,6 +172,134 @@ public final class SearchHelper {
     public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
     /** Constant <code>patternHyperlink</code> */
     public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
+
+    /**
+     * Main search method for flat search.
+     *
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} von
+     * @param rows {@link java.lang.Integer} bis
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return List of <code>StructElement</code>s containing the search hits.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            HttpServletRequest request, int proximitySearchDistance)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, request,
+                false, proximitySearchDistance);
+    }
+
+    /**
+     * Main search method for flat search.
+     *
+     * @param query {@link java.lang.String} Solr search query. Merges full-text and metadata hits into their corresponding docstructs.
+     * @param first {@link java.lang.Integer} von
+     * @param rows {@link java.lang.Integer} bis
+     * @param sortFields a {@link java.util.List} object.
+     * @param resultFields a {@link java.util.List} object.
+     * @param filterQueries a {@link java.util.List} object.
+     * @param params a {@link java.util.Map} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param exportFields a {@link java.util.List} object.
+     * @param locale a {@link java.util.Locale} object.
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return List of <code>StructElement</code>s containing the search hits.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            HttpServletRequest request, boolean keepSolrDoc, int proximitySearchDistance)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        Map<String, SolrDocument> ownerDocs = new HashMap<>();
+        QueryResponse resp =
+                DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
+        if (resp.getResults() == null) {
+            return Collections.emptyList();
+        }
+        if (params != null) {
+            logger.trace("params: {}", params.toString());
+        }
+        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
+        Set<String> oneLineFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields());
+
+        logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
+        List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
+        int count = 0;
+        ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
+        for (SolrDocument doc : resp.getResults()) {
+            logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
+            String fulltext = null;
+            SolrDocument ownerDoc = null;
+            if (doc.containsKey(SolrConstants.IDDOC_OWNER)) {
+                // This is a page, event or metadata. Look up the doc that contains the image owner docstruct.
+                String ownerIddoc = (String) doc.getFieldValue(SolrConstants.IDDOC_OWNER);
+                ownerDoc = ownerDocs.get(ownerIddoc);
+                if (ownerDoc == null) {
+                    ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
+                    if (ownerDoc != null) {
+                        ownerDocs.put(ownerIddoc, ownerDoc);
+                    }
+                }
+
+                // Load full-text
+                try {
+                    String altoFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO);
+                    String plaintextFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
+                    String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+                    if (StringUtils.isNotBlank(plaintextFilename)) {
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false);
+                        if (access) {
+                            fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                        } else {
+                            fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
+                        }
+                    } else if (StringUtils.isNotBlank(altoFilename)) {
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false);
+                        if (access) {
+                            fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                        } else {
+                            fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    logger.error(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            } else {
+                // Add docstruct documents to the owner doc map, just in case
+                ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+            }
+
+            SearchHit hit =
+                    SearchHit.createSearchHit(doc, ownerDoc, null, locale, fulltext, searchTerms, exportFields, sortFields,
+                            ignoreFields, translateFields, oneLineFields, null, proximitySearchDistance, thumbs);
+            if (keepSolrDoc) {
+                hit.setSolrDoc(doc);
+            }
+            ret.add(hit);
+            count++;
+            logger.trace("added hit {}", count);
+        }
+
+        return ret;
+    }
 
     /**
      * Main search method for aggregated search.
@@ -397,7 +530,8 @@ public final class SearchHelper {
         if (boostTopLevelDocstructs) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
-        finalQuery = buildFinalQuery(finalQuery, termQuery, aggregateHits, boostTopLevelDocstructs);
+        finalQuery = buildFinalQuery(finalQuery, termQuery, boostTopLevelDocstructs,
+                aggregateHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale,
@@ -901,7 +1035,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request), privilege);
+                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
+                        ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -911,6 +1046,7 @@ public final class SearchHelper {
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
+     * @param client
      * @param privilege Privilege to check
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -923,7 +1059,7 @@ public final class SearchHelper {
      * @should construct suffix correctly if moving wall license
      * @should construct suffix correctly for alternate privilege
      */
-    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, String privilege)
+    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, Optional<ClientApplication> client, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
         // No restrictions for admins
@@ -949,25 +1085,25 @@ public final class SearchHelper {
             }
 
             // Moving wall license type, use negated filter query
-            if (licenseType.isMovingWall() && StringUtils.isNotBlank(licenseType.getProcessedConditions())) {
+            if (licenseType.isMovingWall()) {
                 logger.trace("License type '{}' is a moving wall", licenseType.getName());
-                query.append(licenseType.getFilterQueryPart(true));
+                query.append(licenseType.getMovingWallFilterQueryPart());
                 // Do not continue; with the next license type here because the user may have full access to the moving wall license,
-                // in which case it should also be added with a non-negated filter query
+                // in which case it should also be added without a date restriction
             }
 
             // License type contains listing privilege
             if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(privilege)) {
-                query.append(licenseType.getFilterQueryPart(false));
+                query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
                 continue;
             }
 
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, null)) {
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null)) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
-                query.append(licenseType.getFilterQueryPart(false));
+                query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
             } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
                 // If there are overriding license types for which the user has listing permission, ignore the current license type
@@ -976,9 +1112,9 @@ public final class SearchHelper {
                         continue;
                     }
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress,
+                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
                             null)) {
-                        query.append(overridingLicenseType.getFilterQueryPart(false));
+                        query.append(overridingLicenseType.getFilterQueryPart());
                         usedLicenseTypes.add(overridingLicenseType.getName());
                         logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
                                 overridingLicenseType.getName(), licenseType.getName());
@@ -991,6 +1127,14 @@ public final class SearchHelper {
         query.append(')');
 
         return query.toString();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static String getMovingWallQuery() {
+        return SolrConstants.DATE_PUBLICRELEASEDATE + ":[* TO NOW/DATE]";
     }
 
     /**
@@ -1756,7 +1900,7 @@ public final class SearchHelper {
         }
 
         // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
-        String query = buildFinalQuery(sbQuery.toString(), null, false, false);
+        String query = buildFinalQuery(sbQuery.toString(), null, false, SearchAggregationType.NO_AGGREGATION);
         logger.trace("getFilteredTermsFromIndex query: {}", query);
         if (logger.isTraceEnabled()) {
             for (String fq : filterQueries) {
@@ -2439,9 +2583,11 @@ public final class SearchHelper {
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
      * @param queryGroups a {@link java.util.List} object.
+     * @param additionalFields Optinal additional fields to return
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, List<SearchQueryGroup> queryGroups) {
+    public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, List<SearchQueryGroup> queryGroups,
+            List<String> additionalFields) {
         List<String> ret = new ArrayList<>();
         // logger.trace("searchType: {}", searchType);
         switch (searchType) {
@@ -2506,6 +2652,10 @@ public final class SearchHelper {
                     ret.add(searchFilter.getField());
                 }
                 break;
+        }
+
+        if (additionalFields != null) {
+            ret.addAll(additionalFields);
         }
 
         return ret;
@@ -2613,9 +2763,9 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      *
      */
-    public static String buildFinalQuery(String rawQuery, String termQuery, boolean aggregateHits, boolean boostTopLevelDocstructs)
+    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType)
             throws IndexUnreachableException {
-        return buildFinalQuery(rawQuery, termQuery, aggregateHits, boostTopLevelDocstructs, null);
+        return buildFinalQuery(rawQuery, termQuery, boostTopLevelDocstructs, null, aggregationType);
     }
 
     /**
@@ -2635,8 +2785,8 @@ public final class SearchHelper {
      * @should not add join statement if aggregateHits false
      * @should remove existing join statement
      */
-    public static String buildFinalQuery(String rawQuery, String termQuery, boolean aggregateHits, boolean boostTopLevelDocstructs,
-            HttpServletRequest request) throws IndexUnreachableException {
+    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs,
+            HttpServletRequest request, SearchAggregationType aggregationType) throws IndexUnreachableException {
         if (rawQuery == null) {
             throw new IllegalArgumentException("rawQuery may not be null");
         }
@@ -2647,12 +2797,12 @@ public final class SearchHelper {
         if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
             rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
         }
-        if (aggregateHits) {
+        if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
             sbQuery.append(AGGREGATION_QUERY_PREFIX);
             // https://wiki.apache.org/solr/FieldCollapsing
             // https://wiki.apache.org/solr/Join
         }
-        if(StringUtils.isNotBlank(rawQuery)) {            
+        if (StringUtils.isNotBlank(rawQuery)) {
             sbQuery.append("+(").append(rawQuery).append(")");
         }
 
@@ -2873,6 +3023,7 @@ public final class SearchHelper {
      * @param s The term to clean up.
      * @return Cleaned up term.
      * @should remove illegal chars correctly
+     * @should remove trailing punctuation
      * @should preserve truncation
      * @should preserve negation
      */
@@ -2894,6 +3045,28 @@ public final class SearchHelper {
             // s = s.replace(".", "");
             s = s.replace("(", "");
             s = s.replace(")", "");
+
+            // Remove trailing punctuation
+            boolean done = false;
+            while (s.length() > 1) {
+                if (done) {
+                    break;
+                }
+                char last = s.charAt(s.length() - 1);
+                switch (last) {
+                    case '.':
+                    case ',':
+                    case ':':
+                    case ';':
+                        s = s.substring(0, s.length() - 1);
+                        break;
+                    default:
+                        done = true;
+                        break;
+                }
+
+            }
+
             if (addNegation) {
                 s = '-' + s;
             } else if (addLeftTruncation) {
@@ -3071,4 +3244,27 @@ public final class SearchHelper {
         return new String[] { prefix, cleanedTerm, suffix };
     }
 
+    /**
+     * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
+     * 
+     * @param facetQueries List of individual facet queries
+     * @return Expand query
+     * @should return empty string if list null or empty
+     * @should construct query correctly
+     */
+    public static String buildExpandQueryFromFacets(List<String> facetQueries) {
+        if (facetQueries == null || facetQueries.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String q : facetQueries) {
+            if (q != null && q.length() > 0) {
+                sb.append(" +").append(q);
+            }
+        }
+        sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+
+        return sb.toString().trim();
+    }
 }

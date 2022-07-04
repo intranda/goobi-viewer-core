@@ -109,8 +109,8 @@
                                                 <button
                                                 	class="admin__table-action-link -redlink"
                                                 	aria-label="#{msg.delete}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}"
-                                                	title="#{msg.cms__delete_record_note}"
-                                                	jsf:onclick="if ( !confirm( &quot;#{msg.cms__delete_record_note__confirmation}&quot; ) ) { return false };"
+                                                	title="#{msg.cms__record_notes__delete_confirmation}"
+                                                	jsf:onclick="if ( !confirm( &quot;#{msg.cms__record_notes__delete_confirmation}&quot; ) ) { return false };"
                                                   jsf:action="#{cmsRecordNotesBean.deleteNote(note)}"
                                                   >
                                                     #{msg.delete}

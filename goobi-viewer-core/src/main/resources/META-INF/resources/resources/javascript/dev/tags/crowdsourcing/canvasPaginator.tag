@@ -129,7 +129,6 @@ lastCanvases() {
 }
 
 toPageNumber(e) {
-    console.log("Change in ", e.target, e.target.value);
     let page = parseInt(e.target.value);
     if(page > 0 && page <= this.getTotalImageCount()) {        
     	this.load(page-1);

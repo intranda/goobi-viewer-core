@@ -63,13 +63,15 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/ipranges/edit/#{ipRange.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{ipRange.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
-                                                <button
-                                                    class="admin__boxed-entry-actions-delete -redlink"
-                                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
-                                                    jsf:action="#{adminBean.deleteIpRangeAction(ipRange)}">
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{ipRange.name}" />
-                                                    #{msg.delete}
-                                                </button>
+	                                            <button
+	                                                class="admin__boxed-entry-actions-delete -redlink"
+	                                                data-require-confirmation="true"
+	                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.ipRange_deleteConfirmationText, ipRange.name)}"
+	                                                jsf:action="#{adminBean.deleteIpRangeAction(ipRange)}"
+	                                                aria-label="#{msg.delete}: #{ipRange.name}" >
+	                                                #{msg.delete}
+	                                            </button>
+
                                             </div>
                                         </div>
                                     </div>

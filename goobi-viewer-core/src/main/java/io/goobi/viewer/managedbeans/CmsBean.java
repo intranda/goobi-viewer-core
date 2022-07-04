@@ -101,6 +101,7 @@ import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -1718,8 +1719,8 @@ public class CmsBean implements Serializable {
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, !item.isNoSearchAggregation(),
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, true,
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(search);
             return null;
         } else if (item == null) {

@@ -423,11 +423,11 @@ public class UserGroup implements ILicensee, Serializable {
 
     /**
      *
-     * @return true if group has members; false otherwise
+     * @return true if group has members other than the owner; false otherwise
      * @throws DAOException
      */
     public boolean isHasMembers() throws DAOException {
-        return getMemberCount() > 0;
+        return getMemberCount() > 1;    //first member is always the owner, only count members beyond that
     }
 
     /**

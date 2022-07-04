@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enum containing supported mime types.
  */
-public enum MimeType {
+public enum BaseMimeType {
 
     IMAGE("image"),
     VIDEO("video"),
@@ -37,7 +37,7 @@ public enum MimeType {
     OBJECT("object");
 
     /** Constant <code>logger</code> */
-    private static final Logger logger = LoggerFactory.getLogger(MimeType.class);
+    private static final Logger logger = LoggerFactory.getLogger(BaseMimeType.class);
 
     private final String name;
 
@@ -46,7 +46,7 @@ public enum MimeType {
      *
      * @should split full mime type names correctly
      */
-    private MimeType(String name) {
+    private BaseMimeType(String name) {
         this.name = name;
     }
 
@@ -56,19 +56,24 @@ public enum MimeType {
      * </p>
      *
      * @param name a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.BaseMimeType} object.
      * @should find mime type by short name correctly
      * @should find mime type by full name correctly
-     * @return a {@link io.goobi.viewer.model.viewer.MimeType} object.
      */
-    public static MimeType getByName(String name) {
+    public static BaseMimeType getByName(String name) {
         if (name == null) {
             return null;
         }
-        for (MimeType o : MimeType.values()) {
+        
+        if (name.contains("/")) {
+            name = name.substring(0, name.indexOf("/"));
+        }
+        for (BaseMimeType o : BaseMimeType.values()) {
             if (o.getName().equals(name)) {
                 return o;
             }
         }
+        
         return null;
     }
 
@@ -110,7 +115,7 @@ public enum MimeType {
      * @param mimeTypeName a {@link java.lang.String} object.
      */
     public static boolean isImageOrPdfDownloadAllowed(String mimeTypeName) {
-        MimeType mimeType = MimeType.getByName(mimeTypeName);
+        BaseMimeType mimeType = BaseMimeType.getByName(mimeTypeName);
         if (mimeType == null) {
             return false;
         }

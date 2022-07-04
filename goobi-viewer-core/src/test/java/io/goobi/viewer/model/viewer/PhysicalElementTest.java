@@ -33,8 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ContextMocker;
 
 public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -46,7 +44,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
 
         FacesContext facesContext = ContextMocker.mockFacesContext();
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
@@ -80,5 +77,65 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(0, page.getImageWidth());
         Assert.assertEquals(0, page.getImageHeight());
         Assert.assertTrue(page.isAdaptImageViewHeight());
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return mimeType if already full mime type
+     */
+    @Test
+    public void getFullMimeType_shouldReturnMimeTypeIfAlreadyFullMimeType() throws Exception {
+        Assert.assertEquals("application/pdf", PhysicalElement.getFullMimeType("application/pdf", "foo.bar"));
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return mimeType if not image
+     */
+    @Test
+    public void getFullMimeType_shouldReturnMimeTypeIfNotImage() throws Exception {
+        Assert.assertEquals("application", PhysicalElement.getFullMimeType("application", "foo.bar"));
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return png image mime type from file name
+     */
+    @Test
+    public void getFullMimeType_shouldReturnPngImageMimeTypeFromFileName() throws Exception {
+        Assert.assertEquals("image/png", PhysicalElement.getFullMimeType("image", "foo.png"));
+    }
+
+    /**
+     * @see PhysicalElement#getFullMimeType(String,String)
+     * @verifies return jpeg if not png
+     */
+    @Test
+    public void getFullMimeType_shouldReturnJpegIfNotPng() throws Exception {
+        Assert.assertEquals("image/jpeg", PhysicalElement.getFullMimeType("image", "foo.bmp"));
+    }
+
+    /**
+     * @see PhysicalElement#getBaseMimeType()
+     * @verifies return correct base mime type
+     */
+    @Test
+    public void getBaseMimeType_shouldReturnCorrectBaseMimeType() throws Exception {
+        Assert.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("image/tiff").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.AUDIO.getName(), new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.VIDEO.getName(), new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.APPLICATION.getName(),
+                new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(), new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
+        Assert.assertEquals(BaseMimeType.OBJECT.getName(), new PhysicalElementBuilder().setMimeType("object").build().getBaseMimeType());
+    }
+
+    /**
+     * @see PhysicalElement#getBaseMimeType()
+     * @verifies return image if base mime type not found
+     */
+    @Test
+    public void getBaseMimeType_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
+        Assert.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
     }
 }

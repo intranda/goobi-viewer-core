@@ -43,7 +43,6 @@
         		}
         		
         		// hide image controls
-        		console.log("controls", this.controls);
         		for (let control of this.controls) {
         		    control.classList.toggle( 'faded' );
         		};

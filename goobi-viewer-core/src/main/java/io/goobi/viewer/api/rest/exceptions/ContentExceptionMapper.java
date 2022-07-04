@@ -93,10 +93,10 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
             status = Status.INTERNAL_SERVER_ERROR;
             printStackTrace = true;
         }
-        if(printStackTrace) {
-            logger.error("Error on request {}: {}", request.getRequestURL(), e.toString());
+        if(printStackTrace) { 
+            logger.error("Error on request {}: {}", request.getRequestURI(), e.toString());
         } else {
-            logger.debug("Faulty request {}: {}", request.getRequestURL(), e.getMessage());
+            logger.debug("Faulty request {}: {}", request.getRequestURI(), e.getMessage());
         }
 
         String mediaType = MediaType.APPLICATION_JSON;

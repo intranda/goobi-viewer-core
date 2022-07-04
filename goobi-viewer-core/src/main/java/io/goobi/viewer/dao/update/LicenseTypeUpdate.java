@@ -65,5 +65,6 @@ public class LicenseTypeUpdate implements IModelUpdate {
             }
         }
 
+        //  Remove LicenseType.conditions
     }
 }

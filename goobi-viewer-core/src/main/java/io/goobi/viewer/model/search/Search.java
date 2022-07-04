@@ -73,6 +73,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Persistable search query.
@@ -123,10 +124,6 @@ public class Search implements Serializable {
 
     @Column(name = "page", nullable = false)
     private int page;
-    //
-    //    @Deprecated
-    //    @Column(name = "collection")
-    //    private String hierarchicalFacetString;
 
     @Column(name = "filter")
     private String facetString;
@@ -280,14 +277,20 @@ public class Search implements Serializable {
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
             boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false);
+        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false,
+                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
     public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator) throws IndexUnreachableException {
+        return generateFinalSolrQuery(facets, advancedSearchGroupOperator, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+    }
+
+    public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator, SearchAggregationType aggregationType)
+            throws IndexUnreachableException {
         String currentQuery = SearchHelper.prepareQuery(this.query);
         String termQuery = null;
 
-        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, false);
+        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, false, aggregationType);
 
         // Apply current facets
         String subElementQueryFilterSuffix = "";
@@ -321,7 +324,7 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean boostTopLevelDocstructs, boolean keepSolrDoc)
+            boolean boostTopLevelDocstructs, boolean keepSolrDoc, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -346,7 +349,7 @@ public class Search implements Serializable {
         Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
         QueryResponse resp = null;
 
-        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, true, boostTopLevelDocstructs);
+        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, boostTopLevelDocstructs, aggregationType);
 
         // Apply current facets
         List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
@@ -400,7 +403,7 @@ public class Search implements Serializable {
             // Extra search for child element facet values
             if (!facets.getConfiguredSubelementFacetFields().isEmpty()) {
                 String extraQuery =
-                        new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, null, false, false))
+                        new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, null, false, SearchAggregationType.NO_AGGREGATION))
                                 .append(subElementQueryFilterSuffix)
                                 .toString();
                 logger.trace("extra query: {}", extraQuery);
@@ -459,7 +462,7 @@ public class Search implements Serializable {
                     }
                 }
                 if (facets.getGeoFacetting().isActive()) {
-                    this.hasGeoLocationHits = resp.getFacetField("BOOL_WKT_COORDS").getValueCount() > 0;
+                    this.hasGeoLocationHits = resp.getFacetField("BOOL_WKT_COORDS").getValues().stream().anyMatch(c -> c.getName().equalsIgnoreCase("true"));
                     if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap()) {
                         this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                         this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
@@ -474,24 +477,26 @@ public class Search implements Serializable {
         }
 
         // Collect available facets
-        for (FacetField facetField : resp.getFacetFields()) {
-            if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
-                continue;
-            }
-            Map<String, Long> facetResult = new TreeMap<>();
-            for (Count count : facetField.getValues()) {
-                if (StringUtils.isEmpty(count.getName())) {
-                    logger.warn("Facet for {} has no name, skipping...", facetField.getName());
+        if (resp.getFacetFields() != null) {
+            for (FacetField facetField : resp.getFacetFields()) {
+                if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
                     continue;
                 }
-                facetResult.put(count.getName(), count.getCount());
+                Map<String, Long> facetResult = new TreeMap<>();
+                for (Count count : facetField.getValues()) {
+                    if (StringUtils.isEmpty(count.getName())) {
+                        logger.warn("Facet for {} has no name, skipping...", facetField.getName());
+                        continue;
+                    }
+                    facetResult.put(count.getName(), count.getCount());
+                }
+                // Use non-FACET_ field names outside of the actual faceting query
+                String fieldName = SearchHelper.defacetifyField(facetField.getName());
+                facets.getAvailableFacets()
+                        .put(fieldName,
+                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale,
+                                        facets.getLabelMap()));
             }
-            // Use non-FACET_ field names outside of the actual faceting query
-            String fieldName = SearchHelper.defacetifyField(facetField.getName());
-            facets.getAvailableFacets()
-                    .put(fieldName,
-                            FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale,
-                                    facets.getLabelMap()));
         }
 
         int lastPage = getLastPage(hitsPerPage);
@@ -503,20 +508,33 @@ public class Search implements Serializable {
         // Hits for the current page
         int from = (page - 1) * hitsPerPage;
 
-        // Search for child hits only if initial search query is not empty (empty query means collection listing)
+        // Expand query (child hits)
+        String useExpandQuery = "";
         if (StringUtils.isNotEmpty(expandQuery)) {
-            String useExpandQuery = expandQuery + subElementQueryFilterSuffix;
-            if (StringUtils.isNotEmpty(useExpandQuery)) {
-                logger.trace("Expand query: {}", useExpandQuery);
-                params.putAll(SearchHelper.getExpandQueryParams(useExpandQuery));
-            }
+            // Search for child hits only if initial search query is not empty (empty query means collection listing)
+            useExpandQuery = expandQuery + subElementQueryFilterSuffix;
+        } else if (!activeFacetFilterQueries.isEmpty() && DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery()) {
+            // If explicitly configured to use facets for expand query to produce child hits
+            useExpandQuery = SearchHelper.buildExpandQueryFromFacets(activeFacetFilterQueries);
+        }
+        if (StringUtils.isNotEmpty(useExpandQuery)) {
+            logger.trace("Expand query: {}", useExpandQuery);
+            params.putAll(SearchHelper.getExpandQueryParams(useExpandQuery));
         }
 
         List<StringPair> useSortFields = getAllSortFields();
+        List<SearchHit> hits = Collections.emptyList();
         // Actual hits for listing
-        List<SearchHit> hits =
-                SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+        switch (aggregationType) {
+            case AGGREGATE_TO_TOPSTRUCT:
+                hits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
+                break;
+            case NO_AGGREGATION:
+                hits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                        searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
+                break;
+        }
         this.hits.addAll(hits);
     }
 

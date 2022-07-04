@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,14 +49,19 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -139,6 +145,7 @@ public class AccessConditionUtils {
      * @return Constructed query
      * @should use correct field name for AV files
      * @should use correct file name for text files
+     * @should use correct file name for pdf files
      * @should adapt basic alto file name
      * @should escape file name for wildcard search correctly
      * @should work correctly with urls
@@ -161,6 +168,7 @@ public class AccessConditionUtils {
             case "mp3":
             case "ogg":
             case "ogv":
+            case "flv":
                 sbQuery.append(" +").append(useFileField).append(':');
                 // Escape whitespaces etc. for wildcard searches
                 sbQuery.append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
@@ -191,12 +199,21 @@ public class AccessConditionUtils {
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "":
-                // Escape whitespaces etc. for wildcard searches
-                sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
+            case "tif":
+            case "tiff":
+            case "jpg":
+            case "jpeg":
+            case "png":
+            case "jp2":
+            case "obj":
+            case "gltf":
+            case "glb":
+            case "pdf":
+                sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
                 break;
             default:
-                sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
+                // Escape whitespaces etc. for wildcard searches
+                sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(simpleFileName)).append(".*");
                 break;
         }
 
@@ -252,11 +269,12 @@ public class AccessConditionUtils {
                     user = userBean.getUser();
                 }
             }
+
             Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
             for (String pageFileName : requiredAccessConditions.keySet()) {
                 Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
                 boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
-                        privilegeName, user, NetTools.getIpAddress(request), query);
+                        privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
                 ret.put(pageFileName, access);
             }
             return ret;
@@ -292,7 +310,7 @@ public class AccessConditionUtils {
                 }
             }
             boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
-                    privilegeName, user, NetTools.getIpAddress(request), query);
+                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
             return access;
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -389,14 +407,14 @@ public class AccessConditionUtils {
                 UserBean userBean = BeanUtils.getUserBean();
                 if (userBean != null) {
                     try {
-                    user = userBean.getUser();
-                    } catch(ContextNotActiveException e) {
+                        user = userBean.getUser();
+                    } catch (ContextNotActiveException e) {
                         logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
                     }
                 }
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                    privilegeName, user, NetTools.getIpAddress(request), originalQuery);
+                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -474,7 +492,7 @@ public class AccessConditionUtils {
                         String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
                         if (logid != null) {
                             ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
-                                    NetTools.getIpAddress(request), query));
+                                    NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query));
                         }
                     }
                     //                    long end = System.nanoTime();
@@ -598,7 +616,7 @@ public class AccessConditionUtils {
                 }
             }
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
-                    privilegeName, user, NetTools.getIpAddress(request), query);
+                    privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             return false;
@@ -629,7 +647,7 @@ public class AccessConditionUtils {
             }
         }
         return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
-                NetTools.getIpAddress(request), query);
+                NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
     }
 
     /**
@@ -745,10 +763,9 @@ public class AccessConditionUtils {
             permissions = new HashMap<>();
             // logger.trace("PI has changed, permissions map reset.");
         }
-
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
-        // logger.debug("permissions key: " + key + ": " + permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
+        // logger.debug("permissions key: {}: {}", key, permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         if (permissions.containsKey(key)) {
             access = permissions.get(key);
             //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
@@ -790,14 +807,16 @@ public class AccessConditionUtils {
      *
      *         TODO user license checks
      * @param remoteAddress a {@link java.lang.String} object.
+     * @param client
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
-            User user, String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
-        return !checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, query).values()
+            User user, String remoteAddress, Optional<ClientApplication> client, String query)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        return !checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, client, query).values()
                 .contains(Boolean.FALSE);
     }
 
@@ -812,6 +831,7 @@ public class AccessConditionUtils {
      * @param user Logged in user.
      * @param query Solr query describing the resource in question.
      * @param remoteAddress a {@link java.lang.String} object.
+     * @param client
      * @param files a {@link java.util.List} object.
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -825,7 +845,7 @@ public class AccessConditionUtils {
      * @should not return true if no ip range matches
      */
     static Map<String, Boolean> checkAccessPermissions(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
-            String privilegeName, User user, String remoteAddress, String query)
+            String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
             throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
 
@@ -915,6 +935,20 @@ public class AccessConditionUtils {
                 if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
                     accessMap.put(key, Boolean.TRUE);
                 }
+
+                //check clientApplication
+                if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
+                    //check if specific client matches access conditions
+                    if (client.isPresent() && client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                        accessMap.put(key, Boolean.TRUE);
+                    } else {
+                        //check if accesscondition match for all clients
+                        ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
+                        if (allClients != null && allClients.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                            accessMap.put(key, Boolean.TRUE);
+                        }
+                    }
+                }
             }
         }
 
@@ -955,7 +989,6 @@ public class AccessConditionUtils {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should remove license types whose names do not match access conditions
-     * @should remove license types whose condition query excludes the given pi
      * @should not remove moving wall license types to open access if condition query excludes given pi
      */
     static Map<String, List<LicenseType>> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
@@ -964,7 +997,7 @@ public class AccessConditionUtils {
             return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
         }
 
-        //         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
+        // logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
         Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
             // logger.trace("{}, moving wall: {}", licenseType.getName(), licenseType.isMovingWall());
@@ -972,19 +1005,19 @@ public class AccessConditionUtils {
                 continue;
             }
             // Check whether the license type contains conditions that exclude the given record, in that case disregard this license type
-            if (StringUtils.isNotEmpty(licenseType.getProcessedConditions()) && StringUtils.isNotEmpty(query)) {
-                String conditions = licenseType.getProcessedConditions();
-                // logger.trace("License conditions: {}", conditions);
-                StringBuilder sbQuery = new StringBuilder().append("+(").append(query).append(')');
-                if (conditions.charAt(0) == '-' || conditions.charAt(0) == '+') {
-                    sbQuery.append(' ').append(conditions);
-                } else {
-                    // Make sure the condition query is not optional (starts with + or -)
-                    sbQuery.append(" +(").append(conditions).append(')');
-                }
-                logger.trace("License relevance query: {}", StringTools.stripPatternBreakingChars(sbQuery.toString()));
+            if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)) {
+                StringBuilder sbQuery = new StringBuilder().append("+(")
+                        .append(query)
+                        .append(") +")
+                        .append(licenseType.getFilterQueryPart().trim())
+                        .append(" -(")
+                        .append(SearchHelper.getMovingWallQuery())
+                        .append(')');
+                logger.trace("License relevance query: {}",
+                        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString())));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
+                    logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
+                            licenseType.getName(), StringTools.stripPatternBreakingChars(query));
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
                         logger.trace(
@@ -995,7 +1028,7 @@ public class AccessConditionUtils {
                         continue;
                     }
                 }
-                logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
+                logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(),
                         StringTools.stripPatternBreakingChars(query));
             }
 
@@ -1099,5 +1132,39 @@ public class AccessConditionUtils {
         }
 
         return false;
+    }
+
+    /**
+     * List all licenses ("rights") that the given user and ipAddress is entitled to, either because they are directly given to the user, a group the
+     * user belongs to or to the given ipAddress, whether or not the given user exists
+     * 
+     * @param user
+     * @param ipAddress
+     * @param type
+     * @param dao
+     * @return
+     * @throws DAOException
+     */
+    public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
+        List<License> licenses = dao.getLicenses(type);
+        List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
+        List<IpRange> ipRangesApplyingToGivenIp =
+                dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
+
+        List<License> applyingLicenses = licenses.stream()
+                .filter(license -> {
+                    return user.map(u -> u.equals(license.getUser())).orElse(false)
+                            || userGroups.contains(license.getUserGroup())
+                            || ipRangesApplyingToGivenIp.stream().anyMatch(r -> r.getSubnetMask().equals(license.getIpRange().getSubnetMask()));
+                })
+                .collect(Collectors.toList());
+
+        return applyingLicenses.stream()
+                .filter(l -> {
+                    return applyingLicenses.stream()
+                            .filter(ol -> !ol.equals(l))
+                            .noneMatch(ol -> l.getLicenseType().getOverridingLicenseTypes().contains(ol.getLicenseType()));
+                })
+                .collect(Collectors.toList());
     }
 }

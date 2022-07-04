@@ -187,7 +187,16 @@
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
-
+    <url-mapping id="searchtoday">
+        <pattern value="/searchtoday/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.searchToday}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(0}</action>
+    </url-mapping>
 
 	<url-mapping id="searchcalendar">
 		<pattern value="/searchcalendar/" />
@@ -196,9 +205,19 @@
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
-		<action onPostback="false">#{calendarBean.resetAllActiveYears()}</action>
+		<action onPostback="false">#{calendarBean.resetAllActiveYears}</action>
+        <action onPostback="false">#{calendarBean.resetCurrentSelection}</action>
 	</url-mapping>
-		<url-mapping id="searchgeomap">
+    <url-mapping id="searchcalendar1">
+        <pattern value="/searchcalendar/#{selectYear:calendarBean.selectYear}/" />
+        <view-id value="/searchCalendar.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacets}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
+        <action onPostback="false">#{calendarBean.resetAllActiveYears}</action>
+    </url-mapping>
+	<url-mapping id="searchgeomap">
 		<pattern value="/searchgeomap/" />
 		<view-id value="/searchGeoMap.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
@@ -258,6 +277,7 @@
     <url-mapping id="newSearch1">
         <pattern value="/search/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.search}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
         <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
@@ -968,8 +988,20 @@
         <view-id value="/resources/cms/adminCmsCollections.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsCollectionsBean.currentTab.refresh(cmsCollectionsBean.solrField)}</action>
-
     </url-mapping>
+	<url-mapping id="adminClients">
+        <pattern value="/admin/clients/" />
+        <view-id value="/resources/admin/views/adminClients.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminClientsEdit">
+        <pattern value="/admin/clients/edit/#{clientId}/" />
+        <view-id value="/resources/admin/views/adminClientEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{adminClientsBean.setSelectedClientId(clientId)}</action>
+    </url-mapping>
+
+
     <url-mapping id="adminCmsEditCollection">
         <pattern value="/admin/cms/collections/edit/#{collectionName}/" />
         <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />

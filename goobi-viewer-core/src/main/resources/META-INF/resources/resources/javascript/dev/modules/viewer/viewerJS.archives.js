@@ -104,10 +104,8 @@ var viewerJS = ( function( viewer ) {
         			return fetch(manifestUrl)
         			.then(response => {if(response.ok) return response.json(); else throw(response.json());})
         			.then(manifest => {
-        				//console.log("loaded manifest ", manifest);
         				//if the manifest contains struct elements, show them as thumbnail gallery
         				if(manifest.structures && manifest.structures.length > 1) {
-        				// console.log("Show structure images");
 				        	riot.mount(".archives__object-thumbnails", "thumbnails", {
 					        	language : currentLang, 
 					        	type: "structures",

@@ -68,8 +68,6 @@ var viewerJS = ( function( viewer ) {
                         setTimeout(() => {
                             let $topHeader = $(".page-header__top");
                             let $navHeader = $(".page-navigation");
-                            console.log("$topHeader", $topHeader.offset().top, $topHeader.outerHeight())
-                            console.log("$navHeader", $navHeader.offset().top, $navHeader.outerHeight())
                             $("html, body").scrollTop($anchor.offset().top)
                         }, 0)
                     }

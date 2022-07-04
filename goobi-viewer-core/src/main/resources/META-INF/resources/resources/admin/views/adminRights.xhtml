@@ -48,6 +48,14 @@
 	                                            <ui:fragment rendered="#{license.ipRange != null}">
 	                                                <h2 class="col-12"><i class="fa fa-bolt" aria-hidden="true"></i> #{license.ipRange.name} (#{license.ipRange.subnetMask})</h2>
 	                                            </ui:fragment>
+	                                            <ui:fragment rendered="#{license.client != null}">
+	                                            	<ui:fragment rendered="#{license.client == adminClientsBean.allClients}">
+	                                            		<h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{msg.admin__right_all_clients}</h2>
+	                                            	</ui:fragment>
+	                                            	<ui:fragment rendered="#{license.client != adminClientsBean.allClients}">
+		                                                <h2 class="col-12"><i class="fa fa-desktop" aria-hidden="true"></i> #{license.client.name} (#{license.client.clientIdentifier})</h2>
+	                                            	</ui:fragment>
+	                                            </ui:fragment>
 	                                        </div>
 	                                        <!-- DATA -->
 	                                        <dl class="row">
@@ -108,14 +116,17 @@
 	                                            <div class="col-3 d-flex justify-content-end">
 	                                                <!-- EDIT -->
 	                                                <a href="#{navigationHelper.applicationUrl}admin/rights/edit/#{license.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{msg[license.licenseType.name]} | #{license.user.displayName} #{license.userGroup.name} #{license.ipRange.name}">#{msg.edit}</a>
-	
-	                                                <!-- DELETE -->
-	                                                <button 
-	                                                	class="admin__boxed-entry-actions-delete -redlink"
-	                                                    jsf:onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
-	                                                    jsf:action="#{adminBean.deleteLicenseAction(license)}">
-	                                                    #{msg.delete}
-	                                                </button>
+	                                                
+                                                    <!-- DELETE -->
+		                                            <button
+		                                                class="admin__boxed-entry-actions-delete -redlink"
+		                                                data-require-confirmation="true"
+		                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__right__delete_warning, msg[license.licenseType.name])}"
+		                                                jsf:action="#{adminBean.deleteLicenseAction(license)}"
+		                                                aria-label="#{msg.delete} #{msg[license.licenseType.name]}" >
+		                                                #{msg.delete}
+		                                            </button>
+	                                                
 	                                            </div>
 	                                        </div>
                                         </div>

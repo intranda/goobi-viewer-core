@@ -38,6 +38,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -96,7 +97,7 @@ public class SitelinkBean implements Serializable {
         String[] fields = { SolrConstants.PI, SolrConstants.PI_PARENT, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                 SolrConstants.MIMETYPE, SolrConstants.CURRENTNO };
         String[] anchorFields = { SolrConstants.LABEL, SolrConstants.TITLE };
-        String query = SearchHelper.buildFinalQuery(field + ":\"" + value + '"' + (filterQuery != null ? " AND " + filterQuery : ""), null, false, false);
+        String query = SearchHelper.buildFinalQuery(field + ":\"" + value + '"' + (filterQuery != null ? " AND " + filterQuery : ""), null, false, SearchAggregationType.NO_AGGREGATION);
         logger.trace("q: {}", query);
 
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));

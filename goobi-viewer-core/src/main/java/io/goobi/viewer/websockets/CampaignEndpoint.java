@@ -261,16 +261,6 @@ public class CampaignEndpoint {
                 .collect(Collectors.toList());
     }
 
-    public static void main(String[] args) {
-        PageLock p1 = new PageLock(null, 1, "1234", 2);
-        PageLock p2 = new PageLock(null, 1, "1234", 2);
-        PageLock p3 = new PageLock(null, 1, "1234", 5);
-
-        System.out.println(p1.equals(p2));
-        System.out.println(p1.equals(p3));
-
-    }
-
     /**
      * Remove a registered crowdsourcing page lock after session end and notify the assiciated websocket session that the session has ended
      *

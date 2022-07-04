@@ -3215,4 +3215,13 @@ public class ConfigurationTest extends AbstractTest {
     public void getContentUploadRejectionReasonPropertyName_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("uploadRejectedInformation", DataManager.getInstance().getConfiguration().getContentUploadRejectionReasonPropertyName());
     }
+
+    /**
+     * @see Configuration#isUseFacetsAsExpandQuery()
+     * @verifies return correct value
+     */
+    @Test
+    public void isUseFacetsAsExpandQuery_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery());
+    }
 }

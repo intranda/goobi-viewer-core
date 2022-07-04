@@ -374,6 +374,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         this.setGeoMap(blueprint.getGeoMap());
         this.setSlider(blueprint.slider);
         this.setSorting(blueprint.sorting);
+        this.setNoSearchAggregation(blueprint.noSearchAggregation);
     }
 
     /**

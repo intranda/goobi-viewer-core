@@ -1,0 +1,160 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminClients')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+
+      <!-- TITLE -->
+      <div class="admin__title-bar">
+        <h1 class="admin__title">#{msg.admin__clients__title}</h1>
+      </div>
+
+      <div id="adminClients" class="admin__content-inner-content">
+
+        <div class="admin__info-text">#{msg.admin__clients__info}</div>
+
+		<c:set scope="view" value="#{adminClientsBean.notConfiguredClients}" var="notConfiguredClients"></c:set>
+
+			<!-- NOT CONFIGURED CLIENTS -->
+            <ui:fragment rendered="#{not empty notConfiguredClients}">
+                <div class="admin__default-block mb-5 -warning">
+                    <div class="row">
+                      <h2 class="col-12">
+                          #{msg.admin__clients__not_configured_clients}
+                      </h2>
+                    </div>
+                    <ui:repeat var="client" value="#{notConfiguredClients}">
+	                    <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
+	                        class="row admin__license-unconfigured-entry">
+	                            <div class="col-10 -textlink">
+									#{client.clientIdentifier} (IP: #{client.clientIp})
+	                            </div>
+	                            <div class="col-2 d-flex justify-content-end">
+	                            	<span>#{msg.admin__clients__configure_client}</span>
+	                            </div>
+	                 	</a>
+                 	</ui:repeat>
+                </div>
+            </ui:fragment>
+
+            <!-- CONFIGURED CLIENTS -->
+            <ui:fragment>
+					<h:form>
+                <div class="admin__table-tools">
+                    <!-- PAGINATOR -->
+                    <div class="admin__table-paginator">
+                        <viewerComponent:dataTablePaginator tableValues="#{adminClientsBean.configuredClientsModel}" />
+                    </div>
+                    <!-- FILTER -->
+                    <div class="admin__table-filter">
+                        <viewerComponent:dataTableColumnFilter key="admin__clients__search" filter="#{adminClientsBean.configuredClientsModel.getFilter('name_ip_identifier')}"/>
+                    </div>
+                </div>
+
+                <div id="new-table-clients" class="admin__table-content" role="grid" aria-label="#{msg.admin__clients__title}: #{msg.aria_label__table__actions}">
+                    <div class="row no-gutters admin__table-title" role="row">
+                        <div class="col-6 d-flex -sorting-arrow-trigger">
+                            <viewerComponent:sortingArrow filterType="name" colHeading="#{msg.admin__clients__column_information}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
+                        
+                        <div class="col-2 d-flex -sorting-arrow-trigger">
+							<viewerComponent:sortingArrow filterType="ip" colHeading="#{msg.admin__clients__column_ip}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
+                        
+                        <div class="col-2 d-flex -sorting-arrow-trigger">
+							<viewerComponent:sortingArrow filterType="dateRegistered" colHeading="#{msg.admin__clients__date_registered}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
+                        
+                        <div class="col-2 d-flex -sorting-arrow-trigger">
+							<viewerComponent:sortingArrow filterType="dateLastAccess" colHeading="#{msg.admin__clients__date_last_access}" list="#{adminClientsBean.configuredClientsModel}" />
+                        </div>
+                    </div>
+
+                    <ui:repeat var="client" value="#{adminClientsBean.configuredClientsModel.paginatorList}">
+                        <div class="row no-gutters admin__table-entry" role="row">
+                            <div class="col-6 d-flex">
+                                <div class="admin__table-data" role="gridcell">
+                                    <!-- CLIENT NAME -->
+                                    <span class="admin__table-name admin__clients-table-client-name">#{client.name}</span>
+                                    <!-- CLIENT DESCRIPTION -->
+                                    <span class="admin__table-additional-info">#{client.description}</span>
+                                    <!-- CLIENT ID -->
+                                    <span class="font-italic">(#{client.clientIdentifier})</span>
+                                    <!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
+                                    <div class="admin__table-actions-wrapper">
+	                                    <!-- EDIT -->
+	                                    <a href="#{navigationHelper.applicationUrl}admin/clients/edit/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">#{msg.edit}</a>
+	                                    <!-- DELETE -->
+                                        <button
+                                            class="admin__table-action-link -redlink"
+                                            data-require-confirmation="true"
+                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__clients__delete_client__confirm, client.name)}"
+                                            jsf:action="#{adminClientsBean.delete(client)}"
+                                            aria-label="#{msg.delete}: #{client.clientIdentifier}" >
+                                            #{msg.delete}
+                                        </button>
+	                                    
+									</div>
+                                </div>
+                            </div>
+
+				<div class="col-2 d-flex align-items-center" role="gridcell">
+                                <span class="admin__table-ip-address">
+                                    #{client.subnetMask}
+                                </span>
+                            </div>
+
+							<!-- REGISTERED DATE -->
+                            <div class="col-2 d-flex align-items-center" role="gridcell">
+                                <span class="admin__table-last-login">
+                                    <h:outputText value="#{client.dateRegistered}">
+                                        <f:converter converterId="localDateTimeConverter" />
+                                        <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                    </h:outputText>
+                                </span>
+                            </div>
+
+                            <!-- LAST LOGIN DATE -->
+                            <div class="col-2 d-flex align-items-center" role="gridcell">
+                                <span class="admin__table-last-login">
+                                    <h:outputText value="#{client.dateLastAccess}">
+                                        <f:converter converterId="localDateTimeConverter" />
+                                        <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                    </h:outputText>
+                                </span>
+                            </div>
+
+                        </div>
+                        
+                    </ui:repeat>
+                    
+			            <script type="text/javascript">
+			                // Create no entries found message
+			    			if($('.admin__table-entry').length == 0) {
+			    				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			    			}
+				        </script>
+
+                </div>
+                    </h:form>
+           </ui:fragment>
+		</div>
+		
+		
+		
+    </ui:define>
+</ui:composition>

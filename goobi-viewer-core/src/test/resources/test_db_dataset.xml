@@ -41,7 +41,7 @@
 		description="ip range 2 desc" />
 
 	<license_types license_type_id="1" name="license type 1 name"
-		description="license type 1 desc" conditions="-YEAR:[* TO 3000]"
+		description="license type 1 desc"
 		open_access="false" core="false" />
 	<license_type_privileges license_type_id="1"
 		privilege_name="license type 1 priv 1" />
@@ -68,8 +68,7 @@
     <!-- This license type is used in conjunction with the test index, so don't change -->
     <license_types license_type_id="6" name="restriction on access"
         description="restricted records"
-        open_access="false" core="false" moving_wall="true"
-        conditions="-MDNUM_PUBLICRELEASEYEAR:[* TO NOW/YEAR]" />
+        open_access="false" core="false" moving_wall="true" />
 
 	<license_types_overriding license_type_id="4" overriding_license_type_id="1" />
 	<license_types_overriding license_type_id="1" overriding_license_type_id="4" />
@@ -284,6 +283,11 @@
     <annotations_crowdsourcing annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
     <annotations_crowdsourcing annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
     <annotations_crowdsourcing annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
+    
+    <client_applications client_application_id="1" client_identifier="74b2b989-753f-4eea-a3f9-8fa7243f3966" access_status="NON_APPLICABLE" name="all clients" date_registered="2022-06-08 00:00:00.000000000" date_last_access="2022-06-08 00:00:00.000000000"></client_applications>
+    <client_applications client_application_id="2" client_identifier="1234-abcd-4321" access_status="REQUESTED" name="First client" subnet_mask="127.0.0.0/16" date_registered="2022-06-08 00:00:00.000000000" date_last_access="2022-06-08 00:00:00.000000000"></client_applications>
+    <client_applications client_application_id="3" client_identifier="7890-abcd-0987" access_status="GRANTED" name="Second client" subnet_mask="192.168.172.0/16" date_registered="2022-06-08 00:00:00.000000000" date_last_access="2022-06-08 00:00:00.000000000"></client_applications>
+    
     
 </dataset>
 

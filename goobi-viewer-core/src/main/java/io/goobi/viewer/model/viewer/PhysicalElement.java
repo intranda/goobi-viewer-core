@@ -128,7 +128,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private final String urn;
     private String purlPart;
     /** Media mime type. */
-    private String mimeType = MimeType.IMAGE.getName();
+    private String mimeType = BaseMimeType.IMAGE.getName();
     /** Actual image/video width (if available). */
     private int width = 0;
     /** Actual image/video height (if available). */
@@ -300,7 +300,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
-        MimeType mimeType = MimeType.getByName(this.mimeType);
+        BaseMimeType mimeType = BaseMimeType.getByName(this.mimeType);
         if (mimeType == null) {
             logger.error("Page {} of record '{}' has unknown mime-type: {}", orderLabel, pi, this.mimeType);
             return "";
@@ -522,13 +522,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * getFullMimeType.
      * </p>
      *
-     * @param baseType a {@link java.lang.String} object.
+     * @param mimeType a {@link java.lang.String} object.
      * @param fileName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
+     * @should return mimeType if already full mime type
+     * @should return mimeType if not image
+     * @should return png image mime type from file name
+     * @should return jpeg if not png
      */
-    public static String getFullMimeType(String baseType, String fileName) {
-        if (baseType.equals(MimeType.IMAGE.getName())) {
-            //            return baseType + "/jpeg";
+    public static String getFullMimeType(String mimeType, String fileName) {
+        if (mimeType == null) {
+            return "";
+        }
+
+        // Already full mime type
+        if (mimeType.contains("/")) {
+            return mimeType;
+        }
+        if (mimeType.equals(BaseMimeType.IMAGE.getName())) {
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
             if (ImageFileFormat.PNG.equals(fileFormat)) {
                 return fileFormat.getMimeType();
@@ -536,19 +547,22 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return ImageFileFormat.JPG.getMimeType();
         }
 
-        return baseType;
+        return mimeType;
     }
 
     /**
-     * <p>
-     * getFullMimeType.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
+     * 
+     * @return
+     * @should return correct base mime type
+     * @should return image if base mime type not found
      */
-    @Deprecated
-    public String getFullMimeType() {
-        return getDisplayMimeType();
+    public String getBaseMimeType() {
+        BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
+        if (baseMimeType != null) {
+            return baseMimeType.getName();
+        }
+
+        return BaseMimeType.IMAGE.getName();
     }
 
     /**
@@ -1154,9 +1168,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         String url;
         try {
-            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(mimeType, format, pi, getFileNameForFormat(format));
+            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType(), format, pi, getFileNameForFormat(format));
         } catch (IllegalRequestException e) {
-            throw new IllegalStateException("media type must be either audio or video, but is " + mimeType);
+            throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
         }
 
         logger.trace("currentMediaUrl: {}", url.toString());
@@ -1317,7 +1331,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getPageLinkLabel() {
-        MimeType mimeType = MimeType.getByName(this.mimeType);
+        BaseMimeType mimeType = BaseMimeType.getByName(this.mimeType);
         if (mimeType == null) {
             return "viewImage";
         }
@@ -1346,7 +1360,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
         // Prevent access if mime type incompatible
-        if (!MimeType.OBJECT.equals(MimeType.getByName(mimeType))) {
+        if (!BaseMimeType.OBJECT.equals(BaseMimeType.getByName(mimeType))) {
             return false;
         }
 
@@ -1373,7 +1387,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermissionImage() throws IndexUnreachableException, DAOException {
         // logger.trace("AccessPermissionImage");
         // Prevent access if mime type incompatible
-        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
 
@@ -1400,7 +1414,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public boolean isAccessPermissionObject() throws IndexUnreachableException, DAOException {
         // Prevent access if mime type incompatible
-        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
 
@@ -1469,7 +1483,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
         // Prevent access if mime type incompatible
-        if (!MimeType.isImageOrPdfDownloadAllowed(mimeType)) {
+        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
             return false;
         }
 
@@ -1497,7 +1511,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
-        return isAccessPermissionObject();
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+        }
+        logger.trace("FacesContext not found");
+
+        return false;
     }
 
     /**

@@ -21,23 +21,31 @@
  */
 package io.goobi.viewer.model.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -55,7 +63,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsEmpty() throws Exception {
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(new ArrayList<LicenseType>(), new HashSet<String>(),
-                IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null, null));
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null, Optional.empty(), null));
     }
 
     /**
@@ -65,7 +73,8 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     @Test
     public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccess() throws Exception {
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(),
-                new HashSet<>(Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", null));
+                new HashSet<>(Collections.singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", Optional.empty(),
+                null));
     }
 
     /**
@@ -85,12 +94,12 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add(SolrConstants.OPEN_ACCESS_VALUE);
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
 
         recordAccessConditions.add("type1");
         recordAccessConditions.add("type2");
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
     }
 
     /**
@@ -114,7 +123,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         recordAccessConditions.add("condition2");
 
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
     }
 
     /**
@@ -137,7 +146,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         recordAccessConditions.add("type2");
 
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null,
-                null, null));
+                null, Optional.empty(), null));
     }
 
     /**
@@ -163,7 +172,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("license type 3 name");
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
-                "127.0.0.1", null));
+                "127.0.0.1", Optional.empty(), null));
 
         // localhost always gets access now
         //        recordAccessConditions.add("license type 1 name");
@@ -188,7 +197,7 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Set<String> recordAccessConditions = new HashSet<>();
         recordAccessConditions.add("license type 1 name");
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
-                "11.22.33.44", null));
+                "11.22.33.44", Optional.empty(), null));
     }
 
     /**
@@ -219,61 +228,19 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     }
 
     /**
-     * @see SearchHelper#getRelevantLicenseTypesOnly(List,Set,String)
-     * @verifies remove license types whose condition query excludes the given pi
-     */
-    @Test
-    public void getRelevantLicenseTypesOnly_shouldRemoveLicenseTypesWhoseConditionQueryExcludesTheGivenPi() throws Exception {
-        List<LicenseType> allLicenseTypes = new ArrayList<>();
-
-        LicenseType lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type1");
-        lt.setConditions("+" + SolrConstants.PI_TOPSTRUCT + ":unknownidentifier");
-
-        lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type2");
-        lt.setConditions("+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
-
-        lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type3");
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("type1");
-        recordAccessConditions.add("type2");
-        recordAccessConditions.add("type3");
-
-        Map<String, List<LicenseType>> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
-                "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005", Collections.singletonMap("", Boolean.FALSE));
-        Assert.assertNotNull(ret);
-        Assert.assertNotNull(ret.get(""));
-        Assert.assertEquals(2, ret.get("").size());
-        Assert.assertEquals("type2", ret.get("").get(0).getName());
-        Assert.assertEquals("type3", ret.get("").get(1).getName());
-    }
-
-    /**
      * @see AccessConditionUtils#getRelevantLicenseTypesOnly(List,Set,String,Map)
      * @verifies not remove moving wall license types to open access if condition query excludes given pi
      */
     @Test
-    public void getRelevantLicenseTypesOnly_shouldNotRemoveWallLicenseTypesToOpenAccessIfConditionQueryExcludesGivenPi() throws Exception {
-        List<LicenseType> allLicenseTypes = new ArrayList<>();
-
+    public void getRelevantLicenseTypesOnly_shouldNotRemoveMovingWallLicenseTypesToOpenAccessIfConditionQueryExcludesGivenPi() throws Exception {
         LicenseType lt = new LicenseType();
-        allLicenseTypes.add(lt);
         lt.setName("type1");
         lt.setMovingWall(true);
-        lt.setConditions("+" + SolrConstants.PI_TOPSTRUCT + ":unknownidentifier");
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("type1");
 
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":PPN517154005";
-        Map<String, List<LicenseType>> ret = AccessConditionUtils.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions,
-                query, Collections.singletonMap("", Boolean.FALSE));
+        Map<String, List<LicenseType>> ret =
+                AccessConditionUtils.getRelevantLicenseTypesOnly(Collections.singletonList(lt), Collections.singleton("type1"),
+                        query, Collections.singletonMap("", Boolean.FALSE));
         Assert.assertNotNull(ret);
         Assert.assertNotNull(ret.get(""));
         Assert.assertEquals(1, ret.get("").size());
@@ -331,6 +298,15 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         }
     }
 
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies use correct file name for pdf files
+     */
+    @Test
+    public void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() throws Exception {
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "12345.pdf");
+        Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"12345.pdf\"", result);
+    }
 
     /**
      * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
@@ -351,8 +327,60 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
      */
     @Test
     public void generateAccessCheckQuery_shouldEscapeFileNameForWildcardSearchCorrectly() throws Exception {
-            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
-            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001 (1)");
+        Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001\\ \\(1\\).*", result);
+    }
+
+    @Test
+    public void generateAccessCheckQuery_shouldUseFullNameForImageFormats() throws Exception {
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.tif");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.tif\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpeg");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jpeg\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.png");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.png\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jp2");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jp2\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.jpg");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.jpg\"", result);
+        }
+    }
+
+    @Test
+    public void generateAccessCheckQuery_shouldUseFullNameFor3dObjectFormats() throws Exception {
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.gltf");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.gltf\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.glb");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.glb\"", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001.obj");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"00000001.obj\"", result);
+        }
+    }
+
+    @Test
+    public void generateAccessCheckQuery_shouldUseBaseNameForFormatlessFiles() throws Exception {
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "00000001");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":00000001.*", result);
+        }
+        {
+            String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "SM.1.6.001");
+            Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":SM.1.6.001.*", result);
+        }
     }
 
     /**
@@ -410,5 +438,33 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
     public void isConcurrentViewsLimitEnabledForAnyAccessCondition_shouldReturnTrueIfAnyLicenseTypeHasLimitEnabled() throws Exception {
         String[] licenseTypes = new String[] { "license type 1 name", "license type 4 name" };
         Assert.assertTrue(AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(Arrays.asList(licenseTypes)));
+    }
+
+    @Test
+    public void test_getApplyingLicenses_byIp() throws DAOException {
+
+        LicenseType licenseType = new LicenseType();
+
+        IpRange ipRangeMatch = new IpRange();
+        ipRangeMatch.setSubnetMask("192.168.0.10/32");
+
+        IpRange ipRangeNoMatch = new IpRange();
+        ipRangeNoMatch.setSubnetMask("172.168.0.11/32");
+
+        License license = new License();
+        license.setLicenseType(licenseType);
+        license.setIpRange(ipRangeMatch);
+
+        IDAO dao = Mockito.mock(IDAO.class);
+        Mockito.when(dao.getLicenses(licenseType)).thenReturn(Arrays.asList(license));
+        Mockito.when(dao.getAllIpRanges()).thenReturn(Arrays.asList(ipRangeMatch, ipRangeNoMatch));
+
+        List<License> licenses = AccessConditionUtils.getApplyingLicenses(Optional.empty(), "192.168.0.10", licenseType, dao);
+        assertFalse(licenses.isEmpty());
+        assertEquals(license, licenses.get(0));
+
+        license.setIpRange(ipRangeNoMatch);
+        licenses = AccessConditionUtils.getApplyingLicenses(Optional.empty(), "192.168.0.10", licenseType, dao);
+        assertTrue(licenses.isEmpty());
     }
 }

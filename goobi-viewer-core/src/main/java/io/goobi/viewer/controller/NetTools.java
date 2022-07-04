@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.util.SubnetUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -697,6 +698,15 @@ public class NetTools {
             int code = Integer.parseInt(string);
             return 200 <= code && code < 400;
         } catch (NullPointerException | NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    public static boolean isValidSubnetMask(String subnetMask) {
+        try {            
+            new SubnetUtils(subnetMask);
+            return true;
+        } catch(IllegalArgumentException e) {
             return false;
         }
     }

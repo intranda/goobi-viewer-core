@@ -111,7 +111,6 @@
         buttonFilesSelected(e) {
             this.files = [];
             for (var f of e.target.files) {
-                console.log("selected file "+ f.name);
                 this.files.push(f);
                 var sizeUnit = 'KB';
                 var size = f.size / 1000;

@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -169,7 +168,8 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("15");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/", adb.getPageUrlRelativeToCurrentPage(3));
+        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/",
+                adb.getPageUrlRelativeToCurrentPage(3));
     }
 
     /**
@@ -273,9 +273,11 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertTrue(adb.isRecordLoaded());
 
         // Next page (2 -> 3)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/", adb.getPageUrlRelativeToCurrentPage(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/",
+                adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (2 -> 1)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/", adb.getPageUrlRelativeToCurrentPage(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/",
+                adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
     /**
@@ -290,28 +292,33 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.setImageToShow("1");
         adb.update();
         Assert.assertTrue(adb.isRecordLoaded());
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2/", adb.getPageUrlRelativeToCurrentPage(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2/",
+                adb.getPageUrlRelativeToCurrentPage(1));
 
         // Next page (1 -> 2-3)
         adb.setImageToShow("1-1");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrlRelativeToCurrentPage(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
+                adb.getPageUrlRelativeToCurrentPage(1));
 
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/", adb.getPageUrlRelativeToCurrentPage(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/",
+                adb.getPageUrlRelativeToCurrentPage(-1));
 
         // Same in right-to-left
         adb.getViewManager().getTopStructElement().setRtl(true);
         // Next page (1 -> 2-3)
         adb.setImageToShow("1-1");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrlRelativeToCurrentPage(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
+                adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16-17");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/", adb.getPageUrlRelativeToCurrentPage(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/",
+                adb.getPageUrlRelativeToCurrentPage(-1));
 
     }
 
@@ -330,9 +337,11 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.getViewManager().setDoublePageMode(true);
 
         // Next page (4-5 -> 6-7)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/", adb.getPageUrlRelativeToCurrentPage(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/",
+                adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (4-5 -> 2-3)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/", adb.getPageUrlRelativeToCurrentPage(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
+                adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
     /**
@@ -351,9 +360,11 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         adb.getViewManager().getCurrentPage().setDoubleImage(true);
 
         // Next page (3 -> 4-5)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/", adb.getPageUrlRelativeToCurrentPage(1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/",
+                adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (3 -> 1-2)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/", adb.getPageUrlRelativeToCurrentPage(-1));
+        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/",
+                adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
     /**

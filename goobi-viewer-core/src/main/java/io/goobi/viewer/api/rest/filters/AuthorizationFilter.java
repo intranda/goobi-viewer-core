@@ -82,9 +82,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
      * @return Whether or not access is granted
      */
     private static boolean checkPermissions(String ip, String token, String pathInfo) {
-        if (pathInfo == null) {
-            return false;
-        }
+
         if (token == null) {
             logger.trace("No token");
             return false;

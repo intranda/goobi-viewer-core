@@ -74,8 +74,6 @@ var viewerJS = ( function( viewer ) {
             var translator = new viewerJS.Translator(_defaults.restEndpoint, "#{navigationHelper.localeString}");
             
             let miradorConfigPromise = null;
-            console.log("Manifests ", manifests);
-            console.log("_getBookmarkListId()", _getBookmarkListId());
             if (manifests.length > 0) {
             	// URL identifiers
                 miradorConfigPromise = _getMiradorConfigForManifestUrls(manifests, _defaults);
@@ -105,7 +103,6 @@ var viewerJS = ( function( viewer ) {
             if(miradorConfigPromise) {  
                 miradorConfigPromise       
                 .then( elements => {                    
-                        console.log("elements ", elements)
                         this.miradorConfig = elements;
                         this.mirador = Mirador.viewer(this.miradorConfig);
                 })
@@ -159,7 +156,6 @@ var viewerJS = ( function( viewer ) {
 		}
 
 		let url = restUrl + "bookmarks/" + id + "/collection.json";
-		console.log("rest url ", url);
 		return fetch(url);
 	}
 	
@@ -222,11 +218,9 @@ var viewerJS = ( function( viewer ) {
                 }),
                 windows: manifests.map(man => {
                     var winObj = Object.assign({}, windowObject);
-                    console.log("manifest ", man);
                     if(man.sequences && man.sequences.length > 0 && man.sequences[0].startCanvas) {
                     	let startId = man.sequences[0].startCanvas["@id"];
                     	let match = startId.match(/pages\/(\d+)\/canvas/);
-                    	console.log("match ", startId, match);
                     	if(match && match.length > 1) {
                     		let pageNo = parseInt(match[1]);
                     		winObj.canvasIndex = pageNo-1;

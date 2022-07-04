@@ -27,42 +27,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+
+import io.goobi.viewer.AbstractTest;
 
 /**
  * @author Florian Alpers
  *
  */
-public class LicenseTypeTest {
-
-    private static final String CONDITION_QUERY_1 = "(DOCTYPE:Monograph AND isWork:true) -DC:privatecollection";
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @Test
-    public void testGetProcessedConditions() {
-        LicenseType type = new LicenseType();
-
-        type.setConditions(CONDITION_QUERY_1);
-        Assert.assertTrue("processed conditions are " + type.getProcessedConditions(), type.getProcessedConditions().equals(CONDITION_QUERY_1));
-    }
-
+public class LicenseTypeTest extends AbstractTest {
 
     /**
      * @see LicenseType#getAvailablePrivileges(Set)
@@ -76,6 +50,7 @@ public class LicenseTypeTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(IPrivilegeHolder.PRIV_VIEW_UGC, result.get(0));
     }
+
     @Test
     public void getAvailablePrivilegesHandleNonEmptyArgument() throws Exception {
         LicenseType type = new LicenseType();
@@ -84,6 +59,4 @@ public class LicenseTypeTest {
         List<String> result = type.getAvailablePrivileges(privileges);
         Assert.assertEquals(0, result.size());
     }
-
-
 }
