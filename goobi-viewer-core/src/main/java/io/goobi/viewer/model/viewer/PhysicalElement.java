@@ -1168,9 +1168,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         String url;
         try {
-            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(mimeType, format, pi, getFileNameForFormat(format));
+            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType(), format, pi, getFileNameForFormat(format));
         } catch (IllegalRequestException e) {
-            throw new IllegalStateException("media type must be either audio or video, but is " + mimeType);
+            throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
         }
 
         logger.trace("currentMediaUrl: {}", url.toString());
