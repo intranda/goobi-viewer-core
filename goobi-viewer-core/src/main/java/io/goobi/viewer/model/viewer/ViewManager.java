@@ -1101,7 +1101,7 @@ public class ViewManager implements Serializable {
         // TODO check all files for mime type?
         if (filesOnly == null) {
             BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
-            if (BaseMimeType.APPLICATION.getName().equals(baseMimeType)) {
+            if (BaseMimeType.APPLICATION.equals(baseMimeType)) {
                 filesOnly = true;
             } else {
                 boolean childIsFilesOnly = isChildFilesOnly();
