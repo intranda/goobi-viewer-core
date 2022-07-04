@@ -937,7 +937,7 @@ public class AccessConditionUtils {
                 //check clientApplication
                 if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                     //check if specific client matches access conditions
-                    if (client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                    if (client.isPresent() && client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
                         accessMap.put(key, Boolean.TRUE);
                     } else {
                         //check if accesscondition match for all clients
@@ -1011,10 +1011,11 @@ public class AccessConditionUtils {
                         .append(" -(")
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
-                logger.trace("License relevance query: {}", StringTools.stripPatternBreakingChars(sbQuery.toString()));
+                logger.trace("License relevance query: {}",
+                        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString())));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
-                            licenseType.getName(), query);
+                            licenseType.getName(), StringTools.stripPatternBreakingChars(query));
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
                         logger.trace(
