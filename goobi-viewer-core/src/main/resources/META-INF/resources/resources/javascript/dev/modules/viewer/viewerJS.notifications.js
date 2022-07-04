@@ -191,11 +191,10 @@ var viewerJS = ( function( viewer ) {
 						 
 		$('[data-require-confirmation="true"]')
 		.each((index,element) => {
-			console.log("init confirmation dialog for", element, element.hasConfirmationEvent);
+			//console.log("init confirmation dialog for", element, element.hasConfirmationEvent);
 			//store the original (jsf) event in the element. If initJsfConfirmationDialogs gets retriggered due to ajax without the element 
 			//being changed, the original jsf-call is kept as the original event
 			if(!element.hasConfirmationEvent) {
-				console.log("hasConfirmationEvent");
 				element.hasConfirmationEvent = true;
 				element.originalEvent = element.onclick;
 				element.onclick = e => {
