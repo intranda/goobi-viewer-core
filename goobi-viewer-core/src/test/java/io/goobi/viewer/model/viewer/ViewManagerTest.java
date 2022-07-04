@@ -476,4 +476,15 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
+    /**
+     * @see ViewManager#isFilesOnly()
+     * @verifies return true if mime type application
+     */
+    @Test
+    public void isFilesOnly_shouldReturnTrueIfMimeTypeApplication() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, "application/pdf", null);
+        Assert.assertTrue(viewManager.isFilesOnly());
+    }
+
 }
