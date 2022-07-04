@@ -1095,7 +1095,7 @@ public class ViewManager implements Serializable {
      * @return true if record or first child or first page have an application mime type; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should return 
+     * @should return true if mime type application
      */
     public boolean isFilesOnly() throws IndexUnreachableException, DAOException {
         // TODO check all files for mime type?
