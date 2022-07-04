@@ -72,19 +72,33 @@ var cmsJS = ( function( cms ) {
             // render grid
             _renderMasonryGrid( data );
             
-            // init masonry
-            _lazyGrid = _defaults.$grid.imagesLoaded( function() {
+            let $images = _defaults.$grid.find('img');
+            let promises = [];
+            $images.each( (index,element) => {
+            	let promise = new Promise((res, rej) => {
+            		element.onload = e => res(e);
+            		element.onerror = e => rej(e);
+            	});
+            	promises.push(promise);
+            });
+            
+            Promise.allSettled(promises)
+            .then( array => {
+            	//console.log("all images loaded in ", _defaults.$grid, array);
                 // init Masonry after all images have loaded
-                _lazyGrid.masonry( {
+                _defaults.$grid.masonry( {
                     itemSelector: '.grid-item',
                     columnWidth: '.grid-sizer',
                     gutter: '.gutter-sizer',
                     percentPosition: true
                 } );
-            } );
-            
+            })
+            .catch( e => {
+            	console.log("error when trying to detect all images loaded", e);
+            });
+
             // fade in grid after rendering
-            _lazyGrid.on( 'layoutComplete', function( event, laidOutItems ) {
+            _defaults.$grid.on( 'layoutComplete', function( event, laidOutItems ) {
                 // hide loader
                 $( _defaults.loaderSelector ).hide();
                 // show images

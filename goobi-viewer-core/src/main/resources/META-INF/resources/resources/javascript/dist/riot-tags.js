@@ -2216,7 +2216,6 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 	this.question = this.opts.question;
 
 	this.on("mount", function() {
-	  console.log("item ", this.question.item);
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Richtext(anno), this.update, this.update, this.focusAnnotation);
 
 	    this.opts.item.onImageOpen(function() {
