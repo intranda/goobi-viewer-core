@@ -10,15 +10,24 @@
 	/* ELEMENT */
 	h2 {}
 	p {}
-	&__items {
-		.mx-grid(@width: 75px; @gap: 10px);
+	&__items { 
+		display: grid;
+		grid-template-columns:  40% repeat(4, 15%);
+		grid-gap: 0;
+		justify-items: stretch;
+		align-items: stretch;
+	}
+	&__head {
+		font-weight: bold;
+		border-top: 1px solid @middlegray;
+		border-bottom: 1px solid @middlegray;
+		padding: 5px;
 	}
 	&__item {
 		position: relative;
+		border-bottom: 1px solid @middlegray;
 		padding: 5px;
-		text-align: center;
-		border: 1px solid @middlegray;
-		background-color: @white;
+		word-wrap: break-word;
 	}   
 	&__item-order-label {
 		display: block;
