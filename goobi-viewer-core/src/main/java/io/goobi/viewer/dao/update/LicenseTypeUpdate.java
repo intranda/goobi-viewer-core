@@ -65,6 +65,7 @@ public class LicenseTypeUpdate implements IModelUpdate {
             }
         }
 
-        //  Remove LicenseType.conditions
+        // Remove LicenseType.conditions
+        dao.executeUpdate("ALTER TABLE license_types DROP COLUMN conditions;");
     }
 }
