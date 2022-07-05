@@ -108,6 +108,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             break;
                         case "identifier":
                             identifier = values[0];
+                            identifier = FilenameUtils.getName(identifier); // Make sure filename doesn't inject a path traversal //NOSONAR
                             break;
                         case "status":
                             status = values[0];
