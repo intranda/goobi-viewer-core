@@ -313,7 +313,7 @@
 				                
 				                
 				                
-								<div data-target="cmsPageBreadcrumbsPreview" class="crowdsourcing-annotations__sidebar-owner mt-2">#{msg.title__preview}: #{msg.home} > #{cmsBean.selectedPage.parentPageId} > #{cmsBean.selectedPage.getLanguageVersion(locale).title} </div>
+								<div data-target="cmsPageBreadcrumbsPreview" class="admin__small-info mt-2">#{msg.title__preview}: #{msg.home} > #{cmsBean.getCMSPage(cmsBean.selectedPage.parentPageId).title} > #{cmsBean.selectedPage.getLanguageVersion(locale).title} </div>
 				                
 				            </h:panelGroup>
 
@@ -469,7 +469,7 @@
 	                    pt:data-input-restricted-message="#{msg.alert__character_not_allowed_in_url}" />
 	            </h:panelGroup>
 	            
-	            <div data-target="cmsPageUrlPreview" class="crowdsourcing-annotations__sidebar-owner mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
+	            <div data-target="cmsPageUrlPreview" class="admin__small-info mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
 			
 			</div>
 			
@@ -502,7 +502,7 @@
 	                    styleClass="form-control" 
 	                    pt:data-target="quickCSSInputField"/>
 	            </h:panelGroup>
-            	<div data-target="cmsPageJumpToQuickCSSLink" class="crowdsourcing-annotations__sidebar-owner mt-2"><a target="_blank" href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a></div>
+            	<div data-target="cmsPageJumpToQuickCSSLink" class="admin__small-info mt-2"><a target="_blank" href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a></div>
 
             </div>
             

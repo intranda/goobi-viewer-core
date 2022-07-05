@@ -439,6 +439,7 @@
 	&__page-metadata-grid {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
+		word-wrap: anywhere;
 	}
 }
 
@@ -488,7 +489,9 @@
 		}
 	}
 	&__categories-selected-categories {
-		margin-bottom: 1rem;
+		.badge  {
+			margin-bottom: 0.8rem !important;
+		}
 	}
 	&__categories-selectable-categories {
 		display: flex;
