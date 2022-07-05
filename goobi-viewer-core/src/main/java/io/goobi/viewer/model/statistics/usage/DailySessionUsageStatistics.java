@@ -16,55 +16,51 @@
 package io.goobi.viewer.model.statistics.usage;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
- * Statistics of record requests for a single day without session information. 
- * Only statistics are total and unique requests per PI
+ *
  */
-public class DailyTotalRecordStatistics {
-
+@Entity
+@Table(name = "usage_statistics")
+public class DailySessionUsageStatistics {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "usage_statistics_id")
+    private long id;
+    
     /**
      * The date the statistics were recorded
      */
-    private final LocalDate date;
-    
+    @Column(name = "date")
+    private LocalDate date;
+
     /**
      * A name for the viewer instance the statistics were recorded for
      */
-    private final String viewerInstance;
-    
-    /**
-     * A map of persistent identifiers (PIs) mapped to an array of two numbers:
-     * 1. total request: the total number of request for the PI
-     * 2. unique requests: the number of user sessions that have requested this PI 
-     */
-    private final Map<String, long[]> requestCounts = new HashMap<>();
-    
-    public DailyTotalRecordStatistics(LocalDate date, String viewer) {
+    @Column(name = "viewer_instance")
+    private String viewerInstance;
+
+    private final List<SessionUsageStatistics> sessions = new ArrayList<>();
+
+    public DailySessionUsageStatistics(LocalDate date, String viewer) {
         this.date = date;
         this.viewerInstance = viewer;
     }
-    
-    public DailyTotalRecordStatistics() {
+
+    public DailySessionUsageStatistics() {
         this(LocalDate.now(), DataManager.getInstance().getConfiguration().getTheme());   
     }
-    
-    public DailyTotalRecordStatistics(DailyTotalRecordStatistics orig) {
-        this(orig.date, orig.viewerInstance);
-        this.requestCounts.putAll(orig.requestCounts);
-    }
-    
-    public void setTotalRequests(long requests, String pi) {
-        
-        long[] counts = this.requestCounts.get(pi);
-        if(counts == null) {
-            counts = 
-        }
-    }
-    
 }
