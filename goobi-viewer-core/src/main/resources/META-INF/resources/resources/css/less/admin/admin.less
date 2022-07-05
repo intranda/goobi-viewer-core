@@ -1730,6 +1730,7 @@
 		.metadata__element-dl dd, .metadata__event-dl dd {
 			margin-left: unset;
 			width: 100%;
+			grid-column-start: unset;
 		}
 		.metadata__element-dl dt, .metadata__event-dl dt {
 			width: 100%;
@@ -1766,15 +1767,23 @@
 			}
 		}
 		.metadata__elements {
-			margin-bottom: 1rem;
+			// margin-bottom: 1rem;
 		}
 		.metadata__element-ungrouped {
 			grid-template-columns: auto;
 		}
 		.metadata__element-dl {
 			grid-template-columns: auto;
+			&:last-of-type {
+				margin-bottom: 1rem;
+			}
 		}
 	}
+//	.admin__record-notes-metadata {
+//		dl {
+//			margin-bottom: 1rem;
+//		}
+//	}
 	&__record-notes-box-editable {}
 	&__record-notes-radio-select {
 		max-width: 150px;
