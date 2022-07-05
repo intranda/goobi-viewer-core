@@ -18,6 +18,7 @@ package io.goobi.viewer.model.statistics.usage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,7 +32,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.controller.DataManager;
+import jersey.repackaged.com.google.common.base.Objects;
 
 /**
  * @author florian
@@ -59,10 +63,10 @@ public class DailySessionUsageStatistics {
     private String viewerInstance;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "usage_statistics_daily_session", joinColumns = @JoinColumn(name = "usage_statistics_id"),
+            inverseJoinColumns = @JoinColumn(name = "session_statistics_id"))
     private final List<SessionUsageStatistics> sessions = new ArrayList<>();
-
+    
     public DailySessionUsageStatistics(LocalDate date, String viewer) {
         this.date = date;
         this.viewerInstance = viewer;
@@ -72,7 +76,41 @@ public class DailySessionUsageStatistics {
         this(LocalDate.now(), DataManager.getInstance().getConfiguration().getTheme());   
     }
     
+    public DailySessionUsageStatistics(DailySessionUsageStatistics orig) {
+        this(orig.date, orig.viewerInstance);
+        this.sessions.addAll(orig.sessions.stream().map(s -> new SessionUsageStatistics(s)).collect(Collectors.toList()));
+    }
+    
     public SessionUsageStatistics getSession(String sessionId) {
-        return sessions.stream().filter(s -)
+        if(StringUtils.isNotBlank(sessionId)) {            
+            return sessions.stream().filter(s -> sessionId.equals(s.getSessionId())).findAny().orElse(null);
+        } else {
+            return null;
+        }
+    }
+    
+    public void addSession(SessionUsageStatistics session) {
+        this.sessions.add(session);
+    }
+    
+    /**
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+    
+    /**
+     * @return the date
+     */
+    public LocalDate getDate() {
+        return date;
+    }
+    
+    /**
+     * @return the viewerInstance
+     */
+    public String getViewerInstance() {
+        return viewerInstance;
     }
 }

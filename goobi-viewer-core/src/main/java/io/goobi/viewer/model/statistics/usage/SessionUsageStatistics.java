@@ -17,6 +17,7 @@ package io.goobi.viewer.model.statistics.usage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -77,6 +78,13 @@ public class SessionUsageStatistics {
     }
 
     /**
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+    
+    /**
      * @return the sessionId
      */
     public String getSessionId() {
@@ -97,5 +105,20 @@ public class SessionUsageStatistics {
         return clientIP;
     }
     
-    public long getRecordRequests(S)
+    public long getRecordRequestCount(String recordIdentifier) {
+        return Optional.ofNullable(this.recordRequests.get(recordIdentifier)).orElse(0l);
+    }
+    
+    public void setRecordRequectCount(String recordIdentifier, long count) {
+        synchronized (this.recordRequests) {            
+            this.recordRequests.put(recordIdentifier, count);
+        }
+    }
+    
+    public void incrementRequestCount(String recordIdentifier) {
+        synchronized (this.recordRequests) {  
+            long count = Optional.ofNullable(this.recordRequests.get(recordIdentifier)).orElse(0l);
+            this.recordRequests.put(recordIdentifier, count+1);
+        }
+    }
 }
