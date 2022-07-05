@@ -559,6 +559,7 @@ public class ClientApplication implements ILicensee, Serializable {
         }
     }
 
+    @JsonIgnore
     public boolean isAccessGranted() {
         return AccessStatus.GRANTED.equals(this.getAccessStatus());
     }
