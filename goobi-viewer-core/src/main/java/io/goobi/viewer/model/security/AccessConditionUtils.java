@@ -213,7 +213,7 @@ public class AccessConditionUtils {
                 break;
             default:
                 // Escape whitespaces etc. for wildcard searches
-                sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
+                sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(simpleFileName)).append(".*");
                 break;
         }
 
