@@ -21,9 +21,14 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import io.goobi.viewer.controller.DataManager;
@@ -53,6 +58,9 @@ public class DailySessionUsageStatistics {
     @Column(name = "viewer_instance")
     private String viewerInstance;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "license_cms_categories", joinColumns = @JoinColumn(name = "license_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private final List<SessionUsageStatistics> sessions = new ArrayList<>();
 
     public DailySessionUsageStatistics(LocalDate date, String viewer) {
@@ -62,5 +70,9 @@ public class DailySessionUsageStatistics {
 
     public DailySessionUsageStatistics() {
         this(LocalDate.now(), DataManager.getInstance().getConfiguration().getTheme());   
+    }
+    
+    public SessionUsageStatistics getSession(String sessionId) {
+        return sessions.stream().filter(s -)
     }
 }
