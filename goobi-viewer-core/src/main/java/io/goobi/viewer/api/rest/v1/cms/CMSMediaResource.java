@@ -285,7 +285,8 @@ public class CMSMediaResource {
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
 
         String decFilename = StringTools.decodeUrl(filename);
-        decFilename = FilenameUtils.getName(decFilename); // Make sure filename doesn't inject a path traversal //NOSONAR
+        // decFilename = FilenameUtils.getName(decFilename); // Make sure filename doesn't inject a path traversal //NOSONAR
+        decFilename = Paths.get(decFilename).getFileName().toString();
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path path = Paths.get(cmsMediaFolder.toAbsolutePath().toString(), decFilename);
