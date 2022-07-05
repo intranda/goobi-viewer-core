@@ -149,15 +149,6 @@ const depsPathsJS = [
     rename: (dest) => `${dest}masonry.min.js`
   },
 
-  { // IMAGES LOADED (masonry layout dependency)
-    expand: true,
-    cwd: nodeModules,
-    src: 'imagesloaded/imagesloaded.pkgd.min.js*', 
-    flatten: true,
-    dest: `${jsLibsDir}masonry/`,
-    rename: (dest) => `${dest}imagesloaded.min.js`
-  },
-
   { // MIRADOR
     expand: true,
     cwd: nodeModules,

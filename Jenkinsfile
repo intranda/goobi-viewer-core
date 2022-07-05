@@ -31,7 +31,10 @@ pipeline {
     }
     stage('build release') {
       when {
-        tag "v*"
+        anyOf {
+          tag "v*"
+          branch 'master'
+        }
       }
       steps {
               sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false -DfailOnSnapshot=true clean verify -U'
@@ -52,7 +55,7 @@ pipeline {
     stage('deployment of artifacts to maven repository') {
       when {
         anyOf {
-          branch 'master'
+          tag "v*"
           branch 'develop'
         }
       }

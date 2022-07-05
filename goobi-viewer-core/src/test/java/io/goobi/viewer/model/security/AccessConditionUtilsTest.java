@@ -300,6 +300,16 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
 
     /**
      * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
+     * @verifies use correct file name for pdf files
+     */
+    @Test
+    public void generateAccessCheckQuery_shouldUseCorrectFileNameForPdfFiles() throws Exception {
+        String result = AccessConditionUtils.generateAccessCheckQuery("PPN123456789", "12345.pdf");
+        Assert.assertEquals("+" + SolrConstants.PI_TOPSTRUCT + ":PPN123456789 +" + SolrConstants.FILENAME + ":\"12345.pdf\"", result);
+    }
+
+    /**
+     * @see AccessConditionUtils#generateAccessCheckQuery(String,String)
      * @verifies adapt basic alto file name
      */
     @Test

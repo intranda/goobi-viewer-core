@@ -53,7 +53,6 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.solr.common.SolrDocument;
@@ -155,7 +154,7 @@ public class ViewManager implements Serializable {
     private Boolean accessPermissionPdf = null;
     private Boolean allowUserComments = null;
     private List<StructElementStub> docHierarchy = null;
-    private String mainMimeType = null;
+    private String mimeType = null;
     private Boolean filesOnly = null;
     private String opacUrl = null;
     private String contextObject = null;
@@ -184,14 +183,14 @@ public class ViewManager implements Serializable {
      * @param pageLoader a {@link io.goobi.viewer.model.viewer.pageloader.IPageLoader} object.
      * @param currentDocumentIddoc a long.
      * @param logId a {@link java.lang.String} object.
-     * @param mainMimeType a {@link java.lang.String} object.
+     * @param mimeType a {@link java.lang.String} object.
      * @param imageDeliveryBean a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws ViewerConfigurationException
      * @throws DAOException
      */
-    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType,
+    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mimeType,
             ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topStructElement = topDocument;
@@ -223,8 +222,8 @@ public class ViewManager implements Serializable {
                         isBelowFulltextThreshold(), BeanUtils.getLocale());
             }
         }
-        this.mainMimeType = mainMimeType;
-        logger.trace("mainMimeType: {}", mainMimeType);
+        this.mimeType = mimeType;
+        logger.trace("mimeType: {}", mimeType);
 
         if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
             String archiveId = getArchiveEntryIdentifier();
@@ -243,9 +242,8 @@ public class ViewManager implements Serializable {
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {
         if (this.archiveResource != null) {
             return DataManager.getInstance().getArchiveManager().getArchiveHierarchyForIdentifier(this.archiveResource, identifier);
-        } else {
-            return Collections.emptyList();
         }
+        return Collections.emptyList();
     }
 
     public String getArchiveUrlForIdentifier(String identifier) {
@@ -262,9 +260,8 @@ public class ViewManager implements Serializable {
     public String getPageUrl(SelectItem item) {
         if (isDoublePageMode()) {
             return item.getValue().toString() + item.getValue().toString();
-        } else {
-            return item.getValue().toString();
         }
+        return item.getValue().toString();
     }
 
     /**
@@ -1098,11 +1095,13 @@ public class ViewManager implements Serializable {
      * @return true if record or first child or first page have an application mime type; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if mime type application
      */
     public boolean isFilesOnly() throws IndexUnreachableException, DAOException {
         // TODO check all files for mime type?
         if (filesOnly == null) {
-            if (BaseMimeType.APPLICATION.getName().equals(mainMimeType)) {
+            BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
+            if (BaseMimeType.APPLICATION.equals(baseMimeType)) {
                 filesOnly = true;
             } else {
                 boolean childIsFilesOnly = isChildFilesOnly();
@@ -1892,9 +1891,9 @@ public class ViewManager implements Serializable {
                     .getContentApiManager()
                     .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
                     .orElse("");
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
     /**
@@ -1993,9 +1992,9 @@ public class ViewManager implements Serializable {
                             .params(pi, filename)
                             .build())
                     .orElse("");
-        } else {
-            return "";
         }
+        
+        return "";
     }
 
     /**
@@ -3471,8 +3470,20 @@ public class ViewManager implements Serializable {
      *
      * @return the mainMimeType
      */
+    @Deprecated
     public String getMainMimeType() {
-        return mainMimeType;
+        return mimeType;
+    }
+    
+    /**
+     * <p>
+     * Getter for the field <code>mimeType</code>.
+     * </p>
+     *
+     * @return the mimeType
+     */
+    public String getmimeType() {
+        return mimeType;
     }
 
     /**
