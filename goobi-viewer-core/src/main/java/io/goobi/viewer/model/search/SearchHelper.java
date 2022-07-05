@@ -2865,28 +2865,31 @@ public final class SearchHelper {
      * exportSearchAsExcel.
      * </p>
      *
+     * @param wb {@link SXSSFWorkbook} to populate
      * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
      * @param sortFields a {@link java.util.List} object.
      * @param filterQueries a {@link java.util.List} object.
      * @param params a {@link java.util.Map} object.
-     * @should create excel workbook correctly
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
      * @param aggregateHits a boolean.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a {@link org.apache.poi.xssf.streaming.SXSSFWorkbook} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should create excel workbook correctly
      */
-    public static SXSSFWorkbook exportSearchAsExcel(String finalQuery, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, int proximitySearchDistance,
-            HttpServletRequest request) throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
-        SXSSFWorkbook wb = new SXSSFWorkbook(25);
-        SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_search");
+    public static void exportSearchAsExcel(SXSSFWorkbook wb, String finalQuery, String exportQuery, List<StringPair> sortFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits,
+            int proximitySearchDistance, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+        if (wb == null) {
+            throw new IllegalArgumentException("wb may not be null");
+        }
 
+        SXSSFSheet currentSheet = wb.createSheet("Goobi_viewer_search");
         CellStyle styleBold = wb.createCellStyle();
         Font font2 = wb.createFont();
         font2.setFontHeightInPoints((short) 10);
@@ -2946,8 +2949,6 @@ public final class SearchHelper {
                 }
             }
         }
-
-        return wb;
     }
 
     /**
