@@ -121,9 +121,6 @@ public class FileTools {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");
         }
-        if (!file.getAbsolutePath().startsWith(DataManager.getInstance().getConfiguration().getViewerHome())) {
-            throw new IOException("File path outside of allowed scope: " + file.getAbsolutePath());
-        }
 
         if (encoding == null) {
             try (FileInputStream fis = new FileInputStream(file)) {
