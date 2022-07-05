@@ -2,20 +2,30 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 	<composite:interface />
 	<composite:implementation>
+	
 		<ui:fragment rendered="#{adminClientsBean.clientLoggedIn}">
+			<c:set var="accessGranted" value="#{adminClientsBean.isLoggedInClientAccessGranted()}" scope="request"/>
+			<c:set var="matchIP" value="#{adminClientsBean.isLoggedInClientFromAllowedIP()}" scope="request"/>
 			<!-- CLIENT IS REGISTERED/CONNECTED -->
-			<ui:fragment rendered="#{adminClientsBean.loggedInClientAccepted}">
+			<ui:fragment rendered="#{accessGranted and matchIP}">
 					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_accepted}">
 						<i class="client-status__icon-status -accepted" aria-hidden="true"></i>
 						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
 					</div>
 			</ui:fragment>
+			<ui:fragment rendered="#{accessGranted and !matchIP}">
+					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_wrong_network}">
+						<i class="client-status__icon-status -wrong_network" aria-hidden="true"></i>
+						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
+					</div>
+			</ui:fragment>
 			<!-- CLIENT IS NOT REGISTERED/CONNECTED -->
-			<ui:fragment rendered="#{!adminClientsBean.loggedInClientAccepted}">
+			<ui:fragment rendered="#{!accessGranted}">
 					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_rejected}">
 						<i class="client-status__icon-status -rejected" aria-hidden="true"></i>
 						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>

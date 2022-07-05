@@ -559,23 +559,15 @@ public class ClientApplication implements ILicensee, Serializable {
         }
     }
 
-    /**
-     * Check if the client is allowed to log in
-     * 
-     * @param request
-     * @return true exactly if the access status is {@link AccessStatus#GRANTED} and the request's ip-address is within the client's IP range
-     */
-    public boolean mayLogIn(HttpServletRequest request) {
-        return mayLogIn(NetTools.getIpAddress(request));
+    public boolean isAccessGranted() {
+        return AccessStatus.GRANTED.equals(this.getAccessStatus());
     }
 
     /**
-     * Check if the client is allowed to log in
-     * 
-     * @param request
-     * @return true exactly if the access status is {@link AccessStatus#GRANTED} and the given ip-address is within the client's IP range
+     * @param remoteAddress
+     * @return
      */
-    public boolean mayLogIn(String ip) {
-        return AccessStatus.GRANTED.equals(getAccessStatus()) && matchIp(ip);
+    public boolean mayLogIn(String remoteAddress) {
+        return isAccessGranted() && matchIp(remoteAddress);
     }
 }
