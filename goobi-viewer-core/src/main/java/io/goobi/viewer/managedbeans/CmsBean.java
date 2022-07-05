@@ -2774,5 +2774,14 @@ public class CmsBean implements Serializable {
     public Collection<Sorting> getSortingModes() {
         return Arrays.asList(Sorting.values());
     }
+    
+    public CMSPage getCMSPage(long id) {
+        try {
+            return DataManager.getInstance().getDao().getCMSPage(id);
+        } catch (DAOException e) {
+            logger.error("Error loading cms page with id {}: {}", id, e.toString());
+            return null;
+        }
+    }
 
 }
