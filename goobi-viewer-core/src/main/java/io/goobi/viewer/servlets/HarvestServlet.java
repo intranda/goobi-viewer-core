@@ -79,9 +79,6 @@ public class HarvestServlet extends HttpServlet implements Serializable {
      */
     public HarvestServlet() {
         super();
-        // httpClient = new HttpClient();
-        // httpClient.setHttpConnectionManager(new MultiThreadedHttpConnectionManager());
-        // httpClient.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
     }
 
     /** {@inheritDoc} */
@@ -108,7 +105,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             break;
                         case "identifier":
                             identifier = values[0];
-                            identifier = FilenameUtils.getName(identifier); // Make sure filename doesn't inject a path traversal //NOSONAR
+                            identifier = Paths.get(identifier).getFileName().toString(); // Make sure filename doesn't inject a path traversal
                             break;
                         case "status":
                             status = values[0];
@@ -119,14 +116,22 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         case "from":
                             fromDate = DateTools.parseDateTimeFromString(values[0], true);
                             if (fromDate == null) {
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'from' attribute value: " + values[0]);
+                                try {
+                                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'from' attribute value: " + values[0]);
+                                } catch (IOException e) {
+                                    logger.error(e.getMessage());
+                                }
                                 return;
                             }
                             break;
                         case "until":
                             toDate = DateTools.parseDateTimeFromString(values[0], true);
                             if (toDate == null) {
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'until' attribute value: " + values[0]);
+                                try {
+                                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'until' attribute value: " + values[0]);
+                                } catch (IOException e) {
+                                    logger.error(e.getMessage());
+                                }
                                 return;
                             }
                             break;
@@ -134,7 +139,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             try {
                                 first = Integer.parseInt(values[0]);
                             } catch (NumberFormatException e) {
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'first' attribute value: " + values[0]);
+                                try {
+                                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'first' attribute value: " + values[0]);
+                                } catch (IOException e1) {
+                                    logger.error(e1.getMessage());
+                                }
                                 return;
                             }
                             break;
@@ -142,8 +151,19 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             try {
                                 pageSize = Integer.parseInt(values[0]);
                             } catch (NumberFormatException e) {
-                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'pageSize' attribute value: " + values[0]);
+                                try {
+                                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'pageSize' attribute value: " + values[0]);
+                                } catch (IOException e1) {
+                                    logger.error(e1.getMessage());
+                                }
                                 return;
+                            }
+                            break;
+                        default:
+                            try {
+                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal actiion: " + s);
+                            } catch (IOException e) {
+                                logger.error(e.getMessage());
                             }
                             break;
                     }
@@ -151,16 +171,28 @@ public class HarvestServlet extends HttpServlet implements Serializable {
             }
         }
         if (action == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: action");
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: action");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
         if (!action.startsWith("getlist")) {
             if (identifier == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: identifier");
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: identifier");
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             } else if (!PIValidator.validatePi(identifier)) {
                 logger.warn("Identifier is invalid: {}", identifier);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier value invalid");
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier value invalid");
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             }
         }
@@ -274,17 +306,24 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         // Find job in the DB
                         DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier(identifier);
                         if (job == null) {
-                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Job not found");
+                            try {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Job not found");
+                            } catch (IOException e) {
+                                logger.error(e.getMessage());
+                            }
                             return;
                         }
                         JobStatus oldStatus = job.getStatus();
                         JobStatus djStatus = JobStatus.getByName(status);
                         if (djStatus == null) {
-                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown status: " + status);
+                            try {
+                                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown status: " + status);
+                            } catch (IOException e) {
+                                logger.error(e.getMessage());
+                            }
                             return;
                         }
-                        logger.trace("Update for " + job.getType() + " job " + job.getIdentifier() + ": Changing status from " + oldStatus + " to "
-                                + djStatus);
+                        logger.trace("Update for {} job {}: CHanging status from {} to {}", job.getType(), job.getIdentifier(), oldStatus, djStatus);
                         //only do something if job status has actually changed
                         if (!djStatus.equals(oldStatus)) {
                             // Update and save job
@@ -302,10 +341,13 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                     }
                                 } catch (MessagingException e) {
                                     logger.error(e.getMessage(), e);
-                                    // response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
                                 } finally {
                                     if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
-                                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                        try {
+                                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                        } catch (IOException e) {
+                                            logger.error(e.getMessage());
+                                        }
                                     } else {
                                         logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
                                     }
@@ -315,7 +357,6 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
-                        return;
                     }
                     return;
                 // Redirect crowdsourcing requests to
@@ -337,9 +378,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
             }
         }
         logger.debug("Access condition for download not met for '{}'.", identifier);
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
-        return;
-
+        try {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     /** {@inheritDoc} */
