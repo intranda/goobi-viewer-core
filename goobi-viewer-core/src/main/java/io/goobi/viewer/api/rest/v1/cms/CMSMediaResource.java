@@ -21,7 +21,17 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_HTML;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_ICO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_SVG;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_VIDEO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_ITEM_BY_ID;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -83,7 +93,6 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -179,7 +188,7 @@ public class CMSMediaResource {
     @Produces("application/pdf")
     @CORSBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
-            throws ContentNotFoundException, DAOException {
+            throws ContentNotFoundException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -252,7 +261,7 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
     public String serveVideoContent(@PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, WebApplicationException {
+            throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
@@ -262,7 +271,7 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
     public String serveAudioContent(@PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, WebApplicationException {
+            throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
@@ -282,7 +291,7 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
-    public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
+    public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
         String decFilename = StringTools.decodeUrl(filename);
         // decFilename = FilenameUtils.getName(decFilename); // Make sure filename doesn't inject a path traversal //NOSONAR
@@ -529,8 +538,7 @@ public class CMSMediaResource {
          */
         public List<MediaItem> getMediaItems() {
             return mediaItems;
-        };
-
+        }
     }
 
     /**
@@ -601,7 +609,7 @@ public class CMSMediaResource {
 
     }
 
-    private String serveMediaContent(String type, Path file) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    private String serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 
         if (Files.isRegularFile(file)) {
