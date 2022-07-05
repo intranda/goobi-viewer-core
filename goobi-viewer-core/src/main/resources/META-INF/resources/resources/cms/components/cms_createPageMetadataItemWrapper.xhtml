@@ -52,7 +52,7 @@
                 <div class="page-metadata-item page-metadata-item-status">
                     <h2>#{msg.information}</h2>
 
-                    <dl class="dl-horizontal">
+                    <dl class="cms-create-page__page-metadata-grid">
                         <dt>
                             <h:outputText value="#{msg.cms_pageMetadata_pageId}:" />
                         </dt>
@@ -68,7 +68,8 @@
                             <h:outputText value="#{msg.cms_pageMetadata_pageURL}:" />
                         </dt>
                         <dd>
-                            <h:outputText value="#{cmsBean.getUrl(cmsBean.selectedPage)}" />
+                            
+                            <a target="_blank" href="#{cmsBean.getUrl(cmsBean.selectedPage)}"><h:outputText value="#{cmsBean.getUrl(cmsBean.selectedPage)}" /></a>
                         </dd>
                         <dt>
                             <h:outputText value="#{msg.cms_pageMetadata_date}:" />
@@ -309,9 +310,16 @@
 				                        <f:ajax event="change" render="pageBreadcrumbParentGroup" />
 				                    </h:selectOneMenu>
 				                </div>
+				                
+				                
+				                
+								<div data-target="cmsPageBreadcrumbsPreview" class="crowdsourcing-annotations__sidebar-owner mt-2">#{msg.title__preview}: #{msg.home} > #{cmsBean.selectedPage.parentPageId} > #{cmsBean.selectedPage.getLanguageVersion(locale).title} </div>
+				                
 				            </h:panelGroup>
-				            <!-- INLINE HELP -->
-				            <span class="cms-module__option-control-helptext">#{msg.cms_page_breadcrumb_parent_help}</span>
+
+
+
+
         		</div>
         		
         		
@@ -381,40 +389,51 @@
 			                </div>
 			                
 			                <!-- INPUT TEXT -->
-			                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control">
+			                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control" pt:data-target="relatedPiInputField">
+			                
 			                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
 			                    <f:ajax event="blur" render="relatedPiInputGroup useAsDefaultRecordViewGroup" />
 			                </h:inputText>
+			                
+						<!-- SCRIPT FOR RELATED RECORD -->
+						<script>
+						if ( !$('[data-target="relatedPiInputField"]').val()) {
+							$('[data-target="useDefaultViewToggleBox"]').hide();
+						}
+						
+						$('[data-target="relatedPiInputField"]').keyup(function() {
+							if ( !$('[data-target="relatedPiInputField"]').val()) {
+								$('[data-target="useDefaultViewToggleBox"]').fadeOut('fast');
+							} else {
+								$('[data-target="useDefaultViewToggleBox"]').fadeIn('fast');
+							}
+						});
+						
+						</script>
+			                
 			            </h:panelGroup>
 
-			    
-			    <!-- USE AS DEFAULT RECORD VIEW CHECKBOX -->
-			    		<h3 class="mt-3">#{msg.cms_page_use_as_default_record_view}</h3>
-			    		<div class="admin__form-help-text in mb-3 mt-1">#{msg.cms_page_use_as_default_record_view_help}</div>
-			    
-			            <!-- AREA FOR AJAX REFRESH -->
-			            <h:panelGroup id="useAsDefaultRecordViewGroup" layout="block" styleClass="cms-module__option-checkbox">
-
-                            <div class="admin__radio-switch">
-                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
-                                    immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
-                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                </h:selectOneRadio>
-                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
-                                    immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
-                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                </h:selectOneRadio>
-                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                            </div>
-			                
-			                
-			                <!-- CHECKBOX -->
-<!-- 			                <h:selectBooleanCheckbox  -->
-<!-- 			                    id="useAsDefaultRecordView"  -->
-<!-- 			                    value="#{cmsBean.selectedPage.useAsDefaultRecordView}"  -->
-<!-- 			                    disabled="#{empty cmsBean.selectedPage.relatedPI}" -->
-<!-- 			                    onclick="cmsJS.createPage.disablePreview();" /> -->
-			            </h:panelGroup>
+			    		<!-- USE AS DEFAULT RECORD VIEW TOGGLE YES NO -->
+			    		<div data-target="useDefaultViewToggleBox" class="cms-create-page__use-as-default-view-toggle-wrapper">
+				    		<h3 class="mt-3">#{msg.cms_page_use_as_default_record_view}</h3>
+				    		<div class="admin__form-help-text in mb-3 mt-1">#{msg.cms_page_use_as_default_record_view_help}</div>
+				    
+				            <!-- AREA FOR AJAX REFRESH -->
+				            <h:panelGroup id="useAsDefaultRecordViewGroup" layout="block" styleClass="cms-module__option-checkbox">
+	
+	                            <div class="admin__radio-switch">
+	                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
+	                                    immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
+	                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                </h:selectOneRadio>
+	                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
+	                                    immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
+	                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                </h:selectOneRadio>
+	                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                            </div>
+				            </h:panelGroup>
+						</div>
 
 			    </div>
 
@@ -450,37 +469,11 @@
 	                    pt:data-input-restricted-message="#{msg.alert__character_not_allowed_in_url}" />
 	            </h:panelGroup>
 	            
-	            <div data-target="cmsPageUrlPreview" class="crowdsourcing-annotations__sidebar-owner mt-2">#{msg.title__preview}: <a href="#{navigationHelper.applicationUrl}#{cmsBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
-
-				
-				<script>
-				
-				if (!$('[data-target="prettyUrlHolder"]').val()) {
-						$('[data-target="cmsPageUrlPreview"]').hide();
-				}
-
-		        var prettyUrlText = $('[data-target="prettyUrlHolder"]').val();
-		        var lblValue = document.getElementById("prettyUrlTextHolder");
-		        lblValue.innerText = prettyUrlText;
-				
-				$('[data-target="prettyUrlHolder"]').keyup(function() {
-			        var prettyUrlText = $('[data-target="prettyUrlHolder"]').val();
-			        
-					if (!$('[data-target="prettyUrlHolder"]').val()) {
-						$('[data-target="cmsPageUrlPreview"]').hide();
-					} else {
-						$('[data-target="cmsPageUrlPreview"]').show();
-					}
-			        
-			        var lblValue = document.getElementById("prettyUrlTextHolder");
-			        lblValue.innerText = prettyUrlText;
-				});
-
-				</script>
-
+	            <div data-target="cmsPageUrlPreview" class="crowdsourcing-annotations__sidebar-owner mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
 			
 			</div>
 			
+			<!-- ADD CSS CLASS FOR THIS CMS PAGE -->
            	<div class="admin__default-block">
            	
 		        <h2>#{msg.cms_wrapperElementClass}</h2>
@@ -506,8 +499,10 @@
 	                <h:inputText 
 	                    id="cssClass" 
 	                    value="#{cmsBean.selectedPage.wrapperElementClass}" 
-	                    styleClass="form-control" />
+	                    styleClass="form-control" 
+	                    pt:data-target="quickCSSInputField"/>
 	            </h:panelGroup>
+            	<div data-target="cmsPageJumpToQuickCSSLink" class="crowdsourcing-annotations__sidebar-owner mt-2"><a target="_blank" href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a></div>
 
             </div>
             
@@ -550,7 +545,60 @@
             </h:panelGroup>
             
             
-            </div>                                              
+            </div>   
+            
+            
+				<!-- SCRIPT FOR PRETTY URL PREVIEW -->
+				<script>
+				
+				if (!$('[data-target="prettyUrlHolder"]').val()) {
+						$('[data-target="cmsPageUrlPreview"]').hide();
+				}
+
+		        var prettyUrlText = $('[data-target="prettyUrlHolder"]').val();
+		        var lblValue = document.getElementById("prettyUrlTextHolder");
+		        lblValue.innerText = prettyUrlText;
+				
+				$('[data-target="prettyUrlHolder"]').keyup(function() {
+			        var prettyUrlText = $('[data-target="prettyUrlHolder"]').val();
+			        
+					if (!$('[data-target="prettyUrlHolder"]').val()) {
+						$('[data-target="cmsPageUrlPreview"]').fadeOut('fast');
+					} else {
+						$('[data-target="cmsPageUrlPreview"]').fadeIn('fast');
+					}
+					
+			        lblValue.innerText = prettyUrlText;
+			        var setLink = $('[data-target="prettyUrlLinkTarget"]').text();
+			        console.log(setLink);
+					$('[data-target="prettyUrlLinkTarget"]').attr("href", setLink);
+				});
+
+				</script>
+				
+				<!-- SCRIPT FOR RELATED RECORD -->
+				<script>
+				if ( !$('[data-target="relatedPiInputField"]').val()) {
+					$('[data-target="useDefaultViewToggleBox"]').hide();
+				}
+				</script>
+				
+				<!-- SCRIPT FOR JUMP TO QUICK CSS LINK -->
+				<script>
+				if ( !$('[data-target="quickCSSInputField"]').val()) {
+					$('[data-target="cmsPageJumpToQuickCSSLink"]').hide();
+				}
+				
+				$('[data-target="quickCSSInputField"]').keyup(function() {
+					if ( !$('[data-target="quickCSSInputField"]').val()) {
+						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeOut('fast');
+					} else {
+						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeIn('fast');
+					}
+				});
+				
+				</script>
+                                                       
 
         		
     </composite:implementation>
