@@ -28,7 +28,7 @@
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
 	                <div class="admin__title-bar">
-	                    <h1 class="admin__title"> Aktuelle ID: #{cmsBean.selectedPage.id}
+	                    <h1 class="admin__title"> #{cmsBean.selectedPage.id}
 		                    <ui:fragment rendered="#{cmsBean.editMode}">
 		                    #{msg.cms_editPage}
 		                    </ui:fragment>
@@ -326,10 +326,8 @@
                 	var actualPageID = "#{cmsBean.selectedPage.id}";
                     if ( !(actualPageID)) {
         				$('#preview-button').hide();
-        				console.log('page ist null');
-                    } else {
-        				console.log('page ist nicht null');
-        			}
+        				// console.log('page is null');
+                    }
                 
                 	var createPageConfig = {
 						selectedPageID : "#{cmsBean.selectedPage.id}",
