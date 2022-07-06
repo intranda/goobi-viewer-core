@@ -333,10 +333,6 @@
 
     }
     #cmsCreatePageMetadataItemWrapper {
-		margin-bottom: 3rem;
-		padding: 2rem;
-		background-color: #fff;
-		border: 1px solid #ccc;
         .page-metadata-item {
             .row {
                 margin: 0;
@@ -361,7 +357,6 @@
                 }
                 img {
                     display: block;
-                    width: 100%;
                 }
                 p {
                 }
@@ -421,25 +416,19 @@
         }
     }
 	&__template-box {
-		display: flex;
 		margin-bottom: 2rem;
-		justify-content: space-between;
 	}
-	&__template-box-title {
-		flex: 0 0 calc(~"50% - 1rem");
-		max-width: calc(~"50% - 1rem");
+	&__template-box-text {
 		p {
 			margin: 0;
 		}
 	}
 	&__template-box-image {
-		flex: 0 0 calc(~"50% - 1rem");
-		max-width: calc(~"50% - 1rem");
-	}
-	&__page-metadata-grid {
-		display: grid;
-		grid-template-columns: 1fr 2fr;
-		word-wrap: anywhere;
+		float: left;
+		padding: 0.4rem 1rem 0.5rem 0;
+		img {
+			width: 150px;
+		}
 	}
 }
 

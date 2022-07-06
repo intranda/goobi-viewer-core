@@ -28,8 +28,13 @@
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
 	                <div class="admin__title-bar">
-	                    <h1 class="admin__title">
-	                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
+	                    <h1 class="admin__title"> Aktuelle ID: #{cmsBean.selectedPage.id}
+		                    <ui:fragment rendered="#{cmsBean.editMode}">
+		                    #{msg.cms_editPage}
+		                    </ui:fragment>
+		                    <ui:fragment rendered="#{!cmsBean.editMode}">
+		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
+		                    </ui:fragment>
 	                    </h1>
 	                    <!-- EXIT -->
                         <a 
@@ -316,6 +321,16 @@
                 </h:panelGroup>
                 
                 <script type="text/javascript">
+                
+    				// deactivate show page button if page was not saved once
+                	var actualPageID = "#{cmsBean.selectedPage.id}";
+                    if ( !(actualPageID)) {
+        				$('#preview-button').hide();
+        				console.log('page ist null');
+                    } else {
+        				console.log('page ist nicht null');
+        			}
+                
                 	var createPageConfig = {
 						selectedPageID : "#{cmsBean.selectedPage.id}",
 						inputFields : $(".content-input"),
@@ -329,6 +344,7 @@
 							visibleItemList : "#visibleItemList"
 						}
 					};
+
 
 					cmsJS.createPage.init(createPageConfig);
                 </script>
