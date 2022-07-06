@@ -23,6 +23,7 @@ package io.goobi.viewer.servlets;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -233,10 +234,20 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     return;
                 case "get_overviewpage": {
                     Path tempFolder = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder());
-                    if (!FileTools.checkPathExistance(tempFolder, true)) {
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                "Temp folder could not be created: " + DataManager.getInstance().getConfiguration().getTempFolder());
-                        return;
+                    try {
+                        if (!FileTools.checkPathExistance(tempFolder, true)) {
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                    "Temp folder could not be created: " + DataManager.getInstance().getConfiguration().getTempFolder());
+                            return;
+                        }
+                    } catch (IOException e) {
+                        try {
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                    "Temp folder could not be checked: " + tempFolder.toAbsolutePath().toString());
+                            return;
+                        } catch (IOException e1) {
+                            logger.error(e1.getMessage());
+                        }
                     }
                     // Thread ID as the temp folder path so that it doesn't collide with other users' calls
                     Path localTempFolder =
@@ -248,7 +259,13 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
                             return;
                         }
-                        Files.createDirectory(localTempFolder);
+                        try {
+                            Files.createDirectory(localTempFolder);
+                        } catch (IOException e) {
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                    "Temp folder could not be created: " + localTempFolder.toAbsolutePath().toString());
+                            return;
+                        }
                         String fileName =
                                 identifier + "_cmspage_" + (fromDate != null ? DateTools.getMillisFromLocalDateTime(fromDate, true) : "-") + "-"
                                         + (toDate != null ? DateTools.getMillisFromLocalDateTime(toDate, true) : "-") + ".zip";
@@ -285,6 +302,12 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+                    } catch (FileNotFoundException e) {
+                        logger.error(e.getMessage(), e);
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                     } finally {
                         if (localTempFolder != null && Files.isDirectory(localTempFolder)) {
                             FileUtils.deleteDirectory(localTempFolder.toFile());
@@ -323,7 +346,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             }
                             return;
                         }
-                        logger.trace("Update for {} job {}: CHanging status from {} to {}", job.getType(), job.getIdentifier(), oldStatus, djStatus);
+                        logger.trace("Update for {} job {}: Changing status from {} to {}", job.getType(), job.getIdentifier(), oldStatus, djStatus);
                         //only do something if job status has actually changed
                         if (!djStatus.equals(oldStatus)) {
                             // Update and save job
