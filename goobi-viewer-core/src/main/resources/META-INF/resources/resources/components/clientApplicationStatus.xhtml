@@ -18,9 +18,10 @@
 						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
 					</div>
 			</ui:fragment>
+			<!-- CLIENT IS REGISTERED/CONNECTED BUT WRONG NETWORK -->
 			<ui:fragment rendered="#{accessGranted and !matchIP}">
 					<div class="client-status__icon-wrapper" data-toggle="tooltip" title="#{msg.info__client_application_wrong_network}">
-						<i class="client-status__icon-status -wrong_network" aria-hidden="true"></i>
+						<i class="client-status__icon-status -wrongNetwork" aria-hidden="true"></i>
 						<i class="fa fa-desktop client-status__icon-client" aria-hidden="true"></i>
 					</div>
 			</ui:fragment>
