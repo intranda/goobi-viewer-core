@@ -49,7 +49,7 @@
              
 				<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
 		
-		         <div class="admin__radio-switch mb-4">
+		         <div class="admin__radio-switch mb-3">
 		             <h:selectOneRadio group="cmsPageStatusVisibility" value="#{cmsBean.selectedPage.published}"
 		                 immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
 		                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
@@ -62,7 +62,7 @@
 		         </div>
 
             <!-- CMS PAGE ACTION -->
-            <div class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-4">
+            <div class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-3">
                 <ul>
                     <li>
                         <!-- preview description text -->
