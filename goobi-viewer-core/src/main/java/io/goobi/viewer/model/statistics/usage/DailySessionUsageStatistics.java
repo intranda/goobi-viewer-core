@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,14 +29,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
-import jersey.repackaged.com.google.common.base.Objects;
 
 /**
  * @author florian
@@ -62,7 +61,7 @@ public class DailySessionUsageStatistics {
     @Column(name = "viewer_instance")
     private String viewerInstance;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "usage_statistics_daily_session", joinColumns = @JoinColumn(name = "usage_statistics_id"),
             inverseJoinColumns = @JoinColumn(name = "session_statistics_id"))
     private final List<SessionUsageStatistics> sessions = new ArrayList<>();
@@ -112,5 +111,21 @@ public class DailySessionUsageStatistics {
      */
     public String getViewerInstance() {
         return viewerInstance;
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    public long getTotalRequestCount(String pi) {
+        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(pi)).sum();
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    public long getUniqueRequestCount(String pi) {
+        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(pi) > 0 ? 1l : 0l).sum();
     }
 }
