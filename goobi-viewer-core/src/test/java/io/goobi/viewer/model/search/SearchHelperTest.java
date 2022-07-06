@@ -1133,29 +1133,31 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
         // TODO makes this more robust against changes to the index
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
-        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
-                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, 0, null);
-        String[] cellValues0 =
-                new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
-        String[] cellValues1 =
-                new String[] { "Label", "Gedichte",
-                        "Linz und seine Umgebungen", "Das Bücherwesen im Mittelalter",
-                        "Das Stilisieren der Thier- und Menschen-Formen" };
-        Assert.assertNotNull(wb);
-        Assert.assertEquals(1, wb.getNumberOfSheets());
-        SXSSFSheet sheet = wb.getSheetAt(0);
-        Assert.assertEquals(6, sheet.getPhysicalNumberOfRows());
-        {
-            SXSSFRow row = sheet.getRow(0);
-            Assert.assertEquals(2, row.getPhysicalNumberOfCells());
-            Assert.assertEquals("Query:", row.getCell(0).getRichStringCellValue().toString());
-            Assert.assertEquals(query, row.getCell(1).getRichStringCellValue().toString());
-        }
-        for (int i = 1; i < 4; ++i) {
-            SXSSFRow row = sheet.getRow(i);
-            Assert.assertEquals(2, row.getPhysicalNumberOfCells());
-            Assert.assertEquals(cellValues0[i - 1], row.getCell(0).getRichStringCellValue().toString());
-            Assert.assertEquals(cellValues1[i - 1], row.getCell(1).getRichStringCellValue().toString());
+        try (SXSSFWorkbook wb = new SXSSFWorkbook(25)) {
+            SearchHelper.exportSearchAsExcel(wb, query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
+                    null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, 0, null);
+            String[] cellValues0 =
+                    new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
+            String[] cellValues1 =
+                    new String[] { "Label", "Gedichte",
+                            "Linz und seine Umgebungen", "Das Bücherwesen im Mittelalter",
+                            "Das Stilisieren der Thier- und Menschen-Formen" };
+            Assert.assertNotNull(wb);
+            Assert.assertEquals(1, wb.getNumberOfSheets());
+            SXSSFSheet sheet = wb.getSheetAt(0);
+            Assert.assertEquals(6, sheet.getPhysicalNumberOfRows());
+            {
+                SXSSFRow row = sheet.getRow(0);
+                Assert.assertEquals(2, row.getPhysicalNumberOfCells());
+                Assert.assertEquals("Query:", row.getCell(0).getRichStringCellValue().toString());
+                Assert.assertEquals(query, row.getCell(1).getRichStringCellValue().toString());
+            }
+            for (int i = 1; i < 4; ++i) {
+                SXSSFRow row = sheet.getRow(i);
+                Assert.assertEquals(2, row.getPhysicalNumberOfCells());
+                Assert.assertEquals(cellValues0[i - 1], row.getCell(0).getRichStringCellValue().toString());
+                Assert.assertEquals(cellValues1[i - 1], row.getCell(1).getRichStringCellValue().toString());
+            }
         }
     }
 

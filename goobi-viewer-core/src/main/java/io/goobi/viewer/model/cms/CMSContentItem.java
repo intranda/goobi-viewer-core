@@ -435,8 +435,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
      */
     @Override
     public CMSContentItem clone() {
-        CMSContentItem clone = new CMSContentItem(this, null);
-        return clone;
+        return new CMSContentItem(this, null);
     }
 
     /**
