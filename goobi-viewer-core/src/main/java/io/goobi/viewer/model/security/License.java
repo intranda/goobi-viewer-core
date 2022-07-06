@@ -80,7 +80,7 @@ public class License implements IPrivilegeHolder, Serializable {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(License.class);
-    
+
     public static final Long ALL_CLIENTS_ID = -1l;
 
     /* (non-Javadoc)
@@ -140,7 +140,7 @@ public class License implements IPrivilegeHolder, Serializable {
     @ManyToOne
     @JoinColumn(name = "ip_range_id")
     private IpRange ipRange;
-    
+
     @ManyToOne
     @JoinColumn(name = "client_id")
     private ClientApplication client;
@@ -161,6 +161,9 @@ public class License implements IPrivilegeHolder, Serializable {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "ticket_required")
+    private boolean ticketRequired = false;
 
     /** List of allowed subtheme discriminator values for CMS pages. */
     @ElementCollection(fetch = FetchType.LAZY)
@@ -186,8 +189,7 @@ public class License implements IPrivilegeHolder, Serializable {
             inverseJoinColumns = @JoinColumn(name = "campaign_id"))
     private List<Campaign> allowedCrowdsourcingCampaigns = new ArrayList<>();
 
-
-    @Column(name="legal_disclaimer_scope", nullable = true)
+    @Column(name = "legal_disclaimer_scope", nullable = true)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope disclaimerScope = new ConsentScope();
 
@@ -888,6 +890,28 @@ public class License implements IPrivilegeHolder, Serializable {
     }
 
     /**
+     * @return the ticketRequired
+     */
+    public boolean isTicketRequired() {
+        return ticketRequired;
+    }
+
+    /**
+     * @param ticketRequired the ticketRequired to set
+     */
+    public void setTicketRequired(boolean ticketRequired) {
+        this.ticketRequired = ticketRequired;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isDisplayTicketRequiredToggle() {
+        return privilegesCopy.contains(IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+    }
+
+    /**
      * <p>
      * Getter for the field <code>subthemeDiscriminatorValues</code>.
      * </p>
@@ -1015,31 +1039,31 @@ public class License implements IPrivilegeHolder, Serializable {
     public ConsentScope getDisclaimerScope() {
         return disclaimerScope;
     }
-    
+
     /**
      * @return the client
      */
     public Long getClientId() {
         return Optional.ofNullable(client).map(ClientApplication::getId).orElse(null);
     }
-    
+
     public ClientApplication getClient() throws DAOException {
         return this.client;
     }
-    
+
     /**
      * @param client the client to set
      */
     public void setClient(ClientApplication client) {
         this.client = client;
     }
-    
+
     /**
      * @param client the client to set
-     * @throws DAOException 
+     * @throws DAOException
      */
     public void setClientId(Long clientId) throws DAOException {
-        if(clientId != null) {            
+        if (clientId != null) {
             this.client = DataManager.getInstance().getDao().getClientApplication(clientId);
         }
     }

@@ -615,6 +615,31 @@
 	                                                    <h:outputText value="#{msg.admin__license_functions__help}" styleClass="admin__form-help-text" escape="false" />
 	                                                </div>    
                                                 </div>
+                                                
+                                                <ui:fragment rendered="#{adminBean.currentLicense.displayTicketRequiredToggle}">
+                                                <div class="form-group form-row blockAfterRadioToggler">
+                                                    <div class="col-12">
+                                                        <h:outputText value="#{msg.admin__license_ticket_required__help}" escape="false" />
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <label for="name" class="control-label">#{msg.admin__license_ticket_required_label}:</label>
+                                                    </div>
+                                                    <div class="col-8 admin__form-input">
+                                                        <div class="admin__radio-switch">
+                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminBean.currentLicense.ticketRequired}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                            </h:selectOneRadio>                                                        
+                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminBean.currentLicense.ticketRequired}"
+                                                                immediate="true">
+                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                            </h:selectOneRadio>
+                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                </ui:fragment>
+                                                
                                             </div>
                                         </ui:fragment>
 
