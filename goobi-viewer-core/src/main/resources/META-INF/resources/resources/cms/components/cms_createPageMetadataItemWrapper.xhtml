@@ -213,7 +213,7 @@
 							</h:selectOneMenu>
 						</div>
 		
-						<ui:fragment rendered="#{cmsBean.selectedPage.parentPageId != null}">
+						<ui:fragment rendered="#{cmsBean.selectedPage.parentPageId != null and cmsBean.selectedPage.parentPageId != ''}">
 		
 						<div data-target="cmsPageBreadcrumbsPreview"
 							class="admin__small-info mt-2">#{msg.title__preview}:
