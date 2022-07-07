@@ -69,8 +69,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
- * Filter for IIIF Image info.json requests. Sets the tile sizes, image sizes and maximum sizes
- * configured in config_viewer.xml
+ * Filter for IIIF Image info.json requests. Sets the tile sizes, image sizes and maximum sizes configured in config_viewer.xml
  * </p>
  */
 @Provider
@@ -89,13 +88,13 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
         Object responseObject = response.getEntity();
-        if (responseObject != null && responseObject instanceof ImageInformation) {
+        if (responseObject instanceof ImageInformation) {
 
             Path requestPath = Paths.get(request.getUriInfo().getPath());
 
             if (request.getUriInfo().getQueryParameters().containsKey("pageType")) {
-                String pageType = request.getUriInfo().getQueryParameters().get("pageType").stream().findAny().orElse("image");
-                this.pageType = PageType.getByName(pageType);
+                String pageTypeName = request.getUriInfo().getQueryParameters().get("pageType").stream().findAny().orElse("image");
+                this.pageType = PageType.getByName(pageTypeName);
             } else {
 
                 switch (requestPath.getName(0).toString().toLowerCase()) {
@@ -122,7 +121,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                 List<Integer> imageSizes = getImageSizesFromConfig(mayZoom);
                 setImageSizes((ImageInformation) responseObject, imageSizes);
                 setMaxImageSizes((ImageInformation) responseObject, mayZoom);
-                if(mayZoom) {
+                if (mayZoom) {
                     List<ImageTile> tileSizes = getTileSizesFromConfig();
                     setTileSizes((ImageInformation) responseObject, tileSizes);
                 } else {
@@ -141,20 +140,20 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @return
      */
     private boolean isZoomingAllowed(ContainerRequestContext request) {
-        if(DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {
+        if (DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {
             String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
-            String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
             String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
             try {
-                boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename, IPrivilegeHolder.PRIV_ZOOM_IMAGES);
-                return access;
+                return AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename, IPrivilegeHolder.PRIV_ZOOM_IMAGES)
+                        .isGranted();
             } catch (IndexUnreachableException | DAOException e) {
-                logger.error(e.toString(),e);
+                logger.error(e.toString(), e);
                 return false;
             }
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**
@@ -189,7 +188,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      */
     private static Optional<PhysicalElement> getPage(String filename, StructElement element) {
         try {
-            IPageLoader pageLoader =  AbstractPageLoader.create(element);
+            IPageLoader pageLoader = AbstractPageLoader.create(element);
             return Optional.ofNullable(pageLoader.getPageForFileName(filename));
         } catch (PresentationException | IndexUnreachableException | DAOException e) {
             logger.error("Unbale to get page for file " + filename + " in " + element);
@@ -243,14 +242,15 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
         Integer maxWidth = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                 : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
-        Integer maxHeight = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageHeight() :
-            DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth()*info.getHeight()/info.getWidth();
+        Integer maxHeight = mayZoom ? DataManager.getInstance().getConfiguration().getViewerMaxImageHeight()
+                : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() * info.getHeight() / info.getWidth();
 
-        if(info instanceof ImageInformation3) {
+        if (info instanceof ImageInformation3) {
             ((ImageInformation3) info).setMaxWidth(maxWidth);
             ((ImageInformation3) info).setMaxHeight(maxHeight);
         } else {
-            Optional<ImageProfile> profile = info.getProfiles().stream().filter(p -> p instanceof ImageProfile).map(p -> (ImageProfile) p).findFirst();
+            Optional<ImageProfile> profile =
+                    info.getProfiles().stream().filter(p -> p instanceof ImageProfile).map(p -> (ImageProfile) p).findFirst();
             profile.ifPresent(p -> {
                 if (maxWidth != null && maxWidth > 0) {
                     p.setMaxWidth(maxWidth);
@@ -295,14 +295,14 @@ public class ImageInformationFilter implements ContainerResponseFilter {
         for (String string : sizeStrings) {
             try {
                 int size = Integer.parseInt(string);
-                if(size <= maxWidth) {
+                if (size <= maxWidth) {
                     sizes.add(size);
                 }
             } catch (NullPointerException | NumberFormatException e) {
                 //                logger.warn("Cannot parse " + string + " as int");
             }
         }
-        if(sizes.isEmpty()) {
+        if (sizes.isEmpty()) {
             sizes.add(maxWidth);
         }
         return sizes;

@@ -54,10 +54,9 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
- * Checks requests for access conditions. Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI}
- * and {@link #REQUIRED_PRIVILEGE} to appropriate values for the filter to work properly.
- * Additionally {@link FilterTools#ATTRIBUTE_LOGID} and {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request
- * to check access to specific files or child documents
+ * Checks requests for access conditions. Requests must have set the request attribute {@link FilterTools#ATTRIBUTE_PI} and
+ * {@link #REQUIRED_PRIVILEGE} to appropriate values for the filter to work properly. Additionally {@link FilterTools#ATTRIBUTE_LOGID} and
+ * {@link FilterTools#ATTRIBUTE_FILENAME} may be set in the request to check access to specific files or child documents
  * </p>
  */
 @Provider
@@ -84,23 +83,21 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
         String responseMediaType = MediaType.APPLICATION_JSON;
 
         try {
-                String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
-                String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
-                String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
+            String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
+            String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
+            String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
-
-            if ( StringUtils.isBlank(filename) ||
-                      (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename)
-                    && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
-                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename))
-                ) {
+            if (StringUtils.isBlank(filename) ||
+                    (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename)
+                            && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
+                            && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename))) {
                 filterForAccessConditions(servletRequest, pi, logid, filename);
                 FilterTools.filterForConcurrentViewLimit(pi, servletRequest);
             }
         } catch (ServiceNotAllowedException e) {
             servletRequest.setAttribute(ImageResource.REQUEST_ATTRIBUTE_ERROR, e);
-//            Response response = Response.status(Status.FORBIDDEN).type(responseMediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
-//            request.abortWith(response);
+            //            Response response = Response.status(Status.FORBIDDEN).type(responseMediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
+            //            request.abortWith(response);
         } catch (ViewerConfigurationException e) {
             Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
                     .type(responseMediaType)
@@ -109,7 +106,6 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
             request.abortWith(response);
         }
     }
-
 
     /**
      * @param requestPath
@@ -124,22 +120,24 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
         boolean access = false;
         try {
             if (FilterTools.isThumbnail(request)) {
-                access = AccessConditionUtils.checkAccessPermissionForThumbnail(request, pi, contentFileName);
+                access = AccessConditionUtils.checkAccessPermissionForThumbnail(request, pi, contentFileName).isGranted();
                 //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
             } else {
                 String[] privileges = getRequiredPrivileges(request);
-                if(privileges.length == 0) {
-                    privileges = new String[] {IPrivilegeHolder.PRIV_LIST};
+                if (privileges.length == 0) {
+                    privileges = new String[] { IPrivilegeHolder.PRIV_LIST };
                 }
-                if(StringUtils.isBlank(pi)) {
+                if (StringUtils.isBlank(pi)) {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
-                } else if(StringUtils.isNotBlank(contentFileName)) {
+                } else if (StringUtils.isNotBlank(contentFileName)) {
                     for (String privilege : privileges) {
-                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege);
+                        access = AccessConditionUtils
+                                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, privilege)
+                                .isGranted();
                     }
                 } else {
                     for (String privilege : privileges) {
-                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request);
+                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request).isGranted();
                     }
                 }
             }
@@ -156,22 +154,20 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Read attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't
-     * exist, return an empty array
+     * Read attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't exist, return an empty array
      *
      * @param request
      * @return
      */
     public static String[] getRequiredPrivileges(HttpServletRequest request) {
         Object privileges = request.getAttribute(REQUIRED_PRIVILEGE);
-        if(privileges == null) {
+        if (privileges == null) {
             return new String[0];
-        } else if(privileges.getClass().isArray()) {
+        } else if (privileges.getClass().isArray()) {
             return (String[]) privileges;
         } else {
-            return new String[]{privileges.toString()};
+            return new String[] { privileges.toString() };
         }
     }
-
 
 }

@@ -263,14 +263,14 @@ public final class SearchHelper {
                     String plaintextFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
                     if (StringUtils.isNotBlank(plaintextFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false);
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false).isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
                     } else if (StringUtils.isNotBlank(altoFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false);
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false).isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
                         } else {
@@ -606,7 +606,7 @@ public final class SearchHelper {
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             //            Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST,
-                    BeanUtils.getRequest())) {
+                    BeanUtils.getRequest()).isGranted()) {
                 // TODO check whether users with permissions still skip over such records
                 logger.trace("Record '{}' does not allow listing, skipping...", pi);
                 throw new RecordNotFoundException(pi);
@@ -1100,7 +1100,7 @@ public final class SearchHelper {
             }
 
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null)) {
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null).isGranted()) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart());
@@ -1113,7 +1113,7 @@ public final class SearchHelper {
                     }
                     if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
                             new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
-                            null)) {
+                            null).isGranted()) {
                         query.append(overridingLicenseType.getFilterQueryPart());
                         usedLicenseTypes.add(overridingLicenseType.getName());
                         logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
@@ -1869,8 +1869,7 @@ public final class SearchHelper {
      * @should contain facets for the main field
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
-            int start, int rows)
-            throws PresentationException, IndexUnreachableException {
+            int start, int rows) throws PresentationException, IndexUnreachableException {
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
         fields.add(bmfc.getField());

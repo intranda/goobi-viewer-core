@@ -283,7 +283,7 @@ public class IdentifierResolver extends HttpServlet {
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access;
             try {
-                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
+                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request).isGranted();
             } catch (RecordNotFoundException e) {
                 try {
                     redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
@@ -420,7 +420,7 @@ public class IdentifierResolver extends HttpServlet {
         // If the user has no listing privilege for this record, act as if it does not exist
         boolean access;
         try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request).isGranted();
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

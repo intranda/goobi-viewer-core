@@ -99,7 +99,7 @@ public class JsonTools {
                     requiredAccessConditionSet.add((String) o);
                 }
                 boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
-                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi, request);
+                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi, request).isGranted();
                 if (!access) {
                     logger.trace("User may not list {}", pi);
                     continue;
@@ -197,7 +197,7 @@ public class JsonTools {
                     requiredAccessConditionSet.add((String) o);
                 }
                 boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
-                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi.toString(), request);
+                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi.toString(), request).isGranted();
                 if (!access) {
                     logger.debug("User may not list {}", pi);
                     continue;

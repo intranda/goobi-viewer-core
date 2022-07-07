@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -87,11 +88,11 @@ public class AccessConditionUtils {
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @param isThumbnail a boolean.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccess(HttpServletRequest request, String action, String pi, String contentFileName, boolean isThumbnail)
+    public static AccessPermission checkAccess(HttpServletRequest request, String action, String pi, String contentFileName, boolean isThumbnail)
             throws IndexUnreachableException, DAOException {
         if (request == null) {
             throw new IllegalArgumentException("request may not be null");
@@ -135,7 +136,7 @@ public class AccessConditionUtils {
                 break;
         }
 
-        return false;
+        return AccessPermission.denied();
     }
 
     /**
@@ -232,7 +233,7 @@ public class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
+    static Map<String, AccessPermission> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
         if (StringUtils.isEmpty(identifier)) {
@@ -270,10 +271,10 @@ public class AccessConditionUtils {
                 }
             }
 
-            Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
+            Map<String, AccessPermission> ret = new HashMap<>(requiredAccessConditions.size());
             for (String pageFileName : requiredAccessConditions.keySet()) {
                 Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
-                boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
+                AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
                 ret.put(pageFileName, access);
             }
@@ -290,11 +291,11 @@ public class AccessConditionUtils {
      * @param request Calling HttpServiceRequest.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param privilegeName a {@link java.lang.String} object.
-     * @return true if access is granted; false otherwise.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    static boolean checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
+    static AccessPermission checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         if (page == null) {
             throw new IllegalArgumentException("page may not be null");
@@ -309,14 +310,13 @@ public class AccessConditionUtils {
                     user = userBean.getUser();
                 }
             }
-            boolean access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
+            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
-            return access;
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
 
-        return false;
+        return AccessPermission.denied();
 
     }
 
@@ -327,16 +327,17 @@ public class AccessConditionUtils {
      * @param logId The LOGID to check (optional).
      * @param privilegeName Particular privilege for which to check the permission.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws RecordNotFoundException
      */
-    public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
+    public static AccessPermission checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName,
+            HttpServletRequest request)
             throws IndexUnreachableException, DAOException, RecordNotFoundException {
         // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
         if (StringUtils.isEmpty(identifier)) {
-            return false;
+            return AccessPermission.denied();
         }
 
         String query;
@@ -370,7 +371,7 @@ public class AccessConditionUtils {
             return checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
-            return false;
+            return AccessPermission.denied();
         }
     }
 
@@ -380,15 +381,15 @@ public class AccessConditionUtils {
      * @param originalQuery
      * @param privilegeName
      * @param request
-     * @return
+     * @return {@link AccessPermission}
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public static boolean checkAccessPermissionBySolrDoc(SolrDocument doc, String originalQuery, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
+    public static AccessPermission checkAccessPermissionBySolrDoc(SolrDocument doc, String originalQuery, String privilegeName,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
         if (doc == null) {
-            return false;
+            return AccessPermission.denied();
         }
 
         try {
@@ -419,7 +420,7 @@ public class AccessConditionUtils {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
 
-        return false;
+        return AccessPermission.denied();
     }
 
     /**
@@ -434,15 +435,15 @@ public class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Boolean> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
+    public static Map<String, AccessPermission> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
 
         String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeName + "_" + identifier;
-        Map<String, Boolean> ret = new HashMap<>();
+        Map<String, AccessPermission> ret = new HashMap<>();
         if (request != null && request.getSession() != null) {
             try {
-                ret = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
+                ret = (Map<String, AccessPermission>) request.getSession().getAttribute(attributeName);
                 if (ret != null) {
                     return ret;
                 }
@@ -467,7 +468,7 @@ public class AccessConditionUtils {
                 SolrDocumentList results = DataManager.getInstance()
                         .getSearchIndex()
                         .search(query, SolrSearchIndex.MAX_HITS, null,
-                                Arrays.asList(new String[] { SolrConstants.LOGID, SolrConstants.ACCESSCONDITION }));
+                                Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
                 if (results != null) {
                     User user = BeanUtils.getUserFromRequest(request);
                     if (user == null) {
@@ -516,20 +517,21 @@ public class AccessConditionUtils {
      *
      * @param identifier The PI of the work to check
      * @param request The HttpRequest which may provide a {@link javax.servlet.http.HttpSession} to store the access map
-     * @return true if access is granted
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkContentFileAccessPermission(String identifier, HttpServletRequest request)
+    public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
 
+        AccessPermission ret = null;
         String attributeName = IPrivilegeHolder._PRIV_PREFIX + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
-        Boolean access = false;
         if (request != null && request.getSession() != null) {
             try {
-                access = (Boolean) request.getSession().getAttribute(attributeName);
-                if (access != null) {
-                    return access;
+                ret = (AccessPermission) request.getSession().getAttribute(attributeName);
+                if (ret != null) {
+                    // Permission already saved in session
+                    return ret;
                 }
             } catch (ClassCastException e) {
                 logger.error("Cannot cast session attribute '" + attributeName + "' to Map", e);
@@ -556,17 +558,17 @@ public class AccessConditionUtils {
                     }
                 }
 
-                access = checkAccessPermission(requiredAccessConditions, IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, query, request);
+                ret = checkAccessPermission(requiredAccessConditions, IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, query, request);
 
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
         }
         if (request != null && request.getSession() != null) {
-            request.getSession().setAttribute(attributeName, access);
+            request.getSession().setAttribute(attributeName, ret);
         }
         //return only the access status for the relevant files
-        return access;
+        return ret;
     }
 
     /**
@@ -574,16 +576,16 @@ public class AccessConditionUtils {
      *
      * @param imageUrn Image URN.
      * @param request Calling HttpServiceRequest.
-     * @return true if access is granted; false otherwise.
+     * @return {@link AccessPermission}
      * @param privilegeName a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
+    public static AccessPermission checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName, request.getAttributeNames());
         if (StringUtils.isEmpty(imageUrn)) {
-            return false;
+            return AccessPermission.denied();
         }
 
         String query = new StringBuilder()
@@ -619,7 +621,7 @@ public class AccessConditionUtils {
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
-            return false;
+            return AccessPermission.denied();
         }
     }
 
@@ -632,12 +634,13 @@ public class AccessConditionUtils {
      * @param privilegeName a {@link java.lang.String} object.
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param query a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query, HttpServletRequest request)
+    public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
+            HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException {
         User user = BeanUtils.getUserFromRequest(request);
         if (user == null) {
@@ -656,11 +659,11 @@ public class AccessConditionUtils {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
+    public static AccessPermission checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
             throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName);
         return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
@@ -672,11 +675,11 @@ public class AccessConditionUtils {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccessPermissionForThumbnail(HttpServletRequest request, String pi, String contentFileName)
+    public static AccessPermission checkAccessPermissionForThumbnail(HttpServletRequest request, String pi, String contentFileName)
             throws IndexUnreachableException, DAOException {
         return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
     }
@@ -686,11 +689,11 @@ public class AccessConditionUtils {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccessPermissionForPagePdf(HttpServletRequest request, PhysicalElement page)
+    public static AccessPermission checkAccessPermissionForPagePdf(HttpServletRequest request, PhysicalElement page)
             throws IndexUnreachableException, DAOException {
         if (page == null) {
             throw new IllegalArgumentException("page may not be null");
@@ -707,11 +710,11 @@ public class AccessConditionUtils {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
      * @param privilegeType a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccessPermissionByIdentifierAndFilePathWithSessionMap(HttpServletRequest request, String filePath,
+    public static AccessPermission checkAccessPermissionByIdentifierAndFilePathWithSessionMap(HttpServletRequest request, String filePath,
             String privilegeType) throws IndexUnreachableException, DAOException {
         if (filePath == null) {
             throw new IllegalArgumentException("filePath may not be null");
@@ -731,25 +734,24 @@ public class AccessConditionUtils {
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @param privilegeType a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @SuppressWarnings("unchecked")
-    public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
-            String privilegeType) throws IndexUnreachableException, DAOException {
+    public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi,
+            String contentFileName, String privilegeType) throws IndexUnreachableException, DAOException {
         // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
-        boolean access = false;
-        // logger.debug("session id: " + request.getSession().getId());
+        // logger.debug("sesaccesssion id: " + request.getSession().getId());
         // Session persistent permission check: Servlet-local method.
         String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeType;
         // logger.trace("Checking session attribute: {}", attributeName);
-        Map<String, Boolean> permissions = null;
+        Map<String, AccessPermission> permissions = null;
         if (request != null) {
-            permissions = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
+            permissions = (Map<String, AccessPermission>) request.getSession().getAttribute(attributeName);
         }
         if (permissions == null) {
             permissions = new HashMap<>();
@@ -766,26 +768,28 @@ public class AccessConditionUtils {
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
         // logger.debug("permissions key: {}: {}", key, permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
-        if (permissions.containsKey(key)) {
-            access = permissions.get(key);
+
+        AccessPermission ret = null;
+        if (permissions.containsKey(key) && permissions.get(key) != null) {
+            ret = permissions.get(key);
             //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
             //                    request.getSession().getId());
         } else {
             // TODO check for all images and save to map
-            Map<String, Boolean> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
-            for (String pageFileName : accessMap.keySet()) {
-                String newKey = new StringBuilder(pi).append('_').append(pageFileName).toString();
-                boolean pageAccess = accessMap.get(pageFileName);
+            Map<String, AccessPermission> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
+            for (Entry<String, AccessPermission> entry : accessMap.entrySet()) {
+                String newKey = new StringBuilder(pi).append('_').append(entry.getKey()).toString();
+                AccessPermission pageAccess = entry.getValue();
                 permissions.put(newKey, pageAccess);
             }
-            access = permissions.get(key) != null ? permissions.get(key) : false;
+            ret = permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
             // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, access); // Sonar considers this log msg a security issue, so leave it commented out when not needed
             if (request != null) {
                 request.getSession().setAttribute(attributeName, permissions);
             }
         }
 
-        return access;
+        return ret;
     }
 
     /**
@@ -813,11 +817,17 @@ public class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
-            User user, String remoteAddress, Optional<ClientApplication> client, String query)
+    public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
+            String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
             throws IndexUnreachableException, PresentationException, DAOException {
-        return !checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, client, query).values()
-                .contains(Boolean.FALSE);
+        Map<String, AccessPermission> result =
+                checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, client, query);
+        for (Entry<String, AccessPermission> entry : result.entrySet()) {
+            if (!entry.getValue().isGranted()) {
+                return AccessPermission.denied();
+            }
+        }
+        return AccessPermission.granted();
     }
 
     /**
@@ -844,34 +854,34 @@ public class AccessConditionUtils {
      * @should return true if ip range allows access
      * @should not return true if no ip range matches
      */
-    static Map<String, Boolean> checkAccessPermissions(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
+    static Map<String, AccessPermission> checkAccessPermissions(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
             throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
 
-        Map<String, Boolean> accessMap = new HashMap<>();
-        accessMap.put("", Boolean.FALSE);
+        Map<String, AccessPermission> accessMap = new HashMap<>();
+        accessMap.put("", AccessPermission.denied());
 
         // If user is superuser, allow immediately
         if (user != null && user.isSuperuser()) {
-            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
+            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
             return accessMap;
         }
         // If no access condition given, allow immediately (though this should never be the case)
         if (requiredAccessConditions.isEmpty()) {
             logger.trace("No required access conditions given, access granted.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
+            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
             return accessMap;
         }
         // If OPENACCESS is the only condition, allow immediately
         if (isFreeOpenAccess(requiredAccessConditions, allLicenseTypes)) {
-            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.TRUE));
+            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
             return accessMap;
         }
         // If no license types are configured or no privilege name is given, deny immediately
         if (allLicenseTypes == null || !StringUtils.isNotEmpty(privilegeName)) {
             logger.trace("No license types or no privilege name given.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.FALSE));
+            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.denied()));
             return accessMap;
         }
 
@@ -879,7 +889,7 @@ public class AccessConditionUtils {
         // If no relevant license types found (configured), deny all
         if (licenseMap.isEmpty()) {
             logger.trace("No relevant license types found.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, Boolean.FALSE));
+            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.denied()));
             return accessMap;
         }
 
@@ -889,7 +899,7 @@ public class AccessConditionUtils {
             if (relevantLicenseTypes.isEmpty()) {
                 // No relevant license types for this file, set to false and continue
                 logger.trace("No relevant license types.");
-                accessMap.put(key, Boolean.FALSE);
+                accessMap.put(key, AccessPermission.denied());
                 continue;
             }
 
@@ -906,17 +916,17 @@ public class AccessConditionUtils {
             }
             if (licenseTypeAllowsPriv) {
                 // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
-                accessMap.put(key, Boolean.TRUE);
+                accessMap.put(key, AccessPermission.granted());
             } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
                 logger.trace("Privilege '{}' is OpenAccess", privilegeName);
-                accessMap.put(key, Boolean.TRUE);
+                accessMap.put(key, AccessPermission.granted());
             } else {
                 // Check IP range
                 if (StringUtils.isNotEmpty(remoteAddress)) {
                     if (NetTools.isIpAddressLocalhost(remoteAddress)
                             && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
                         logger.trace("Access granted to localhost");
-                        accessMap.put(key, Boolean.TRUE);
+                        accessMap.put(key, AccessPermission.granted());
                         continue;
                     }
                     // Check whether the requested privilege is allowed to this IP range (for all access conditions)
@@ -925,7 +935,7 @@ public class AccessConditionUtils {
                         if (ipRange.matchIp(remoteAddress)
                                 && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
                             logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                            accessMap.put(key, Boolean.TRUE);
+                            accessMap.put(key, AccessPermission.granted());
                             continue;
                         }
                     }
@@ -933,19 +943,19 @@ public class AccessConditionUtils {
 
                 // If not within an allowed IP range, check the current user's satisfied access conditions
                 if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                    accessMap.put(key, Boolean.TRUE);
+                    accessMap.put(key, AccessPermission.granted());
                 }
 
                 //check clientApplication
                 if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                     //check if specific client matches access conditions
                     if (client.isPresent() && client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                        accessMap.put(key, Boolean.TRUE);
+                        accessMap.put(key, AccessPermission.granted());
                     } else {
                         //check if accesscondition match for all clients
                         ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
                         if (allClients != null && allClients.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                            accessMap.put(key, Boolean.TRUE);
+                            accessMap.put(key, AccessPermission.granted());
                         }
                     }
                 }
@@ -992,7 +1002,7 @@ public class AccessConditionUtils {
      * @should not remove moving wall license types to open access if condition query excludes given pi
      */
     static Map<String, List<LicenseType>> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
-            String query, Map<String, Boolean> accessMap) throws IndexUnreachableException, PresentationException {
+            String query, Map<String, AccessPermission> accessMap) throws IndexUnreachableException, PresentationException {
         if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()) {
             return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
         }

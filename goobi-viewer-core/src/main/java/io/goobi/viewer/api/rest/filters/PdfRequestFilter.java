@@ -96,7 +96,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 throw new ServiceNotAllowedException("PDF API is disabled");
             }
 
-            Path requestPath = Paths.get(request.getUriInfo().getPath());
+            //Path requestPath = Paths.get(request.getUriInfo().getPath());
             //            String requestPath = request.getUriInfo().getPath();
 
             String pi = null;
@@ -222,7 +222,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 SolrDocumentList docs = DataManager.getInstance()
                         .getSearchIndex()
                         .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
-                                Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.FILENAME }));
+                                Arrays.asList(SolrConstants.ORDER, SolrConstants.FILENAME));
                 logger.trace(query);
                 if (docs.isEmpty()) {
                     throw new RecordNotFoundException("Document not found: " + pi + "/" + divId);
@@ -346,10 +346,8 @@ public class PdfRequestFilter implements ContainerRequestFilter {
         contentFileName = StringTools.decodeUrl(contentFileName);
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest);
-        } catch (IndexUnreachableException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
-        } catch (DAOException e) {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest).isGranted();
+        } catch (IndexUnreachableException | DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (RecordNotFoundException e) {
             throw new ServiceNotAllowedException("Record not found in index: " + pi);

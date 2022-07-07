@@ -155,8 +155,7 @@ public class RecordResource {
         StructElement se = getStructElement(pi);
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
         servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        String ris = new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
-        return ris;
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
     /**
@@ -315,7 +314,7 @@ public class RecordResource {
             @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
             @Parameter(description = "Number of pages to combine into each group") @QueryParam("step") Integer stepSize,
             @Parameter(description = "Tag type to consider (person, coorporation, event or location)") @QueryParam("type") String type)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException {
         NERBuilder builder = new NERBuilder(urls);
         return builder.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
@@ -612,8 +611,7 @@ public class RecordResource {
      */
     private static StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
-        StructElement struct = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-        return struct;
+        return new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
     }
 
     /**
@@ -624,11 +622,11 @@ public class RecordResource {
     private void checkFulltextAccessConditions(String pi) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest).isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s: %s", pi, e.toString()));
         } catch (RecordNotFoundException e) {
-            access = false;
+            //
         }
         if (!access) {
             throw new ServiceNotAllowedException("Access to fulltext of " + pi + " not allowed");

@@ -75,7 +75,7 @@ public class NERBuilder {
     }
 
     public DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException {
         StringBuilder query = new StringBuilder();
         query.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
 
@@ -104,9 +104,9 @@ public class NERBuilder {
      * @throws ViewerConfigurationException
      */
     private DocumentReference getNERTagsByQuery(HttpServletRequest request, String query, String typeString, int rangeSize)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        final List<String> fieldList = Arrays.asList(new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
-                SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME_ALTO });
+            throws PresentationException, IndexUnreachableException {
+        final List<String> fieldList = Arrays.asList(SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
+                SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME_ALTO);
         SolrDocumentList solrDocuments = DataManager.getInstance().getSearchIndex().search(query, fieldList);
         Collections.sort(solrDocuments, docOrderComparator);
 
@@ -131,9 +131,8 @@ public class NERBuilder {
                     try {
                         if (!altoFileName.contains("/")) {
                             altoFileName = topStructPi + "/" + altoFileName;
-
                         }
-                        if (AccessConditionUtils.checkAccess(request, "text", topStructPi, altoFileName, false)) {
+                        if (AccessConditionUtils.checkAccess(request, "text", topStructPi, altoFileName, false).isGranted()) {
 
                             String altoString = "";
                             String charset = null;
@@ -170,8 +169,7 @@ public class NERBuilder {
     }
 
     private static Integer getPageOrder(SolrDocument solrDoc) {
-        Integer order = (Integer) solrDoc.getFieldValue(SolrConstants.ORDER);
-        return order;
+        return (Integer) solrDoc.getFieldValue(SolrConstants.ORDER);
     }
 
     private static TagGroup createPageReference(List<SolrDocument> solrDocs) {

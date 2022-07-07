@@ -82,7 +82,8 @@ public class MediaResource {
      */
     @GET
     @Path(RECORDS_FILES_AUDIO)
-    public String serveAudioContent(@PathParam("mimetype") String format, @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, AccessDeniedException {
+    public String serveAudioContent(@PathParam("mimetype") String format, @PathParam("filename") String filename)
+            throws PresentationException, IndexUnreachableException, AccessDeniedException {
         return serveMediaContent("audio", format, pi, filename);
     }
 
@@ -102,11 +103,13 @@ public class MediaResource {
      */
     @GET
     @Path(RECORDS_FILES_VIDEO)
-    public String serveVideoContent(@PathParam("mimetype") String format, @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    public String serveVideoContent(@PathParam("mimetype") String format, @PathParam("filename") String filename)
+            throws PresentationException, IndexUnreachableException, WebApplicationException {
         return serveMediaContent("video", format, pi, filename);
     }
 
-    private String serveMediaContent(String type, String format, String identifier, String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    private String serveMediaContent(String type, String format, String identifier, String filename)
+            throws PresentationException, IndexUnreachableException, WebApplicationException {
         String mimeType = type + "/" + format;
 
         checkAccess(type, identifier, filename);
@@ -144,7 +147,7 @@ public class MediaResource {
     public void checkAccess(String action, String pi, String contentFilename) throws WebApplicationException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(request, action, pi, contentFilename, false);
+            access = AccessConditionUtils.checkAccess(request, action, pi, contentFilename, false).isGranted();
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (DAOException e) {

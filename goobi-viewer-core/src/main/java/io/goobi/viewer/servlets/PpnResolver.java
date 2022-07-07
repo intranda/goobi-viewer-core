@@ -123,7 +123,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
 
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST,
-                    request);
+                    request).isGranted();
             if (!access) {
                 logger.debug("User may not list {}", identifier);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
