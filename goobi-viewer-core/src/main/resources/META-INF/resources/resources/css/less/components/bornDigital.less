@@ -12,22 +12,17 @@
 	p {}
 	&__items { 
 		display: grid;
-		grid-template-columns:  40% repeat(4, 15%);
-		grid-gap: 0;
-		justify-items: stretch;
-		align-items: stretch;
+		grid-template-columns: 40% repeat(4, 15%);
+		grid-gap: 5px;
 	}
 	&__head {
 		font-weight: bold;
-		border-top: 1px solid @middlegray;
-		border-bottom: 1px solid @middlegray;
-		padding: 5px;
+		padding-bottom: 0.5rem;
 	}
 	&__item {
 		position: relative;
-		border-bottom: 1px solid @middlegray;
-		padding: 5px;
 		word-wrap: break-word;
+		place-self: center start;
 	}   
 	&__item-order-label {
 		display: block;
