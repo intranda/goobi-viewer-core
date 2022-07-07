@@ -21,6 +21,12 @@
 	dt {
 		font-weight: 600;
 	}
+	
+	.admin__default-block {
+		h3 {
+			font-size: 1.5rem;
+		}
+	}
 
 	/* LAYOUT GENERAL */
 	&__content {
@@ -257,6 +263,10 @@
                 color: @middlegray;
             }
 	    }
+	}
+	&__small-info {
+		font-size: 1.2rem;
+		word-wrap: anywhere;
 	}
 	&__final-actions {
 		margin-top: -1rem;
@@ -839,7 +849,7 @@
 		}
 	}
 	&__sidebar-divider-top {
-		border-top: 1px dashed #eee;
+		border-top: 1px dashed #ddd;
 		padding-top: 1.4rem;
 	}
 	&__sidebar-inner {
@@ -1724,6 +1734,7 @@
 		.metadata__element-dl dd, .metadata__event-dl dd {
 			margin-left: unset;
 			width: 100%;
+			grid-column-start: unset;
 		}
 		.metadata__element-dl dt, .metadata__event-dl dt {
 			width: 100%;
@@ -1760,15 +1771,23 @@
 			}
 		}
 		.metadata__elements {
-			margin-bottom: 1rem;
+			// margin-bottom: 1rem;
 		}
 		.metadata__element-ungrouped {
 			grid-template-columns: auto;
 		}
 		.metadata__element-dl {
 			grid-template-columns: auto;
+			&:last-of-type {
+				margin-bottom: 1rem;
+			}
 		}
 	}
+//	.admin__record-notes-metadata {
+//		dl {
+//			margin-bottom: 1rem;
+//		}
+//	}
 	&__record-notes-box-editable {}
 	&__record-notes-radio-select {
 		max-width: 150px;

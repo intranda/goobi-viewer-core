@@ -29,7 +29,12 @@
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
 	                <div class="admin__title-bar">
 	                    <h1 class="admin__title">
-	                        #{cmsBean.editMode ? msg.cms_editPage : msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
+		                    <ui:fragment rendered="#{cmsBean.editMode}">
+		                    #{msg.cms_editPage}
+		                    </ui:fragment>
+		                    <ui:fragment rendered="#{!cmsBean.editMode}">
+		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
+		                    </ui:fragment>
 	                    </h1>
 	                    <!-- EXIT -->
                         <a 
@@ -43,9 +48,14 @@
 	                </div>
 
                     <div class="admin__content-inner-content">
-                        <div class="row">
                             <h:form id="create_page_form" prependId="false">
-                                <div class="col-12 col-sm-12 col-md-9 col-lg-9 create-page-left">
+                           
+                           	<div class="row">
+                            <div class="col-12">
+
+                            
+                            <div class="admin__content-wrapper">
+                                <div class="admin__content-main -refreshHCsticky">
                                     <!-- CREATE PAGE WRAPPER -->
                                     <div class="cms-create-page__wrapper">
                                         <div>
@@ -256,22 +266,22 @@
                                                             </ui:fragment>
 
                                                             <!-- CONTENT TYPE CSS CLASS -->
-                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCssClass.xhtml" />
+<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCssClass.xhtml" /> -->
 
                                                             <!-- CONTENT TYPE PRETTY URL -->
-                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePrettyUrl.xhtml" />
+<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePrettyUrl.xhtml" /> -->
 
                                                             <!-- CONTENT TYPE URL PARAMS -->
-                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeUrlParams.xhtml" />
+<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeUrlParams.xhtml" /> -->
 
                                                             <!-- CONTENT TYPE RELATED PI -->
-                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRelatedPi.xhtml" />
+<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRelatedPi.xhtml" /> -->
 
                                                             <!-- CONTENT TYPE SUBTHEME -->
-                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSubtheme.xhtml" />
+<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSubtheme.xhtml" /> -->
 
                                                             <!-- CONTENT TYPE PAGE BREADCRUMB PARENT -->
-                                                            <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageBreadcrumbParent.xhtml" />
+<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageBreadcrumbParent.xhtml" /> -->
                                                         </div>
                                                     </div>
                                                 </h:panelGroup>
@@ -283,12 +293,15 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12 col-sm-12 col-md-3 col-lg-3 create-page-right">
+                                <div class="admin__content-side -sticky">
                                     <!-- METADATA WRAPPER -->
                                     <cmsComponent:cms_createPageMetadataItemWrapper id="metadata_component" />
                                 </div>
+                                
+							</div>
+							</div>
+							</div>
                             </h:form>
-                        </div>
                     </div>
                     
                     <!-- MEDIA SELECT PANEL -->
@@ -308,6 +321,14 @@
                 </h:panelGroup>
                 
                 <script type="text/javascript">
+                
+    				// deactivate show page button if page was not saved once
+                	var actualPageID = "#{cmsBean.selectedPage.id}";
+                    if ( !(actualPageID)) {
+        				$('#showPageButton').hide();
+        				// console.log('page is null');#20130
+                    }
+                
                 	var createPageConfig = {
 						selectedPageID : "#{cmsBean.selectedPage.id}",
 						inputFields : $(".content-input"),
@@ -321,6 +342,7 @@
 							visibleItemList : "#visibleItemList"
 						}
 					};
+
 
 					cmsJS.createPage.init(createPageConfig);
                 </script>
