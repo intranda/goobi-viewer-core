@@ -8,20 +8,48 @@
 	margin-bottom: 21px;
 	margin-top: 25px;
 	/* ELEMENT */
-	h2 {}
+	&__box {
+		padding-bottom: 1.5rem;
+	}
+	h2 {
+		margin-bottom: 1rem;
+		margin-top: 3.5rem;
+	}
 	p {}
-	&__items { 
+	&__items-wrapper {
 		display: grid;
-		grid-template-columns: 40% repeat(4, 15%);
+		grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+		grid-gap: 0px;
+	  	grid-column: span 5;
+		padding: 0.5rem 1.5rem;
+		grid-gap: 5px;
+	}
+	&__items { 
+	}
+	&__head-wrapper {
+		display: grid;
+		grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+		padding: 1.5rem;
+		padding-bottom: 0;
+		grid-gap: 5px;
+	}
+	&__head-mobile {
+		font-weight: 700;
+		display: none;
+	}
+	&__head-mobile-wrapper {
+		display: grid;
+		grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+		padding: 1.5rem;
+		padding-bottom: 0;
 		grid-gap: 5px;
 	}
 	&__head {
 		font-weight: bold;
-		padding-bottom: 0.5rem;
 	}
 	&__item {
 		position: relative;
-		word-wrap: break-word;
+		word-wrap: anywhere;
 		place-self: center start;
 	}   
 	&__item-order-label {
@@ -33,13 +61,39 @@
 		border-radius: 5px;
 		background-color: @blue;
 	}
+	&__item-download-dummy {
+		visibility: 0;
+		opacity: 0;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.born-digital__box {
+		padding-bottom: 0;
+	}
+	.born-digital__items-wrapper {
+		grid-template-columns: 1fr;
+		grid-gap: 0px;
+		// margin-bottom: 1.5rem;
+		padding: 1.5rem;
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+	.born-digital__item {
+		margin-bottom: 1rem;
+	}
+	.born-digital__head-mobile {
+		display: block;
+	}
+	.born-digital__head-wrapper {
+		display: none;
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {}
