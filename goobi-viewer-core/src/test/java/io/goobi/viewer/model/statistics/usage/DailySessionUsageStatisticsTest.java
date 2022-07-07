@@ -48,6 +48,8 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         assertNotNull(loaded);
         assertEquals(stats.getId(), loaded.getId());
         assertEquals(stats.getViewerInstance(), loaded.getViewerInstance());
+        
+        dao.deleteUsageStatistics(stats.getId());
     }
     
     @Test
@@ -55,17 +57,18 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         
         IDAO dao = DataManager.getInstance().getDao();
         LocalDate date = LocalDate.now();
+        RequestType type = RequestType.RECORD_VIEW;
         
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
         
         SessionUsageStatistics session1 = new SessionUsageStatistics("ABCD", "Ubuntu Firefox", "168.178.192.2");
-        session1.setRecordRequectCount("PI_01", 7);
-        session1.setRecordRequectCount("PI_02", 3);
+        session1.setRecordRequectCount(type, "PI_01", 7);
+        session1.setRecordRequectCount(type, "PI_02", 3);
         stats.addSession(session1);
         
         SessionUsageStatistics session2 = new SessionUsageStatistics("EFGH", "Ubuntu Chrome", "168.178.192.3");
-        session2.setRecordRequectCount("PI_01", 2);
-        session2.setRecordRequectCount("PI_03", 4);
+        session2.setRecordRequectCount(type, "PI_01", 2);
+        session2.setRecordRequectCount(type, "PI_03", 4);
         stats.addSession(session2);
 
         dao.addUsageStatistics(stats);
@@ -73,9 +76,11 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         DailySessionUsageStatistics loaded = dao.getUsageStatistics(date);
         assertNotNull(loaded);
         assertNotNull(loaded.getSession("ABCD"));
-        assertEquals(7, loaded.getSession("ABCD").getRecordRequestCount("PI_01"));
+        assertEquals(7, loaded.getSession("ABCD").getRecordRequestCount(type, "PI_01"));
         assertNotNull(loaded.getSession("EFGH"));
-        assertEquals(4, loaded.getSession("EFGH").getRecordRequestCount("PI_03"));
+        assertEquals(4, loaded.getSession("EFGH").getRecordRequestCount(type, "PI_03"));
+        
+        dao.deleteUsageStatistics(stats.getId());
     }
     
     @Test
@@ -83,12 +88,13 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         
         IDAO dao = DataManager.getInstance().getDao();
         LocalDate date = LocalDate.now();
-        
+        RequestType type = RequestType.RECORD_VIEW;
+
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
         
         SessionUsageStatistics session1 = new SessionUsageStatistics("ABCD", "Ubuntu Firefox", "168.178.192.2");
-        session1.setRecordRequectCount("PI_01", 7);
-        session1.setRecordRequectCount("PI_02", 3);
+        session1.setRecordRequectCount(type, "PI_01", 7);
+        session1.setRecordRequectCount(type, "PI_02", 3);
         stats.addSession(session1);
 
         dao.addUsageStatistics(stats);
@@ -96,11 +102,13 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         DailySessionUsageStatistics loaded = dao.getUsageStatistics(date);
         assertNotNull(loaded);
         assertNotNull(loaded.getSession("ABCD"));
-        assertEquals(7, loaded.getSession("ABCD").getRecordRequestCount("PI_01"));
+        assertEquals(7, loaded.getSession("ABCD").getRecordRequestCount(type, "PI_01"));
         
         dao.deleteUsageStatistics(loaded.getId());
         loaded = dao.getUsageStatistics(date);
         assertNull(loaded);
+        
+        dao.deleteUsageStatistics(stats.getId());
         
     }
     
@@ -109,23 +117,24 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         
         LocalDate date = LocalDate.now();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
-        
+        RequestType type = RequestType.RECORD_VIEW;
+
         SessionUsageStatistics session1 = new SessionUsageStatistics("ABCD", "Ubuntu Firefox", "168.178.192.2");
-        session1.setRecordRequectCount("PI_01", 7);
-        session1.setRecordRequectCount("PI_02", 3);
+        session1.setRecordRequectCount(type, "PI_01", 7);
+        session1.setRecordRequectCount(type, "PI_02", 3);
         stats.addSession(session1);
         
         SessionUsageStatistics session2 = new SessionUsageStatistics("EFGH", "Ubuntu Chrome", "168.178.192.3");
-        session2.setRecordRequectCount("PI_01", 2);
-        session2.setRecordRequectCount("PI_03", 4);
+        session2.setRecordRequectCount(type, "PI_01", 2);
+        session2.setRecordRequectCount(type, "PI_03", 4);
         stats.addSession(session2);
 
-        assertEquals(9l, stats.getTotalRequestCount("PI_01"));
-        assertEquals(2l, stats.getUniqueRequestCount("PI_01"));
-        assertEquals(3l, stats.getTotalRequestCount("PI_02"));
-        assertEquals(1l, stats.getUniqueRequestCount("PI_02"));
-        assertEquals(4l, stats.getTotalRequestCount("PI_03"));
-        assertEquals(1l, stats.getUniqueRequestCount("PI_03"));
+        assertEquals(9l, stats.getTotalRequestCount(type, "PI_01"));
+        assertEquals(2l, stats.getUniqueRequestCount(type, "PI_01"));
+        assertEquals(3l, stats.getTotalRequestCount(type, "PI_02"));
+        assertEquals(1l, stats.getUniqueRequestCount(type, "PI_02"));
+        assertEquals(4l, stats.getTotalRequestCount(type, "PI_03"));
+        assertEquals(1l, stats.getUniqueRequestCount(type, "PI_03"));
     }
 
 }

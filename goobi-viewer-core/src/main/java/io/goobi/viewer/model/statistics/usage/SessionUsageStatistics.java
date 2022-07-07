@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,6 +30,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringUtils;
+
+import io.goobi.viewer.dao.converter.NumberListConverter;
+import io.goobi.viewer.dao.converter.RequestCountsConverter;
 
 /**
  * @author florian
@@ -41,7 +47,7 @@ public class SessionUsageStatistics {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "session_statistics_id")
-    private long id;
+    private Long id;
     
     @Column(name = "session_id")
     private String sessionId;
@@ -57,7 +63,7 @@ public class SessionUsageStatistics {
       joinColumns = {@JoinColumn(name = "session_statistics_id", referencedColumnName = "session_statistics_id")})
     @MapKeyColumn(name = "record_identifier")
     @Column(name = "count")
-    private Map<String, Long> recordRequests = new HashMap<>();
+    private Map<String, String> recordRequests = new HashMap<>();
     
 
     public SessionUsageStatistics() {
@@ -80,7 +86,7 @@ public class SessionUsageStatistics {
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
     
@@ -105,20 +111,37 @@ public class SessionUsageStatistics {
         return clientIP;
     }
     
-    public long getRecordRequestCount(String recordIdentifier) {
-        return Optional.ofNullable(this.recordRequests.get(recordIdentifier)).orElse(0l);
+    private RequestCounts getRecordRequests(String identifier) {
+        String s = this.recordRequests.get(identifier);
+        return new RequestCounts(s);
     }
     
-    public void setRecordRequectCount(String recordIdentifier, long count) {
-        synchronized (this.recordRequests) {            
-            this.recordRequests.put(recordIdentifier, count);
+    private void setRecordRequests(String identifier, RequestCounts counts) {
+        String s = counts.toJsonArray();
+        this.recordRequests.put(identifier, s);
+    }
+    
+    public long getRecordRequestCount(RequestType type, String recordIdentifier) {
+        return Optional.ofNullable(getRecordRequests(recordIdentifier))
+                .map(count -> count.getCount(type))
+                .orElse(0l);
+    }
+    
+    public void setRecordRequectCount(RequestType type, String recordIdentifier, long count) {
+        synchronized (this.recordRequests) {           
+            RequestCounts counts = getRecordRequests(recordIdentifier);
+            if(counts == null) {
+                counts = new RequestCounts();
+            }
+            counts.setCount(type, count);
+            setRecordRequests(recordIdentifier, counts);
         }
     }
     
-    public void incrementRequestCount(String recordIdentifier) {
+    public void incrementRequestCount(RequestType type, String recordIdentifier) {
         synchronized (this.recordRequests) {  
-            long count = Optional.ofNullable(this.recordRequests.get(recordIdentifier)).orElse(0l);
-            this.recordRequests.put(recordIdentifier, count+1);
+            long count = getRecordRequestCount(type, recordIdentifier);
+            setRecordRequectCount(type, recordIdentifier, count+1);
         }
     }
 }

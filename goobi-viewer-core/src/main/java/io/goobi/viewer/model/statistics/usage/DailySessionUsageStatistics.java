@@ -47,7 +47,7 @@ public class DailySessionUsageStatistics {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_statistics_id")
-    private long id;
+    private Long id;
     
     /**
      * The date the statistics were recorded
@@ -95,7 +95,7 @@ public class DailySessionUsageStatistics {
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
     
@@ -117,15 +117,15 @@ public class DailySessionUsageStatistics {
      * @param string
      * @return
      */
-    public long getTotalRequestCount(String pi) {
-        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(pi)).sum();
+    public long getTotalRequestCount(RequestType type, String pi) {
+        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi)).sum();
     }
 
     /**
      * @param string
      * @return
      */
-    public long getUniqueRequestCount(String pi) {
-        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(pi) > 0 ? 1l : 0l).sum();
+    public long getUniqueRequestCount(RequestType type, String pi) {
+        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1l : 0l).sum();
     }
 }
