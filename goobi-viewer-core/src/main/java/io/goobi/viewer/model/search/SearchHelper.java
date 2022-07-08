@@ -2321,29 +2321,50 @@ public final class SearchHelper {
                 if ("SORT_".equals(prefix)) {
                     return "SORTNUM_" + fieldName;
                 }
+                fieldName = applyPrefix(fieldName, prefix);
+                fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                return fieldName;
             default:
-                if (StringUtils.isNotEmpty(prefix)) {
-                    if (fieldName.startsWith("MD_")) {
-                        fieldName = fieldName.replace("MD_", prefix);
-                    } else if (fieldName.startsWith("MD2_")) {
-                        fieldName = fieldName.replace("MD2_", prefix);
-                    } else if (fieldName.startsWith("MDNUM_")) {
-                        if ("SORT_".equals(prefix)) {
-                            fieldName = fieldName.replace("MDNUM_", "SORTNUM_");
-                        } else {
-                            fieldName = fieldName.replace("MDNUM_", prefix);
-                        }
-                    } else if (fieldName.startsWith("NE_")) {
-                        fieldName = fieldName.replace("NE_", prefix);
-                    } else if (fieldName.startsWith("BOOL_")) {
-                        fieldName = fieldName.replace("BOOL_", prefix);
-                    } else if (fieldName.startsWith("SORT_")) {
-                        fieldName = fieldName.replace("SORT_", prefix);
-                    }
-                }
+                fieldName = applyPrefix(fieldName, prefix);
                 fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
                 return fieldName;
         }
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @param prefix
+     * @return
+     * @should apply prefix correctly
+     */
+    static String applyPrefix(String fieldName, String prefix) {
+        if (StringUtils.isEmpty(fieldName)) {
+            return fieldName;
+        }
+        if (StringUtils.isEmpty(prefix)) {
+            return fieldName;
+        }
+
+        if (fieldName.startsWith("MD_")) {
+            fieldName = fieldName.replace("MD_", prefix);
+        } else if (fieldName.startsWith("MD2_")) {
+            fieldName = fieldName.replace("MD2_", prefix);
+        } else if (fieldName.startsWith("MDNUM_")) {
+            if ("SORT_".equals(prefix)) {
+                fieldName = fieldName.replace("MDNUM_", "SORTNUM_");
+            } else {
+                fieldName = fieldName.replace("MDNUM_", prefix);
+            }
+        } else if (fieldName.startsWith("NE_")) {
+            fieldName = fieldName.replace("NE_", prefix);
+        } else if (fieldName.startsWith("BOOL_")) {
+            fieldName = fieldName.replace("BOOL_", prefix);
+        } else if (fieldName.startsWith("SORT_")) {
+            fieldName = fieldName.replace("SORT_", prefix);
+        }
+
+        return fieldName;
     }
 
     /**

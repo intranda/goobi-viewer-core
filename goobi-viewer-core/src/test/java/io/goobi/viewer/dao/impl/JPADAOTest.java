@@ -30,7 +30,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -2181,13 +2180,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getDownloadJobByMetadata_shouldReturnCorrectObject() throws Exception {
         {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.TYPE, "PI_1", null);
+            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, "PI_1", null);
             Assert.assertNotNull(job);
             Assert.assertEquals(PDFDownloadJob.class, job.getClass());
             Assert.assertEquals(Long.valueOf(1), job.getId());
         }
         {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.TYPE, "PI_1", "LOG_0001");
+            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.LOCAL_TYPE, "PI_1", "LOG_0001");
             Assert.assertNotNull(job);
             Assert.assertEquals(EPUBDownloadJob.class, job.getClass());
             Assert.assertEquals(Long.valueOf(2), job.getId());

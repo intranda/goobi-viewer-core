@@ -170,13 +170,6 @@ public class TocFunctionality implements Functionality {
         return toc;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public TocFunctionality clone() {
-        TocFunctionality clone = new TocFunctionality(this);
-        return clone;
-    }
-
     /**
      * <p>
      * Getter for the field <code>pi</code>.

@@ -54,13 +54,13 @@ import io.goobi.viewer.model.job.JobStatus;
  * </p>
  */
 @Entity
-@DiscriminatorValue(EPUBDownloadJob.TYPE)
+@DiscriminatorValue(EPUBDownloadJob.LOCAL_TYPE)
 public class EPUBDownloadJob extends DownloadJob {
 
     private static final long serialVersionUID = 5799943793394080870L;
 
     /** Constant <code>TYPE="epub"</code> */
-    public static final String TYPE = "epub";
+    public static final String LOCAL_TYPE = "epub";
 
     private static final Logger logger = LoggerFactory.getLogger(EPUBDownloadJob.class);
 
@@ -70,7 +70,7 @@ public class EPUBDownloadJob extends DownloadJob {
      * </p>
      */
     public EPUBDownloadJob() {
-        type = TYPE;
+        type = LOCAL_TYPE;
     }
 
     /**
@@ -84,7 +84,7 @@ public class EPUBDownloadJob extends DownloadJob {
      * @param ttl a long.
      */
     public EPUBDownloadJob(String pi, String logid, LocalDateTime lastRequested, long ttl) {
-        type = TYPE;
+        type = LOCAL_TYPE;
         this.pi = pi;
         this.logId = logid;
         this.lastRequested = lastRequested;
@@ -99,7 +99,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /** {@inheritDoc} */
     @Override
     public final void generateDownloadIdentifier() {
-        this.identifier = generateDownloadJobId(TYPE, pi, logId);
+        this.identifier = generateDownloadJobId(LOCAL_TYPE, pi, logId);
     }
 
     /* (non-Javadoc)
@@ -165,7 +165,7 @@ public class EPUBDownloadJob extends DownloadJob {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return Long.parseLong(ret);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Error getting response from TaskManager", e);
             return -1;
         }
@@ -191,7 +191,7 @@ public class EPUBDownloadJob extends DownloadJob {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return Integer.parseInt(ret);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Error getting response from TaskManager", e);
             return -1;
         }
@@ -203,7 +203,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /** {@inheritDoc} */
     @Override
     protected void triggerCreation() throws PresentationException, IndexUnreachableException {
-        triggerCreation(pi, identifier, DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.TYPE));
+        triggerCreation(pi, identifier);
     }
 
     /**
@@ -218,16 +218,16 @@ public class EPUBDownloadJob extends DownloadJob {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
-    public static void triggerCreation(String pi, String downloadIdentifier, String targetFolderPath)
-            throws PresentationException, IndexUnreachableException, DownloadException {
-        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.TYPE));
+    public static void triggerCreation(String pi, String downloadIdentifier)
+            throws PresentationException, IndexUnreachableException {
+        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.LOCAL_TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
             throw new DownloadException("Cannot create download folder: " + targetFolder);
         }
 
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
-        Path altoFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).resolve(pi);
+        // Path altoFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).resolve(pi);
         Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
 
         TaskManagerEPUBRequest requestObject = new TaskManagerEPUBRequest();

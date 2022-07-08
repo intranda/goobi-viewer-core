@@ -1993,7 +1993,7 @@ public class ActiveDocumentBean implements Serializable {
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
             try {
-                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
+                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null
                         || !DownloadJob.ocrFolderExists(viewManager.getPi())) {
                     return false;
                 }
@@ -2016,7 +2016,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public boolean isAccessPermissionPdf() {
         synchronized (this) {
-            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
+            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
                 return false;
             }
 
@@ -2029,11 +2029,11 @@ public class ActiveDocumentBean implements Serializable {
      * @return
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
-        if (downloadType.equals(EPUBDownloadJob.TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
+        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
             return false;
         }
         PageType pageType = PageType.getByName(pageTypeName);
-        boolean pdf = PDFDownloadJob.TYPE.equals(downloadType);
+        boolean pdf = PDFDownloadJob.LOCAL_TYPE.equals(downloadType);
         if (pageType != null) {
             switch (pageType) {
                 case viewToc:
@@ -2516,13 +2516,14 @@ public class ActiveDocumentBean implements Serializable {
 
         return viewManager.isAllowUserComments();
     }
-    
+
     /**
      * Check if the current page should initialize a WebSocket
+     * 
      * @return true if a document is loaded and it contains the field {@link SolrConstants.ACCESSCONDITION_CONCURRENTUSE}
      */
     public boolean isRequiresWebSocket() {
-        if(viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
+        if (viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
             return viewManager.getTopStructElement().getMetadataFields().containsKey(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
         } else {
             return false;
