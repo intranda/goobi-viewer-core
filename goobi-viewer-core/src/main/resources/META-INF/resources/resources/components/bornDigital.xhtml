@@ -14,9 +14,7 @@
             
             <!-- ACCESS DENIED -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
-                <p>
-                    <h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" />
-                </p>
+                <div class="born-digital__no-access-box"><p><h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" /></p></div>
             </ui:fragment>
             
             <!-- ACCESS GRANTED -->
