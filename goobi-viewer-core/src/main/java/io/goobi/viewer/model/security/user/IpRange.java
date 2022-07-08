@@ -224,7 +224,7 @@ public class IpRange implements ILicensee, Serializable {
      */
     public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, List<LicenseType> relevantLicenseTypes,
             String privilegeName, String pi) throws PresentationException, IndexUnreachableException, DAOException {
-        if (AccessConditionUtils.isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
+        if (requiredAccessConditions.isEmpty() || AccessConditionUtils.isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
             return AccessPermission.granted();
         }
 

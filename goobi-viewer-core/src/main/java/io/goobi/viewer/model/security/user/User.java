@@ -450,6 +450,9 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             // logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return AccessPermission.granted();
         }
+        if (requiredAccessConditions.isEmpty()) {
+            return AccessPermission.granted();
+        }
         // always allow access if the only condition is open access and there is no special license configured for it
         if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
                 && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
