@@ -18,6 +18,7 @@ package io.goobi.viewer.model.statistics.usage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -143,5 +144,12 @@ public class SessionUsageStatistics {
             long count = getRecordRequestCount(type, recordIdentifier);
             setRecordRequectCount(type, recordIdentifier, count+1);
         }
+    }
+    
+    @Override
+    public String toString() {
+        String s = "Usage statistics for session " + this.sessionId + ":\n";
+        s += this.recordRequests.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n"));
+        return s;
     }
 }

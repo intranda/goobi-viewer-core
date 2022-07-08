@@ -61,7 +61,7 @@ public class DailySessionUsageStatistics {
     @Column(name = "viewer_instance")
     private String viewerInstance;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "usage_statistics_daily_session", joinColumns = @JoinColumn(name = "usage_statistics_id"),
             inverseJoinColumns = @JoinColumn(name = "session_statistics_id"))
     private final List<SessionUsageStatistics> sessions = new ArrayList<>();
@@ -127,5 +127,14 @@ public class DailySessionUsageStatistics {
      */
     public long getUniqueRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1l : 0l).sum();
+    }
+    
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        String s = "Usage statistics for " + date + " in " + viewerInstance + ". Countains " + sessions.size() + " session instances\n";
+        s += this.sessions.stream().map(e -> e.toString()).collect(Collectors.joining("\n"));
+        return s;
+
     }
 }

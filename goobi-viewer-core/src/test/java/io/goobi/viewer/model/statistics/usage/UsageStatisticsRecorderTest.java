@@ -15,19 +15,96 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDate;
+import java.util.Random;
+
+import org.junit.Before;
 import org.junit.Test;
+
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * @author florian
  *
  */
-public class UsageStatisticsRecorderTest {
+public class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
+    
+    volatile IDAO dao;
+    
+    @Before
+    public void before() throws Exception  {
+        super.setUp();
+        dao = DataManager.getInstance().getDao();
+    }
 
     @Test
-    public void test_recordRequests() {
-        fail("Not yet implemented");
+    public void test_recordRequests() throws DAOException, InterruptedException {
+
+
+        String pi1 = "PI_1";
+        String pi2 = "PI_2";
+        String pi3 = "PI_3";
+
+        String session1 = "12345";
+        String session2 = "67890";
+
+        UsageStatisticsRecorder recorder = new UsageStatisticsRecorder(dao, "viewer.goobi.io");
+        Random random = new Random();
+
+        Thread thread1 = new Thread(() -> {
+            try {
+                for (int i = 0; i < 25; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi1, session1, "", "");
+                }
+                recorder.recordRequest(RequestType.FILE_DOWNLOAD, pi1, session1, "", "");
+                for (int i = 0; i < 15; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi2, session1, "", "");
+                }
+                recorder.recordRequest(RequestType.FILE_DOWNLOAD, pi2, session1, "", "");
+                recorder.recordRequest(RequestType.FILE_DOWNLOAD, pi2, session1, "", "");
+            } catch (InterruptedException e) {
+
+            }
+        });
+
+        Thread thread2 = new Thread(() -> {
+            try {
+                for (int i = 0; i < 10; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi3, session2, "", "");
+                }
+                recorder.recordRequest(RequestType.FILE_DOWNLOAD, pi3, session2, "", "");
+                recorder.recordRequest(RequestType.FILE_DOWNLOAD, pi3, session2, "", "");
+                for (int i = 0; i < 30; i++) {
+                    wait(random);
+                    recorder.recordRequest(RequestType.RECORD_VIEW, pi1, session2, "", "");
+                }
+                recorder.recordRequest(RequestType.FILE_DOWNLOAD, pi1, session2, "", "");
+            } catch (InterruptedException e) {
+
+            }
+        });
+        
+        LocalDate date = LocalDate.now();
+        thread1.start();
+        thread2.start();
+        
+        thread1.join();
+        thread2.join();
+        DailySessionUsageStatistics stats = dao.getUsageStatistics(date);
+        
+        assertEquals(55l, stats.getTotalRequestCount(RequestType.RECORD_VIEW, pi1));
+    }
+
+    private void wait(Random random) throws InterruptedException {
+        Thread.sleep(random.nextInt(100));
     }
 
 }

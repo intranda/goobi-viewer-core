@@ -80,6 +80,13 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         assertNotNull(loaded.getSession("EFGH"));
         assertEquals(4, loaded.getSession("EFGH").getRecordRequestCount(type, "PI_03"));
         
+        DailySessionUsageStatistics stats3 = dao.getUsageStatistics(date);
+        stats3.getSession("EFGH").incrementRequestCount(type, "PI_03");
+        dao.updateUsageStatistics(stats3);
+        DailySessionUsageStatistics stats4 = dao.getUsageStatistics(date);
+        assertEquals(5, stats4.getSession("EFGH").getRecordRequestCount(type, "PI_03"));
+        
+        
         dao.deleteUsageStatistics(stats.getId());
     }
     

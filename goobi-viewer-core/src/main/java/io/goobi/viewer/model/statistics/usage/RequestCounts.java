@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,11 +64,12 @@ public class RequestCounts {
     }
     
     public String toJsonArray() {
-        List<Long> countsList = new ArrayList<>(RequestType.values().length);
-        for (RequestType type : counts.keySet()) {
-            int index = type.getSessionCountIndex();
-            Long count = counts.get(type);
-            countsList.add(index, count);
+        int numTypes = RequestType.values().length;
+        List<Long> countsList = Arrays.asList(new Long[numTypes]);
+        for (int index = 0; index < numTypes; index++) {
+            RequestType type = RequestType.getTypeForSessionCountIndex(index);
+            Long count = Optional.ofNullable(counts.get(type)).orElse(0l);
+            countsList.set(index, count);            
         }
         return new JSONArray(countsList).toString();
     }
