@@ -72,10 +72,8 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
     @Test
     public void checkAccessPermission_shouldReturnFalseIfClientNotContainsLicense() throws Exception {
-
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
-
     }
 
     @Test
@@ -85,7 +83,6 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
-
     }
 
     @Test
@@ -97,7 +94,6 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
         recordAccessConditions.add(lt.getName());
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
-
     }
 
     @Test
@@ -109,7 +105,6 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
         Assert.assertFalse(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
-
     }
 
     @Test
@@ -121,6 +116,5 @@ public class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest
 
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
-
     }
 }

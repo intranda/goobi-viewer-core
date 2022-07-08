@@ -955,12 +955,15 @@ public class AccessConditionUtils {
                 //check clientApplication
                 if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                     //check if specific client matches access conditions
+                    boolean clientAccessGranted = false;
                     if (client.isPresent()) {
                         AccessPermission access = client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
                         if (access.isGranted()) {
                             accessMap.put(key, access);
+                            clientAccessGranted = true;
                         }
-                    } else {
+                    }
+                    if (!clientAccessGranted) {
                         //check if accesscondition match for all clients
                         ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
                         if (allClients != null) {
