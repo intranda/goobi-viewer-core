@@ -248,7 +248,7 @@ public class AccessConditionUtils {
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query, "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
-                            Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
+                            Arrays.asList(SolrConstants.ACCESSCONDITION));
             if (results != null) {
                 for (SolrDocument doc : results) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -932,30 +932,43 @@ public class AccessConditionUtils {
                     // Check whether the requested privilege is allowed to this IP range (for all access conditions)
                     for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
                         // logger.debug("ip range: " + ipRange.getSubnetMask());
-                        if (ipRange.matchIp(remoteAddress)
-                                && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null)) {
-                            logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                            accessMap.put(key, AccessPermission.granted());
-                            continue;
+                        if (ipRange.matchIp(remoteAddress)) {
+                            AccessPermission access =
+                                    ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null);
+                            if (access.isGranted()) {
+                                logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                                accessMap.put(key, access);
+                            }
                         }
                     }
                 }
 
                 // If not within an allowed IP range, check the current user's satisfied access conditions
-                if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                    accessMap.put(key, AccessPermission.granted());
+                if (user != null) {
+                    AccessPermission access =
+                            user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
+                    if (access.isGranted()) {
+                        accessMap.put(key, access);
+                    }
                 }
 
                 //check clientApplication
                 if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                     //check if specific client matches access conditions
-                    if (client.isPresent() && client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                        accessMap.put(key, AccessPermission.granted());
+                    if (client.isPresent()) {
+                        AccessPermission access = client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
+                        if (access.isGranted()) {
+                            accessMap.put(key, access);
+                        }
                     } else {
                         //check if accesscondition match for all clients
                         ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
-                        if (allClients != null && allClients.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                            accessMap.put(key, AccessPermission.granted());
+                        if (allClients != null) {
+                            AccessPermission access =
+                                    allClients.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
+                            if (access.isGranted()) {
+                                accessMap.put(key, access);
+                            }
                         }
                     }
                 }

@@ -1311,7 +1311,7 @@ public class UserBean implements Serializable {
             if (user == null) {
                 hasAdminBackendAccess = false;
             } else {
-                hasAdminBackendAccess = user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)
+                hasAdminBackendAccess = user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES).isGranted()
                         || CrowdsourcingTools.isUserOwnsAnyCampaigns(user) || CommentManager.isUserHasAccessToCommentGroups(user);
             }
         }

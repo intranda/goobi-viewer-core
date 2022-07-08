@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -52,6 +53,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -171,29 +173,35 @@ public class IpRange implements ILicensee, Serializable {
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
+    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
         for (License license : getLicenses()) {
             // logger.trace("License: {}", license.getId());
             if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
+                // No privilege name given
                 if (StringUtils.isEmpty(privilegeName)) {
-                    return true;
+                    return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
                 }
-                if (license.getPrivileges().contains(privilegeName) || license.getLicenseType().getPrivileges().contains(privilegeName)) {
+                // LicenseType grants privilege
+                if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
+                    return AccessPermission.granted();
+                }
+                // License grants privilege
+                if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        return true;
+                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
                         if (DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             logger.debug("Permission found for IP range: {} (query: {})", name, query);
-                            return true;
+                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
                         }
                     }
                 }
             }
         }
 
-        return false;
+        return AccessPermission.denied();
     }
 
     /**
@@ -201,39 +209,43 @@ public class IpRange implements ILicensee, Serializable {
      * canSatisfyAllAccessConditions.
      * </p>
      *
-     * @param conditionList a {@link java.util.Set} object.
-     * @param licenseTypes a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
+     * @param requiredAccessConditions a {@link java.util.Set} object.
+     * @param relevantLicenseTypes a list of relevant license types. If null, the DAO may be queried to check for any restrictions in OpenAccess
      * @param privilegeName a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
-     * @should return true if condition is open access
-     * @should return true if ip range has license
-     * @should return false if ip range has no license
-     * @should return true if condition list empty
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if condition is open access
+     * @should return true if ip range has license
+     * @should return false if ip range has no license
+     * @should return true if condition list empty
      */
-    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, List<LicenseType> licenseTypes, String privilegeName, String pi)
-            throws PresentationException, IndexUnreachableException, DAOException {
-
-        if (AccessConditionUtils.isFreeOpenAccess(conditionList, licenseTypes)) {
-            return true;
+    public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, List<LicenseType> relevantLicenseTypes,
+            String privilegeName, String pi) throws PresentationException, IndexUnreachableException, DAOException {
+        if (AccessConditionUtils.isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
+            return AccessPermission.granted();
         }
 
-        // logger.trace(privilegeName);
-        Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
-        for (String accessCondition : conditionList) {
-            permissionMap.put(accessCondition, false);
-            // Check individual licenses
-            if (hasLicense(accessCondition, privilegeName, pi)) {
-                permissionMap.put(accessCondition, true);
-                continue;
+        Map<String, AccessPermission> permissionMap = new HashMap<>(requiredAccessConditions.size());
+        for (String accessCondition : requiredAccessConditions) {
+            AccessPermission access = hasLicense(accessCondition, privilegeName, pi);
+            if (access.isGranted()) {
+                permissionMap.put(accessCondition, access);
             }
         }
+        if (!permissionMap.isEmpty()) {
+            // TODO Prefer license with ticket requirement?
+            for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
+                if (entry.getValue().isTicketRequired()) {
+                    return entry.getValue();
+                }
+            }
+            return AccessPermission.granted();
+        }
 
-        return permissionMap.isEmpty() || permissionMap.containsValue(true);
-        //        return !permissionMap.containsValue(false);
+        return AccessPermission.denied();
     }
 
     /** {@inheritDoc} */

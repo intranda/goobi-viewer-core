@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -36,7 +37,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
@@ -51,6 +51,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.solr.SolrConstants;
@@ -390,7 +391,7 @@ public class ClientApplication implements ILicensee, Serializable {
         if (this.clientIdentifier != null) {
             return this.clientIdentifier.hashCode();
         }
-        
+
         return 0;
     }
 
@@ -403,7 +404,7 @@ public class ClientApplication implements ILicensee, Serializable {
             ClientApplication other = (ClientApplication) obj;
             return Objects.equals(other.clientIdentifier, this.clientIdentifier);
         }
-        
+
         return false;
     }
 
@@ -452,7 +453,7 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * Check if this client has the privilege of the given privilegeName via its {@link #licenses}
      * 
-     * @param conditionList List of access condition names to satisfy
+     * @param requiredAccessConditions List of access condition names to satisfy
      * @param privilegeName The privilege to check for
      * @param pi PI of a record to check
      * @return true if the privilege should be granted to the client
@@ -460,46 +461,51 @@ public class ClientApplication implements ILicensee, Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
+    public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-
         // always allow access if the only condition is open access and there is no special license configured for it
-        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)
+        if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
                 && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
-            return true;
+            return AccessPermission.granted();
         }
 
-        Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
-        for (String accessCondition : conditionList) {
-            permissionMap.put(accessCondition, false);
-            // Check individual licenses
-            if (hasLicense(accessCondition, privilegeName, pi)) {
-                permissionMap.put(accessCondition, true);
-                continue;
+        Map<String, AccessPermission> permissionMap = new HashMap<>(requiredAccessConditions.size());
+        for (String accessCondition : requiredAccessConditions) {
+            AccessPermission access = hasLicense(accessCondition, privilegeName, pi);
+            if (access.isGranted()) {
+                permissionMap.put(accessCondition, access);
             }
         }
-        // It should be sufficient if the user can satisfy one required licence
-        return permissionMap.isEmpty() || permissionMap.containsValue(true);
-        // return !permissionMap.containsValue(false);
+        if (!permissionMap.isEmpty()) {
+            // TODO Prefer license with ticket requirement?
+            for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
+                if (entry.getValue().isTicketRequired()) {
+                    return entry.getValue();
+                }
+            }
+            return AccessPermission.granted();
+        }
+
+        return AccessPermission.denied();
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
+    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
         // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
         if (StringUtils.isEmpty(privilegeName)) {
-            return true;
+            return AccessPermission.granted();
         }
         for (License license : getLicenses()) {
-            // logger.trace("license: {}, {}", license.getId(),
-            // license.getPrivileges().toString());
-            // logger.trace("license type: {}", license.getLicenseType().getName());
             if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
-                // TODO why not do this check right at the beginning?
-                if (license.getPrivileges().contains(privilegeName) || license.getLicenseType().getPrivileges().contains(privilegeName)) {
+                // LicenseType grants privilege
+                if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
+                    return AccessPermission.granted();
+                }
+                // License grants privilege
+                if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        // logger.trace("Permission found for user: {} ", id);
-                        return true;
+                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         StringBuilder sbQuery = new StringBuilder();
@@ -507,14 +513,14 @@ public class ClientApplication implements ILicensee, Serializable {
                         if (DataManager.getInstance()
                                 .getSearchIndex()
                                 .getFirstDoc(sbQuery.toString(), Collections.singletonList(SolrConstants.IDDOC)) != null) {
-                            return true;
+                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
                         }
                     }
                 }
             }
         }
 
-        return false;
+        return AccessPermission.denied();
     }
 
     /**
