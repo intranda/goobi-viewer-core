@@ -572,13 +572,12 @@ public class DisplayUserGeneratedContent {
                 if (resource == null) {
                     throw new IllegalArgumentException("no content generated");
                 }
-            } catch (JsonProcessingException | IllegalArgumentException e) {
+            } catch (JsonProcessingException | IllegalArgumentException | ClassCastException e) {
                 try {
                     resource = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
-                } catch (JsonProcessingException e1) {
+                } catch (JsonProcessingException | ClassCastException e1) {
                     resource = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : "text/plain");
                 }
-
             }
         }
         return resource;

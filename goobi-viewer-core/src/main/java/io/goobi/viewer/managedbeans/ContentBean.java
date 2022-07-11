@@ -46,6 +46,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
@@ -159,7 +160,9 @@ public class ContentBean implements Serializable {
         this.pi = pi;
         userGeneratedContentsForDisplay = new ArrayList<>();
 
-        List<DisplayUserGeneratedContent> allContent = DataManager.getInstance().getDao().getAnnotationsForWork(pi).stream()
+        List<CrowdsourcingAnnotation> allAnnotationsForRecord = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
+        
+        List<DisplayUserGeneratedContent> allContent = allAnnotationsForRecord.stream()
                 .filter(a -> a.getPublicationStatus().equals(PublicationStatus.PUBLISHED))
                 .filter(a -> StringUtils.isNotBlank(a.getBody()))
                 .map(a -> new DisplayUserGeneratedContent(a))
