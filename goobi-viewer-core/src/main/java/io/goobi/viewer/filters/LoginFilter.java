@@ -102,7 +102,7 @@ public class LoginFilter implements Filter {
                     ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/login/?from=" + URLEncoder.encode(fullRequestURI, "UTF-8"));
         } else if (httpRequest.getRequestURI().contains("/admin")) {
             try {
-                if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES).isGranted()
+                if (user.isSuperuser() || user.isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES)
                         || CrowdsourcingTools.isUserOwnsAnyCampaigns(user) || CommentManager.isUserHasAccessToCommentGroups(user)) {
                     chain.doFilter(request, response); // continue
                     return;

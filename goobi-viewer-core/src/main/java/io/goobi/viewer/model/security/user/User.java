@@ -536,12 +536,12 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param privilege a {@link java.lang.String} object.
-     * @return {@link AccessPermission}
+     * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public AccessPermission isHasCmsPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
+    public boolean isHasCmsPrivilege(String privilege) throws PresentationException, IndexUnreachableException, DAOException {
         return isHasPrivilege(LicenseType.LICENSE_TYPE_CMS, privilege);
     }
 
@@ -552,26 +552,26 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @param licenseType a {@link java.lang.String} object.
      * @param privilege a {@link java.lang.String} object.
-     * @return {@link AccessPermission}
+     * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public AccessPermission isHasPrivilege(String licenseType, String privilege)
+    public boolean isHasPrivilege(String licenseType, String privilege)
             throws PresentationException, IndexUnreachableException, DAOException {
-        return canSatisfyAllAccessConditions(Collections.singletonMap(licenseType, null).keySet(), privilege, null);
+        return canSatisfyAllAccessConditions(Collections.singletonMap(licenseType, null).keySet(), privilege, null).isGranted();
     }
 
     /**
      * Checks whether this user has the permission to set the representative image for the currently open record. TODO For some reason this method is
      * called 8x in a row.
      *
-     * @return {@link AccessPermission}
+     * @return boolean
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public AccessPermission isMaySetRepresentativeImage() throws IndexUnreachableException, PresentationException, DAOException {
+    public boolean isMaySetRepresentativeImage() throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("isMaySetRepresentativeImage");
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE, IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE,
                 recordsForWhichUserMaySetRepresentativeImage);
@@ -585,7 +585,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public AccessPermission isMayDeleteCrowdsourcingFulltext() throws IndexUnreachableException, PresentationException, DAOException {
+    public boolean isMayDeleteCrowdsourcingFulltext() throws IndexUnreachableException, PresentationException, DAOException {
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_DELETE_OCR_PAGE, IPrivilegeHolder.PRIV_DELETE_OCR_PAGE,
                 recordsForWhichUserMayDeleteOcrPage);
     }
@@ -604,21 +604,21 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @param licenseType
      * @param privilegeName
      * @param alreadyCheckedPiMap
-     * @return {@link AccessPermission}
+     * @return boolean
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
-    private AccessPermission isHasPrivilegeForCurrentRecord(String licenseType, String privilegeName,
+    private boolean isHasPrivilegeForCurrentRecord(String licenseType, String privilegeName,
             Map<String, AccessPermission> alreadyCheckedPiMap)
             throws IndexUnreachableException, PresentationException, DAOException {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null && adb.getViewManager() != null) {
             String pi = adb.getViewManager().getPi();
-            return isHasPrivilegeForRecord(pi, licenseType, privilegeName, alreadyCheckedPiMap);
+            return isHasPrivilegeForRecord(pi, licenseType, privilegeName, alreadyCheckedPiMap).isGranted();
         }
 
-        return AccessPermission.denied();
+        return false;
     }
 
     /**
@@ -1411,7 +1411,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      */
     public boolean isCmsAdmin() {
         try {
-            return isSuperuser() || isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES).isGranted();
+            return isSuperuser() || isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
         } catch (PresentationException e) {
             logger.error(e.getMessage());
         } catch (IndexUnreachableException e) {
