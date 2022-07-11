@@ -505,7 +505,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getCurrentObjectUrl() throws IndexUnreachableException, DAOException {
-        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
+        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, getCurrentPage().getFirstFileName());
     }
 
     /**
@@ -748,7 +748,7 @@ public class ViewManager implements Serializable {
         PhysicalElement page = getCurrentPage();
         if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
-            String imageFilename = page.getFilename();
+            String imageFilename = page.getFirstFileName();
             Dimension maxSize = new Dimension(
                     page.isAccessPermissionImageZoom() ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                             : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth(),
