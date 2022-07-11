@@ -156,17 +156,6 @@ public class RecordResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getCommentsForRecord(java.lang.String)}.
-     *
-     * @throws JsonProcessingException
-     * @throws JsonMappingException
-     */
-    @Test
-    public void testGetCommentsForRecord() throws JsonMappingException, JsonProcessingException {
-
-    }
-
-    /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordResource#getCommentPageForRecord()}.
      *
      * @throws JsonProcessingException

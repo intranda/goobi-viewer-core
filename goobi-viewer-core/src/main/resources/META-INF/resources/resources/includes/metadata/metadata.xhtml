@@ -33,6 +33,14 @@
                     </button>
             </ui:fragment>
 	    </div>
+	    
+        <!-- BORN DIGITAL MATERIALS -->
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.bornDigital}">
+            <viewerComponent:bornDigital />
+
+            <div class="clearfix"></div>
+        </h:panelGroup>
+	    
         <c:forEach items="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>

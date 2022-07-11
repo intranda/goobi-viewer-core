@@ -1991,7 +1991,7 @@ public class ActiveDocumentBean implements Serializable {
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
             try {
-                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
+                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null
                         || !DownloadJob.ocrFolderExists(viewManager.getPi())) {
                     return false;
                 }
@@ -2014,7 +2014,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public boolean isAccessPermissionPdf() {
         synchronized (this) {
-            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
+            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
                 return false;
             }
 
@@ -2027,11 +2027,11 @@ public class ActiveDocumentBean implements Serializable {
      * @return
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
-        if (downloadType.equals(EPUBDownloadJob.TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
+        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
             return false;
         }
         PageType pageType = PageType.getByName(pageTypeName);
-        boolean pdf = PDFDownloadJob.TYPE.equals(downloadType);
+        boolean pdf = PDFDownloadJob.LOCAL_TYPE.equals(downloadType);
         if (pageType != null) {
             switch (pageType) {
                 case viewToc:
