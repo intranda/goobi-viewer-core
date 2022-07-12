@@ -1,0 +1,226 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package io.goobi.viewer.model.security;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
+
+/**
+ * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
+ * known as core license types.
+ */
+@Entity
+@Table(name = "download_tickets")
+public class DownloadTicket {
+
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(DownloadTicket.class);
+
+    private static final int VALIDITY_DAYS = 14;
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "download_ticket_id")
+    private Long id;
+
+    @Column(name = "date_created", nullable = false)
+    private LocalDateTime dateCreated;
+
+    @Column(name = "date_created", nullable = false)
+    private LocalDateTime dateStart;
+
+    @Column(name = "license_name", nullable = false)
+    private String licenseName;
+
+    @Column(name = "pi", nullable = false)
+    private String pi;
+
+    @Column(name = "title")
+    private String title;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "user_group_id")
+    private UserGroup userGroup;
+
+    @ManyToOne
+    @JoinColumn(name = "ip_range_id")
+    private IpRange ipRange;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private ClientApplication client;
+
+    /**
+     * Empty constructor.
+     */
+    public DownloadTicket() {
+        super();
+    }
+
+    public boolean isValid() {
+        // TODO
+        
+        return false;
+    }
+
+    public void extend(int days) {
+        // TODO
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>id</code>.
+     * </p>
+     *
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>id</code>.
+     * </p>
+     *
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the dateCreated
+     */
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    /**
+     * @param dateCreated the dateCreated to set
+     */
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    /**
+     * @return the dateStart
+     */
+    public LocalDateTime getDateStart() {
+        return dateStart;
+    }
+
+    /**
+     * @param dateStart the dateStart to set
+     */
+    public void setDateStart(LocalDateTime dateStart) {
+        this.dateStart = dateStart;
+    }
+
+    /**
+     * @return the licenseName
+     */
+    public String getLicenseName() {
+        return licenseName;
+    }
+
+    /**
+     * @param licenseName the licenseName to set
+     */
+    public void setLicenseName(String licenseName) {
+        this.licenseName = licenseName;
+    }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    /**
+     * @return the userGroup
+     */
+    public UserGroup getUserGroup() {
+        return userGroup;
+    }
+
+    /**
+     * @param userGroup the userGroup to set
+     */
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
+    }
+
+    /**
+     * @return the ipRange
+     */
+    public IpRange getIpRange() {
+        return ipRange;
+    }
+
+    /**
+     * @param ipRange the ipRange to set
+     */
+    public void setIpRange(IpRange ipRange) {
+        this.ipRange = ipRange;
+    }
+
+    /**
+     * @return the client
+     */
+    public ClientApplication getClient() {
+        return client;
+    }
+
+    /**
+     * @param client the client to set
+     */
+    public void setClient(ClientApplication client) {
+        this.client = client;
+    }
+}

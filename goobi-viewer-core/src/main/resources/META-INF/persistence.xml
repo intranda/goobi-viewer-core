@@ -64,6 +64,7 @@
         <class>io.goobi.viewer.model.maps.GeoMap</class>
         <class>io.goobi.viewer.model.maps.MapTranslation</class>
 		<class>io.goobi.viewer.model.search.Search</class>
+        <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
 		<class>io.goobi.viewer.model.security.Role</class>
@@ -156,6 +157,7 @@
 		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
 		<class>io.goobi.viewer.model.search.Search</class>
+        <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>
 		<class>io.goobi.viewer.model.security.LicenseType</class>
 		<class>io.goobi.viewer.model.security.Role</class>
