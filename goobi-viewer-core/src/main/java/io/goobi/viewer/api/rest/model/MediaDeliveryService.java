@@ -245,7 +245,7 @@ public class MediaDeliveryService {
         if (range != null) {
 
             // Range header should match format "bytes=n-n,n-n,n-n..." or "bytes=n-". If not, then return 416.
-            if (!range.matches("^bytes=(,?\\d+(?:-\\d{0,9})?)+$")) {
+            if (!matchesRangeHeaderPattern(range)) {
                 throw new IllegalRequestException("Range has wrong syntax: " + range);
             }
 
@@ -289,6 +289,10 @@ public class MediaDeliveryService {
             }
         }
         return sections;
+    }
+
+    protected static boolean matchesRangeHeaderPattern(String range) {
+        return range.matches("bytes=((\\d+-,\\s*)|(-\\d+,\\s*)|(\\d+-\\d+,\\s*))*((\\d+-)|(-\\d+)|(\\d+-\\d+))");
     }
 
     /**
