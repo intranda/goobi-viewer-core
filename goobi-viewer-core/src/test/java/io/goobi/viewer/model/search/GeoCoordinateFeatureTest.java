@@ -52,12 +52,43 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
     public void testParsePoints() {
-        double[][] referencePoints = new double[][] {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
-        String pointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
+        double[][] referencePoints = new double[][] {{1.1, 1.2}, {2.1, -2.2}, {3.1, 3.2}, {-4.1, 4.2}, {1.1, 1.2}};
+        String pointsString = "1.1 1.2, 2.1 -2.2, 3.1 3.2, -4.1 4.2, 1.1 1.2";
         String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
         // System.out.println("query = " + query);
         double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
         assertArrayEquals(referencePoints, points);
+    }
+    
+    @Test
+    public void testParseIllegalPoints() {
+        {
+            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            String pointsString = "1.1 1.2, 2.1 , 3.1 3.2, 4.1 4.2, 1.1 1.2";
+            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            // System.out.println("query = " + query);
+            double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
+            assertArrayEquals(referencePoints, points);
+
+        }
+        {
+            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            String pointsString = "1.1 1.2, -2342- , 3.1 3.2, 4.1 4.2, 1.1 1.2";
+            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            // System.out.println("query = " + query);
+            double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
+            assertArrayEquals(referencePoints, points);
+
+        }
+        {
+            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            String pointsString = "1.1 1.2, sfs, 3.1 3.2, 4.1 4.2, 1.1 1.2";
+            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            // System.out.println("query = " + query);
+            double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
+            assertEquals(0, points.length);
+
+        }
     }
 
     @Test

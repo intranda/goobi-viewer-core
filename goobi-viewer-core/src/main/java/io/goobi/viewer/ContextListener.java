@@ -56,6 +56,8 @@ import io.goobi.viewer.model.security.user.UserTools;
 @WebListener
 public class ContextListener implements ServletContextListener {
 
+    private static final int PRETTY_CONFIG_FILES_STRING_THRESHOLD = 1_000_000;
+
     private static final Logger logger = LoggerFactory.getLogger(ContextListener.class);
 
     /** Constant <code>PRETTY_FACES_CONFIG_PARAM_NAME="com.ocpsoft.pretty.CONFIG_FILES"</code> */
@@ -105,8 +107,8 @@ public class ContextListener implements ServletContextListener {
                     for (Path path : stream) {
                         logger.debug("Found module JAR: {}", path.getFileName().toString());
                         try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
-                            while (true) {
-                                ZipEntry e = zip.getNextEntry();
+                            while (prettyConfigFiles.length() < PRETTY_CONFIG_FILES_STRING_THRESHOLD) {
+                                ZipEntry e = zip.getNextEntry();    //NOSONAR only viewer jars are scanned, which we control, and no data is written besides entry names
                                 if (e == null) {
                                     break;
                                 }

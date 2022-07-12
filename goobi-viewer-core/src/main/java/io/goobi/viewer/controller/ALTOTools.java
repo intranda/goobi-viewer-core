@@ -83,8 +83,7 @@ public class ALTOTools {
     private final static String LABEL = "LABEL";
 
     /** Constant <code>TAG_LABEL_IGNORE_REGEX</code> */
-    // public static final String TAG_LABEL_IGNORE_REGEX = "(^\\W+)|(\\W+$)";
-    public static final String TAG_LABEL_IGNORE_REGEX= "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
+    public static final String TAG_LABEL_IGNORE_REGEX= "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)"; //NOSONAR This contains no lazy internal repititions which would cause catastrophic backtracking
 
     /**
      * Read the plain fulltext from an alto file. Don't merge linebreaks
@@ -439,7 +438,6 @@ public class ALTOTools {
     }
 
     /**
-     * TODO Re-implement using stream
      *
      * @param altoString String containing the ALTO XML document
      * @param charset
@@ -696,40 +694,6 @@ public class ALTOTools {
         }
         return hits;
 
-        //        if (content.trim().contains(" ")) {
-        //            // not a word, but a line
-        //            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
-        //            int hitCount = words.length;
-        //            StringBuilder sbMatchString = new StringBuilder();
-        //            for (String string : words) {
-        //                if (sbMatchString.length() > 0) {
-        //                    sbMatchString.append(' ');
-        //                }
-        //                sbMatchString.append(string.toLowerCase());
-        //            }
-        //            String matchString = sbMatchString.toString();
-        //            for (; hitCount > 0; hitCount--) {
-        //                if (content.contains(matchString)) {
-        //                    break;
-        //                } else if (!matchString.contains(" ")) {
-        //                    // last word didn't match, so no match
-        //                    return 0;
-        //                } else {
-        //                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
-        //                }
-        //            }
-        //            return hitCount;
-        //        }
-        //for both the search term and the alto string, make lower case, normalize characters, remove diacriticals and remove all non-word characters
-        //        FuzzySearchTerm fuzzy = new FuzzySearchTerm(words[0]);
-        //        return fuzzy.matches(content) ? 1 : 0;
-        //        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
-        //        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
-        //        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
-        //            return 1;
-        //        }
-        //
-        //        return 0;
     }
 
     /**

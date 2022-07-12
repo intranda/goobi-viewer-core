@@ -41,7 +41,8 @@ public class GeoCoordinateFeature {
 
     private static final Logger logger = LoggerFactory.getLogger(GeoCoordinateFeature.class);
 
-    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(((?:[\\d.-]+ [\\d.-]+,?\\s?)+)\\)\\)\\)";
+    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(([\\s\\d\\-.,]+)\\)\\)\\)"; //NOSONAR    backtracking save
+
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_POINTS = 3;
@@ -141,8 +142,6 @@ public class GeoCoordinateFeature {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
         if(matcher.find()) {
-            String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
-            String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
             String allPoints = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_POINTS);
             String[] strPoints = allPoints.split(", ");
             double[][] points = new double[strPoints.length][2];
@@ -150,7 +149,7 @@ public class GeoCoordinateFeature {
                 try {
                     String[] strPoint = strPoints[i].split(" ");
                     points[i] = new double[]{Double.parseDouble(strPoint[0]), Double.parseDouble(strPoint[1])};
-                } catch(NumberFormatException e) {
+                } catch(NumberFormatException | IndexOutOfBoundsException e) {
                     logger.warn("Unable to parse {} as double array", strPoints[i]);
                 }
             }

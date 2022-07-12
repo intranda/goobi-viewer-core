@@ -182,7 +182,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
             return new SpecificResource(getRestBuilder().getCanvasURI(pi, pageOrder), selector);
         } catch (IllegalArgumentException e) {
             //old UGC coords format
-            String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)";
+            String regex = "([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+),\\s*([\\d\\.]+)"; //NOSONAR  no catastrophic backtracking detected
             Matcher matcher = Pattern.compile(regex).matcher(coordString);
             if (matcher.find()) {
                 int x1 = Math.round(Float.parseFloat(matcher.group(1)));

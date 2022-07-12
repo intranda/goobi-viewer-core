@@ -954,7 +954,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public static Long getId(URI idAsURI) {
 
-        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
+        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString()); //NOSONAR  no catastrophic backtracking detected
         if (matcher.find()) {
             String idString = matcher.group(1);
             return Long.parseLong(idString);
