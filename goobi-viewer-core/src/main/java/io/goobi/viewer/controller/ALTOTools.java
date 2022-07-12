@@ -83,7 +83,7 @@ public class ALTOTools {
     private final static String LABEL = "LABEL";
 
     /** Constant <code>TAG_LABEL_IGNORE_REGEX</code> */
-    public static final String TAG_LABEL_IGNORE_REGEX= "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)"; //NOSONAR This contains no lazy internal repititions which would cause catastrophic backtracking
+    public static final String TAG_LABEL_IGNORE_REGEX= "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
 
     /**
      * Read the plain fulltext from an alto file. Don't merge linebreaks
@@ -176,7 +176,7 @@ public class ALTOTools {
     @SuppressWarnings("rawtypes")
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
-        value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");
+        value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");   //NOSONAR   TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions which would cause catastrophic backtracking
         Type type = Type.getByLabel(tag.getType());
         if (type == null) {
             logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.misc.name());
