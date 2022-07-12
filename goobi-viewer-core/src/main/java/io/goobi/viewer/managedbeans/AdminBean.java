@@ -25,12 +25,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,13 +35,10 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -60,11 +54,8 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
@@ -72,13 +63,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.job.download.DownloadJobTools;
-import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
@@ -121,8 +106,6 @@ public class AdminBean implements Serializable {
     /** List of UserRoles to persist or delete */
     Map<UserRole, String> dirtyUserRoles = new HashMap<>();
     private UserRole currentUserRole = null;
-    private LicenseType currentLicenseType = null;
-    private License currentLicense = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
 
@@ -190,6 +173,7 @@ public class AdminBean implements Serializable {
 
                 @Override
                 public void resetTotalNumberOfRecords() {
+                  // 
                 }
             });
             lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -669,283 +653,6 @@ public class AdminBean implements Serializable {
         }
     }
 
-    // LicenseType
-
-    /**
-     * Returns all existing license types. Required for admin tabs.
-     *
-     * @return all license types in the database
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<LicenseType> getAllLicenseTypes() throws DAOException {
-        return DataManager.getInstance().getDao().getAllLicenseTypes();
-    }
-
-    /**
-     *
-     * @return Two SelectItemGroups for core and regular license types
-     * @throws DAOException
-     * @should group license types in select item groups correctly
-     */
-    public List<SelectItem> getGroupedLicenseTypeSelectItems() throws DAOException {
-        List<LicenseType> licenseTypes = getAllLicenseTypes();
-        if (licenseTypes.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<LicenseType> list1 = new ArrayList<>();
-        List<LicenseType> list2 = new ArrayList<>();
-        for (LicenseType licenseType : licenseTypes) {
-            if (licenseType.isCore()) {
-                list1.add(licenseType);
-            } else {
-                list2.add(licenseType);
-            }
-        }
-        List<SelectItem> ret = new ArrayList<>(licenseTypes.size());
-        {
-            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
-            SelectItem[] array1 = new SelectItem[list1.size()];
-            for (int i = 0; i < array1.length; ++i) {
-                array1[i] = new SelectItem(list1.get(i), ViewerResourceBundle.getTranslation(list1.get(i).getName(), null));
-            }
-            group.setSelectItems(array1);
-            ret.add(group);
-        }
-        {
-            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
-            SelectItem[] array = new SelectItem[list2.size()];
-            for (int i = 0; i < array.length; ++i) {
-                array[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
-            }
-            group.setSelectItems(array);
-            ret.add(group);
-        }
-
-        //        List<Campaign> campaigns = DataManager.getInstance().getDao().getAllCampaigns();
-        //        if (!campaigns.isEmpty()) {
-        //            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__crowdsourcing_campaigns", null));
-        //            SelectItem[] array = new SelectItem[campaigns.size()];
-        //            for (int i = 0; i < array.length; ++i) {
-        //                array[i] = new SelectItem(campaigns.get(i), ViewerResourceBundle.getTranslation(campaigns.get(i).getTitle(), null));
-        //            }
-        //            group.setSelectItems(array);
-        //            ret.add(group);
-        //        }
-
-        return ret;
-    }
-
-    /**
-     *
-     * @param core
-     * @return all license types in the database where this.core=core
-     * @throws DAOException
-     */
-    private List<LicenseType> getFilteredLicenseTypes(boolean core) throws DAOException {
-        List<LicenseType> all = getAllLicenseTypes();
-        if (all.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<LicenseType> ret = new ArrayList<>(all.size());
-        for (LicenseType lt : all) {
-            if (lt.isCore() == core) {
-                ret.add(lt);
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * <p>
-     * getAllCoreLicenseTypes.
-     * </p>
-     *
-     * @return all license types in the database where core=true
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<LicenseType> getAllCoreLicenseTypes() throws DAOException {
-        return getFilteredLicenseTypes(true);
-    }
-
-    /**
-     * <p>
-     * getAllRecordLicenseTypes.
-     * </p>
-     *
-     * @return all license types in the database where core=false
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<LicenseType> getAllRecordLicenseTypes() throws DAOException {
-        return getFilteredLicenseTypes(false);
-    }
-
-    /**
-     * Returns all existing non-core license types minus <code>currentLicenseType</code>. Used for overriding license type selection.
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<LicenseType> getOtherLicenseTypes() throws DAOException {
-        List<LicenseType> all = DataManager.getInstance().getDao().getAllLicenseTypes();
-        if (all.isEmpty() || all.get(0).equals(this.currentLicenseType)) {
-            return Collections.emptyList();
-        }
-
-        List<LicenseType> ret = new ArrayList<>(all.size() - 1);
-        for (LicenseType licenseType : all) {
-            if (licenseType.equals(this.currentLicenseType) || licenseType.isCore()) {
-                continue;
-            }
-            ret.add(licenseType);
-        }
-
-        return ret;
-    }
-
-    /**
-     * <p>
-     * saveLicenseTypeAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String saveCurrentLicenseTypeAction() throws DAOException {
-        if (currentLicenseType == null) {
-            Messages.error("errSave");
-            return "licenseTypes";
-        }
-
-        // Adopt changes made to the privileges
-        if (!currentLicenseType.getPrivileges().equals(currentLicenseType.getPrivilegesCopy())) {
-            logger.trace("Saving changes to privileges");
-            currentLicenseType.setPrivileges(new HashSet<>(currentLicenseType.getPrivilegesCopy()));
-        }
-
-        if (currentLicenseType.getId() != null) {
-            if (DataManager.getInstance().getDao().updateLicenseType(currentLicenseType)) {
-                logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
-                Messages.info("updatedSuccessfully");
-            } else {
-                Messages.error("errSave");
-                return "pretty:adminLicenseEdit";
-            }
-        } else {
-            if (DataManager.getInstance().getDao().addLicenseType(currentLicenseType)) {
-                Messages.info("addedSuccessfully");
-            } else {
-                Messages.error("errSave");
-                return "pretty:adminLicenseNew";
-            }
-        }
-
-        return "pretty:adminLicenses";
-    }
-
-    /**
-     * <p>
-     * deleteLicenseTypeAction.
-     * </p>
-     *
-     * @param licenseType a {@link io.goobi.viewer.model.security.LicenseType} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
-        if (licenseType == null) {
-            return "";
-        }
-
-        if (DataManager.getInstance().getDao().deleteLicenseType(licenseType)) {
-            Messages.info("deletedSuccessfully");
-
-        } else {
-            Messages.error("deleteFailure");
-        }
-
-        return licenseType.isCore() ? "pretty:adminRoles" : "pretty:adminLicenseTypes";
-    }
-
-    /**
-     * <p>
-     * newCurrentLicenseTypeAction.
-     * </p>
-     */
-    public void newCurrentLicenseTypeAction(String name) {
-        logger.trace("newCurrentLicenseTypeAction({})", name);
-        currentLicenseType = new LicenseType(name);
-    }
-
-    /**
-     * <p>
-     * resetCurrentRoleLicenseAction.
-     * </p>
-     */
-    public void resetCurrentRoleLicenseAction() {
-        currentLicenseType = new LicenseType();
-        currentLicenseType.setCore(true);
-    }
-
-    // License
-
-    public List<License> getAllLicenses() throws DAOException {
-        return DataManager.getInstance().getDao().getAllLicenses();
-    }
-
-    /**
-     *
-     * @param licenseType
-     * @return true if at least one license uses the given license type; false otherwise
-     * @throws DAOException
-     */
-    public boolean isLicenseTypeInUse(LicenseType licenseType) throws DAOException {
-        if (licenseType == null) {
-            return false;
-        }
-
-        return DataManager.getInstance().getDao().getLicenseCount(licenseType) > 0;
-    }
-
-    /**
-     *
-     * @param licenseTypeName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public long getConcurrentViewsLimitRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName
-                        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_CONCURRENTUSE + ":*");
-    }
-
-    /**
-     *
-     * @param licenseTypeName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public long getPdfQuotaRecordCountForLicenseType(String licenseTypeName) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount("+" + SolrConstants.ACCESSCONDITION + ":\"" + licenseTypeName
-                        + "\" +" + SolrConstants.ISWORK + ":true +" + SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA + ":*");
-    }
-
-    /**
-     *
-     * @param licenseType
-     * @return
-     * @throws DAOException
-     */
-    public List<License> getLicenses(LicenseType licenseType) throws DAOException {
-        return DataManager.getInstance().getDao().getLicenses(licenseType);
-    }
-
     // IpRange
 
     /**
@@ -1011,156 +718,6 @@ public class AdminBean implements Serializable {
         currentIpRange = new IpRange();
     }
 
-    /**
-     * <p>
-     * Creates <code>currentLicense</code> to a new instance.
-     * </p>
-     */
-    public void newCurrentLicenseAction() {
-        logger.trace("newCurrentLicenseAction");
-        setCurrentLicense(new License());
-    }
-
-    /**
-     * Adds the current License to the licensee (User, UserGroup or IpRange). It is imperative that the licensee object is refreshed after updating so
-     * that a new license object is an ID attached. Otherwise the list of licenses will throw an NPE!
-     *
-     * @param license a {@link io.goobi.viewer.model.security.License} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public String saveCurrentLicenseAction() throws DAOException, IndexUnreachableException, PresentationException {
-        logger.trace("saveCurrentLicenseAction");
-        if (currentLicense == null) {
-            throw new IllegalArgumentException("license may not be null");
-        }
-
-        // Sync changes made to the privileges
-        if (!currentLicense.getPrivileges().equals(currentLicense.getPrivilegesCopy())) {
-            logger.trace("Saving changes to privileges");
-            currentLicense.setPrivileges(new HashSet<>(currentLicense.getPrivilegesCopy()));
-        }
-        // Sync changes made to allowed subthemes
-        if (currentLicense.getSelectableSubthemes() != null && !currentLicense.getSelectableSubthemes().isEmpty()) {
-            currentLicense.getSubthemeDiscriminatorValues().clear();
-            for (Selectable<String> selectable : currentLicense.getSelectableSubthemes()) {
-                if (selectable.isSelected()) {
-                    currentLicense.getSubthemeDiscriminatorValues().add(selectable.getValue());
-                }
-            }
-        }
-        // Sync changes made to allowed categories
-        if (currentLicense.getSelectableCategories() != null && !currentLicense.getSelectableCategories().isEmpty()) {
-            currentLicense.getAllowedCategories().clear();
-            for (Selectable<CMSCategory> selectable : currentLicense.getSelectableCategories()) {
-                if (selectable.isSelected()) {
-                    currentLicense.getAllowedCategories().add(selectable.getValue());
-                }
-            }
-        }
-        // Sync changes made to allowed templates
-        if (currentLicense.getSelectableTemplates() != null && !currentLicense.getSelectableTemplates().isEmpty()) {
-            currentLicense.getAllowedCmsTemplates().clear();
-            for (Selectable<CMSPageTemplate> selectable : currentLicense.getSelectableTemplates()) {
-                if (selectable.isSelected()) {
-                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue().getId());
-                }
-            }
-        }
-
-        boolean error = false;
-        if (currentLicense.getUser() != null) {
-            // User
-            currentLicense.getUser().addLicense(currentLicense);
-            if (DataManager.getInstance().getDao().updateUser(currentLicense.getUser())) {
-                Messages.info("license_licenseSaveSuccess");
-            } else {
-                Messages.error("license_licenseSaveFailure");
-                error = true;
-            }
-        } else if (currentLicense.getUserGroup() != null) {
-            // UserGroup
-            currentLicense.getUserGroup().addLicense(currentLicense);
-            if (DataManager.getInstance().getDao().updateUserGroup(currentLicense.getUserGroup())) {
-                Messages.info("license_licenseSaveSuccess");
-            } else {
-                Messages.error("license_licenseSaveFailure");
-                error = true;
-            }
-        } else if (currentLicense.getIpRange() != null) {
-            // IpRange
-            logger.trace("ip range id:{} ", currentLicense.getIpRange().getId());
-            currentLicense.getIpRange().addLicense(currentLicense);
-            if (DataManager.getInstance().getDao().updateIpRange(currentLicense.getIpRange())) {
-                Messages.info("license_licenseSaveSuccess");
-            } else {
-                Messages.error("license_licenseSaveFailure");
-                error = true;
-            }
-        } else if (currentLicense.getClient() != null) {
-            // IpRange
-            logger.trace("client id:{} ", currentLicense.getClientId());
-            currentLicense.getClient().addLicense(currentLicense);
-            if (DataManager.getInstance().getDao().saveClientApplication(currentLicense.getClient())) {
-                Messages.info("license_licenseSaveSuccess");
-            } else {
-                Messages.error("license_licenseSaveFailure");
-                error = true;
-            }
-        } else {
-            logger.trace("nothing");
-            Messages.error("license_licenseSaveFailure");
-            error = true;
-        }
-
-        if (error) {
-            if (currentLicense.getId() != null) {
-                return "pretty:adminRightsEdit";
-            }
-            return "pretty:adminRightsNew";
-        }
-
-        return "pretty:adminRights";
-    }
-
-    /**
-     * <p>
-     * deleteLicenseAction.
-     * </p>
-     *
-     * @param license a {@link io.goobi.viewer.model.security.License} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String deleteLicenseAction(License license) throws DAOException {
-        if (license == null) {
-            throw new IllegalArgumentException("license may not be null");
-        }
-
-        boolean success = false;
-        logger.debug("removing license: {}", license.getLicenseType().getName());
-        if (license.getUser() != null) {
-            license.getUser().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateUser(license.getUser());
-        } else if (license.getUserGroup() != null) {
-            license.getUserGroup().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup());
-        } else if (license.getIpRange() != null) {
-            license.getIpRange().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateIpRange(license.getIpRange());
-        }
-
-        if (success) {
-            Messages.info("license_deleteSuccess");
-        } else {
-            Messages.error("license_deleteFailure");
-        }
-
-        return "pretty:adminRights";
-    }
 
     /*********************************** Getter and Setter ***************************************/
 
@@ -1296,113 +853,6 @@ public class AdminBean implements Serializable {
      */
     public void setCurrentUserRole(UserRole currentUserRole) {
         this.currentUserRole = currentUserRole;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>currentLicenseType</code>.
-     * </p>
-     *
-     * @return the currentLicenseType
-     */
-    public LicenseType getCurrentLicenseType() {
-        return currentLicenseType;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>currentLicenseType</code>.
-     * </p>
-     *
-     * @param currentLicenseType the currentLicenseType to set
-     */
-    public void setCurrentLicenseType(LicenseType currentLicenseType) {
-        if (currentLicenseType != null) {
-            logger.trace("setCurrentLicenseType: {}", currentLicenseType.getName());
-            // Prepare privileges working copy (but only if the same license type is not already set)
-            if (!currentLicenseType.equals(this.currentLicenseType)) {
-                currentLicenseType.setPrivilegesCopy(new HashSet<>(currentLicenseType.getPrivileges()));
-            }
-        }
-        this.currentLicenseType = currentLicenseType;
-    }
-
-    /**
-     * Returns the user ID of <code>currentLicenseType/code>.
-     *
-     * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
-     */
-    public Long getCurrentLicenseTypeId() {
-        if (currentLicenseType != null && currentLicenseType.getId() != null) {
-            return currentLicenseType.getId();
-        }
-
-        return null;
-    }
-
-    /**
-     * Sets <code>currentUserGroup</code> by loading it from the DB via the given ID.
-     *
-     * @param id
-     * @throws DAOException
-     */
-    public void setCurrentLicenseTypeId(Long id) throws DAOException {
-        setCurrentLicenseType(DataManager.getInstance().getDao().getLicenseType(id));
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>currentLicense</code>.
-     * </p>
-     *
-     * @return the currentLicense
-     */
-    public License getCurrentLicense() {
-        return currentLicense;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>currentLicense</code>.
-     * </p>
-     *
-     * @param currentLicense the currentLicense to set
-     */
-    public void setCurrentLicense(License currentLicense) {
-        if (currentLicense != null) {
-            logger.trace("setCurrentLicense: {}", currentLicense.toString());
-            // Prepare privileges working copy (but only if the same license is not already set)
-            currentLicense.resetTempData();
-            if (!currentLicense.equals(this.currentLicense)) {
-                currentLicense.setPrivilegesCopy(new HashSet<>(currentLicense.getPrivileges()));
-            }
-        }
-        this.currentLicense = currentLicense;
-    }
-
-    /**
-     * Returns the user ID of <code>currentLicense/code>.
-     *
-     * return <code>currentLicense.id</code> if loaded and has ID; null if not
-     */
-    public Long getCurrentLicenseId() {
-        if (currentLicense != null && currentLicense.getId() != null) {
-            return currentLicense.getId();
-        }
-
-        return null;
-    }
-
-    /**
-     * Sets <code>currentLicense/code> by loading it from the DB via the given ID.
-     *
-     * @param id
-     * @throws DAOException
-     */
-    public void setCurrentLicenseId(Long id) throws DAOException {
-        if (ObjectUtils.notEqual(getCurrentLicenseId(), id)) {
-            setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
-        }
     }
 
     /**
@@ -1705,100 +1155,9 @@ public class AdminBean implements Serializable {
         return "";
     }
 
-    /**
-     * Queries Solr for a list of all values of the set ACCESSCONDITION
-     *
-     * @return A list of all indexed ACCESSCONDITIONs
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
-        List<String> accessConditions = SearchHelper.getFacetValues(
-                "+" + SolrConstants.ACCESSCONDITION + ":[* TO *] -" + SolrConstants.ACCESSCONDITION + ":" + SolrConstants.OPEN_ACCESS_VALUE,
-                SolrConstants.ACCESSCONDITION, 1);
-        Collections.sort(accessConditions);
-        return accessConditions;
-    }
-
-    /**
-     *
-     * @return List of access condition values that have no corresponding license type in the database
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    public List<String> getNotConfiguredAccessConditions() throws IndexUnreachableException, PresentationException, DAOException {
-        List<String> accessConditions = getPossibleAccessConditions();
-        if (accessConditions.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<LicenseType> licenseTypes = getAllLicenseTypes();
-        if (licenseTypes.isEmpty()) {
-            return accessConditions;
-        }
-
-        List<String> ret = new ArrayList<>();
-        for (String accessCondition : accessConditions) {
-            boolean found = false;
-            for (LicenseType licenseType : licenseTypes) {
-                if (licenseType.getName().equals(accessCondition)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                ret.add(accessCondition);
-            }
-        }
-
-        return ret;
-
-    }
-
-    /**
-     *
-     * @param accessCondition
-     * @return Number of records containing the given access condition value
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     */
-    public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
-    }
-
-    /**
-     *
-     * @param accessCondition
-     * @return
-     */
-    public String getUrlQueryForAccessCondition(String accessCondition) {
-        String query = SearchHelper.getQueryForAccessCondition(accessCondition, true);
-        if (query == null) {
-            return null;
-        }
-        query = BeanUtils.escapeCriticalUrlChracters(query);
-        try {
-            return URLEncoder.encode(query, StringTools.DEFAULT_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return query;
-        }
-    }
-
     public void triggerMessage(String message) {
         logger.debug("Show message: {}", message);
         Messages.info(ViewerResourceBundle.getTranslation(message, null));
-    }
-
-    /**
-     *
-     * @param privilege
-     * @return
-     */
-    public String getMessageKeyForPrivilege(String privilege) {
-        return "license_priv_" + privilege.toLowerCase();
     }
 
     /**

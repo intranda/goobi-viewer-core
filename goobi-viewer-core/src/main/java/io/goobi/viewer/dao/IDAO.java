@@ -64,6 +64,8 @@ import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.DownloadTicket;
+import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -780,6 +782,45 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
+    
+    // DownloadTicket
+    
+    public DownloadTicket getDownloadTicket(Long id) throws DAOException;
+    
+    public DownloadTicket getDownloadTicketsForLicenseName(String licenseName, String pi, ILicensee licensee) throws DAOException;
+    
+    /**
+     * <p>
+     * addDownloadTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
+
+    /**
+     * <p>
+     * updateDownloadTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
+
+    /**
+     * <p>
+     * deleteDownloadTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
 
     // IpRange
 

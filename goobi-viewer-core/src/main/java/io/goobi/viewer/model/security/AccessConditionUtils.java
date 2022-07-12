@@ -1167,4 +1167,9 @@ public class AccessConditionUtils {
                 })
                 .collect(Collectors.toList());
     }
+    
+    public static String generateDownloadTicket(ILicensee licensee, String licenseName) {
+        // TODO
+        return null;
+    }
 }

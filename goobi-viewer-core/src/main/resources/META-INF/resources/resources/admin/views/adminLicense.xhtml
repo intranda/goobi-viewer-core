@@ -19,12 +19,12 @@
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicense">
-                <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicenseType != null}">
+                <h:panelGroup rendered="#{userBean.admin and adminLicenseBean.currentLicenseType != null}">
                     <h:form id="editLicenseTypeForm" styleClass="form-horizontal" prependId="false">
                         <div class="admin__title-bar">
                             <h1 class="admin__title">
-                                <h:outputText value="#{msg.admin__license_new}"  rendered="#{adminBean.currentLicenseType.id == null}" />
-                                <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminBean.currentLicenseType.id != null}" />
+                                <h:outputText value="#{msg.admin__license_new}"  rendered="#{adminLicenseBean.currentLicenseType.id == null}" />
+                                <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminLicenseBean.currentLicenseType.id != null}" />
                             </h1>
                         </div>
 
@@ -34,7 +34,7 @@
                                 <div class="form-group form-row">
                                     <h:outputLabel for="name" styleClass="col-sm-2 control-label" value="#{msg.name}:" />
                                     <div class="col-sm-10">
-                                        #{adminBean.currentLicenseType.name}
+                                        #{adminLicenseBean.currentLicenseType.name}
                                     </div>
                                 </div>
                                 <div class="form-group form-row">
@@ -42,7 +42,7 @@
                                         <label for="description">#{msg.description}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
-                                        <h:inputTextarea value="#{adminBean.currentLicenseType.description}" id="description" styleClass="form-control" />
+                                        <h:inputTextarea value="#{adminLicenseBean.currentLicenseType.description}" id="description" styleClass="form-control" />
                                         <span class="admin__form-help-text">#{msg.admin__license_description__help}</span>
                                     </div>
                                     <div class="col-1 admin__form-help-icon">
@@ -64,7 +64,7 @@
                                     
                                 	<viewerComponent:toggleSwitch
 									name="openAccessToggle"
-									value="#{adminBean.currentLicenseType.openAccess}"
+									value="#{adminLicenseBean.currentLicenseType.openAccess}"
 									toggleTarget=".admin__license-functions"
 									toggleActionLeft="show"
 									toggleActionRight="hide"/>    
@@ -84,11 +84,11 @@
                                     </div>
                                     <div class="col-9 admin__form-input">
                                         <div class="admin__radio-switch movingWallToggle">
-                                            <h:selectOneRadio group="movingWallToggle" value="#{adminBean.currentLicenseType.movingWall}"
+                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
                                                 immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                             </h:selectOneRadio>
-                                            <h:selectOneRadio group="movingWallToggle" value="#{adminBean.currentLicenseType.movingWall}"
+                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
                                                 immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                             </h:selectOneRadio>
@@ -106,12 +106,12 @@
                                         <div class="col-1"></div>
                                         <div class="col-2"></div>
                                         <div class="col-9 badge-hover pb-3">
-                                            <c:forEach var="priv" items="#{adminBean.currentLicenseType.getSortedPrivileges(adminBean.currentLicenseType.privilegesCopy)}">
+                                            <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.getSortedPrivileges(adminLicenseBean.currentLicenseType.privilegesCopy)}">
                                                 <button 
                                                     class="admin__license-action btn btn--link" 
-                                                    jsf:action="#{adminBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
+                                                    jsf:action="#{adminLicenseBean.currentLicenseType.removePrivilege(priv)}" title="#{msg.remove}">
                                                     <div class="badge badge-success">
-                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- remove button -->
                                                         <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                     </div>
@@ -127,12 +127,12 @@
                                         <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
                                         <div class="col-2"></div>
                                         <div class="col-9 badge-hover">
-                                            <c:forEach var="priv" items="#{adminBean.currentLicenseType.availablePrivileges}">
+                                            <c:forEach var="priv" items="#{adminLicenseBean.currentLicenseType.availablePrivileges}">
                                                 <button 
                                                     class="admin__license-action btn btn--link"
-                                                    jsf:action="#{adminBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
+                                                    jsf:action="#{adminLicenseBean.currentLicenseType.addPrivilege(priv)}" title="#{msg.add}">
                                                     <div class="badge badge-dark">
-                                                        #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                        #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                         <!-- add button -->
                                                         <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                                     </div>
@@ -146,37 +146,37 @@
 									</div>
 									
                                     <!-- CONCURRENT VIEWS LIMIT -->
-                                    <ui:fragment rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+                                    <ui:fragment rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                     <div class="form-group form-row mb-3">
                                         <div class="col-2"></div>
                                         <h:panelGroup id="pdf_concurrent_views_limit_info_box" layout="block" styleClass="col-9">
                                             <!-- No records found -->
 <!--                                             <ui:fragment -->
-<!--                                                 rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) == 0}"> -->
+<!--                                                 rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) == 0}"> -->
 <!--                                                     <div class="admin__default-block mb-0 -info-box"> -->
 <!--                                                         <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_nok}" escape="false"> -->
-<!--                                                             <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" /> -->
+<!--                                                             <f:param value="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" /> -->
 <!--                                                         </h:outputFormat> -->
 <!--                                                     </div> -->
 <!--                                             </ui:fragment> -->
                                             <!-- Yes, records found -->
                                             <ui:fragment
-                                                rendered="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+                                                rendered="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
                                                 <div class="admin__default-block mb-0 -success-box">
                                                     <p class="mb-3">
                                                         <h:outputFormat value="#{msg.admin__license_concurrent_views_limit_record_count_ok}" escape="false">
-                                                            <f:param value="#{adminBean.getConcurrentViewsLimitRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
+                                                            <f:param value="#{adminLicenseBean.getConcurrentViewsLimitRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
                                                         </h:outputFormat>
                                                     </p>
                                                     <div class="row">
                                                         <div class="col-2">#{msg.admin__license_concurrent_views_limit_active}:</div>
                                                         <div class="col-10">
                                                             <div class="admin__radio-switch -on-off">
-                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminBean.currentLicenseType.concurrentViewsLimit}"
+                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminLicenseBean.currentLicenseType.concurrentViewsLimit}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                                 </h:selectOneRadio>
-                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminBean.currentLicenseType.concurrentViewsLimit}"
+                                                                <h:selectOneRadio group="concurentViewsLimitToggle" value="#{adminLicenseBean.currentLicenseType.concurrentViewsLimit}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                                 </h:selectOneRadio>
@@ -191,37 +191,37 @@
                                     </ui:fragment>
 
                                     <!-- PDF DOWNLOAD QUOTA -->
-                                    <ui:fragment rendered="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name) > 0}">
+                                    <ui:fragment rendered="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name) > 0}">
 	                                <div class="form-group form-row mb-3">
 	                                    <div class="col-2"></div>
 	                                    <h:panelGroup id="pdf_download_quota_info_box" layout="block" styleClass="col-9">
 	                                        <!-- Records found -->
 	                                        <ui:fragment
-	                                            rendered="#{!adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
+	                                            rendered="#{!adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') and !adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
                                                     <div class="admin__default-block mb-0 -info-box">
                                                         <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_found}" escape="false">
-                                                            <f:param value="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
+                                                            <f:param value="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
                                                         </h:outputFormat>
                                                     </div>
 	                                        </ui:fragment>
 
-	                                        <ui:fragment rendered="#{adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') or adminBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
+	                                        <ui:fragment rendered="#{adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PDF') or adminLicenseBean.currentLicenseType.hasPrivilegeCopy('DOWNLOAD_PAGE_PDF')}">
 	                                            <div class="admin__default-block mb-0 -success-box">
 	                                                <p class="mb-3">
 	                                                    <h:outputFormat value="#{msg.admin__license_pdf_download_quota_record_count_ok}" escape="false">
-	                                                        <f:param value="#{adminBean.getPdfQuotaRecordCountForLicenseType(adminBean.currentLicenseType.name)}" />
+	                                                        <f:param value="#{adminLicenseBean.getPdfQuotaRecordCountForLicenseType(adminLicenseBean.currentLicenseType.name)}" />
 	                                                    </h:outputFormat>
 	                                                </p>
                                                     <div class="row">
                                                         <div class="col-2">#{msg.admin__license_pdf_download_quota_active}:</div>
                                                         <div class="col-10">
                                                             <div class="admin__radio-switch -on-off">
-                                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+                                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
                                                                     <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                                     <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
                                                                 </h:selectOneRadio>
-                                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminBean.currentLicenseType.pdfDownloadQuota}"
+                                                                <h:selectOneRadio group="pdfDownloadQuotaToggle" value="#{adminLicenseBean.currentLicenseType.pdfDownloadQuota}"
                                                                     immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
                                                                     <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                                     <!-- <f:ajax render="pdf_download_quota_info_box" /> -->
@@ -247,9 +247,9 @@
                                         <label for="overridindlicense">#{msg.admin__licenses}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
-                                        <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter" value="#{adminBean.currentLicenseType.overridingLicenseTypes}">
+                                        <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter" value="#{adminLicenseBean.currentLicenseType.overridingLicenseTypes}">
                                             <f:passThroughAttribute name="aria-label" value="overriding licenses" />
-                                            <f:selectItems value="#{adminBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
+                                            <f:selectItems value="#{adminLicenseBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                                             <f:ajax render="@none" />
                                         </h:selectManyListbox>
                                         <span class="admin__form-help-text">#{msg.admin__license_overriding__help}</span>
@@ -265,7 +265,7 @@
                             <div class="row no-gutters justify-content-end admin__final-actions">
                                 <h:commandLink action="pretty:adminLicenses" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
                                 <button
-                                    jsf:action="#{adminBean.saveCurrentLicenseTypeAction}" 
+                                    jsf:action="#{adminLicenseBean.saveCurrentLicenseTypeAction}" 
                                     class="btn btn--success">
                                     #{msg.save}
                                 </button>

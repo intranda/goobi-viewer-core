@@ -96,6 +96,8 @@ import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.DownloadTicket;
+import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -1674,6 +1676,78 @@ public class JPADAO implements IDAO {
             }
             // H2
             return (long) q.getResultList().get(0);
+        } finally {
+            close(em);
+        }
+    }
+    
+
+    @Override
+    public DownloadTicket getDownloadTicket(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(DownloadTicket.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public DownloadTicket getDownloadTicketsForLicenseName(String licenseName, String pi, ILicensee licensee) throws DAOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(downloadTicket);
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean updateDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(downloadTicket);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean deleteDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            DownloadTicket o = em.getReference(DownloadTicket.class, downloadTicket.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
         } finally {
             close(em);
         }
