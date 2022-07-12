@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -52,6 +53,7 @@ public class DownloadTicket {
 
     private static final int VALIDITY_DAYS = 14;
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "download_ticket_id")
     private Long id;
@@ -59,8 +61,8 @@ public class DownloadTicket {
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_created", nullable = false)
-    private LocalDateTime dateStart;
+    @Column(name = "expiration_date", nullable = false)
+    private LocalDateTime expirationDate;
 
     @Column(name = "license_name", nullable = false)
     private String licenseName;
@@ -91,17 +93,24 @@ public class DownloadTicket {
      * Empty constructor.
      */
     public DownloadTicket() {
-        super();
+        dateCreated = LocalDateTime.now();
+        expirationDate = dateCreated.plusDays(VALIDITY_DAYS);
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isValid() {
-        // TODO
-        
-        return false;
+        return expirationDate.isAfter(LocalDateTime.now());
     }
 
-    public void extend(int days) {
-        // TODO
+    /**
+     * 
+     * @param days
+     */
+    public void extend(long days) {
+        expirationDate = LocalDateTime.now().plusDays(days);
     }
 
     /**
@@ -141,17 +150,17 @@ public class DownloadTicket {
     }
 
     /**
-     * @return the dateStart
+     * @return the expirationDate
      */
-    public LocalDateTime getDateStart() {
-        return dateStart;
+    public LocalDateTime getExpirationDate() {
+        return expirationDate;
     }
 
     /**
-     * @param dateStart the dateStart to set
+     * @param expirationDate the expirationDate to set
      */
-    public void setDateStart(LocalDateTime dateStart) {
-        this.dateStart = dateStart;
+    public void setExpirationDate(LocalDateTime expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     /**
