@@ -26,13 +26,18 @@ import static org.junit.Assert.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
  *
  */
-public class GeoCoordinateFeatureTest {
+public class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
     public void testParseSearchString() {
@@ -70,7 +75,7 @@ public class GeoCoordinateFeatureTest {
         facets.setCurrentFacetString(urlString);
 
         String filterQueryString = facets.generateFacetFilterQueries(0, true, true).get(0);
-        String comparisonString = "WKT_COORDS:\"INTERSECTS\\(POLYGON\\(\\(51.94656677497078\\ 11.83273903383027,\\ 53.48917317885388\\ 11.83273903383027,\\ 53.48917317885388\\ 13.855459790711027,\\ 51.94656677497078\\ 13.855459790711027,\\ 51.94656677497078\\ 11.83273903383027\\)\\)\\)\"";
+        String comparisonString = "WKT_COORDS:\"ISWITHIN\\(POLYGON\\(\\(51.94656677497078\\ 11.83273903383027,\\ 53.48917317885388\\ 11.83273903383027,\\ 53.48917317885388\\ 13.855459790711027,\\ 51.94656677497078\\ 13.855459790711027,\\ 51.94656677497078\\ 11.83273903383027\\)\\)\\)\"";
         assertEquals(comparisonString, filterQueryString);
     }
 
