@@ -80,14 +80,14 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
         long delay = DataManager.getInstance().getSecurityManager().getDelayForIpAddress(ipAddress);
         if (delay > 0) {
             // refuse with delay
-            return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true).setDelay(delay));
+            return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true, delay));
         }
 
         if (StringUtils.isNotEmpty(email)) {
             delay = DataManager.getInstance().getSecurityManager().getDelayForUserName(email);
             if (delay > 0) {
                 // refuse with delay
-                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true).setDelay(delay));
+                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true, delay));
             }
             try {
                 User user = DataManager.getInstance().getDao().getUserByEmail(email);

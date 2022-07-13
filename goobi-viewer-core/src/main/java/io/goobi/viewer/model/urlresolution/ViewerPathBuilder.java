@@ -185,7 +185,7 @@ public class ViewerPathBuilder {
         for (CMSPage cmsPage : cmsPages) {
             String pagePath = cmsPage.getPersistentUrl();
             if (StringUtils.isNotBlank(pagePath)) {
-                pagePath = pagePath.replaceAll("^\\/|\\/$", "").trim();
+                pagePath = pagePath.replaceAll("(^\\/)|(\\/$)", "").trim();
                 if (startsWith(servicePath, pagePath)) {
                     return Optional.of(cmsPage);
                 }
@@ -210,7 +210,7 @@ public class ViewerPathBuilder {
         for (Campaign campaign : campaigns) {
             String pagePath = campaign.getPermalink();
             if (StringUtils.isNotBlank(pagePath)) {
-                pagePath = pagePath.replaceAll("^\\/|\\/$", "").trim();
+                pagePath = pagePath.replaceAll("(^\\/)|(\\/$)", "").trim();
                 if (startsWith(servicePath, pagePath)) {
                     return Optional.of(campaign);
                 }

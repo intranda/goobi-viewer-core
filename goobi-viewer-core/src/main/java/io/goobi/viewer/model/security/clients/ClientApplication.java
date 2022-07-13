@@ -88,8 +88,7 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * The IP under which the client first requested registration
      */
-    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13",
-            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR
+    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13", accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
     @Column(name = "client_ip")
     private String clientIp;
 
@@ -128,8 +127,7 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * An IP Subnet mask. If present, the client may only log in if its current IP matches the mask
      */
-    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16",
-            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16", accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
     @Column(name = "subnet_mask")
     private String subnetMask;
 

@@ -66,7 +66,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>11</maven.compiler.release>
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
@@ -139,7 +138,7 @@
 		<json.version>20220320</json.version>
 		<jsoup.version>1.15.2</jsoup.version>
 		<junit.version>4.13.2</junit.version>
-		<mariadb-java-client.version>2.7.5</mariadb-java-client.version>
+		<mariadb-java-client.version>3.0.6</mariadb-java-client.version>
 		<mockito.version>4.6.1</mockito.version>
 		<mockserver.version>5.13.2</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
@@ -688,8 +687,6 @@
 			<artifactId>swagger-integration</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>net.bull.javamelody</groupId> <artifactId>javamelody-core</artifactId>
-			<version>1.85.0</version> </dependency> -->
 	</dependencies>
 
 
@@ -785,7 +782,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
-				<configuration>
+                <configuration>
+                    <release>11</release>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
 					<!--compilerArgument>-Xlint:unchecked</compilerArgument -->
 				</configuration>

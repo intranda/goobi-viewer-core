@@ -167,7 +167,7 @@ public class LoginFilter implements Filter {
                 }
 
                 //any URIs leading to campaign annotation/review
-                if (uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) {
+                if (uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) { //NOSONAR no catastrophic backtracking detected
                     return true;
                 }
 

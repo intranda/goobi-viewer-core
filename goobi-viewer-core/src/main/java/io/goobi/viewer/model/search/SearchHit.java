@@ -327,7 +327,7 @@ public class SearchHit implements Comparable<SearchHit> {
             Set<String> newTerms = new HashSet<String>();
             Set<String> terms = origTerms.get(solrField);
             for (String term : terms) {
-                term = term.replaceAll("^\\(|\\)$", "");
+                term = term.replaceAll("(^\\()|(\\)$)", "");
                 term = StringTools.removeDiacriticalMarks(term);
                 if (FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
@@ -600,7 +600,7 @@ public class SearchHit implements Comparable<SearchHit> {
             // logger.trace("Found child doc: {}", docType);
             boolean acccessDeniedType = false;
             switch (docType) {
-                case PAGE:
+                case PAGE: //NOSONAR, no break on purpose to run through all cases
                     String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
                     String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     try {

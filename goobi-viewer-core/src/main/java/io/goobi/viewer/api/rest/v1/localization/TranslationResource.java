@@ -85,12 +85,12 @@ public class TranslationResource {
         if(StringUtils.isBlank(keys)) {
             throw new IllegalRequestException("Must provide query parameter 'keys'");
         } else {
-            keysCollection = Arrays.asList(keys.split("\\s*,\\s*"));
+            keysCollection = Arrays.asList(keys.split(","));
         }
 
         List<Translation> translations = new ArrayList<>();
         for (String key : keysCollection) {
-            translations.addAll(MessagesTranslation.getTranslations(key));
+            translations.addAll(MessagesTranslation.getTranslations(key.trim()));
         }
         return new TranslationList(translations);
     }

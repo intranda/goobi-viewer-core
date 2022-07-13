@@ -301,13 +301,18 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         }
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
-                    } catch (FileNotFoundException e) {
-                        logger.error(e.getMessage(), e);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                        try {                            
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+                        } catch(IOException e1) {
+                            //ignore
+                        }
                     } catch (IOException e) {
                         logger.error(e.getMessage(), e);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                        try {                            
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                        } catch(IOException e1) {
+                            //ignore
+                        }
                     } finally {
                         if (localTempFolder != null && Files.isDirectory(localTempFolder)) {
                             FileUtils.deleteDirectory(localTempFolder.toFile());

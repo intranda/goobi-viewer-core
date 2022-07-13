@@ -180,6 +180,11 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
         List<CrowdsourcingAnnotation> annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, null, Motivation.COMMENTING);
         return annos;
     }
+    
+    @Override
+    public int hashCode() {
+        return this.annotations == null ? 0 : this.annotations.hashCode();
+    }
 
     /**
      * Two instances are equal if they contain the same annotations (disregarding order)

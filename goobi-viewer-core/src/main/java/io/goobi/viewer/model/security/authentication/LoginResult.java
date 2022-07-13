@@ -44,8 +44,8 @@ public class LoginResult {
     private final Optional<User> user;
     private final boolean refused;
     private final AuthenticationProviderException exception;
-    private long delay = 0;
-    private Object redirectLock = new Object();
+    private final long delay;
+    private final Object redirectLock = new Object();
 
     /**
      * <p>
@@ -58,12 +58,28 @@ public class LoginResult {
      * @param loginRefused true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused) {
+        this(request, response, user, loginRefused, 0l);
+    }
+    
+    /**
+     * <p>
+     * Constructor for LoginResult.
+     * </p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param user a {@link java.util.Optional} object.
+     * @param loginRefused true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
+     * @param delay a configured delay time
+     */
+    public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused, long delay) {
         super();
         this.request = request;
         this.response = response;
         this.user = user;
         this.exception = null;
         this.refused = loginRefused;
+        this.delay = delay;
     }
 
     /**
@@ -76,12 +92,27 @@ public class LoginResult {
      * @param exception a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} object.
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, AuthenticationProviderException exception) {
+        this(request, response, exception, 0);
+    }
+    
+    /**
+     * <p>
+     * Constructor for LoginResult.
+     * </p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param exception a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} object.
+     * @param delay a configured delay time
+     */
+    public LoginResult(HttpServletRequest request, HttpServletResponse response, AuthenticationProviderException exception, long delay) {
         super();
         this.request = request;
         this.response = response;
         this.user = Optional.empty();
         this.exception = exception;
         this.refused = true;
+        this.delay = delay;
     }
 
     /**
@@ -133,8 +164,12 @@ public class LoginResult {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (redirectLock) {
                 try {
-                    redirectLock.wait(timeout);
+                    long startTime = System.currentTimeMillis();
+                    while(System.currentTimeMillis() - startTime < timeout) {                        
+                        redirectLock.wait(timeout);     
+                    }
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
                 return true;
             }
@@ -171,13 +206,4 @@ public class LoginResult {
         return delay;
     }
 
-    /**
-     * 
-     * @param delay
-     * @return this
-     */
-    public LoginResult setDelay(long delay) {
-        this.delay = delay;
-        return this;
-    }
 }

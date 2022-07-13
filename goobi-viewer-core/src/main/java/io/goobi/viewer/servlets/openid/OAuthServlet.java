@@ -84,7 +84,7 @@ public class OAuthServlet extends HttpServlet {
      * This future gets fulfilled once the {@link UserBean} has finished setting up the session and redirecting the request. Completing the request
      * should wait after the redirect, otherwise it will not have any effect
      */
-    private Future<Boolean> redirected = null;
+    private static Future<Boolean> redirected = null;
 
     /** {@inheritDoc} */
     @Override
@@ -119,7 +119,6 @@ public class OAuthServlet extends HttpServlet {
                     logger.error(e.getMessage(), e);
                     this.redirected = provider.completeLogin(null, request, response);
                     listener.unregister(provider);
-                    //            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "OpenID Connect login failed");
                 } catch (AuthenticationProviderException e) {
                     logger.debug("AuthenticationProviderException thrown here: {}", e.getMessage());
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -140,6 +139,7 @@ public class OAuthServlet extends HttpServlet {
             try {
                 this.redirected.get(1, TimeUnit.MINUTES); //redirected has an internal timeout, so this get() should never run into a timeout, but you never know
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 logger.warn("Waiting for redirect after login unterrupted unexpectedly");
             } catch (TimeoutException e) {
                 logger.error("Waiting for redirect after login took longer than a minute. This should not happen. Redirect will not take place");

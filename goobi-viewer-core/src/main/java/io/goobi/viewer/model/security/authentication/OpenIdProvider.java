@@ -62,7 +62,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private String oAuthState = null;
     private String oAuthAccessToken = null;
-    private volatile LoginResult loginResult = null;
+    private volatile LoginResult loginResult = null;    //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
 
     /**
      * Lock to be opened once login is completed
@@ -159,9 +159,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
             return CompletableFuture.supplyAsync(() -> {
                 synchronized (responseLock) {
                     try {
-                        responseLock.wait(getTimeoutMillis());
+                        long startTime = System.currentTimeMillis();
+                        while(System.currentTimeMillis() - startTime < getTimeoutMillis()) {                            
+                            responseLock.wait(getTimeoutMillis());
+                        }
                         return this.loginResult;
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
                     }
                 }
