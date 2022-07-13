@@ -234,6 +234,11 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CLIENTS_CLIENT = "/{id}";
     public static final String CLIENTS_REGISTER = "/register";
     public static final String CLIENTS_REQUEST = "/request";
+    
+    public static final String STATISTICS_USAGE = "/statistics/usage";
+    public static final String STATISTICS_USAGE_DATE = "/{date}";
+    public static final String STATISTICS_USAGE_DATE_RANGE = "/{startDate}/{endDate}";
+
 
 
     private final String apiUrl;

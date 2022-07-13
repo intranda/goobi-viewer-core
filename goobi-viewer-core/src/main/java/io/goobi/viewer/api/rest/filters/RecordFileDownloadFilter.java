@@ -17,11 +17,16 @@ package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.statistics.usage.RequestType;
 
 /**
  * @author florian
@@ -29,12 +34,18 @@ import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
  */
 @Provider
 @RecordFileDownloadBinding
-public class RecordFileDownloadFilter implements ContainerRequestFilter { {
+public class RecordFileDownloadFilter implements ContainerRequestFilter {
 
-}
-
-@Override
-public void filter(ContainerRequestContext requestContext) throws IOException {
-    // TODO Auto-generated method stub
+    @Context
+    private HttpServletRequest servletRequest;
+    @Context
+    private HttpServletResponse servletResponse;
     
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        if(servletRequest.getAttribute("pi") != null){
+            String pi = servletRequest.getAttribute("pi").toString();
+            DataManager.getInstance().getUsageStatisticsRecorder().recordRequest(RequestType.FILE_DOWNLOAD, pi, servletRequest);
+        }
+    }
 }
