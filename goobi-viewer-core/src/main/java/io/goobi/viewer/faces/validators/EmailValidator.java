@@ -40,7 +40,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class EmailValidator implements Validator<String> {
 
     private static final String REGEX =
-            "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$";
+            "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"; //NOSONAR   input size is limited
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     /* (non-Javadoc)
@@ -68,7 +68,7 @@ public class EmailValidator implements Validator<String> {
      * @return a boolean.
      */
     public static boolean validateEmailAddress(String email) {
-        if (email == null) {
+        if (email == null || email.length() > 10_000) {
             return false;
         }
         Matcher m = PATTERN.matcher(email.toLowerCase());

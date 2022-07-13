@@ -327,7 +327,7 @@ public class SearchHit implements Comparable<SearchHit> {
             Set<String> newTerms = new HashSet<String>();
             Set<String> terms = origTerms.get(solrField);
             for (String term : terms) {
-                term = term.replaceAll("^\\(|\\)$", "");
+                term = term.replaceAll("(^\\()|(\\)$)", "");
                 term = StringTools.removeDiacriticalMarks(term);
                 if (FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);

@@ -66,7 +66,10 @@ public class SAMLAssertionServlet extends HttpServlet {
         Future<Boolean> redirectDoneFuture = samlProvider.completeLogin(encodedResponse, request, response);
         try {
             redirectDoneFuture.get(1, TimeUnit.MINUTES);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Unexpected error while waiting for redirect", e);
+        } catch (ExecutionException | TimeoutException e) {
             logger.error("Unexpected error while waiting for redirect", e);
         }
     }

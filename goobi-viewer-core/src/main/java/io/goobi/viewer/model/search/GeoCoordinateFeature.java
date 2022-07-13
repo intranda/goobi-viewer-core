@@ -192,4 +192,9 @@ public class GeoCoordinateFeature {
             return false;
         }
     }
+    
+    @Override
+    public int hashCode() {
+        return this.feature.hashCode();
+    }
 }

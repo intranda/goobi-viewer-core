@@ -656,6 +656,9 @@ public class DisplayUserGeneratedContent {
      * @return
      */
     private static String createLabelFromBody(ContentType type, ITypedResource body) {
+        if(type == null || body == null) {
+            return "";
+        }
         switch (type) {
             case GEOLOCATION:
                 return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";
