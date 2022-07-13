@@ -29,7 +29,9 @@ import javax.faces.model.SelectItemGroup;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class AdminLicenseBeanTest {
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
+
+public class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see AdminLicenseBean#getGroupedLicenseTypeSelectItems()
