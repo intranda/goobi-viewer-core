@@ -1438,7 +1438,7 @@ public class AdminBean implements Serializable {
     /**
      * @return {@link TranslationGroup#isHasFileAccess()}
      */
-    public boolean hasAccessPermissingForTranslationFiles() {
+    public boolean isHasAccessPermissingForTranslationFiles() {
         return TranslationGroup.isHasFileAccess();
     }
 

@@ -112,7 +112,7 @@
 
                             <!-- LICENSES -->
 
-                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminBean.notConfiguredAccessConditions}">
+                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty hasAccessPermissingForTranslationFilesnotConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h2 class="col-9">#{msg.admin__licenses}</h2>
@@ -123,9 +123,9 @@
                                             <div class="row">
                                                 <div class="col-12">#{msg.admin__dashboard_licenses_not_configured}:</div>
                                             </div>
-                                            <ui:repeat var="accessCondition" value="#{adminBean.notConfiguredAccessConditions}">
+                                            <ui:repeat var="accessCondition" value="#{adminLicenseBean.notConfiguredAccessConditions}">
                                                 <h:commandLink action="pretty:adminLicenseNew"
-                                                    actionListener="#{adminBean.newCurrentLicenseTypeAction(accessCondition)}"
+                                                    actionListener="#{adminLicenseBean.newCurrentLicenseTypeAction(accessCondition)}"
                                                     styleClass="row admin__license-unconfigured-entry my-3">
                                                     <div class="col-8 pl-5 -textlink">
                                                         #{accessCondition}
@@ -197,7 +197,7 @@
                             <!-- TRANSLATIONS -->
 							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
                             	<c:choose>
-									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
+									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
                                 		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError).get() ? '-danger':'-warning'}">
 		                                    <div class="row">
 		                                        <h2 class="col-9">#{msg.admin__translations}</h2>

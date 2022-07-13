@@ -175,7 +175,7 @@
 							<!-- TRANSLATIONS -->
 							<ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidget}">
 								<c:choose>
-									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles()}">
+									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
 											<ui:repeat var="group"
 												value="#{adminBean.getTranslationGroupsForSolrField(cmsCollectionsBean.solrField)}">
 												<div class="admin__default-block -warning">
