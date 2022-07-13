@@ -565,7 +565,7 @@
                                         
 
                                         <!-- RECORD RELATED FUNCTIONS -->
-                                        <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
+		                                        <ui:fragment rendered="#{!adminLicenseBean.currentLicense.licenseType.core}">
                                             <div class="admin__license-functions admin__license-functions-added">
                                                 <div class="form-group form-row">
                                                     <div class="col-5 mb-3">#{msg.admin__license_functions_added}</div>
@@ -596,15 +596,23 @@
                                                             </button>
                                                         </ui:repeat>
                                                     </div>
-                                                    <div class="col-1"></div>
-                                                    <!-- Privileges available to add -->
-                                                    <div class="col-5 badge-hover">
-                                                        <ui:repeat var="priv" value="#{adminBean.currentLicense.availablePrivileges}">
+                                                    <div class="col-1 admin__form-help-icon">
+                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+
+                                                
+		                                        <div class="col-2"></div>
+		                                        <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
+		                                        <div class="col-2"></div>
+		                                        <div class="col-9 badge-hover">
+	                                                <ui:repeat var="priv" value="#{adminLicenseBean.currentLicense.availablePrivileges}">
                                                             <button 
                                                                 class="admin__license-action btn btn--link" 
-                                                                jsf:action="#{adminBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
+	                                                        jsf:action="#{adminLicenseBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
                                                                 <div class="badge badge-dark">
-                                                                    #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+	                                                            #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                                     <i class="fa fa-plus-circle" aria-hidden="true"></i>
                                                                 </div>
                                                             </button>
@@ -616,35 +624,35 @@
 	                                                </div>    
                                                 </div>
 
-<!--                                                 <ui:fragment rendered="#{adminLicenseBean.currentLicense.displayTicketRequiredToggle}"> -->
-<!--                                                 <div class="form-row form-group"> -->
-<!--                                                 	<div class="col-2"></div> -->
-<!--                                                 	<div class="col-9"> -->
-<!-- 	                                                <div class="admin__default-block mb-0 -success-box"> -->
-<!-- 		                                                <div class="blockAfterRadioToggler"> -->
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.displayTicketRequiredToggle}">
+                                                <div class="form-row form-group">
+                                                	<div class="col-2"></div>
+                                                	<div class="col-9">
+	                                                <div class="admin__default-block mb-0 -success-box">
+		                                                <div class="blockAfterRadioToggler">
 		                                                	
-<!-- 		                                                	<h:outputText value="#{msg.admin__license_ticket_required__help}" escape="false" /> -->
-<!-- 		                                                	<div class="d-flex align-items-center mt-3"> -->
-<!-- 		                                                		<label for="name" class="control-label mb-0 mr-3">#{msg.admin__license_ticket_required_label}:</label> -->
-<!-- 		                                                    <div class="admin__form-input"> -->
-<!-- 		                                                        <div class="admin__radio-switch"> -->
-<!-- 		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminLicenseBean.currentLicense.ticketRequired}" -->
-<!-- 		                                                                immediate="true"> -->
-<!-- 		                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" /> -->
-<!-- 		                                                            </h:selectOneRadio>                                                         -->
-<!-- 		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminLicenseBean.currentLicense.ticketRequired}" -->
-<!-- 		                                                                immediate="true"> -->
-<!-- 		                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" /> -->
-<!-- 		                                                            </h:selectOneRadio> -->
-<!-- 		                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span> -->
-<!-- 		                                                        </div> -->
-<!-- 		                                                    </div> -->
-<!-- 		                                                    </div> -->
-<!-- 		                                                </div> -->
-<!-- 		                                             </div> -->
-<!-- 		                                             </div> -->
-<!--                                             </div> -->
-<!--                                         </ui:fragment> -->
+		                                                	<h:outputText value="#{msg.admin__license_ticket_required__help}" escape="false" />
+		                                                	<div class="d-flex align-items-center mt-3">
+		                                                		<label for="name" class="control-label mb-0 mr-3">#{msg.admin__license_ticket_required_label}:</label>
+		                                                    <div class="admin__form-input">
+		                                                        <div class="admin__radio-switch">
+		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminLicenseBean.currentLicense.ticketRequired}"
+		                                                                immediate="true">
+		                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+		                                                            </h:selectOneRadio>                                                        
+		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminLicenseBean.currentLicense.ticketRequired}"
+		                                                                immediate="true">
+		                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+		                                                            </h:selectOneRadio>
+		                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+		                                                        </div>
+		                                                    </div>
+		                                                    </div>
+		                                                </div>
+		                                             </div>
+		                                             </div>
+                                            </div>
+                                        </ui:fragment>
 
                                     </div>
                                 </ui:fragment>
