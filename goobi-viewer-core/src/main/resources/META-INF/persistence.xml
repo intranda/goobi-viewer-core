@@ -191,7 +191,7 @@
 		<class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
 		<class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
-        <class>io.goobi.viewer.model.job.download.DownloadJob</class>
+<!--         <class>io.goobi.viewer.model.job.download.DownloadJob</class> -->
         <class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
         <class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
         <class>io.goobi.viewer.model.job.upload.UploadJob</class>

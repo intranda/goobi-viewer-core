@@ -43,8 +43,8 @@ import io.goobi.viewer.model.security.user.UserGroup;
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
  * known as core license types.
  */
-@Entity
-@Table(name = "download_tickets")
+// @Entity
+// @Table(name = "download_tickets")
 public class DownloadTicket {
 
     /** Logger for this class. */
