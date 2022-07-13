@@ -834,7 +834,7 @@
 	<url-mapping id="adminLicenseEdit">
 		<pattern value="/admin/licenses/edit/#{licenseTypeId}/" />
 		<view-id value="/resources/admin/views/adminLicense.xhtml" />
-		<action onPostback="false">#{adminBean.setCurrentLicenseTypeId(licenseTypeId)}</action>
+		<action onPostback="false">#{adminLicenseBean.setCurrentLicenseTypeId(licenseTypeId)}</action>
 	</url-mapping>
     <url-mapping id="adminLicenseNew">
         <pattern value="/admin/licenses/new/" />
@@ -845,13 +845,13 @@
 		<view-id value="/resources/admin/views/adminRights.xhtml" />
 	</url-mapping>
     <url-mapping id="adminRightsEdit">
-        <pattern value="/admin/rights/edit/#{licenseId:adminBean.currentLicenseId}/" />
+        <pattern value="/admin/rights/edit/#{licenseId:adminLicenseBean.currentLicenseId}/" />
         <view-id value="/resources/admin/views/adminRight.xhtml" />
     </url-mapping>
     <url-mapping id="adminRightsNew">
         <pattern value="/admin/rights/new/" />
         <view-id value="/resources/admin/views/adminRight.xhtml" />
-        <action onPostback="false">#{adminBean.newCurrentLicenseAction}</action>
+        <action onPostback="false">#{adminLicenseBean.newCurrentLicenseAction}</action>
     </url-mapping>
     <url-mapping id="adminUserCommentGroups">
         <pattern value="/admin/comments/" />

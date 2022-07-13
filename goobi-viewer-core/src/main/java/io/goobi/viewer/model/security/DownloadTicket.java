@@ -89,6 +89,9 @@ public class DownloadTicket {
     @JoinColumn(name = "client_id")
     private ClientApplication client;
 
+    @Column(name = "request_message")
+    private String requestMessage;
+
     /**
      * Empty constructor.
      */
@@ -178,6 +181,34 @@ public class DownloadTicket {
     }
 
     /**
+     * @return the pi
+     */
+    public String getPi() {
+        return pi;
+    }
+
+    /**
+     * @param pi the pi to set
+     */
+    public void setPi(String pi) {
+        this.pi = pi;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
      * @return the user
      */
     public User getUser() {
@@ -232,4 +263,19 @@ public class DownloadTicket {
     public void setClient(ClientApplication client) {
         this.client = client;
     }
+
+    /**
+     * @return the requestMessage
+     */
+    public String getRequestMessage() {
+        return requestMessage;
+    }
+
+    /**
+     * @param requestMessage the requestMessage to set
+     */
+    public void setRequestMessage(String requestMessage) {
+        this.requestMessage = requestMessage;
+    }
+
 }

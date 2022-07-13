@@ -20,12 +20,12 @@
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminRight">
-                <h:panelGroup rendered="#{userBean.admin and adminBean.currentLicense != null}">
+                <h:panelGroup rendered="#{userBean.admin and adminLicenseBean.currentLicense != null}">
                     <h:form id="editLicenseForm" styleClass="form-horizontal" prependId="false">
                         <div class="admin__title-bar">
                             <h1 class="admin__title">
-                                <h:outputText value="#{msg.admin__right_new}" rendered="#{adminBean.currentLicense.id == null}" />
-                                <h:outputText value="#{msg.admin__right_edit}" rendered="#{adminBean.currentLicense.id != null}" />
+                                <h:outputText value="#{msg.admin__right_new}" rendered="#{adminLicenseBean.currentLicense.id == null}" />
+                                <h:outputText value="#{msg.admin__right_edit}" rendered="#{adminLicenseBean.currentLicense.id != null}" />
                             </h1>
                         </div>
 
@@ -39,10 +39,10 @@
                                     </div>
                                     <div class="col-sm-8">
                                         <h:selectOneMenu
-                                            value="#{adminBean.currentLicense.type}"
+                                            value="#{adminLicenseBean.currentLicense.type}"
                                             styleClass="form-control"
                                             immediate="true"
-                                            disabled="#{adminBean.currentLicense.id != null}" >
+                                            disabled="#{adminLicenseBean.currentLicense.id != null}" >
 
                                             <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_type_select_label}" />
 
@@ -53,10 +53,10 @@
                                             <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" />
                                             <f:ajax render="licenseeGroup infoGroup licenseTypeGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
-                                            <f:ajax listener="#{adminBean.currentLicense.setUser(null)}" />
-                                            <f:ajax listener="#{adminBean.currentLicense.setUserGroup(null)}" />
-                                            <f:ajax listener="#{adminBean.currentLicense.setIpRange(null)}" />
-                                            <f:ajax listener="#{adminBean.currentLicense.setClient(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUser(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setUserGroup(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setIpRange(null)}" />
+                                            <f:ajax listener="#{adminLicenseBean.currentLicense.setClient(null)}" />
                                         </h:selectOneMenu>
                                     </div>
                                 </div>
@@ -68,47 +68,47 @@
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
-                                             rendered="#{adminBean.currentLicense.type == 'user' or adminBean.currentLicense.user != null}"
-                                             value="#{adminBean.currentLicense.user}"
+                                             rendered="#{adminLicenseBean.currentLicense.type == 'user' or adminLicenseBean.currentLicense.user != null}"
+                                             value="#{adminLicenseBean.currentLicense.user}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="userConverter"
-                                             disabled="#{adminBean.currentLicense.id != null}">
+                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
+                                             <f:selectItems var="user" value="#{adminLicenseBean.allUsers}" itemLabel="#{user.displayName}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminBean.currentLicense.type == 'group' or adminBean.currentLicense.userGroup != null}"
-                                             value="#{adminBean.currentLicense.userGroup}"
+                                             rendered="#{adminLicenseBean.currentLicense.type == 'group' or adminLicenseBean.currentLicense.userGroup != null}"
+                                             value="#{adminLicenseBean.currentLicense.userGroup}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="userGroupConverter"
-                                             disabled="#{adminBean.currentLicense.id != null}">
+                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems value="#{adminBean.allUserGroups}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminBean.currentLicense.type == 'iprange' or adminBean.currentLicense.ipRange != null}"
-                                             value="#{adminBean.currentLicense.ipRange}"
+                                             rendered="#{adminLicenseBean.currentLicense.type == 'iprange' or adminLicenseBean.currentLicense.ipRange != null}"
+                                             value="#{adminLicenseBean.currentLicense.ipRange}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="ipRangeConverter"
-                                             disabled="#{adminBean.currentLicense.id != null}">
+                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
-                                             rendered="#{adminBean.currentLicense.type == 'client' or adminBean.currentLicense.client != null}"
-                                             value="#{adminBean.currentLicense.clientId}"
+                                             rendered="#{adminLicenseBean.currentLicense.type == 'client' or adminLicenseBean.currentLicense.client != null}"
+                                             value="#{adminLicenseBean.currentLicense.clientId}"
                                              styleClass="form-control"
                                              immediate="true"
-                                             disabled="#{adminBean.currentLicense.id != null}">
+                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItem itemLabel="#{msg.admin__right_all_clients}" itemValue="#{adminClientsBean.allClients.id}"/>
@@ -125,15 +125,15 @@
                                      </div>
                                      <div class="col-sm-8">
                                          <h:selectOneMenu
-                                             rendered="#{adminBean.currentLicense.user != null or adminBean.currentLicense.userGroup != null or adminBean.currentLicense.ipRange != null or adminBean.currentLicense.client != null}"
-                                             value="#{adminBean.currentLicense.licenseType}"
+                                             rendered="#{adminLicenseBean.currentLicense.user != null or adminLicenseBean.currentLicense.userGroup != null or adminLicenseBean.currentLicense.ipRange != null or adminLicenseBean.currentLicense.client != null}"
+                                             value="#{adminLicenseBean.currentLicense.licenseType}"
                                              styleClass="form-control"
                                              immediate="true"
                                              converter="iLicenseTypeConverter"
-                                             disabled="#{adminBean.currentLicense.id != null}">
+                                             disabled="#{adminLicenseBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_license_type_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems var="item" value="#{adminBean.groupedLicenseTypeSelectItems}"
+                                             <f:selectItems var="item" value="#{adminLicenseBean.groupedLicenseTypeSelectItems}"
                                                     itemLabel="#{msg[item.value.name]}" itemValue="#{item.value}"/>
                                              <f:ajax render="infoGroup functionsGroup" />
                                          </h:selectOneMenu>
@@ -145,24 +145,24 @@
 
                             <!-- SECOND BLOCK INFORMATION -->
                             <h:panelGroup id="infoGroup">
-                            <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
+                            <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType != null}">
                                 <h2>#{msg.information}</h2>
                                 <div class="admin__default-block">
                                     <dl class="row">
                                         <dt class="col-4">
-                                           <h:outputText rendered="#{adminBean.currentLicense.user != null}">#{adminBean.currentLicense.user.displayName}</h:outputText>
-                                           <h:outputText rendered="#{adminBean.currentLicense.userGroup != null}">#{adminBean.currentLicense.userGroup.name}</h:outputText>
-                                           <h:outputText rendered="#{adminBean.currentLicense.ipRange != null}">#{adminBean.currentLicense.ipRange.name}</h:outputText>
-                                           <h:outputText rendered="#{adminBean.currentLicense.clientId != null}">#{client.name}</h:outputText>
+                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.user != null}">#{adminLicenseBean.currentLicense.user.displayName}</h:outputText>
+                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.userGroup != null}">#{adminLicenseBean.currentLicense.userGroup.name}</h:outputText>
+                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.ipRange != null}">#{adminLicenseBean.currentLicense.ipRange.name}</h:outputText>
+                                           <h:outputText rendered="#{adminLicenseBean.currentLicense.clientId != null}">#{client.name}</h:outputText>
                                         </dt>
                                         <dd class="col-8">
 
                                             <!-- USER -->
-                                             <h:outputText rendered="#{adminBean.currentLicense.user != null}">
-                                                #{msg.admin__user_contact}: #{adminBean.currentLicense.user.email}
-                                                <ui:fragment rendered="#{adminBean.currentLicense.user.lastLogin != null}">
+                                             <h:outputText rendered="#{adminLicenseBean.currentLicense.user != null}">
+                                                #{msg.admin__user_contact}: #{adminLicenseBean.currentLicense.user.email}
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.user.lastLogin != null}">
                                                     | #{msg.lastLoginDate}:
-                                                    <h:outputText value="#{adminBean.currentLicense.user.lastLogin}">
+                                                    <h:outputText value="#{adminLicenseBean.currentLicense.user.lastLogin}">
                                                         <!-- Everything longer than MM in this pattern is treated as character for the month to be displayed -->
                                                         <f:converter converterId="localDateTimeConverter" />
                                                         <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
@@ -171,14 +171,14 @@
                                             </h:outputText>
 
                                             <!-- USER GROUP -->
-                                            <h:outputText rendered="#{adminBean.currentLicense.userGroup.description ne ''}">#{adminBean.currentLicense.userGroup.description}</h:outputText>
-                                            <h:outputText rendered="#{adminBean.currentLicense.userGroup.description eq ''}">
+                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.userGroup.description ne ''}">#{adminLicenseBean.currentLicense.userGroup.description}</h:outputText>
+                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.userGroup.description eq ''}">
                                             	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                             </h:outputText>
 
                                             <!-- IP RANGE -->
-                                            <h:outputText rendered="#{adminBean.currentLicense.ipRange.description ne ''}">#{adminBean.currentLicense.ipRange.description}</h:outputText>
-                                            <h:outputText rendered="#{adminBean.currentLicense.ipRange.description eq ''}">
+                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.ipRange.description ne ''}">#{adminLicenseBean.currentLicense.ipRange.description}</h:outputText>
+                                            <h:outputText rendered="#{adminLicenseBean.currentLicense.ipRange.description eq ''}">
                                             	<span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                             </h:outputText>
                                             
@@ -190,12 +190,12 @@
                                             
                                         </dd>
                                         <!-- LICENSE TYPE INFO -->
-                                            <dt class="col-4">#{msg[adminBean.currentLicense.licenseType.name]}</dt>
+                                            <dt class="col-4">#{msg[adminLicenseBean.currentLicense.licenseType.name]}</dt>
                                             <dd class="col-8">
-                                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description ne ''}">
-                                                    #{msg[adminBean.currentLicense.licenseType.description]}
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description ne ''}">
+                                                    #{msg[adminLicenseBean.currentLicense.licenseType.description]}
                                                 </ui:fragment>
-                                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType.description eq ''}">
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.description eq ''}">
                                                     <span class="admin__default-block-description-empty" aria-disabled="true">(#{msg.admin__label__no_description_available})</span>
                                                 </ui:fragment>
                                             </dd>
@@ -208,18 +208,18 @@
 
                             <!-- THIRD BLOCK FUNCTIONS -->
                             <h:panelGroup id="functionsGroup">
-                                <ui:fragment rendered="#{adminBean.currentLicense.licenseType != null}">
+                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType != null}">
                                     <h2>#{msg.admin__license_functions}</h2>
                                     <div class="admin__default-block">
 
-                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.name == 'licenseType_setRepresentativeImage' or
-                                                                 adminBean.currentLicense.licenseType.name == 'licenseType_deleteOcrPage'}">
+                                        <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.name == 'licenseType_setRepresentativeImage' or
+                                                                 adminLicenseBean.currentLicense.licenseType.name == 'licenseType_deleteOcrPage'}">
                                             #{msg.admin__right_functions_not_available}
                                         </ui:fragment>
 
 
                                         <!-- CORE FUNCTIONS -->
-                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.legalDisclaimerType}">
+                                        <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.legalDisclaimerType}">
                                         
                                         <p>#{msg.admin__right_functions_info_disclaimer}</p>
                                         
@@ -231,7 +231,7 @@
 													class="form-group admin__cms-edit-collection-connected-radio-buttons">
 													<div class="connected-top">
 														<h:selectOneRadio group="scopeRadio"
-															value="#{adminBean.currentLicense.disclaimerScope.storageMode}"
+															value="#{adminLicenseBean.currentLicense.disclaimerScope.storageMode}"
 															immediate="true">
 															<f:selectItem itemValue="SESSION"
 																itemLabel="#{msg.admin__legal__disclaimer_scope__session}" />
@@ -240,18 +240,18 @@
 													</div>
 													<div class="connected-bottom connected-bottom-wrapper">
 														<h:selectOneRadio group="scopeRadio"
-															value="#{adminBean.currentLicense.disclaimerScope.storageMode}"
+															value="#{adminLicenseBean.currentLicense.disclaimerScope.storageMode}"
 															immediate="true">
 															<f:selectItem itemValue="LOCAL"
 																itemLabel="#{msg.admin__legal__disclaimer_scope__local}" />
 															<f:ajax render="scopeGroup" />
 														</h:selectOneRadio>
 														<h:panelGroup layout="block" id="scopeDurationInputGroup"
-															rendered="#{adminBean.currentLicense.disclaimerScope.storageMode == 'LOCAL'}">
+															rendered="#{adminLicenseBean.currentLicense.disclaimerScope.storageMode == 'LOCAL'}">
 															<div class="cms-module__option-control admin__form-input">
 																<h:inputText id="scopeDurationInput"
 																	styleClass="form-control"
-																	value="#{adminBean.currentLicense.disclaimerScope.daysToLive}">
+																	value="#{adminLicenseBean.currentLicense.disclaimerScope.daysToLive}">
 																</h:inputText>
 															</div>
 														</h:panelGroup>
@@ -263,22 +263,22 @@
 										</h:panelGroup>
                                         </ui:fragment>
                                         
-                                        <ui:fragment rendered="#{adminBean.currentLicense.licenseType.cmsType}">
+                                        <ui:fragment rendered="#{adminLicenseBean.currentLicense.licenseType.cmsType}">
                                             <div class="admin__license-functions">
 
                                                 <!-- SUBTHEMES -->
-                                                <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableSubthemes) > 0}">
+                                                <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.selectableSubthemes) > 0}">
                                                 <div class="form-group form-row blockAfterRadioToggler">
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_subthemes_label}:</label>
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminBean.currentLicense.privCmsAllSubthemes}"
+                                                            <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminLicenseBean.currentLicense.privCmsAllSubthemes}"
                                                                 immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>                                                        
-                                                            <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminBean.currentLicense.privCmsAllSubthemes}"
+                                                            <h:selectOneRadio group="privCmsAllSubthemes" value="#{adminLicenseBean.currentLicense.privCmsAllSubthemes}"
                                                                 immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
@@ -298,7 +298,7 @@
                                                     <div class="col-7 pb-4">
                                                         <div>
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_subthemes">
-                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
+                                                                <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableSubthemes}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-dark">
                                                                             #{msg[selectable.value]}
@@ -313,7 +313,7 @@
                                                                    <div class="cms-module__option-dropdown">
                                                                        <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.select}</div>
                                                                        <ul>
-                                                                           <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableSubthemes}">
+                                                                           <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableSubthemes}">
                                                                                <li>
                                                                                    <label>
                                                                                        <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
@@ -335,18 +335,18 @@
                                                 </ui:fragment>
 
                                                 <!-- CATEGORIES -->
-                                                <ui:fragment rendered="#{fn:length(adminBean.currentLicense.selectableCategories) > 0}">
+                                                <ui:fragment rendered="#{fn:length(adminLicenseBean.currentLicense.selectableCategories) > 0}">
                                                 <div class="form-group form-row blockAfterRadioToggler">
                                                     <div class="col-4">
                                                         <label for="name" class="control-label">#{msg.admin__license_allowed_categories_label}:</label>
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsAllCategories" value="#{adminBean.currentLicense.privCmsAllCategories}"
+                                                            <h:selectOneRadio group="privCmsAllCategories" value="#{adminLicenseBean.currentLicense.privCmsAllCategories}"
                                                                 immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>                                                        
-                                                            <h:selectOneRadio group="privCmsAllCategories" value="#{adminBean.currentLicense.privCmsAllCategories}"
+                                                            <h:selectOneRadio group="privCmsAllCategories" value="#{adminLicenseBean.currentLicense.privCmsAllCategories}"
                                                                 immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
@@ -365,7 +365,7 @@
                                                     <div class="col-4" />
                                                     <div class="col-7 pb-4">
                                                             <h:panelGroup layout="block" class="overflow-hidden" id="selected_categories">
-                                                                <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
+                                                                <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableCategories}">
                                                                     <ui:fragment rendered="#{selectable.selected}">
                                                                         <div class="badge badge-violet">
                                                                             #{msg[selectable.value.name]}
@@ -379,7 +379,7 @@
                                                                     <div class="cms-module__option-dropdown">
                                                                         <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.select}</div>
                                                                         <ul>
-                                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableCategories}">
+                                                                            <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableCategories}">
                                                                                 <li>
                                                                                     <label>
                                                                                         <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
@@ -407,11 +407,11 @@
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsAllTemplates" value="#{adminBean.currentLicense.privCmsAllTemplates}"
+                                                            <h:selectOneRadio group="privCmsAllTemplates" value="#{adminLicenseBean.currentLicense.privCmsAllTemplates}"
                                                                 immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>                                                        
-                                                            <h:selectOneRadio group="privCmsAllTemplates" value="#{adminBean.currentLicense.privCmsAllTemplates}"
+                                                            <h:selectOneRadio group="privCmsAllTemplates" value="#{adminLicenseBean.currentLicense.privCmsAllTemplates}"
                                                                 immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
@@ -430,7 +430,7 @@
                                                     <div class="col-4"></div>
                                                     <div class="col-7 pb-4">
                                                         <h:panelGroup layout="block" styleClass="overflow-hidden" id="selected_templates">
-                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                            <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableTemplates}">
                                                                 <ui:fragment rendered="#{selectable.selected}">
                                                                     <div class="badge badge-primary">
                                                                         #{msg[selectable.value.name]}
@@ -445,7 +445,7 @@
                                                                         <div class="cms-module__option-dropdown-trigger"
                                                                             data-toggle="option-dropdown">#{msg.select}</div>
                                                                         <ul>
-                                                                            <ui:repeat var="selectable" value="#{adminBean.currentLicense.selectableTemplates}">
+                                                                            <ui:repeat var="selectable" value="#{adminLicenseBean.currentLicense.selectableTemplates}">
                                                                                 <li>
                                                                                     <label>
                                                                                         <h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
@@ -472,10 +472,10 @@
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsMenu" value="#{adminLicenseBean.currentLicense.privCmsMenu}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>
-                                                            <h:selectOneRadio group="privCmsMenu" value="#{adminBean.currentLicense.privCmsMenu}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsMenu" value="#{adminLicenseBean.currentLicense.privCmsMenu}" immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
@@ -496,10 +496,10 @@
                                                     </div>
                                                     <div class="col admin__form-input">
                                                         <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsStaticPages" value="#{adminLicenseBean.currentLicense.privCmsStaticPages}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>
-                                                            <h:selectOneRadio group="privCmsStaticPages" value="#{adminBean.currentLicense.privCmsStaticPages}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsStaticPages" value="#{adminLicenseBean.currentLicense.privCmsStaticPages}" immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
@@ -520,10 +520,10 @@
                                                     </div>
                                                     <div class="col-7 admin__form-input">
                                                         <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsCategories" value="#{adminLicenseBean.currentLicense.privCmsCategories}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>
-                                                            <h:selectOneRadio group="privCmsCategories" value="#{adminBean.currentLicense.privCmsCategories}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsCategories" value="#{adminLicenseBean.currentLicense.privCmsCategories}" immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
@@ -544,10 +544,10 @@
                                                     </div>
                                                     <div class="col admin__form-input">
                                                         <div class="admin__radio-switch">
-                                                            <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsCollections" value="#{adminLicenseBean.currentLicense.privCmsCollections}" immediate="true">
                                                                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
                                                             </h:selectOneRadio>
-                                                            <h:selectOneRadio group="privCmsCollections" value="#{adminBean.currentLicense.privCmsCollections}" immediate="true">
+                                                            <h:selectOneRadio group="privCmsCollections" value="#{adminLicenseBean.currentLicense.privCmsCollections}" immediate="true">
                                                                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
                                                             </h:selectOneRadio>
                                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
@@ -565,7 +565,7 @@
                                         
 
 		                                        <!-- RECORD RELATED FUNCTIONS -->
-		                                        <ui:fragment rendered="#{!adminBean.currentLicense.licenseType.core}">
+		                                        <ui:fragment rendered="#{!adminLicenseBean.currentLicense.licenseType.core}">
 		                                            <div class="admin__license-functions admin__license-functions-added">
 		                                        
 		                                        <div class="form-group form-row pb-3">
@@ -581,17 +581,17 @@
                                                     <div class="col-9 badge-hover pb-3">
                                                         <!-- Privileges inherited from the selected license type -->
                                                         <ui:repeat var="priv"
-                                                            value="#{adminBean.currentLicense.licenseType.getSortedPrivileges(adminBean.currentLicense.licenseType.privileges)}">
+                                                            value="#{adminLicenseBean.currentLicense.licenseType.getSortedPrivileges(adminLicenseBean.currentLicense.licenseType.privileges)}">
                                                             <div class="badge badge-secondary">
-                                                                #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                                #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                             </div>
                                                         </ui:repeat>
-                                                        <ui:repeat var="priv" value="#{adminBean.currentLicense.getSortedPrivileges(adminBean.currentLicense.privilegesCopy)}">
+                                                        <ui:repeat var="priv" value="#{adminLicenseBean.currentLicense.getSortedPrivileges(adminLicenseBean.currentLicense.privilegesCopy)}">
                                                             <button 
                                                                 class="admin__license-action btn btn--link"
-                                                                jsf:action="#{adminBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
+                                                                jsf:action="#{adminLicenseBean.currentLicense.removePrivilege(priv)}" title="#{msg.remove}">
                                                                 <div class="badge badge-success">
-                                                                    #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+                                                                    #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
                                                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                                 </div>
                                                             </button>
@@ -608,12 +608,12 @@
 		                                        <div class="col-10 pb-1">#{msg.admin__license_functions_available}</div>
 		                                        <div class="col-2"></div>
 		                                        <div class="col-9 badge-hover">
-	                                                <ui:repeat var="priv" value="#{adminBean.currentLicense.availablePrivileges}">
+	                                                <ui:repeat var="priv" value="#{adminLicenseBean.currentLicense.availablePrivileges}">
 	                                                    <button 
 	                                                        class="admin__license-action btn btn--link" 
-	                                                        jsf:action="#{adminBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
+	                                                        jsf:action="#{adminLicenseBean.currentLicense.addPrivilege(priv)}" title="#{msg.add}">
 	                                                        <div class="badge badge-dark">
-	                                                            #{msg[adminBean.getMessageKeyForPrivilege(priv)]}
+	                                                            #{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}
 	                                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
 	                                                        </div>
 	                                                    </button>
@@ -627,7 +627,7 @@
                                                 
                                                 </div>
 
-                                                <ui:fragment rendered="#{adminBean.currentLicense.displayTicketRequiredToggle}">
+                                                <ui:fragment rendered="#{adminLicenseBean.currentLicense.displayTicketRequiredToggle}">
                                                 <div class="form-row form-group">
                                                 	<div class="col-2"></div>
                                                 	<div class="col-9">
@@ -639,11 +639,11 @@
 		                                                		<label for="name" class="control-label mb-0 mr-3">#{msg.admin__license_ticket_required_label}:</label>
 		                                                    <div class="admin__form-input">
 		                                                        <div class="admin__radio-switch">
-		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminBean.currentLicense.ticketRequired}"
+		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminLicenseBean.currentLicense.ticketRequired}"
 		                                                                immediate="true">
 		                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
 		                                                            </h:selectOneRadio>                                                        
-		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminBean.currentLicense.ticketRequired}"
+		                                                            <h:selectOneRadio group="licenseTicketRequired" value="#{adminLicenseBean.currentLicense.ticketRequired}"
 		                                                                immediate="true">
 		                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
 		                                                            </h:selectOneRadio>
@@ -667,7 +667,7 @@
 								class="row no-gutters justify-content-end admin__final-actions">
                                 <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
                                 <button 
-                                    jsf:action="#{adminBean.saveCurrentLicenseAction}" value="" 
+                                    jsf:action="#{adminLicenseBean.saveCurrentLicenseAction}" value="" 
                                     class="btn btn--success">
                                     #{msg.save}
                                 </button>
