@@ -609,40 +609,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         this.height = height;
     }
 
-    /**
-     * Returns the filename alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filepath
-     * otherwise
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getFileName() {
-        if (StringUtils.isEmpty(fileName)) {
-            determineFileName(filePath);
-        }
-        return fileName;
-    }
 
-    /**
-     * <p>
-     * getFileNameBase.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getFileNameBase() {
-        return FilenameUtils.getBaseName(fileName);
-    }
-
-    /**
-     * <p>
-     * getFileNameExtension.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getFileNameExtension() {
-        return FilenameUtils.getExtension(fileName);
-    }
 
     /**
      * <p>
@@ -1118,6 +1085,52 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public void setFileNames(Map<String, String> fileNames) {
         this.fileNames = fileNames;
     }
+    
+
+    /**
+     * Returns The first matching media filename for this page
+     *
+     * @return The first matching media filename for this page
+     */
+    public String getFirstFileName() {
+        String format = getFileNames().keySet().stream().findFirst().orElse("");
+        return getFileNameForFormat(format);
+    }
+    
+    /**
+     * Returns the fileName alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filePath
+     * otherwise
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFileName() {
+        if (StringUtils.isEmpty(fileName)) {
+            determineFileName(filePath);
+        }
+        return fileName;
+    }
+
+    /**
+     * <p>
+     * getFileNameBase.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFileNameBase() {
+        return FilenameUtils.getBaseName(fileName);
+    }
+
+    /**
+     * <p>
+     * getFileNameExtension.
+     * </p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getFileNameExtension() {
+        return FilenameUtils.getExtension(fileName);
+    }
 
     /**
      * <p>
@@ -1135,15 +1148,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return fileName;
     }
 
-    /**
-     * Returns The first matching media filename for this page
-     *
-     * @return The first matching media filename for this page
-     */
-    public String getFilename() {
-        String format = getFileNames().keySet().stream().findFirst().orElse("");
-        return getFileNameForFormat(format);
-    }
 
     /**
      * <p>

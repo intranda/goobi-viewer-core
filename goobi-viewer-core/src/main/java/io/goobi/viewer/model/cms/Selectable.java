@@ -90,6 +90,20 @@ public class Selectable<T> implements Comparable<Selectable<T>> {
 
         return 0;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            return (((Selectable) obj).getValue()).equals(this.getValue());
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.value == null ? 0 : this.value.hashCode();
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

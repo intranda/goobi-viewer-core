@@ -31,6 +31,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.MalformedInputException;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
@@ -764,6 +765,18 @@ public class StringTools {
             page = Integer.valueOf(range);
         }
         return new int[]{page, page2};
+    }
+    
+    /**
+     * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths
+     * @param data
+     * @return  a cleaned up string which can be savely used
+     */
+    public static String cleanUserGeneratedData(String data) {
+        String cleaned = stripJS(data);
+        cleaned = stripPatternBreakingChars(cleaned);
+        cleaned = Paths.get(cleaned).getFileName().toString();
+        return cleaned;
     }
 
 }

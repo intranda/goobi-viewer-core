@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +40,6 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.job.download.DownloadJob;
-import io.goobi.viewer.model.job.download.PDFDownloadJob;
 
 public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -118,5 +117,9 @@ public class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
         job.setMessage("Some message");
         job.getObservers().add("me@he.re");
         String jobString = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(job);
+        JSONObject json = new JSONObject(jobString);
+        assertEquals("pdf", json.get("type"));
+        assertEquals(pi, json.get("pi"));
+        assertEquals(logid, json.get("logId"));
     }
 }

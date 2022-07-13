@@ -26,13 +26,18 @@ import static org.junit.Assert.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
  *
  */
-public class GeoCoordinateFeatureTest {
+public class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
     public void testParseSearchString() {
@@ -47,12 +52,43 @@ public class GeoCoordinateFeatureTest {
 
     @Test
     public void testParsePoints() {
-        double[][] referencePoints = new double[][] {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
-        String pointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
+        double[][] referencePoints = new double[][] {{1.1, 1.2}, {2.1, -2.2}, {3.1, 3.2}, {-4.1, 4.2}, {1.1, 1.2}};
+        String pointsString = "1.1 1.2, 2.1 -2.2, 3.1 3.2, -4.1 4.2, 1.1 1.2";
         String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
         // System.out.println("query = " + query);
         double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
         assertArrayEquals(referencePoints, points);
+    }
+    
+    @Test
+    public void testParseIllegalPoints() {
+        {
+            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            String pointsString = "1.1 1.2, 2.1 , 3.1 3.2, 4.1 4.2, 1.1 1.2";
+            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            // System.out.println("query = " + query);
+            double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
+            assertArrayEquals(referencePoints, points);
+
+        }
+        {
+            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            String pointsString = "1.1 1.2, -2342- , 3.1 3.2, 4.1 4.2, 1.1 1.2";
+            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            // System.out.println("query = " + query);
+            double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
+            assertArrayEquals(referencePoints, points);
+
+        }
+        {
+            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            String pointsString = "1.1 1.2, sfs, 3.1 3.2, 4.1 4.2, 1.1 1.2";
+            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            // System.out.println("query = " + query);
+            double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
+            assertEquals(0, points.length);
+
+        }
     }
 
     @Test
@@ -70,6 +106,8 @@ public class GeoCoordinateFeatureTest {
         facets.setCurrentFacetString(urlString);
 
         String filterQueryString = facets.generateFacetFilterQueries(0, true, true).get(0);
+        String comparisonString = "WKT_COORDS:\"ISWITHIN\\(POLYGON\\(\\(51.94656677497078\\ 11.83273903383027,\\ 53.48917317885388\\ 11.83273903383027,\\ 53.48917317885388\\ 13.855459790711027,\\ 51.94656677497078\\ 13.855459790711027,\\ 51.94656677497078\\ 11.83273903383027\\)\\)\\)\"";
+        assertEquals(comparisonString, filterQueryString);
     }
 
 }

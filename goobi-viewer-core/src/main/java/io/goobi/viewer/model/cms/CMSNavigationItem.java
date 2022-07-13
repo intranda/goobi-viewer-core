@@ -492,10 +492,12 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
                 if (userBean != null) {
                     return userBean.isLoggedIn() && userBean.getUser().isSuperuser();
                 }
+                return false;
             case LOGGED_IN:
                 if (userBean != null) {
                     return userBean.isLoggedIn();
                 }
+                return false;
             case NOT_LOGGED_IN:
                 return userBean == null || !userBean.isLoggedIn();
             case ALWAYS:

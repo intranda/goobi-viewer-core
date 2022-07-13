@@ -52,6 +52,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
@@ -74,6 +75,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 @javax.ws.rs.Path(RECORDS_FILES_3D)
 @AccessConditionBinding
+@CORSBinding
 public class ObjectResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ObjectResource.class);
@@ -112,8 +114,6 @@ public class ObjectResource {
     @javax.ws.rs.Path(RECORDS_FILES_3D_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response) throws PresentationException, IndexUnreachableException {
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
 
         String objectURI = request.getRequestURL().toString().replaceAll("/(info.json)?$", "");
 //        String baseURI = objectURI.replace(filename, "");

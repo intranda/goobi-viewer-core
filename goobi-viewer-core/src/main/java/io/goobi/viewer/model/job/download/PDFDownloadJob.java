@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -53,13 +54,13 @@ import io.goobi.viewer.model.job.JobStatus;
  * </p>
  */
 @Entity
-@DiscriminatorValue(PDFDownloadJob.TYPE)
+@DiscriminatorValue(PDFDownloadJob.LOCAL_TYPE)
 public class PDFDownloadJob extends DownloadJob {
 
     private static final long serialVersionUID = 250689453571003230L;
 
     /** Constant <code>TYPE="pdf"</code> */
-    public static final String TYPE = "pdf";
+    public static final String LOCAL_TYPE = "pdf";
 
     private static final Logger logger = LoggerFactory.getLogger(PDFDownloadJob.class);
 
@@ -69,7 +70,7 @@ public class PDFDownloadJob extends DownloadJob {
      * </p>
      */
     public PDFDownloadJob() {
-        type = TYPE;
+        type = LOCAL_TYPE;
     }
 
     /**
@@ -83,7 +84,7 @@ public class PDFDownloadJob extends DownloadJob {
      * @param ttl a long.
      */
     public PDFDownloadJob(String pi, String logid, LocalDateTime lastRequested, long ttl) {
-        type = TYPE;
+        type = LOCAL_TYPE;
         this.pi = pi;
         this.logId = logid;
         this.lastRequested = lastRequested;
@@ -98,7 +99,7 @@ public class PDFDownloadJob extends DownloadJob {
     /** {@inheritDoc} */
     @Override
     public final void generateDownloadIdentifier() {
-        this.identifier = generateDownloadJobId(TYPE, pi, logId);
+        this.identifier = generateDownloadJobId(LOCAL_TYPE, pi, logId);
     }
 
     /* (non-Javadoc)
@@ -128,7 +129,6 @@ public class PDFDownloadJob extends DownloadJob {
         return "PDF";
     }
 
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
      */
@@ -152,23 +152,27 @@ public class PDFDownloadJob extends DownloadJob {
      */
     public static void triggerCreation(String pi, String logId, String downloadIdentifier)
             throws PresentationException, IndexUnreachableException, DownloadException {
-        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.TYPE));
+        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
             throw new DownloadException("Cannot create download folder: " + targetFolder);
         }
-        String title = pi + "_" + logId;
-        logger.debug("Trigger pdf generation for " + title);
+        
+        String cleanedPi = StringTools.cleanUserGeneratedData(pi);
+        String cleanedLogId = StringTools.cleanUserGeneratedData(logId);
+        
+        String title = cleanedPi + "_" + cleanedLogId;
+        logger.debug("Trigger PDF generation for {}", title);
 
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(pi);
-        Path imageFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
-        Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
+        String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(cleanedPi);
+        // Path imageFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
+        Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(cleanedPi + ".xml");
 
-        logger.debug("Calling taskManager at " + taskManagerUrl);
+        logger.debug("Calling taskManager at {}", taskManagerUrl);
 
         TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
-        requestObject.pi = pi;
-        requestObject.logId = logId;
+        requestObject.pi = cleanedPi;
+        requestObject.logId = cleanedLogId;
         requestObject.goobiId = downloadIdentifier;
         requestObject.sourceDir = metsPath.toString();
         try {
@@ -179,13 +183,13 @@ public class PDFDownloadJob extends DownloadJob {
                 if (entityJson.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
                     logger.debug("Job is already being processed");
                 } else {
-                    throw new DownloadException("Failed to start pdf creation for PI=" + pi + " and LOGID=" + logId + ": TaskManager returned error "
+                    throw new DownloadException("Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": TaskManager returned error "
                             + entityJson.get("ERRORMESSAGE"));
                 }
             }
         } catch (Exception e) {
             // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
-            throw new DownloadException("Failed to start pdf creation for PI=" + pi + " and LOGID=" + logId + ": " + e.getMessage());
+            throw new DownloadException("Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": " + e.getMessage());
         }
     }
 
@@ -209,12 +213,11 @@ public class PDFDownloadJob extends DownloadJob {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return Integer.parseInt(ret);
-        } catch (Throwable e) {
-            logger.warn("Error getting response from TaskManager: " + e.toString());
+        } catch (Exception e) {
+            logger.warn("Error getting response from TaskManager: {}", e.toString());
             return -1;
         }
     }
-
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()

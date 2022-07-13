@@ -72,7 +72,7 @@ public final class CMSTemplateManager {
 
     private static final Object lock = new Object();
 
-    private static volatile CMSTemplateManager instance;
+    private static CMSTemplateManager instance;
 
     private Map<String, CMSPageTemplate> templates;
 
@@ -95,7 +95,6 @@ public final class CMSTemplateManager {
      * @return a {@link io.goobi.viewer.model.cms.CMSTemplateManager} object.
      */
     public static CMSTemplateManager getInstance() {
-        //                        instance = null;
         CMSTemplateManager ctm = instance;
         if (ctm == null) {
             synchronized (lock) {

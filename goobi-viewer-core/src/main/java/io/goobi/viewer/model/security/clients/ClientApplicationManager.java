@@ -214,7 +214,7 @@ public class ClientApplicationManager {
      * @return true if the client does not represent all clients
      */
     public boolean isNotAllClients(ClientApplication client) {
-        return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> id != getAllClients().getId()).orElse(true);
+        return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> !getAllClients().getId().equals(id)).orElse(true);
     }
 
     /**

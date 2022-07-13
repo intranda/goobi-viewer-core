@@ -223,10 +223,10 @@ public abstract class DownloadJob implements Serializable {
                 logger.debug("Create new download job");
                 newJob = true;
                 switch (type) {
-                    case PDFDownloadJob.TYPE:
+                    case PDFDownloadJob.LOCAL_TYPE:
                         downloadJob = new PDFDownloadJob(pi, logId, LocalDateTime.now(), ttl);
                         break;
-                    case EPUBDownloadJob.TYPE:
+                    case EPUBDownloadJob.LOCAL_TYPE:
                         downloadJob = new EPUBDownloadJob(pi, logId, LocalDateTime.now(), ttl);
                         break;
                     default:

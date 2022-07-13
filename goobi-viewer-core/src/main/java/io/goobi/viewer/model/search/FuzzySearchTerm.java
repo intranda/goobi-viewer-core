@@ -52,7 +52,15 @@ public class FuzzySearchTerm {
      * Regex matching all characters within words, including umlauts etc.
      */
     public static final String WORD_PATTERN = "[\\p{L}=-_\\d⸗¬]+";
-
+    /**
+     * Regex matching anything not matching {@link #WORD_PATTERN}, including an empty string
+     */
+    public static final String NOT_WORD_PATTERN = "[^\\p{L}=-_\\d⸗¬]*";
+    /**
+     * Regex matching a word (according to {@link #WORD_PATTERN}, surrounded by other characters (according to {@link #NOT_WORD_PATTERN}.
+     * The word itself is the first capture group
+     */
+    public static final String WORD_SURROUNDED_BY_OTHER_CHARACTERS = NOT_WORD_PATTERN + "(" + WORD_PATTERN + ")" + NOT_WORD_PATTERN;
 
     private final String fullTerm;
     private final String term;
@@ -63,8 +71,8 @@ public class FuzzySearchTerm {
     public FuzzySearchTerm(String term) {
         this.fullTerm = term;
         if(isFuzzyTerm(term)) {
-            this.term = this.fullTerm.replaceAll("\\*?("+WORD_PATTERN+")\\*?~\\d", "$1").toLowerCase();
-            this.maxDistance = Integer.parseInt(this.fullTerm.replaceAll("\\*?"+WORD_PATTERN+"\\*?~(\\d)", "$1"));
+            this.term = this.fullTerm.replaceAll("[*]{0,1}("+WORD_PATTERN+")[*]{0,1}~\\d", "$1").toLowerCase(); //NOSONAR   no catastrophic backtracking detected
+            this.maxDistance = Integer.parseInt(this.fullTerm.replaceAll("[*]{0,1}"+WORD_PATTERN+"[*]{0,1}~(\\d)", "$1")); //NOSONAR   no catastrophic backtracking detected
             wildcardBack = this.fullTerm.endsWith("*~"+this.maxDistance);
         } else {
             this.term = term;
@@ -95,9 +103,14 @@ public class FuzzySearchTerm {
     }
 
     public static boolean isFuzzyTerm(String term) {
-        return term.matches("\\*?"+WORD_PATTERN+"+\\*?~\\d");
+        return term.matches("[*]{0,1}"+WORD_PATTERN+"[*]{0,1}~\\d");
     }
 
+    /**
+     * Test if a given text containing a single word
+     * @param text
+     * @return
+     */
     public boolean matches(String text) {
         text = cleanup(text);
         String termToMatch = cleanup(this.term);
@@ -126,7 +139,7 @@ public class FuzzySearchTerm {
             text = StringTools.removeDiacriticalMarks(text);
             text = StringTools.replaceCharacterVariants(text);
             text = text.toLowerCase();
-            text = text.replaceAll(".*?("+WORD_PATTERN+").*", "$1");
+            text = text.replaceAll(WORD_SURROUNDED_BY_OTHER_CHARACTERS, "$1"); //NOSONAR  removes anything before and after the word, backtracking save
         }
         return text;
     }

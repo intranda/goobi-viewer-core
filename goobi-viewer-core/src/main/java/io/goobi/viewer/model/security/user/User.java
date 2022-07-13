@@ -217,6 +217,42 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         this.nickName = nickname;
     }
 
+    /**
+     * Cloning constructor.
+     * 
+     * @param blueprint User to clone
+     * @should clone blueprint correctly
+     */
+    public User(User blueprint) {
+        if (blueprint == null) {
+            throw new IllegalArgumentException("blueprint may not be null");
+        }
+
+        setId(blueprint.id);
+        setEmail(blueprint.email);
+        setPasswordHash(blueprint.passwordHash);
+        setActivationKey(blueprint.activationKey);
+        setLastLogin(blueprint.lastLogin);
+        setActive(blueprint.active);
+        setSuspended(blueprint.suspended);
+        setSuperuser(blueprint.superuser);
+        setLastName(blueprint.lastName);
+        setFirstName(blueprint.firstName);
+        setNickName(blueprint.nickName);
+        setComments(blueprint.comments);
+        setScore(blueprint.score);
+        setAgreedToTermsOfUse(blueprint.agreedToTermsOfUse);
+        setAvatarType(blueprint.avatarType);
+        setLocalAvatarUpdated(blueprint.localAvatarUpdated);
+        // TODO clone licenses?
+        for (License license : blueprint.getLicenses()) {
+            getLicenses().add(license);
+        }
+        for (String openIdAccount : blueprint.getOpenIdAccounts()) {
+            getOpenIdAccounts().add(openIdAccount);
+        }
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -264,37 +300,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             return false;
         }
         return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public User clone() {
-        User user = new User();
-
-        user.setId(id);
-        user.setEmail(email);
-        user.setPasswordHash(passwordHash);
-        user.setActivationKey(activationKey);
-        user.setLastLogin(lastLogin);
-        user.setActive(active);
-        user.setSuspended(suspended);
-        user.setSuperuser(superuser);
-        user.setLastName(lastName);
-        user.setFirstName(firstName);
-        user.setNickName(nickName);
-        user.setComments(comments);
-        user.setScore(score);
-        user.setAgreedToTermsOfUse(agreedToTermsOfUse);
-        user.setAvatarType(this.avatarType);
-        user.setLocalAvatarUpdated(this.localAvatarUpdated);
-        for (License license : licenses) {
-            user.getLicenses().add(license);
-        }
-        for (String openIdAccount : openIdAccounts) {
-            user.getOpenIdAccounts().add(openIdAccount);
-        }
-
-        return user;
     }
 
     /**
@@ -1563,7 +1568,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         if (copy != null) {
             this.setLocalAvatarUpdated(copy.getLocalAvatarUpdated());
         }
-        copy = clone();
+        copy = new User(this);
     }
 
     /** {@inheritDoc} */

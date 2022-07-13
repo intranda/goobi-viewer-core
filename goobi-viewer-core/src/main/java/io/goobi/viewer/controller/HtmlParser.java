@@ -41,7 +41,7 @@ import org.jsoup.nodes.Document;
  */
 public class HtmlParser {
 
-    private static final String HTML_TAG_PATTERN_STRING = "<(\"[^\"]*\"|'[^']*'|[^'\">])*>";
+    private static final String HTML_TAG_PATTERN_STRING = "(</\\w+>)|(<br\\s*/>)";
     private static final Pattern HTML_TAG_PATTERN = Pattern.compile(HTML_TAG_PATTERN_STRING);
 
 
@@ -49,7 +49,7 @@ public class HtmlParser {
     private static final Map<String, String> HTML_REPLACEMENTS = Map.ofEntries(new SimpleEntry<>("<br\\s?>", "<br />"));
 
     /**
-     * Guess if the given text should be interpreted as html based in the existance of html tags
+     * Guess if the given text should be interpreted as html based in the existence of closing html tags or empty line break tags
      *
      * @param json
      * @return

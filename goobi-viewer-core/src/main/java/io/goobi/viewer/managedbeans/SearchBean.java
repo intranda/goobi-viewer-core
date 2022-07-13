@@ -183,8 +183,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
 
-    private volatile FutureTask<Boolean> downloadReady;
-    private volatile FutureTask<Boolean> downloadComplete;
+    private volatile FutureTask<Boolean> downloadReady;     //NOSONAR   Future is thread-save
+    private volatile FutureTask<Boolean> downloadComplete;  //NOSONAR   Future is thread-save
 
     /**
      * Whether to only display the current search parameters rather than the full input mask
@@ -2425,7 +2425,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
             }
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
-            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(finalQuery, exportQuery, currentSearch.getAllSortFields(),
+            SXSSFWorkbook wb = new SXSSFWorkbook(25);
+            SearchHelper.exportSearchAsExcel(wb, finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), params, searchTerms, locale,
                     true, proximitySearchDistance, request);
             if (Thread.interrupted()) {

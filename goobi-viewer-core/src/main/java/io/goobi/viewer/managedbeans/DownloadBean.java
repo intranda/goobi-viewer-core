@@ -150,10 +150,10 @@ public class DownloadBean implements Serializable {
             }
             String fileName;
             switch (downloadJob.getType()) {
-                case PDFDownloadJob.TYPE:
+                case PDFDownloadJob.LOCAL_TYPE:
                     fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".pdf";
                     break;
-                case EPUBDownloadJob.TYPE:
+                case EPUBDownloadJob.LOCAL_TYPE:
                     fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".epub";
                     break;
                 default:
