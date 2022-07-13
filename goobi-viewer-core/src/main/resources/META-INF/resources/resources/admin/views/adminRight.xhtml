@@ -76,7 +76,7 @@
                                              disabled="#{adminLicenseBean.currentLicense.id != null}">
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
-                                             <f:selectItems var="user" value="#{adminLicenseBean.allUsers}" itemLabel="#{user.displayName}" />
+                                             <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
                                              <f:ajax render="licenseTypeGroup infoGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
