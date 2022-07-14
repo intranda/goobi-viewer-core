@@ -539,9 +539,14 @@
         <!-- fuzzy/@enabled: If true, fuzzy search will be applied. Default is false. -->
         <fuzzy enabled="false" />
         
-        <!-- useFacetsAsExpandQuery: If true, currently selected facets will be used to build the expand query to produce child hits,
+        <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,
             even if no search terms were given. Default is false. -->
-        <useFacetsAsExpandQuery>true</useFacetsAsExpandQuery>
+        <useFacetsAsExpandQuery enabled="true">
+            <!-- facetQuery: (0-n); If at least one facet query is configured here, only active queries that match those listed here
+                will be used for constructing the expand query. -->
+            <facetQuery>(FACET_DC:"foo" OR FACET_DC:foo.*)</facetQuery>
+            <facetQuery>(FACET_DC:"bar" OR FACET_DC:bar.*)</facetQuery>
+        </useFacetsAsExpandQuery>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->

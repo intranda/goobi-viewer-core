@@ -3224,4 +3224,16 @@ public class ConfigurationTest extends AbstractTest {
     public void isUseFacetsAsExpandQuery_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery());
     }
+
+    /**
+     * @see Configuration#getAllowedFacetsForExpandQuery()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getAllowedFacetsForExpandQuery_shouldReturnAllConfiguredElements() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getAllowedFacetsForExpandQuery();
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("(FACET_DC:\"foo\" OR FACET_DC:foo.*)", result.get(0));
+        Assert.assertEquals("(FACET_DC:\"bar\" OR FACET_DC:bar.*)", result.get(1));
+    }
 }

@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Objects;
 
@@ -42,7 +43,9 @@ import io.goobi.viewer.modules.interfaces.IURLBuilder;
  * @author florian
  *
  */
-public class Location {
+public class Location implements Serializable {
+
+    private static final long serialVersionUID = 1628708143715554466L;
 
     private static final Logger logger = LoggerFactory.getLogger(Location.class);
 
