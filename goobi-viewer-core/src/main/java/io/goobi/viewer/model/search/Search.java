@@ -73,7 +73,6 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
-import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Persistable search query.
@@ -301,9 +300,7 @@ public class Search implements Serializable {
             }
         }
 
-        String finalQuery = query + subElementQueryFilterSuffix;
-
-        return finalQuery;
+        return query + subElementQueryFilterSuffix;
     }
 
     /**
@@ -338,7 +335,7 @@ public class Search implements Serializable {
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
         if (facets.getGeoFacetting().isActive()) {
-            allFacetFields.add("BOOL_WKT_COORDS");
+            allFacetFields.add(SolrConstants.BOOL_WKT_COORDS);
         }
 
         String termQuery = null;
@@ -348,8 +345,6 @@ public class Search implements Serializable {
 
         Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
         QueryResponse resp = null;
-
-        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, boostTopLevelDocstructs, aggregationType);
 
         // Apply current facets
         List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
@@ -364,7 +359,8 @@ public class Search implements Serializable {
             logger.debug("Subelement facet query: {}", subElementQueryFilterSuffix);
         }
 
-        String finalQuery = query + subElementQueryFilterSuffix;
+        String finalQuery =
+                SearchHelper.buildFinalQuery(currentQuery, termQuery, boostTopLevelDocstructs, aggregationType) + subElementQueryFilterSuffix;
         if (hitsCount == 0) {
             logger.debug("Final main query: {}", finalQuery);
 
@@ -427,7 +423,6 @@ public class Search implements Serializable {
                         facets.getAvailableFacets()
                                 .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
                                         locale, facets.getLabelMap()));
-                        //                        allFacetFields.remove("FACET_" + SolrConstants.DOCSTRCT_SUB);
                         allFacetFields.remove(facetField.getName());
                     }
                 }
@@ -462,7 +457,10 @@ public class Search implements Serializable {
                     }
                 }
                 if (facets.getGeoFacetting().isActive()) {
-                    this.hasGeoLocationHits = resp.getFacetField("BOOL_WKT_COORDS").getValues().stream().anyMatch(c -> c.getName().equalsIgnoreCase("true"));
+                    this.hasGeoLocationHits = resp.getFacetField(SolrConstants.BOOL_WKT_COORDS)
+                            .getValues()
+                            .stream()
+                            .anyMatch(c -> c.getName().equalsIgnoreCase("true"));
                     if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap()) {
                         this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                         this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
@@ -515,7 +513,8 @@ public class Search implements Serializable {
             useExpandQuery = expandQuery + subElementQueryFilterSuffix;
         } else if (!activeFacetFilterQueries.isEmpty() && DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery()) {
             // If explicitly configured to use facets for expand query to produce child hits
-            useExpandQuery = SearchHelper.buildExpandQueryFromFacets(activeFacetFilterQueries);
+            useExpandQuery = SearchHelper.buildExpandQueryFromFacets(activeFacetFilterQueries,
+                    DataManager.getInstance().getConfiguration().getAllowedFacetsForExpandQuery());
         }
         if (StringUtils.isNotEmpty(useExpandQuery)) {
             logger.trace("Expand query: {}", useExpandQuery);
@@ -523,19 +522,19 @@ public class Search implements Serializable {
         }
 
         List<StringPair> useSortFields = getAllSortFields();
-        List<SearchHit> hits = Collections.emptyList();
+        List<SearchHit> foundHits = Collections.emptyList();
         // Actual hits for listing
         switch (aggregationType) {
             case AGGREGATE_TO_TOPSTRUCT:
-                hits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                foundHits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
                 break;
             case NO_AGGREGATION:
-                hits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
                 break;
         }
-        this.hits.addAll(hits);
+        this.hits.addAll(foundHits);
     }
 
     /**
@@ -584,12 +583,12 @@ public class Search implements Serializable {
             return locs;
         } else if (o instanceof String) {
             String s = (String) o;
-            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s);   //NOSONAR   no catastrophic backtracking detected
+            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
             while (polygonMatcher.find()) {
                 String match = polygonMatcher.group();
                 locs.add(new Polygon(getPoints(match)));
                 s = s.replace(match, "");
-                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s);   //NOSONAR   no catastrophic backtracking detected
+                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
             }
             if (StringUtils.isNotBlank(s)) {
                 locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
@@ -601,7 +600,7 @@ public class Search implements Serializable {
 
     protected static double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
-        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value);    //NOSONAR   no caastrophic backtracking detected
+        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value); //NOSONAR   no caastrophic backtracking detected
         while (matcher.find() && matcher.groupCount() == 2) {
             points.add(parsePoint(matcher.group(1), matcher.group(2)));
         }

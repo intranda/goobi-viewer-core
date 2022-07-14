@@ -1749,8 +1749,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildExpandQueryFromFacets_shouldReturnEmptyStringIfListNullOrEmpty() throws Exception {
-        Assert.assertEquals("", SearchHelper.buildExpandQueryFromFacets(null));
-        Assert.assertEquals("", SearchHelper.buildExpandQueryFromFacets(Collections.emptyList()));
+        Assert.assertEquals("", SearchHelper.buildExpandQueryFromFacets(null, null));
+        Assert.assertEquals("", SearchHelper.buildExpandQueryFromFacets(Collections.emptyList(), null));
     }
 
     /**
@@ -1763,6 +1763,32 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.add("FOO:bar");
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
         Assert.assertEquals("+FOO:bar +(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*) +DOCTYPE:DOCSTRCT",
-                SearchHelper.buildExpandQueryFromFacets(facets));
+                SearchHelper.buildExpandQueryFromFacets(facets, Collections.emptyList()));
+    }
+
+    /**
+     * @see SearchHelper#buildExpandQueryFromFacets(List,List)
+     * @verifies only use allowed queries if list not empty
+     */
+    @Test
+    public void buildExpandQueryFromFacets_shouldOnlyUseAllowedQueriesIfListNotEmpty() throws Exception {
+        List<String> facets = new ArrayList<>(2);
+        facets.add("FOO:bar");
+        facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
+        Assert.assertEquals("+FOO:bar +DOCTYPE:DOCSTRCT",
+                SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("FOO:bar")));
+    }
+
+    /**
+     * @see SearchHelper#buildExpandQueryFromFacets(List,List)
+     * @verifies return empty string of no query allowed
+     */
+    @Test
+    public void buildExpandQueryFromFacets_shouldReturnEmptyStringOfNoQueryAllowed() throws Exception {
+        List<String> facets = new ArrayList<>(2);
+        facets.add("FOO:bar");
+        facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
+        Assert.assertTrue("+FOO:bar +DOCTYPE:DOCSTRCT",
+                SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("YARGLE:bargle")).isEmpty());
     }
 }

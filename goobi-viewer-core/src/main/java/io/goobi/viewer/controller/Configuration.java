@@ -1145,6 +1145,10 @@ public class Configuration extends AbstractConfiguration {
         return null;
     }
 
+    /**
+     * 
+     * @return
+     */
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
         if (list == null || list.isEmpty()) {
@@ -1160,8 +1164,8 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return all configured elements
      * @return a {@link java.util.List} object.
+     * @should return all configured elements
      */
     public List<DcSortingList> getCollectionSorting(String field) {
 
@@ -1267,8 +1271,8 @@ public class Configuration extends AbstractConfiguration {
      * getCollectionHierarchyField.
      * </p>
      *
-     * @should return first field where hierarchy enabled
      * @return a {@link java.lang.String} object.
+     * @should return first field where hierarchy enabled
      */
     public String getCollectionHierarchyField() {
 
@@ -5479,7 +5483,16 @@ public class Configuration extends AbstractConfiguration {
     * @should return correct value
     */
    public boolean isUseFacetsAsExpandQuery() {
-       return getLocalBoolean("search.useFacetsAsExpandQuery", false);
+       return getLocalBoolean("search.useFacetsAsExpandQuery[@enabled]", false);
+   }
+   
+   /**
+    * 
+    * @return
+    * @should return all configured elements
+    */
+   public List<String> getAllowedFacetsForExpandQuery() {
+       return getLocalList("search.useFacetsAsExpandQuery.facetQuery");
    }
 
 

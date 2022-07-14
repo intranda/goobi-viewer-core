@@ -3269,22 +3269,27 @@ public final class SearchHelper {
      * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
      * 
      * @param facetQueries List of individual facet queries
+     * @param allowedQueries
      * @return Expand query
      * @should return empty string if list null or empty
      * @should construct query correctly
+     * @should only use allowed queries if list not empty
+     * @should return empty string of no query allowed
      */
-    public static String buildExpandQueryFromFacets(List<String> facetQueries) {
-        if (facetQueries == null || facetQueries.isEmpty()) {
+    public static String buildExpandQueryFromFacets(List<String> allFacetQueries, List<String> allowedFacetQueries) {
+        if (allFacetQueries == null || allFacetQueries.isEmpty()) {
             return "";
         }
 
         StringBuilder sb = new StringBuilder();
-        for (String q : facetQueries) {
-            if (q != null && q.length() > 0) {
+        for (String q : allFacetQueries) {
+            if (q != null && q.length() > 0 && (allowedFacetQueries == null || allowedFacetQueries.isEmpty() || allowedFacetQueries.contains(q))) {
                 sb.append(" +").append(q);
             }
         }
-        sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+        if (sb.length() > 0) {
+            sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+        }
 
         return sb.toString().trim();
     }
