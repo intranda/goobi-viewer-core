@@ -60,11 +60,11 @@
 	                        	<span>#{msg[page.mimeType]}</span>
 	                        </div>
 	                        <div class="born-digital__item">
-                                <ui:fragment rendered="#{page.downloadTicketRequired}">
+                                <ui:fragment rendered="#{page.bornDigitalDownloadTicketRequired}">
                                     <h:commandLink class="born-digital__item__download btn btn--full">
                                     </h:commandLink>
                                 </ui:fragment>
-	                            <ui:fragment rendered="#{!page.downloadTicketRequired}">
+	                            <ui:fragment rendered="#{!page.bornDigitalDownloadTicketRequired}">
 	                      	        <a class="born-digital__item__download btn btn--full" href="#{page.url}">#{msg.action__born_digital__download}</a>
 	                      	    </ui:fragment>
 	                        </div>

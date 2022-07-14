@@ -144,6 +144,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private boolean fulltextAvailable = false;
 
     private Boolean fulltextAccessPermission;
+    /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
+    private Boolean bornDigitalDownloadTicketRequired = null;
     /** File name of the full-text document in the file system. */
     private String fulltextFileName;
     /** File name of the ALTO document in the file system. */
@@ -291,8 +293,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
-    public boolean isDownloadTicketRequired() {
-        return false;
+    public boolean isBornDigitalDownloadTicketRequired() throws IndexUnreachableException, DAOException {
+        if (bornDigitalDownloadTicketRequired == null) {
+            isAccessPermissionBornDigital();
+        }
+        return bornDigitalDownloadTicketRequired;
     }
 
     /**
@@ -612,8 +617,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public void setHeight(int height) {
         this.height = height;
     }
-
-
 
     /**
      * <p>
@@ -1089,7 +1092,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public void setFileNames(Map<String, String> fileNames) {
         this.fileNames = fileNames;
     }
-    
 
     /**
      * Returns The first matching media filename for this page
@@ -1100,7 +1102,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         String format = getFileNames().keySet().stream().findFirst().orElse("");
         return getFileNameForFormat(format);
     }
-    
+
     /**
      * Returns the fileName alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filePath
      * otherwise
@@ -1151,7 +1153,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return fileName;
     }
-
 
     /**
      * <p>
@@ -1505,13 +1506,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
-            if (access.isTicketRequired()) {
-                // TODO acknowledge ticket requirement
+            if (bornDigitalDownloadTicketRequired == null) {
+                bornDigitalDownloadTicketRequired = access.isTicketRequired();
             }
             return access.isGranted();
         }
         logger.trace("FacesContext not found");
 
+        bornDigitalDownloadTicketRequired = false; // maybe set to true?
         return false;
     }
 
