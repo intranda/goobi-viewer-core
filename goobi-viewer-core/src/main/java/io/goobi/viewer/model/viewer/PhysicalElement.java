@@ -145,7 +145,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     private Boolean fulltextAccessPermission;
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
-    private Boolean bornDigitalDownloadTicketRequired = null;
+    private Boolean bornDigitalDownloadTicketRequired = null;  // TODO reset when logging in/out or persist in session
     /** File name of the full-text document in the file system. */
     private String fulltextFileName;
     /** File name of the ALTO document in the file system. */
@@ -291,13 +291,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         } else {
             return 0;
         }
-    }
-
-    public boolean isBornDigitalDownloadTicketRequired() throws IndexUnreachableException, DAOException {
-        if (bornDigitalDownloadTicketRequired == null) {
-            isAccessPermissionBornDigital();
-        }
-        return bornDigitalDownloadTicketRequired;
     }
 
     /**
@@ -1506,8 +1499,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+            logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted());
             if (bornDigitalDownloadTicketRequired == null) {
                 bornDigitalDownloadTicketRequired = access.isTicketRequired();
+                logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired());
             }
             return access.isGranted();
         }
@@ -1515,6 +1510,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         bornDigitalDownloadTicketRequired = false; // maybe set to true?
         return false;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isBornDigitalDownloadTicketRequired() throws IndexUnreachableException, DAOException {
+        if (bornDigitalDownloadTicketRequired == null) {
+            isAccessPermissionBornDigital();
+        }
+        logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired);
+        return bornDigitalDownloadTicketRequired;
     }
 
     /**

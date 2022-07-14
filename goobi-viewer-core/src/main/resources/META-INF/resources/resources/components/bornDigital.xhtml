@@ -62,6 +62,7 @@
 	                        <div class="born-digital__item">
                                 <ui:fragment rendered="#{page.bornDigitalDownloadTicketRequired}">
                                     <h:commandLink class="born-digital__item__download btn btn--full">
+                                        <h:outputText value="#{msg.action__born_digital__unlock}" />
                                     </h:commandLink>
                                 </ui:fragment>
 	                            <ui:fragment rendered="#{!page.bornDigitalDownloadTicketRequired}">

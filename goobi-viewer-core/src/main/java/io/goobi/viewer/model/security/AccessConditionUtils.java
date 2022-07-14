@@ -802,32 +802,37 @@ public class AccessConditionUtils {
      * @param privilegeName The particular privilege to check.
      * @param user Logged in user.
      * @param query Solr query describing the resource in question.
-     * @should return true if required access conditions empty
-     * @should return true if required access conditions contain only open access
-     * @should return true if all license types allow privilege by default
-     * @should return false if not all license types allow privilege by default
-     * @should return true if ip range allows access
-     * @should not return true if no ip range matches
-     *
-     *         TODO user license checks
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if required access conditions empty
+     * @should return true if required access conditions contain only open access
+     * @should return true if all license types allow privilege by default
+     * @should return false if not all license types allow privilege by default
+     * @should return true if ip range allows access
+     * @should not return true if no ip range matches
+     * @should preserve ticket requirement
      */
     public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
             throws IndexUnreachableException, PresentationException, DAOException {
         Map<String, AccessPermission> result =
                 checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, client, query);
+        boolean ticketRequired = false;
         for (Entry<String, AccessPermission> entry : result.entrySet()) {
+            // Preserve ticket requirement
+            if (entry.getValue().isTicketRequired()) {
+                ticketRequired = true;
+            }
             if (!entry.getValue().isGranted()) {
                 return AccessPermission.denied();
             }
         }
-        return AccessPermission.granted();
+        
+        return AccessPermission.granted().setTicketRequired(ticketRequired);
     }
 
     /**
@@ -1193,7 +1198,7 @@ public class AccessConditionUtils {
                 })
                 .collect(Collectors.toList());
     }
-    
+
     public static String generateDownloadTicket(ILicensee licensee, String licenseName) {
         // TODO
         return null;
