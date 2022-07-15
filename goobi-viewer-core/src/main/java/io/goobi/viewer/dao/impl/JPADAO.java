@@ -1570,11 +1570,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteLicenseType(io.goobi.viewer.model.user.LicenseType)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException {
@@ -1594,9 +1589,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllLicenses()
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<License> getAllLicenses() throws DAOException {
@@ -1612,9 +1605,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getLicense(java.lang.Long)
-     */
+    /** {@inheritDoc} */
     @Override
     public License getLicense(Long id) throws DAOException {
         preQuery();
@@ -1682,6 +1673,7 @@ public class JPADAO implements IDAO {
     }
     
 
+    /** {@inheritDoc} */
     @Override
     public DownloadTicket getDownloadTicket(Long id) throws DAOException {
         preQuery();
@@ -1694,13 +1686,32 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+    
 
+    /** {@inheritDoc} */
+    @Override
+    public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<DownloadTicket> cq = cb.createQuery(DownloadTicket.class);
+            Root<DownloadTicket> root = cq.from(DownloadTicket.class);
+            cq.select(root).where(cb.equal(root.get("passwordHash"), passwordHash));
+            return em.createQuery(cq).getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
     public DownloadTicket getDownloadTicketsForLicenseName(String licenseName, String pi, ILicensee licensee) throws DAOException {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
         preQuery();
@@ -2526,8 +2537,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Search o = em.find(Search.class, id);
-            return o;
+            return em.find(Search.class, id);
         } catch (EntityNotFoundException e) {
             return null;
         } finally {

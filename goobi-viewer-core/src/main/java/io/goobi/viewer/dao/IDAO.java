@@ -785,7 +785,21 @@ public interface IDAO {
     
     // DownloadTicket
     
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws DAOException
+     */
     public DownloadTicket getDownloadTicket(Long id) throws DAOException;
+    
+    /**
+     * 
+     * @param passwordHash
+     * @return
+     * @throws DAOException
+     */
+    public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException;
     
     public DownloadTicket getDownloadTicketsForLicenseName(String licenseName, String pi, ILicensee licensee) throws DAOException;
     

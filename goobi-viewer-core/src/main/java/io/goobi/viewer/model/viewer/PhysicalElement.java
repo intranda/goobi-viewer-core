@@ -104,14 +104,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public static final String WATERMARK_TEXT_TYPE_PURL = "PURL";
     /** Constant <code>WATERMARK_TEXT_TYPE_SOLR="SOLR:"</code> */
     public static final String WATERMARK_TEXT_TYPE_SOLR = "SOLR:";
+    /** Constant <code>defaultVideoWidth=320</code> */
+    private static final int DEFAULT_VIDEO_WIDTH = 320;
+    /** Constant <code>defaultVideoHeight=240</code> */
+    private static final int DEFAULT_VIDEO_HEIGHT = 240;
 
     private static List<String> watermarkTextConfiguration;
-    /** Constant <code>defaultVideoWidth=320</code> */
-    public static int defaultVideoWidth = 320;
-    /** Constant <code>defaultVideoHeight=240</code> */
-    public static int defaultVideoHeight = 240;
 
-    private final Object lock = new Object();
+    private final transient Object lock = new Object();
 
     /** Persistent identifier. */
     private final String pi;
@@ -145,7 +145,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     private Boolean fulltextAccessPermission;
     /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
-    private Boolean bornDigitalDownloadTicketRequired = null;  // TODO reset when logging in/out or persist in session
+    private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
     /** File name of the full-text document in the file system. */
     private String fulltextFileName;
     /** File name of the ALTO document in the file system. */
@@ -749,7 +749,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return the fulltextAccessPermission
      * @throws ViewerConfigurationException
      */
-    public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
+    public Boolean isFulltextAccessPermission() {
         if (fulltextAccessPermission == null) {
             fulltextAccessPermission = false;
             try {
@@ -949,25 +949,22 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if fulltext loaded successfully false otherwise
      * @throws AccessDeniedException
      * @throws IOException
-     * @throws FileNotFoundException
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws ConfigurationException
      * @should load full-text correctly if not yet loaded
      * @should return null if already loaded
      */
-    String loadFullText()
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    String loadFullText() throws AccessDeniedException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (fulltextFileName == null) {
             return null;
-        } else if (!isFulltextAccessPermission()) {
+        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
         try {
-            String text = DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
-            return text;
+            return DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
             return "";
@@ -1000,7 +997,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (searchTerms == null || searchTerms.isEmpty()) {
             return Collections.emptyList();
         }
-        logger.trace("loadWordCoords: {}", searchTerms.toString());
+        logger.trace("loadWordCoords: {}", searchTerms);
 
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
@@ -1041,7 +1038,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
             return new StringPair("", null);
-        } else if (!isFulltextAccessPermission()) {
+        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
@@ -1175,8 +1172,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
         }
 
-        logger.trace("currentMediaUrl: {}", url.toString());
-        return url.toString();
+        logger.trace("currentMediaUrl: {}", url);
+        return url;
     }
 
     /**
@@ -1191,7 +1188,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return width;
         }
 
-        return defaultVideoWidth;
+        return DEFAULT_VIDEO_WIDTH;
     }
 
     /**
@@ -1206,7 +1203,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return height;
         }
 
-        return defaultVideoHeight;
+        return DEFAULT_VIDEO_HEIGHT;
     }
 
     /**
@@ -1235,7 +1232,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a int.
      */
     public int getPhysicalImageHeight() {
-        return height;
+        return getImageHeight();
     }
 
     /**
@@ -1278,7 +1275,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a int.
      */
     public int getMixWidth() {
-        return width;
+        return getImageWidth();
     }
 
     /**
@@ -1289,7 +1286,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a int.
      */
     public int getPhysicalImageWidth() {
-        return width;
+        return getImageWidth();
     }
 
     /**
@@ -1333,12 +1330,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getPageLinkLabel() {
-        BaseMimeType mimeType = BaseMimeType.getByName(this.mimeType);
-        if (mimeType == null) {
+        BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
+        if (baseMimeType == null) {
             return "viewImage";
         }
 
-        switch (mimeType) {
+        switch (baseMimeType) {
             case IMAGE:
                 return "viewImage";
             case VIDEO:
@@ -1514,7 +1511,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * 
-     * @return
+     * @return true if a download ticket requirement is present and not yet satisfied; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      */
@@ -1523,6 +1520,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             isAccessPermissionBornDigital();
         }
         logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired);
+
+        // If license requires a download ticket, check agent session for loaded ticket
+        if (Boolean.TRUE.equals(bornDigitalDownloadTicketRequired) && FacesContext.getCurrentInstance() != null
+                && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            return AccessConditionUtils.isHasDownloadTicket(pi,
+                    (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+        }
+
         return bornDigitalDownloadTicketRequired;
     }
 

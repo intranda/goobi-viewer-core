@@ -520,7 +520,7 @@ public class UserBean implements Serializable {
             Set<String> attributesToRemove = new HashSet<>();
             while (attributeNames.hasMoreElements()) {
                 String attribute = attributeNames.nextElement();
-                if (attribute.startsWith(IPrivilegeHolder._PRIV_PREFIX)) {
+                if (attribute.startsWith(IPrivilegeHolder.PREFIX_PRIV)) {
                     attributesToRemove.add(attribute);
 
                 }
@@ -562,9 +562,9 @@ public class UserBean implements Serializable {
     public List<User> getAllUsers() throws DAOException {
         List<User> ret = new ArrayList<>();
 
-        for (User user : DataManager.getInstance().getDao().getAllUsers(true)) {
-            if (!user.isSuperuser() && !user.equals(getUser())) {
-                ret.add(user);
+        for (User u : DataManager.getInstance().getDao().getAllUsers(true)) {
+            if (!u.isSuperuser() && !u.equals(getUser())) {
+                ret.add(u);
             }
         }
 
@@ -627,17 +627,17 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String sendPasswordResetLinkAction() throws DAOException {
-        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        User u = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
-        if (user != null && !user.isOpenIdUser()) {
-            if (user.isActive()) {
-                user.setActivationKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
+        if (u != null && !u.isOpenIdUser()) {
+            if (u.isActive()) {
+                u.setActivationKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
                     requesterIp = NetTools.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                 }
-                String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + user.getEmail() + "/" + user.getActivationKey() + "/";
+                String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + u.getEmail() + "/" + u.getActivationKey() + "/";
 
                 if (DataManager.getInstance().getDao().updateUser(user)) {
                     try {
@@ -663,7 +663,7 @@ public class UserBean implements Serializable {
             }
 
             // Send new activation mail if not yet activated
-            if (sendActivationEmail(user)) {
+            if (sendActivationEmail(u)) {
                 Messages.info(ViewerResourceBundle.getTranslation("user_activationEmailReSent", null));
             } else {
                 Messages.error(ViewerResourceBundle.getTranslation("errSendEmail", null));
@@ -776,7 +776,7 @@ public class UserBean implements Serializable {
                 Optional.ofNullable(BeanUtils.getNavigationHelper())
                         .map(NavigationHelper::getCurrentPrettyUrl)
                         .ifPresent(u -> feedback.setUrl(u));
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
 

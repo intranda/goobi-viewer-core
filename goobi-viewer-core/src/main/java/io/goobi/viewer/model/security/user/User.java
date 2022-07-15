@@ -1605,17 +1605,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * <p>
-     * main.
-     * </p>
-     *
-     * @param args an array of {@link java.lang.String} objects.
-     */
-    public static void main(String[] args) {
-        System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
-    }
-
-    /**
      * @param agreedToTermsOfUse the agreedToTermsOfUse to set
      */
     public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
@@ -1725,4 +1714,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         }
     }
 
+    /**
+     * <p>
+     * main.
+     * </p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
+    public static void main(String[] args) {
+        System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
+    }
 }

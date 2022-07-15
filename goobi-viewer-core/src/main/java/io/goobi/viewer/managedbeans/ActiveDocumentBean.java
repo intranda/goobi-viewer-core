@@ -2514,6 +2514,15 @@ public class ActiveDocumentBean implements Serializable {
 
         return viewManager.isAllowUserComments();
     }
+    
+    public boolean checkDownloadTicket(String password) {
+        if(StringUtils.isEmpty(password)) {
+            return false;
+        }
+        
+        // TODO
+        return false;
+    }
 
     /**
      * Check if the current page should initialize a WebSocket

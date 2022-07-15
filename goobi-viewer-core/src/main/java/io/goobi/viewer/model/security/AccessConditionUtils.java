@@ -439,7 +439,7 @@ public class AccessConditionUtils {
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
         logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
 
-        String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeName + "_" + identifier;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier;
         Map<String, AccessPermission> ret = new HashMap<>();
         if (request != null && request.getSession() != null) {
             try {
@@ -525,7 +525,7 @@ public class AccessConditionUtils {
             throws IndexUnreachableException, DAOException {
 
         AccessPermission ret = null;
-        String attributeName = IPrivilegeHolder._PRIV_PREFIX + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
         if (request != null && request.getSession() != null) {
             try {
                 ret = (AccessPermission) request.getSession().getAttribute(attributeName);
@@ -747,7 +747,7 @@ public class AccessConditionUtils {
         }
         // logger.debug("sesaccesssion id: " + request.getSession().getId());
         // Session persistent permission check: Servlet-local method.
-        String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeType;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType;
         // logger.trace("Checking session attribute: {}", attributeName);
         Map<String, AccessPermission> permissions = null;
         if (request != null) {
@@ -1197,6 +1197,23 @@ public class AccessConditionUtils {
                             .noneMatch(ol -> l.getLicenseType().getOverridingLicenseTypes().contains(ol.getLicenseType()));
                 })
                 .collect(Collectors.toList());
+    }
+    
+    /**
+     * 
+     * @param pi
+     * @param request
+     * @return
+     */
+    public static boolean isHasDownloadTicket(String pi, HttpServletRequest request) {
+        if(pi == null || request == null) {
+            return false;
+        }
+        
+        String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
+        Boolean hasTicket  = (Boolean) request.getSession().getAttribute(attributeName);
+        
+        return hasTicket != null && hasTicket;
     }
 
     public static String generateDownloadTicket(ILicensee licensee, String licenseName) {

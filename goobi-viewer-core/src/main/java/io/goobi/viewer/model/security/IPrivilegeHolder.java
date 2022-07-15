@@ -32,8 +32,10 @@ import java.util.Set;
 public interface IPrivilegeHolder {
 
     // Data access privileges
-    /** Constant <code>_PRIV_PREFIX="PRIV_"</code> */
-    public static final String _PRIV_PREFIX = "PRIV_";
+    /** Constant <code>PREFIX_TICKET="TICKET_"</code> */
+    public static final String PREFIX_TICKET = "TICKET_";
+    /** Constant <code>PREFIX_PRIV="PRIV_"</code> */
+    public static final String PREFIX_PRIV = "PRIV_";
     /** Constant <code>PRIV_LIST="LIST"</code> */
     public static final String PRIV_LIST = "LIST";
     /** Constant <code>PRIV_VIEW_IMAGES="VIEW_IMAGES"</code> */

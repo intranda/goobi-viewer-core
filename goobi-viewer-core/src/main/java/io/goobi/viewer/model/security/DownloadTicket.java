@@ -70,6 +70,9 @@ public class DownloadTicket {
     @Column(name = "pi", nullable = false)
     private String pi;
 
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
     @Column(name = "title")
     private String title;
 
@@ -192,6 +195,20 @@ public class DownloadTicket {
      */
     public void setPi(String pi) {
         this.pi = pi;
+    }
+
+    /**
+     * @return the passwordHash
+     */
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    /**
+     * @param passwordHash the passwordHash to set
+     */
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     /**

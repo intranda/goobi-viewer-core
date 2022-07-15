@@ -78,4 +78,9 @@ public class AccessPermission implements Serializable {
         this.ticketRequired = ticketRequired;
         return this;
     }
+    
+    @Override
+    public String toString() {
+        return "Granted: " + granted + ", ticket required: " + ticketRequired;
+    }
 }
