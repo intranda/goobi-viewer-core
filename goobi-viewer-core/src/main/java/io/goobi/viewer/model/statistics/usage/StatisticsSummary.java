@@ -1,6 +1,8 @@
 package io.goobi.viewer.model.statistics.usage;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StatisticsSummary {
@@ -12,10 +14,14 @@ public class StatisticsSummary {
     }
     
     public StatisticsSummary(DailySessionUsageStatistics dailyStats) {
+        this(dailyStats, Collections.emptyList());
+    }
+    
+    public StatisticsSummary(DailySessionUsageStatistics dailyStats, List<String> includedIdentifiers) {
         Map<RequestType, RequestTypeSummary> types = new HashMap<>();
         for (RequestType type : RequestType.values()) {
-            long total = dailyStats.getTotalRequestCount(type);
-            long unique = dailyStats.getUniqueRequestCount(type);
+            long total = dailyStats.getTotalRequestCount(type, includedIdentifiers);
+            long unique = dailyStats.getUniqueRequestCount(type, includedIdentifiers);
             types.put(type, new RequestTypeSummary(total, unique));
         }
         this.types = types;

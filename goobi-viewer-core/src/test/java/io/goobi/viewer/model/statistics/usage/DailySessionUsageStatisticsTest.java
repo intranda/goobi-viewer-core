@@ -18,11 +18,13 @@ package io.goobi.viewer.model.statistics.usage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -36,10 +38,27 @@ import io.goobi.viewer.exceptions.DAOException;
  */
 public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
 
+    IDAO dao;
+    
+    @Before
+    public void setup() throws Exception {
+        super.setUp();
+        dao = DataManager.getInstance().getDao();
+        List<DailySessionUsageStatistics> stats = dao.getUsageStatistics(LocalDate.of(0, Month.JANUARY, 1), LocalDate.of(3000, Month.JANUARY, 1));
+        stats.forEach(stat -> {
+            try {
+                dao.deleteUsageStatistics(stat.getId());
+            } catch (DAOException e) {
+                fail(e.toString());
+            }
+        });
+
+    }
+    
     @Test
     public void test_persistence() throws DAOException {
         
-        IDAO dao = DataManager.getInstance().getDao();
+        
         LocalDate date = LocalDate.now();
         
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
@@ -57,7 +76,6 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     @Test
     public void test_persistenceWithEntries() throws DAOException {
         
-        IDAO dao = DataManager.getInstance().getDao();
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
         
@@ -95,7 +113,6 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     @Test
     public void test_persistenceDelete() throws DAOException {
         
-        IDAO dao = DataManager.getInstance().getDao();
         LocalDate date = LocalDate.now();
         RequestType type = RequestType.RECORD_VIEW;
 
@@ -149,8 +166,8 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
     @Test
     public void test_getDateRange() throws DAOException {
 
-        IDAO dao = DataManager.getInstance().getDao();
         RequestType type = RequestType.RECORD_VIEW;
+        
         
         {
             LocalDate date = LocalDate.of(2022, Month.JUNE, 30);
@@ -207,5 +224,6 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         List<DailySessionUsageStatistics> statsJune = dao.getUsageStatistics(LocalDate.of(2022, Month.JUNE, 30), LocalDate.of(2022, Month.JUNE, 30));
         assertEquals(1, statsJune.size());
     }
+
 
 }

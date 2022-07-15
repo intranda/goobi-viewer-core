@@ -1,6 +1,7 @@
 package io.goobi.viewer.model.statistics.usage;
 
 import java.time.LocalDate;
+import java.time.Month;
 
 /**
  * A class holding values by which a {@link StatisticsSummary} instance should be filtered
@@ -8,6 +9,15 @@ import java.time.LocalDate;
  *
  */
 public class StatisticsSummaryFilter {
+
+    /**
+     * {@link LOCAL_DATE_MIN} is not accepted as date by SQL, so this is the min date to use, 0000-01-01
+     */
+    public static final LocalDate LOCAL_DATE_MIN = LocalDate.of(0, Month.JANUARY, 1);
+    /**
+     * {@link LOCAL_DATE_MAX} is not accepted as date by SQL, so this is the max date to use, 3000-12-31
+     */
+    public static final LocalDate LOCAL_DATE_MAX = LocalDate.of(3000, Month.DECEMBER, 31);
 
     /**
      * Earliest date from which to collect data
@@ -60,16 +70,16 @@ public class StatisticsSummaryFilter {
     }
     
     public static StatisticsSummaryFilter forRecord(String pi) {
-        return new StatisticsSummaryFilter(LocalDate.MIN, LocalDate.MAX, "PI:" + pi);
+        return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, "PI:" + pi);
     }
     
     public static StatisticsSummaryFilter ofDigitalCollection(String collectionName) {
         String query = "(DC:{} DC:{}.*)".replace("{}", collectionName);
-        return new StatisticsSummaryFilter(LocalDate.MIN, LocalDate.MAX, query);
+        return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, query);
     }
     
     public static StatisticsSummaryFilter ofQuery(String query) {
-        return new StatisticsSummaryFilter(LocalDate.MIN, LocalDate.MAX, query);
+        return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, query);
     }
 
     public static StatisticsSummaryFilter of(LocalDate start, LocalDate end, String query) {

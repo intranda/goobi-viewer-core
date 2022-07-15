@@ -17,6 +17,7 @@ package io.goobi.viewer.model.statistics.usage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,19 +123,27 @@ public class DailySessionUsageStatistics {
     }
     
     public long getTotalRequestCount(RequestType type) {
-        return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type)).sum();
+        return getTotalRequestCount(type, Collections.emptyList());
+    }
+    
+    public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
+        return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, identifiersToInclude)).sum();
     }
     
     public long getUniqueRequestCount(RequestType type) {
         return this.sessions.stream().mapToLong(s -> s.getRequestedRecordsCount(type)).sum();
+    }
+    
+    public long getUniqueRequestCount(RequestType type, String pi) {
+        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1l : 0l).sum();
     }
 
     /**
      * @param string
      * @return
      */
-    public long getUniqueRequestCount(RequestType type, String pi) {
-        return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1l : 0l).sum();
+    public long getUniqueRequestCount(RequestType type, List<String> includedIdentifiers) {
+        return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, includedIdentifiers) > 0 ? 1l : 0l).sum();
     }
     
     public List<String> getRecordIdentifier() {

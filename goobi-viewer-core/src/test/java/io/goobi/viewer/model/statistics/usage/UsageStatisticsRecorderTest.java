@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import java.time.LocalDate;
 import java.util.Random;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,6 +42,7 @@ public class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         dao = DataManager.getInstance().getDao();
     }
+
 
     @Test
     public void test_recordRequests() throws DAOException, InterruptedException {

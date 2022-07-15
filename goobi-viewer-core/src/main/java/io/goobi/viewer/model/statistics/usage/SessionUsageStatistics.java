@@ -16,6 +16,8 @@
 package io.goobi.viewer.model.statistics.usage;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,11 +127,16 @@ public class SessionUsageStatistics {
     }
     
     public long getTotalRequestCount(RequestType type) {
-        return this.recordRequests.values().stream().map(RequestCounts::new)
+        return getTotalRequestCount(type, Collections.emptyList());
+    }
+    
+    public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
+        Collection<String> requestValues = getRequestedCounts(identifiersToInclude);
+        return requestValues.stream().map(RequestCounts::new)
                 .mapToLong(count -> count.getCount(type))
                 .sum();
     }
-    
+
     public long getRequestedRecordsCount(RequestType type) {
         return this.recordRequests.values().stream().map(RequestCounts::new)
                 .mapToLong(count -> count.getCount(type))
@@ -140,9 +147,6 @@ public class SessionUsageStatistics {
     public void setRecordRequectCount(RequestType type, String recordIdentifier, long count) {
         synchronized (this.recordRequests) {           
             RequestCounts counts = getRecordRequests(recordIdentifier);
-            if(counts == null) {
-                counts = new RequestCounts();
-            }
             counts.setCount(type, count);
             setRecordRequests(recordIdentifier, counts);
         }
@@ -164,5 +168,19 @@ public class SessionUsageStatistics {
         String s = "Usage statistics for session " + this.sessionId + ":\n";
         s += this.recordRequests.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n"));
         return s;
+    }
+    
+
+    private Collection<String> getRequestedCounts(List<String> identifiersToInclude) {
+        Collection<String> requestValues;
+        if(identifiersToInclude.isEmpty()) {
+            requestValues = this.recordRequests.values();
+        } else {
+            requestValues = this.recordRequests.keySet().stream()
+                    .filter(key -> identifiersToInclude.contains(key))
+                    .map(key -> this.recordRequests.get(key))
+                    .collect(Collectors.toList());
+        }
+        return requestValues;
     }
 }
