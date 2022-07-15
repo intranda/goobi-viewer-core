@@ -102,6 +102,8 @@ public class DateTools {
     public static DateTimeFormatter formatterJavaUtilDateToString = DateTimeFormatter.ofPattern("EEE MMM dd hh:mm:ss zzz yyyy");
 
     public static DateTimeFormatter formatterYearOnly = DateTimeFormatter.ofPattern("yyyy");
+    
+    public static DateTimeFormatter formatterMonthDayOnly = DateTimeFormatter.ofPattern("MMdd");
 
     /**
      * Converts the given string to a list of Date objects created from the contents of this string (years or whole dates).

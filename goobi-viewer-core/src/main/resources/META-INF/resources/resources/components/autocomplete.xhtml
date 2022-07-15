@@ -63,7 +63,6 @@
 			    if(e.status === "complete") {
 			        try {			            
 			        autocompleteResponseListener_#{cc.attrs.id}.next(JSON.parse(e.responseText));
-			        console.log("Handle autocomplete ", e.responseText)
 			        } catch(e) {
 			            console.error("Error handling autocomplete response ", e.responseText)
 			        }

@@ -145,22 +145,21 @@ public class DisplayUserGeneratedContent {
 
     }
 
-    private String getCoordinates(String target) {
-        if(StringUtils.isNotBlank(target)) {
+    private static String getCoordinates(String target) {
+        if (StringUtils.isNotBlank(target)) {
             ObjectMapper mapper = new ObjectMapper();
             try {
                 IResource resource = mapper.readValue(target, SpecificResource.class);
-                if(resource instanceof SpecificResource) {
+                if (resource instanceof SpecificResource) {
                     return ((SpecificResource) resource).getSelector().getValue();
-                } else {
-                    return "";
                 }
+                return "";
             } catch (JsonProcessingException e) {
                 return "";
             }
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     /**
@@ -622,7 +621,7 @@ public class DisplayUserGeneratedContent {
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         ret.setAccessCondition(SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION));
-        if(body != null) {
+        if (body != null) {
             ret.setAnnotationBody(body);
         }
         Object pageNo = doc.getFieldValue(SolrConstants.ORDER);
@@ -646,13 +645,8 @@ public class DisplayUserGeneratedContent {
      * @return the text if the body is a TextualResource. Otherwise return null
      */
     private static String createExtendedLabelFromBody(ContentType type, ITypedResource body) {
-        switch (type) {
-            case COMMENT:
-                if (body instanceof TextualResource) {
-                    return ((TextualResource) body).getText();
-                }
-            default:
-                break;
+        if (ContentType.COMMENT.equals(type) && body instanceof TextualResource) {
+            return ((TextualResource) body).getText();
         }
 
         return null;
@@ -701,7 +695,7 @@ public class DisplayUserGeneratedContent {
      * If the annotation body has a type property of one of "Feature", "AuthorityResource" or "TextualBody" then the {@link #type} is set accordingly
      */
     private static ContentType getTypeFromBody(ITypedResource body) {
-        if (body != null &&  StringUtils.isNotBlank(body.getType())) {
+        if (body != null && StringUtils.isNotBlank(body.getType())) {
             switch (body.getType()) {
                 case "Feature":
                     return ContentType.GEOLOCATION;

@@ -56,6 +56,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.IpRange;
@@ -144,6 +145,7 @@ public class AccessConditionUtils {
      * @return Constructed query
      * @should use correct field name for AV files
      * @should use correct file name for text files
+     * @should use correct file name for pdf files
      * @should adapt basic alto file name
      * @should escape file name for wildcard search correctly
      * @should work correctly with urls
@@ -206,6 +208,7 @@ public class AccessConditionUtils {
             case "obj":
             case "gltf":
             case "glb":
+            case "pdf":
                 sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
                 break;
             default:
@@ -762,7 +765,7 @@ public class AccessConditionUtils {
         }
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
-        // logger.debug("permissions key: " + key + ": " + permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
+        // logger.debug("permissions key: {}: {}", key, permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
         if (permissions.containsKey(key)) {
             access = permissions.get(key);
             //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
@@ -936,7 +939,7 @@ public class AccessConditionUtils {
                 //check clientApplication
                 if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                     //check if specific client matches access conditions
-                    if (client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                    if (client.isPresent() && client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
                         accessMap.put(key, Boolean.TRUE);
                     } else {
                         //check if accesscondition match for all clients
@@ -986,7 +989,6 @@ public class AccessConditionUtils {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should remove license types whose names do not match access conditions
-     * @should remove license types whose condition query excludes the given pi
      * @should not remove moving wall license types to open access if condition query excludes given pi
      */
     static Map<String, List<LicenseType>> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
@@ -995,7 +997,7 @@ public class AccessConditionUtils {
             return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
         }
 
-        //         logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
+        // logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
         Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
         for (LicenseType licenseType : allLicenseTypes) {
             // logger.trace("{}, moving wall: {}", licenseType.getName(), licenseType.isMovingWall());
@@ -1003,19 +1005,19 @@ public class AccessConditionUtils {
                 continue;
             }
             // Check whether the license type contains conditions that exclude the given record, in that case disregard this license type
-            if (StringUtils.isNotEmpty(licenseType.getProcessedConditions()) && StringUtils.isNotEmpty(query)) {
-                String conditions = licenseType.getProcessedConditions();
-                // logger.trace("License conditions: {}", conditions);
-                StringBuilder sbQuery = new StringBuilder().append("+(").append(query).append(')');
-                if (conditions.charAt(0) == '-' || conditions.charAt(0) == '+') {
-                    sbQuery.append(' ').append(conditions);
-                } else {
-                    // Make sure the condition query is not optional (starts with + or -)
-                    sbQuery.append(" +(").append(conditions).append(')');
-                }
-                logger.trace("License relevance query: {}", StringTools.stripPatternBreakingChars(sbQuery.toString()));
+            if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)) {
+                StringBuilder sbQuery = new StringBuilder().append("+(")
+                        .append(query)
+                        .append(") +")
+                        .append(licenseType.getFilterQueryPart().trim())
+                        .append(" -(")
+                        .append(SearchHelper.getMovingWallQuery())
+                        .append(')');
+                logger.trace("License relevance query: {}",
+                        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString())));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the license subquery.", licenseType.getName(), query);
+                    logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
+                            licenseType.getName(), StringTools.stripPatternBreakingChars(query));
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
                         logger.trace(
@@ -1026,7 +1028,7 @@ public class AccessConditionUtils {
                         continue;
                     }
                 }
-                logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
+                logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(),
                         StringTools.stripPatternBreakingChars(query));
             }
 

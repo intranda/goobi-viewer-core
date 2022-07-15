@@ -321,7 +321,6 @@ var viewerJS = ( function( viewer ) {
 	                icon.options.shadowSize = [0,0];
 	            }
 	            if(highlighted) {
-	            console.log(this.config.markerIcon.highlightColor);
 	            	icon.options.markerColor = this.config.markerIcon.highlightColor;
 	            }
 	            return icon;
@@ -491,7 +490,6 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.setVisible = function(visible) {
-        console.log("set Visible ", visible, this);
         if(visible && !this.isVisible()) {
 	    	this.geoMap.map.addLayer(this.layer);
 	    } else if(!visible) {

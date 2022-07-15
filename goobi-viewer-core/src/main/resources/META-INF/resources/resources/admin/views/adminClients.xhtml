@@ -99,13 +99,14 @@
 	                                    <!-- EDIT -->
 	                                    <a href="#{navigationHelper.applicationUrl}admin/clients/edit/#{client.id}/" class="admin__table-action-link" aria-label="#{msg.edit}: #{client.name}">#{msg.edit}</a>
 	                                    <!-- DELETE -->
-	                                    <button
-	                                        class="admin__table-action-link -redlink"
-	                                        data-delete="client-#{client.id}"
-	                                        type="button">
-	                                        <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{client.clientIdentifier}" />
-	                                    	#{msg.delete}
-	                                    </button>
+                                        <button
+                                            class="admin__table-action-link -redlink"
+                                            data-require-confirmation="true"
+                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__clients__delete_client__confirm, client.name)}"
+                                            jsf:action="#{adminClientsBean.delete(client)}"
+                                            aria-label="#{msg.delete}: #{client.clientIdentifier}" >
+                                            #{msg.delete}
+                                        </button>
 	                                    
 									</div>
                                 </div>
@@ -113,7 +114,7 @@
 
 				<div class="col-2 d-flex align-items-center" role="gridcell">
                                 <span class="admin__table-ip-address">
-                                    #{client.clientIp}
+                                    #{client.subnetMask}
                                 </span>
                             </div>
 
@@ -138,18 +139,6 @@
                             </div>
 
                         </div>
-                        
-						<h:commandScript name="deleteClient" action="#{adminClientsBean.delete(client)}" render="@form"
-							onerror="e => viewerJS.swaltoasts.error(e.responseText)"/>
-
-						<!-- SWEET ALERT NOTIFICATION ON DELETE REQUEST -->
-			            <script type="text/javascript">
-							$('[data-delete="client-#{client.id}"]').on('click', function() {
-								viewerJS.notifications.confirm('', '' ,'', '#{msg.admin__clients__delete_client__confirm}<br/>"#{client.name}" ')
-									.then((result) => deleteClient())
-									.catch(() => {});
-							});
-			            </script>
                         
                     </ui:repeat>
                     

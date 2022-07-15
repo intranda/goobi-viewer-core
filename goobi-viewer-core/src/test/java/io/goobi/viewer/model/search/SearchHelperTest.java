@@ -216,7 +216,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
-                        + " (+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*)))",
+                        + " (+ACCESSCONDITION:\"restriction on access\" +" + SearchHelper.getMovingWallQuery() + "))",
                 suffix);
     }
 
@@ -229,7 +229,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(2);
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null, Optional.empty(), null);
         // User has listing privilege for 'license type 1 name'
-        Assert.assertTrue(suffix.contains("(+ACCESSCONDITION:\"license type 1 name\" +(-YEAR:[* TO 3000] *:*))"));
+        Assert.assertTrue(suffix, suffix.contains("ACCESSCONDITION:\"license type 1 name\""));
     }
 
     /**
@@ -255,10 +255,14 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertEquals("", suffix);
         }
         {
-            // Regular IP address (has listing privilege for 'license type 3 name')
+            // Regular IP address (has listing privilege for 'restriction on access')
             String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4", Optional.empty(), null);
-            Assert.assertTrue(suffix.contains(
-                    "+ACCESSCONDITION:\"restriction on access\" +(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*))"));
+            Assert.assertEquals(
+                    " +(ACCESSCONDITION:\"OPENACCESS\""
+                            + " ACCESSCONDITION:\"license type 2 name\""
+                            + " (+ACCESSCONDITION:\"restriction on access\" +" + SearchHelper.getMovingWallQuery() + ")"
+                            + " ACCESSCONDITION:\"restriction on access\")",
+                    suffix);
         }
     }
 
@@ -269,9 +273,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfMovingWallLicense() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null, Optional.empty(), null);
-        // Moving wall license with negated filter query
-        Assert.assertTrue(suffix.contains(
-                "(+ACCESSCONDITION:\"restriction on access\" -(-MDNUM_PUBLICRELEASEYEAR:[* TO " + LocalDateTime.now().getYear() + "] *:*))"));
+        Assert.assertEquals(
+                " +(ACCESSCONDITION:\"OPENACCESS\""
+                        + " ACCESSCONDITION:\"license type 2 name\""
+                        + " (+ACCESSCONDITION:\"restriction on access\" +" + SearchHelper.getMovingWallQuery() + "))",
+                suffix);
     }
 
     /**
@@ -1127,29 +1133,31 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
         // TODO makes this more robust against changes to the index
         String query = "DOCSTRCT:monograph AND MD_YEARPUBLISH:18*";
-        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
-                null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, 0, null);
-        String[] cellValues0 =
-                new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
-        String[] cellValues1 =
-                new String[] { "Label", "Gedichte",
-                        "Linz und seine Umgebungen", "Das Bücherwesen im Mittelalter",
-                        "Das Stilisieren der Thier- und Menschen-Formen" };
-        Assert.assertNotNull(wb);
-        Assert.assertEquals(1, wb.getNumberOfSheets());
-        SXSSFSheet sheet = wb.getSheetAt(0);
-        Assert.assertEquals(6, sheet.getPhysicalNumberOfRows());
-        {
-            SXSSFRow row = sheet.getRow(0);
-            Assert.assertEquals(2, row.getPhysicalNumberOfCells());
-            Assert.assertEquals("Query:", row.getCell(0).getRichStringCellValue().toString());
-            Assert.assertEquals(query, row.getCell(1).getRichStringCellValue().toString());
-        }
-        for (int i = 1; i < 4; ++i) {
-            SXSSFRow row = sheet.getRow(i);
-            Assert.assertEquals(2, row.getPhysicalNumberOfCells());
-            Assert.assertEquals(cellValues0[i - 1], row.getCell(0).getRichStringCellValue().toString());
-            Assert.assertEquals(cellValues1[i - 1], row.getCell(1).getRichStringCellValue().toString());
+        try (SXSSFWorkbook wb = new SXSSFWorkbook(25)) {
+            SearchHelper.exportSearchAsExcel(wb, query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
+                    null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, 0, null);
+            String[] cellValues0 =
+                    new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
+            String[] cellValues1 =
+                    new String[] { "Label", "Gedichte",
+                            "Linz und seine Umgebungen", "Das Bücherwesen im Mittelalter",
+                            "Das Stilisieren der Thier- und Menschen-Formen" };
+            Assert.assertNotNull(wb);
+            Assert.assertEquals(1, wb.getNumberOfSheets());
+            SXSSFSheet sheet = wb.getSheetAt(0);
+            Assert.assertEquals(6, sheet.getPhysicalNumberOfRows());
+            {
+                SXSSFRow row = sheet.getRow(0);
+                Assert.assertEquals(2, row.getPhysicalNumberOfCells());
+                Assert.assertEquals("Query:", row.getCell(0).getRichStringCellValue().toString());
+                Assert.assertEquals(query, row.getCell(1).getRichStringCellValue().toString());
+            }
+            for (int i = 1; i < 4; ++i) {
+                SXSSFRow row = sheet.getRow(i);
+                Assert.assertEquals(2, row.getPhysicalNumberOfCells());
+                Assert.assertEquals(cellValues0[i - 1], row.getCell(0).getRichStringCellValue().toString());
+                Assert.assertEquals(cellValues1[i - 1], row.getCell(1).getRichStringCellValue().toString());
+            }
         }
     }
 
@@ -1178,7 +1186,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
-                SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, null, true, false), 0, 10, null, null, null, null, null,
+                SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT),
+                        0, 10, null, null, null, null, null,
                         null, Locale.ENGLISH, 0);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
@@ -1356,7 +1365,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void cleanUpSearchTerm_shouldRemoveIllegalCharsCorrectly() throws Exception {
         Assert.assertEquals("a", SearchHelper.cleanUpSearchTerm("(a)"));
     }
-    
 
     /**
      * @see SearchHelper#cleanUpSearchTerm(String)
@@ -1433,11 +1441,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, false);
+        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, SearchAggregationType.NO_AGGREGATION);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
-        finalQuery = SearchHelper.buildFinalQuery(query, null, false, false);
+        finalQuery = SearchHelper.buildFinalQuery(query, null, false, SearchAggregationType.NO_AGGREGATION);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
     }
@@ -1519,7 +1527,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, true, false, null);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, false, null, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1529,7 +1537,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, false, false, null);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, false, null, SearchAggregationType.NO_AGGREGATION);
         Assert.assertEquals("+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1539,7 +1547,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", null, true, false, null);
+        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", null, false, null,
+                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1550,7 +1559,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void buildFinalQuery_shouldAddEmbeddedQueryTemplateIfBoostTopLevelDocstructsTrue() throws Exception {
         String finalQuery =
-                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", null, true, true, null);
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", null, true, null,
+                        SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals("+("
                 + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
                 + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
@@ -1579,7 +1589,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void buildFinalQuery_shouldEscapeQuotationMarksInEmbeddedQuery() throws Exception {
         String finalQuery =
-                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(\"foo bar\")", null, true, true, null);
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(\"foo bar\")", null, true, null,
+                        SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals("+("
                 + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(\\\"foo bar\\\"))")
                 + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",

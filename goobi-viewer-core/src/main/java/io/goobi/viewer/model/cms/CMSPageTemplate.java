@@ -221,13 +221,13 @@ public class CMSPageTemplate implements Serializable {
             if (item.getType() == CMSContentItemType.HTML || item.getType() == CMSContentItemType.TEXT) {
                 for (CMSPageLanguageVersion langVersion : page.getLanguageVersions()) {
                     if (!CMSPage.GLOBAL_LANGUAGE.equals(langVersion.getLanguage())) {
-                        CMSContentItem actualItem = item.clone();
+                        CMSContentItem actualItem = new CMSContentItem(item, null);
                         actualItem.setOwnerPageLanguageVersion(langVersion);
                         langVersion.getContentItems().add(actualItem);
                     }
                 }
             } else {
-                CMSContentItem actualItem = item.clone();
+                CMSContentItem actualItem = new CMSContentItem(item, null);
                 actualItem.setOwnerPageLanguageVersion(globalLanguageVersion);
                 globalLanguageVersion.getContentItems().add(actualItem);
             }
@@ -434,7 +434,7 @@ public class CMSPageTemplate implements Serializable {
             }
         }
         //return custom template for special items
-        switch(itemId) {
+        switch (itemId) {
             case CMSPage.TOPBAR_SLIDER_ID:
                 return new CMSContentItemTemplate(CMSContentItemType.SLIDER);
         }

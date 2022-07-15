@@ -70,7 +70,10 @@ var viewerJS = (function () {
  		viewer.disclaimerModal.init(this.disclaimerConfig);
 
         //init websocket
-        viewer.webSocket = new viewerJS.WebSocket(window.location.host, currentPath, viewerJS.WebSocket.PATH_SESSION_SOCKET);
+        if(viewer.useWebSocket) {
+	        viewer.webSocket = new viewerJS.WebSocket(window.location.host, currentPath, viewerJS.WebSocket.PATH_SESSION_SOCKET);
+        }
+        
   
         // init Bootstrap features
         viewerJS.helper.initBsFeatures();
@@ -327,7 +330,6 @@ var viewerJS = (function () {
                 viewer.tinyConfig.setup = function (ed) {
                     // listen to changes on tinymce input fields
                     ed.on('init', function (e) {
-                        console.log("init ", e);
                         viewerJS.stickyElements.refresh.next();
                     });
                     

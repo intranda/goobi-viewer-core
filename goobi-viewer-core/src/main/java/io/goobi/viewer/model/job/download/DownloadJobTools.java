@@ -115,7 +115,7 @@ public class DownloadJobTools {
         if (StringUtils.isBlank(identifier)) {
             throw new IllegalArgumentException("Cannot determine download path for empty identifier");
         }
-        if (!(EPUBDownloadJob.TYPE.equals(type) || PDFDownloadJob.TYPE.equals(type))) {
+        if (!(EPUBDownloadJob.LOCAL_TYPE.equals(type) || PDFDownloadJob.LOCAL_TYPE.equals(type))) {
             throw new IllegalArgumentException("Unknown download type: " + type);
         }
         File folder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(type));

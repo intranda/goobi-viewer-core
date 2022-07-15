@@ -207,7 +207,6 @@
 	        let string = sessionStorage.getItem("viewer_timematrix");
 	        if(string) {
 	            let json = JSON.parse(string);
-	            console.log("restoreValues", json);
 	            return json;
 	        } else {
 	            return undefined;
@@ -216,7 +215,6 @@
 	    
 	    storeValues() {
 	        let json = {startYear: this.startYear, endYear: this.endYear, maxHits: this.maxHits}
-	        console.log("store values ", json);
 	        let string = JSON.stringify(json);
 	        sessionStorage.setItem("viewer_timematrix", string);
 	    }

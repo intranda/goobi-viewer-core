@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -351,9 +352,20 @@ public class AdminClientsBean implements Serializable {
      * Check if a client application is logged in that is applicable for access privileges
      * @return  true if the session contains a clientApplication with the accessStatus {@link AccessStatus#GRANTED} and if the request ip matches the client's subnet mask
      */
-    public boolean isLoggedInClientAccepted() {
+    public boolean isLoggedInClientAccessGranted() {
         return ClientApplicationManager.getClientFromRequest(BeanUtils.getRequest())
-                .map(client -> client.mayLogIn(BeanUtils.getRequest()))
+                .map(client -> client.isAccessGranted())
                 .orElse(false);
+    }
+    
+    public boolean isLoggedInClientFromAllowedIP() {
+        HttpServletRequest request = BeanUtils.getRequest();
+        if(request != null) {            
+            return ClientApplicationManager.getClientFromRequest(BeanUtils.getRequest())
+                    .map(client -> client.matchIp(NetTools.getIpAddress(request)))
+                    .orElse(false);
+        } else {
+            return false;
+        }
     }
 }

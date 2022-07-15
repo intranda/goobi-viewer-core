@@ -67,15 +67,16 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/groups/edit/#{userGroup.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{userGroup.name}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
-                                                <button 
-                                                	jsf:rendered="#{!userGroup.hasMembers}"
-                                                    class="admin__boxed-entry-actions-delete -redlink"
-                                                    jsf:onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
-                                                    jsf:action="adminAllUserGroups"
-                                                    jsf:actionListener="#{adminBean.deleteUserGroupAction(userGroup)}">
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg.delete}: #{userGroup.name}" />
-                                                    #{msg.delete}
-                                                </button>
+	                                            <button
+	                                            	jsf:rendered="#{!userGroup.hasMembers}"
+	                                                class="admin__boxed-entry-actions-delete -redlink"
+	                                                data-require-confirmation="true"
+	                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.userGroup_deleteConfirmationText, userGroup.name)}"
+	                                                jsf:action="#{adminBean.deleteUserGroupAction(userGroup)}"
+	                                                aria-label="#{msg.delete}: #{userGroup.name}" >
+	                                                #{msg.delete}
+	                                            </button>
+                                            
                                             </div>
                                         </div>
                                     </div>

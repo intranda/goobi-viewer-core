@@ -67,7 +67,12 @@
 	
 	            <!-- CALENDAR SEARCH -->
 	            <div class="search-list__adv-search-info-back text-right">
-	                <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
+	                <ui:fragment rendered="#{calendarBean.selectYear != null}">
+                        <a href="#{request.contextPath}/searchcalendar/#{calendarBean.selectYear}/">#{msg.searchCalendarBack}</a>
+	                </ui:fragment>
+                    <ui:fragment rendered="#{calendarBean.selectYear == null}">
+                        <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
+                    </ui:fragment>
 	            </div>
 	        </div>
 	    </ui:fragment>

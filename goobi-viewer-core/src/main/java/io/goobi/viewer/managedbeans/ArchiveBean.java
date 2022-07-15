@@ -399,6 +399,7 @@ public class ArchiveBean implements Serializable {
         if (!this.databaseLoaded) {
             this.archiveManager.getOnlyDatabaseResource().ifPresent(resource -> {
                 String url = PrettyUrlTools.getAbsolutePageUrl("archives2", resource.getDatabaseId(), resource.getResourceId());
+                logger.trace(url);
                 try {
                     FacesContext.getCurrentInstance().getExternalContext().redirect(url);
                 } catch (IOException | NullPointerException e) {

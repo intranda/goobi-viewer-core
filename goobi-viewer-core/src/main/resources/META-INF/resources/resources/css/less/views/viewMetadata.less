@@ -4,6 +4,7 @@
    ==============================================================*/
 /* METADATA */
 /* BLOCK */
+/* THESE PROPERTIES HAVE IMPACT ON VIEWER BACKEND RECORD NOTES AS WELL */
 .metadata {
 	position: relative;
     margin-bottom: 1.3125rem;
@@ -66,7 +67,7 @@
 		margin-bottom: 1rem;
 		&.-isBoxed {
 			background: @white;
-			padding: 1rem 1.5rem;
+			padding: 1.5rem;
 			.metadata__ungrouped-wrapper {
 				background: transparent;
 				padding: 0;
@@ -77,6 +78,7 @@
 			}
 		}
 	}
+	/* THESE PROPERTIES HAVE IMPACT ON VIEWER BACKEND RECORD NOTES AS WELL */
 	&__element,
 	&__event {}
 	&__element-dl,
@@ -89,9 +91,13 @@
 			text-align: left;
 		}
 		dd {
-			margin-bottom: 0;
+			grid-column-start: 2;
 			margin-right: 0;
 			overflow: hidden;
+			margin-bottom: 1rem;
+			&:last-of-child {
+				margin-bottom: 0;
+			}
 		}
 	}
 	&__element-value,
@@ -181,14 +187,20 @@
 		}
 		.metadata__element-wrapper {
 			background: #f6f6f6;
-			padding: 1rem;
+			padding: 0 1rem;
 			margin-bottom: unset;
 		}
 	}
 	&__ungrouped-wrapper {
 		background: white;
 		padding: 1rem 1.5rem;
-		margin-bottom: 1rem;
+		// margin-bottom: 1rem;
+		&:last-child {
+			margin-bottom: 0;
+			dd {
+				margin-bottom: 0;
+			}
+		}
 	}
 	&__element-ungrouped {
 		grid-template-columns: 250px auto;
@@ -221,6 +233,13 @@
 		&.level-1 {
 		}
 		&.level-2 {
+		}
+	}
+	&__key-value-pairs-list {
+		dd {
+			&:last-child {
+				margin-bottom: 0;
+			}
 		}
 	}
 
@@ -306,8 +325,10 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	.metadata {
-		&__element-dl {
+		&__element-dl,
+		&__event-dl {
 			dd {
+				grid-column-start: unset;
 				word-wrap: anywhere;
 			}
 		}

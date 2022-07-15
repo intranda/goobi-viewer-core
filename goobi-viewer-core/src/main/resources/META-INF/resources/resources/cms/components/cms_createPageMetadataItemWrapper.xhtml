@@ -75,9 +75,8 @@
 <!--                         <button type="button" id="preview-button" class="btn btndefault" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}"> -->
 <!--                             #{msg.cms_pagePreview} -->
 <!--                         </button> -->
-                        
-                        
-                        <a id="preview-button" class="btn btn--default" href="#{cmsBean.getUrl(cmsBean.selectedPage)}">
+
+                        <a id="showPageButton" class="btn btn--default" target="_blank" href="#{cmsBean.getUrl(cmsBean.selectedPage)}">
                             #{msg.cms_pagePreview}
                         </a>
                         

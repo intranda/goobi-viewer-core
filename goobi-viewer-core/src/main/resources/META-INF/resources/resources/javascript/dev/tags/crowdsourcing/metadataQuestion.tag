@@ -36,7 +36,6 @@
 	this.on("mount", function() { 
 	    this.initOriginalMetadata(this.question);
 	    this.question.initializeView((anno) => new Crowdsourcing.Annotation.Metadata(anno, this.originalData), this.update, this.update, this.focusAnnotation);	    
-	    console.log("mounted ", this);
 		    this.opts.item.onImageOpen(function() {
 		        switch(this.question.targetSelector) {
 		            case Crowdsourcing.Question.Selector.WHOLE_PAGE:

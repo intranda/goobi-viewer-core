@@ -65,6 +65,7 @@ public enum PageType {
     userContentUpload("user/upload", "user__upload_content"),
     //admin
     admin("admin"),
+    adminDashboard("admin/"),
     adminUsers("admin/users"),
     adminUser("admin/users"),
     adminUserNew("admin/users/new"),
@@ -79,6 +80,7 @@ public enum PageType {
     adminRights("admin/rights"),
     adminRight("admin/rights"),
     adminRightsNew("admin/rights/new"),
+    adminUserComments("admin/comments"),
     adminUserCommentGroups("admin/comments"),
     adminUserCommentGroupAll("admin/comments/all"),
     adminUserCommentGroupNew("admin/comments/new"),
@@ -400,7 +402,8 @@ public enum PageType {
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;
         }
-        if ("application".equals(mimeType)) {
+
+        if (BaseMimeType.APPLICATION.equals(BaseMimeType.getByName(mimeType))) {
             return PageType.viewMetadata;
         }
         if (Boolean.TRUE.equals(anchorOrGroup)) {

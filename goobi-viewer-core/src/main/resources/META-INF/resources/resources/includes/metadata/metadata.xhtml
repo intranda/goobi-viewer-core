@@ -33,6 +33,14 @@
                     </button>
             </ui:fragment>
 	    </div>
+	    
+        <!-- BORN DIGITAL MATERIALS -->
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.bornDigital}">
+            <viewerComponent:bornDigital />
+
+            <div class="clearfix"></div>
+        </h:panelGroup>
+	    
         <c:forEach items="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
@@ -55,34 +63,81 @@
                                 <dt title="#{msg[metadata.label]}">
                                     <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                 </dt>
-                                <!-- grouped="true" -->
-                                <ui:fragment rendered="#{metadata.group}">
-                                    <dd>
-                                        <c:forEach items="#{metadata.values}" var="val">
-                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-                                                    <f:param value="#{val.getParamLabelWithColon(ind)}" />
-                                                    <f:param value="#{val.getComboValueShort(ind)}" />
-                                                </c:forEach>
-                                            </h:outputFormat>
-                                        </c:forEach>
-                                    </dd>
+                                
+								<!-- STANDARD STRUCTURE FOR METADATA -->
+								<ui:fragment>
+
+	                                <!-- grouped="true" -->
+										<ui:fragment rendered="#{metadata.group}">
+											<c:forEach items="#{metadata.values}" var="val">
+												<dd>
+													<h:outputFormat value="#{msg[val.masterValue]}"
+														escape="false">
+														<c:forEach begin="0" end="#{metadata.paramCount - 0}"
+															var="ind">
+															<f:param value="#{val.getParamLabelWithColon(ind)}" />
+															<f:param value="#{val.getComboValueShort(ind)}" />
+														</c:forEach>
+													</h:outputFormat>
+												</dd>
+											</c:forEach>
+										</ui:fragment>
+	
+									<!-- grouped="false" -->
+	                                <ui:fragment rendered="#{!metadata.group}">
+	                                    <c:forEach items="#{metadata.values}" var="val">
+	                                    	<dd>
+	                                            <span class="metadata__element-value">
+	                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+	                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
+	                                                        <f:param value="#{val.getComboValueShort(ind)}" />
+	                                                    </c:forEach>
+	                                                </h:outputFormat>
+	                                            </span>
+	                                    	</dd>
+	                                    </c:forEach>
+	                                </ui:fragment>
+                                
                                 </ui:fragment>
-    
-                                <!-- grouped="false" -->
-                                <ui:fragment rendered="#{!metadata.group}">
-                                    <dd>
-                                        <c:forEach items="#{metadata.values}" var="val">
-                                            <span class="metadata__element-value">
-                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-                                                        <f:param value="#{val.getComboValueShort(ind)}" />
-                                                    </c:forEach>
-                                                </h:outputFormat>
-                                            </span>
-                                        </c:forEach>
-                                    </dd>
-                                </ui:fragment>
+                                
+								<!-- STRUCTURE FOR METADATA VALUES IN ONE LINE -->
+<!-- 								<ui:fragment> -->
+
+	                                <!-- grouped="true" -->
+<!-- 										<ui:fragment rendered="#{metadata.group}"> -->
+<!-- 											<dd> -->
+<!-- 												<c:forEach items="#{metadata.values}" var="val"> -->
+<!-- 													<h:outputFormat value="#{msg[val.masterValue]}" -->
+<!-- 														escape="false"> -->
+<!-- 														<c:forEach begin="0" end="#{metadata.paramCount - 0}" -->
+<!-- 															var="ind"> -->
+<!-- 															<f:param value="#{val.getParamLabelWithColon(ind)}" /> -->
+<!-- 															<f:param value="#{val.getComboValueShort(ind)}" /> -->
+<!-- 														</c:forEach> -->
+<!-- 													</h:outputFormat> -->
+<!-- 													<h:outputText value="delimiter" escape="false" /> -->
+<!-- 												</c:forEach> -->
+<!-- 											</dd> -->
+<!-- 										</ui:fragment> -->
+	
+									<!-- grouped="false" -->
+<!-- 	                                <ui:fragment rendered="#{!metadata.group}"> -->
+<!-- 	                                    <dd> -->
+<!-- 		                                    <c:forEach items="#{metadata.values}" var="val"> -->
+<!-- 		                                            <span class="metadata__element-value"> -->
+<!-- 		                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false"> -->
+<!-- 		                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind"> -->
+<!-- 		                                                        <f:param value="#{val.getComboValueShort(ind)}" /> -->
+<!-- 		                                                    </c:forEach> -->
+<!-- 		                                                </h:outputFormat> -->
+<!-- 		                                                <h:outputText value="delimiter" escape="false" /> -->
+<!-- 		                                            </span> -->
+<!-- 		                                    </c:forEach> -->
+<!-- 	                                    </dd> -->
+<!-- 	                                </ui:fragment> -->
+                                
+<!--                                 </ui:fragment> -->
+                                
                             </dl>
                         </div>
                     </ui:fragment>
