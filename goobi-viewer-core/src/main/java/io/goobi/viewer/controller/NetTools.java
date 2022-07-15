@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -44,7 +45,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.valves.CrawlerSessionManagerValve;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
@@ -88,6 +91,11 @@ public class NetTools {
 
     private static final Logger logger = LoggerFactory.getLogger(NetTools.class);
 
+    /**
+     * Used to detect requests by web-crawlers
+     */
+    private static final String CRAWLER_SESSION_MANAGER_VALVE_CLASS_NAME = "org.apache.catalina.valves.CrawlerSessionManagerValve";
+    
     private static final int HTTP_TIMEOUT = 30000;
     /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
@@ -709,5 +717,19 @@ public class NetTools {
         } catch(IllegalArgumentException e) {
             return false;
         }
+    }
+    
+    /**
+     * Check if the request belongs to a session reserved for web crawlers by {@link org.apache.catalina.valves.CrawlerSessionManagerValve}
+     * @param request
+     * @return  true if the request is made by a web crawler
+     */
+    public static boolean isCrawlerBotRequest(HttpServletRequest request) {
+        
+        return Optional.ofNullable(request)
+                .map(HttpServletRequest::getSession)
+                .map(session -> session.getAttribute(CRAWLER_SESSION_MANAGER_VALVE_CLASS_NAME) != null)
+                .orElse(false);
+
     }
 }

@@ -20,6 +20,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -142,6 +144,68 @@ public class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest
         assertEquals(1l, stats.getUniqueRequestCount(type, "PI_02"));
         assertEquals(4l, stats.getTotalRequestCount(type, "PI_03"));
         assertEquals(1l, stats.getUniqueRequestCount(type, "PI_03"));
+    }
+    
+    @Test
+    public void test_getDateRange() throws DAOException {
+
+        IDAO dao = DataManager.getInstance().getDao();
+        RequestType type = RequestType.RECORD_VIEW;
+        
+        {
+            LocalDate date = LocalDate.of(2022, Month.JUNE, 30);
+            DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
+            
+            SessionUsageStatistics session1 = new SessionUsageStatistics("ABCD", "Ubuntu Firefox", "168.178.192.2");
+            session1.setRecordRequectCount(type, "PI_01", 7);
+            session1.setRecordRequectCount(type, "PI_02", 3);
+            stats.addSession(session1);
+            
+            SessionUsageStatistics session2 = new SessionUsageStatistics("EFGH", "Ubuntu Chrome", "168.178.192.3");
+            session2.setRecordRequectCount(type, "PI_01", 2);
+            session2.setRecordRequectCount(type, "PI_03", 4);
+            stats.addSession(session2);
+    
+            dao.addUsageStatistics(stats);
+        }
+        {
+            LocalDate date = LocalDate.of(2022, Month.JULY, 1);
+            DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
+            
+            SessionUsageStatistics session1 = new SessionUsageStatistics("ABCD", "Ubuntu Firefox", "168.178.192.2");
+            session1.setRecordRequectCount(type, "PI_01", 7);
+            session1.setRecordRequectCount(type, "PI_02", 3);
+            stats.addSession(session1);
+            
+            SessionUsageStatistics session2 = new SessionUsageStatistics("EFGH", "Ubuntu Chrome", "168.178.192.3");
+            session2.setRecordRequectCount(type, "PI_01", 2);
+            session2.setRecordRequectCount(type, "PI_03", 4);
+            stats.addSession(session2);
+    
+            dao.addUsageStatistics(stats);
+        }
+        {
+            LocalDate date = LocalDate.of(2022, Month.JULY, 4);
+            DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
+            
+            SessionUsageStatistics session1 = new SessionUsageStatistics("ABCD", "Ubuntu Firefox", "168.178.192.2");
+            session1.setRecordRequectCount(type, "PI_01", 7);
+            session1.setRecordRequectCount(type, "PI_02", 3);
+            stats.addSession(session1);
+            
+            SessionUsageStatistics session2 = new SessionUsageStatistics("EFGH", "Ubuntu Chrome", "168.178.192.3");
+            session2.setRecordRequectCount(type, "PI_01", 2);
+            session2.setRecordRequectCount(type, "PI_03", 4);
+            stats.addSession(session2);
+    
+            dao.addUsageStatistics(stats);
+        }
+        
+        List<DailySessionUsageStatistics> statsJuly = dao.getUsageStatistics(LocalDate.of(2022, Month.JULY, 1), LocalDate.of(2022, Month.AUGUST, 1));
+        assertEquals(2, statsJuly.size());
+        
+        List<DailySessionUsageStatistics> statsJune = dao.getUsageStatistics(LocalDate.of(2022, Month.JUNE, 30), LocalDate.of(2022, Month.JUNE, 30));
+        assertEquals(1, statsJune.size());
     }
 
 }

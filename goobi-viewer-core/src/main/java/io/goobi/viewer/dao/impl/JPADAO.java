@@ -6706,6 +6706,22 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+    
+    @Override
+    public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s WHERE s.date BETWEEN :start AND :end");
+            q.setParameter("start", start);
+            q.setParameter("end", end);
+            return q.getResultList();
+        } catch(NoResultException e) {
+            return Collections.emptyList();
+        } finally {
+            close(em);
+        }
+    }
 
     @Override
     public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {

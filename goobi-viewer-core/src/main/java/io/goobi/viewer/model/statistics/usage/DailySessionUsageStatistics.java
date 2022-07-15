@@ -120,6 +120,14 @@ public class DailySessionUsageStatistics {
     public long getTotalRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi)).sum();
     }
+    
+    public long getTotalRequestCount(RequestType type) {
+        return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type)).sum();
+    }
+    
+    public long getUniqueRequestCount(RequestType type) {
+        return this.sessions.stream().mapToLong(s -> s.getRequestedRecordsCount(type)).sum();
+    }
 
     /**
      * @param string
@@ -129,12 +137,16 @@ public class DailySessionUsageStatistics {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1l : 0l).sum();
     }
     
+    public List<String> getRecordIdentifier() {
+        return this.sessions.stream().flatMap(s -> s.getRecordIdentifier().stream()).distinct().collect(Collectors.toList());
+    }
+    
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
         String s = "Usage statistics for " + date + " in " + viewerInstance + ". Countains " + sessions.size() + " session instances\n";
         s += this.sessions.stream().map(e -> e.toString()).collect(Collectors.joining("\n"));
         return s;
 
     }
+
 }

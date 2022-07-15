@@ -2496,6 +2496,8 @@ public interface IDAO {
     
     public DailySessionUsageStatistics getUsageStatistics(LocalDate date)  throws DAOException; 
     
+    public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException;
+    
     public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
     
     public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
@@ -2566,6 +2568,7 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
 
 
 

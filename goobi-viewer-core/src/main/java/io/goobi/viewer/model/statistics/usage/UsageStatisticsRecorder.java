@@ -18,19 +18,20 @@ package io.goobi.viewer.model.statistics.usage;
 import java.time.LocalDate;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
-import io.goobi.viewer.dao.impl.JPAClassLoader;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * @author florian Class to be called on requests to be recorded in usage statistics. Stores and updates usage statistics in database on each request
  */
 public class UsageStatisticsRecorder {
+
 
     private static final String USER_AGENT_HEADER = "User-Agent";
 
@@ -46,7 +47,9 @@ public class UsageStatisticsRecorder {
     }
 
     public void recordRequest(RequestType type, String recordIdentifier, HttpServletRequest request) {
-        recordRequest(type, recordIdentifier, request.getSession().getId(), request.getHeader(USER_AGENT_HEADER), NetTools.getIpAddress(request));
+        if(!NetTools.isCrawlerBotRequest(request)) {            
+            recordRequest(type, recordIdentifier, request.getSession().getId(), request.getHeader(USER_AGENT_HEADER), NetTools.getIpAddress(request));
+        }
     }
 
     public void recordRequest(RequestType type, String recordIdentifier, String sessionID, String userAgent, String clientIP) {
@@ -109,4 +112,5 @@ public class UsageStatisticsRecorder {
         this.dao.addUsageStatistics(stats);
         return stats;
     }
+
 }

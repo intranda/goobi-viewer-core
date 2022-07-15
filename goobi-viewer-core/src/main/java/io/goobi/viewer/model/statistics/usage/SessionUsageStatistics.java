@@ -15,14 +15,15 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,11 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
-
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.dao.converter.NumberListConverter;
-import io.goobi.viewer.dao.converter.RequestCountsConverter;
 
 /**
  * @author florian
@@ -128,6 +124,19 @@ public class SessionUsageStatistics {
                 .orElse(0l);
     }
     
+    public long getTotalRequestCount(RequestType type) {
+        return this.recordRequests.values().stream().map(RequestCounts::new)
+                .mapToLong(count -> count.getCount(type))
+                .sum();
+    }
+    
+    public long getRequestedRecordsCount(RequestType type) {
+        return this.recordRequests.values().stream().map(RequestCounts::new)
+                .mapToLong(count -> count.getCount(type))
+                .map(count -> count > 0 ? 1 : 0)
+                .sum();
+    }
+    
     public void setRecordRequectCount(RequestType type, String recordIdentifier, long count) {
         synchronized (this.recordRequests) {           
             RequestCounts counts = getRecordRequests(recordIdentifier);
@@ -144,6 +153,10 @@ public class SessionUsageStatistics {
             long count = getRecordRequestCount(type, recordIdentifier);
             setRecordRequectCount(type, recordIdentifier, count+1);
         }
+    }
+    
+    public List<String> getRecordIdentifier() {
+        return new ArrayList<>(this.recordRequests.keySet());
     }
     
     @Override
