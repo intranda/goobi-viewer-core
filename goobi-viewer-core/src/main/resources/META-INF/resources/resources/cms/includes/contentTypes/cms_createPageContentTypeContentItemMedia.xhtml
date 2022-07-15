@@ -6,25 +6,25 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-    <!-- CONTENT TYPE MEDIA -->
-    <!-- AREA FOR AJAX REFRESH -->
-    <h:panelGroup id="contentItemImage" styleClass="admin__content-item-single" rendered="#{contentItem.type == 'CONTENTITEMIMAGE'}" layout="block">
-    
-    <div class="admin__content-item-order-wrapper">
-    	<div class="admin__content-item-order-arrow-up"><i class="fa fa-arrow-up" aria-hidden="true"></i></div>
-	    <div class="admin__content-item-order-number">2</div>
-	    <div class="admin__content-item-order-arrow-down"><i class="fa fa-arrow-down" aria-hidden="true"></i></div>
-    </div>
+    <h:panelGroup id="contentItemMedia" styleClass="admin__content-item" rendered="#{contentItem.type == 'CONTENT_ITEM_MEDIA'}" layout="block">
 
-        <div class="admin__content-item-single-inner">
-        
-        
-        	<div class="admin__content-item-header">
-            	<h2 class="admin__content-item-heading">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}</h2>
+		<!-- CONTENT ITEM ORDER FUNCTIONS -->
+		<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+
+		<!-- CONTENT ITEM INNER -->
+		<div class="admin__content-item-inner">
+
+			<!-- CONTENT HEADER + TOOLBAR -->
+			<div class="admin__content-item-header">
+				<h2 class="admin__content-item-heading">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}</h2>
+
             	<div class="admin__content-item-options">
-            		<div class="admin__content-item-option-size">100 %</div>
-            		<div class="admin__content-item-option-size">50 %</div>
-            		<div class="admin__content-item-option-lightbox">Lightbox</div>
+					<!-- LAYOUT: SIZING OPTIONS -->
+					<div class="admin__content-item-option admin__content-item-option-size">100 %</div>
+					<div class="admin__content-item-option admin__content-item-option-size">50 %</div>
+					<!-- ADDITIONAL OPTION: INCLUDE THIS IMAGE IN LIGHTBOX GALLERY -->
+            		<div class="admin__content-item-option admin__content-item-option-lightbox">Lightbox</div>
+            		
             	</div>
 			</div>
 
@@ -35,7 +35,7 @@
                 </ui:include>
             </ui:fragment>
 
-            <!-- ACTIONS -->
+            <!-- MEDIA FILE ACTIONS -->
             <div class="cms-module__actions">
                 <h:commandLink 
                     action="#{cmsBean.setSelectedMediaHolder(contentItem)}" 
@@ -53,14 +53,8 @@
                     <f:ajax render="contentMediaGroup" />
                 </h:commandLink>
             </div>
-            
-            
-            
-            
-        </div>
-    </h:panelGroup>
-    
-    
-    
-    
+
+		</div>
+
+	</h:panelGroup>
 </ui:composition>

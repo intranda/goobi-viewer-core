@@ -127,7 +127,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         BROWSETERMS,
         GEOMAP,
         SLIDER,
-        CONTENTITEMIMAGE;
+        CONTENT_ITEM_MEDIA,
+        CONTENT_ITEM_TEXTEDITOR;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type

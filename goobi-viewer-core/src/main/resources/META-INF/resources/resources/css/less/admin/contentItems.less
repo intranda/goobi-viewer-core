@@ -3,46 +3,86 @@
    ==============================================================*/
 
 /* ADMIN BACKEND STYLING */
-.admin__content-item {
-	&-wrapper {}
-	&-single {
+.admin .admin__content-item {
 		display: flex;
 		width: 100%;
 		// background: #f5f5f5;
-		padding: 1rem;
-	}
+		padding: 0rem;
+		border-bottom: 1px solid #ddd;
+		padding: 2rem 0;
+	&-wrapper {}
 	&-heading {
-		font-size: 25px;
-		margin-bottom: 2rem;
+		font-size: 22px;
+		margin-bottom: 0rem;
 	}
 	&-header {
 		display: flex;
+		margin-bottom: 2rem;
 	}
-	&-single-inner {
+	&-inner {
 		// display: flex;
 		flex-grow: 1;
 	}
 	&-order-wrapper {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		width: 50px;
+		align-items: flex-start;
+		width: 30px;
+	}
+	&-order-number {
+		padding-left: 2px;
 	}
 	&-options {
-		margin-left: auto;
 		display: flex;
-		div {
-			margin-right: 1rem;
-		}
+		align-items: flex-start;
+		gap: 1rem;
+		margin-left: auto;
 	}
-	&-option-size {
-		width: 50px;
-		padding: 3px;
-		border-radius: 2px;
+	&-option {
+		user-select: none;
+		padding: 5px;
 		background: #eee;
+		border: 1px solid #bbb;
+		text-align: center;
+		border-radius: 4px;
+		font-size: 12px;
+		cursor: pointer;
+		&-size {
+			width: 60px;
+		}
+		&-lightbox {
+			
+		}
+		&.-active {
+			background: #222;
+			color: #fff;
+		}
 	}
 }
 
+// CHANGES TO EXISTING STYLES CREATE PAGE
+
+.cms-create-page{
+	.admin-cms-media__file {
+		border: none;
+		padding: 0;
+	}
+	.admin-cms-media__file-image {
+		border: none;
+	}
+	.admin-cms-media__file-bottom, .admin-cms-media__file-select {
+		display: none;
+	}
+	.admin-cms-media__file-image {
+		width: 300px;
+	}
+	.admin-cms-media__file-top {
+		margin: 0;
+	}
+	.admin-cms-media__file:hover {
+		background: unset;
+	}
+}
 
 
 .content-items {

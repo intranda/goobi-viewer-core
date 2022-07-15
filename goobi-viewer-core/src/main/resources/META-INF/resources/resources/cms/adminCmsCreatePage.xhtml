@@ -173,9 +173,29 @@
                                                                         </div>
                                                                     </div>
                                                                 </ui:fragment>
+
+
+
                                                                 
-<!--                                                                 FLEXIBLE CONTENT ITEM IMAGE -->
-																<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeContentItemImage.xhtml" />
+																<!-- FLEXIBLE CONTENT ITEM TINY MCE -->
+																<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeContentItemTextEditor.xhtml" />
+                                                                
+																<!-- FLEXIBLE CONTENT ITEM IMAGE -->
+																<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeContentItemMedia.xhtml" />
+
+																<script>
+																$('.admin__content-item-option').on('click', function() {
+																	$(this).toggleClass('-active');
+																});
+																
+																</script>
+
+
+
+
+
+
+
 
                                                                 <!-- CONTENT TYPE MEDIA -->
 <!--                                                                 <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMedia.xhtml" /> -->
