@@ -352,7 +352,7 @@ public class BCrypt {
      */
     private void initKey() {
         p = P_orig.clone();
-        p = S_orig.clone();
+        s = S_orig.clone();
     }
 
     /**
