@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -46,12 +47,14 @@ import io.goobi.viewer.model.security.user.UserGroup;
  */
 @Entity
 @Table(name = "download_tickets")
-public class DownloadTicket {
+public class DownloadTicket implements Serializable {
+
+    private static final long serialVersionUID = -4208299894404324724L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(DownloadTicket.class);
 
-    private static final int VALIDITY_DAYS = 14;
+    public static final int VALIDITY_DAYS = 14;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,6 +102,13 @@ public class DownloadTicket {
      * Empty constructor.
      */
     public DownloadTicket() {
+        //
+    }
+
+    /**
+     * Sets the dates.
+     */
+    public void start() {
         dateCreated = LocalDateTime.now();
         expirationDate = dateCreated.plusDays(VALIDITY_DAYS);
     }

@@ -1216,7 +1216,7 @@ public class AccessConditionUtils {
         return hasTicket != null && hasTicket;
     }
 
-    public static String generateDownloadTicket(ILicensee licensee, String licenseName) {
+    public static String requestDownloadTicket(ILicensee licensee, String licenseName) {
         // TODO
         return null;
     }

@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,7 +64,9 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 @Entity
 @Table(name = "license_types")
-public class LicenseType implements IPrivilegeHolder, ILicenseType {
+public class LicenseType implements IPrivilegeHolder, ILicenseType, Serializable {
+
+    private static final long serialVersionUID = 9206827867178660886L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(LicenseType.class);
