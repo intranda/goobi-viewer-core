@@ -22,24 +22,24 @@
 package io.goobi.viewer.model.security;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.user.IpRange;
-import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.controller.BCrypt;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
@@ -54,7 +54,12 @@ public class DownloadTicket implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(DownloadTicket.class);
 
+    /** Default validity for a ticket in days. */
     public static final int VALIDITY_DAYS = 14;
+    /** Static salt for password hashes. */
+    public static final String SALT = "$2a$10$H580saN37o2P03A5myUCm.";
+    /** Random object for password generation. */
+    private static final Random random = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,50 +72,32 @@ public class DownloadTicket implements Serializable {
     @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
 
-    @Column(name = "license_name", nullable = false)
-    private String licenseName;
-
     @Column(name = "pi", nullable = false)
     private String pi;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Transient
+    private transient String password;
+
     @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    private transient String passwordHash;
 
     @Column(name = "title")
     private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "user_group_id")
-    private UserGroup userGroup;
-
-    @ManyToOne
-    @JoinColumn(name = "ip_range_id")
-    private IpRange ipRange;
-
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private ClientApplication client;
-
     @Column(name = "request_message")
     private String requestMessage;
 
-    /**
-     * Empty constructor.
-     */
-    public DownloadTicket() {
-        //
-    }
+    @Transient
+    private transient BCrypt bcrypt = new BCrypt();
 
     /**
-     * Sets the dates.
+     * Zero argument constructor.
      */
-    public void start() {
+    public DownloadTicket() {
         dateCreated = LocalDateTime.now();
-        expirationDate = dateCreated.plusDays(VALIDITY_DAYS);
     }
 
     /**
@@ -118,15 +105,69 @@ public class DownloadTicket implements Serializable {
      * @return
      */
     public boolean isValid() {
-        return expirationDate.isAfter(LocalDateTime.now());
+        return !isRequest() && !isExpired();
     }
 
     /**
      * 
-     * @param days
+     * @return true if expiration date is in the past; false otherwise
+     */
+    public boolean isExpired() {
+        return expirationDate.isBefore(LocalDateTime.now());
+    }
+
+    /**
+     * 
+     * @return true if ticket is requested but not yet issued; false otherwise
+     */
+    public boolean isRequest() {
+        return StringUtils.isEmpty(passwordHash);
+    }
+
+    /**
+     * 
+     * @param password Password to check
+     * @return true if password correct; false otherwise
+     * @should check password correctly
+     */
+    public boolean checkPassword(String password) {
+        if (StringUtils.isEmpty(password)) {
+            return false;
+        }
+
+        return BCrypt.checkPassword(password, passwordHash);
+    }
+
+    /**
+     * Sets the dates.
+     */
+    public void activate() {
+        if (passwordHash == null) {
+            password = StringTools.generateHash("xxx" + random.nextInt());
+            passwordHash = BCrypt.hashpw(password, SALT);
+        }
+        expirationDate = LocalDateTime.now().plusDays(VALIDITY_DAYS);
+    }
+
+    /**
+     * Extends the ticket by another <code>days</code> days.
+     * 
+     * @param days Number of days to extend
      */
     public void extend(long days) {
+        if (days <= 0) {
+            throw new IllegalArgumentException("days must be a number greater than 0");
+        }
+
         expirationDate = LocalDateTime.now().plusDays(days);
+    }
+
+    /**
+     * Resets the ticket's password and expiration date.
+     */
+    public void reset() {
+        passwordHash = null;
+        activate();
     }
 
     /**
@@ -180,20 +221,6 @@ public class DownloadTicket implements Serializable {
     }
 
     /**
-     * @return the licenseName
-     */
-    public String getLicenseName() {
-        return licenseName;
-    }
-
-    /**
-     * @param licenseName the licenseName to set
-     */
-    public void setLicenseName(String licenseName) {
-        this.licenseName = licenseName;
-    }
-
-    /**
      * @return the pi
      */
     public String getPi() {
@@ -205,6 +232,34 @@ public class DownloadTicket implements Serializable {
      */
     public void setPi(String pi) {
         this.pi = pi;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -233,62 +288,6 @@ public class DownloadTicket implements Serializable {
      */
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * @return the user
-     */
-    public User getUser() {
-        return user;
-    }
-
-    /**
-     * @param user the user to set
-     */
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    /**
-     * @return the userGroup
-     */
-    public UserGroup getUserGroup() {
-        return userGroup;
-    }
-
-    /**
-     * @param userGroup the userGroup to set
-     */
-    public void setUserGroup(UserGroup userGroup) {
-        this.userGroup = userGroup;
-    }
-
-    /**
-     * @return the ipRange
-     */
-    public IpRange getIpRange() {
-        return ipRange;
-    }
-
-    /**
-     * @param ipRange the ipRange to set
-     */
-    public void setIpRange(IpRange ipRange) {
-        this.ipRange = ipRange;
-    }
-
-    /**
-     * @return the client
-     */
-    public ClientApplication getClient() {
-        return client;
-    }
-
-    /**
-     * @param client the client to set
-     */
-    public void setClient(ClientApplication client) {
-        this.client = client;
     }
 
     /**

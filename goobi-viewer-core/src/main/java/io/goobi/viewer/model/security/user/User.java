@@ -127,7 +127,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     // TODO exclude from serialization
     @Column(name = "password_hash")
-    private String passwordHash;
+    private transient String passwordHash;
 
     /**
      * Activation key for the user account. Value must be reset to null when the account is activated.

@@ -536,11 +536,9 @@ public class AdminLicenseBean implements Serializable {
             return "";
         }
 
-        // TODO generate password
-        currentDownloadTicket.setPasswordHash("TODO");
         
         // Set creation and expiration dates
-        currentDownloadTicket.start();
+        currentDownloadTicket.activate();
 
         // Persist in DB
 

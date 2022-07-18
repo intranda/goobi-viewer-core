@@ -62,6 +62,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -93,6 +94,7 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.toc.TOCElement;
@@ -2514,14 +2516,51 @@ public class ActiveDocumentBean implements Serializable {
 
         return viewManager.isAllowUserComments();
     }
-    
+
+    /**
+     * 
+     * @param password
+     * @return
+     */
     public boolean checkDownloadTicket(String password) {
-        if(StringUtils.isEmpty(password)) {
+        if (StringUtils.isEmpty(password)) {
             return false;
         }
-        
-        // TODO
+
+        // TODO find ticket in DB and compare pw
         return false;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param email
+     * @param requestMessage
+     * @return
+     * @throws DAOException 
+     */
+    public static String requestDownloadTicketAction(String pi, String email, String requestMessage) throws DAOException {
+        if (StringUtils.isEmpty(pi)) {
+            throw new IllegalArgumentException("pi may not be empty");
+        }
+        if (StringUtils.isEmpty(email)) {
+            throw new IllegalArgumentException("email may not be empty");
+        }
+
+        DownloadTicket ticket = new DownloadTicket();
+        ticket.setPi(pi);
+        ticket.setEmail(email);
+        if (StringUtils.isNotEmpty(requestMessage)) {
+            ticket.setRequestMessage(requestMessage);
+        }
+
+        if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
+            Messages.info("download_ticket_created");
+        } else {
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
+        }
+
+        return "";
     }
 
     /**

@@ -831,7 +831,7 @@ public class AccessConditionUtils {
                 return AccessPermission.denied();
             }
         }
-        
+
         return AccessPermission.granted().setTicketRequired(ticketRequired);
     }
 
@@ -1198,7 +1198,7 @@ public class AccessConditionUtils {
                 })
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * 
      * @param pi
@@ -1206,18 +1206,13 @@ public class AccessConditionUtils {
      * @return
      */
     public static boolean isHasDownloadTicket(String pi, HttpServletRequest request) {
-        if(pi == null || request == null) {
+        if (pi == null || request == null) {
             return false;
         }
-        
-        String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
-        Boolean hasTicket  = (Boolean) request.getSession().getAttribute(attributeName);
-        
-        return hasTicket != null && hasTicket;
-    }
 
-    public static String requestDownloadTicket(ILicensee licensee, String licenseName) {
-        // TODO
-        return null;
+        String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
+        Boolean hasTicket = (Boolean) request.getSession().getAttribute(attributeName);
+
+        return hasTicket != null && hasTicket;
     }
 }
