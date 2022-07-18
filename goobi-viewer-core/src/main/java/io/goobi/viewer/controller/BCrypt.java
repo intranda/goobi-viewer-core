@@ -571,6 +571,16 @@ public class BCrypt {
     public static String gensalt() {
         return gensalt(GENSALT_DEFAULT_LOG2_ROUNDS);
     }
+    
+    /**
+     * 
+     * @param plaintext the plaintext password to verify
+     * @param hashed the previously-hashed password
+     * @return
+     */
+    public boolean checkpw(String plaintext, String hashed) {
+        return checkpw(plaintext, hashed);
+    }
 
     /**
      * Check that a plaintext password matches a previously hashed one
@@ -581,7 +591,7 @@ public class BCrypt {
      * @should return true if passwords match
      * @should return false if passwords dont match
      */
-    public static boolean checkpw(String plaintext, String hashed) {
+    public static boolean checkPassword(String plaintext, String hashed) {
         return (hashed.compareTo(hashpw(plaintext, hashed)) == 0);
     }
 }
