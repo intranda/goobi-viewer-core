@@ -579,7 +579,7 @@ public class BCrypt {
      * @return
      */
     public boolean checkpw(String plaintext, String hashed) {
-        return checkpw(plaintext, hashed);
+        return checkPassword(plaintext, hashed);
     }
 
     /**
