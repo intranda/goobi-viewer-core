@@ -1524,8 +1524,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         // If license requires a download ticket, check agent session for loaded ticket
         if (Boolean.TRUE.equals(bornDigitalDownloadTicketRequired) && FacesContext.getCurrentInstance() != null
                 && FacesContext.getCurrentInstance().getExternalContext() != null) {
-            return AccessConditionUtils.isHasDownloadTicket(pi,
-                    (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+            return AccessConditionUtils.isHasDownloadTicket(pi,  BeanUtils.getSession());
         }
 
         return bornDigitalDownloadTicketRequired;

@@ -30,7 +30,7 @@
                         <div class="admin__content-inner-content">
 
 							<!-- DOWNLOAD TICKETS -->
-							<ui:fragment>
+							<ui:fragment rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0}">
 								<div class="admin__table-tools">
 									<!-- PAGINATOR -->
 									<div class="admin__table-paginator">
@@ -40,7 +40,7 @@
 									<!-- FILTER -->
 									<div class="admin__table-filter">
 										<viewerComponent:dataTableColumnFilter
-											key="admin__clients__search"
+											key="admin__download_tickets__search"
 											filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email')}" />
 									</div>
 								</div>
@@ -49,27 +49,19 @@
 									aria-label="#{msg.admin__donwload_tickets__title}: #{msg.aria_label__table__actions}">
 									<div class="row no-gutters admin__table-title" role="row">
 										<div class="col-6 d-flex -sorting-arrow-trigger">
-											<viewerComponent:sortingArrow filterType="pi_email"
+											<viewerComponent:sortingArrow
 												colHeading="#{msg.admin__download_tickets__pi}"
-												list="#{adminClientsBean.configuredClientsModel}" />
+												list="#{adminLicenseBean.lazyModelDownloadTickets}" />
 										</div>
-
 										<div class="col-2 d-flex -sorting-arrow-trigger">
-											<viewerComponent:sortingArrow filterType="ip"
-												colHeading="#{msg.admin__clients__column_ip}"
-												list="#{adminClientsBean.configuredClientsModel}" />
+											<viewerComponent:sortingArrow
+												colHeading="#{msg.admin__download_tickets__email}"
+												list="#{adminLicenseBean.lazyModelDownloadTickets}" />
 										</div>
-
 										<div class="col-2 d-flex -sorting-arrow-trigger">
-											<viewerComponent:sortingArrow filterType="dateRegistered"
-												colHeading="#{msg.admin__clients__date_registered}"
-												list="#{adminClientsBean.configuredClientsModel}" />
-										</div>
-
-										<div class="col-2 d-flex -sorting-arrow-trigger">
-											<viewerComponent:sortingArrow filterType="dateLastAccess"
-												colHeading="#{msg.admin__clients__date_last_access}"
-												list="#{adminClientsBean.configuredClientsModel}" />
+											<viewerComponent:sortingArrow
+												colHeading="#{msg.admin__download_tickets__expiration_date}"
+												list="#{adminLicenseBean.lazyModelDownloadTickets}" />
 										</div>
 									</div>
 
@@ -79,8 +71,6 @@
 												<div class="admin__table-data" role="gridcell">
 													<!-- RECORD IDENTIFIER -->
 													<span class="admin__table-name admin__clients-table-client-name">#{ticket.pi}</span>
-													<!-- RECORD TITLE -->
-													<span class="admin__table-additional-info">#{ticket.title}</span>
 													<!-- EMAIL -->
 													<span>#{ticket.email}</span>
                                                     <!-- EXPIRES -->

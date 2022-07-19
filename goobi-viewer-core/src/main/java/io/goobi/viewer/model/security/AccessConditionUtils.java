@@ -36,6 +36,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +78,13 @@ import io.goobi.viewer.solr.SolrTools;
 public class AccessConditionUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessConditionUtils.class);
+
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private AccessConditionUtils() {
+        //
+    }
 
     /**
      * <p>
@@ -1201,18 +1209,28 @@ public class AccessConditionUtils {
 
     /**
      * 
-     * @param pi
-     * @param request
-     * @return
+     * @param pi Record identifier
+     * @param session {@link HttpSession} that contains permission attributes
+     * @return true if given <code>session</code> contains permission for <code>pi</code>; false otherwise
      */
-    public static boolean isHasDownloadTicket(String pi, HttpServletRequest request) {
-        if (pi == null || request == null) {
+    public static boolean isHasDownloadTicket(String pi, HttpSession session) {
+        if (pi == null || session == null) {
             return false;
         }
 
         String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
-        Boolean hasTicket = (Boolean) request.getSession().getAttribute(attributeName);
+        Boolean hasTicket = (Boolean) session.getAttribute(attributeName);
 
         return hasTicket != null && hasTicket;
+    }
+    
+    public static boolean addPermissionToSession(String pi, HttpSession session) {
+        if (pi == null || session == null) {
+            return false;
+        }
+        
+        String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
+        session.setAttribute(attributeName, true);
+        return true;
     }
 }

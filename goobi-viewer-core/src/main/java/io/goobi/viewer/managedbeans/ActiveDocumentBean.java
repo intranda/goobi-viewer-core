@@ -58,6 +58,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
@@ -130,7 +131,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private static int imageContainerWidth = 600;
 
-    private final Object lock = new Object();
+    private final transient Object lock = new Object();
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -189,6 +190,10 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
+
+    private transient String downloadTicketPassword;
+    private transient String downloadTicketEmail;
+    private transient String downloadTicketRequestMessage;
 
     /**
      * Empty constructor.
@@ -2277,6 +2282,13 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws DAOException
+     */
     public GeoMap generateGeoMap(String pi) throws PresentationException, DAOException {
         try {
             if ("-".equals(pi)) {
@@ -2335,7 +2347,7 @@ public class ActiveDocumentBean implements Serializable {
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
             if (subDocs != null) {
                 for (SolrDocument solrDocument : subDocs) {
-                    List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
+                    List<GeoMapFeature> docFeatures = new ArrayList<>();
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
@@ -2398,7 +2410,7 @@ public class ActiveDocumentBean implements Serializable {
      * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
      */
     public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
-        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
+        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel : null);
         this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
     }
 
@@ -2411,18 +2423,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
     }
-
-    //    /**
-    //     *
-    //     * @return ViewManager.doublePageMode; false if ViewManager is null
-    //     */
-    //    public boolean isDoublePageMode() {
-    //        if (viewManager == null) {
-    //            return false;
-    //        }
-    //
-    //        return viewManager.isDoublePageMode();
-    //    }
 
     /**
      * This method augments the setter <code>ViewManager.setDoublePageMode(boolean)</code> with URL modifications to reflect the mode.
@@ -2519,43 +2519,61 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * 
-     * @param password
-     * @return
+     * @return true if session contains permission for current record, false otherwise;
+     * @throws IndexUnreachableException
      */
-    public boolean checkDownloadTicket(String password) {
+    public boolean isHasDownloadTicket() throws IndexUnreachableException {
+        return AccessConditionUtils.isHasDownloadTicket(getPersistentIdentifier(), BeanUtils.getSession());
+    }
+
+    /**
+     * Checks the given download ticket password for validity for the current record and persists valid permission in the agent session.
+     * 
+     * @param password Ticket password to check
+     * @return true if ticket found and valid; false otherwise
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public boolean checkDownloadTicketPassword(String password) throws DAOException, IndexUnreachableException {
         if (StringUtils.isEmpty(password)) {
             return false;
         }
 
-        // TODO find ticket in DB and compare pw
+        String hash = BCrypt.hashpw(password, DownloadTicket.SALT);
+        DownloadTicket ticket = DataManager.getInstance().getDao().getDownloadTicketByPasswordHash(hash);
+        String pi = getPersistentIdentifier();
+        if ("-".equals(pi)) {
+            return false;
+        }
+        if (ticket != null && ticket.isValid() && ticket.getPi().equals(pi) && ticket.checkPassword(password)) {
+            // Add permission to browser session
+            return AccessConditionUtils.addPermissionToSession(pi, BeanUtils.getSession());
+        }
+
         return false;
     }
 
     /**
      * 
-     * @param pi
-     * @param email
-     * @param requestMessage
      * @return
-     * @throws DAOException 
+     * @throws DAOException
+     * @throws IndexUnreachableException
      */
-    public static String requestDownloadTicketAction(String pi, String email, String requestMessage) throws DAOException {
-        if (StringUtils.isEmpty(pi)) {
-            throw new IllegalArgumentException("pi may not be empty");
-        }
-        if (StringUtils.isEmpty(email)) {
-            throw new IllegalArgumentException("email may not be empty");
+    public String requestNewDownloadTicketAction() throws DAOException, IndexUnreachableException {
+        if (StringUtils.isEmpty(downloadTicketEmail)) {
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return "";
         }
 
         DownloadTicket ticket = new DownloadTicket();
-        ticket.setPi(pi);
-        ticket.setEmail(email);
-        if (StringUtils.isNotEmpty(requestMessage)) {
-            ticket.setRequestMessage(requestMessage);
+        ticket.setPi(getPersistentIdentifier());
+        ticket.setEmail(downloadTicketEmail);
+        if (StringUtils.isNotEmpty(downloadTicketRequestMessage)) {
+            ticket.setRequestMessage(downloadTicketRequestMessage);
         }
 
         if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
-            Messages.info("download_ticket_created");
+            Messages.info("download_ticket_request_created");
         } else {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
         }
@@ -2571,8 +2589,51 @@ public class ActiveDocumentBean implements Serializable {
     public boolean isRequiresWebSocket() {
         if (viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
             return viewManager.getTopStructElement().getMetadataFields().containsKey(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
-        } else {
-            return false;
         }
+
+        return false;
     }
+
+    /**
+     * @return the downloadTicketPassword
+     */
+    public String getDownloadTicketPassword() {
+        return downloadTicketPassword;
+    }
+
+    /**
+     * @param downloadTicketPassword the downloadTicketPassword to set
+     */
+    public void setDownloadTicketPassword(String downloadTicketPassword) {
+        this.downloadTicketPassword = downloadTicketPassword;
+    }
+
+    /**
+     * @return the downloadTicketEmail
+     */
+    public String getDownloadTicketEmail() {
+        return downloadTicketEmail;
+    }
+
+    /**
+     * @param downloadTicketEmail the downloadTicketEmail to set
+     */
+    public void setDownloadTicketEmail(String downloadTicketEmail) {
+        this.downloadTicketEmail = downloadTicketEmail;
+    }
+
+    /**
+     * @return the downloadTicketRequestMessage
+     */
+    public String getDownloadTicketRequestMessage() {
+        return downloadTicketRequestMessage;
+    }
+
+    /**
+     * @param downloadTicketRequestMessage the downloadTicketRequestMessage to set
+     */
+    public void setDownloadTicketRequestMessage(String downloadTicketRequestMessage) {
+        this.downloadTicketRequestMessage = downloadTicketRequestMessage;
+    }
+
 }

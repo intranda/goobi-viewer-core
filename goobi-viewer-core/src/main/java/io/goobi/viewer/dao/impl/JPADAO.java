@@ -4257,7 +4257,6 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append("a.targetPI in :targetPIs");
             }
-            logger.trace(sbQuery.toString());
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
             if (owner != null) {
