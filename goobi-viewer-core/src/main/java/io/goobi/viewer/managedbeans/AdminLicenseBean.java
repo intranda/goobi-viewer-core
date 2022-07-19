@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -36,6 +37,7 @@ import javax.faces.model.SelectItemGroup;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,9 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -75,6 +80,8 @@ public class AdminLicenseBean implements Serializable {
     private static final String URL_PRETTY_ADMINLICENSES ="pretty:adminLicenses";
 
     static final int DEFAULT_ROWS_PER_PAGE = 15;
+    
+    private TableDataProvider<DownloadTicket> lazyModelDownloadTickets;
 
     private Role currentRole = null;
     private LicenseType currentLicenseType = null;
@@ -97,6 +104,39 @@ public class AdminLicenseBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        lazyModelDownloadTickets = new TableDataProvider<>(new TableDataSource<DownloadTicket>() {
+
+            @Override
+            public List<DownloadTicket> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                logger.trace("getEntries<DownloadTicket>, {}-{}", first, first + pageSize);
+                try {
+                    if (StringUtils.isEmpty(sortField)) {
+                        sortField = "id";
+                    }
+                    return DataManager.getInstance().getDao().getDownloadTickets(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
+                }
+                return Collections.emptyList();
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                try {
+                    return DataManager.getInstance().getDao().getDownloadTicketCount(filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
+                }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
+              // 
+            }
+        });
+        lazyModelDownloadTickets.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        lazyModelDownloadTickets.setFilters("pi_email");
     }
 
     // LicenseType
@@ -517,6 +557,29 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      * <p>
+     * Getter for the field <code>lazyModelDownloadTickets</code>.
+     * </p>
+     *
+     * @return the lazyModelDownloadTickets
+     */
+    public TableDataProvider<DownloadTicket> getLazyModelDownloadTickets() {
+        return lazyModelDownloadTickets;
+    }
+
+    /**
+     * <p>
+     * getPageDownloadTickets.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<DownloadTicket> getPageDownloadTickets() {
+        return lazyModelDownloadTickets.getPaginatorList();
+    }
+    
+
+    /**
+     * <p>
      * Creates a new <code>currentDownloadTicket</code> instance.
      * </p>
      */
@@ -694,7 +757,7 @@ public class AdminLicenseBean implements Serializable {
      */
     public void setCurrentLicense(License currentLicense) {
         if (currentLicense != null) {
-            logger.trace("setCurrentLicense: {}", currentLicense.toString());
+            logger.trace("setCurrentLicense: {}", currentLicense);
             // Prepare privileges working copy (but only if the same license is not already set)
             currentLicense.resetTempData();
             if (!currentLicense.equals(this.currentLicense)) {

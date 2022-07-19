@@ -3296,4 +3296,31 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Thread.sleep(duration);
         dao.executeUpdate("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id);
     }
+
+    /**
+     * @see JPADAO#getDownloadTicketCount(Map)
+     * @verifies return correct count
+     */
+    @Test
+    public void getDownloadTicketCount_shouldReturnCorrectCount() throws Exception {
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getDownloadTicketCount(Collections.emptyMap()));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
+    }
+
+    /**
+     * @see JPADAO#getDownloadTickets(int,int,String,boolean,Map)
+     * @verifies filter rows correctly
+     */
+    @Test
+    public void getDownloadTickets_shouldFilterRowsCorrectly() throws Exception {
+        Assert.assertEquals(3, DataManager.getInstance().getDao().getDownloadTickets(0, 10, null, false, null).size());
+        Assert.assertEquals(2,
+                DataManager.getInstance()
+                        .getDao()
+                        .getDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "user1@example.com"))
+                        .size());
+        Assert.assertEquals(1,
+                DataManager.getInstance().getDao().getDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456")).size());
+    }
 }

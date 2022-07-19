@@ -69,11 +69,8 @@ public class DownloadTicket implements Serializable {
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
-    @Column(name = "expiration_date", nullable = false)
+    @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
-
-    @Column(name = "pi", nullable = false)
-    private String pi;
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -81,8 +78,11 @@ public class DownloadTicket implements Serializable {
     @Transient
     private transient String password;
 
-    @Column(name = "password_hash", nullable = false)
-    private transient String passwordHash;
+    @Column(name = "password_hash")
+    private String passwordHash;
+
+    @Column(name = "pi", nullable = false)
+    private String pi;
 
     @Column(name = "title")
     private String title;
@@ -105,7 +105,7 @@ public class DownloadTicket implements Serializable {
      * @return
      */
     public boolean isValid() {
-        return !isRequest() && !isExpired();
+        return expirationDate != null && passwordHash != null && !isRequest() && !isExpired();
     }
 
     /**
@@ -113,7 +113,7 @@ public class DownloadTicket implements Serializable {
      * @return true if expiration date is in the past; false otherwise
      */
     public boolean isExpired() {
-        return expirationDate.isBefore(LocalDateTime.now());
+        return expirationDate != null && expirationDate.isBefore(LocalDateTime.now());
     }
 
     /**

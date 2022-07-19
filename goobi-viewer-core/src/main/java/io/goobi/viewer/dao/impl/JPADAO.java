@@ -97,7 +97,6 @@ import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.DownloadTicket;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -1671,7 +1670,6 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
 
     /** {@inheritDoc} */
     @Override
@@ -1686,7 +1684,6 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
 
     /** {@inheritDoc} */
     @Override
@@ -1704,11 +1701,52 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct count
+     */
     @Override
-    public DownloadTicket getDownloadTicketsForLicenseName(String licenseName, String pi, ILicensee licensee) throws DAOException {
-        // TODO Auto-generated method stub
-        return null;
+    public long getDownloadTicketCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("DownloadTicket", null, filters);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should filter rows correctly
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<DownloadTicket> getDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM DownloadTicket a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            sbQuery.append(filterQuery);
+            if (StringUtils.isNotBlank(sortField)) {
+                String[] sortFields = sortField.split("_");
+                sbQuery.append(" ORDER BY ");
+                for (String sf : sortFields) {
+                    sbQuery.append("a.").append(sf);
+                    if (descending) {
+                        sbQuery.append(" DESC");
+                    }
+                    sbQuery.append(",");
+                }
+                sbQuery.deleteCharAt(sbQuery.length() - 1);
+            }
+
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+        } finally {
+            close(em);
+        }
     }
 
     /** {@inheritDoc} */
@@ -6334,6 +6372,13 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * 
+     * @param staticFilterQuery
+     * @param filters
+     * @param params
+     * @return
+     */
     static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
         StringBuilder q = new StringBuilder(" ");
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
@@ -6644,7 +6689,7 @@ public class JPADAO implements IDAO {
                         where.append("UPPER(" + tableKey + ".")
                                 .append(keyPart.replace("-", "."))
                                 .append(") LIKE :")
-                                .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
+                                .append(key.replace(MULTIKEY_SEPARATOR, "").replace("-", ""));
                         keyPartCount++;
                     }
                     where.append(" ) ");
@@ -6681,15 +6726,14 @@ public class JPADAO implements IDAO {
                                 .append(tableKey)
                                 .append(".owner.id)");
                     }
-                    params.put(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
+                    params.put(key.replace(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
                 }
                 if (count > 1) {
                     where.append(" )");
                 }
             }
         }
-        String filterString = join.append(where).toString();
-        return filterString;
+        return join.append(where).toString();
     }
 
     @Override
@@ -6718,7 +6762,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     @Override
     public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException {
         preQuery();
@@ -6727,7 +6771,7 @@ public class JPADAO implements IDAO {
             Query q = em.createQuery("SELECT c FROM ClientApplication c WHERE c.clientIdentifier = :clientId");
             q.setParameter("clientId", clientId);
             return (ClientApplication) q.getSingleResult();
-        } catch(NoResultException e) {
+        } catch (NoResultException e) {
             return null;
         } finally {
             close(em);
@@ -6773,4 +6817,5 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+
 }

@@ -65,7 +65,6 @@ import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.DownloadTicket;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -801,7 +800,31 @@ public interface IDAO {
      */
     public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException;
     
-    public DownloadTicket getDownloadTicketsForLicenseName(String licenseName, String pi, ILicensee licensee) throws DAOException;
+    /**
+     * <p>
+     * getDownloadTicketCount.
+     * </p>
+     *
+     * @param filters Selected filters
+     * @return Number of found rows
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getDownloadTicketCount(Map<String, String> filters) throws DAOException;
+    
+    /**
+     * <p>
+     * getDownloadTicket.
+     * </p>
+     *
+     * @param first First row index
+     * @param pageSize Number of rows
+     * @param sortField a {@link java.lang.String} object.
+     * @param descending true if descending order requested; false otherwise
+     * @param filters Selected filters
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<DownloadTicket> getDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
     
     /**
      * <p>
