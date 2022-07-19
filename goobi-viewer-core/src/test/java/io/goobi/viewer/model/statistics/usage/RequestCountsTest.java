@@ -28,7 +28,7 @@ public class RequestCountsTest {
     @Test
     public void test_serialize() {
         
-        RequestCounts counts = new RequestCounts();
+        SessionRequestCounts counts = new SessionRequestCounts();
         counts.setCount(RequestType.FILE_DOWNLOAD, 4);
         counts.setCount(RequestType.MEDIA_RESOURCE, 3);
         counts.setCount(RequestType.RECORD_VIEW, 23);
@@ -39,7 +39,7 @@ public class RequestCountsTest {
 
     @Test
     public void test_serialize_empty() {
-        RequestCounts counts = new RequestCounts();
+        SessionRequestCounts counts = new SessionRequestCounts();
     
         String s = counts.toJsonArray();
         assertEquals("[0,0,0]", s);
@@ -47,7 +47,7 @@ public class RequestCountsTest {
     
     @Test
     public void test_serialize_partially_empty() {
-        RequestCounts counts = new RequestCounts();
+        SessionRequestCounts counts = new SessionRequestCounts();
         counts.setCount(RequestType.MEDIA_RESOURCE, 3);
 
         String s = counts.toJsonArray();
@@ -57,7 +57,7 @@ public class RequestCountsTest {
     @Test
     public void test_deserialize() {
         String s = "[23,4,3]";
-        RequestCounts counts = new RequestCounts(s);
+        SessionRequestCounts counts = new SessionRequestCounts(s);
         assertEquals(Long.valueOf(23), counts.getCount(RequestType.RECORD_VIEW));
         assertEquals(Long.valueOf(4), counts.getCount(RequestType.FILE_DOWNLOAD));
         assertEquals(Long.valueOf(3), counts.getCount(RequestType.MEDIA_RESOURCE));

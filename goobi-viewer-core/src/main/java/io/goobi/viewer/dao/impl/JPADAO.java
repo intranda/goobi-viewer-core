@@ -6691,6 +6691,22 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+    
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<DailySessionUsageStatistics> getAllUsageStatistics() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s");
+            return q.getResultList();
+        } catch(NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
 
     @Override
     public DailySessionUsageStatistics getUsageStatistics(LocalDate date) throws DAOException {

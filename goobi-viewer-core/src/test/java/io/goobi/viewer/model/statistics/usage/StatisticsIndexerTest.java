@@ -1,0 +1,87 @@
+package io.goobi.viewer.model.statistics.usage;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.stream.StreamSupport;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Test;
+
+import io.goobi.viewer.exceptions.DAOException;
+
+public class StatisticsIndexerTest {
+
+    @Test
+    public void test() throws DAOException, IOException {
+        Path hotfolder = Paths.get("src/test/resources/hotfolder");
+        Path hotfolderFile = hotfolder.resolve("statistics-usage-2022-07-04.json");
+        if(Files.exists(hotfolderFile)) {
+            Files.delete(hotfolderFile);
+        }
+        DailySessionUsageStatistics stats = createStatistics();
+        
+        StatisticsIndexer indexer = new StatisticsIndexer(hotfolder);
+        indexer.indexStatistics(stats);
+        
+        assertTrue(Files.exists(hotfolderFile));
+        String jsonString = Files.readString(hotfolderFile);
+        JSONObject json = new JSONObject(jsonString);
+        assertEquals("viewer-test", json.getString("viewer-name"));
+        assertEquals("2022-07-04", json.getString("date"));
+        
+        JSONArray records = json.getJSONArray("records");
+        assertEquals(3, records.length());
+
+        JSONObject pi1Records = StreamSupport.stream(records.spliterator(), false)
+                .map(o -> (JSONObject)o)
+                .filter(j -> j.getString("pi").equals("PI_01"))
+                .findAny().orElse(null);
+        assertNotNull(pi1Records);
+        assertEquals(9, pi1Records.getJSONArray("counts").get(0));
+        assertEquals(2, pi1Records.getJSONArray("counts").get(1));
+        
+        JSONObject pi2Records = StreamSupport.stream(records.spliterator(), false)
+                .map(o -> (JSONObject)o)
+                .filter(j -> j.getString("pi").equals("PI_02"))
+                .findAny().orElse(null);
+        assertNotNull(pi2Records);
+        assertEquals(3, pi2Records.getJSONArray("counts").get(0));
+        assertEquals(1, pi2Records.getJSONArray("counts").get(1));
+        
+        JSONObject pi3Records = StreamSupport.stream(records.spliterator(), false)
+                .map(o -> (JSONObject)o)
+                .filter(j -> j.getString("pi").equals("PI_03"))
+                .findAny().orElse(null);
+        assertNotNull(pi3Records);
+        assertEquals(4, pi3Records.getJSONArray("counts").get(0));
+        assertEquals(1, pi3Records.getJSONArray("counts").get(1));
+        
+    }
+    
+    private DailySessionUsageStatistics createStatistics() {
+            LocalDate date = LocalDate.of(2022, Month.JULY, 4);
+            DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
+            
+            SessionUsageStatistics session1 = new SessionUsageStatistics("ABCD", "Ubuntu Firefox", "168.178.192.2");
+            session1.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_01", 7);
+            session1.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_02", 3);
+            stats.addSession(session1);
+            
+            SessionUsageStatistics session2 = new SessionUsageStatistics("EFGH", "Ubuntu Chrome", "168.178.192.3");
+            session2.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_01", 2);
+            session2.setRecordRequectCount(RequestType.RECORD_VIEW, "PI_03", 4);
+            stats.addSession(session2);
+    
+            return stats;
+    }
+
+}

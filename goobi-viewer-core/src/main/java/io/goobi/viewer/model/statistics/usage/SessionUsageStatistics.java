@@ -110,12 +110,12 @@ public class SessionUsageStatistics {
         return clientIP;
     }
     
-    private RequestCounts getRecordRequests(String identifier) {
+    private SessionRequestCounts getRecordRequests(String identifier) {
         String s = this.recordRequests.get(identifier);
-        return new RequestCounts(s);
+        return new SessionRequestCounts(s);
     }
     
-    private void setRecordRequests(String identifier, RequestCounts counts) {
+    private void setRecordRequests(String identifier, SessionRequestCounts counts) {
         String s = counts.toJsonArray();
         this.recordRequests.put(identifier, s);
     }
@@ -132,13 +132,13 @@ public class SessionUsageStatistics {
     
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         Collection<String> requestValues = getRequestedCounts(identifiersToInclude);
-        return requestValues.stream().map(RequestCounts::new)
+        return requestValues.stream().map(SessionRequestCounts::new)
                 .mapToLong(count -> count.getCount(type))
                 .sum();
     }
 
     public long getRequestedRecordsCount(RequestType type) {
-        return this.recordRequests.values().stream().map(RequestCounts::new)
+        return this.recordRequests.values().stream().map(SessionRequestCounts::new)
                 .mapToLong(count -> count.getCount(type))
                 .map(count -> count > 0 ? 1 : 0)
                 .sum();
@@ -146,7 +146,7 @@ public class SessionUsageStatistics {
     
     public void setRecordRequectCount(RequestType type, String recordIdentifier, long count) {
         synchronized (this.recordRequests) {           
-            RequestCounts counts = getRecordRequests(recordIdentifier);
+            SessionRequestCounts counts = getRecordRequests(recordIdentifier);
             counts.setCount(type, count);
             setRecordRequests(recordIdentifier, counts);
         }

@@ -29,15 +29,15 @@ import org.json.JSONArray;
  * @author florian
  * Class holding counts of requests of different {@link RequestType}s. Should be serialized to a string to dao storage
  */
-public class RequestCounts {
+public class SessionRequestCounts {
 
     private final Map<RequestType, Long> counts = new HashMap<>();
     
-    public RequestCounts() {
+    public SessionRequestCounts() {
         
     }
     
-    public RequestCounts(String data) {
+    public SessionRequestCounts(String data) {
         if(StringUtils.isNotBlank(data)) {            
             JSONArray array = new JSONArray(data);
             for (int i = 0; i < array.length(); i++) {
@@ -76,7 +76,7 @@ public class RequestCounts {
     
     public boolean equals(Object o) {
         if(o != null && o.getClass().equals(this.getClass())) {
-            RequestCounts other = (RequestCounts)o;
+            SessionRequestCounts other = (SessionRequestCounts)o;
             if(other.counts.size() == this.counts.size()) {
                 for (RequestType type : this.counts.keySet()) {
                     Long thisCount = this.counts.get(type);

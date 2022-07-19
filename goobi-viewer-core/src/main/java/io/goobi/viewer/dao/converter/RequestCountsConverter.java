@@ -17,22 +17,22 @@ package io.goobi.viewer.dao.converter;
 
 import javax.persistence.AttributeConverter;
 
-import io.goobi.viewer.model.statistics.usage.RequestCounts;
+import io.goobi.viewer.model.statistics.usage.SessionRequestCounts;
 
 /**
  * @author florian
  *
  */
-public class RequestCountsConverter implements AttributeConverter<RequestCounts, String> {
+public class RequestCountsConverter implements AttributeConverter<SessionRequestCounts, String> {
 
     @Override
-    public String convertToDatabaseColumn(RequestCounts attribute) {
+    public String convertToDatabaseColumn(SessionRequestCounts attribute) {
         return attribute == null ? "" : attribute.toJsonArray();
     }
 
     @Override
-    public RequestCounts convertToEntityAttribute(String dbData) {
-        return new RequestCounts(dbData);
+    public SessionRequestCounts convertToEntityAttribute(String dbData) {
+        return new SessionRequestCounts(dbData);
     }
 
 }

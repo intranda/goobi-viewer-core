@@ -2494,6 +2494,8 @@ public interface IDAO {
 
     public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException;
     
+    public List<DailySessionUsageStatistics> getAllUsageStatistics() throws DAOException;
+    
     public DailySessionUsageStatistics getUsageStatistics(LocalDate date)  throws DAOException; 
     
     public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException;
