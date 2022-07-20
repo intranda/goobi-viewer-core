@@ -204,7 +204,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * @param checkAllDescendents a boolean.
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<? extends HierarchicalBrowseDcElement> getAllVisibleDescendents(boolean checkAllDescendents) {
+    public Collection<HierarchicalBrowseDcElement> getAllVisibleDescendents(boolean checkAllDescendents) {
         List<HierarchicalBrowseDcElement> list = new ArrayList<>();
         if (checkAllDescendents || isShowSubElements()) {
             for (HierarchicalBrowseDcElement child : children) {
