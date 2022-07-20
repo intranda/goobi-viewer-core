@@ -143,7 +143,7 @@ public class DownloadTicket implements Serializable {
      */
     public void activate() {
         if (passwordHash == null) {
-            password = StringTools.generateHash("xxx" + random.nextInt());
+            password = StringTools.generateHash("xxx" + random.nextInt()).substring(0, 12);
             passwordHash = BCrypt.hashpw(password, SALT);
         }
         expirationDate = LocalDateTime.now().plusDays(VALIDITY_DAYS);
