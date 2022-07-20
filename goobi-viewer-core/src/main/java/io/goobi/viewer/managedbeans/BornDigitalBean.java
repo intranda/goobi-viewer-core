@@ -51,7 +51,6 @@ public class BornDigitalBean implements Serializable {
     private transient String downloadTicketPassword;
     private String downloadTicketEmail;
     private String downloadTicketRequestMessage;
-    private boolean ticketRequestMode = false;
 
     /**
      * 
@@ -166,20 +165,4 @@ public class BornDigitalBean implements Serializable {
     public void setDownloadTicketRequestMessage(String downloadTicketRequestMessage) {
         this.downloadTicketRequestMessage = downloadTicketRequestMessage;
     }
-
-    /**
-     * @return the ticketRequestMode
-     */
-    public boolean isTicketRequestMode() {
-        return ticketRequestMode;
-    }
-
-    /**
-     * @param ticketRequestMode the ticketRequestMode to set
-     */
-    public void setTicketRequestMode(boolean ticketRequestMode) {
-        this.ticketRequestMode = ticketRequestMode;
-    }
-    
-    
 }

@@ -32,10 +32,8 @@
 
 						<h:form id="download-ticket-modal__downloadTicketForm" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
 							<div id="download-ticket-modal__downloadTicket" class="downloadTicketModal">
-							
-							<ui:fragment rendered="#{!bornDigitalBean.ticketRequestMode}">
 
-								<!-- PASSWORD -->
+								<!-- PASSWORD (visible when ticket request mode OFF) -->
 								<div class="form-group form-row">
 									<label id="download-ticket-modal__labelDownloadTicketPassword" for="download-ticket-modal__title"
 										class="col-lg-3 control-label">
@@ -45,19 +43,15 @@
 									<div class="col-12 col-lg-9">
 										<h:inputSecret id="download-ticket-modal__downloadTicketPassword" styleClass="form-control"
 											value="#{bornDigitalBean.downloadTicketPassword}" required="#{!bornDigitalBean.downloadTicketRequestMode}"
-											requiredMessage="#{msg.}"
+											requiredMessage="#{msg.required}"
 											aria-labelledby="labelDownloadTicketPassword" pt:data-require-input-text="downloadTicketInput">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="download-ticket-modal__downloadTicketPassword" />
 										</h:inputSecret>
 									</div>
 								</div>
-								
-								</ui:fragment>
-								
-								<ui:fragment rendered="#{bornDigitalBean.ticketRequestMode}">
 
-                                <!-- E-MAIL -->
+                                <!-- E-MAIL (visible when ticket request mode ON) -->
                                 <h:panelGroup layout="block"
                                     styleClass="form-group form-row" id="emailGroup">
                                     <label id="download-ticket-modal__labelEmail" for="download-ticket-modal__downloadTicketEmail"
@@ -89,7 +83,7 @@
                                     </div>
                                 </h:panelGroup>
                                 
-                                <!-- REQUEST MESSAGE -->
+                                <!-- REQUEST MESSAGE (visible when ticket request mode ON) -->
                                 <div class="form-group form-row">
                                     <label id="download-ticket-modal__labelDownloadTicketRequestMessage" for="download-ticket-modal__requestMessage"
                                         class="col-lg-3 control-label">
@@ -105,19 +99,18 @@
                                         </h:inputTextarea>
                                     </div>
                                 </div>
-                                
-                                </ui:fragment>
-                                
+
 							</div>
 
-							<!-- ACTION -->
+							<!-- SWITCH TO TICKET REQUEST MODE -->
                             <div class="form-group form-row download-ticket-modal__action">
                                 <div class="col-sm-12 d-flex justify-content-end">
                                     <h:commandButton styleClass="btn btn--full" onclick="$(&quot;[data-loader='fullOverlay']&quot;).show();"
                                         value="#{msg.download_tickets__need_ticket}" pt:data-require-input="downloadTicketInput"
-                                        action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  />
+                                        action=""  />
                                 </div>
                             </div>
+                            <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
 							<div class="form-group form-row download-ticket-modal__action">
 								<div class="col-sm-12 d-flex justify-content-end">
 									<h:commandButton styleClass="btn btn--full" onclick="$(&quot;[data-loader='fullOverlay']&quot;).show();"
@@ -125,6 +118,14 @@
 										action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  />
 								</div>
 							</div>
+							<!-- SUBMIT REQUEST (visible when ticket request mode ON) -->
+                            <div class="form-group form-row download-ticket-modal__action">
+                                <div class="col-sm-12 d-flex justify-content-end">
+                                    <h:commandButton styleClass="btn btn--full" onclick="$(&quot;[data-loader='fullOverlay']&quot;).show();"
+                                        value="#{msg.submit}" pt:data-require-input="downloadTicketInput"
+                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}"  />
+                                </div>
+                            </div>
 														
 						</h:form>
 
