@@ -61,10 +61,9 @@
 	                        </div>
 	                        <div class="born-digital__item">
                                 <ui:fragment rendered="#{page.bornDigitalDownloadTicketRequired}">
-                                    <h:commandLink class="born-digital__item__download btn btn--full">
                                         <!-- TODO: Display button that opens ticket entry popup, then reload list with download links -->
-                                        <h:outputText value="#{msg.action__born_digital__unlock}" />
-                                    </h:commandLink>
+                                        <button class="btn btn--full" data-toggle="modal"
+                                            data-target="#downloadTicketModal">#{msg.action__born_digital__unlock}</button>
                                 </ui:fragment>
 	                            <ui:fragment rendered="#{!page.bornDigitalDownloadTicketRequired}">
 	                      	        <a class="born-digital__item__download btn btn--full" href="#{page.url}">#{msg.action__born_digital__download}</a>

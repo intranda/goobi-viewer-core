@@ -58,12 +58,10 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
-import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -95,7 +93,6 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.toc.TOCElement;
@@ -190,10 +187,6 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
-
-    private transient String downloadTicketPassword;
-    private transient String downloadTicketEmail;
-    private transient String downloadTicketRequestMessage;
 
     /**
      * Empty constructor.
@@ -2518,70 +2511,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
-     * @return true if session contains permission for current record, false otherwise;
-     * @throws IndexUnreachableException
-     */
-    public boolean isHasDownloadTicket() throws IndexUnreachableException {
-        return AccessConditionUtils.isHasDownloadTicket(getPersistentIdentifier(), BeanUtils.getSession());
-    }
-
-    /**
-     * Checks the given download ticket password for validity for the current record and persists valid permission in the agent session.
-     * 
-     * @param password Ticket password to check
-     * @return true if ticket found and valid; false otherwise
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     */
-    public boolean checkDownloadTicketPassword(String password) throws DAOException, IndexUnreachableException {
-        if (StringUtils.isEmpty(password)) {
-            return false;
-        }
-
-        String hash = BCrypt.hashpw(password, DownloadTicket.SALT);
-        DownloadTicket ticket = DataManager.getInstance().getDao().getDownloadTicketByPasswordHash(hash);
-        String pi = getPersistentIdentifier();
-        if ("-".equals(pi)) {
-            return false;
-        }
-        if (ticket != null && ticket.isValid() && ticket.getPi().equals(pi) && ticket.checkPassword(password)) {
-            // Add permission to browser session
-            return AccessConditionUtils.addPermissionToSession(pi, BeanUtils.getSession());
-        }
-
-        return false;
-    }
-
-    /**
-     * 
-     * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     */
-    public String requestNewDownloadTicketAction() throws DAOException, IndexUnreachableException {
-        if (StringUtils.isEmpty(downloadTicketEmail)) {
-            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
-            return "";
-        }
-
-        DownloadTicket ticket = new DownloadTicket();
-        ticket.setPi(getPersistentIdentifier());
-        ticket.setEmail(downloadTicketEmail);
-        if (StringUtils.isNotEmpty(downloadTicketRequestMessage)) {
-            ticket.setRequestMessage(downloadTicketRequestMessage);
-        }
-
-        if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
-            Messages.info("download_ticket_request_created");
-        } else {
-            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
-        }
-
-        return "";
-    }
-
-    /**
      * Check if the current page should initialize a WebSocket
      * 
      * @return true if a document is loaded and it contains the field {@link SolrConstants.ACCESSCONDITION_CONCURRENTUSE}
@@ -2592,48 +2521,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return false;
-    }
-
-    /**
-     * @return the downloadTicketPassword
-     */
-    public String getDownloadTicketPassword() {
-        return downloadTicketPassword;
-    }
-
-    /**
-     * @param downloadTicketPassword the downloadTicketPassword to set
-     */
-    public void setDownloadTicketPassword(String downloadTicketPassword) {
-        this.downloadTicketPassword = downloadTicketPassword;
-    }
-
-    /**
-     * @return the downloadTicketEmail
-     */
-    public String getDownloadTicketEmail() {
-        return downloadTicketEmail;
-    }
-
-    /**
-     * @param downloadTicketEmail the downloadTicketEmail to set
-     */
-    public void setDownloadTicketEmail(String downloadTicketEmail) {
-        this.downloadTicketEmail = downloadTicketEmail;
-    }
-
-    /**
-     * @return the downloadTicketRequestMessage
-     */
-    public String getDownloadTicketRequestMessage() {
-        return downloadTicketRequestMessage;
-    }
-
-    /**
-     * @param downloadTicketRequestMessage the downloadTicketRequestMessage to set
-     */
-    public void setDownloadTicketRequestMessage(String downloadTicketRequestMessage) {
-        this.downloadTicketRequestMessage = downloadTicketRequestMessage;
     }
 
 }
