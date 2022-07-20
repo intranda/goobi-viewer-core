@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<!-- HEADING ONLY CONTENT ITEM -->
+
+	<composite:interface>
+		<!-- DETERMINE THE WIDTH OF THE ITEM -->
+		<composite:attribute name="width" required="false" default="100" />
+		<!-- DETERMINE IF HIDDEN FOR DESKTOP OR MOBILE VIEW -->
+		<composite:attribute name="hideContentItem" required="false" default="false" />
+		<!-- DETERMINE IF UNPUBLISHED AND ONLY VISIBLE FOR ADMINS -->
+		<composite:attribute name="notPublished" required="false" default="false" />
+	</composite:interface>
+
+	<composite:implementation>
+		<!-- IF CONTENT ITEM IS SET TO UNPUBLISHED ONLY ADMINS CAN SEE IT IN THE FRONTEND -->
+		<ui:fragment rendered="#{cc.attrs.notPublished == false || userBean.admin == true}">
+
+			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
+			<div class="content-item content-item__heading
+						-width-#{cc.attrs.width}
+						#{cc.attrs.hideContentItem == 'mobile' ? '-hiddenOnMobile' : ''} 
+						#{cc.attrs.hideContentItem == 'desktop' ? '-hiddenOnDesktop' : ''}
+						#{cc.attrs.notPublished == false || userBean.admin == true ? '-notPublished' : ''}">
+						
+				<!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
+				<ui:fragment rendered="#{cc.attrs.notPublished == true and userBean.admin == true}">
+					<div class="content-item__not-published-info">#{msg.content_item_not_published_yet}</div>
+				</ui:fragment>
+						
+				<!-- RENDER THE TEXT EDITOR CONTENT -->
+				<!-- FA* the cmsPage.getContent method has to be dynamic and not a fixed item -->
+				<h2><h:outputText escape="true" value="#{cmsPage.getContent('item01')}" /></h2>
+			</div>
+
+		</ui:fragment>
+	</composite:implementation>
+
+</ui:composition>

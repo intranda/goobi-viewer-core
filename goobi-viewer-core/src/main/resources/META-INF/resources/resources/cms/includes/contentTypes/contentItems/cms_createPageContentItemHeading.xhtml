@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <h:panelGroup id="contentItemHeading" styleClass="admin__content-item" rendered="#{contentItem.type == 'CONTENT_ITEM_HEADING'}" layout="block">
+
+		<!-- CONTENT ITEM ORDER FUNCTIONS -->
+		<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+
+		<!-- CONTENT ITEM INNER -->
+		<div class="admin__content-item-inner">
+
+			<!-- CONTENT HEADER + TOOLBAR -->
+			<div class="admin__content-item-header">
+				<h2 class="admin__content-item-heading">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}</h2>
+
+				<div class="admin__content-item-options">
+            		<!-- DISPLAY: CONTENT ITEM ONLY VISIBLE FOR ADMINS -->
+            		<div class="admin__content-item-option admin__content-item-option-unpublished">Not published</div>
+            		<!-- DISPLAY: CONTENT ITEM NOT VISIBLE FOR DESKTOP OR MOBILE -->
+            		<div class="admin__content-item-option admin__content-item-option-no-desktop-view">Hide for desktop</div>
+            		<div class="admin__content-item-option admin__content-item-option-no-mobile-view">Hide for mobile</div>
+					<!-- LAYOUT: SIZING OPTIONS -->
+					<div class="admin__content-item-option admin__content-item-option-size">100 %</div>
+					<div class="admin__content-item-option admin__content-item-option-size">50 %</div>
+				</div>
+
+			</div>
+
+			<!-- INPUT TEXT -->
+            <h:inputText id="cmsCreatePageContenttypeHeading" styleClass="form-control" value="#{contentItem.htmlFragment}" />
+		</div>
+
+	</h:panelGroup>
+</ui:composition>
