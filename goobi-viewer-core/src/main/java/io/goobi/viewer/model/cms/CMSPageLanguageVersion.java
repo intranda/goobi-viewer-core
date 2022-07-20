@@ -411,7 +411,8 @@ public class CMSPageLanguageVersion {
         }
 
         CMSContentItem item = new CMSContentItem(templateItem, null);
-        if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+        	// FA* check this
+        if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT) || item.getType().equals(CMSContentItemType.CONTENT_ITEM_TEXTEDITOR)) {
             if (!getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
                 addContentItem(item);
                 // logger.trace("Added new template item '{}' to language version: {}", templateItem.getId(), getLanguage());

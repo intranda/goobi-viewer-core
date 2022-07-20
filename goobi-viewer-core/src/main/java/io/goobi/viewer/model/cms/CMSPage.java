@@ -1063,6 +1063,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                     case TEXT:
                         return item.getHtmlFragment();
                     case HTML:
+                        // FA* check this
+                    case CONTENT_ITEM_TEXTEDITOR:
                         String htmlText = item.getHtmlFragment();
                         String plainText = htmlText.replaceAll("\\<.*?\\>", "");
                         plainText = StringEscapeUtils.unescapeHtml4(plainText);
@@ -1181,6 +1183,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         switch (item.getType()) {
             case TEXT:
             case HTML:
+                // FA* check this
+            case CONTENT_ITEM_TEXTEDITOR:
                 return StringUtils.isNotBlank(item.getHtmlFragment());
             case MEDIA:
                 return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
@@ -1269,6 +1273,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             switch (item.getType()) {
                 case TEXT:
                 case HTML:
+                    // FA* check this
+                case CONTENT_ITEM_TEXTEDITOR:
                     contentString = item.getHtmlFragment();
                     break;
                 case MEDIA:
@@ -2006,8 +2012,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             // Collect files that match the page-contentid name pattern
             for (CMSPageLanguageVersion lv : getLanguageVersions()) {
                 for (CMSContentItem ci : lv.getContentItems()) {
+                	// FA* check this
                     if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())
-                            || CMSContentItemType.MEDIA.equals(ci.getType())) {
+                    		// FA* check this
+                            || CMSContentItemType.MEDIA.equals(ci.getType()) || CMSContentItemType.CONTENT_ITEM_TEXTEDITOR.equals(ci.getType())) {
                         String baseFileName = id + "-" + ci.getItemId() + ".";
                         for (Path file : cmsPageFiles) {
                             if (file.getFileName().toString().startsWith(baseFileName)) {
@@ -2105,6 +2113,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 return Collections.emptyList();
             case HTML:
             case TEXT:
+            // FA* check this
+            case CONTENT_ITEM_TEXTEDITOR:
                 return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
             default:
                 return Collections.emptyList();

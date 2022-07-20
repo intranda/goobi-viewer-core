@@ -218,7 +218,8 @@ public class CMSPageTemplate implements Serializable {
         page.getLanguageVersions().add(globalLanguageVersion);
 
         for (CMSContentItem item : contentItems) {
-            if (item.getType() == CMSContentItemType.HTML || item.getType() == CMSContentItemType.TEXT) {
+        	// FA* check this
+            if (item.getType() == CMSContentItemType.HTML || item.getType() == CMSContentItemType.TEXT || item.getType() == CMSContentItemType.CONTENT_ITEM_TEXTEDITOR) {
                 for (CMSPageLanguageVersion langVersion : page.getLanguageVersions()) {
                     if (!CMSPage.GLOBAL_LANGUAGE.equals(langVersion.getLanguage())) {
                         CMSContentItem actualItem = new CMSContentItem(item, null);

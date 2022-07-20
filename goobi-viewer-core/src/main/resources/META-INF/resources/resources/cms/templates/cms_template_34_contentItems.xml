@@ -8,15 +8,12 @@
         <topBarSlider>true</topBarSlider>
     </options>
     <content>
-        <item id="text01" order="1" label="cms__template_01__textblock__label" type="HTML" mandatory="true" />
 
+		<item id="item01" order="1" label="Content Item: Heading" type="CONTENT_ITEM_HEADING" mandatory="false" />
+		
+		<item id="item02" order="2" label="Content Item: Texteditor" type="CONTENT_ITEM_TEXTEDITOR" mandatory="false" />
+		
+        <item id="item03" order="3" label="Content Item: Media" type="CONTENT_ITEM_MEDIA" mandatory="false" />
 
-		<!-- FLEXIBLE CONTENT ITEMS -->
-        <item id="item01" order="2" label="Content Item: Media" type="CONTENT_ITEM_MEDIA" mandatory="false" />
-        <item id="item02" order="3" label="Content Item: TextEditor" type="CONTENT_ITEM_TEXTEDITOR" mandatory="false" />
-        <item id="item03" order="4" label="Content Item: Text" type="CONTENT_ITEM_TEXT" mandatory="false" /> 
-        <item id="item04" order="4" label="Content Item: Solr Query" type="CONTENT_ITEM_SOLRQUERY" mandatory="false" />
-        <item id="item05" order="4" label="Content Item: Page List" type="CONTENT_ITEM_PAGELIST" mandatory="false" />
-        
     </content>
 </cms_page_template>

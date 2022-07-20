@@ -19,12 +19,16 @@
 				<h2 class="admin__content-item-heading">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}</h2>
 
             	<div class="admin__content-item-options">
+            		<!-- DISPLAY: CONTENT ITEM ONLY VISIBLE FOR ADMINS -->
+            		<div class="admin__content-item-option admin__content-item-option-unpublished">Not published</div>
+            		<!-- DISPLAY: CONTENT ITEM NOT VISIBLE FOR DESKTOP OR MOBILE -->
+            		<div class="admin__content-item-option admin__content-item-option-no-desktop-view">Hide for desktop</div>
+            		<div class="admin__content-item-option admin__content-item-option-no-mobile-view">Hide for mobile</div>
 					<!-- LAYOUT: SIZING OPTIONS -->
 					<div class="admin__content-item-option admin__content-item-option-size">100 %</div>
 					<div class="admin__content-item-option admin__content-item-option-size">50 %</div>
-					<!-- ADDITIONAL OPTION: INCLUDE THIS IMAGE IN LIGHTBOX GALLERY -->
+					<!-- GALLERY FUNCTION: INCLUDE THIS IMAGE IN LIGHTBOX GALLERY -->
             		<div class="admin__content-item-option admin__content-item-option-lightbox">Lightbox</div>
-            		
             	</div>
 			</div>
 

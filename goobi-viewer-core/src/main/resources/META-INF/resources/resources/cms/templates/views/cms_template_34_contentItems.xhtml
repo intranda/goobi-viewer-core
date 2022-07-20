@@ -6,7 +6,8 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:contentItem="http://xmlns.jcp.org/jsf/composite/components/contentItems"
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3">
 
@@ -48,25 +49,27 @@
 					<div class="content-items__all-items-container">
 					
 						<!-- CONTENT ITEM HEADING -->
-						<div class="content-items__single-item -width-100">
-							<div class="content-item__type-heading">
+						<div class="content-item -width-100">
+							<div class="content-item__heading">
 								<h2>Heading Content Item</h2>
 							</div>
 						</div>
 
 
 						<!-- CONTENT ITEM TEXT HALF -->
-						<div class="content-items__single-item -width-50">
-							<div class="content-item__type-text">
+						<div class="content-item -width-50">
+							<div class="content-item__text">
 								<p>Lorem ipsum dolor sit amet, consetetur sadipscing pscing elitr, sed diam nonumy ei elitr, sed diam nonumy eirmod tempor invidunt pscing elitr, sed diam nonumy ei pscing elitr, sed diam nonumy ei pscing elitr, sed diam nonumy ei ut labore et dolore magna Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna  aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
 							</div>
 						</div>
 
 
+
+
 						<!-- CONTENT ITEM IMAGE HALF -->
-						<div class="content-items__single-item -width-50">
+						<div class="content-item -width-50">
 							 
-							<div class="content-item__type-image lightbox-test">
+							<div class="content-item__image lightbox-test">
 								<a href="https://picsum.photos/1400/800?random=1"><img src="https://picsum.photos/1400/800?random=1" alt="" title=""/></a>
 							</div>
 						</div>
@@ -74,57 +77,62 @@
 
 
 						<!-- CONTENT ITEM HEADING -->
-						<div class="content-items__single-item -width-100">
-							<div class="content-item__type-heading">
+						<div class="content-item -width-100">
+							<div class="content-item__heading">
 								<h2>Heading Content Item with a long title to get the maximum out of this nice goobi viewer page with cool pictures</h2>
 							</div>
 						</div>
 						
 						<!-- CONTENT ITEM IMAGE FULL -->
-						<div class="content-items__single-item -width-100">
+						<div class="content-item -width-100">
 							 
-							<div class="content-item__type-image lightbox-test">
+							<div class="content-item__image lightbox-test">
 								<a href="https://picsum.photos/1400/800?random=2" title="Test Caption"><img src="https://picsum.photos/1400/800?random=2" alt="test1" title="test2"/></a>
 							</div>
 						</div>
 						
 						<!-- CONTENT ITEM TEXT FULL -->
-						<div class="content-items__single-item -width-100">
-							<div class="content-item__type-text">
+						<div class="content-item -width-100">
+							<div class="content-item__text">
 								<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
 							</div>
 						</div>
 						
 						<!-- CONTENT ITEM HEADING -->
-						<div class="content-items__single-item -width-100">
-							<div class="content-item__type-heading">
+						<div class="content-item -width-100">
+							<div class="content-item__heading">
 								<h2>Heading Content Item with a long title to get the maximum out of this nice goobi viewer page with cool pictures</h2>
 							</div>
 						</div>
 
 						<!-- CONTENT ITEM IMAGE FLOATING LEFT -->
-						<div class="content-items__single-item -width-100">
+						<div class="content-item -width-100">
 							 
-							<div class="content-item__type-floating-text-image lightbox-test">
+							<div class="content-item__floating-text-image lightbox-test">
 								<p><a href="https://picsum.photos/1400/800?random=3" title="Test Caption 3"><img src="https://picsum.photos/1400/800?random=3" alt="" title=""/></a>
 								Lorem ipsum dolor sit amet, consetetur sadipscing elitr, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, consetetur sadipscing elitr, Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, consetetur sadipscing elitr, Lorem ipsum dolor sit amet, consetetur sadipscing elitr, Lorem ipsum dolor sit amet, consetetur sadipscing elitr,sed diam nonumy eirmod tempor invidLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et do Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et do Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dount ut labore et dolore magna aliquyam erat, sed diam voluLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam volu
 								</p>
 							</div>
 						</div>
-						
-						
-						
-						
-						
-						
-						
 
+						<!-- FA* the values of these attributes shall be based on the selected options in the admin viewer backend for every single content item -->
+                        <contentItem:textEditor hideContentItem="mobile" width="100" />
+                        
+                        <contentItem:textEditor hideContentItem="mobile" width="50" />
+                        
+                        <contentItem:textEditor hideContentItem="mobile" width="50" />
+                        
+                        <contentItem:heading hideContentItem="mobile" width="100" />
 
+                        
+                        <div class="infomessage">text01 here:</div>
+                        <h:outputText escape="false" value="#{cmsPage.getContent('item01')}" />
 
-
+						<div class="infomessage">item11 here:</div>
+						<h:outputText escape="false" value="#{cmsPage.getContent('item11')}" />
 
 						<!-- CONTENT ITEM SEARCH HITS -->
-						<div class="content-items__single-item -width-50">
+						<div class="content-item -width-50">
 							<div class="content-item__search">
 
 

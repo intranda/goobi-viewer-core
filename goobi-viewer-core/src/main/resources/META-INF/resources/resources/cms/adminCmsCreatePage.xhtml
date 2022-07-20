@@ -138,7 +138,7 @@
 
                                                             <ui:repeat var="contentItem" value="#{cmsBean.selectedPage.getContentItems(locale).stream().filter(item -> item.appearInListings()).toList()}">
                                                                 <!-- HTML SNIPPET -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'TEXT'}">
+                                                              <ui:fragment rendered="#{contentItem.type == 'TEXT'}">
                                                                     <div class="cms-module__option-group">
                                                                         <div class="cms-module__option-label">
                                                                             <label for="cmsCreatePageContenttypeText">#{msg[contentItem.itemLabel]}#{contentItem.mandatory ? '*'
@@ -186,23 +186,20 @@
 
 
 
+																<!-- CONTENT ITEM MEDIA -->
+																<ui:fragment rendered="#{contentItem.type == 'CONTENT_ITEM_HEADING'}">
+																	<ui:include src="/resources/cms/includes/contentTypes/contentItems/cms_createPageContentItemHeading.xhtml" />
+																</ui:fragment>
+
+																<!-- CONTENT ITEM TEXTEDITOR -->
+                                                                <ui:fragment rendered="#{contentItem.type == 'CONTENT_ITEM_TEXTEDITOR'}">
+																	<ui:include src="/resources/cms/includes/contentTypes/contentItems/cms_createPageContentItemTextEditor.xhtml" />
+																</ui:fragment>
                                                                 
-																<!-- FLEXIBLE CONTENT ITEM TINY MCE -->
-																<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeContentItemTextEditor.xhtml" />
-                                                                
-																<!-- FLEXIBLE CONTENT ITEM IMAGE -->
-																<ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeContentItemMedia.xhtml" />
-
-																<script>
-																$('.admin__content-item-option').on('click', function() {
-																	$(this).toggleClass('-active');
-																});
-																
-																</script>
-
-
-
-
+																<!-- CONTENT ITEM MEDIA -->
+																<ui:fragment rendered="#{contentItem.type == 'CONTENT_ITEM_MEDIA'}">
+																	<ui:include src="/resources/cms/includes/contentTypes/contentItems/cms_createPageContentItemMedia.xhtml" />
+																</ui:fragment>
 
 
 

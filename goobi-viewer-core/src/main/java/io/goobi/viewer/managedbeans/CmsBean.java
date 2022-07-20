@@ -981,6 +981,8 @@ public class CmsBean implements Serializable {
                     switch (item.getType()) {
                         case TEXT:
                         case HTML:
+                            // FA* check this
+                        case CONTENT_ITEM_TEXTEDITOR:
                             if (StringUtils.isBlank(item.getHtmlFragment())) {
                                 // Messages.warn("cmsValidationErrorHtml");
                                 languageIncomplete = true;
