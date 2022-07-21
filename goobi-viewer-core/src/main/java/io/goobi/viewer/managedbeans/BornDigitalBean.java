@@ -83,7 +83,7 @@ public class BornDigitalBean implements Serializable {
                 Messages.error("errPassword");
                 return "";
             }
-            if (ticket != null && ticket.isValid() && ticket.getPi().equals(pi) && ticket.checkPassword(downloadTicketPassword)
+            if (ticket != null && ticket.isActive() && ticket.getPi().equals(pi) && ticket.checkPassword(downloadTicketPassword)
                     && AccessConditionUtils.addPermissionToSession(pi, BeanUtils.getSession())) {
                 Messages.info("");
                 return "";

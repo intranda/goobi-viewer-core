@@ -103,14 +103,17 @@ public class DownloadTicket implements Serializable {
     /**
      * 
      * @return
+     * @should return true if ticket active
      */
-    public boolean isValid() {
-        return expirationDate != null && passwordHash != null && !isRequest() && !isExpired();
+    public boolean isActive() {
+        return !isRequest() && !isExpired();
     }
 
     /**
      * 
      * @return true if expiration date is in the past; false otherwise
+     * @should return true if expiration date before now
+     * @should return false if expiration date after now
      */
     public boolean isExpired() {
         return expirationDate != null && expirationDate.isBefore(LocalDateTime.now());

@@ -22,10 +22,14 @@
 package io.goobi.viewer.model.security;
 
 
+import java.time.LocalDateTime;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DownloadTicketTest {
+import io.goobi.viewer.AbstractTest;
+
+public class DownloadTicketTest extends AbstractTest {
     
     /**
     * @see DownloadTicket#checkPassword(String)
@@ -38,5 +42,39 @@ public class DownloadTicketTest {
         
         Assert.assertFalse(ticket.checkPassword("foo"));
         Assert.assertTrue(ticket.checkPassword("halbgeviertstrich"));
+    }
+
+    /**
+     * @see DownloadTicket#isActive()
+     * @verifies return true if ticket active
+     */
+    @Test
+    public void isActive_shouldReturnTrueIfTicketActive() throws Exception {
+        DownloadTicket ticket = new DownloadTicket();
+        ticket.setPasswordHash("abcde");
+        ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
+        Assert.assertFalse(ticket.isExpired());
+    }
+
+    /**
+     * @see DownloadTicket#isExpired()
+     * @verifies return true if expiration date before now
+     */
+    @Test
+    public void isExpired_shouldReturnTrueIfExpirationDateBeforeNow() throws Exception {
+        DownloadTicket ticket = new DownloadTicket();
+        ticket.setExpirationDate(LocalDateTime.now().minusDays(1));
+        Assert.assertTrue(ticket.isExpired());
+    }
+
+    /**
+     * @see DownloadTicket#isExpired()
+     * @verifies return false if expiration date after now
+     */
+    @Test
+    public void isExpired_shouldReturnFalseIfExpirationDateAfterNow() throws Exception {
+        DownloadTicket ticket = new DownloadTicket();
+        ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
+        Assert.assertFalse(ticket.isExpired());
     }
 }
