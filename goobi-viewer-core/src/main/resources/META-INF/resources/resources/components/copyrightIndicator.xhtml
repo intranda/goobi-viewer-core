@@ -2,7 +2,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
     <composite:interface>
     
@@ -10,16 +11,37 @@
 
     <composite:implementation>
     	<!-- FA* rendered condition for this panelgroup example: rendered="#{configurationBean.displayCopyrightIndicator} -->
-		<h:panelGroup id="copyrightIndicator" styleClass="copyright-indicator">
+    	
+		<h:panelGroup layout="block" id="copyrightIndicator" styleClass="copyright-indicator" pt:data-popover-element="#copyrightInformation" 
+												pt:data-popover-dismiss="click-outside" 
+												pt:aria-label="Image manipulation tools" 
+												pt:data-original-title="Image manipulation tools" pt:title="">
 
 					<!-- TRAFFIC LIGHT STYLE -->
 					<!-- FA* set configuration for copyright indicator style option: traffic light style or label style -->
 <!-- 					<ui:fragment rendered="#{configurationBean.displayCopyrightIndicatorStyle = 'trafficlight'}"> -->
 						<div class="copyright-indicator__traffic-light-style">
-						
+							<div class="copyright-indicator__traffic-light-style-circle-wrapper">
+							    <div class="copyright-indicator__traffic-light-style-circle -green"><i class="fa fa-check" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle -yellow"><i class="fa fa-info" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle -red"><i class="fa fa-times" aria-hidden="true"></i></div>
+							</div>
+							<div class="copyright-indicator__traffic-light-style-icon-wrapper">
+							
+							<!-- FA* functionality to add icons dynamically (out of the theme as well - functionality like image controls icons) -->
+<!-- 							<ui:repeat> -->
+								<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" />
+								<img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" />
+								<img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" />
+<!-- 							</ui:repeat> -->
+							
+							</div>
 						</div>
 <!-- 					</ui:fragment> -->
-					
+								<div class="copyright-indicator__hidden-information">
+									<div id="copyrightInformation">Lorem Ipsum Dolor</div>			   
+								</div>
+											
 					<!-- LABEL STYLE -->
 					<!-- FA* set configuration for copyright indicator style option: traffic light style or label style -->
 <!-- 					<ui:fragment rendered="#{configurationBean.displayCopyrightIndicatorStyle = 'label'}"> -->
@@ -27,23 +49,23 @@
 						<!-- FA* green/free = copyright free or CC or something - you are allowed to use it -->
 						<!-- FA* yellow/info = copyright related warning -->
 						<!-- FA* red/notAllowed = not allowed/copyright very restricted -->
-						<div class="copyright-indicator__label-style -green">
+						<div class="copyright-indicator__label-style -red">
 <!-- 									#{configurationBean.licenceForThisRecord = 'free' ? '-green' : ''} -->
 <!-- 									#{configurationBean.licenceForThisRecord = 'info' ? '-yellow' : ''} -->
 <!-- 									#{configurationBean.licenceForThisRecord = 'notAllowed' ? '-red' : ''}"> -->
 							
 							<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
 							<div class="copyright-indicator__dot-wrapper">
-								<div class="copyright-indicator__dot -green">
+								<div class="copyright-indicator__dot">
 									<!-- PSEUDO FA ELEMENT GETS REPLACED DEPENDING ON GREEN YELLOW RED STATE -->
-									<i class="fa fa-copyright-indicator-status-icon" aria-hidden="true"></i>
+									<i class="fa copyright-indicator__status-icon" aria-hidden="true"></i>
 								</div>
 							</div>
 						
 							<div class="copyright-indicator__icon-wrapper">
-							
-							<!-- FA* functionality to add icons dynamically (out of the theme as well - functionality like image controls icons) -->
 							<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
+							<!-- FA* functionality to add icons dynamically (out of the theme as well - functionality like image controls icons) -->
+
 <!-- 							<ui:repeat> -->
 								<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" />
 								<img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" />
