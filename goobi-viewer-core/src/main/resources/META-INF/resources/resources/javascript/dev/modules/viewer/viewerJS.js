@@ -480,6 +480,7 @@ var viewerJS = (function () {
 		viewer.handleFragmentAction();
 	}
 	
+	// IF #feedback HASH IS RECOGNIZED MAKE OPEN MODAL LINK OUT OF IT
 	viewer.handleFragmentAction = function() {
 		let hash = location.hash;
 		if(hash) {
@@ -550,10 +551,12 @@ var viewerJS = (function () {
 						if(!text) {
 							allTextFieldsFilled = false;
 							// console.log(allTextFieldsFilled);
+							console.log('NO - all texts filled');
 							return false;
 						} else {
 							allTextFieldsFilled = true;
 							// console.log(allTextFieldsFilled);
+							console.log('YES - all texts filled');
 						}
 					});
 				
@@ -561,7 +564,7 @@ var viewerJS = (function () {
 				// ACTIVATE SUBMIT BUTTON IF ALL REQUIRED CHECKBOXES AND TEXTFIELDS ARE FILLED/CHECKED
 				if(allCheckboxesChecked && allTextFieldsFilled == true) {
 					$ele.removeAttr("disabled");
-					// console.log('button activated, removed attribute');
+					console.log('button activated, removed attribute');
 				} else {
 					$ele.attr("disabled", "disabled");
 					// console.log('button DEactivated, attribute added');
