@@ -109,9 +109,7 @@
                             </div>
                             </ui:fragment>
 
-
                             <!-- LICENSES -->
-
                             <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty hasAccessPermissingForTranslationFilesnotConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
@@ -143,8 +141,33 @@
                                 </h:form>
                             </ui:fragment>
                             
+                            <!-- DOWNLOAD TICKETS -->
+                            <ui:fragment rendered="#{userBean.admin and fn:length(adminLicenseBean.downloadTicketRequests) > 0}">
+                                <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                                    <div class="row">
+                                        <h2 class="col-9">#{msg.admin__download_ticket_requests}</h2>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <!-- NOT CONFIGURED LICENSES -->
+                                            <div class="row">
+                                                <div class="col-12">#{msg.admin__dashboard_download_ticket_requests_desc}:</div>
+                                            </div>
+                                            <ui:repeat var="ticket" value="#{adminLicenseBean.downloadTicketRequests}">
+                                                <div class="row">
+                                                    <div>#{ticket.email}</div>
+                                                    <div>#{ticket.requestMessage}</div>
+                                                </div>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <a href="#{navigationHelper.applicationUrl}admin/rights/">#{msg.admin_dashboard_download_ticket_requests_configure}</a>
+                                    </div>
+                                </h:form>
+                            </ui:fragment>
+                            
                             <!-- CLIENTS -->
-
 							<c:set scope="view"
 								value="#{adminClientsBean.notConfiguredClients}"
 								var="notConfiguredClients"></c:set> 

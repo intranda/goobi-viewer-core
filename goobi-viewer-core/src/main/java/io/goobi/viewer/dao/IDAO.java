@@ -827,6 +827,13 @@ public interface IDAO {
     public List<DownloadTicket> getDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
     
     /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException;
+    
+    /**
      * <p>
      * addDownloadTicket.
      * </p>

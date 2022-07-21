@@ -1749,6 +1749,25 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @should return tickets that have never been activated
+     */
+    @Override
+    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<DownloadTicket> cq = cb.createQuery(DownloadTicket.class);
+            Root<DownloadTicket> root = cq.from(DownloadTicket.class);
+            cq.select(root).where(cb.and(root.get("passwordHash").isNull(), root.get("expirationDate").isNull()));
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
@@ -6819,5 +6838,4 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-
 }

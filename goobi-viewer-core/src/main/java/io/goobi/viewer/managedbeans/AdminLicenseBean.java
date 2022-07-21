@@ -666,6 +666,15 @@ public class AdminLicenseBean implements Serializable {
 
         return "";
     }
+    
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException {
+        return DataManager.getInstance().getDao().getDownloadTicketRequests();
+    }
 
     /**
      * 
