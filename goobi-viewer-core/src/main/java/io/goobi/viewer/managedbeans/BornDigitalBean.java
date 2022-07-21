@@ -74,6 +74,8 @@ public class BornDigitalBean implements Serializable {
             Messages.error("errPassword");
             return "";
         }
+        
+        // TODO brute force check
 
         try {
             String hash = BCrypt.hashpw(downloadTicketPassword, DownloadTicket.SALT);
