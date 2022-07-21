@@ -121,7 +121,8 @@
 									<div class="col-sm-12 d-flex justify-content-end">
 										<h:commandButton styleClass="btn btn--full"
 											value="#{msg.submit}"
-											action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  />
+											action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  
+											pt:data-require-input="downloadTicketRequired"/>
 									</div>
 								</div>
 							
@@ -130,8 +131,7 @@
 	                                <div class="col-sm-12 d-flex justify-content-end">
 	                                    <h:commandButton styleClass="btn btn--full"
 	                                        value="#{msg.submit}"
-	                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}"  
-	                                        pt:data-require-input="downloadTicketRequired"/>
+	                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}"  />
 	                                </div>
 	                            </div>
                             

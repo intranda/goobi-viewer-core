@@ -529,6 +529,12 @@ var viewerJS = (function () {
 			var allCheckboxesChecked = false;
 			var allTextFieldsFilled = false;
 			
+			if ($checkboxes.length == 0) {
+				// console.log('no checkboxes to check, so allCheckboxesChecked is true');
+				var allCheckboxesChecked = true;
+			}
+			
+			
 			// CHECK ALL REQUIRED CHECKBOXES AND TEXT FIELDS + CHECK IF RADIO BUTTONS "UNCHECKED"
 			$checkboxes.add($texts).add($uncheckedRadios).on("change paste keyup cut", (e) => {
 				$checkboxes.each((index, element) => {
@@ -551,12 +557,12 @@ var viewerJS = (function () {
 						if(!text) {
 							allTextFieldsFilled = false;
 							// console.log(allTextFieldsFilled);
-							console.log('NO - all texts filled');
+							// console.log('NO - all texts filled');
 							return false;
 						} else {
 							allTextFieldsFilled = true;
 							// console.log(allTextFieldsFilled);
-							console.log('YES - all texts filled');
+							// console.log('YES - all texts filled');
 						}
 					});
 				
@@ -564,7 +570,7 @@ var viewerJS = (function () {
 				// ACTIVATE SUBMIT BUTTON IF ALL REQUIRED CHECKBOXES AND TEXTFIELDS ARE FILLED/CHECKED
 				if(allCheckboxesChecked && allTextFieldsFilled == true) {
 					$ele.removeAttr("disabled");
-					console.log('button activated, removed attribute');
+					// console.log('button activated, removed attribute');
 				} else {
 					$ele.attr("disabled", "disabled");
 					// console.log('button DEactivated, attribute added');
