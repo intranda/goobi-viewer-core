@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<!-- NOT ACCEPTED DOWNLOAD REQUESTS -->
+    <ui:fragment rendered="#{not empty notConfiguredClients}">
+        <div class="admin__default-block mb-5 -warning">
+            <div class="row">
+              <h2 class="col-12">
+                  #{msg.admin__download_tickets__not_accepted}
+              </h2>
+            </div>
+            <ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
+             <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
+                 class="row admin__download-tickets-unconfigured-entry">							
+                     <div class="col-10 -textlink"><span class="d-inline-block">#{ticket.pi} </span><span class="admin__download-tickets-not-accepted-title"> #{ticket.title} </span><span class="d-inline-block"> (#{ticket.email})</span>
+                     </div>
+                     <div class="col-2 d-flex justify-content-end">
+                     	<span>#{msg.admin__clients__configure_client}</span>
+                     </div>
+          	</a>
+         	</ui:repeat>
+        </div>
+    </ui:fragment>
+
+
+	<!-- DOWNLOAD TICKETS -->
+	<ui:fragment>
+		<div class="admin__table-tools">
+			<!-- PAGINATOR -->
+			<div class="admin__table-paginator">
+				<viewerComponent:dataTablePaginator
+					tableValues="#{adminLicenseBean.lazyModelDownloadTickets}" />
+			</div>
+			<!-- FILTER -->
+			<div class="admin__table-filter">
+				<viewerComponent:dataTableColumnFilter key="admin__clients__search"
+					filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email')}" />
+			</div>
+		</div>
+
+		<div id="new-table-clients" class="admin__table-content" role="grid"
+			aria-label="#{msg.admin__donwload_tickets__title}: #{msg.aria_label__table__actions}">
+			<div class="row no-gutters admin__table-title" role="row">
+				<div class="col-3 d-flex -sorting-arrow-trigger">
+					<viewerComponent:sortingArrow filterType="pi_email"
+						colHeading="#{msg.admin__download_tickets__pi}"
+						list="#{adminClientsBean.configuredClientsModel}" />
+				</div>
+
+				<div class="col-5 d-flex -sorting-arrow-trigger">
+					<viewerComponent:sortingArrow filterType="email"
+						colHeading="#{msg.admin__download_tickets__title}" />
+				</div>
+
+				<div class="col-2 d-flex -sorting-arrow-trigger">
+					<viewerComponent:sortingArrow filterType="dateRegistered"
+						colHeading="#{msg.admin__download_tickets__email}"
+						list="#{adminClientsBean.configuredClientsModel}" />
+				</div>
+
+				<div class="col-2 d-flex -sorting-arrow-trigger">
+					<viewerComponent:sortingArrow filterType="dateLastAccess"
+						colHeading="#{msg.admin__download_tickets__expires}"
+						list="#{adminClientsBean.configuredClientsModel}" />
+				</div>
+			</div>
+
+			<ui:repeat var="ticket"
+				value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
+				<div class="row no-gutters admin__table-entry" role="row">
+					<div class="col-3 d-flex">
+						<div class="admin__table-data" role="gridcell">
+							<!-- RECORD IDENTIFIER -->
+							<span class="admin__table-name admin__clients-table-client-name">#{ticket.pi}</span>
+
+							<!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
+							<div class="admin__table-actions-wrapper">
+								<!-- EDIT -->
+								<a
+									href="#{navigationHelper.applicationUrl}admin/clients/edit/#{client.id}/"
+									class="admin__table-action-link"
+									aria-label="#{msg.edit}: #{client.name}">#{msg.edit}</a>
+								<!-- DELETE -->
+								<button class="admin__table-action-link -redlink"
+									data-require-confirmation="true"
+									data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.id)}"
+									jsf:action="#{adminLicenseBean.deleteDownloadTicket(client)}"
+									aria-label="#{msg.delete}: #{client.clientIdentifier}">
+									#{msg.delete}</button>
+
+							</div>
+						</div>
+					</div>
+
+					<div class="col-5 d-flex align-items-center" role="gridcell">
+<!-- 						<span class="admin__table-ip-address">#{client.subnetMask}</span> -->
+													<!-- EMAIL -->
+							<span>#{ticket.title}</span>
+					</div>
+					
+					
+					<div class="col-2 d-flex align-items-center" role="gridcell">
+						<!-- RECORD TITLE -->
+						<span class="admin__table-additional-info">#{ticket.email}</span>
+					</div>
+
+					<!-- REGISTERED DATE -->
+					<div class="col-2 d-flex align-items-center" role="gridcell">
+						<!-- EXPIRES -->
+						<span> <h:outputText value="#{ticket.expirationDate}">
+								<f:converter converterId="localDateTimeConverter" />
+								<f:attribute name="pattern"
+									value="#{navigationHelper.dateTimePattern}" />
+							</h:outputText>
+						</span>
+					</div>
+
+				</div>
+
+			</ui:repeat>
+
+			<script type="text/javascript">
+				// Create no entries found message
+				if ($('.admin__table-entry').length == 0) {
+					$('.admin__table-content')
+							.append(
+									'<br/><p >#{msg.hitsZero}</p>');
+										}
+			</script>
+
+		</div>
+	</ui:fragment>
+
+</ui:composition>

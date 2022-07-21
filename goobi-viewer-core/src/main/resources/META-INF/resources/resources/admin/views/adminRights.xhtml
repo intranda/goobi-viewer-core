@@ -29,124 +29,12 @@
 
                         <div class="admin__content-inner-content">
 
-							<!-- DOWNLOAD TICKETS -->
-							<ui:fragment rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0}">
-								<div class="admin__table-tools">
-									<!-- PAGINATOR -->
-									<div class="admin__table-paginator">
-										<viewerComponent:dataTablePaginator
-											tableValues="#{adminLicenseBean.lazyModelDownloadTickets}" />
-									</div>
-									<!-- FILTER -->
-									<div class="admin__table-filter">
-										<viewerComponent:dataTableColumnFilter
-											key="admin__download_tickets__search"
-											filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email')}" />
-									</div>
-								</div>
-
-								<div id="new-table-clients" class="admin__table-content" role="grid"
-									aria-label="#{msg.admin__donwload_tickets__title}: #{msg.aria_label__table__actions}">
-									<div class="row no-gutters admin__table-title" role="row">
-										<div class="col-6 d-flex -sorting-arrow-trigger">
-											<viewerComponent:sortingArrow
-												colHeading="#{msg.admin__download_tickets__pi}"
-												list="#{adminLicenseBean.lazyModelDownloadTickets}" />
-										</div>
-										<div class="col-2 d-flex -sorting-arrow-trigger">
-											<viewerComponent:sortingArrow
-												colHeading="#{msg.admin__download_tickets__email}"
-												list="#{adminLicenseBean.lazyModelDownloadTickets}" />
-										</div>
-										<div class="col-2 d-flex -sorting-arrow-trigger">
-											<viewerComponent:sortingArrow
-												colHeading="#{msg.admin__download_tickets__expiration_date}"
-												list="#{adminLicenseBean.lazyModelDownloadTickets}" />
-										</div>
-									</div>
-
-									<ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-										<div class="row no-gutters admin__table-entry" role="row">
-											<div class="col-6 d-flex">
-												<div class="admin__table-data" role="gridcell">
-													<!-- RECORD IDENTIFIER -->
-													<span class="admin__table-name admin__clients-table-client-name">#{ticket.pi}</span>
-													<!-- EMAIL -->
-													<span>#{ticket.email}</span>
-                                                    <!-- EXPIRES -->
-                                                    <span>
-                                                        <h:outputText value="#{ticket.expirationDate}">
-                                                            <f:converter converterId="localDateTimeConverter" />
-                                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                                                        </h:outputText>
-                                                    </span>
-                                                    
-													<!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
-													<div class="admin__table-actions-wrapper">
-														<!-- EDIT -->
-														<a
-															href="#{navigationHelper.applicationUrl}admin/clients/edit/#{client.id}/"
-															class="admin__table-action-link"
-															aria-label="#{msg.edit}: #{client.name}">#{msg.edit}</a>
-														<!-- DELETE -->
-														<button class="admin__table-action-link -redlink"
-															data-require-confirmation="true"
-															data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.id)}"
-															jsf:action="#{adminLicenseBean.deleteDownloadTicket(client)}"
-															aria-label="#{msg.delete}: #{client.clientIdentifier}">
-															#{msg.delete}</button>
-
-													</div>
-												</div>
-											</div>
-
-											<div class="col-2 d-flex align-items-center" role="gridcell">
-												<span class="admin__table-ip-address">
-													#{client.subnetMask} </span>
-											</div>
-
-											<!-- REGISTERED DATE -->
-											<div class="col-2 d-flex align-items-center" role="gridcell">
-												<span class="admin__table-last-login"> <h:outputText
-														value="#{client.dateRegistered}">
-														<f:converter converterId="localDateTimeConverter" />
-														<f:attribute name="pattern"
-															value="#{navigationHelper.dateTimePattern}" />
-													</h:outputText>
-												</span>
-											</div>
-
-											<!-- LAST LOGIN DATE -->
-											<div class="col-2 d-flex align-items-center" role="gridcell">
-												<span class="admin__table-last-login"> <h:outputText
-														value="#{client.dateLastAccess}">
-														<f:converter converterId="localDateTimeConverter" />
-														<f:attribute name="pattern"
-															value="#{navigationHelper.dateTimePattern}" />
-													</h:outputText>
-												</span>
-											</div>
-
-										</div>
-
-									</ui:repeat>
-
-									<script type="text/javascript">
-										// Create no entries found message
-										if ($('.admin__table-entry').length == 0) {
-											$('.admin__table-content')
-													.append(
-															'<br/><p >#{msg.hitsZero}</p>');
-										}
-									</script>
-
-								</div>
-							</ui:fragment>
-
 							<!-- INFO TEXT -->
                             <div class="admin__info-text">
                                 <h:outputText value="#{msg.admin__roles_description_text}" escape="false" />
                             </div>
+                            
+                           <ui:include src="/resources/admin/includes/adminRightsTicketTable.xhtml" />
 
                            <div class="admin__entry-list">
                                <ui:repeat var="license" value="#{adminLicenseBean.allLicenses}">

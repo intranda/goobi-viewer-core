@@ -557,11 +557,12 @@ var viewerJS = (function () {
 						if(!text) {
 							allTextFieldsFilled = false;
 							// console.log(allTextFieldsFilled);
-							// console.log('NO - all texts filled');
+							// console.log($texts);
+							// console.log('NO - not all texts filled');
 							return false;
 						} else {
 							allTextFieldsFilled = true;
-							// console.log(allTextFieldsFilled);
+							// console.log($texts);
 							// console.log('YES - all texts filled');
 						}
 					});

@@ -48,9 +48,9 @@
 									
 									<div class="col-12 col-lg-9">
 										<h:inputSecret id="download-ticket-modal__downloadTicketPassword" styleClass="form-control"
-											value="#{bornDigitalBean.downloadTicketPassword}" required="#{!bornDigitalBean.downloadTicketRequestMode}"
+											value="#{bornDigitalBean.downloadTicketPassword}"
 											requiredMessage="#{msg.required}"
-											aria-labelledby="labelDownloadTicketPassword" pt:data-require-input-text="downloadTicketInput">
+											aria-labelledby="labelDownloadTicketPassword" pt:data-require-input-text="passwordRequired" pt:autocomplete="new-password">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="download-ticket-modal__downloadTicketPassword" />
 										</h:inputSecret>
@@ -79,13 +79,11 @@
                                             </div>
                                         </div>
                                         <h:inputText id="download-ticket-modal__email" label="downloadTicketEmail"
-                                            immediate="true" required="true"
-                                            value="#{bornDigitalBean.downloadTicketEmail}" styleClass="form-control"
-                                            disabled="true">
+                                            required="true"
+                                            value="#{bornDigitalBean.downloadTicketEmail}" styleClass="form-control" pt:data-require-input-text="ticketRequired">
                                             <f:passThroughAttribute name="aria-labelledby"
                                                 value="download-ticket-modal__labelDownloadTicket" />
                                             <f:validator validatorId="emailValidator" for="downloadTicketEmail" />
-                                            <f:ajax render="emailGroup" />
                                         </h:inputText>
                                     </div>
                                 </h:panelGroup>
@@ -122,7 +120,7 @@
 										<h:commandButton styleClass="btn btn--full"
 											value="#{msg.submit}"
 											action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  
-											pt:data-require-input="downloadTicketRequired"/>
+											pt:data-require-input="passwordRequired"/>
 									</div>
 								</div>
 							
@@ -131,7 +129,7 @@
 	                                <div class="col-sm-12 d-flex justify-content-end">
 	                                    <h:commandButton styleClass="btn btn--full"
 	                                        value="#{msg.submit}"
-	                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}"  />
+	                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired" />
 	                                </div>
 	                            </div>
                             
