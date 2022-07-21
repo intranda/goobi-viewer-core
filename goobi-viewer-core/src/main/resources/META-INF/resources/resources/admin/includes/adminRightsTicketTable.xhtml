@@ -83,6 +83,9 @@
 
 							<!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
 							<div class="admin__table-actions-wrapper">
+							    <!-- SHOW RECORD -->
+                                <a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/" class="admin__table-action-link"
+                                    target="_blank" aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">#{msg.show}</a>
                                 <!-- ACTIVATE -->
                                 <ui:fragment rendered="#{!ticket.active and !ticket.expired}">
                                     <button class="admin__table-action-link"
