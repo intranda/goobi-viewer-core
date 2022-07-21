@@ -109,7 +109,10 @@ public class BornDigitalBean implements Serializable {
         }
 
         DownloadTicket ticket = new DownloadTicket();
-        ticket.setPi(activeDocumentBean.getPersistentIdentifier());
+        if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded()) {
+            ticket.setPi(activeDocumentBean.getPersistentIdentifier());
+            ticket.setTitle(activeDocumentBean.getViewManager().getTopDocumentTitle());
+        }
         ticket.setEmail(downloadTicketEmail);
         if (StringUtils.isNotEmpty(downloadTicketRequestMessage)) {
             ticket.setRequestMessage(downloadTicketRequestMessage);

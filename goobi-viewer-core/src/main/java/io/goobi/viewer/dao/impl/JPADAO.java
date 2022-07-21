@@ -1759,6 +1759,7 @@ public class JPADAO implements IDAO {
             em.persist(downloadTicket);
             commitTransaction(em);
         } catch (PersistenceException e) {
+            logger.error(e.getMessage());
             handleException(em);
             return false;
         } finally {
@@ -1777,6 +1778,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
+            logger.error(e.getMessage());
             handleException(em);
             return false;
         } finally {
@@ -1795,6 +1797,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
+            logger.error(e.getMessage());
             handleException(em);
             return false;
         } finally {

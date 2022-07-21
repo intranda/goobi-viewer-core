@@ -35,6 +35,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.inject.Named;
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -77,16 +80,15 @@ public class AdminLicenseBean implements Serializable {
 
     private static final String MSG_ADMIN_LICENSE_SAVE_FAILURE = "license_licenseSaveFailure";
     private static final String MSG_ADMIN_LICENSE_SAVE_SUCCESS = "license_licenseSaveSuccess";
-    private static final String URL_PRETTY_ADMINLICENSES ="pretty:adminLicenses";
+    private static final String URL_PRETTY_ADMINLICENSES = "pretty:adminLicenses";
 
     static final int DEFAULT_ROWS_PER_PAGE = 15;
-    
+
     private TableDataProvider<DownloadTicket> lazyModelDownloadTickets;
 
     private Role currentRole = null;
     private LicenseType currentLicenseType = null;
     private License currentLicense = null;
-    private DownloadTicket currentDownloadTicket = null;
 
     /**
      * <p>
@@ -132,7 +134,7 @@ public class AdminLicenseBean implements Serializable {
 
             @Override
             public void resetTotalNumberOfRecords() {
-              // 
+                // 
             }
         });
         lazyModelDownloadTickets.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -553,7 +555,6 @@ public class AdminLicenseBean implements Serializable {
 
         return "pretty:adminRights";
     }
-    
 
     /**
      * <p>
@@ -576,68 +577,93 @@ public class AdminLicenseBean implements Serializable {
     public List<DownloadTicket> getPageDownloadTickets() {
         return lazyModelDownloadTickets.getPaginatorList();
     }
-    
-
-    /**
-     * <p>
-     * Creates a new <code>currentDownloadTicket</code> instance.
-     * </p>
-     */
-    public void newCurrentDownloadTicketAction() {
-        logger.trace("newCurrentDownloadTicketAction");
-        setCurrentDownloadTicket(new DownloadTicket());
-    }
 
     /**
      * 
+     * @param ticket
      * @return
      * @throws DAOException
      */
-    public String saveCurrentDownloadTicketAction() throws DAOException {
-        logger.trace("saveCurrentDownloadTicketAction");
-        if (currentDownloadTicket == null) {
+    public String activateDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket may not be null");
+        }
+        logger.trace("activateDownloadTicketAction: {}", ticket.getId());
+
+        // Set creation and expiration dates
+        ticket.activate();
+
+        // Persist changes
+        if (DataManager.getInstance().getDao().updateDownloadTicket(ticket)) {
+            logger.trace("Download ticket '{}' updated successfully", ticket.getId());
+            Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
+        } else {
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
             return "";
         }
 
-        
-        // Set creation and expiration dates
-        currentDownloadTicket.activate();
-
-        // Persist in DB
-
-        if (currentDownloadTicket.getId() != null) {
-            if (DataManager.getInstance().getDao().updateDownloadTicket(currentDownloadTicket)) {
-                logger.trace("Download ticket '{}' updated successfully", currentDownloadTicket.getId());
-                Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
+        // Notify owner
+        String subject = ViewerResourceBundle.getTranslation("download_ticket__email_subject", null).replace("{0}", ticket.getPi());
+        String body = ViewerResourceBundle.getTranslation("download_ticket__email_body_activation", null)
+                .replace("{0}", ticket.getPi())
+                .replace("{1}", ticket.getPassword())
+                .replace("{2}", DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate()));
+        try {
+            if (NetTools.postMail(Collections.singletonList(ticket.getEmail()), null, null, subject, body)) {
+                Messages.info("admin__email_sent");
             } else {
-                Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
-                return "pretty:adminDownloadTicketEdit";
+                Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
             }
-        } else {
-            if (DataManager.getInstance().getDao().addDownloadTicket(currentDownloadTicket)) {
-                Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
-            } else {
-                Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
-                return "pretty:adminDownloadTicketNew";
-            }
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            logger.error(e.getMessage());
+            Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
         }
 
-        return URL_PRETTY_ADMINLICENSES;
+        return "";
     }
-    
+
     /**
      * 
-     * @param downloadTicket
+     * @param ticket
      * @return
+     * @throws DAOException 
      */
-    public String extendDownloadTicketAction(DownloadTicket downloadTicket) {
-        if(downloadTicket == null) {
-            throw new IllegalArgumentException("downloadTicket may not be null");
+    public String extendDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket may not be null");
         }
+        logger.trace("extendDownloadTicketAction: {}", ticket.getId());
+
+        // Set new expiration date
+        ticket.extend(DownloadTicket.VALIDITY_DAYS);
+       
         
-        downloadTicket.extend(DownloadTicket.VALIDITY_DAYS);
-        Messages.info("TODO");
-        
+        // Persist changes
+        if (DataManager.getInstance().getDao().updateDownloadTicket(ticket)) {
+            logger.trace("Download ticket '{}' updated successfully", ticket.getId());
+            Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
+        } else {
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return "";
+        }
+
+        // Notify owner
+        String subject = ViewerResourceBundle.getTranslation("download_ticket__email_subject", null).replace("{0}", ticket.getPi());
+        String body = ViewerResourceBundle.getTranslation("download_ticket__email_body_extention", null)
+                .replace("{0}", ticket.getPi())
+                .replace("{1}", DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate()));
+        try {
+            if (NetTools.postMail(Collections.singletonList(ticket.getEmail()), null, null, subject, body)) {
+                Messages.info("admin__email_sent");
+            } else {
+                Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+            }
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            logger.error(e.getMessage());
+            Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+        }
+
+
         return "";
     }
 
@@ -647,15 +673,16 @@ public class AdminLicenseBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public String deleteDownloadTicketAction(DownloadTicket downloadTicket) throws DAOException {
-        if (downloadTicket == null) {
-            throw new IllegalArgumentException("downloadTicket may not be null");
+    public String deleteDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket may not be null");
         }
+        logger.trace("deleteDownloadTicketAction: {}", ticket.getId());
 
-        if (DataManager.getInstance().getDao().deleteDownloadTicket(downloadTicket)) {
-            Messages.info("license_deleteSuccess");
+        if (DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+            Messages.info("deletedSuccessfully");
         } else {
-            Messages.error("license_deleteFailure");
+            Messages.error("deleteFailure");
         }
 
         return "pretty:adminDownloadTickets";
@@ -789,45 +816,6 @@ public class AdminLicenseBean implements Serializable {
     public void setCurrentLicenseId(Long id) throws DAOException {
         if (ObjectUtils.notEqual(getCurrentLicenseId(), id)) {
             setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
-        }
-    }
-
-    /**
-     * @return the currentDownloadTicket
-     */
-    public DownloadTicket getCurrentDownloadTicket() {
-        return currentDownloadTicket;
-    }
-
-    /**
-     * @param currentDownloadTicket the currentDownloadTicket to set
-     */
-    public void setCurrentDownloadTicket(DownloadTicket currentDownloadTicket) {
-        this.currentDownloadTicket = currentDownloadTicket;
-    }
-
-    /**
-     * Returns the user ID of <code>currentDownloadTicket/code>.
-     *
-     * return <code>currentDownloadTicket.id</code> if loaded and has ID; null if not
-     */
-    public Long getCurrentDownloadTicketId() {
-        if (currentDownloadTicket != null && currentDownloadTicket.getId() != null) {
-            return currentDownloadTicket.getId();
-        }
-
-        return null;
-    }
-
-    /**
-     * Sets <code>currentDownloadTicket/code> by loading it from the DB via the given ID.
-     *
-     * @param id
-     * @throws DAOException
-     */
-    public void setDownloadTicketId(Long id) throws DAOException {
-        if (ObjectUtils.notEqual(getCurrentDownloadTicketId(), id)) {
-            setCurrentDownloadTicket(DataManager.getInstance().getDao().getDownloadTicket(id));
         }
     }
 

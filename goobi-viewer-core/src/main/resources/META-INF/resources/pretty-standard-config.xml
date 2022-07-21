@@ -852,15 +852,6 @@
         <view-id value="/resources/admin/views/adminRight.xhtml" />
         <action onPostback="false">#{adminLicenseBean.newCurrentLicenseAction}</action>
     </url-mapping>
-    <url-mapping id="adminDownloadTicketsEdit">
-        <pattern value="/admin/rights/edit/#{DownloadTicketId:adminLicenseBean.currentDownloadTicketId}/" />
-        <view-id value="/resources/admin/views/adminDownloadTicket.xhtml" />
-    </url-mapping>
-    <url-mapping id="adminDownloadTicketsNew">
-        <pattern value="/admin/rights/new/" />
-        <view-id value="/resources/admin/views/adminDownloadTicket.xhtml" />
-        <action onPostback="false">#{adminLicenseBean.newDownloadTicketAction}</action>
-    </url-mapping>
     <url-mapping id="adminUserCommentGroups">
         <pattern value="/admin/comments/" />
         <view-id value="/resources/admin/views/adminUserCommentGroups.xhtml" />
