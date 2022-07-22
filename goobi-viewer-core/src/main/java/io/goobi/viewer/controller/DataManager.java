@@ -569,10 +569,10 @@ public final class DataManager {
         this.clientManager = manager;
     }
     
-    public UsageStatisticsRecorder getUsageStatisticsRecorder() {
+    public UsageStatisticsRecorder getUsageStatisticsRecorder() throws DAOException {
         if (usageStatisticsRecorder == null) {
             synchronized (lock) {
-                usageStatisticsRecorder = new UsageStatisticsRecorder(this.dao, this.configuration, this.configuration.getTheme());
+                usageStatisticsRecorder = new UsageStatisticsRecorder(this.getDao(), this.getConfiguration(), this.getConfiguration().getTheme());
             }
         }
 
