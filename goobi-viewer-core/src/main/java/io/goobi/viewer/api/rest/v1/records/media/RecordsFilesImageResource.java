@@ -133,7 +133,6 @@ public class RecordsFilesImageResource extends ImageResource {
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @RecordFileDownloadBinding
     @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
