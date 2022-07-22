@@ -5557,4 +5557,8 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("campaigns.geoMap.tilesource", "mapbox");
 
     }
+    
+    public boolean isStatisticsEnabled() {
+        return getLocalBoolean("statistics[@enabled]", false);
+    }
 }

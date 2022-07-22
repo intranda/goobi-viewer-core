@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -38,21 +39,27 @@ public class UsageStatisticsRecorder {
     private static final Logger logger = LoggerFactory.getLogger(UsageStatisticsRecorder.class);
 
     private final IDAO dao;
+    private final Configuration config;
     private final String viewerName;
     private final Object dailyStatisticsLock = new Object();
 
-    public UsageStatisticsRecorder(IDAO dao, String viewerName) {
+    public UsageStatisticsRecorder(IDAO dao, Configuration config, String viewerName) {
         this.dao = dao;
+        this.config = config;
         this.viewerName = viewerName;
     }
 
+    public boolean isActive() {
+        return config.isStatisticsEnabled();
+    }
+    
     public void recordRequest(RequestType type, String recordIdentifier, HttpServletRequest request) {
-        if(!NetTools.isCrawlerBotRequest(request)) {            
+        if(isActive() && !NetTools.isCrawlerBotRequest(request)) {            
             recordRequest(type, recordIdentifier, request.getSession().getId(), request.getHeader(USER_AGENT_HEADER), NetTools.getIpAddress(request));
         }
     }
 
-    public void recordRequest(RequestType type, String recordIdentifier, String sessionID, String userAgent, String clientIP) {
+    protected void recordRequest(RequestType type, String recordIdentifier, String sessionID, String userAgent, String clientIP) {
         synchronized (dailyStatisticsLock) {
             try {
                 LocalDate date = LocalDate.now();

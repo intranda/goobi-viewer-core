@@ -1366,6 +1366,9 @@
             <node name="other"  icon="fa fa-file-o" />
         </nodeTypes>
     </archives>
+    
+    <!-- Configuration for collecting usage statistics -->
+    <statistics enabled="true"></statistics>
 
 </config>
 

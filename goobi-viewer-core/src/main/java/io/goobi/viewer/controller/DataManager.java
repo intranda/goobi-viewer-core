@@ -572,7 +572,7 @@ public final class DataManager {
     public UsageStatisticsRecorder getUsageStatisticsRecorder() {
         if (usageStatisticsRecorder == null) {
             synchronized (lock) {
-                usageStatisticsRecorder = new UsageStatisticsRecorder(this.dao, this.configuration.getTheme());
+                usageStatisticsRecorder = new UsageStatisticsRecorder(this.dao, this.configuration, this.configuration.getTheme());
             }
         }
 

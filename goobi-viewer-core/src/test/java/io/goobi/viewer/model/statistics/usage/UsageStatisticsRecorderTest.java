@@ -55,7 +55,7 @@ public class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
         String session1 = "12345";
         String session2 = "67890";
 
-        UsageStatisticsRecorder recorder = new UsageStatisticsRecorder(dao, "viewer.goobi.io");
+        UsageStatisticsRecorder recorder = new UsageStatisticsRecorder(dao, DataManager.getInstance().getConfiguration(),  "viewer.goobi.io");
         Random random = new Random();
 
         Thread thread1 = new Thread(() -> {
