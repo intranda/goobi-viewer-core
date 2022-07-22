@@ -16,6 +16,7 @@
 package io.goobi.viewer.model.statistics.usage;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -32,7 +33,6 @@ import io.goobi.viewer.exceptions.DAOException;
  * @author florian Class to be called on requests to be recorded in usage statistics. Stores and updates usage statistics in database on each request
  */
 public class UsageStatisticsRecorder {
-
 
     private static final String USER_AGENT_HEADER = "User-Agent";
 
@@ -52,30 +52,34 @@ public class UsageStatisticsRecorder {
     public boolean isActive() {
         return config.isStatisticsEnabled();
     }
-    
+
     public void recordRequest(RequestType type, String recordIdentifier, HttpServletRequest request) {
-        if(isActive() && !NetTools.isCrawlerBotRequest(request)) {            
-            recordRequest(type, recordIdentifier, request.getSession().getId(), request.getHeader(USER_AGENT_HEADER), NetTools.getIpAddress(request));
+        if (isActive() && !NetTools.isCrawlerBotRequest(request)) {
+            recordRequest(type, recordIdentifier,
+                    Optional.ofNullable(request).map(HttpServletRequest::getSession).map(HttpSession::getId).orElse(null),
+                    Optional.ofNullable(request).map(req -> req.getHeader(USER_AGENT_HEADER)).orElse(""), NetTools.getIpAddress(request));
         }
     }
 
     protected void recordRequest(RequestType type, String recordIdentifier, String sessionID, String userAgent, String clientIP) {
-        synchronized (dailyStatisticsLock) {
-            try {
-                LocalDate date = LocalDate.now();
-                DailySessionUsageStatistics stats = getStatistics(date);
-                if (stats == null) {
-                    stats = initStatistics(date);
+        if (sessionID != null) {
+            synchronized (dailyStatisticsLock) {
+                try {
+                    LocalDate date = LocalDate.now();
+                    DailySessionUsageStatistics stats = getStatistics(date);
+                    if (stats == null) {
+                        stats = initStatistics(date);
+                    }
+                    SessionUsageStatistics session = stats.getSession(sessionID);
+                    if (session == null) {
+                        session = new SessionUsageStatistics(sessionID, userAgent, clientIP);
+                        stats.addSession(session);
+                    }
+                    session.incrementRequestCount(type, recordIdentifier);
+                    updateStatistics(stats);
+                } catch (DAOException e) {
+                    logger.error("Unable to record update usage statistics: {}", e.toString());
                 }
-                SessionUsageStatistics session = stats.getSession(sessionID);
-                if(session == null) {
-                    session = new SessionUsageStatistics(sessionID, userAgent, clientIP);
-                    stats.addSession(session);
-                }
-                session.incrementRequestCount(type, recordIdentifier);
-                updateStatistics(stats);
-            } catch (DAOException e) {
-                logger.error("Unable to record update usage statistics: {}", e.toString());
             }
         }
     }
