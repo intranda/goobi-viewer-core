@@ -140,31 +140,35 @@
                                     </div>
                                 </h:form>
                             </ui:fragment>
-                            
+
                             <!-- DOWNLOAD TICKETS -->
                             <ui:fragment rendered="#{userBean.admin and fn:length(adminLicenseBean.downloadTicketRequests) > 0}">
-                                <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
+                                <div class="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
-                                        <h2 class="col-9">#{msg.admin__download_ticket_requests}</h2>
+                                        <!-- NOT CONFIGURED TICKETS -->
+                                        <h2 class="col-9">#{msg.admin__dashboard_download_ticket_requests_title}</h2>
+                                        <p class="col-12">#{msg.admin__dashboard_download_ticket_requests_desc}:</p> 
                                     </div>
+                                    
                                     <div class="row">
                                         <div class="col-12">
-                                            <!-- NOT CONFIGURED LICENSES -->
-                                            <div class="row">
-                                                <div class="col-12">#{msg.admin__dashboard_download_ticket_requests_desc}:</div>
-                                            </div>
                                             <ui:repeat var="ticket" value="#{adminLicenseBean.downloadTicketRequests}">
-                                                <div class="row">
-                                                    <div>#{ticket.email}</div>
-                                                    <div>#{ticket.requestMessage}</div>
-                                                </div>
+							                    <a href="#{navigationHelper.applicationUrl}admin/rights/"
+							                        class="row admin__license-unconfigured-entry">
+							                            <div class="col-8 -textlink">
+															#{ticket.email} (#{ticket.requestMessage})
+							                            </div>
+							                            <div class="col-4 d-flex justify-content-end">
+							                            	<span>#{msg.admin__dashboard_download_ticket_requests_configure}</span>
+							                            </div>
+							                 	</a>
                                             </ui:repeat>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <a href="#{navigationHelper.applicationUrl}admin/rights/">#{msg.admin_dashboard_download_ticket_requests_configure}</a>
+                                        <a href=""></a>
                                     </div>
-                                </h:form>
+                                </div>
                             </ui:fragment>
                             
                             <!-- CLIENTS -->
