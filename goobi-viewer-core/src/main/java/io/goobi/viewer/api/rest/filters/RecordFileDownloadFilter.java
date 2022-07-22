@@ -49,13 +49,13 @@ public class RecordFileDownloadFilter implements ContainerRequestFilter {
     
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if(servletRequest.getAttribute("pi") != null){
-            String pi = servletRequest.getAttribute("pi").toString();
-            try {
+        try {            
+            if(servletRequest.getAttribute("pi") != null){
+                String pi = servletRequest.getAttribute("pi").toString();
                 DataManager.getInstance().getUsageStatisticsRecorder().recordRequest(RequestType.FILE_DOWNLOAD, pi, servletRequest);
-            } catch (DAOException e) {
-                logger.error("Error recording file download: {}", e.toString()); 
             }
+        } catch(Throwable e) {
+            logger.error("Error recording file download: {}", e.toString()); 
         }
     }
 }
