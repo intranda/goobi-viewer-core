@@ -18,17 +18,39 @@
               </h2>
             </div>
             <ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-             <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
-                 class="row admin__download-tickets-unconfigured-entry">							
-                     <div class="col-10 -textlink"><span class="d-inline-block">#{ticket.pi} </span><span class="admin__download-tickets-not-accepted-title"> #{ticket.title} </span><span class="d-inline-block"> (#{ticket.email})</span>
-                     </div>
-                     <div class="col-2 d-flex justify-content-end">
-                     	<span>#{msg.admin__clients__configure_client}</span>
-                     </div>
-          	</a>
+	            <ui:fragment rendered="#{!ticket.active and !ticket.expired}">
+		             <div data-target="clientActivationRow"
+		                 class="row admin__download-tickets-unconfigured-entry">							
+		                     <div class="col-10 -textlink"><span class="d-inline-block">#{ticket.pi} </span><span class="admin__download-tickets-not-accepted-title"> #{ticket.title} </span><span class="d-inline-block"> (#{ticket.email})</span>
+		                     </div>
+		                     <div class="col-2 d-flex justify-content-end">
+		                     	<button class="btn btn--clean"
+		                     				data-target="clientActivationButton"
+	                                        data-require-confirmation="true"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.id)}"
+	                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
+	                                        aria-label="#{msg.activate}: #{ticket.id}">
+	                                        #{msg.activate}
+	                            </button>
+		                     </div>
+		          	</div>
+	          	</ui:fragment>
          	</ui:repeat>
         </div>
     </ui:fragment>
+    
+    <!-- CLICK ON ROW ACTIVATES BUTTON FOR TICKET ACTIVATION -->
+    <script>
+	    $('[data-target="clientActivationButton"]').click(function(e) {
+	        e.stopPropagation();
+	    });
+	    $('[data-target="clientActivationRow"]').on('click', function (event ) {
+	    	event.preventDefault();
+		    	$(this).find('[data-target="clientActivationButton"]').trigger('click');
+	    	console.log('clicked this stuff');
+	    	return false;
+	    });
+    </script>
 
 
 	<!-- DOWNLOAD TICKETS -->
@@ -75,72 +97,84 @@
 
 			<ui:repeat var="ticket"
 				value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-				<div class="row no-gutters admin__table-entry" role="row">
-					<div class="col-3 d-flex">
-						<div class="admin__table-data" role="gridcell">
-							<!-- RECORD IDENTIFIER -->
-							<span class="admin__table-name admin__clients-table-client-name">#{ticket.pi}</span>
-
-							<!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
-							<div class="admin__table-actions-wrapper">
-							    <!-- SHOW RECORD -->
-                                <a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/" class="admin__table-action-link"
-                                    target="_blank" aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">#{msg.show}</a>
-                                <!-- ACTIVATE -->
-                                <ui:fragment rendered="#{!ticket.active and !ticket.expired}">
-                                    <button class="admin__table-action-link"
-                                        data-require-confirmation="true"
-                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.id)}"
-                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
-                                        aria-label="#{msg.activate}: #{ticket.id}">
-                                        #{msg.activate}</button>
-                                </ui:fragment>
-								<!-- EXTEND -->
-								<ui:fragment rendered="#{ticket.expired}">
-                                    <button class="admin__table-action-link"
-                                        data-require-confirmation="true"
-                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.id)}"
-                                        jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
-                                        aria-label="#{msg.extend}: #{ticket.id}">
-                                        #{msg.extend}</button>
-                                </ui:fragment>
-								<!-- DELETE -->
-								<button class="admin__table-action-link -redlink"
-									data-require-confirmation="true"
-									data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.id)}"
-									jsf:action="#{adminLicenseBean.deleteDownloadTicketAction(ticket)}"
-									aria-label="#{msg.delete}: #{ticket.id}">
-									#{msg.delete}</button>
-
+	            <ui:fragment rendered="#{ticket.active and !ticket.expired}">
+					<div class="row no-gutters admin__table-entry" role="row">
+						<div class="col-3 d-flex">
+							<div class="admin__table-data" role="gridcell">
+								<!-- RECORD IDENTIFIER -->
+								<span class="admin__table-name admin__clients-table-client-name">#{ticket.pi}</span>
+	
+								<!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
+								<div class="admin__table-actions-wrapper">
+								    <!-- SHOW RECORD -->
+	                                <a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/" class="admin__table-action-link"
+	                                    target="_blank" aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">#{msg.show}</a>
+	                                
+	                                <!-- ACTIVATE -->
+	                                <ui:fragment rendered="#{!ticket.active and !ticket.expired}">
+	                                    <button class="admin__table-action-link"
+	                                        data-require-confirmation="true"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.id)}"
+	                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
+	                                        aria-label="#{msg.activate}: #{ticket.id}">
+	                                        #{msg.activate}</button>
+	                                </ui:fragment>
+									<!-- EXTEND -->
+									<ui:fragment rendered="#{!ticket.expired}">
+	                                    <button class="admin__table-action-link"
+	                                        data-require-confirmation="true"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.id)}"
+	                                        jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
+	                                        aria-label="#{msg.extend}: #{ticket.id}">
+	                                        #{msg.extend}</button>
+	                                </ui:fragment>
+									<!-- RENEW -->
+									<ui:fragment rendered="#{ticket.expired}">
+	                                    <button class="admin__table-action-link"
+	                                        data-require-confirmation="true"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.id)}"
+	                                        jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
+	                                        aria-label="#{msg.extend}: #{ticket.id}">
+	                                        #{msg.extend}</button>
+	                                </ui:fragment>
+	                                
+									<!-- DELETE -->
+									<button class="admin__table-action-link -redlink"
+										data-require-confirmation="true"
+										data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.id)}"
+										jsf:action="#{adminLicenseBean.deleteDownloadTicketAction(ticket)}"
+										aria-label="#{msg.delete}: #{ticket.id}">
+										#{msg.delete}</button>
+	
+								</div>
 							</div>
 						</div>
+	
+						<div class="col-5 d-flex align-items-center" role="gridcell">
+	<!-- 						<span class="admin__table-ip-address">#{client.subnetMask}</span> -->
+														<!-- EMAIL -->
+								<span>#{ticket.title}</span>
+						</div>
+						
+						
+						<div class="col-2 d-flex align-items-center" role="gridcell">
+							<!-- RECORD TITLE -->
+							<span class="admin__table-additional-info">#{ticket.email}</span>
+						</div>
+	
+						<!-- REGISTERED DATE -->
+						<div class="col-2 d-flex align-items-center" role="gridcell">
+							<!-- EXPIRES -->
+							<span> <h:outputText value="#{ticket.expirationDate}">
+									<f:converter converterId="localDateTimeConverter" />
+									<f:attribute name="pattern"
+										value="#{navigationHelper.dateTimePattern}" />
+								</h:outputText>
+							</span>
+						</div>
+	
 					</div>
-
-					<div class="col-5 d-flex align-items-center" role="gridcell">
-<!-- 						<span class="admin__table-ip-address">#{client.subnetMask}</span> -->
-													<!-- EMAIL -->
-							<span>#{ticket.title}</span>
-					</div>
-					
-					
-					<div class="col-2 d-flex align-items-center" role="gridcell">
-						<!-- RECORD TITLE -->
-						<span class="admin__table-additional-info">#{ticket.email}</span>
-					</div>
-
-					<!-- REGISTERED DATE -->
-					<div class="col-2 d-flex align-items-center" role="gridcell">
-						<!-- EXPIRES -->
-						<span> <h:outputText value="#{ticket.expirationDate}">
-								<f:converter converterId="localDateTimeConverter" />
-								<f:attribute name="pattern"
-									value="#{navigationHelper.dateTimePattern}" />
-							</h:outputText>
-						</span>
-					</div>
-
-				</div>
-
+				</ui:fragment>
 			</ui:repeat>
 
 			<script type="text/javascript">
