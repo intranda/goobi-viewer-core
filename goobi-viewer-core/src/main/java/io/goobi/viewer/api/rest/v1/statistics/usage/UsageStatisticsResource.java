@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
@@ -44,7 +45,7 @@ public class UsageStatisticsResource {
     public StatisticsSummary getStatisticsForDay(
             @Parameter(description = "date to observe, in format yyyy-mm-dd") @PathParam("date") String date,
             @Parameter(description = "additional SOLR query to filter records which should be counted. "
-                    + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery) throws DAOException, IndexUnreachableException {
+                    + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery) throws DAOException, IndexUnreachableException, PresentationException {
         return new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(getLocalDate(date), getLocalDate(date), recordFilterQuery));
     }
 
@@ -57,7 +58,7 @@ public class UsageStatisticsResource {
             @Parameter(description = "first date to observer, in format yyyy-mm-dd") @PathParam("startDate") String start,
             @Parameter(description = "last date to observer, in format yyyy-mm-dd") @PathParam("endDate") String end,
             @Parameter(description = "additional SOLR query to filter records which should be counted. "
-                    + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery) throws DAOException, IndexUnreachableException {
+                    + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery) throws DAOException, IndexUnreachableException, PresentationException {
         return new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(getLocalDate(start), getLocalDate(end), recordFilterQuery));
     }
 

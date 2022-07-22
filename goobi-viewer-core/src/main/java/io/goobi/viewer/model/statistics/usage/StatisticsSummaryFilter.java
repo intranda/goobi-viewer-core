@@ -3,6 +3,8 @@ package io.goobi.viewer.model.statistics.usage;
 import java.time.LocalDate;
 import java.time.Month;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * A class holding values by which a {@link StatisticsSummary} instance should be filtered
  * @author florian
@@ -84,6 +86,22 @@ public class StatisticsSummaryFilter {
 
     public static StatisticsSummaryFilter of(LocalDate start, LocalDate end, String query) {
         return new StatisticsSummaryFilter(start, end, query);
+    }
+    
+    public boolean hasStartDateRestriction() {
+        return startDate.isAfter(LOCAL_DATE_MIN);
+    }
+    
+    public boolean hasEndDateRestriction() {
+        return endDate.isBefore(LOCAL_DATE_MAX);
+    }
+    
+    public boolean isDateRange() {
+        return hasStartDateRestriction() && hasEndDateRestriction() && this.endDate.isAfter(this.startDate);
+    }
+    
+    public boolean hasFilterQuery() {
+        return StringUtils.isNotBlank(filterQuery);
     }
 
 }
