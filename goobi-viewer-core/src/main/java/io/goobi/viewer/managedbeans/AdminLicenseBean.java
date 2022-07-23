@@ -751,7 +751,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * Returns the user ID of <code>currentLicenseType/code>.
+     * Returns the user ID of <code>currentLicenseType</code>.
      *
      * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
      */
@@ -804,7 +804,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * Returns the user ID of <code>currentLicense/code>.
+     * Returns the user ID of <code>currentLicense</code>.
      *
      * return <code>currentLicense.id</code> if loaded and has ID; null if not
      */
@@ -817,7 +817,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * Sets <code>currentLicense/code> by loading it from the DB via the given ID.
+     * Sets <code>currentLicense</code> by loading it from the DB via the given ID.
      *
      * @param id
      * @throws DAOException
