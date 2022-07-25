@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -577,7 +578,7 @@ public class AdminLicenseBean implements Serializable {
     public List<DownloadTicket> getPageDownloadTickets() {
         return lazyModelDownloadTickets.getPaginatorList();
     }
-    
+
     /**
      * 
      * @return
@@ -586,7 +587,7 @@ public class AdminLicenseBean implements Serializable {
     public List<DownloadTicket> getDownloadTicketRequests() throws DAOException {
         return DataManager.getInstance().getDao().getDownloadTicketRequests();
     }
-    
+
     /**
      * 
      * @param ticket
@@ -599,7 +600,7 @@ public class AdminLicenseBean implements Serializable {
         if (ticket == null) {
             throw new IllegalArgumentException("ticket may not be null");
         }
-        
+
         // Persist changes
         if (DataManager.getInstance().getDao().updateDownloadTicket(ticket)) {
             logger.trace("Download ticket '{}' updated successfully", ticket.getId());
@@ -610,32 +611,37 @@ public class AdminLicenseBean implements Serializable {
         }
 
         // Notify owner
-        return notifyOwner(ticket, emailSubjectKey, emailBodyKey);
+        return notifyOwner(ticket, emailSubjectKey, emailBodyKey,
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
     }
-    
+
     /**
      * 
      * @param ticket
      * @param emailSubjectKey
      * @param emailBodyKey
+     * @param emailBodyParams
      * @return
      */
-    private static String notifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey) {
+    private static String notifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
         if (ticket == null) {
             throw new IllegalArgumentException("ticket may not be null");
         }
         if (emailSubjectKey == null) {
             throw new IllegalArgumentException("emailSubjectKey may not be null");
-        } 
+        }
         if (emailBodyKey == null) {
             throw new IllegalArgumentException("emailBodyKey may not be null");
-        } 
-        
+        }
+
         String subject = ViewerResourceBundle.getTranslation(emailSubjectKey, null).replace("{0}", ticket.getPi());
-        String body = ViewerResourceBundle.getTranslation(emailBodyKey, null)
-                .replace("{0}", ticket.getPi())
-                .replace("{1}", ticket.getPassword())
-                .replace("{2}", DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate()));
+        String body = ViewerResourceBundle.getTranslation(emailBodyKey, null);
+        if (emailBodyParams != null) {
+            for (int i = 0; i < emailBodyParams.size(); ++i) {
+                body = body.replace("{" + i + "}", emailBodyParams.get(i));
+            }
+        }
+
         try {
             if (NetTools.postMail(Collections.singletonList(ticket.getEmail()), null, null, subject, body)) {
                 Messages.info("admin__email_sent");
@@ -664,7 +670,7 @@ public class AdminLicenseBean implements Serializable {
 
         // Set creation and expiration dates
         ticket.activate();
-        
+
         return saveTicketAndNotifyOwner(ticket, "download_ticket__email_subject", "download_ticket__email_body_activation");
     }
 
@@ -672,7 +678,7 @@ public class AdminLicenseBean implements Serializable {
      * 
      * @param ticket
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public String extendDownloadTicketAction(DownloadTicket ticket) throws DAOException {
         if (ticket == null) {
@@ -682,15 +688,15 @@ public class AdminLicenseBean implements Serializable {
 
         // Set new expiration date
         ticket.extend(DownloadTicket.VALIDITY_DAYS);
-       
+
         return saveTicketAndNotifyOwner(ticket, "download_ticket__email_subject", "download_ticket__email_body_extention");
     }
-    
+
     /**
      * 
      * @param ticket
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     public String renewDownloadTicketAction(DownloadTicket ticket) throws DAOException {
         if (ticket == null) {
@@ -700,10 +706,10 @@ public class AdminLicenseBean implements Serializable {
 
         // Generate new password and reset expiration date
         ticket.activate();
-       
+
         return saveTicketAndNotifyOwner(ticket, "download_ticket__email_subject", "download_ticket__email_body_renewal");
     }
-    
+
     /**
      * 
      * @param ticket
@@ -715,15 +721,16 @@ public class AdminLicenseBean implements Serializable {
             throw new IllegalArgumentException("ticket may not be null");
         }
         logger.trace("rejectDownloadTicketAction: {}", ticket.getId());
-        
+
         if (DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
             Messages.info("deletedSuccessfully");
         } else {
             Messages.error("deleteFailure");
+            return "";
         }
-        
-        
-        return notifyOwner(ticket, "download_ticket__email_subject", "download_ticket__email_body_rejection");
+
+        return notifyOwner(ticket, "download_ticket__email_subject", "download_ticket__email_body_rejection",
+                Arrays.asList(ticket.getPi(), "info@example.com"));
     }
 
     /**
