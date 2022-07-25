@@ -97,7 +97,7 @@
 
 			<ui:repeat var="ticket"
 				value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-	            <ui:fragment rendered="#{ticket.active and !ticket.expired}">
+	            <ui:fragment>
 					<div class="row no-gutters admin__table-entry" role="row">
 						<div class="col-3 d-flex">
 							<div class="admin__table-data" role="gridcell">
@@ -111,33 +111,32 @@
 	                                    target="_blank" aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">#{msg.show}</a>
 	                                
 	                                <!-- ACTIVATE -->
-	                                <ui:fragment rendered="#{!ticket.active and !ticket.expired}">
+	                                <ui:fragment rendered="#{ticket.request}">
 	                                    <button class="admin__table-action-link"
 	                                        data-require-confirmation="true"
 	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm,  ticket.email, ticket.pi)}"
 	                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
 	                                        aria-label="#{msg.activate}: #{ticket.id}">
-	                                        #{msg.activate}</button>
+	                                        #{msg.action__activate}</button>
 	                                </ui:fragment>
 									<!-- EXTEND -->
-									<ui:fragment rendered="#{!ticket.expired}">
-	                                    <button class="admin__table-action-link"
-	                                        data-require-confirmation="true"
-	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi)}"
-	                                        jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
-	                                        aria-label="#{msg.extend}: #{ticket.id}">
-	                                        #{msg.extend}</button>
-	                                </ui:fragment>
-									<!-- RENEW -->
 									<ui:fragment rendered="#{ticket.expired}">
 	                                    <button class="admin__table-action-link"
 	                                        data-require-confirmation="true"
 	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi, '14')}"
+	                                        jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
+	                                        aria-label="#{msg.extend}: #{ticket.id}">
+	                                        #{msg.admin__download_tickets_extend}</button>
+	                                </ui:fragment>
+									<!-- RENEW -->
+									<ui:fragment rendered="#{ticket.active}">
+	                                    <button class="admin__table-action-link"
+	                                        data-require-confirmation="true"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi)}"
 	                                        jsf:action="#{adminLicenseBean.renewDownloadTicketAction(ticket)}"
 	                                        aria-label="#{msg.extend}: #{ticket.id}">
-	                                        #{msg.extend}</button>
+	                                        #{msg.admin__download_tickets_renew}</button>
 	                                </ui:fragment>
-	                                
 									<!-- DELETE -->
 									<button class="admin__table-action-link -redlink"
 										data-require-confirmation="true"
