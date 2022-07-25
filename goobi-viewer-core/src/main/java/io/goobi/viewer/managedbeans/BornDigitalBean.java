@@ -22,20 +22,27 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.DownloadTicket;
 
@@ -44,6 +51,8 @@ import io.goobi.viewer.model.security.DownloadTicket;
 public class BornDigitalBean implements Serializable {
 
     private static final long serialVersionUID = -371794671604543166L;
+
+    private static final Logger logger = LoggerFactory.getLogger(BornDigitalBean.class);
 
     @Inject
     private ActiveDocumentBean activeDocumentBean;
@@ -70,12 +79,22 @@ public class BornDigitalBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public String checkDownloadTicketPasswordAction() throws DAOException, IndexUnreachableException {
+        logger.trace("checkDownloadTicketPasswordAction");
         if (StringUtils.isEmpty(downloadTicketPassword)) {
-            Messages.error("errPassword");
+            Messages.error(StringConstants.MSG_ERR_PASSWORD_INCORRECT);
             return "";
         }
-        
-        // TODO brute force check
+
+        // brute force check
+        String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
+        long delay = DataManager.getInstance().getSecurityManager().getDelayForIpAddress(ipAddress);
+        if (delay > 0) {
+            String msg =
+                    ViewerResourceBundle.getTranslation("errLoginDelay", BeanUtils.getLocale())
+                            .replace("{0}", String.valueOf((int) Math.ceil(delay / 1000.0)));
+            Messages.error(msg);
+            return "";
+        }
 
         try {
             String hash = BCrypt.hashpw(downloadTicketPassword, DownloadTicket.SALT);
@@ -87,11 +106,15 @@ public class BornDigitalBean implements Serializable {
             }
             if (ticket != null && ticket.isActive() && ticket.getPi().equals(pi) && ticket.checkPassword(downloadTicketPassword)
                     && AccessConditionUtils.addPermissionToSession(pi, BeanUtils.getSession())) {
+                logger.trace("Born digital download permission for {} added to user session.", pi);
+                DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForIpAddress(ipAddress);
                 Messages.info("");
                 return "";
             }
 
-            Messages.error("errPassword");
+            logger.trace("password incorrect");
+            DataManager.getInstance().getSecurityManager().addFailedLoginAttemptForIpAddress(ipAddress);
+            Messages.error(StringConstants.MSG_ERR_PASSWORD_INCORRECT);
             return "";
         } finally {
             downloadTicketPassword = null;
@@ -121,6 +144,23 @@ public class BornDigitalBean implements Serializable {
         }
 
         if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
+            downloadTicketEmail = null;
+            downloadTicketRequestMessage = null;
+
+            // Notify the requesting party of a successful request via e-mail
+            String subject = ViewerResourceBundle.getTranslation(StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, BeanUtils.getLocale())
+                    .replace("{0}", ticket.getPi());
+            String body = ViewerResourceBundle.getTranslation("download_ticket__email_body_request_sent", BeanUtils.getLocale())
+                    .replace("{0}", ticket.getPi());
+
+            try {
+                if (!NetTools.postMail(Collections.singletonList(ticket.getEmail()), null, null, subject, body)) {
+                    Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+                }
+            } catch (UnsupportedEncodingException | MessagingException e) {
+                logger.error(e.getMessage());
+                Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+            }
             Messages.info("download_ticket__request_created");
         } else {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
