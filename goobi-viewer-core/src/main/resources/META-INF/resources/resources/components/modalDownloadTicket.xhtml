@@ -83,6 +83,8 @@
                                             value="#{bornDigitalBean.downloadTicketEmail}" styleClass="form-control" pt:data-require-input-text="ticketRequired">
                                             <f:passThroughAttribute name="aria-labelledby"
                                                 value="download-ticket-modal__labelDownloadTicket" />
+                                            <f:passThroughAttribute name="type"
+                                                value="email" />
                                             <f:validator validatorId="emailValidator" for="downloadTicketEmail" />
                                         </h:inputText>
                                     </div>
