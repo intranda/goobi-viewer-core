@@ -27,10 +27,10 @@
 		                     	<button class="btn btn--clean"
 		                     				data-target="clientActivationButton"
 	                                        data-require-confirmation="true"
-	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.id)}"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
 	                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
 	                                        aria-label="#{msg.activate}: #{ticket.id}">
-	                                        #{msg.activate}
+	                                        #{msg.action__activate}
 	                            </button>
 		                     </div>
 		          	</div>
