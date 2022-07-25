@@ -1496,11 +1496,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
-            logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted());
-            if (bornDigitalDownloadTicketRequired == null) {
-                bornDigitalDownloadTicketRequired = access.isTicketRequired();
-                logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired());
-            }
+            // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted());
+            //            if (bornDigitalDownloadTicketRequired == null) {
+            bornDigitalDownloadTicketRequired = access.isTicketRequired();
+            // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired());
+            //            }
             return access.isGranted();
         }
         logger.trace("FacesContext not found");
@@ -1516,16 +1516,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws DAOException
      */
     public boolean isBornDigitalDownloadTicketRequired() throws IndexUnreachableException, DAOException {
-        if (bornDigitalDownloadTicketRequired == null) {
-            isAccessPermissionBornDigital();
-        }
-        logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired);
+        //                if (bornDigitalDownloadTicketRequired == null) {
+        isAccessPermissionBornDigital();
+        //                }
+        // logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired);
 
         // If license requires a download ticket, check agent session for loaded ticket
         if (Boolean.TRUE.equals(bornDigitalDownloadTicketRequired) && FacesContext.getCurrentInstance() != null
                 && FacesContext.getCurrentInstance().getExternalContext() != null) {
-            boolean hasTicket = AccessConditionUtils.isHasDownloadTicket(pi,  BeanUtils.getSession());
-            logger.trace("User has download ticket: {}", hasTicket);
+            boolean hasTicket = AccessConditionUtils.isHasDownloadTicket(pi, BeanUtils.getSession());
+            // logger.trace("User has download ticket: {}", hasTicket);
             return !hasTicket;
         }
 
