@@ -610,6 +610,27 @@ public class AdminLicenseBean implements Serializable {
         }
 
         // Notify owner
+        return notifyOwner(ticket, emailSubjectKey, emailBodyKey);
+    }
+    
+    /**
+     * 
+     * @param ticket
+     * @param emailSubjectKey
+     * @param emailBodyKey
+     * @return
+     */
+    private static String notifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey) {
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket may not be null");
+        }
+        if (emailSubjectKey == null) {
+            throw new IllegalArgumentException("emailSubjectKey may not be null");
+        } 
+        if (emailBodyKey == null) {
+            throw new IllegalArgumentException("emailBodyKey may not be null");
+        } 
+        
         String subject = ViewerResourceBundle.getTranslation(emailSubjectKey, null).replace("{0}", ticket.getPi());
         String body = ViewerResourceBundle.getTranslation(emailBodyKey, null)
                 .replace("{0}", ticket.getPi())
@@ -681,6 +702,28 @@ public class AdminLicenseBean implements Serializable {
         ticket.activate();
        
         return saveTicketAndNotifyOwner(ticket, "download_ticket__email_subject", "download_ticket__email_body_renewal");
+    }
+    
+    /**
+     * 
+     * @param ticket
+     * @return
+     * @throws DAOException
+     */
+    public String rejectDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket may not be null");
+        }
+        logger.trace("rejectDownloadTicketAction: {}", ticket.getId());
+        
+        if (DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+            Messages.info("deletedSuccessfully");
+        } else {
+            Messages.error("deleteFailure");
+        }
+        
+        
+        return notifyOwner(ticket, "download_ticket__email_subject", "download_ticket__email_body_rejection");
     }
 
     /**

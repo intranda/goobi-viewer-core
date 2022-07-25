@@ -18,20 +18,28 @@
               </h2>
             </div>
             <ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-	            <ui:fragment rendered="#{!ticket.active and !ticket.expired}">
-		             <div data-target="clientActivationRow"
+	            <ui:fragment rendered="#{ticket.request}">
+		             <div data-target="ticketActivationRow"
 		                 class="row admin__download-tickets-unconfigured-entry">							
 		                     <div class="col-10 -textlink"><span class="d-inline-block">#{ticket.pi} </span><span class="admin__download-tickets-not-accepted-title"> #{ticket.title} </span><span class="d-inline-block"> (#{ticket.email})</span>
 		                     </div>
 		                     <div class="col-2 d-flex justify-content-end">
 		                     	<button class="btn btn--clean"
-		                     				data-target="clientActivationButton"
+		                     				data-target="ticketActivationButton"
 	                                        data-require-confirmation="true"
 	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
 	                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
-	                                        aria-label="#{msg.activate}: #{ticket.id}">
+	                                        aria-label="#{msg.action__activate}: #{ticket.id}">
 	                                        #{msg.action__activate}
 	                            </button>
+                                <button class="btn btn--clean"
+                                            data-target="ticketRejectionButton"
+                                            data-require-confirmation="true"
+                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_reject_confirm, ticket.email, ticket.pi)}"
+                                            jsf:action="#{adminLicenseBean.rejectDownloadTicketAction(ticket)}"
+                                            aria-label="#{msg.activate}: #{ticket.id}">
+                                            #{msg.action__reject}
+                                </button>
 		                     </div>
 		          	</div>
 	          	</ui:fragment>
@@ -97,7 +105,7 @@
 
 			<ui:repeat var="ticket"
 				value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-	            <ui:fragment>
+	            <ui:fragment rendered="#{!ticket.request}">
 					<div class="row no-gutters admin__table-entry" role="row">
 						<div class="col-3 d-flex">
 							<div class="admin__table-data" role="gridcell">
@@ -109,18 +117,8 @@
 								    <!-- SHOW RECORD -->
 	                                <a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/" class="admin__table-action-link"
 	                                    target="_blank" aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">#{msg.show}</a>
-	                                
-	                                <!-- ACTIVATE -->
-	                                <ui:fragment rendered="#{ticket.request}">
-	                                    <button class="admin__table-action-link"
-	                                        data-require-confirmation="true"
-	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm,  ticket.email, ticket.pi)}"
-	                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
-	                                        aria-label="#{msg.activate}: #{ticket.id}">
-	                                        #{msg.action__activate}</button>
-	                                </ui:fragment>
 									<!-- EXTEND -->
-									<ui:fragment rendered="#{ticket.expired}">
+									<ui:fragment rendered="#{ticket.active or ticket.expired}">
 	                                    <button class="admin__table-action-link"
 	                                        data-require-confirmation="true"
 	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi, '14')}"

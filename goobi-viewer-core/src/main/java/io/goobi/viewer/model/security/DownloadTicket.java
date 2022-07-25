@@ -162,7 +162,11 @@ public class DownloadTicket implements Serializable {
             throw new IllegalArgumentException("days must be a number greater than 0");
         }
 
-        expirationDate = LocalDateTime.now().plusDays(days);
+        if (expirationDate != null) {
+            expirationDate = expirationDate.plusDays(days);
+        } else {
+            expirationDate = LocalDateTime.now().plusDays(days);
+        }
     }
 
     /**
