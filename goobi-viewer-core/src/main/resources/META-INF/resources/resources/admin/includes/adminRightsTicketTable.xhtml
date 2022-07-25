@@ -9,8 +9,8 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<!-- NOT ACCEPTED DOWNLOAD REQUESTS -->
-    <ui:fragment rendered="#{not empty notConfiguredClients}">
+	<!-- NOT (YET) ACCEPTED DOWNLOAD REQUESTS -->
+    <ui:fragment rendered="#{not empty adminLicenseBean.downloadTicketRequests}">
         <div class="admin__default-block mb-5 -warning">
             <div class="row">
               <h2 class="col-12">
