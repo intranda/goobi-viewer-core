@@ -121,7 +121,7 @@ public class BornDigitalBean implements Serializable {
         }
 
         if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
-            Messages.info("download_ticket_request_created");
+            Messages.info("download_ticket__request_created");
         } else {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
         }
