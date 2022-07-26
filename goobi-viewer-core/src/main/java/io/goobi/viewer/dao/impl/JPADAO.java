@@ -1696,6 +1696,8 @@ public class JPADAO implements IDAO {
             Root<DownloadTicket> root = cq.from(DownloadTicket.class);
             cq.select(root).where(cb.equal(root.get("passwordHash"), passwordHash));
             return em.createQuery(cq).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } finally {
             close(em);
         }
@@ -1751,6 +1753,7 @@ public class JPADAO implements IDAO {
 
     /**
      * {@inheritDoc}
+     * 
      * @should return tickets that have never been activated
      */
     @Override
