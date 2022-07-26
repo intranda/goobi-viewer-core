@@ -4,24 +4,78 @@
    ==============================================================*/
 /* ADMIN RIGHTS */
 .admin__download-tickets {
-	&-not-accepted-title {
-		max-width: 300px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		display: inline-block;
-		white-space: nowrap;
+	&-pending-tickets-wrapper {
+		display: grid;
+		grid-auto-rows: auto;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 25px 25px;
+		grid-template-areas: ". . .";
 	}
-	&-unconfigured-entry {
-			transition: background .2s ease;
-			padding: 0.4rem 0.5rem;
-			margin: 0 -2rem;
-		&:hover {
-			background: @lightgray2;
-			span {
-				text-decoration: underline;
-				
-			}
+	&-pending-ticket-single {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 0;
+		padding-bottom: 2rem;
+	}
+	&-pending-ticket-key-value-wrapper {
+		display: flex;
+		margin-bottom: 1rem;
+	}
+	&-pending-ticket-key {
+		flex: 0 0 140px;
+		max-width: 140px;
+		font-weight: 700;
+	}
+	&-pending-ticket-value {
+		
+	}
+	&-pending-ticket-actions {
+		margin-top: auto;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 20px;
+		flex-wrap: wrap;
+		button {
+			flex-grow: 1;
 		}
+	}
+	&-pending-ticket-value {
+		word-wrap: anywhere;
+	}
+	&-pending-ticket-value-message-wrapper {
+		position: relative;
+		margin-bottom: 15px;
+		// padding-bottom: 18px;
+	}
+	&-pending-ticket-value-message {
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;  
+		overflow: hidden;
+		position: relative;
+		padding-right: 14px;
+		&.-unfoldable {
+			cursor: pointer;
+		}
+		&.-unfolded {
+		  display: block;
+		  -webkit-line-clamp: unset;
+		  -webkit-box-orient: unset;  
+		  overflow: unset;
+			cursor: default;
+		}
+	}
+	&-pending-ticket-unfold-button {
+		display: none;
+		position: absolute;
+		right: 0;
+		bottom: -5px;
+		font-size: 20px;
+		cursor: pointer;
+	}
+	&-active-tickets-table-wrapper {
+		margin-top: 40px;
 	}
 }
 
