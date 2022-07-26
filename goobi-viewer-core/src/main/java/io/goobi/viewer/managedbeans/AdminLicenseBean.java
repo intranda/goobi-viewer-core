@@ -720,7 +720,7 @@ public class AdminLicenseBean implements Serializable {
      */
     public String rejectDownloadTicketAction(DownloadTicket ticket) throws DAOException {
         if (ticket == null) {
-            throw new IllegalArgumentException("ticket may not be null");
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
         logger.trace("rejectDownloadTicketAction: {}", ticket.getId());
 

@@ -60,11 +60,12 @@
 	                        	<span>#{msg[page.mimeType]}</span>
 	                        </div>
 	                        <div class="born-digital__item">
+	                            <!-- Ticket required for download -->
                                 <ui:fragment rendered="#{page.bornDigitalDownloadTicketRequired}">
-                                        <!-- TODO: Display button that opens ticket entry popup, then reload list with download links -->
-                                        <button class="btn btn--full" data-toggle="modal"
-                                            data-target="#downloadTicketModal">#{msg.action__born_digital__unlock}</button>
+                                    <button class="btn btn--full" data-toggle="modal"
+                                        data-target="#downloadTicketModal">#{msg.action__born_digital__unlock}</button>
                                 </ui:fragment>
+                                <!-- Download allowed -->
 	                            <ui:fragment rendered="#{!page.bornDigitalDownloadTicketRequired}">
 	                      	        <a class="born-digital__item__download btn btn--full" href="#{page.url}">#{msg.action__born_digital__download}</a>
 	                      	    </ui:fragment>

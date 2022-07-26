@@ -54,6 +54,7 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
@@ -363,7 +364,7 @@ public class AdminBean implements Serializable {
 
         // Finally, delete user (and any user-created data that's not publicly visible)
         if (UserTools.deleteUser(user)) {
-            Messages.info("deletedSuccessfully");
+            Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
             return "pretty:adminUsers";
         }
 

@@ -97,6 +97,7 @@ public class RecordsFilesImageResource extends ImageResource {
         super(context, request, response, pi, filename);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
+        // TODO Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, otherwise the check in AccessConditionRequestFilter will fail!
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);

@@ -89,6 +89,7 @@ public class BornDigitalBean implements Serializable {
         String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
         long delay = DataManager.getInstance().getSecurityManager().getDelayForIpAddress(ipAddress);
         if (delay > 0) {
+            logger.trace("Password delay: {} ms", delay);
             String msg =
                     ViewerResourceBundle.getTranslation("errLoginDelay", BeanUtils.getLocale())
                             .replace("{0}", String.valueOf((int) Math.ceil(delay / 1000.0)));

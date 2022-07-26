@@ -358,6 +358,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
         }
 
         if (!access.isGranted()) {
+            logger.trace("Access denied for {}/{}", pi, privName);
             throw new ServiceNotAllowedException("Serving this content is restricted due to access conditions");
         }
     }

@@ -113,7 +113,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
-    private void filterForAccessConditions(HttpServletRequest request, String pi, String logid, String contentFileName)
+    private static void filterForAccessConditions(HttpServletRequest request, String pi, String logid, String contentFileName)
             throws ServiceNotAllowedException {
         // logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
         contentFileName = StringTools.decodeUrl(contentFileName);
@@ -141,9 +141,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                     }
                 }
             }
-        } catch (IndexUnreachableException e) {
-            throw new ServiceNotAllowedException("Serving this resource is currently impossible due to " + e.toString());
-        } catch (DAOException e) {
+        } catch (IndexUnreachableException | DAOException e) {
             throw new ServiceNotAllowedException("Serving this resource is currently impossible due to " + e.toString());
         } catch (RecordNotFoundException e) {
             throw new ServiceNotAllowedException("Serving this resource is currently impossible because the record could not be found");

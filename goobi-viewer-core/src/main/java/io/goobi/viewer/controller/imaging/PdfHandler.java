@@ -150,7 +150,7 @@ public class PdfHandler {
      */
     public String getPdfUrl(String pi, String filename) {
         if (this.urls != null) {
-            return urls.path(ApiUrls.RECORDS_FILES_PDF, ApiUrls.RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
+            return urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
         }
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("pdf").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
