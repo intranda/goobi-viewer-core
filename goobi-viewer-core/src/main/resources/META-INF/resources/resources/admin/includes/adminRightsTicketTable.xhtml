@@ -11,58 +11,141 @@
 
 	<!-- NOT (YET) ACCEPTED DOWNLOAD REQUESTS -->
     <ui:fragment rendered="#{not empty adminLicenseBean.downloadTicketRequests}">
-        <div class="admin__default-block mb-5 -warning">
-            <div class="row">
-              <h2 class="col-12">
-                  #{msg.admin__download_tickets__not_accepted}
+
+            <!-- PENDING TICKETS HEADING -->
+              <h2>
+                  #{msg.admin__download_tickets__pending_requests}
               </h2>
+
+            
+            
+            <div class="admin__download-tickets-pending-tickets-wrapper">
+            
+            
+	            <ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}" varStatus="status">
+            
+                                <div class="admin__boxed-entry admin__download-tickets-pending-ticket-single">
+                                    
+                                   	<!-- TITLE -->
+                                       <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
+                                        <h2 class="cms-widgets-overview__single-widget-title">#{msg.admin__dashboard_download_ticket_single_request} #{status.index + 1}</h2>
+           							</div>
+
+            						<div class="admin__download-tickets-pending-ticket-key-value-wrapper">
+	            						<div class="admin__download-tickets-pending-ticket-key">
+	            							#{msg.pi}:
+	            						</div>
+	            						<div class="admin__download-tickets-pending-ticket-value">
+	            							#{ticket.pi}
+	            						</div>
+            						</div>
+            						
+            						<div class="admin__download-tickets-pending-ticket-key-value-wrapper">
+	            						<div class="admin__download-tickets-pending-ticket-key">
+	            							#{msg.title}:
+	            						</div>
+	            						<div class="admin__download-tickets-pending-ticket-value">
+	            							#{ticket.title}
+	            						</div>
+            						</div>
+            						
+            						<div class="admin__download-tickets-pending-ticket-key-value-wrapper">
+	            						<div class="admin__download-tickets-pending-ticket-key">
+	            							#{msg.email}:
+	            						</div>
+	            						<div class="admin__download-tickets-pending-ticket-value">
+	            							#{ticket.email}
+	            						</div>
+            						</div>
+            						
+            						<div class="admin__download-tickets-pending-ticket-key-value-wrapper">
+	            						<div class="admin__download-tickets-pending-ticket-key">
+	            							#{msg.message}:
+	            						</div>
+	            						<div class="admin__download-tickets-pending-ticket-value admin__download-tickets-pending-ticket-value-message-wrapper">
+		            						<div class="admin__download-tickets-pending-ticket-value-message">
+		            							#{ticket.requestMessage} 
+		            						</div>
+		            						<span class="admin__download-tickets-pending-ticket-unfold-button"><i class="fa fa-caret-right"></i></span>
+	            						</div>
+            						</div>
+            						
+            						<script>
+            							// Check if download ticket request messsage is very long and offer unfold button
+            							
+            							$('.admin__download-tickets-pending-ticket-value-message-wrapper').each(function() {
+    	            						if ($(this).height() > 74) {
+    	            							
+    	            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').fadeIn('fast');
+    	            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfoldable');
+    	            							
+    		            						$(this).on('click', function() {
+    		            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfolded');
+    		            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').hide();
+    		            						});
+    	            						
+    	            						
+    	            						}
+            								
+            							});
+            							
+
+            						</script>
+            						
+            						
+									<div class="admin__download-tickets-pending-ticket-actions">
+				                     	<button class="btn btn--success"
+				                     				data-target="ticketActivationButton"
+			                                        data-require-confirmation="false"
+			                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
+			                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
+			                                        aria-label="#{msg.action__activate}: #{ticket.id}">
+			                                        #{msg.action__activate}
+			                            </button>
+		                                <button class="btn btn--danger"
+		                                            data-target="ticketRejectionButton"
+		                                            data-require-confirmation="true"
+		                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_reject_confirm, ticket.email, ticket.pi)}"
+		                                            jsf:action="#{adminLicenseBean.rejectDownloadTicketAction(ticket)}"
+		                                            aria-label="#{msg.activate}: #{ticket.id}">
+		                                            #{msg.action__reject}
+		                                </button>
+	                                </div>
+
+            						
+            						</div>
+            
+            	</ui:repeat>
+            
+            
+
+		            <ui:fragment rendered="#{ticket.request}">
+
+		          	</ui:fragment>
+
+	         	
+	         	
+	         	
+	         	
+	         	
+	         	
             </div>
-            <ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-	            <ui:fragment rendered="#{ticket.request}">
-		             <div data-target="ticketActivationRow"
-		                 class="row admin__download-tickets-unconfigured-entry">							
-		                     <div class="col-10 -textlink"><span class="d-inline-block">#{ticket.pi} </span><span class="admin__download-tickets-not-accepted-title"> #{ticket.title} </span><span class="d-inline-block"> (#{ticket.email})</span>
-		                     </div>
-		                     <div class="col-2 d-flex justify-content-end">
-		                     	<button class="btn btn--clean"
-		                     				data-target="ticketActivationButton"
-	                                        data-require-confirmation="true"
-	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
-	                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
-	                                        aria-label="#{msg.action__activate}: #{ticket.id}">
-	                                        #{msg.action__activate}
-	                            </button>
-                                <button class="btn btn--clean"
-                                            data-target="ticketRejectionButton"
-                                            data-require-confirmation="true"
-                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_reject_confirm, ticket.email, ticket.pi)}"
-                                            jsf:action="#{adminLicenseBean.rejectDownloadTicketAction(ticket)}"
-                                            aria-label="#{msg.activate}: #{ticket.id}">
-                                            #{msg.action__reject}
-                                </button>
-		                     </div>
-		          	</div>
-	          	</ui:fragment>
-         	</ui:repeat>
-        </div>
+            
+
     </ui:fragment>
     
-    <!-- CLICK ON ROW ACTIVATES BUTTON FOR TICKET ACTIVATION -->
-    <script>
-	    $('[data-target="clientActivationButton"]').click(function(e) {
-	        e.stopPropagation();
-	    });
-	    $('[data-target="clientActivationRow"]').on('click', function (event ) {
-	    	event.preventDefault();
-		    	$(this).find('[data-target="clientActivationButton"]').trigger('click');
-	    	console.log('clicked this stuff');
-	    	return false;
-	    });
-    </script>
-
+    
 
 	<!-- DOWNLOAD TICKETS -->
+	<!-- AK* rendered condition = show only if at least one active ticket -->
 	<ui:fragment>
+	
+	<div class="admin__download-tickets-active-tickets-table-wrapper">
+
+	    <h2>
+	        #{msg.admin__download_tickets__active_download_tickets}
+	    </h2>
+	
 		<div class="admin__table-tools">
 			<!-- PAGINATOR -->
 			<div class="admin__table-paginator">
@@ -76,7 +159,7 @@
 			</div>
 		</div>
 
-		<div id="new-table-clients" class="admin__table-content" role="grid"
+		<div id="new-clients-table" class="admin__table-content" role="grid"
 			aria-label="#{msg.admin__donwload_tickets__title}: #{msg.aria_label__table__actions}">
 			<div class="row no-gutters admin__table-title" role="row">
 				<div class="col-3 d-flex -sorting-arrow-trigger">
@@ -183,6 +266,7 @@
 										}
 			</script>
 
+		</div>
 		</div>
 	</ui:fragment>
 
