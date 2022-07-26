@@ -135,9 +135,8 @@
     
     
 
-	<!-- DOWNLOAD TICKETS -->
-	<!-- AK* rendered condition = show only if at least one active ticket -->
-	<ui:fragment>
+	<!-- ACTIVE DOWNLOAD TICKETS -->
+	<ui:fragment rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0}">
 	
 	<div class="admin__download-tickets-active-tickets-table-wrapper">
 
