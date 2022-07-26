@@ -26,21 +26,27 @@
 					</div>
 
 					<div class="modal-body">
-						<!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
-						<p data-mode="passwordMode">
-							<h:outputText value="#{msg.download_ticket__modal_desc_pw}" />
-						</p>
 						
 						<!-- DESCRIPTION FOR REQUESTING A TICKET -->
 						<p data-mode="ticketMode">
 							<h:outputText value="#{msg.download_ticket__modal_desc_request}" />
 						</p>
 
-						<h:form id="download-ticket-modal__downloadTicketForm" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+						
 							<div id="download-ticket-modal__downloadTicket" class="downloadTicketModal">
 
+							<!-- ENTER PASSWORD MODE -->
+							<h:form id="download-ticket-modal__downloadTicketFormPassword" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+							
+							<div class="download-ticket-modal__password-mode" data-mode="passwordMode">
+							
+								<!-- DESCRIPTION FOR ENTERING THE PASSWORD -->
+								<p data-mode="passwordMode">
+									<h:outputText value="#{msg.download_ticket__modal_desc_pw}" />
+								</p>
+
 								<!-- PASSWORD (visible when ticket request mode OFF) -->
-								<div class="form-group form-row" data-mode="passwordMode">
+								<div class="form-group form-row">
 									<label id="download-ticket-modal__labelDownloadTicketPassword" for="download-ticket-modal__title"
 										class="col-lg-3 control-label">
 										<span class="download-ticket-modal__label-span">#{msg.password}:</span>
@@ -56,10 +62,40 @@
 										</h:inputSecret>
 									</div>
 								</div>
+							
+
+
+							<div class="download-ticket-modal__actions">
+								<!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
+	                            <div class="form-row download-ticket-modal__action" data-target="switchToTicketMode">
+	                                <div class="col-sm-12 d-flex justify-content-end">
+	                                    <button type="button" class="btn btn--clean">#{msg.download_ticket__need_ticket}</button>
+	                                </div>
+	                            </div>
+	                            <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
+								<div class="form-row download-ticket-modal__action">
+									<div class="col-sm-12 d-flex justify-content-end">
+										<h:commandButton styleClass="btn btn--full"
+											value="#{msg.submit}"
+											action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  
+											pt:data-require-input="passwordRequired"/>
+									</div>
+								</div>
+                            
+							</div>
+
+							
+							</div>
+							</h:form>
+							
+							<!-- REQUEST TICKET MODE -->
+							<h:form id="download-ticket-modal__downloadTicketFormRequest" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+
+							<div class="download-ticket-modal__ticket-mode" data-mode="ticketMode">
 
                                 <!-- E-MAIL (visible when ticket request mode ON) -->
                                 <h:panelGroup layout="block"
-                                    styleClass="form-group form-row" id="emailGroup" pt:data-mode="ticketMode">
+                                    styleClass="form-group form-row" id="emailGroup">
                                     <label id="download-ticket-modal__labelEmail" for="download-ticket-modal__downloadTicketEmail"
                                         class="col-lg-12 control-label">
                                         <span class="download-ticket-modal__label-span">#{msg.email}:</span>
@@ -91,7 +127,7 @@
                                 </h:panelGroup>
                                 
                                 <!-- REQUEST MESSAGE (visible when ticket request mode ON) -->
-                                <div class="form-group form-row" data-mode="ticketMode">
+                                <div class="form-group form-row">
                                     <label id="download-ticket-modal__labelDownloadTicketRequestMessage" for="download-ticket-modal__requestMessage"
                                         class="col-12 control-label">
                                         <span class="download-ticket-modal__label-span">#{msg.download_ticket__request_message}:</span>
@@ -106,49 +142,51 @@
                                         </h:inputTextarea>
                                     </div>
                                 </div>
+
+								<div class="download-ticket-modal__actions">
+									
+									<!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
+		                            <div class="form-row download-ticket-modal__action" data-target="switchToPasswordMode">
+		                                <div class="col-sm-12 d-flex justify-content-end">
+		                                    <button type="button" class="btn btn--clean">#{msg.previous}</button>
+		                                </div>
+		                            </div>
+									
+									<!-- SUBMIT REQUEST (visible when ticket request mode ON) -->
+		                            <div class="form-row download-ticket-modal__action">
+		                                <div class="col-sm-12 d-flex justify-content-end">
+		                                    <h:commandButton styleClass="btn btn--full"
+		                                        value="#{msg.submit}"
+		                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired" />
+		                                </div>
+		                            </div>
+		                            
+		                            
+		                            
+								</div>
+                                
                                 
                                 <!-- TODO: captcha? -->
                                 
                                 <!-- TODO: user consent? -->
+                                
+                                </div>
+                                </h:form>
 
-							</div>
-
-							<div class="download-ticket-modal__actions">
-								<!-- SWITCH TO TICKET REQUEST MODE -->
-	                            <div class="form-row download-ticket-modal__action" data-mode="passwordMode" data-target="switchToPasswordMode">
-	                                <div class="col-sm-12 d-flex justify-content-end">
-	                                    <button type="button" class="btn btn--clean">#{msg.download_ticket__need_ticket}</button>
-	                                </div>
-	                            </div>
-	                            <!-- SUBMIT PASSWORD (visible when ticket request mode OFF) -->
-								<div class="form-row download-ticket-modal__action" data-mode="passwordMode">
-									<div class="col-sm-12 d-flex justify-content-end">
-										<h:commandButton styleClass="btn btn--full"
-											value="#{msg.submit}"
-											action="#{bornDigitalBean.checkDownloadTicketPasswordAction}"  
-											pt:data-require-input="passwordRequired"/>
-									</div>
-								</div>
-							
-								<!-- SUBMIT REQUEST (visible when ticket request mode ON) -->
-	                            <div class="form-row download-ticket-modal__action" data-mode="ticketMode">
-	                                <div class="col-sm-12 d-flex justify-content-end">
-	                                    <h:commandButton styleClass="btn btn--full"
-	                                        value="#{msg.submit}"
-	                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired" />
-	                                </div>
-	                            </div>
-                            
 							</div>
                             
                             <script>
-	                            $('[data-target="switchToPasswordMode"]').on('click', function () {
+	                            $('[data-target="switchToTicketMode"]').on('click', function () {
 	                            	$('[data-mode="passwordMode"]').hide();
 	                            	$('[data-mode="ticketMode"]').fadeIn();
 	                            });
+	                            
+	                            $('[data-target="switchToPasswordMode"]').on('click', function () {
+	                            	$('[data-mode="ticketMode"]').hide();
+	                            	$('[data-mode="passwordMode"]').fadeIn();
+	                            });
                             </script>
-														
-						</h:form>
+
 
 					</div>
 				</div>
