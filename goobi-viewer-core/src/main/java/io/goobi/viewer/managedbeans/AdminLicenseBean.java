@@ -118,7 +118,7 @@ public class AdminLicenseBean implements Serializable {
                     if (StringUtils.isEmpty(sortField)) {
                         sortField = "id";
                     }
-                    return DataManager.getInstance().getDao().getDownloadTickets(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance().getDao().getActiveDownloadTickets(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }

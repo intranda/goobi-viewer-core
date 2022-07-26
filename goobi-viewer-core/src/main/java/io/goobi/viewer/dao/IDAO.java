@@ -813,7 +813,7 @@ public interface IDAO {
     
     /**
      * <p>
-     * getDownloadTicket.
+     * getActiveDownloadTickets.
      * </p>
      *
      * @param first First row index
@@ -824,7 +824,7 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<DownloadTicket> getDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
     
     /**
      * 

@@ -21,10 +21,8 @@
             
             <div class="admin__download-tickets-pending-tickets-wrapper">
             
-	            <ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}" varStatus="status">
+	            <ui:repeat var="ticket" value="#{adminLicenseBean.downloadTicketRequests}" varStatus="status">
 	            
-	                <ui:fragment rendered="#{ticket.request}">
-            
                                 <div class="admin__boxed-entry admin__download-tickets-pending-ticket-single">
                                     
                                    	<!-- TITLE -->
@@ -116,8 +114,6 @@
             						
             						</div>
             
-                    </ui:fragment>
-                
             	</ui:repeat>
             
             

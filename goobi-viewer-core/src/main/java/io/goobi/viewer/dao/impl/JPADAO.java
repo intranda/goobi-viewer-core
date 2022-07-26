@@ -1720,7 +1720,7 @@ public class JPADAO implements IDAO {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<DownloadTicket> getDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -1728,7 +1728,13 @@ public class JPADAO implements IDAO {
             StringBuilder sbQuery = new StringBuilder("SELECT a FROM DownloadTicket a");
             Map<String, String> params = new HashMap<>();
             String filterQuery = createFilterQuery(null, filters, params);
-            sbQuery.append(filterQuery);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(filterQuery).append(" AND ");
+            }
+            // Only tickets that aren't requests
+            sbQuery.append("a.passwordHash IS NOT NULL AND a.expirationDate IS NOT NULL");
             if (StringUtils.isNotBlank(sortField)) {
                 String[] sortFields = sortField.split("_");
                 sbQuery.append(" ORDER BY ");
