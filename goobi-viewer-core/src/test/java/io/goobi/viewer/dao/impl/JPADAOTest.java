@@ -3316,7 +3316,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getActiveDownloadTickets_shouldFilterRowsCorrectly() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTickets(0, 10, null, false, null).size());
-        Assert.assertEquals(1,
+        Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
                         .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "user2@example.com"))
