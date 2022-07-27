@@ -3304,9 +3304,9 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getDownloadTicketCount_shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getDownloadTicketCount(Collections.emptyMap()));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
-        Assert.assertEquals(1, DataManager.getInstance().getDao().getDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.emptyMap()));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
     }
 
     /**

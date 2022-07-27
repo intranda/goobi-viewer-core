@@ -128,7 +128,7 @@ public class AdminLicenseBean implements Serializable {
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getDownloadTicketCount(filters);
+                    return DataManager.getInstance().getDao().getActiveDownloadTicketCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;

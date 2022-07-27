@@ -1709,8 +1709,26 @@ public class JPADAO implements IDAO {
      * @should return correct count
      */
     @Override
-    public long getDownloadTicketCount(Map<String, String> filters) throws DAOException {
-        return getRowCount("DownloadTicket", null, filters);
+    public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM DownloadTicket a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(filterQuery).append(" AND ");
+            }
+            // Only tickets that aren't requests
+            sbQuery.append("a.passwordHash IS NOT NULL AND a.expirationDate IS NOT NULL");
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
     }
 
     /**

@@ -802,14 +802,14 @@ public interface IDAO {
     
     /**
      * <p>
-     * getDownloadTicketCount.
+     * getActiveDownloadTicketCount.
      * </p>
      *
      * @param filters Selected filters
      * @return Number of found rows
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getDownloadTicketCount(Map<String, String> filters) throws DAOException;
+    public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException;
     
     /**
      * <p>

@@ -35,8 +35,8 @@ public class TaskManagerTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void deleteExpiredDownloadTickets_shouldDeleteAllExpiredTickets() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getDao().getDownloadTicketCount(null));
+        Assert.assertNotNull(DataManager.getInstance().getDao().getDownloadTicket(1L));
         Assert.assertEquals(1, TaskManager.deleteExpiredDownloadTickets());
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getDownloadTicketCount(null));
+        Assert.assertNull(DataManager.getInstance().getDao().getDownloadTicket(1L));
     }
 }
