@@ -13,17 +13,17 @@
     <ui:fragment rendered="#{not empty adminLicenseBean.downloadTicketRequests}">
 
             <!-- PENDING TICKETS HEADING -->
-              <h2>
+              <h2 class="mb-4"> 
                   #{msg.admin__download_tickets__pending_requests}
               </h2>
 
-            
+              
             
             <div class="admin__download-tickets-pending-tickets-wrapper">
             
 	            <ui:repeat var="ticket" value="#{adminLicenseBean.downloadTicketRequests}" varStatus="status">
 	            
-                                <div class="admin__boxed-entry admin__download-tickets-pending-ticket-single">
+                                <div class="admin__boxed-entry -warning admin__download-tickets-pending-ticket-single">
                                     
                                    	<!-- TITLE -->
                                        <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
@@ -44,7 +44,7 @@
 	            							#{msg.title}:
 	            						</div>
 	            						<div class="admin__download-tickets-pending-ticket-value">
-	            							#{ticket.title}
+	            							<a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/">#{ticket.title}</a>
 	            						</div>
             						</div>
             						
@@ -53,7 +53,7 @@
 	            							#{msg.email}:
 	            						</div>
 	            						<div class="admin__download-tickets-pending-ticket-value">
-	            							#{ticket.email}
+	            							<a href="mailto:#{ticket.email}">#{ticket.email}</a>
 	            						</div>
             						</div>
             						
@@ -65,30 +65,66 @@
 		            						<div class="admin__download-tickets-pending-ticket-value-message">
 		            							#{ticket.requestMessage} 
 		            						</div>
+		            						<div class="admin__download-tickets-pending-ticket-value-invis-message" aria-hidden="true">
+		            							#{ticket.requestMessage} extra spacer
+		            						</div>
 		            						<span class="admin__download-tickets-pending-ticket-unfold-button"><i class="fa fa-caret-right"></i></span>
 	            						</div>
             						</div>
             						
             						<script>
             							// Check if download ticket request messsage is very long and offer unfold button
-            							
-            							$('.admin__download-tickets-pending-ticket-value-message-wrapper').each(function() {
-    	            						if ($(this).height() > 74) {
-    	            							
-    	            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').fadeIn('fast');
-    	            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfoldable');
-    	            							
-    		            						$(this).on('click', function() {
-    		            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfolded');
-    		            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').hide();
-    		            						});
-    	            						
-    	            						
-    	            						}
-            								
-            							});
-            							
 
+										// Debounce
+										function debounce(func, time){
+										    var time = time || 100; // 100 by default if no param
+										    var timer;
+										    return function(event){
+										        if(timer) clearTimeout(timer);
+										        timer = setTimeout(func, time, event);
+										    };
+										}
+										
+										// Function with stuff to execute
+										function resizeContent() {
+										    // Do loads of stuff once window has resized
+											checkTextLength();
+										}
+										
+										// Eventlistener
+										window.addEventListener("resize", debounce( resizeContent, 150 ));
+
+										
+            							function checkTextLength() {
+            								$('.admin__download-tickets-pending-ticket-value-message-wrapper').each(function() {
+	            								
+	    	            						if ( $(this).find('.admin__download-tickets-pending-ticket-value-invis-message').height() > 85 &amp;&amp; !$(this).find('.admin__download-tickets-pending-ticket-value-message').hasClass("-unfolded") )  {
+	    	            							 // console.log('Height: ' + $(this).find('.admin__download-tickets-pending-ticket-value-invis-message').height());
+	    	            							 
+	    	            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').fadeIn('fast');
+	    	            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfoldable');
+	    	            							
+	    		            						$(this).on('click', function() {
+	    		            							$(this).find('.admin__download-tickets-pending-ticket-value-message').addClass('-unfolded');
+	    		            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').hide();
+	    		            							$(this).find('.admin__download-tickets-pending-ticket-value-invis-message').addClass('-unfolded');
+	    		            						});
+	    	            						
+	    	            						
+	    	            						} else {
+	    	            							$(this).find('.admin__download-tickets-pending-ticket-unfold-button').fadeOut('fast');
+	    	            							$(this).find('.admin__download-tickets-pending-ticket-value-message').removeClass('-unfoldable');
+	    	            						}
+	            								
+	            							});
+            							
+            							}
+            							
+            							$(document).ready(function() {
+            							
+            							checkTextLength();
+            							
+            							});
             						</script>
             						
             						
@@ -135,12 +171,12 @@
     
     
 
-	<!-- ACTIVE DOWNLOAD TICKETS -->
+	<!-- ACTIVE DOWNLOAD TICKETS TABLE -->
 	<ui:fragment rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0}">
 	
 	<div class="admin__download-tickets-active-tickets-table-wrapper">
 
-	    <h2>
+	    <h2 class="mb-4">
 	        #{msg.admin__download_tickets__active_download_tickets}
 	    </h2>
 	
@@ -157,39 +193,45 @@
 			</div>
 		</div>
 
-		<div id="new-clients-table" class="admin__table-content" role="grid"
+		<div id="activeClientsTable" class="admin__grid-table -columns-5" role="grid"
 			aria-label="#{msg.admin__donwload_tickets__title}: #{msg.aria_label__table__actions}">
-			<div class="row no-gutters admin__table-title" role="row">
-				<div class="col-3 d-flex -sorting-arrow-trigger">
+			
+			<div class="admin__grid-table-title-row" role="row">
+			
+				<div class="admin__grid-table-sorting-wrapper">
 					<viewerComponent:sortingArrow filterType="pi_email"
-						colHeading="#{msg.admin__download_tickets__pi}"
-						list="#{adminClientsBean.configuredClientsModel}" />
+						colHeading="#{msg.admin__download_tickets__pi}" />
 				</div>
 
-				<div class="col-5 d-flex -sorting-arrow-trigger">
+				<div class="admin__grid-table-sorting-wrapper">
 					<viewerComponent:sortingArrow filterType="email"
 						colHeading="#{msg.admin__download_tickets__title}" />
 				</div>
+				
+				<div class="admin__grid-table-sorting-wrapper">
+					#{msg.message}
+				</div>
 
-				<div class="col-2 d-flex -sorting-arrow-trigger">
+				<div class="admin__grid-table-sorting-wrapper">
 					<viewerComponent:sortingArrow filterType="dateRegistered"
-						colHeading="#{msg.admin__download_tickets__email}"
-						list="#{adminClientsBean.configuredClientsModel}" />
+						colHeading="#{msg.admin__download_tickets__email}" />
 				</div>
 
-				<div class="col-2 d-flex -sorting-arrow-trigger">
+				<div class="admin__grid-table-sorting-wrapper">
 					<viewerComponent:sortingArrow filterType="dateLastAccess"
-						colHeading="#{msg.admin__download_tickets__expires}"
-						list="#{adminClientsBean.configuredClientsModel}" />
+						colHeading="#{msg.admin__download_tickets__expires}" />
 				</div>
+
 			</div>
 
 			<ui:repeat var="ticket"
 				value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
 	            <ui:fragment rendered="#{!ticket.request}">
-					<div class="row no-gutters admin__table-entry" role="row">
-						<div class="col-3 d-flex">
-							<div class="admin__table-data" role="gridcell">
+
+
+
+						<div class="admin__grid-table-data-row" role="row">
+							<div class="admin__grid-table-data" role="gridcell">
 								<!-- RECORD IDENTIFIER -->
 								<span class="admin__table-name admin__clients-table-client-name">#{ticket.pi}</span>
 	
@@ -225,23 +267,34 @@
 										#{msg.delete}</button>
 	
 								</div>
+
+						</div>
+	
+						<!-- TICKET RECORD TITLE -->
+						<div class="admin__grid-table-data" role="gridcell">
+							<a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/">#{ticket.title}</a>
+						</div>
+
+						<!-- TICKET MESSAGE -->
+						<div class="admin__grid-table-data" role="gridcell">
+							<div class="admin__download-tickets-pending-ticket-value-message-wrapper">
+	        					<div class="admin__download-tickets-pending-ticket-value-message">
+	        						#{ticket.requestMessage} 
+	        					</div>
+	        					<div class="admin__download-tickets-pending-ticket-value-invis-message" aria-hidden="true">
+	        						#{ticket.requestMessage} 
+	        					</div>
+	        					<span class="admin__download-tickets-pending-ticket-unfold-button"><i class="fa fa-caret-right"></i></span>
 							</div>
 						</div>
-	
-						<div class="col-5 d-flex align-items-center" role="gridcell">
-	<!-- 						<span class="admin__table-ip-address">#{client.subnetMask}</span> -->
-														<!-- EMAIL -->
-								<span>#{ticket.title}</span>
-						</div>
 						
-						
-						<div class="col-2 d-flex align-items-center" role="gridcell">
-							<!-- RECORD TITLE -->
-							<span class="admin__table-additional-info">#{ticket.email}</span>
+						<!-- TICKET EMAIL -->
+						<div class="admin__grid-table-data" role="gridcell">
+							<a href="mailto:#{ticket.email}">#{ticket.email}</a>
 						</div>
-	
-						<!-- REGISTERED DATE -->
-						<div class="col-2 d-flex align-items-center" role="gridcell">
+
+						<!-- TICKET EXPIRE DATE -->
+						<div class="admin__grid-table-data" role="gridcell">
 							<!-- EXPIRES -->
 							<span> <h:outputText value="#{ticket.expirationDate}">
 									<f:converter converterId="localDateTimeConverter" />
@@ -250,8 +303,9 @@
 								</h:outputText>
 							</span>
 						</div>
-	
-					</div>
+						
+						</div>
+
 				</ui:fragment>
 			</ui:repeat>
 

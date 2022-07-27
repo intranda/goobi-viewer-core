@@ -4,6 +4,12 @@
    ==============================================================*/
 /* ADMIN RIGHTS */
 .admin__download-tickets {
+	&-dashboard-row {
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;  
+		overflow: hidden;
+	}
 	&-pending-tickets-wrapper {
 		display: grid;
 		grid-auto-rows: auto;
@@ -46,6 +52,7 @@
 	&-pending-ticket-value-message-wrapper {
 		position: relative;
 		margin-bottom: 15px;
+		width: 100%;
 		// padding-bottom: 18px;
 	}
 	&-pending-ticket-value-message {
@@ -76,6 +83,13 @@
 	}
 	&-active-tickets-table-wrapper {
 		margin-top: 40px;
+	}
+	&-pending-ticket-value-invis-message {
+		display: inline;
+		opacity: 0;
+		visibility: hidden;
+		position: absolute;
+		z-index: -1;
 	}
 }
 

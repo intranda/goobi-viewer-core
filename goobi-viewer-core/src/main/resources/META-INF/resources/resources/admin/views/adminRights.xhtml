@@ -36,6 +36,10 @@
                             
                            <ui:include src="/resources/admin/includes/adminRightsTicketTable.xhtml" />
 
+						    <h2 class="mb-4">
+						        #{msg.admin__rights_entries_heading}
+						    </h2>
+
                            <div class="admin__entry-list">
                                <ui:repeat var="license" value="#{adminLicenseBean.allLicenses}">
                                     <div class="admin__boxed-entry -w50">
