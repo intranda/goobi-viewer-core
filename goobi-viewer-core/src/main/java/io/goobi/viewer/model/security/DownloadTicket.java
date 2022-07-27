@@ -55,7 +55,7 @@ public class DownloadTicket implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(DownloadTicket.class);
 
     /** Default validity for a ticket in days. */
-    public static final int VALIDITY_DAYS = 14;
+    public static final int VALIDITY_DAYS = 30;
     /** Static salt for password hashes. */
     public static final String SALT = "$2a$10$H580saN37o2P03A5myUCm.";
     /** Random object for password generation. */
@@ -175,6 +175,14 @@ public class DownloadTicket implements Serializable {
     public void reset() {
         passwordHash = null;
         activate();
+    }
+    
+    /**
+     * 
+     * @return <code>VALIDITY_DAYS</code>
+     */
+    public String getDefaultValidityAsString() {
+        return String.valueOf(VALIDITY_DAYS);
     }
 
     /**

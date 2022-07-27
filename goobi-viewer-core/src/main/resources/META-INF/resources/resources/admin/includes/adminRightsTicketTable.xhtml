@@ -244,7 +244,7 @@
 									<ui:fragment rendered="#{ticket.active or ticket.expired}">
 	                                    <button class="admin__table-action-link"
 	                                        data-require-confirmation="true"
-	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi, '14')}"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi, ticket.defaultValidityAsString)}"
 	                                        jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
 	                                        aria-label="#{msg.extend}: #{ticket.id}">
 	                                        #{msg.admin__download_tickets_extend}</button>

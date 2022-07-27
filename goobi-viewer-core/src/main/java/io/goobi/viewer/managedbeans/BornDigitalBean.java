@@ -56,6 +56,8 @@ public class BornDigitalBean implements Serializable {
 
     @Inject
     private ActiveDocumentBean activeDocumentBean;
+    @Inject
+    private UserBean userBean;
 
     private transient String downloadTicketPassword;
     private String downloadTicketEmail;
@@ -188,6 +190,9 @@ public class BornDigitalBean implements Serializable {
      * @return the downloadTicketEmail
      */
     public String getDownloadTicketEmail() {
+        if (downloadTicketEmail == null && userBean != null && userBean.getUser() != null) {
+            downloadTicketEmail = userBean.getUser().getEmail();
+        }
         return downloadTicketEmail;
     }
 
