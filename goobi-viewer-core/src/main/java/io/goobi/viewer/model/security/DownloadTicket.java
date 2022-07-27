@@ -176,6 +176,14 @@ public class DownloadTicket implements Serializable {
         passwordHash = null;
         activate();
     }
+    
+    /**
+     * 
+     * @return <code>VALIDITY_DAYS</code>
+     */
+    public String getDefaultValidityAsString() {
+        return String.valueOf(VALIDITY_DAYS);
+    }
 
     /**
      * <p>
