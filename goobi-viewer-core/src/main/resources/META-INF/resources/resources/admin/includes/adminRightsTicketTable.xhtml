@@ -224,11 +224,7 @@
 
 			</div>
 
-			<ui:repeat var="ticket"
-				value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
-	            <ui:fragment rendered="#{!ticket.request}">
-
-
+			<ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
 
 						<div class="admin__grid-table-data-row" role="row">
 							<div class="admin__grid-table-data" role="gridcell">
@@ -306,7 +302,6 @@
 						
 						</div>
 
-				</ui:fragment>
 			</ui:repeat>
 
 			<script type="text/javascript">
