@@ -20,7 +20,7 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenseTypes">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h:form id="adminLicensesForm" prependId="false">
+
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h1 class="admin__title">#{msg.admin__rights}</h1>
@@ -33,12 +33,14 @@
                             <div class="admin__info-text">
                                 <h:outputText value="#{msg.admin__roles_description_text}" escape="false" />
                             </div>
-                            
+                           
                            <ui:include src="/resources/admin/includes/adminRightsTicketTable.xhtml" />
+                           
+                           <h:form id="adminLicensesForm" prependId="false">
 
-						    <h2 class="mb-4">
-						        #{msg.admin__rights_entries_heading}
-						    </h2>
+						   <h2 class="mb-4">
+						       #{msg.admin__rights_entries_heading}
+						   </h2>
 
                            <div class="admin__entry-list">
                                <ui:repeat var="license" value="#{adminLicenseBean.allLicenses}">
@@ -140,8 +142,8 @@
                                     </div>
                                 </ui:repeat>
                             </div>
-                        </div>
-                    </h:form>
+                    	</h:form>
+                	</div>
                 </h:panelGroup>
             </div>
         </f:view>

@@ -141,7 +141,7 @@ public class AdminLicenseBean implements Serializable {
             }
         });
         lazyModelDownloadTickets.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        lazyModelDownloadTickets.setFilters("pi_email");
+        lazyModelDownloadTickets.setFilters("pi_email_title");
     }
 
     // LicenseType

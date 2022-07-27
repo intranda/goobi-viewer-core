@@ -9,6 +9,9 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+
+    <h:form id="adminPendingTicketsForm" prependId="false">
+
 	<!-- NOT (YET) ACCEPTED DOWNLOAD REQUESTS -->
     <ui:fragment rendered="#{not empty adminLicenseBean.downloadTicketRequests}">
 
@@ -17,7 +20,7 @@
                   #{msg.admin__download_tickets__pending_requests}
               </h2>
 
-              
+
             
             <div class="admin__download-tickets-pending-tickets-wrapper">
             
@@ -26,18 +29,9 @@
                                 <div class="admin__boxed-entry -warning admin__download-tickets-pending-ticket-single">
                                     
                                    	<!-- TITLE -->
-                                       <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
-                                        <h2 class="cms-widgets-overview__single-widget-title">#{msg.admin__dashboard_download_ticket_single_request} #{status.index + 1}</h2>
+                                    <div class="admin__download-tickets-pending-ticket-title-wrapper">                                    	
+                                        <h2 class="admin__download-tickets-pending-ticket-title">#{msg.admin__dashboard_download_ticket_request_by} #{ticket.email}</h2>
            							</div>
-
-            						<div class="admin__download-tickets-pending-ticket-key-value-wrapper">
-	            						<div class="admin__download-tickets-pending-ticket-key">
-	            							#{msg.pi}:
-	            						</div>
-	            						<div class="admin__download-tickets-pending-ticket-value">
-	            							#{ticket.pi}
-	            						</div>
-            						</div>
             						
             						<div class="admin__download-tickets-pending-ticket-key-value-wrapper">
 	            						<div class="admin__download-tickets-pending-ticket-key">
@@ -57,7 +51,7 @@
 	            						</div>
             						</div>
             						
-            						<div class="admin__download-tickets-pending-ticket-key-value-wrapper">
+            						<div class="admin__download-tickets-pending-ticket-key-value-wrapper mb-4">
 	            						<div class="admin__download-tickets-pending-ticket-key">
 	            							#{msg.message}:
 	            						</div>
@@ -129,15 +123,15 @@
             						
             						
 									<div class="admin__download-tickets-pending-ticket-actions">
-				                     	<button class="btn btn--success"
+				                     	<button class="btn btn--success" 
 				                     				data-target="ticketActivationButton"
 			                                        data-require-confirmation="false"
 			                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_activate_confirm, ticket.email, ticket.pi)}"
 			                                        jsf:action="#{adminLicenseBean.activateDownloadTicketAction(ticket)}"
 			                                        aria-label="#{msg.action__activate}: #{ticket.id}">
-			                                        #{msg.action__activate}
+			                                        #{msg.action__accept}
 			                            </button>
-		                                <button class="btn btn--danger"
+		                                <button class="btn btn--danger" 
 		                                            data-target="ticketRejectionButton"
 		                                            data-require-confirmation="true"
 		                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_reject_confirm, ticket.email, ticket.pi)}"
@@ -151,29 +145,19 @@
             						</div>
             
             	</ui:repeat>
-            
-            
 
-		            <ui:fragment rendered="#{ticket.request}">
-
-		          	</ui:fragment>
-
-	         	
-	         	
-	         	
-	         	
-	         	
-	         	
             </div>
             
 
     </ui:fragment>
     
+    </h:form>
     
-
+        <h:form id="adminActiveTicketsForm" prependId="false">
+    
 	<!-- ACTIVE DOWNLOAD TICKETS TABLE -->
-	<ui:fragment rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0}">
-	
+<!-- 	<ui:fragment rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0}"> -->
+
 	<div class="admin__download-tickets-active-tickets-table-wrapper">
 
 	    <h2 class="mb-4">
@@ -189,19 +173,14 @@
 			<!-- FILTER -->
 			<div class="admin__table-filter">
 				<viewerComponent:dataTableColumnFilter key="admin__download_tickets__search"
-					filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email')}" />
+					filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title')}" />
 			</div>
 		</div>
 
-		<div id="activeClientsTable" class="admin__grid-table -columns-5" role="grid"
+		<div id="activeTicketsTable" class="admin__grid-table -columns-4" role="grid"
 			aria-label="#{msg.admin__donwload_tickets__title}: #{msg.aria_label__table__actions}">
 			
 			<div class="admin__grid-table-title-row" role="row">
-			
-				<div class="admin__grid-table-sorting-wrapper">
-					<viewerComponent:sortingArrow filterType="pi_email"
-						colHeading="#{msg.admin__download_tickets__pi}" />
-				</div>
 
 				<div class="admin__grid-table-sorting-wrapper">
 					<viewerComponent:sortingArrow filterType="email"
@@ -223,13 +202,15 @@
 				</div>
 
 			</div>
+			
+			<div class="admin__grid-table-data-row-area">
 
 			<ui:repeat var="ticket" value="#{adminLicenseBean.lazyModelDownloadTickets.paginatorList}">
 
 						<div class="admin__grid-table-data-row" role="row">
 							<div class="admin__grid-table-data" role="gridcell">
-								<!-- RECORD IDENTIFIER -->
-								<span class="admin__table-name admin__clients-table-client-name">#{ticket.pi}</span>
+								<!-- TICKET RECORD TITLE -->
+								<span class="admin__table-name admin__clients-table-client-name">#{ticket.title}</span>
 	
 								<!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
 								<div class="admin__table-actions-wrapper">
@@ -267,9 +248,6 @@
 						</div>
 	
 						<!-- TICKET RECORD TITLE -->
-						<div class="admin__grid-table-data" role="gridcell">
-							<a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/">#{ticket.title}</a>
-						</div>
 
 						<!-- TICKET MESSAGE -->
 						<div class="admin__grid-table-data" role="gridcell">
@@ -303,18 +281,21 @@
 						</div>
 
 			</ui:repeat>
+			</div>
 
 			<script type="text/javascript">
 				// Create no entries found message
-				if ($('.admin__table-entry').length == 0) {
-					$('.admin__table-content')
+				if ($('.admin__grid-table-data-row').length == 0) {
+					$('.admin__grid-table-data-row-area')
 							.append(
-									'<br/><p >#{msg.hitsZero}</p>');
+									'<div class="admin__grid-table-data-row" role="row"><div class="admin__grid-table-data" role="gridcell">#{msg.hitsZero}</div></div>');
 										}
 			</script>
 
 		</div>
 		</div>
-	</ui:fragment>
-
+<!-- 	</ui:fragment> -->
+	
+	</h:form>
+	
 </ui:composition>

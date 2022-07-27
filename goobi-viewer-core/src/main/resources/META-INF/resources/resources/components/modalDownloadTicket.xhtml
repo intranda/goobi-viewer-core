@@ -102,7 +102,7 @@
                                         <!-- REQUIRED MSG NOT NEEDED? FILLED AUTOMATICALLY -->
 <!--                                         <span class="download-ticket-modal__label-required-field">(#{msg.form__required_field})</span> -->
                                     </label>
-                                    <div class="cms-module__option-control col-12">
+                                    <div class="col-12">
                                         <div class="cms-module__option-message">
                                             <h:messages for="downloadTicketEmail"
                                                 styleClass="m-0 p-0 pb-1 list-unstyled"
@@ -142,6 +142,59 @@
                                         </h:inputTextarea>
                                     </div>
                                 </div>
+                                
+								<!-- SECURITY QUESTION -->
+								<ui:fragment
+									rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
+									<div class="form-group form-row">
+										<label id="download-ticket-modal__ticketSecurityQuestion" for="download-ticket-modal__ticketSecurityQuestion"
+											class="col-12 control-label">#{msg.user__security_question}:</label>
+										<div class="col-12 composite-control pt-0">
+											<span class="control-label d-block pb-1">#{msg[userBean.securityQuestion.questionKey]}:</span>
+											<h:messages for="downloadTicketSecurityQuestion"
+												styleClass="m-0 p-0 pb-1 list-unstyled"
+												infoClass="cms-module__option-message-status success"
+												warnClass="cms-module__option-message-status warning"
+												errorClass="cms-module__option-message-status danger" />
+											<h:inputText id="downloadTicketSecurityQuestion"
+												styleClass="form-control" autocomplete="off"
+												pt:data-require-input-text="ticketRequired"
+												pt:aria-labelledby="download-ticket-modal__ticketSecurityQuestion"
+												pt:autocomplete="new-password"
+												value="#{userBean.securityAnswer}" required="true"
+												requiredMessage="#{msg.user__security_question_required_msg}">
+						                	</h:inputText>
+										</div>
+									</div>
+								</ui:fragment>
+                                
+								<div class="download-ticket-modal__required-checkbox-wrapper">
+								  
+								  	<div class="form-row">
+									  	<p class="col-12 feedback-modal__accept-terms-text">#{msg.feedbackAcceptingTerms}</p>
+									  
+									  
+					  					<div id="sendContactFormAcceptTerms" class="col-12 col-sm-3 feedback-modal__accept-terms-label">
+											<label class="mr-3 mb-0">#{msg.admin__terms_of_use__accept}:</label>
+										</div>	
+                                       
+                                       
+                                        <div class="col-12 col-md-9 mt-3 mt-sm-0 feedback-modal__accept-terms-radios admin__radio-switch">
+                                            <h:selectOneRadio group="requiredDownloadTicketTerms" value="false"
+                                                immediate="true" checked="false"
+                                                pt:data-require-input-checkbox="uncheckedChecker">
+                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                            </h:selectOneRadio>
+                                            <h:selectOneRadio id="requiredDownloadTicketCheckbox2" group="requiredDownloadTicketTerms" value="true"
+                                                immediate="true" checked="true"
+                                                pt:data-require-input-checkbox="ticketRequired">
+                                                <f:selectItem itemValue="#{feedbackModalAcceptedTerms}" itemLabel="#{msg.yes}" />
+                                            </h:selectOneRadio>
+                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                        </div>
+                                       </div>
+
+								</div>
 
 								<div class="download-ticket-modal__actions">
 									
