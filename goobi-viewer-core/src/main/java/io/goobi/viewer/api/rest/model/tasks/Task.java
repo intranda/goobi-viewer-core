@@ -35,23 +35,19 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 
 /**
- * A process triggered by a REST call using POST and may be monitored via the {@link TasksResource}.
- * Each task has a unique id of type long given during object construcion.
- * A Task has an {@link Accessibility} property defining which calls are allowed to access the task,
- * and a {@link TaskType} defining the actual process to use. Parameters of the execution as well as the type itself
- * are determined by a {@link TaskParameter} object given at task creation.
- * Also each task has a status property signaling he current state of the task. A task starts out
- * as {@link TaskStatus#CREATED}. Once processing starts (which may be delayed by the limited thread pool
- * if other tasks are running) the status changes to {@link TaskStatus#STARTED}. After processing ends
- * the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depedning on whether
- * an error occured which may be recorded in the {@link #exception} property.
+ * A process triggered by a REST call using POST and may be monitored via the {@link TasksResource}. Each task has a unique id of type long given
+ * during object construcion. A Task has an {@link Accessibility} property defining which calls are allowed to access the task, and a {@link TaskType}
+ * defining the actual process to use. Parameters of the execution as well as the type itself are determined by a {@link TaskParameter} object given
+ * at task creation. Also each task has a status property signaling he current state of the task. A task starts out as {@link TaskStatus#CREATED}.
+ * Once processing starts (which may be delayed by the limited thread pool if other tasks are running) the status changes to
+ * {@link TaskStatus#STARTED}. After processing ends the task is set to either {@link TaskStatus#COMPLETE} or {@link TaskStatus#ERROR} depedning on
+ * whether an error occured which may be recorded in the {@link #exception} property.
  *
  * @author florian
  *
@@ -62,7 +58,7 @@ public class Task {
     private static final Logger logger = LoggerFactory.getLogger(Task.class);
     private static final AtomicLong idCounter = new AtomicLong(0);
 
-    public static enum Accessibility {
+    public enum Accessibility {
         /**
          * Anyone may access this task
          */
@@ -81,28 +77,22 @@ public class Task {
         TOKEN;
     }
 
-    public static enum TaskType {
-        /**
-         * Send emails to all search owners if their searches have changed results
-         */
+    public enum TaskType {
+        /** Send emails to all search owners if their searches have changed results */
         NOTIFY_SEARCH_UPDATE,
-        /**
-         * Handle asynchonous generation of excel sheets with search results
-         */
+        /** Remove expired born digital content download tickets from the DB */
+        PURGE_EXPIRED_DOWNLOAD_TICKETS,
+        /** Handle asynchronous generation of excel sheets with search results */
         SEARCH_EXCEL_EXPORT,
-        /**
-         * Update the application sitemap
-         */
+        /** Update the application sitemap */
         UPDATE_SITEMAP,
-        /**
-         * Update data repository names of a record
-         */
+        /** Update data repository names of a record */
         UPDATE_DATA_REPOSITORY_NAMES,
         /** Update uploaded processes status. */
         UPDATE_UPLOAD_JOBS;
     }
 
-    public static enum TaskStatus {
+    public enum TaskStatus {
         CREATED,
         STARTED,
         COMPLETE,
@@ -116,7 +106,7 @@ public class Task {
     public final LocalDateTime timeCreated;
     @JsonIgnore
     public final BiConsumer<HttpServletRequest, Task> work;
-    public volatile TaskStatus status;
+    private volatile TaskStatus status;
     @JsonIgnore
     public Optional<String> exception = Optional.empty();
     @JsonIgnore
@@ -133,13 +123,12 @@ public class Task {
         this.params = params;
     }
 
-
     public void doTask(HttpServletRequest request) {
         logger.debug("Started Task '{}'", this);
         this.sessionId = Optional.ofNullable(request).map(r -> r.getSession().getId());
         this.status = TaskStatus.STARTED;
         this.work.accept(request, this);
-        if(TaskStatus.ERROR != this.status) {
+        if (TaskStatus.ERROR != this.status) {
             this.status = TaskStatus.COMPLETE;
         }
         logger.debug("Finished Task '{}'", this);
@@ -150,9 +139,15 @@ public class Task {
         this.exception = Optional.ofNullable(error);
     }
 
+    /**
+     * 
+     * @param type
+     * @return
+     */
     public static Accessibility getAccessibility(TaskType type) {
-        switch(type) {
+        switch (type) {
             case NOTIFY_SEARCH_UPDATE:
+            case PURGE_EXPIRED_DOWNLOAD_TICKETS:
             case UPDATE_SITEMAP:
             case UPDATE_DATA_REPOSITORY_NAMES:
             case UPDATE_UPLOAD_JOBS:
@@ -162,6 +157,13 @@ public class Task {
             default:
                 return Accessibility.ADMIN;
         }
+    }
+
+    /**
+     * @return the status
+     */
+    public TaskStatus getStatus() {
+        return status;
     }
 
     public String getErrorMessage() {
