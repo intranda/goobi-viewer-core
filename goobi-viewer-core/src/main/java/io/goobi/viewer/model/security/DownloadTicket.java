@@ -87,7 +87,7 @@ public class DownloadTicket implements Serializable {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "request_message")
+    @Column(name = "request_message", columnDefinition = "MEDIUMTEXT")
     private String requestMessage;
 
     @Transient
@@ -176,7 +176,7 @@ public class DownloadTicket implements Serializable {
         passwordHash = null;
         activate();
     }
-    
+
     /**
      * 
      * @return <code>VALIDITY_DAYS</code>
