@@ -157,7 +157,7 @@
 
 		<!-- ACTIVE DOWNLOAD TICKETS TABLE -->
 		<ui:fragment
-			rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title').value}">
+			rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title_requestMessage').value}">
 			<div class="admin__download-tickets-active-tickets-table-wrapper">
 
 				<h2 class="mb-4">
@@ -173,7 +173,7 @@
 					<div class="admin__table-filter">
 						<viewerComponent:dataTableColumnFilter
 							key="admin__download_tickets__search"
-							filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title')}" />
+							filter="#{adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title_requestMessage')}" />
 					</div>
 				</div>
 
