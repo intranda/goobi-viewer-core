@@ -156,8 +156,8 @@
         <h:form id="adminActiveTicketsForm" prependId="false">
     
 	<!-- ACTIVE DOWNLOAD TICKETS TABLE -->
-<!-- 	<ui:fragment rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0}"> -->
-
+    <ui:fragment
+        rendered="#{adminLicenseBean.lazyModelDownloadTickets.sizeOfDataList > 0 or not empty adminLicenseBean.lazyModelDownloadTickets.getFilter('pi_email_title').value}">
 	<div class="admin__download-tickets-active-tickets-table-wrapper">
 
 	    <h2 class="mb-4">
@@ -294,7 +294,7 @@
 
 		</div>
 		</div>
-<!-- 	</ui:fragment> -->
+        </ui:fragment>
 	
 	</h:form>
 	
