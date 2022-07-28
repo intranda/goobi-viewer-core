@@ -5,10 +5,14 @@
 /* ADMIN RIGHTS */
 .admin__download-tickets {
 	&-dashboard-row {
-		display: -webkit-box;
-		-webkit-line-clamp: 4;
-		-webkit-box-orient: vertical;  
-		overflow: hidden;
+		display: grid;
+		grid-template-columns: minmax(89px, 1fr) 4fr;
+		padding: 10px 20px;
+	}
+	&-dashboard-row-key {
+		font-weight: 600;
+	}
+	&-dashboard-row-value {
 	}
 	&-pending-tickets-wrapper {
 		display: grid;
@@ -18,6 +22,7 @@
 		grid-template-areas: ". . .";
 	}
 	&-pending-ticket-single {
+		// min-height: 220px;
 		display: flex;
 		flex-direction: column;
 		margin-bottom: 0;

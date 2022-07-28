@@ -28,12 +28,13 @@
 					<div
 						class="admin__boxed-entry -warning admin__download-tickets-pending-ticket-single">
 
-						<!-- TITLE -->
+						<!-- PENDING TICKET REQUESTED BY EMAIL SENDER -->
 						<div class="admin__download-tickets-pending-ticket-title-wrapper">
 							<h2 class="admin__download-tickets-pending-ticket-title">#{msg.admin__dashboard_download_ticket_request_by}
 								#{ticket.email}</h2>
 						</div>
 
+						<!-- PENDING TICKET RECORD TITLE -->
 						<div
 							class="admin__download-tickets-pending-ticket-key-value-wrapper">
 							<div class="admin__download-tickets-pending-ticket-key">
@@ -43,8 +44,9 @@
 							</div>
 						</div>
 
+						<!-- PENDING TICKET EMAIL -->
 						<div
-							class="admin__download-tickets-pending-ticket-key-value-wrapper">
+							class="admin__download-tickets-pending-ticket-key-value-wrapper #{ticket.requestMessage == null ? 'mb-4' : ''}">
 							<div class="admin__download-tickets-pending-ticket-key">
 								#{msg.email}:</div>
 							<div class="admin__download-tickets-pending-ticket-value">
@@ -52,6 +54,8 @@
 							</div>
 						</div>
 
+						<!-- PENDING TICKET MSG -->
+						<ui:fragment rendered="#{ticket.requestMessage != null}">
 						<div
 							class="admin__download-tickets-pending-ticket-key-value-wrapper mb-4">
 							<div class="admin__download-tickets-pending-ticket-key">
@@ -70,6 +74,7 @@
 									class="fa fa-caret-right"></i></span>
 							</div>
 						</div>
+						</ui:fragment>
 
 						<script>
             							// Check if download ticket request messsage is very long and offer unfold button
@@ -222,7 +227,11 @@
 											aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">#{msg.show}</a>
 										<!-- EXTEND -->
 										<ui:fragment rendered="#{ticket.active or ticket.expired}">
-											<button class="admin__table-action-link"
+											<button class="admin__table-action-link -bluelink"
+												title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_tooltip, ticket.defaultValidityAsString)}"
+												data-toggle="tooltip"
+												data-placement="top"
+												data-trigger="hover"
 												data-require-confirmation="true"
 												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi, ticket.defaultValidityAsString)}"
 												jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
@@ -231,9 +240,13 @@
 										</ui:fragment>
 										<!-- RENEW -->
 										<ui:fragment rendered="#{ticket.active}">
-											<button class="admin__table-action-link"
+											<button class="admin__table-action-link -bluelink"
+												title="#{msg.admin__download_tickets_renew_tooltip}"
+												data-toggle="tooltip"
+												data-placement="top"
+												data-trigger="hover"
 												data-require-confirmation="true"
-												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi)}"
+												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email)}"
 												jsf:action="#{adminLicenseBean.renewDownloadTicketAction(ticket)}"
 												aria-label="#{msg.extend}: #{ticket.id}">
 												#{msg.admin__download_tickets_renew}</button>
@@ -249,8 +262,6 @@
 									</div>
 
 								</div>
-
-								<!-- TICKET RECORD TITLE -->
 
 								<!-- TICKET MESSAGE -->
 								<div class="admin__grid-table-data" role="gridcell">
