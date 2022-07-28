@@ -57,6 +57,8 @@ public class BornDigitalBean implements Serializable {
     @Inject
     private ActiveDocumentBean activeDocumentBean;
     @Inject
+    private CaptchaBean captchaBean;
+    @Inject
     private UserBean userBean;
 
     private transient String downloadTicketPassword;
@@ -136,6 +138,15 @@ public class BornDigitalBean implements Serializable {
             return "";
         }
 
+        // Check whether the security question has been answered correct, if configured
+        if (captchaBean != null) {
+            if (!captchaBean.checkAnswer()) {
+                captchaBean.reset();
+                Messages.error("user__security_question_wrong");
+                return "";
+            }
+        }
+
         DownloadTicket ticket = new DownloadTicket();
         if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded()) {
             ticket.setPi(activeDocumentBean.getPersistentIdentifier());
@@ -149,6 +160,7 @@ public class BornDigitalBean implements Serializable {
         if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
             downloadTicketEmail = null;
             downloadTicketRequestMessage = null;
+            captchaBean.reset();
 
             // Notify the requesting party of a successful request via e-mail
             String subject = ViewerResourceBundle.getTranslation(StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, BeanUtils.getLocale())

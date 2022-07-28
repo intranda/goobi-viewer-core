@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +34,6 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
@@ -123,13 +121,6 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
         });
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
 
@@ -172,22 +163,5 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertNull(bean.getUser());
         //        Assert.assertTrue(bean.getUser().isActive());
         //        Assert.assertTrue(bean.getUser().isSuspended());
-    }
-
-    /**
-     * @see UserBean#resetSecurityQuestion()
-     * @verifies not reset securityQuest if not yet answered
-     */
-    @Test
-    public void resetSecurityQuestion_shouldNotResetSecurityQuestIfNotYetAnswered() throws Exception {
-        UserBean ub = new UserBean();
-        Assert.assertTrue(ub.resetSecurityQuestion());
-        SecurityQuestion sq = ub.getSecurityQuestion();
-        Assert.assertNotNull(sq);
-        Assert.assertFalse(sq.isAnswered());
-        for (int i = 0; i < 10; ++i) {
-            Assert.assertTrue(ub.resetSecurityQuestion());
-        }
-        Assert.assertEquals(sq, ub.getSecurityQuestion());
     }
 }
