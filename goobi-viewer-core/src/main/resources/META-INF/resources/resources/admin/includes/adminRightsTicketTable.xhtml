@@ -219,7 +219,11 @@
 	                                    target="_blank" aria-label="#{msg.downloadTicket} #{msg.show} (#{ticket.pi}/1)">#{msg.show}</a>
 									<!-- EXTEND -->
 									<ui:fragment rendered="#{ticket.active or ticket.expired}">
-	                                    <button class="admin__table-action-link"
+	                                    <button class="admin__table-action-link -bluelink"
+											title="#{msg.citeLinks__open_modal_tooltip}"
+											data-toggle="tooltip"
+											data-placement="top"
+											data-trigger="hover"
 	                                        data-require-confirmation="true"
 	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi, ticket.defaultValidityAsString)}"
 	                                        jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
@@ -228,7 +232,7 @@
 	                                </ui:fragment>
 									<!-- RENEW -->
 									<ui:fragment rendered="#{ticket.active}">
-	                                    <button class="admin__table-action-link"
+	                                    <button class="admin__table-action-link -bluelink"
 	                                        data-require-confirmation="true"
 	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi)}"
 	                                        jsf:action="#{adminLicenseBean.renewDownloadTicketAction(ticket)}"

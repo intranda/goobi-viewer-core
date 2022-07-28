@@ -117,6 +117,18 @@
 		cursor: default;
 		padding: 0;
 	}
+	.-bluelink {
+		color: @blue;
+		&:hover {
+			text-decoration: underline;
+		}
+		&:hover,
+		&:active,
+		&:focus,
+		&:active:focus {
+			color: @blue;
+		}
+	}
 	.-redlink {
 		color: @red;
 		&:hover {
