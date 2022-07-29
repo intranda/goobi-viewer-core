@@ -98,6 +98,8 @@ import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TOC;
@@ -173,6 +175,8 @@ public class ViewManager implements Serializable {
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
+    private CopyrightIndicatorStatus copyrightIndicatorStatus = null;
+    private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
 
     /**
      * <p>
@@ -187,11 +191,9 @@ public class ViewManager implements Serializable {
      * @param imageDeliveryBean a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws ViewerConfigurationException
-     * @throws DAOException
      */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mimeType,
-            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topStructElement = topDocument;
         this.topStructElementIddoc = topDocument.getLuceneId();
@@ -1106,7 +1108,8 @@ public class ViewManager implements Serializable {
             } else {
                 boolean childIsFilesOnly = isChildFilesOnly();
                 PhysicalElement firstPage = pageLoader.getPage(pageLoader.getFirstPageOrder());
-                filesOnly = childIsFilesOnly || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(BaseMimeType.APPLICATION.getName()));
+                filesOnly =
+                        childIsFilesOnly || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(BaseMimeType.APPLICATION.getName()));
             }
 
         }
@@ -1892,7 +1895,7 @@ public class ViewManager implements Serializable {
                     .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
                     .orElse("");
         }
-        
+
         return "";
     }
 
@@ -1993,7 +1996,7 @@ public class ViewManager implements Serializable {
                             .build())
                     .orElse("");
         }
-        
+
         return "";
     }
 
@@ -3474,7 +3477,7 @@ public class ViewManager implements Serializable {
     public String getMainMimeType() {
         return mimeType;
     }
-    
+
     /**
      * <p>
      * Getter for the field <code>mimeType</code>.
@@ -3986,47 +3989,90 @@ public class ViewManager implements Serializable {
      * <li>the list contains (2*range)+1 consecutive numbers, or all page numbers of the current record if it is less than that</li>
      * <li>the first number is not less than the first image order</li>
      * <li>the last number is not larger than the last image order</li>
-     * <li>the 'pageOrder' is as far in the middle of the list as possible without violating any of the other points</li>
-     * </li>
-     * Used int thumbnailPaginator.xhtml to calculate the pages to display.
+     * <li>the 'pageOrder' is as far in the middle of the list as possible without violating any of the other points</li></li> Used int
+     * thumbnailPaginator.xhtml to calculate the pages to display.
+     * 
      * @param pageOrder The current page number around which to center the numbers
-     * @param range     The number of numbers to include above and below the current page number, if possible
-     * @param fillToSize    if true, always return a list of exactly 2*range+1 elements, no matter the total number of pages in the current record
-     * @return  an integer list
-     * @throws IndexUnreachableException    If the page numbers could not be read from SOLR
-     * @throws IllegalArgumentException     If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
+     * @param range The number of numbers to include above and below the current page number, if possible
+     * @param fillToSize if true, always return a list of exactly 2*range+1 elements, no matter the total number of pages in the current record
+     * @return an integer list
+     * @throws IndexUnreachableException If the page numbers could not be read from SOLR
+     * @throws IllegalArgumentException If the pageOrder is not within the range of page numbers of the current record or if range is less than zero
      */
     public List<Integer> getPageRangeAroundPage(int pageOrder, int range, boolean fillToSize) throws IndexUnreachableException {
 
-        if(pageOrder < pageLoader.getFirstPageOrder() || pageOrder > pageLoader.getLastPageOrder()) {
-            throw new IllegalArgumentException("the given pageOrder must be within the range of page numbers of the current record. The given pageOrder is " + pageOrder);
-        } else if(range < 0) {
+        if (pageOrder < pageLoader.getFirstPageOrder() || pageOrder > pageLoader.getLastPageOrder()) {
+            throw new IllegalArgumentException(
+                    "the given pageOrder must be within the range of page numbers of the current record. The given pageOrder is " + pageOrder);
+        } else if (range < 0) {
             throw new IllegalArgumentException("the given range must not be less than zero. It is " + range);
         }
 
         int firstPage = pageOrder;
         int lastPage = pageOrder;
-        int numPages = 2*range+1;
-        while( lastPage - firstPage + 1 < numPages) {
+        int numPages = 2 * range + 1;
+        while (lastPage - firstPage + 1 < numPages) {
             boolean changed = false;
-            if(firstPage > pageLoader.getFirstPageOrder()) {
+            if (firstPage > pageLoader.getFirstPageOrder()) {
                 firstPage--;
                 changed = true;
             }
-            if(lastPage < pageLoader.getLastPageOrder()) {
+            if (lastPage < pageLoader.getLastPageOrder()) {
                 lastPage++;
                 changed = true;
             }
-            if(!changed) {
+            if (!changed) {
                 break;
             }
         }
-        if(fillToSize) {
-            while(lastPage - firstPage + 1 < numPages) {
+        if (fillToSize) {
+            while (lastPage - firstPage + 1 < numPages) {
                 lastPage++;
             }
         }
-        return IntStream.range(firstPage, lastPage+1).boxed().collect(Collectors.toList());
+        return IntStream.range(firstPage, lastPage + 1).boxed().collect(Collectors.toList());
     }
 
+    /**
+     * 
+     * @return copyrightIndicatorStatus
+     */
+    public CopyrightIndicatorStatus getCopyrightIndicatorStatus() {
+        if (copyrightIndicatorStatus == null) {
+            String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
+            if (StringUtils.isNotEmpty(field)) {
+                String value = topStructElement.getMetadataValue(field);
+                if (StringUtils.isNotEmpty(value)) {
+                    copyrightIndicatorStatus = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
+                }
+            }
+            // Default
+            if (copyrightIndicatorStatus == null) {
+                copyrightIndicatorStatus = CopyrightIndicatorStatus.OPEN;
+            }
+        }
+
+        return copyrightIndicatorStatus;
+    }
+
+    /**
+     * @return the copyrightIndicatorLicense
+     */
+    public CopyrightIndicatorLicense getCopyrightIndicatorLicense() {
+        if (copyrightIndicatorLicense == null) {
+            String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseField();
+            if (StringUtils.isNotEmpty(field)) {
+                String value = topStructElement.getMetadataValue(field);
+                if (StringUtils.isNotEmpty(value)) {
+                    copyrightIndicatorLicense = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseForValue(value);
+                }
+            }
+            // Default
+            if (copyrightIndicatorLicense == null) {
+                copyrightIndicatorLicense = new CopyrightIndicatorLicense("", "no.svg");
+            }
+        }
+
+        return copyrightIndicatorLicense;
+    }
 }
