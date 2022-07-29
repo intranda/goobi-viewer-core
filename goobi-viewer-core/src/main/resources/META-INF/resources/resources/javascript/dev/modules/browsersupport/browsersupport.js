@@ -24,7 +24,7 @@ function getCurrentBrowser() {
             var isOpera = ( !!window.opr && !!opr.addons ) || !!window.opera || navigator.userAgent.indexOf( ' OPR/' ) >= 0;
             // Firefox 1.0+
 				// deprecated method:
-           		// var isFirefox = typeof InstallTrigger !== 'undefined';
+           		 var isFirefox = 'undefined';
             // Safari 3.0+ "[object HTMLElementConstructor]"
             var isSafari = /constructor/i.test( window.HTMLElement ) || ( function( p ) {
                 return p.toString() === "[object SafariRemoteNotification]";
@@ -41,9 +41,9 @@ function getCurrentBrowser() {
             if ( isOpera ) {
                 return 'Opera';
             }
-//            else if ( isFirefox ) {
-//                return 'Firefox';
-//            }
+            else if ( isFirefox ) {
+                return 'Firefox';
+            }
             else if ( isSafari ) {
                 return 'Safari';
             }

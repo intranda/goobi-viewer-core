@@ -540,14 +540,14 @@ var viewerJS = (function () {
 				$checkboxes.each((index, element) => {
 					if ( $(element).is(':checked') ) {
 						let isChecked = true;
-						  console.log("all boxes checked");
+						  // console.log("all boxes checked");
 						 // console.log(allCheckboxesChecked);
 						 allCheckboxesChecked = true;
 					} else {
 						let isChecked = false;
 						allCheckboxesChecked = false;
 						// console.log(allCheckboxesChecked);
-						console.log("not all boxes checked");
+						// console.log("not all boxes checked");
 						return false;
 					}
 					});
@@ -558,12 +558,12 @@ var viewerJS = (function () {
 							allTextFieldsFilled = false;
 							// console.log(allTextFieldsFilled);
 							// console.log($texts);
-							console.log('NO - not all texts filled');
+							// console.log('NO - not all texts filled');
 							return false;
 						} else {
 							allTextFieldsFilled = true;
 							// console.log($texts);
-							console.log('YES - all texts filled');
+							// console.log('YES - all texts filled');
 						}
 					});
 				
@@ -571,10 +571,10 @@ var viewerJS = (function () {
 				// ACTIVATE SUBMIT BUTTON IF ALL REQUIRED CHECKBOXES AND TEXTFIELDS ARE FILLED/CHECKED
 				if(allCheckboxesChecked && allTextFieldsFilled == true) {
 					$ele.removeAttr("disabled");
-					 console.log('button activated, removed attribute');
+					// console.log('button activated, removed attribute');
 				} else {
 					$ele.attr("disabled", "disabled");
-					 console.log('button DEactivated, attribute added');
+					// console.log('button DEactivated, attribute added');
 				}
 				
 				// console.log(allCheckboxesChecked);

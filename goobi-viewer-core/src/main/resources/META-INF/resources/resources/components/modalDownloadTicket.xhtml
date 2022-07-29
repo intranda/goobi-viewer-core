@@ -81,6 +81,7 @@
 											pt:data-require-input="passwordRequired"/>
 									</div>
 								</div>
+								
                             
 							</div>
 
@@ -89,7 +90,7 @@
 							</h:form>
 							
 							<!-- REQUEST TICKET MODE -->
-							<h:form id="download-ticket-modal__downloadTicketFormRequest" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
+							<h:form id="download-ticket-modal__downloadTicketFormRequest" pt:data-target="requestTicketForm" styleClass="form-horizontal" prependId="false" enctype="multipart/form-data">
 
 							<div class="download-ticket-modal__ticket-mode" data-mode="ticketMode">
 
@@ -116,7 +117,7 @@
                                         </div>
                                         <h:inputText id="download-ticket-modal__email" label="downloadTicketEmail"
                                             required="true"
-                                            value="#{bornDigitalBean.downloadTicketEmail}" styleClass="form-control" pt:data-require-input-text="ticketRequired">
+                                            value="#{bornDigitalBean.downloadTicketEmail}" styleClass="form-control" pt:data-require-input-text="ticketRequired" pt:data-target="mailValidatorCheck">
                                             <f:passThroughAttribute name="aria-labelledby"
                                                 value="download-ticket-modal__labelDownloadTicket" />
                                             <f:passThroughAttribute name="type"
@@ -195,9 +196,9 @@
 
 								</div>
 
-								<div class="download-ticket-modal__actions">
+								<div class="download-ticket-modal__actions small-button-loader__wrapper">
 									
-									<!-- SWITCH TO TICKET REQUEST MODE (visible when ticket request mode OFF)-->
+									<!-- SWITCH TO PASSWORD ENTER MODE (visible when ticket request mode ON)-->
 		                            <div class="form-row download-ticket-modal__action" data-target="switchToPasswordMode">
 		                                <div class="col-sm-12 d-flex justify-content-end">
 		                                    <button type="button" class="btn btn--clean">#{msg.previous}</button>
@@ -209,13 +210,34 @@
 		                                <div class="col-sm-12 d-flex justify-content-end">
 		                                    <h:commandButton styleClass="btn btn--full"
 		                                        value="#{msg.submit}"
-		                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired" />
+		                                        action="#{bornDigitalBean.requestNewDownloadTicketAction}" pt:data-require-input="ticketRequired"
+		                                        pt:data-target="buttonLoaderClickEvent">
+		                                    </h:commandButton>
 		                                </div>
 		                            </div>
 		                            
-		                            
+		                            <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
 		                            
 								</div>
+								
+								<!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
+								<script>
+
+								$.fn.isValid = function(){
+								  return this[0].checkValidity()
+								}
+								
+								$('[data-target="buttonLoaderClickEvent"]').on('click', function(e) {
+									if($('[data-target="mailValidatorCheck"]').isValid())
+									
+									{
+								      		$('[data-target="buttonLoader"]').fadeIn('fast');
+											$('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
+										}
+
+								});
+
+								</script>
                                 
                                 
                                 <!-- TODO: captcha? -->
