@@ -22,7 +22,7 @@
 package io.goobi.viewer.servlets.openid;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -89,7 +89,11 @@ public class OAuthServlet extends HttpServlet {
     /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
+        try {
+            doPost(request, response);
+        } catch (IOException | ServletException e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     /** {@inheritDoc} */
@@ -117,12 +121,16 @@ public class OAuthServlet extends HttpServlet {
                     listener.unregister(provider);
                 } catch (OAuthSystemException e) {
                     logger.error(e.getMessage(), e);
-                    this.redirected = provider.completeLogin(null, request, response);
+                    redirected = provider.completeLogin(null, request, response);
                     listener.unregister(provider);
                 } catch (AuthenticationProviderException e) {
                     logger.debug("AuthenticationProviderException thrown here: {}", e.getMessage());
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                    this.redirected = provider.completeLogin(null, request, response);
+                    try {
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                    } catch (IOException e1) {
+                        logger.error(e1.getMessage());
+                    }
+                    redirected = provider.completeLogin(null, request, response);
                     listener.unregister(provider);
                     return;
                 }
@@ -135,9 +143,9 @@ public class OAuthServlet extends HttpServlet {
             }
         }
 
-        if (this.redirected != null) {
+        if (redirected != null) {
             try {
-                this.redirected.get(1, TimeUnit.MINUTES); //redirected has an internal timeout, so this get() should never run into a timeout, but you never know
+                redirected.get(1, TimeUnit.MINUTES); //redirected has an internal timeout, so this get() should never run into a timeout, but you never know
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.warn("Waiting for redirect after login unterrupted unexpectedly");
@@ -149,7 +157,18 @@ public class OAuthServlet extends HttpServlet {
         }
     }
 
-    private boolean handleResponse(OAuthAuthzResponse oar, OpenIdProvider provider, HttpServletRequest request, HttpServletResponse response)
+    /**
+     * 
+     * @param oar
+     * @param provider
+     * @param request
+     * @param response
+     * @return
+     * @throws OAuthProblemException
+     * @throws OAuthSystemException
+     * @throws AuthenticationProviderException
+     */
+    private static boolean handleResponse(OAuthAuthzResponse oar, OpenIdProvider provider, HttpServletRequest request, HttpServletResponse response)
             throws OAuthProblemException, OAuthSystemException, AuthenticationProviderException {
         if (provider.getoAuthState() == null || !oar.getState().equals(provider.getoAuthState())) {
             return false;
@@ -164,31 +183,13 @@ public class OAuthServlet extends HttpServlet {
                         .setClientSecret(provider.getClientSecret())
                         .setRedirectURI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/" + URL)
                         .setCode(oar.getCode())
-                        .buildBodyMessage(); {
-                OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-                OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
-                if (oAuthTokenResponse != null) {
-                    TokenValidator tv = new TokenValidator();
-                    tv.validate(oAuthTokenResponse);
-                    provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
-                    String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
-                    String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
-                    if (idTokenEncodedSplit.length != 3) {
-                        logger.error("Wrong number of segments in id_token. Expected 3, found " + idTokenEncodedSplit.length);
-                        break;
-                    }
-                    // String header = new String(new Base64(true).decode(idTokenEncodedSplit[0]), Charset.forName("UTF-8"));
-                    String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), Charset.forName("UTF-8"));
-                    // String signature = idTokenEncodedSplit[2];
-                    JSONTokener tokener = new JSONTokener(payload);
-                    JSONObject jsonPayload = new JSONObject(tokener);
-                    this.redirected = provider.completeLogin(jsonPayload, request, response);
-                    return true;
-                    //                    return provider.completeLogin();
+                        .buildBodyMessage();
+                try {
+                    return doGoogle(provider, oAuthTokenRequest, request, response);
+                } catch (OAuthSystemException | OAuthProblemException e) {
+                    logger.error(e.getMessage(), e);
+                    return false;
                 }
-            }
-
-                break;
             case "facebook":
                 oAuthTokenRequest = OAuthClientRequest.tokenProvider(OAuthProviderType.FACEBOOK)
                         .setGrantType(GrantType.AUTHORIZATION_CODE)
@@ -196,38 +197,15 @@ public class OAuthServlet extends HttpServlet {
                         .setClientSecret(provider.getClientSecret())
                         .setRedirectURI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/" + URL)
                         .setCode(oar.getCode())
-                        .buildQueryMessage(); {
-                OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-                OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest, GitHubTokenResponse.class);
-                if (oAuthTokenResponse != null) {
-                    TokenValidator tv = new TokenValidator();
-                    tv.validate(oAuthTokenResponse);
-                    provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
-
-                    // Retrieve resources
-                    OAuthClientRequest bearerClientRequest =
-                            new OAuthBearerClientRequest("https://graph.facebook.com/me").setAccessToken(oAuthTokenResponse.getAccessToken())
-                                    .buildQueryMessage();
-                    OAuthResourceResponse resourceResponse =
-                            oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
-                    if (resourceResponse != null) {
-                        // logger.debug(resourceResponse.getBody());
-                        JSONTokener tokener = new JSONTokener(resourceResponse.getBody());
-                        JSONObject jsonProfile = new JSONObject(tokener);
-                        this.redirected = provider.completeLogin(jsonProfile, request, response);
-                        return true;
-                        //                        return provider.completeLogin();
-                    }
-                }
-            }
-                break;
+                        .buildQueryMessage();
+                return doTheFaceBook(provider, oAuthTokenRequest, request, response);
             case "openid-test":
                 String email = oar.getCode();
                 String password = oar.getParam("token");
                 Optional<User> user = loginUser(email, password);
                 if (user.isPresent()) {
                     JSONObject jsonProfile = new JSONObject(Collections.singletonMap("email", email));
-                    this.redirected = provider.completeLogin(jsonProfile, request, response);
+                    redirected = provider.completeLogin(jsonProfile, request, response);
                     return true;
                 }
                 break;
@@ -243,9 +221,79 @@ public class OAuthServlet extends HttpServlet {
                 OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
                 oAuthClient.accessToken(oAuthTokenRequest);
         }
-        return false;// Optional.empty();
+
+        return false;
+
     }
 
+    static boolean doGoogle(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request,
+            HttpServletResponse response) throws OAuthSystemException, OAuthProblemException {
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
+        if (oAuthTokenResponse != null) {
+            TokenValidator tv = new TokenValidator();
+            tv.validate(oAuthTokenResponse);
+            provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
+            String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
+            String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
+            if (idTokenEncodedSplit.length != 3) {
+                logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
+                return false;
+            }
+            String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
+            JSONTokener tokener = new JSONTokener(payload);
+            JSONObject jsonPayload = new JSONObject(tokener);
+            redirected = provider.completeLogin(jsonPayload, request, response);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param provider
+     * @param oAuthTokenRequest
+     * @param request
+     * @param response
+     * @return
+     * @throws OAuthSystemException
+     * @throws OAuthProblemException
+     */
+    static boolean doTheFaceBook(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request,
+            HttpServletResponse response) throws OAuthSystemException, OAuthProblemException {
+
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest, GitHubTokenResponse.class);
+        if (oAuthTokenResponse != null) {
+            TokenValidator tv = new TokenValidator();
+            tv.validate(oAuthTokenResponse);
+            provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
+
+            // Retrieve resources
+            OAuthClientRequest bearerClientRequest =
+                    new OAuthBearerClientRequest("https://graph.facebook.com/me").setAccessToken(oAuthTokenResponse.getAccessToken())
+                            .buildQueryMessage();
+            OAuthResourceResponse resourceResponse =
+                    oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
+            if (resourceResponse != null) {
+                JSONTokener tokener = new JSONTokener(resourceResponse.getBody());
+                JSONObject jsonProfile = new JSONObject(tokener);
+                redirected = provider.completeLogin(jsonProfile, request, response);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param email
+     * @param password
+     * @return
+     * @throws AuthenticationProviderException
+     */
     private static Optional<User> loginUser(String email, String password) throws AuthenticationProviderException {
         if (StringUtils.isNotEmpty(email)) {
             try {
@@ -260,6 +308,7 @@ public class OAuthServlet extends HttpServlet {
                 throw new AuthenticationProviderException(e);
             }
         }
+
         return Optional.empty();
     }
 
