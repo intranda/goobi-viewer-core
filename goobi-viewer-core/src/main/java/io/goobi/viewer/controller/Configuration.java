@@ -79,6 +79,8 @@ import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
@@ -106,6 +108,8 @@ import io.goobi.viewer.solr.SolrConstants;
 public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
+    
+    private static final String XML_PATH_ATTRIBUTE_ICON = "[@icon]";
 
     private Set<String> stopwords;
 
@@ -180,7 +184,9 @@ public class Configuration extends AbstractConfiguration {
         // Load stopwords
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
-        } catch (FileNotFoundException e) {
+        } catch (
+
+        FileNotFoundException e) {
             logger.error(e.getMessage());
             stopwords = new HashSet<>(0);
         } catch (IOException | IllegalArgumentException e) {
@@ -1388,8 +1394,7 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
-        boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
-        return use;
+        return getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
     }
 
     /**
@@ -2073,7 +2078,6 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
-    @SuppressWarnings("static-method")
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
     }
@@ -4910,7 +4914,7 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getIIIFDescriptionFields() {
         return getLocalList("webapi.iiif.descriptionFields.field", new ArrayList<>());
     }
-    
+
     public List<String> getIIIFLabelFields() {
         return getLocalList("webapi.iiif.labelFields.field", new ArrayList<>());
     }
@@ -5019,19 +5023,19 @@ public class Configuration extends AbstractConfiguration {
     public String getLabelIIIFRenderingAlto() {
         return getLocalString("webapi.iiif.rendering.alto.label", null);
     }
-    
+
     public boolean isVisibleIIIFSeeAlsoMets() {
         return getLocalBoolean("webapi.iiif.seeAlso.mets[@enabled]", true);
     }
-    
+
     public String getLabelIIIFSeeAlsoMets() {
         return getLocalString("webapi.iiif.seeAlso.mets.label", "METS/MODS");
     }
-    
+
     public boolean isVisibleIIIFSeeAlsoLido() {
         return getLocalBoolean("webapi.iiif.seeAlso.lido[@enabled]", true);
     }
-    
+
     public String getLabelIIIFSeeAlsoLido() {
         return getLocalString("webapi.iiif.seeAlso.lido.label", "LIDO");
     }
@@ -5178,16 +5182,89 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
     }
 
-    public String getAccessConditionDisplayField() {
-        return getLocalString("webGuiDisplay.displayCopyrightInfo.accessConditionField", null);
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isCopyrightIndicatorEnabled() {
+        return getLocalBoolean("webGuiDisplay.copyrightIndicator[@enabled]", false);
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getCopyrightIndicatorStyle() {
+        return getLocalString("webGuiDisplay.copyrightIndicator[@style]", "badge");
     }
 
-    public String getCopyrightDisplayField() {
-        return getLocalString("webGuiDisplay.displayCopyrightInfo.copyrightField", null);
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getCopyrightIndicatorStatusField() {
+        return getLocalString("webGuiDisplay.copyrightIndicator.status[@field]");
     }
 
-    public boolean isDisplayCopyrightInfo() {
-        return getLocalBoolean("webGuiDisplay.displayCopyrightInfo.visible", false);
+    /**
+     * 
+     * @param value
+     * @should return correct value
+     */
+    public CopyrightIndicatorStatus getCopyrightIndicatorStatusForValue(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webGuiDisplay.copyrightIndicator.status.value");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            String content = config.getString("[@content]");
+            if (value.equals(content)) {
+                String statusName = config.getString("[@status]");
+                CopyrightIndicatorStatus ret = CopyrightIndicatorStatus.getByName(statusName);
+                if (ret == null) {
+                    logger.warn("No copyright indicator status found for configured name: {}", statusName);
+                }
+                return ret;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param value
+     * @should return correct value
+     */
+    public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webGuiDisplay.copyrightIndicator.license.value");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            String content = config.getString("[@content]");
+            if (value.equals(content)) {
+                String description = config.getString("[@description]");
+                String icon = config.getString(XML_PATH_ATTRIBUTE_ICON);
+                return new CopyrightIndicatorLicense(description, icon);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getCopyrightIndicatorLicenseField() {
+        return getLocalString("webGuiDisplay.copyrightIndicator.license[@field]");
     }
 
     public boolean isDisplaySocialMediaShareLinks() {
@@ -5270,14 +5347,12 @@ public class Configuration extends AbstractConfiguration {
 
     public GeoMapMarker getMarkerForMapSearch() {
         HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.search.marker");
-        GeoMapMarker marker = readGeoMapMarker(config);
-        return marker;
+        return readGeoMapMarker(config);
     }
 
     public GeoMapMarker getMarkerForFacetting() {
         HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.facet.marker");
-        GeoMapMarker marker = readGeoMapMarker(config);
-        return marker;
+        return readGeoMapMarker(config);
     }
 
     public boolean includeCoordinateFieldsFromMetadataDocs() {
@@ -5309,7 +5384,7 @@ public class Configuration extends AbstractConfiguration {
             String name = config.getString(".", "default");
             marker = new GeoMapMarker(name);
             marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
-            marker.setIcon(config.getString("[@icon]", marker.getIcon()));
+            marker.setIcon(config.getString(XML_PATH_ATTRIBUTE_ICON, marker.getIcon()));
             marker.setIconColor(config.getString("[@iconColor]", marker.getIconColor()));
             marker.setIconRotate(config.getInt("[@iconRotate]", marker.getIconRotate()));
             marker.setMarkerColor(config.getString("[@markerColor]", marker.getMarkerColor()));
@@ -5367,7 +5442,7 @@ public class Configuration extends AbstractConfiguration {
             String url = node.getString("[@url]", "");
             if (StringUtils.isNotBlank(url)) {
                 String label = node.getString("[@label]", url);
-                String icon = node.getString("[@icon]", "");
+                String icon = node.getString(XML_PATH_ATTRIBUTE_ICON, "");
                 LicenseDescription license = new LicenseDescription(url);
                 license.setLabel(label);
                 license.setIcon(icon);
@@ -5393,7 +5468,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
         nodeTypes.get(0).getString(getReCaptchaSiteKey());
         return nodeTypes.stream()
-                .collect(Collectors.toMap(node -> node.getString("[@name]"), node -> node.getString("[@icon]")));
+                .collect(Collectors.toMap(node -> node.getString("[@name]"), node -> node.getString(XML_PATH_ATTRIBUTE_ICON)));
     }
 
     /**
@@ -5476,25 +5551,24 @@ public class Configuration extends AbstractConfiguration {
     public boolean isFuzzySearchEnabled() {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
-    
-    /**
-    *
-    * @return
-    * @should return correct value
-    */
-   public boolean isUseFacetsAsExpandQuery() {
-       return getLocalBoolean("search.useFacetsAsExpandQuery[@enabled]", false);
-   }
-   
-   /**
-    * 
-    * @return
-    * @should return all configured elements
-    */
-   public List<String> getAllowedFacetsForExpandQuery() {
-       return getLocalList("search.useFacetsAsExpandQuery.facetQuery");
-   }
 
+    /**
+     *
+     * @return
+     * @should return correct value
+     */
+    public boolean isUseFacetsAsExpandQuery() {
+        return getLocalBoolean("search.useFacetsAsExpandQuery[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<String> getAllowedFacetsForExpandQuery() {
+        return getLocalList("search.useFacetsAsExpandQuery.facetQuery");
+    }
 
     /**
      * 
@@ -5549,23 +5623,23 @@ public class Configuration extends AbstractConfiguration {
     public String getContentUploadRejectionReasonPropertyName() {
         return getLocalString("upload.rejectionReasonPropertyName");
     }
-    
+
     public String getCrowdsourcingCampaignItemOrder() {
         return getLocalString("campaigns.itemOrder", "fixed");
     }
-    
+
     public int getGeomapAnnotationZoom() {
         return getLocalInt("campaigns.annotations.geoCoordinates.zoom", 7);
     }
-    
+
     public int getCrowdsourcingCampaignGeomapZoom() {
         return getLocalInt("campaigns.geoMap.zoom", 7);
     }
-    
+
     public String getCrowdsourcingCampaignGeomapLngLat() {
         return getLocalString("campaigns.geoMap.lngLat", "11.073397, 49.451993");
     }
-    
+
     public String getCrowdsourcingCampaignGeomapTilesource() {
         return getLocalString("campaigns.geoMap.tilesource", "mapbox");
 

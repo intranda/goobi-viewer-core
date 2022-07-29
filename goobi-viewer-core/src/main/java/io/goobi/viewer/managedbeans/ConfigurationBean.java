@@ -1059,15 +1059,14 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isShowSearchInItem.
-     * </p
+     * isShowSearchInItem. </p
      *
      * @return a boolean.
      */
     public boolean isShowSearchInItem() {
         return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
     }
-    
+
     /**
      * <p>
      * isContentUploadEnabled.
@@ -1412,16 +1411,20 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getTwitterUserName();
     }
 
-    public String getAccessConditionDisplayField() {
-        return DataManager.getInstance().getConfiguration().getAccessConditionDisplayField();
+    /**
+     * 
+     * @return
+     */
+    public boolean isCopyrightIndicatorEnabled() {
+        return DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled();
     }
 
-    public String getCopyrightDisplayField() {
-        return DataManager.getInstance().getConfiguration().getCopyrightDisplayField();
-    }
-
-    public boolean isDisplayCopyrightInfo() {
-        return DataManager.getInstance().getConfiguration().isDisplayCopyrightInfo();
+    /**
+     * 
+     * @return
+     */
+    public String getCopyrightIndicatorStyle() {
+        return DataManager.getInstance().getConfiguration().getCopyrightIndicatorStyle();
     }
 
     public boolean isDisplaySocialMediaShareLinks() {
@@ -1542,27 +1545,29 @@ public class ConfigurationBean implements Serializable {
 
     public GeoMapMarker getDefaultMarkerForCMSMaps() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
-        GeoMapMarker marker = markers.stream().filter(m -> m.getName().equalsIgnoreCase("default")).findAny()
+        GeoMapMarker marker = markers.stream()
+                .filter(m -> m.getName().equalsIgnoreCase("default"))
+                .findAny()
                 .orElse(new GeoMapMarker("default"));
         return marker;
     }
-    
+
     public int getGeomapAnnotationZoom() {
         return DataManager.getInstance().getConfiguration().getGeomapAnnotationZoom();
     }
-    
+
     public String getCampaignGeomapInitialViewAsJson() {
         int zoom = DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapZoom();
         String lngLatString = DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapLngLat();
-        
+
         JSONArray lngLatArray = new JSONArray("[" + lngLatString + "]");
         JSONObject view = new JSONObject();
         view.put("zoom", zoom);
         view.put("center", lngLatArray);
-        
+
         return view.toString();
     }
-    
+
     public String getCampaignGeomapTilesource() {
         return DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapTilesource();
     }
