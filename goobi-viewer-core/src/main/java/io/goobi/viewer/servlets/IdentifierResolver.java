@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -72,6 +73,8 @@ public class IdentifierResolver extends HttpServlet {
     private static final String CUSTOM_FIELD_PARAMETER = "field";
     private static final String PAGE_PARAMETER = "page";
 
+    private static final String ATTRIBUTE_ERRMSG = "errMsg";
+
     // error messages
     //    private static final String ERRTXT_QUERY_PARSE = "Query string could not be parsed, check your input value. ";
     //    private static final String ERRTXT_DOC_NOT_FOUND = "No matching document could be found. ";
@@ -96,16 +99,16 @@ public class IdentifierResolver extends HttpServlet {
             return;
         }
 
-        for (String key : parameterMap.keySet()) {
-            if (parameterMap.get(key) == null || parameterMap.get(key).length == 0) {
+        for (Entry<String,String[]> entry : parameterMap.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().length == 0) {
                 continue;
             }
-            if (key.startsWith(CUSTOM_FIELD_PARAMETER) && key.length() > CUSTOM_FIELD_PARAMETER.length()) {
-                String number = key.substring(CUSTOM_FIELD_PARAMETER.length());
-                moreFields.put(Integer.valueOf(number), parameterMap.get(key)[0]);
-            } else if (key.startsWith("value") && key.length() > "value".length()) {
-                String number = key.substring("value".length());
-                moreValues.put(Integer.valueOf(number), parameterMap.get(key)[0]);
+            if (entry.getKey().startsWith(CUSTOM_FIELD_PARAMETER) && entry.getKey().length() > CUSTOM_FIELD_PARAMETER.length()) {
+                String number = entry.getKey().substring(CUSTOM_FIELD_PARAMETER.length());
+                moreFields.put(Integer.valueOf(number), entry.getValue()[0]);
+            } else if (entry.getKey().startsWith("value") && entry.getKey().length() > "value".length()) {
+                String number = entry.getKey().substring("value".length());
+                moreValues.put(Integer.valueOf(number),entry.getValue()[0]);
             }
         }
     }
@@ -183,12 +186,12 @@ public class IdentifierResolver extends HttpServlet {
 
             // Add additional field/value pairs to the query
             if (!moreFields.isEmpty()) {
-                for (int number : moreFields.keySet()) {
-                    if (moreValues.get(number) != null) {
+                for (Entry<Integer, String> entry : moreFields.entrySet()) {
+                    if (moreValues.get(entry.getKey()) != null) {
                         sbQuery.append(" +")
-                                .append(moreFields.get(number))
+                                .append(entry.getValue())
                                 .append(':')
-                                .append(moreValues.get(number));
+                                .append(moreValues.get(entry.getKey()));
                     }
                 }
             }
@@ -214,7 +217,6 @@ public class IdentifierResolver extends HttpServlet {
                     } catch (IOException | ServletException e) {
                         logger.error(e.getMessage());
                     }
-                    return;
                 }
                 return;
             } else if (hits.getNumFound() > 1) {
@@ -229,17 +231,6 @@ public class IdentifierResolver extends HttpServlet {
 
             // 4. extract the target field value of the single found document
             SolrDocument targetDoc = hits.get(0);
-
-            // Check against the collection blacklist
-            // List<SolrDocument> filteredDocs = SearchHelper.applyCollectionBlacklistFilter(hits);
-            // if (filteredDocs.isEmpty()) {
-            // if (!customMode) {
-            // doPageSearch(fieldValue, request, response);
-            // } else {
-            // response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
-            // }
-            // return;
-            // }
 
             String pi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
             int page = 0;
@@ -270,27 +261,43 @@ public class IdentifierResolver extends HttpServlet {
                 try {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_TARGET_FIELD_NOT_FOUND + SolrConstants.PI);
                 } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error(e.getMessage());
                 }
                 return;
             }
 
             // Custom page, if parameter given
             if (request.getParameter(PAGE_PARAMETER) != null) {
-                page = Integer.valueOf(request.getParameter(PAGE_PARAMETER));
+                try {
+                    page = Integer.valueOf(request.getParameter(PAGE_PARAMETER));
+                } catch (NumberFormatException e) {
+                    logger.debug(e.getMessage());
+                    try {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                    } catch (IOException e1) {
+                        logger.error(e1.getMessage(), e1);
+                    }
+                    return;
+                }
             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
-            boolean access;
+            boolean access = false;
             try {
                 access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
             } catch (RecordNotFoundException e) {
                 try {
                     redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
                 } catch (ServletException | IOException e1) {
-                    logger.error(e.getMessage(), e1);
+                    logger.error(e1.getMessage());
                 }
                 return;
+            } catch (IndexUnreachableException | DAOException e) {
+                try {
+                    redirectToError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, fieldValue, request, response);
+                } catch (ServletException | IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
             if (!access) {
                 logger.debug("User may not list record '{}'.", pi);
@@ -311,10 +318,9 @@ public class IdentifierResolver extends HttpServlet {
                     String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
                     response.sendRedirect(absoluteUrl);
                 } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error(e.getMessage());
                 }
             } else {
-                // getServletContext().getRequestDispatcher(TARGET_WORK_URL.replaceAll("\\(0\\)", outputPart)).forward(request, response);
                 try {
                     getServletContext().getRequestDispatcher(result).forward(request, response);
                 } catch (ServletException | IOException e) {
@@ -322,29 +328,19 @@ public class IdentifierResolver extends HttpServlet {
                 }
             }
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(e.getMessage());
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             } catch (IOException e1) {
-                logger.error(e.getMessage(), e1);
+                logger.error(e1.getMessage());
             }
-            return;
         } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+            logger.debug(e.getMessage());
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             } catch (IOException e1) {
-                logger.error(e.getMessage(), e1);
+                logger.error(e1.getMessage());
             }
-            return;
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here: {}", e.getMessage());
-            try {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-                logger.error(e.getMessage(), e1);
-            }
-            return;
         }
     }
 
@@ -378,40 +374,38 @@ public class IdentifierResolver extends HttpServlet {
             hits = DataManager.getInstance().getSearchIndex().search(query2);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage(), e1);
+            }
             return;
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage(), e1);
+            }
             return;
         }
         if (hits.getNumFound() == 0) {
             // A2.1 show, that no document was found at all
-            redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+            try {
+                redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+            } catch (IOException | ServletException e) {
+                logger.error(e.getMessage());
+            }
             return;
         } else if (hits.getNumFound() > 1) {
             // A2.2 show multiple match, that indicates inconsistencies within the index
-            redirectToError(HttpServletResponse.SC_CONFLICT, fieldValue, request, response);
+            try {
+                redirectToError(HttpServletResponse.SC_CONFLICT, fieldValue, request, response);
+            } catch (IOException | ServletException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
-
-        // A.3 Extract the page field value of the single found document
-        // Document targetDoc = getSearcher().doc(hits.scoreDocs[0].doc);
-        // String pagesString = targetDoc.get(PAGE_FIELD_NAME);
-        // pagesString = pagesStsring.replaceAll("\\\\", "");
-        // if (pagesString == null) {
-        // response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_TARGET_FIELD_NOT_FOUND + PAGE_FIELD_NAME);
-        // return;
-        // }
-        //
-        // // A.4 Determine, at what position inside the page field the request param resides
-        // String[] pages = pagesString.split("[ ]");
-        // int i;
-        // for (i = 0; i < pages.length; i++) {
-        // if (pages[i].equals(fieldValue))
-        // break;
-        // }
-        // ++i;
 
         // Retrieve the corresponding page document from the index, then extract the main document's PI and the current page number
         SolrDocument targetDoc = hits.get(0);
@@ -423,38 +417,56 @@ public class IdentifierResolver extends HttpServlet {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage(), e1);
+            }
             return;
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage(), e1);
+            }
             return;
         } catch (RecordNotFoundException e) {
-            redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+            try {
+                redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+            } catch (IOException | ServletException e1) {
+                logger.error(e1.getMessage(), e1);
+            }
             return;
         }
         if (!access) {
             logger.debug("User may not list {}", pi);
-            redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+            try {
+                redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
+            } catch (IOException | ServletException e1) {
+                logger.error(e1.getMessage(), e1);
+            }
             return;
         }
 
         // A.5 Form a result url by inserting the target field of the document and the in A.4 determined value into the target page url
-        //        try {
         String result = constructUrl(targetDoc, true);
         logger.debug("URL: {}", result);
         // A.6 redirect or forward to this newly created url
         if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
             String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
-            response.sendRedirect(absoluteUrl);
+            try {
+                response.sendRedirect(absoluteUrl);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         } else {
-            getServletContext().getRequestDispatcher(result).forward(request, response);
+            try {
+                getServletContext().getRequestDispatcher(result).forward(request, response);
+            } catch (IOException | ServletException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
-        //        } catch (DAOException e) {
-        //            logger.debug("DAOException thrown here: {}", e.getMessage());
-        //            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-        //            return;
-        //        }
     }
 
     /**
@@ -472,26 +484,24 @@ public class IdentifierResolver extends HttpServlet {
         switch (code) {
             case HttpServletResponse.SC_NOT_FOUND:
                 request.setAttribute("type", "recordNotFound");
-                request.setAttribute("errMsg",
+                request.setAttribute(ATTRIBUTE_ERRMSG,
                         ViewerResourceBundle.getTranslation("errRecordNotFoundMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_GONE:
                 request.setAttribute("type", "recordDeleted");
-                request.setAttribute("errMsg",
+                request.setAttribute(ATTRIBUTE_ERRMSG,
                         ViewerResourceBundle.getTranslation("errRecordDeletedMsg", BeanUtils.getLocale()).replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_CONFLICT:
                 request.setAttribute("type", "general");
-                request.setAttribute("errMsg",
+                request.setAttribute(ATTRIBUTE_ERRMSG,
                         ViewerResourceBundle.getTranslation("errMultiMatch", BeanUtils.getLocale()).replace("{0}", identifier));
+                break;
+            default:
                 break;
         }
         request.setAttribute("sourceUrl", NavigationHelper.getFullRequestUrl(request, null));
         request.getRequestDispatcher(url).forward(request, response);
-        return;
-
-        //        response.sendError(code, msg);
-        //        return;
     }
 
     public static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
