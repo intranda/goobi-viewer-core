@@ -89,7 +89,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.4.1</ics.version>
+		<ics.version>3.4.2</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.2.2</iiif-api-model.version>
@@ -151,7 +151,7 @@
 		<log4j.version>2.18.0</log4j.version>
 		<solr.version>8.11.1</solr.version>
 		<saml-client.version>4.0.0</saml-client.version>
-		<swagger.version>2.2.1</swagger.version>
+		<swagger.version>2.2.2</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
