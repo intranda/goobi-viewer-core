@@ -184,7 +184,7 @@
 
 				<div id="activeTicketsTable" class="admin__grid-table -columns-4"
 					role="grid"
-					aria-label="#{msg.admin__donwload_tickets__title}: #{msg.aria_label__table__actions}">
+					aria-label="#{msg.aria_label__table__actions}">
 
 					<div class="admin__grid-table-title-row" role="row">
 
@@ -217,10 +217,10 @@
 								<div class="admin__grid-table-data" role="gridcell">
 									<!-- TICKET RECORD TITLE -->
 									<span
-										class="admin__table-name admin__clients-table-client-name">#{ticket.title}</span>
+										class="admin__table-name">#{ticket.title}</span>
 
 									<!-- TABLE ENTRY ACTIONS (EDIT/DELETE) -->
-									<div class="admin__table-actions-wrapper">
+									<div class="admin__grid-table-actions-wrapper">
 										<!-- SHOW RECORD -->
 										<a href="#{navigationHelper.metadataUrl}/#{ticket.pi}/1/"
 											class="admin__table-action-link" target="_blank"
