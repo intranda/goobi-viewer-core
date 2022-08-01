@@ -3270,7 +3270,8 @@ public final class SearchHelper {
      * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
      * 
      * @param facetQueries List of individual facet queries
-     * @param allowedQueries
+     * @param allFacetQueries
+     * @param allowedFacetQueries Optional list containing regexes for allowed facet queries
      * @return Expand query
      * @should return empty string if list null or empty
      * @should construct query correctly
@@ -3284,8 +3285,19 @@ public final class SearchHelper {
 
         StringBuilder sb = new StringBuilder();
         for (String q : allFacetQueries) {
-            if (q != null && q.length() > 0 && (allowedFacetQueries == null || allowedFacetQueries.isEmpty() || allowedFacetQueries.contains(q))) {
+            if (StringUtils.isBlank(q)) {
+                continue;
+            }
+            if (allowedFacetQueries == null || allowedFacetQueries.isEmpty()) {
                 sb.append(" +").append(q);
+            } else {
+                for (String allowedFacetQuery : allowedFacetQueries) {
+                    Pattern p = Pattern.compile(allowedFacetQuery);
+                    Matcher m = p.matcher(q);
+                    if (m.matches()) {
+                        sb.append(" +").append(q);
+                    }
+                }
             }
         }
         if (sb.length() > 0) {
