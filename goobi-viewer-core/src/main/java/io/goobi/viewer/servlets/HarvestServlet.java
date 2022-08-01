@@ -23,10 +23,10 @@ package io.goobi.viewer.servlets;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,7 +69,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(HarvestServlet.class);
 
-    // private HttpClient httpClient;
+    private static final String ERROR_DB = "Database error";
 
     /**
      * <p>
@@ -215,9 +215,13 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         JSONArray jsonArray = convertToJSON(count, cmsPages);
                         response.setContentType("application/json");
                         response.getWriter().write(jsonArray.toString());
-                    } catch (DAOException e) {
+                    } catch (IOException | DAOException e) {
                         logger.error(e.getMessage(), e);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        try {
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        } catch (IOException e1) {
+                            logger.error(e1.getMessage());
+                        }
                     }
                     return;
                 case "snoop_overviewpage":
@@ -225,11 +229,19 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     try {
                         // ?action=snoop_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
                         if (!DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates(identifier, null, fromDate, toDate)) {
-                            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                            try {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                            } catch (IOException e) {
+                                logger.error(e.getMessage());
+                            }
                         }
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+                        try {
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
+                        } catch (IOException e1) {
+                            logger.error(e1.getMessage());
+                        }
                     }
                     return;
                 case "get_overviewpage": {
@@ -256,7 +268,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
                         List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPagesForRecord(identifier, null);
                         if (pages.isEmpty()) {
-                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
+                            try {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND, "CMS pages not found");
+                            } catch (IOException e) {
+                                logger.error(e.getMessage());
+                            }
                             return;
                         }
                         try {
@@ -272,50 +288,72 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         fileName = FilenameUtils.getName(fileName); // Make sure identifier doesn't inject a path traversal
                         Path zipFile = Paths.get(localTempFolder.toAbsolutePath().toString(), fileName);
                         List<File> tempFiles = new ArrayList<>(pages.size() * 2);
-                        for (CMSPage page : pages) {
-                            tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
+                        try {
+                            for (CMSPage page : pages) {
+                                tempFiles.addAll(page.exportTexts(localTempFolder.toAbsolutePath().toString(), fileName));
+                            }
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                            try {
+                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                            } catch (IOException e1) {
+                                logger.error(e1.getMessage());
+                            }
+                            return;
                         }
 
                         if (tempFiles.isEmpty()) {
-                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No content found");
+                            try {
+                                response.sendError(HttpServletResponse.SC_NOT_FOUND, "No content found");
+                            } catch (IOException e1) {
+                                logger.error(e1.getMessage());
+                            }
                             return;
                         }
 
                         // Compress to a ZIP
-                        FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
-                        if (Files.isRegularFile(zipFile)) {
-                            String now = LocalDateTime.now().format(DateTools.formatterISO8601BasicDateTime);
-                            response.setContentType("application/zip");
-                            response.setHeader("Content-Disposition",
-                                    new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
-                            response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
-                            response.flushBuffer();
-                            OutputStream os = response.getOutputStream();
-                            try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
-                                byte[] buffer = new byte[1024];
-                                int bytesRead = 0;
-                                while ((bytesRead = fis.read(buffer)) != -1) {
-                                    os.write(buffer, 0, bytesRead);
+                        try {
+                            FileTools.compressZipFile(tempFiles, zipFile.toFile(), 9);
+                            if (Files.isRegularFile(zipFile)) {
+                                String now = LocalDateTime.now().format(DateTools.formatterISO8601BasicDateTime);
+                                response.setContentType("application/zip");
+                                response.setHeader("Content-Disposition",
+                                        new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
+
+                                response.setHeader("Content-Length", String.valueOf(Files.size(zipFile)));
+                                response.flushBuffer();
+                                OutputStream os = response.getOutputStream();
+                                try (FileInputStream fis = new FileInputStream(zipFile.toFile())) {
+                                    byte[] buffer = new byte[1024];
+                                    int bytesRead = 0;
+                                    while ((bytesRead = fis.read(buffer)) != -1) {
+                                        os.write(buffer, 0, bytesRead);
+                                    }
                                 }
                             }
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                            try {
+                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                            } catch (IOException e1) {
+                                logger.error(e1.getMessage());
+                            }
                         }
+
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
-                        try {                            
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
-                        } catch(IOException e1) {
-                            //ignore
-                        }
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                        try {                            
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                        } catch(IOException e1) {
-                            //ignore
+                        try {
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
+                        } catch (IOException e1) {
+                            logger.error(e1.getMessage());
                         }
                     } finally {
                         if (localTempFolder != null && Files.isDirectory(localTempFolder)) {
-                            FileUtils.deleteDirectory(localTempFolder.toFile());
+                            try {
+                                FileUtils.deleteDirectory(localTempFolder.toFile());
+                            } catch (IOException e1) {
+                                logger.error(e1.getMessage());
+                            }
                         }
                     }
                 }
@@ -323,11 +361,19 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 case "dl_update":
                     // http://localhost:8080/viewer/harvest?&action=dl_update&identifier=7062b2225caf97a5e80f91f647f66b95&status=READY
                     if (StringUtils.isEmpty(identifier)) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier required");
+                        try {
+                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier required");
+                        } catch (IOException e1) {
+                            logger.error(e1.getMessage());
+                        }
                         return;
                     }
                     if (StringUtils.isEmpty(status)) {
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "status required");
+                        try {
+                            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "status required");
+                        } catch (IOException e1) {
+                            logger.error(e1.getMessage());
+                        }
                         return;
                     }
                     try {
@@ -364,27 +410,44 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                     job.setLastRequested(LocalDateTime.now());
                                     if (JobStatus.ERROR.equals(djStatus) || JobStatus.READY.equals(djStatus)) {
                                         // Send out the word
-                                        job.notifyObservers(djStatus, message);
-                                        job.resetObservers();
+                                        try {
+                                            job.notifyObservers(djStatus, message);
+                                            job.resetObservers();
+                                        } catch (UnsupportedEncodingException e) {
+                                            logger.error(e.getMessage());
+                                        }
                                     }
                                 } catch (MessagingException e) {
                                     logger.error(e.getMessage(), e);
                                 } finally {
-                                    if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
-                                        try {
-                                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                        } catch (IOException e) {
-                                            logger.error(e.getMessage());
+                                    try {
+                                        if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
+                                            try {
+                                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                            } catch (IOException e) {
+                                                logger.error(e.getMessage());
+                                            }
+                                        } else {
+                                            logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
                                         }
-                                    } else {
-                                        logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
+                                    } catch (DAOException e) {
+                                        logger.error(e.getMessage(), e);
+                                        try {
+                                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
+                                        } catch (IOException e1) {
+                                            logger.error(e1.getMessage());
+                                        }
                                     }
                                 }
                             }
                         }
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
+                        try {
+                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ERROR_DB);
+                        } catch (IOException e1) {
+                            logger.error(e1.getMessage());
+                        }
                     }
                     return;
                 // Redirect crowdsourcing requests to
@@ -397,11 +460,19 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     }
                     String forward = contextPath + "/csharvest?" + request.getQueryString();
                     logger.trace("Redirecting to {}", forward);
-                    response.sendRedirect(forward);
+                    try {
+                        response.sendRedirect(forward);
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
                 }
                     return;
                 default:
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
+                    try {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown action: " + action);
+                    } catch (IOException e1) {
+                        logger.error(e1.getMessage());
+                    }
                     return;
             }
         }
@@ -411,12 +482,6 @@ public class HarvestServlet extends HttpServlet implements Serializable {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
     }
 
     /**

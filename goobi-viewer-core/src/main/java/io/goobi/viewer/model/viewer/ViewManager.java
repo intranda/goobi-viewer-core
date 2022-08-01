@@ -98,6 +98,8 @@ import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TOC;
@@ -173,6 +175,8 @@ public class ViewManager implements Serializable {
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
+    private CopyrightIndicatorStatus copyrightIndicatorStatus = null;
+    private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
 
     /**
      * <p>
@@ -187,11 +191,9 @@ public class ViewManager implements Serializable {
      * @param imageDeliveryBean a {@link io.goobi.viewer.managedbeans.ImageDeliveryBean} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws ViewerConfigurationException
-     * @throws DAOException
      */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mimeType,
-            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+            ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topStructElement = topDocument;
         this.topStructElementIddoc = topDocument.getLuceneId();
@@ -4032,4 +4034,46 @@ public class ViewManager implements Serializable {
         return IntStream.range(firstPage, lastPage + 1).boxed().collect(Collectors.toList());
     }
 
+    /**
+     * 
+     * @return copyrightIndicatorStatus
+     */
+    public CopyrightIndicatorStatus getCopyrightIndicatorStatus() {
+        if (copyrightIndicatorStatus == null) {
+            String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
+            if (StringUtils.isNotEmpty(field)) {
+                String value = topStructElement.getMetadataValue(field);
+                if (StringUtils.isNotEmpty(value)) {
+                    copyrightIndicatorStatus = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
+                }
+            }
+            // Default
+            if (copyrightIndicatorStatus == null) {
+                copyrightIndicatorStatus = CopyrightIndicatorStatus.OPEN;
+            }
+        }
+
+        return copyrightIndicatorStatus;
+    }
+
+    /**
+     * @return the copyrightIndicatorLicense
+     */
+    public CopyrightIndicatorLicense getCopyrightIndicatorLicense() {
+        if (copyrightIndicatorLicense == null) {
+            String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseField();
+            if (StringUtils.isNotEmpty(field)) {
+                String value = topStructElement.getMetadataValue(field);
+                if (StringUtils.isNotEmpty(value)) {
+                    copyrightIndicatorLicense = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseForValue(value);
+                }
+            }
+            // Default
+            if (copyrightIndicatorLicense == null) {
+                copyrightIndicatorLicense = new CopyrightIndicatorLicense("", "no.svg");
+            }
+        }
+
+        return copyrightIndicatorLicense;
+    }
 }

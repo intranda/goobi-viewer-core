@@ -53,6 +53,8 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
@@ -3236,4 +3238,67 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("(FACET_DC:\"foo\" OR FACET_DC:foo.*)", result.get(0));
         Assert.assertEquals("(FACET_DC:\"bar\" OR FACET_DC:bar.*)", result.get(1));
     }
+
+    /**
+     * @see Configuration#isCopyrightIndicatorEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isCopyrightIndicatorEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled());
+    }
+
+    /**
+     * @see Configuration#getCopyrightIndicatorStyle()
+     * @verifies return correct value
+     */
+    @Test
+    public void getCopyrightIndicatorStyle_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("trafficlight", DataManager.getInstance().getConfiguration().getCopyrightIndicatorStyle());
+    }
+
+    /**
+     * @see Configuration#getCopyrightIndicatorStatusField()
+     * @verifies return correct value
+     */
+    @Test
+    public void getCopyrightIndicatorStatusField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_ACCESSCONDITION", DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField());
+    }
+
+    /**
+     * @see Configuration#getCopyrightIndicatorStatusForValue(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCopyrightIndicatorStatusForValue_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(CopyrightIndicatorStatus.OPEN,
+                DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Freier Zugang"));
+        Assert.assertEquals(CopyrightIndicatorStatus.PARTIAL,
+                DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Eingeschränker Zugang"));
+        Assert.assertEquals(CopyrightIndicatorStatus.LOCKED,
+                DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Gesperrter Zugang"));
+    }
+
+    /**
+     * @see Configuration#getCopyrightIndicatorLicenseField()
+     * @verifies return correct value
+     */
+    @Test
+    public void getCopyrightIndicatorLicenseField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_ACCESSCONDITIONCOPYRIGHT", DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseField());
+    }
+
+    /**
+     * @see Configuration#getCopyrightIndicatorLicenseForValue(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getCopyrightIndicatorLicenseForValue_shouldReturnCorrectValue() throws Exception {
+        CopyrightIndicatorLicense result = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseForValue("VGWORT");
+        Assert.assertNotNull(result);
+        Assert.assertEquals("COPYRIGHT_DESCRIPTION_VGWORT", result.getDescription());
+        Assert.assertEquals("paragraph50.svg", result.getIcon());
+    }
+
 }
