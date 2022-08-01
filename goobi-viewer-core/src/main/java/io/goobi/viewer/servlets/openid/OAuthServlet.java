@@ -184,12 +184,7 @@ public class OAuthServlet extends HttpServlet {
                         .setRedirectURI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/" + URL)
                         .setCode(oar.getCode())
                         .buildBodyMessage();
-                try {
-                    return doGoogle(provider, oAuthTokenRequest, request, response);
-                } catch (OAuthSystemException | OAuthProblemException e) {
-                    logger.error(e.getMessage(), e);
-                    return false;
-                }
+                return doGoogle(provider, oAuthTokenRequest, request, response);
             case "facebook":
                 oAuthTokenRequest = OAuthClientRequest.tokenProvider(OAuthProviderType.FACEBOOK)
                         .setGrantType(GrantType.AUTHORIZATION_CODE)
@@ -226,25 +221,37 @@ public class OAuthServlet extends HttpServlet {
 
     }
 
-    static boolean doGoogle(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request,
-            HttpServletResponse response) throws OAuthSystemException, OAuthProblemException {
+    /**
+     * 
+     * @param provider
+     * @param oAuthTokenRequest
+     * @param request
+     * @param response
+     * @return
+     */
+    static boolean doGoogle(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request, HttpServletResponse response) {
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-        OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
-        if (oAuthTokenResponse != null) {
-            TokenValidator tv = new TokenValidator();
-            tv.validate(oAuthTokenResponse);
-            provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
-            String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
-            String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
-            if (idTokenEncodedSplit.length != 3) {
-                logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
-                return false;
+        try {
+            OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
+            if (oAuthTokenResponse != null) {
+                TokenValidator tv = new TokenValidator();
+                tv.validate(oAuthTokenResponse);
+                provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
+                String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
+                String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
+                if (idTokenEncodedSplit.length != 3) {
+                    logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
+                    return false;
+                }
+                String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
+                JSONTokener tokener = new JSONTokener(payload);
+                JSONObject jsonPayload = new JSONObject(tokener);
+                redirected = provider.completeLogin(jsonPayload, request, response);
+                return true;
             }
-            String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
-            JSONTokener tokener = new JSONTokener(payload);
-            JSONObject jsonPayload = new JSONObject(tokener);
-            redirected = provider.completeLogin(jsonPayload, request, response);
-            return true;
+        } catch (OAuthSystemException | OAuthProblemException e) {
+            logger.error(e.getMessage(), e);
+            return false;
         }
 
         return false;
@@ -261,27 +268,31 @@ public class OAuthServlet extends HttpServlet {
      * @throws OAuthProblemException
      */
     static boolean doTheFaceBook(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request,
-            HttpServletResponse response) throws OAuthSystemException, OAuthProblemException {
-
+            HttpServletResponse response) {
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-        OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest, GitHubTokenResponse.class);
-        if (oAuthTokenResponse != null) {
-            TokenValidator tv = new TokenValidator();
-            tv.validate(oAuthTokenResponse);
-            provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
+        try {
+            OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest, GitHubTokenResponse.class);
+            if (oAuthTokenResponse != null) {
+                TokenValidator tv = new TokenValidator();
+                tv.validate(oAuthTokenResponse);
+                provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
 
-            // Retrieve resources
-            OAuthClientRequest bearerClientRequest =
-                    new OAuthBearerClientRequest("https://graph.facebook.com/me").setAccessToken(oAuthTokenResponse.getAccessToken())
-                            .buildQueryMessage();
-            OAuthResourceResponse resourceResponse =
-                    oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
-            if (resourceResponse != null) {
-                JSONTokener tokener = new JSONTokener(resourceResponse.getBody());
-                JSONObject jsonProfile = new JSONObject(tokener);
-                redirected = provider.completeLogin(jsonProfile, request, response);
-                return true;
+                // Retrieve resources
+                OAuthClientRequest bearerClientRequest =
+                        new OAuthBearerClientRequest("https://graph.facebook.com/me").setAccessToken(oAuthTokenResponse.getAccessToken())
+                                .buildQueryMessage();
+                OAuthResourceResponse resourceResponse =
+                        oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
+                if (resourceResponse != null) {
+                    JSONTokener tokener = new JSONTokener(resourceResponse.getBody());
+                    JSONObject jsonProfile = new JSONObject(tokener);
+                    redirected = provider.completeLogin(jsonProfile, request, response);
+                    return true;
+                }
             }
+        } catch (OAuthSystemException | OAuthProblemException e) {
+            logger.error(e.getMessage(), e);
+            return false;
         }
 
         return false;
