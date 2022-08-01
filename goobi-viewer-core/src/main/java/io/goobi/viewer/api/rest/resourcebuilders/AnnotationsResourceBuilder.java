@@ -71,10 +71,9 @@ public class AnnotationsResourceBuilder {
     private final OpenAnnotationBuilder oaBuilder;
     private final AnnotationConverter converter;
 
+    private static final Logger logger = LoggerFactory.getLogger(AnnotationsResourceBuilder.class);
 
-    private final static Logger logger = LoggerFactory.getLogger(AnnotationsResourceBuilder.class);
-
-    private final static int MAX_ANNOTATIONS_PER_PAGE = 100;
+    private static final int MAX_ANNOTATIONS_PER_PAGE = 100;
 
     /**
      * Default constructor
@@ -98,18 +97,19 @@ public class AnnotationsResourceBuilder {
         long count = waBuilder.getAnnotationCount(request);
         URI uri = URI.create(urls.path(ANNOTATIONS).build());
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, count);
-        AnnotationCollection collection = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
-        return collection;
+        return builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildCollection();
     }
 
-    public AnnotationPage getWebAnnotationPage(Integer page) throws IllegalRequestException, PresentationException, IndexUnreachableException, DAOException {
+    public AnnotationPage getWebAnnotationPage(Integer page) throws IllegalRequestException, DAOException {
         if (page == null || page < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
         int first = (page - 1) * MAX_ANNOTATIONS_PER_PAGE;
         String sortField = "id";
 
-        List<IAnnotation> annotations = DataManager.getInstance().getDao().getAnnotations(0, Integer.MAX_VALUE, sortField, false, null)
+        List<IAnnotation> annotations = DataManager.getInstance()
+                .getDao()
+                .getAnnotations(0, Integer.MAX_VALUE, sortField, false, null)
                 .stream()
                 .filter(anno -> isAccessible(anno, request))
                 .skip(first)
@@ -119,8 +119,7 @@ public class AnnotationsResourceBuilder {
 
         URI uri = URI.create(urls.path(ANNOTATIONS).build());
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, annotations.size());
-        AnnotationPage annoPage = builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annotations, page);
-        return annoPage;
+        return builder.setItemsPerPage(MAX_ANNOTATIONS_PER_PAGE).buildPage(annotations, page);
     }
 
     /**
@@ -130,19 +129,17 @@ public class AnnotationsResourceBuilder {
      */
     private boolean isAccessible(CrowdsourcingAnnotation anno, HttpServletRequest request) {
 
-        if(StringUtils.isBlank(anno.getAccessCondition()) ||  anno.getAccessCondition().equals(SolrConstants.OPEN_ACCESS_VALUE)) {
+        if (StringUtils.isBlank(anno.getAccessCondition()) || anno.getAccessCondition().equals(SolrConstants.OPEN_ACCESS_VALUE)) {
             return true;
-        } else {
-            try {
-                return AccessConditionUtils.checkAccessPermission(Collections.singleton(anno.getAccessCondition()),
-                        IPrivilegeHolder.PRIV_VIEW_UGC, waBuilder.getAnnotationQuery(anno.getId()), request);
-            } catch (IndexUnreachableException | PresentationException | DAOException e) {
-                logger.error("Error ckecking access conditions for annotation " + anno.getId() + ": " + e.toString());
-                return false;
-            }
+        }
+        try {
+            return AccessConditionUtils.checkAccessPermission(Collections.singleton(anno.getAccessCondition()),
+                    IPrivilegeHolder.PRIV_VIEW_UGC, waBuilder.getAnnotationQuery(anno.getId()), request).isGranted();
+        } catch (IndexUnreachableException | PresentationException | DAOException e) {
+            logger.error("Error ckecking access conditions for annotation {}: {}", anno.getId(), e.toString());
+            return false;
         }
     }
-
 
     /**
      * @param pi
@@ -222,8 +219,7 @@ public class AnnotationsResourceBuilder {
         }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(converter::getAsWebAnnotation).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.setItemsPerPage(annos.size()).buildPage(annos, page);
-        return annoPage;
+        return builder.setItemsPerPage(annos.size()).buildPage(annos, page);
     }
 
     public AnnotationPage getWebAnnotationPageForPage(String pi, Integer pageNo, URI uri, Integer page) throws DAOException, IllegalRequestException {
@@ -236,8 +232,7 @@ public class AnnotationsResourceBuilder {
         }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         List<IAnnotation> annos = data.stream().map(converter::getAsWebAnnotation).collect(Collectors.toList());
-        AnnotationPage annoPage = builder.setItemsPerPage(annos.size()).buildPage(annos, page);
-        return annoPage;
+        return builder.setItemsPerPage(annos.size()).buildPage(annos, page);
     }
 
     /**
@@ -251,7 +246,7 @@ public class AnnotationsResourceBuilder {
 
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
         AnnotationCollection collection = builder.setItemsPerPage(data.size()).buildCollection();
-        if (data.size() > 0) {
+        if (!data.isEmpty()) {
             try {
                 collection.setFirst(getWebAnnotationPageForRecordComments(pi, uri, 1));
             } catch (IllegalRequestException e) {
@@ -270,14 +265,12 @@ public class AnnotationsResourceBuilder {
             throw new IllegalRequestException("Page number is out of bounds");
         }
         AnnotationCollectionBuilder builder = new AnnotationCollectionBuilder(uri, data.size());
-        AnnotationPage annoPage = builder.setItemsPerPage(data.size())
+        return builder.setItemsPerPage(data.size())
                 .buildPage(
                         data.stream()
                                 .map(converter::getAsWebAnnotation)
                                 .collect(Collectors.toList()),
                         page);
-
-        return annoPage;
     }
 
     public AnnotationList getOAnnotationListForRecordComments(String pi, URI uri) throws DAOException {
@@ -296,18 +289,16 @@ public class AnnotationsResourceBuilder {
         return list;
     }
 
-    public AnnotationPage getWebAnnotationPageForPageComments(String pi, Integer pageNo, URI uri)
-            throws DAOException, IllegalRequestException {
+    public AnnotationPage getWebAnnotationPageForPageComments(String pi, Integer pageNo, URI uri) throws DAOException {
         List<Comment> data = DataManager.getInstance().getDao().getCommentsForPage(pi, pageNo);
         AnnotationPage page = new AnnotationPage(uri);
         data.stream()
-        .map(converter::getAsOpenAnnotation)
-        .collect(Collectors.toList())
-        .forEach(c -> page.addItem(c));
+                .map(converter::getAsOpenAnnotation)
+                .collect(Collectors.toList())
+                .forEach(c -> page.addItem(c));
 
         return page;
     }
-
 
     /**
      * @param id

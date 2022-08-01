@@ -21,37 +21,47 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.user.IpRange;
-import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.controller.BCrypt;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * This class describes license types for record access conditions and also system user roles (not to be confused with the class Role, however), also
  * known as core license types.
  */
-// @Entity
-// @Table(name = "download_tickets")
-public class DownloadTicket {
+@Entity
+@Table(name = "download_tickets")
+public class DownloadTicket implements Serializable {
+
+    private static final long serialVersionUID = -4208299894404324724L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(DownloadTicket.class);
 
-    private static final int VALIDITY_DAYS = 14;
+    /** Default validity for a ticket in days. */
+    public static final int VALIDITY_DAYS = 30;
+    /** Static salt for password hashes. */
+    public static final String SALT = "$2a$10$H580saN37o2P03A5myUCm.";
+    /** Random object for password generation. */
+    private static final Random random = new SecureRandom();
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "download_ticket_id")
     private Long id;
@@ -59,11 +69,17 @@ public class DownloadTicket {
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
-    @Column(name = "date_created", nullable = false)
-    private LocalDateTime dateStart;
+    @Column(name = "expiration_date")
+    private LocalDateTime expirationDate;
 
-    @Column(name = "license_name", nullable = false)
-    private String licenseName;
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Transient
+    private transient String password;
+
+    @Column(name = "password_hash")
+    private String passwordHash;
 
     @Column(name = "pi", nullable = false)
     private String pi;
@@ -71,40 +87,102 @@ public class DownloadTicket {
     @Column(name = "title")
     private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "user_group_id")
-    private UserGroup userGroup;
-
-    @ManyToOne
-    @JoinColumn(name = "ip_range_id")
-    private IpRange ipRange;
-
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private ClientApplication client;
-
-    @Column(name = "request_message")
+    @Column(name = "request_message", columnDefinition = "MEDIUMTEXT")
     private String requestMessage;
 
+    @Transient
+    private transient BCrypt bcrypt = new BCrypt();
+
     /**
-     * Empty constructor.
+     * Zero argument constructor.
      */
     public DownloadTicket() {
-        super();
+        dateCreated = LocalDateTime.now();
     }
 
-    public boolean isValid() {
-        // TODO
-        
-        return false;
+    /**
+     * 
+     * @return
+     * @should return true if ticket active
+     */
+    public boolean isActive() {
+        return !isRequest() && !isExpired();
     }
 
-    public void extend(int days) {
-        // TODO
+    /**
+     * 
+     * @return true if expiration date is in the past; false otherwise
+     * @should return true if expiration date before now
+     * @should return false if expiration date after now
+     */
+    public boolean isExpired() {
+        return expirationDate != null && expirationDate.isBefore(LocalDateTime.now());
+    }
+
+    /**
+     * 
+     * @return true if ticket is requested but not yet issued; false otherwise
+     */
+    public boolean isRequest() {
+        return StringUtils.isEmpty(passwordHash);
+    }
+
+    /**
+     * 
+     * @param password Password to check
+     * @return true if password correct; false otherwise
+     * @should check password correctly
+     */
+    public boolean checkPassword(String password) {
+        if (StringUtils.isEmpty(password)) {
+            return false;
+        }
+
+        return BCrypt.checkPassword(password, passwordHash);
+    }
+
+    /**
+     * Sets the dates.
+     */
+    public void activate() {
+        if (passwordHash == null) {
+            password = StringTools.generateHash("xxx" + random.nextInt()).substring(0, 12);
+            passwordHash = BCrypt.hashpw(password, SALT);
+        }
+        expirationDate = LocalDateTime.now().plusDays(VALIDITY_DAYS);
+    }
+
+    /**
+     * Extends the ticket by another <code>days</code> days.
+     * 
+     * @param days Number of days to extend
+     */
+    public void extend(long days) {
+        if (days <= 0) {
+            throw new IllegalArgumentException("days must be a number greater than 0");
+        }
+
+        if (expirationDate != null) {
+            expirationDate = expirationDate.plusDays(days);
+        } else {
+            expirationDate = LocalDateTime.now().plusDays(days);
+        }
+    }
+
+    /**
+     * Resets the ticket's password and expiration date.
+     */
+    public void reset() {
+        passwordHash = null;
+        activate();
+    }
+
+    /**
+     * 
+     * @return <code>VALIDITY_DAYS</code>
+     */
+    public String getDefaultValidityAsString() {
+        return String.valueOf(VALIDITY_DAYS);
     }
 
     /**
@@ -144,31 +222,17 @@ public class DownloadTicket {
     }
 
     /**
-     * @return the dateStart
+     * @return the expirationDate
      */
-    public LocalDateTime getDateStart() {
-        return dateStart;
+    public LocalDateTime getExpirationDate() {
+        return expirationDate;
     }
 
     /**
-     * @param dateStart the dateStart to set
+     * @param expirationDate the expirationDate to set
      */
-    public void setDateStart(LocalDateTime dateStart) {
-        this.dateStart = dateStart;
-    }
-
-    /**
-     * @return the licenseName
-     */
-    public String getLicenseName() {
-        return licenseName;
-    }
-
-    /**
-     * @param licenseName the licenseName to set
-     */
-    public void setLicenseName(String licenseName) {
-        this.licenseName = licenseName;
+    public void setExpirationDate(LocalDateTime expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     /**
@@ -186,6 +250,48 @@ public class DownloadTicket {
     }
 
     /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @return the passwordHash
+     */
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    /**
+     * @param passwordHash the passwordHash to set
+     */
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    /**
      * @return the title
      */
     public String getTitle() {
@@ -197,62 +303,6 @@ public class DownloadTicket {
      */
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * @return the user
-     */
-    public User getUser() {
-        return user;
-    }
-
-    /**
-     * @param user the user to set
-     */
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    /**
-     * @return the userGroup
-     */
-    public UserGroup getUserGroup() {
-        return userGroup;
-    }
-
-    /**
-     * @param userGroup the userGroup to set
-     */
-    public void setUserGroup(UserGroup userGroup) {
-        this.userGroup = userGroup;
-    }
-
-    /**
-     * @return the ipRange
-     */
-    public IpRange getIpRange() {
-        return ipRange;
-    }
-
-    /**
-     * @param ipRange the ipRange to set
-     */
-    public void setIpRange(IpRange ipRange) {
-        this.ipRange = ipRange;
-    }
-
-    /**
-     * @return the client
-     */
-    public ClientApplication getClient() {
-        return client;
-    }
-
-    /**
-     * @param client the client to set
-     */
-    public void setClient(ClientApplication client) {
-        this.client = client;
     }
 
     /**

@@ -20,7 +20,7 @@
             <!-- ACCESS GRANTED -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
                 <div class="born-digital__box">
-                <div class="born-digital__head-wrapper">
+                    <div class="born-digital__head-wrapper">
                 		<div class="born-digital__head">
                 			<span>#{msg.label__born_digital__filename}</span>
                 		</div>
@@ -36,12 +36,12 @@
                 		<div class="born-digital__head"><span aria-hidden="true" class="born-digital__item__download btn btn--full born-digital__item-download-dummy">#{msg.action__born_digital__download}</span></div>
                 	</div>
                     <ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
-                    <div class="born-digital__items-wrapper"> 
+                        <div class="born-digital__items-wrapper"> 
 	                		<div class="born-digital__head-mobile">
 	                			<span>#{msg.label__born_digital__filename}</span>
 	                		</div>
 	                        <div class="born-digital__item">
-	                       		<a class="born-digital__item__download" href="#{page.url}">#{page.fileName}</a>
+	                       		<span>#{page.fileName}</span>
 	                        </div>
 	                		<div class="born-digital__head-mobile">
 	                			<span>#{msg.label__born_digital__filedescription}</span>
@@ -60,9 +60,17 @@
 	                        	<span>#{msg[page.mimeType]}</span>
 	                        </div>
 	                        <div class="born-digital__item">
-	                        	<a class="born-digital__item-download btn btn--full" href="#{page.url}">#{msg.action__born_digital__download}</a>
-	                      	 </div>
-	                </div>
+	                            <!-- Ticket required for download -->
+                                <ui:fragment rendered="#{page.bornDigitalDownloadTicketRequired}">
+                                    <button class="btn btn--full" data-toggle="modal"
+                                        data-target="#downloadTicketModal">#{msg.action__born_digital__unlock}</button>
+                                </ui:fragment>
+                                <!-- Download allowed -->
+	                            <ui:fragment rendered="#{!page.bornDigitalDownloadTicketRequired}">
+	                      	        <a class="born-digital__item__download btn btn--full" href="#{page.url}">#{msg.action__born_digital__download}</a>
+	                      	    </ui:fragment>
+	                        </div>
+	                    </div>
                     </ui:repeat>
                 </div>
             </ui:fragment>

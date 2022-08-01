@@ -114,7 +114,7 @@ public class MetsResolver extends HttpServlet {
 
             // If the user has no listing privilege for this record, act as if it does not exist
             boolean access =
-                    AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request);
+                    AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
             if (!access) {
                 logger.debug("User may not download metadata for {}", id);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);

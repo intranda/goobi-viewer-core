@@ -2182,7 +2182,7 @@ public class ViewManager implements Serializable {
     public boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request);
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, privilege, request).isGranted();
         } catch (RecordNotFoundException e) {
             return false;
         }
@@ -2585,10 +2585,11 @@ public class ViewManager implements Serializable {
         boolean access;
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                    BeanUtils.getRequest());
+                    BeanUtils.getRequest()).isGranted();
         } catch (RecordNotFoundException e) {
             return false;
         }
+
         return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork());
     }
 
@@ -2605,7 +2606,7 @@ public class ViewManager implements Serializable {
         }
 
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_IMAGES,
-                BeanUtils.getRequest());
+                BeanUtils.getRequest()).isGranted();
     }
 
     /**
@@ -2626,7 +2627,7 @@ public class ViewManager implements Serializable {
         boolean access;
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                    BeanUtils.getRequest());
+                    BeanUtils.getRequest()).isGranted();
             return access && (!isBelowFulltextThreshold(0.0001) || isAltoAvailableForWork() || isWorkHasTEIFiles());
         } catch (RecordNotFoundException e) {
             return false;
@@ -2693,7 +2694,7 @@ public class ViewManager implements Serializable {
         boolean access;
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                    BeanUtils.getRequest());
+                    BeanUtils.getRequest()).isGranted();
         } catch (RecordNotFoundException e) {
             return false;
         }
@@ -2850,7 +2851,7 @@ public class ViewManager implements Serializable {
         //        if (this.downloadFilenames == null) {
         Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
         if (Files.exists(sourceFileDir) && AccessConditionUtils.checkContentFileAccessPermission(pi,
-                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
+                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted()) {
             String hideDownloadFilesRegex = DataManager.getInstance().getConfiguration().getHideDownloadFileRegex();
             try (Stream<Path> files = Files.list(sourceFileDir)) {
                 Stream<String> filenames = files.map(path -> path.getFileName().toString());
@@ -3475,7 +3476,7 @@ public class ViewManager implements Serializable {
      */
     @Deprecated
     public String getMainMimeType() {
-        return mimeType;
+        return getMimeType();
     }
 
     /**
@@ -3485,7 +3486,7 @@ public class ViewManager implements Serializable {
      *
      * @return the mimeType
      */
-    public String getmimeType() {
+    public String getMimeType() {
         return mimeType;
     }
 

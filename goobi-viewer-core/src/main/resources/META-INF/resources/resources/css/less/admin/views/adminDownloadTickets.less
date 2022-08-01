@@ -1,0 +1,122 @@
+/* ==============================================================
+   Admin Rights
+   style declarations for adminRights.xhtml
+   ==============================================================*/
+/* ADMIN RIGHTS */
+
+.admin {
+	.admin__download-tickets {
+		&-heading {
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+	}
+}
+
+.admin__download-tickets {
+	&-dashboard-row {
+		display: grid;
+		grid-template-columns: minmax(89px, 1fr) 4fr;
+		padding: 10px 20px;
+	}
+	&-dashboard-row-key {
+		font-weight: 600;
+	}
+	&-dashboard-row-value {
+	}
+	&-pending-tickets-wrapper {
+		display: grid;
+		grid-auto-rows: auto;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 25px 25px;
+		grid-template-areas: ". . .";
+	}
+	&-pending-ticket-single {
+		// min-height: 220px;
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 0;
+		padding-bottom: 2rem;
+	}
+	&-pending-ticket-title-wrapper {
+		margin-bottom: 15px;
+	}
+	&-pending-ticket-key-value-wrapper {
+		display: flex;
+		margin-bottom: 1rem;
+	}
+	&-pending-ticket-key {
+		flex: 0 0 140px;
+		max-width: 140px;
+		font-weight: 700;
+	}
+	&-pending-ticket-value {
+		
+	}
+	&-pending-ticket-actions {
+		margin-top: auto;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 20px;
+		flex-wrap: wrap;
+		button {
+			flex-grow: 1;
+		}
+	}
+	&-pending-ticket-value {
+		word-wrap: anywhere;
+	}
+	&-pending-ticket-value-message-wrapper {
+		position: relative;
+		width: 100%;
+	}
+	&-pending-ticket-value-message {
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;  
+		overflow: hidden;
+		position: relative;
+		padding-right: 14px;
+		&.-unfoldable {
+			cursor: pointer;
+		}
+		&.-unfolded {
+		  display: block;
+		  -webkit-line-clamp: unset;
+		  -webkit-box-orient: unset;  
+		  overflow: unset;
+			cursor: default;
+		}
+	}
+	&-pending-ticket-unfold-button {
+		display: none;
+		position: absolute;
+		right: 0;
+		bottom: -5px;
+		font-size: 20px;
+		cursor: pointer;
+	}
+	&-active-tickets-table-wrapper {
+		// margin-top: 40px;
+	}
+	&-pending-ticket-value-invis-message {
+		display: inline;
+		opacity: 0;
+		visibility: hidden;
+		position: absolute;
+		z-index: -1;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

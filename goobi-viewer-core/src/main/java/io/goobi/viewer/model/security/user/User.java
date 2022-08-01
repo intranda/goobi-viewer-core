@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -80,11 +81,11 @@ import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
@@ -171,9 +172,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Column(name = "agreed_to_terms_of_use")
     private boolean agreedToTermsOfUse = false;
 
-    //    @Column(name = "dummy")
-    //    private boolean dummy = false;
-
     /** List contains both old style OpenID 2.0 identifiers and OAuth subs. */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "openid_accounts", joinColumns = @JoinColumn(name = "user_id"))
@@ -186,15 +184,15 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
-    private Set<String> recordsForWhichUserMaySetRepresentativeImage = new HashSet<>();
+    private Map<String, AccessPermission> recordsForWhichUserMaySetRepresentativeImage = new HashMap<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
-    private Set<String> recordsForWhichUserMayEditOverviewPage = new HashSet<>();
+    private Map<String, AccessPermission> recordsForWhichUserMayEditOverviewPage = new HashMap<>();
 
     /** Save previous checks to avoid expensive Solr queries. */
     @Transient
-    private Set<String> recordsForWhichUserMayDeleteOcrPage = new HashSet<>();
+    private Map<String, AccessPermission> recordsForWhichUserMayDeleteOcrPage = new HashMap<>();
 
     @Transient
     private User copy;
@@ -325,21 +323,22 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
+    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
         // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
+        // No privilege name given
         if (StringUtils.isEmpty(privilegeName)) {
-            return true;
+            return AccessPermission.granted();
         }
         for (License license : getLicenses()) {
-            // logger.trace("license: {}, {}", license.getId(),
-            // license.getPrivileges().toString());
-            // logger.trace("license type: {}", license.getLicenseType().getName());
             if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
-                // TODO why not do this check right at the beginning?
-                if (license.getPrivileges().contains(privilegeName) || license.getLicenseType().getPrivileges().contains(privilegeName)) {
+                // LicenseType grants privilege
+                if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
+                    return AccessPermission.granted();
+                }
+                // License grants privilege
+                if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        // logger.trace("Permission found for user: {} ", id);
-                        return true;
+                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         StringBuilder sbQuery = new StringBuilder();
@@ -347,48 +346,15 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                         if (DataManager.getInstance()
                                 .getSearchIndex()
                                 .getFirstDoc(sbQuery.toString(), Collections.singletonList(SolrConstants.IDDOC)) != null) {
-                            logger.debug("Permission found for user: {} (query: {})", id, sbQuery.toString());
-                            return true;
+                            logger.trace("Permission found for user: {} (query: {})", id, sbQuery);
+                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
                         }
                     }
                 }
             }
         }
 
-        return false;
-    }
-
-    /**
-     * Checks whether the user has the role with the given name.
-     *
-     * @param roleName The role name to check.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean hasRole(String roleName) throws DAOException {
-        // return DataManager.getInstance().getConfiguration().getUserHasRole(roleName,
-        // getId());
-        Role role = DataManager.getInstance().getDao().getRole(roleName);
-        return !DataManager.getInstance().getDao().getUserRoles(null, this, role).isEmpty();
-    }
-
-    /**
-     * Checks whether the user has the given privilege directly.
-     *
-     * @param privilegeName a {@link java.lang.String} object.
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean hasUserPrivilege(String privilegeName) throws DAOException {
-        for (UserRole role : DataManager.getInstance().getDao().getUserRoles(null, this, null)) {
-            if (role.getRole().hasPrivilege(privilegeName)) {
-                return true;
-            }
-        }
-
-        return false;
+        return AccessPermission.denied();
     }
 
     /**
@@ -469,7 +435,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * Checks whether the user can satisfy at least one of the given access conditions with a license that contains the given privilege name. If one
      * of the conditions is OPENACCESS, true is always returned. Superusers always get access.
      *
-     * @param conditionList a {@link java.util.Set} object.
+     * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param privilegeName a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @should return true if user is superuser
@@ -477,50 +443,66 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @should return true if user has license
      * @should return false if user has no license
      * @should return true if condition list empty
-     * @return a boolean.
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
+    public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
             // logger.trace("User '{}' is superuser, access granted.", getDisplayName());
-            return true;
+            return AccessPermission.granted();
+        }
+        if (requiredAccessConditions.isEmpty()) {
+            return AccessPermission.granted();
         }
         // always allow access if the only condition is open access and there is no special license configured for it
-        if (conditionList.size() == 1 && conditionList.contains(SolrConstants.OPEN_ACCESS_VALUE)
+        if (requiredAccessConditions.size() == 1 && requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
                 && DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) == null) {
-            return true;
+            return AccessPermission.granted();
         }
 
-        Map<String, Boolean> permissionMap = new HashMap<>(conditionList.size());
-        for (String accessCondition : conditionList) {
-            permissionMap.put(accessCondition, false);
+        Map<String, AccessPermission> permissionMap = new HashMap<>(requiredAccessConditions.size());
+        for (String accessCondition : requiredAccessConditions) {
             // Check individual licenses
-            if (hasLicense(accessCondition, privilegeName, pi)) {
-                permissionMap.put(accessCondition, true);
+            AccessPermission access = hasLicense(accessCondition, privilegeName, pi);
+            if (access.isGranted()) {
+                permissionMap.put(accessCondition, access);
                 continue;
             }
             // Check group ownership licenses
             for (UserGroup group : getUserGroupOwnerships()) {
-                if (group.hasLicense(accessCondition, privilegeName, pi)) {
-                    permissionMap.put(accessCondition, true);
-                    continue;
+                access = group.hasLicense(accessCondition, privilegeName, pi);
+                if (access.isGranted()) {
+                    permissionMap.put(accessCondition, access);
+                    break;
                 }
             }
             // Check group membership licenses
             for (UserGroup group : getUserGroupsWithMembership()) {
-                if (group.hasLicense(accessCondition, privilegeName, pi)) {
-                    permissionMap.put(accessCondition, true);
+                access = group.hasLicense(accessCondition, privilegeName, pi);
+                if (access.isGranted()) {
+                    permissionMap.put(accessCondition, access);
+                    break;
                 }
             }
 
         }
-        // It should be sufficient if the user can satisfy one required licence
-        return permissionMap.isEmpty() || permissionMap.containsValue(true);
-        // return !permissionMap.containsValue(false);
+
+        // It should be sufficient if the user can satisfy one required license
+        if (!permissionMap.isEmpty()) {
+            // TODO Prefer license with ticket requirement?
+            for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
+                if (entry.getValue().isTicketRequired()) {
+                    return entry.getValue();
+                }
+            }
+            return AccessPermission.granted();
+        }
+
+        return AccessPermission.denied();
     }
 
     /** {@inheritDoc} */
@@ -542,7 +524,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     @Override
     public boolean removeLicense(License license) {
         if (license != null && licenses != null) {
-            // license.setUser(null);
             return licenses.remove(license);
         }
 
@@ -555,7 +536,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * </p>
      *
      * @param privilege a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -571,20 +552,21 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @param licenseType a {@link java.lang.String} object.
      * @param privilege a {@link java.lang.String} object.
-     * @return a boolean.
+     * @return boolean
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean isHasPrivilege(String licenseType, String privilege) throws PresentationException, IndexUnreachableException, DAOException {
-        return canSatisfyAllAccessConditions(Collections.singletonMap(licenseType, null).keySet(), privilege, null);
+    public boolean isHasPrivilege(String licenseType, String privilege)
+            throws PresentationException, IndexUnreachableException, DAOException {
+        return canSatisfyAllAccessConditions(Collections.singletonMap(licenseType, null).keySet(), privilege, null).isGranted();
     }
 
     /**
      * Checks whether this user has the permission to set the representative image for the currently open record. TODO For some reason this method is
      * called 8x in a row.
      *
-     * @return a boolean.
+     * @return boolean
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -621,18 +603,19 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      *
      * @param licenseType
      * @param privilegeName
-     * @param alreadyCheckedPiList
-     * @return
+     * @param alreadyCheckedPiMap
+     * @return boolean
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
-    private boolean isHasPrivilegeForCurrentRecord(String licenseType, String privilegeName, Set<String> alreadyCheckedPiList)
+    private boolean isHasPrivilegeForCurrentRecord(String licenseType, String privilegeName,
+            Map<String, AccessPermission> alreadyCheckedPiMap)
             throws IndexUnreachableException, PresentationException, DAOException {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null && adb.getViewManager() != null) {
             String pi = adb.getViewManager().getPi();
-            return isHasPrivilegeForRecord(pi, licenseType, privilegeName, alreadyCheckedPiList);
+            return isHasPrivilegeForRecord(pi, licenseType, privilegeName, alreadyCheckedPiMap).isGranted();
         }
 
         return false;
@@ -643,26 +626,28 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
      * @param pi
      * @param licenseType
      * @param privilegeName
-     * @param alreadyCheckedPiList
-     * @return
+     * @param alreadyCheckedPiMap
+     * @return {@link AccessPermission}
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
-    private boolean isHasPrivilegeForRecord(String pi, String licenseType, String privilegeName, Set<String> alreadyCheckedPiList)
+    private AccessPermission isHasPrivilegeForRecord(String pi, String licenseType, String privilegeName,
+            Map<String, AccessPermission> alreadyCheckedPiMap)
             throws PresentationException, IndexUnreachableException, DAOException {
-        if (alreadyCheckedPiList == null) {
-            alreadyCheckedPiList = new HashSet<>();
+        if (alreadyCheckedPiMap == null) {
+            alreadyCheckedPiMap = new HashMap<>();
         }
-        if (alreadyCheckedPiList.contains(pi)) {
-            return true;
+        if (alreadyCheckedPiMap.containsKey(pi)) {
+            return alreadyCheckedPiMap.get(pi);
         }
-        if (canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(licenseType)), privilegeName, pi)) {
-            alreadyCheckedPiList.add(pi);
-            return true;
+        AccessPermission access = canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(licenseType)), privilegeName, pi);
+        if (access.isGranted()) {
+            alreadyCheckedPiMap.put(pi, access);
+            return access;
         }
 
-        return false;
+        return AccessPermission.denied();
     }
 
     /**
@@ -1620,17 +1605,6 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
     }
 
     /**
-     * <p>
-     * main.
-     * </p>
-     *
-     * @param args an array of {@link java.lang.String} objects.
-     */
-    public static void main(String[] args) {
-        System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
-    }
-
-    /**
      * @param agreedToTermsOfUse the agreedToTermsOfUse to set
      */
     public void setAgreedToTermsOfUse(boolean agreedToTermsOfUse) {
@@ -1740,4 +1714,14 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
         }
     }
 
+    /**
+     * <p>
+     * main.
+     * </p>
+     *
+     * @param args an array of {@link java.lang.String} objects.
+     */
+    public static void main(String[] args) {
+        System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
+    }
 }

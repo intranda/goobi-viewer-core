@@ -109,9 +109,7 @@
                             </div>
                             </ui:fragment>
 
-
                             <!-- LICENSES -->
-
                             <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty hasAccessPermissingForTranslationFilesnotConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
@@ -130,7 +128,7 @@
                                                     <div class="col-8 pl-5 -textlink">
                                                         #{accessCondition}
                                                     </div>
-                                                    <div class="col-4 d-flex justify-content-end">
+                                                    <div class="col- d-flex justify-content-end">
                                                         <span>#{msg.admin__licenses_configure_license_now}</span>
                                                     </div>
                                                 </h:commandLink>
@@ -142,9 +140,50 @@
                                     </div>
                                 </h:form>
                             </ui:fragment>
+
+                            <!-- DOWNLOAD TICKETS -->
+                            <ui:fragment rendered="#{userBean.admin and fn:length(adminLicenseBean.downloadTicketRequests) > 0}">
+                                <div class="admin__boxed-entry -no-actions -w33 -warning">
+                                    <div class="row">
+                                        <!-- NOT CONFIGURED TICKETS -->
+                                        <h2 class="col-9">#{msg.admin__dashboard_download_ticket_requests_title}</h2>
+                                        <p class="col-12">#{msg.admin__dashboard_download_ticket_requests_desc}:</p> 
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-12">
+                                        
+											<!-- LIMIT TICKETS TO A MAXIMUM OF X IN DASHBOARD -->
+                                        	<ui:param name="limitTickets" value="4"/>
+                                            <ui:repeat var="ticket" varStatus="status" value="#{adminLicenseBean.downloadTicketRequests}">
+    											<ui:fragment rendered="#{status.index lt limitTickets}">
+								                    <a href="#{navigationHelper.applicationUrl}admin/rights/"
+								                        class="row -textlink admin__license-unconfigured-entry mb-2">
+								                            <div class="col-12 admin__download-tickets-dashboard-row">
+																<div class="admin__download-tickets-dashboard-row-key">#{msg.email}:</div>
+																<div class="admin__download-tickets-dashboard-row-value">#{ticket.email}</div>
+																<div class="admin__download-tickets-dashboard-row-key">#{msg.title}:</div>
+																<div class="admin__download-tickets-dashboard-row-value">#{ticket.title.length() gt 50 ? ticket.title.substring(0,50).concat('...') : ticket.title}</div>
+																<ui:fragment rendered="#{ticket.requestMessage != null}">
+																	<div class="admin__download-tickets-dashboard-row-key">#{msg.message}:</div>
+																	<div class="admin__download-tickets-dashboard-row-value">#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}</div>
+								                            	</ui:fragment>
+								                            </div>
+<!-- 								                            <div class="col-3 d-flex justify-content-end"> -->
+<!-- 								                            	<span>#{msg.admin__dashboard_download_ticket_requests_configure}</span> -->
+<!-- 								                            </div> -->
+								                 	</a>
+								                 </ui:fragment>
+                                            </ui:repeat>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <a href=""></a>
+                                    </div>
+                                </div>
+                            </ui:fragment>
                             
                             <!-- CLIENTS -->
-
 							<c:set scope="view"
 								value="#{adminClientsBean.notConfiguredClients}"
 								var="notConfiguredClients"></c:set> 

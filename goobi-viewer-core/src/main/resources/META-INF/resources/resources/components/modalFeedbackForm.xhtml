@@ -164,12 +164,12 @@
 
 								<!-- SECURITY QUESTION -->
 								<ui:fragment
-									rendered="#{userBean.resetSecurityQuestion() and userBean.securityQuestion != null}">
+									rendered="#{captchaBean.resetSecurityQuestion() and captchaBean.securityQuestion != null}">
 									<div class="form-group form-row mb-0">
 										<label id="feedback-modal__feedbackSecurityQuestion" for="feedback-modal__feedbackSecurityQuestion"
 											class="col-lg-3 control-label">#{msg.user__security_question}:</label>
 										<div class="col-12 col-12 col-lg-9 composite-control pt-0">
-											<span class="control-label d-block pb-1">#{msg[userBean.securityQuestion.questionKey]}:</span>
+											<span class="control-label d-block pb-1">#{msg[captchaBean.securityQuestion.questionKey]}:</span>
 											<h:messages for="feedbackSecurityQuestion"
 												styleClass="m-0 p-0 pb-1 list-unstyled"
 												infoClass="cms-module__option-message-status success"
@@ -180,7 +180,7 @@
 												pt:data-require-input-text="feedbackInput"
 												pt:aria-labelledby="feedback-modal__feedbackSecurityQuestion"
 												pt:autocomplete="new-password"
-												value="#{userBean.securityAnswer}" required="true"
+												value="#{captchaBean.securityAnswer}" required="true"
 												requiredMessage="#{msg.user__security_question_required_msg}">
 						                	</h:inputText>
 										</div>

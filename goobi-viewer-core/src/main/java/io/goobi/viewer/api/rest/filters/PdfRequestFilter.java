@@ -53,7 +53,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapp
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -61,6 +60,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -96,7 +96,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 throw new ServiceNotAllowedException("PDF API is disabled");
             }
 
-            Path requestPath = Paths.get(request.getUriInfo().getPath());
+            //Path requestPath = Paths.get(request.getUriInfo().getPath());
             //            String requestPath = request.getUriInfo().getPath();
 
             String pi = null;
@@ -107,18 +107,20 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
                 divId = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
                 if (servletRequest.getAttribute("filename") != null) {
-                    privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
                     imageName = (String) servletRequest.getAttribute("filename");
+                    // Check different privilege between born digital and page PDF files
+                    if (imageName != null && imageName.toLowerCase().endsWith(".pdf")) {
+                        privName = IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES;
+                    } else {
+                        privName = IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF;
+                    }
                 }
             }
-            filterForAccessConditions(pi, divId, imageName, privName);
+            filterForAccessConditions(pi, divId, privName);
             filterForDownloadQuota(pi, divId, imageName, servletRequest);
             addRequestParameters(pi, divId, imageName, request);
         } catch (ServiceNotAllowedException | IndexUnreachableException | PresentationException | DAOException e) {
             String mediaType = MediaType.APPLICATION_JSON;
-            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-                mediaType = MediaType.APPLICATION_JSON;
-            }
             Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
         }
@@ -222,7 +224,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
                 SolrDocumentList docs = DataManager.getInstance()
                         .getSearchIndex()
                         .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")),
-                                Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.FILENAME }));
+                                Arrays.asList(SolrConstants.ORDER, SolrConstants.FILENAME));
                 logger.trace(query);
                 if (docs.isEmpty()) {
                     throw new RecordNotFoundException("Document not found: " + pi + "/" + divId);
@@ -336,27 +338,28 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     /**
      * @param pi
      * @param divId
-     * @param contentFileName
      * @param privName
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
-    private void filterForAccessConditions(String pi, String divId, String contentFileName, String privName) throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: {} {}", servletRequest.getSession().getId(), contentFileName);
-        contentFileName = StringTools.decodeUrl(contentFileName);
-        boolean access = false;
+    private void filterForAccessConditions(String pi, String divId, String privName) throws ServiceNotAllowedException {
+        logger.trace("filterForAccessConditions: session:{} pi:{} priv:{}", servletRequest.getSession().getId(), pi, privName);
+        AccessPermission access = AccessPermission.denied();
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, privName, servletRequest);
-        } catch (IndexUnreachableException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
-        } catch (DAOException e) {
+            if (access.isGranted() && access.isTicketRequired() && !AccessConditionUtils.isHasDownloadTicket(pi, servletRequest.getSession())) {
+                logger.trace("Agent has no download ticket for PI: {}", pi);
+                access.setGranted(false);
+            }
+        } catch (IndexUnreachableException | DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (RecordNotFoundException e) {
             throw new ServiceNotAllowedException("Record not found in index: " + pi);
         }
 
-        if (!access) {
-            throw new ServiceNotAllowedException("Serving this image is restricted due to access conditions");
+        if (!access.isGranted()) {
+            logger.trace("Access denied for {}/{}", pi, privName);
+            throw new ServiceNotAllowedException("Serving this content is restricted due to access conditions");
         }
     }
 

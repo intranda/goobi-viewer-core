@@ -25,25 +25,35 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.inject.Named;
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -64,21 +74,24 @@ import io.goobi.viewer.solr.SolrConstants;
 @SessionScoped
 public class AdminLicenseBean implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 4036951960661161323L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(AdminLicenseBean.class);
 
+    private static final String MSG_ADMIN_LICENSE_SAVE_FAILURE = "license_licenseSaveFailure";
+    private static final String MSG_ADMIN_LICENSE_SAVE_SUCCESS = "license_licenseSaveSuccess";
+    private static final String URL_PRETTY_ADMINLICENSES = "pretty:adminLicenses";
+
+    private static final String EXCEPTION_TICKET_MAY_NOT_BE_NULL = "ticket may not be null";
+
     static final int DEFAULT_ROWS_PER_PAGE = 15;
 
+    private TableDataProvider<DownloadTicket> lazyModelDownloadTickets;
+
     private Role currentRole = null;
-    /** List of UserRoles to persist or delete */
     private LicenseType currentLicenseType = null;
     private License currentLicense = null;
-    private DownloadTicket currentDownloadTicket = null;
 
     /**
      * <p>
@@ -96,6 +109,39 @@ public class AdminLicenseBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        lazyModelDownloadTickets = new TableDataProvider<>(new TableDataSource<DownloadTicket>() {
+
+            @Override
+            public List<DownloadTicket> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                logger.trace("getEntries<DownloadTicket>, {}-{}", first, first + pageSize);
+                try {
+                    if (StringUtils.isEmpty(sortField)) {
+                        sortField = "id";
+                    }
+                    return DataManager.getInstance().getDao().getActiveDownloadTickets(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
+                }
+                return Collections.emptyList();
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                try {
+                    return DataManager.getInstance().getDao().getActiveDownloadTicketCount(filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
+                }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
+                // 
+            }
+        });
+        lazyModelDownloadTickets.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        lazyModelDownloadTickets.setFilters("pi_email_title_requestMessage");
     }
 
     // LicenseType
@@ -132,24 +178,22 @@ public class AdminLicenseBean implements Serializable {
             }
         }
         List<SelectItem> ret = new ArrayList<>(licenseTypes.size());
-        {
-            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
-            SelectItem[] array1 = new SelectItem[list1.size()];
-            for (int i = 0; i < array1.length; ++i) {
-                array1[i] = new SelectItem(list1.get(i), ViewerResourceBundle.getTranslation(list1.get(i).getName(), null));
-            }
-            group.setSelectItems(array1);
-            ret.add(group);
+
+        SelectItemGroup group1 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license_function", null));
+        SelectItem[] array1 = new SelectItem[list1.size()];
+        for (int i = 0; i < array1.length; ++i) {
+            array1[i] = new SelectItem(list1.get(i), ViewerResourceBundle.getTranslation(list1.get(i).getName(), null));
         }
-        {
-            SelectItemGroup group = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
-            SelectItem[] array = new SelectItem[list2.size()];
-            for (int i = 0; i < array.length; ++i) {
-                array[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
-            }
-            group.setSelectItems(array);
-            ret.add(group);
+        group1.setSelectItems(array1);
+        ret.add(group1);
+
+        SelectItemGroup group2 = new SelectItemGroup(ViewerResourceBundle.getTranslation("admin__license", null));
+        SelectItem[] array2 = new SelectItem[list2.size()];
+        for (int i = 0; i < array2.length; ++i) {
+            array2[i] = new SelectItem(list2.get(i), ViewerResourceBundle.getTranslation(list2.get(i).getName(), null));
         }
+        group2.setSelectItems(array2);
+        ret.add(group2);
 
         return ret;
     }
@@ -233,8 +277,8 @@ public class AdminLicenseBean implements Serializable {
      */
     public String saveCurrentLicenseTypeAction() throws DAOException {
         if (currentLicenseType == null) {
-            Messages.error("errSave");
-            return "licenseTypes";
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return URL_PRETTY_ADMINLICENSES;
         }
 
         // Adopt changes made to the privileges
@@ -246,21 +290,21 @@ public class AdminLicenseBean implements Serializable {
         if (currentLicenseType.getId() != null) {
             if (DataManager.getInstance().getDao().updateLicenseType(currentLicenseType)) {
                 logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
-                Messages.info("updatedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
-                Messages.error("errSave");
+                Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminLicenseEdit";
             }
         } else {
             if (DataManager.getInstance().getDao().addLicenseType(currentLicenseType)) {
-                Messages.info("addedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
-                Messages.error("errSave");
+                Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminLicenseNew";
             }
         }
 
-        return "pretty:adminLicenses";
+        return URL_PRETTY_ADMINLICENSES;
     }
 
     /**
@@ -277,7 +321,7 @@ public class AdminLicenseBean implements Serializable {
         }
 
         if (DataManager.getInstance().getDao().deleteLicenseType(licenseType)) {
-            Messages.info("deletedSuccessfully");
+            Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
 
         } else {
             Messages.error("deleteFailure");
@@ -388,7 +432,8 @@ public class AdminLicenseBean implements Serializable {
     public String saveCurrentLicenseAction() throws DAOException, IndexUnreachableException, PresentationException {
         logger.trace("saveCurrentLicenseAction");
         if (currentLicense == null) {
-            throw new IllegalArgumentException("license may not be null");
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return "";
         }
 
         // Sync changes made to the privileges
@@ -429,18 +474,18 @@ public class AdminLicenseBean implements Serializable {
             // User
             currentLicense.getUser().addLicense(currentLicense);
             if (DataManager.getInstance().getDao().updateUser(currentLicense.getUser())) {
-                Messages.info("license_licenseSaveSuccess");
+                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
-                Messages.error("license_licenseSaveFailure");
+                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
                 error = true;
             }
         } else if (currentLicense.getUserGroup() != null) {
             // UserGroup
             currentLicense.getUserGroup().addLicense(currentLicense);
             if (DataManager.getInstance().getDao().updateUserGroup(currentLicense.getUserGroup())) {
-                Messages.info("license_licenseSaveSuccess");
+                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
-                Messages.error("license_licenseSaveFailure");
+                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
                 error = true;
             }
         } else if (currentLicense.getIpRange() != null) {
@@ -448,9 +493,9 @@ public class AdminLicenseBean implements Serializable {
             logger.trace("ip range id:{} ", currentLicense.getIpRange().getId());
             currentLicense.getIpRange().addLicense(currentLicense);
             if (DataManager.getInstance().getDao().updateIpRange(currentLicense.getIpRange())) {
-                Messages.info("license_licenseSaveSuccess");
+                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
-                Messages.error("license_licenseSaveFailure");
+                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
                 error = true;
             }
         } else if (currentLicense.getClient() != null) {
@@ -458,14 +503,13 @@ public class AdminLicenseBean implements Serializable {
             logger.trace("client id:{} ", currentLicense.getClientId());
             currentLicense.getClient().addLicense(currentLicense);
             if (DataManager.getInstance().getDao().saveClientApplication(currentLicense.getClient())) {
-                Messages.info("license_licenseSaveSuccess");
+                Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
-                Messages.error("license_licenseSaveFailure");
+                Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
                 error = true;
             }
         } else {
-            logger.trace("nothing");
-            Messages.error("license_licenseSaveFailure");
+            Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);
             error = true;
         }
 
@@ -516,20 +560,197 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
+     * <p>
+     * Getter for the field <code>lazyModelDownloadTickets</code>.
+     * </p>
+     *
+     * @return the lazyModelDownloadTickets
+     */
+    public TableDataProvider<DownloadTicket> getLazyModelDownloadTickets() {
+        return lazyModelDownloadTickets;
+    }
+
+    /**
+     * <p>
+     * getPageDownloadTickets.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     */
+    public List<DownloadTicket> getPageDownloadTickets() {
+        return lazyModelDownloadTickets.getPaginatorList();
+    }
+
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException {
+        return DataManager.getInstance().getDao().getDownloadTicketRequests();
+    }
+
+    /**
+     * 
+     * @param ticket
+     * @param emailSubjectKey
+     * @param emailBodyKey
+     * @return
+     * @throws DAOException
+     */
+    private static String saveTicketAndNotifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
+        }
+
+        // Persist changes
+        if (DataManager.getInstance().getDao().updateDownloadTicket(ticket)) {
+            logger.trace("Download ticket '{}' updated successfully", ticket.getId());
+            Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
+        } else {
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return "";
+        }
+
+        // Notify owner
+        return notifyOwner(ticket, emailSubjectKey, emailBodyKey,
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
+    }
+
+    /**
+     * 
+     * @param ticket
+     * @param emailSubjectKey
+     * @param emailBodyKey
+     * @param emailBodyParams
+     * @return
+     */
+    private static String notifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey, List<String> emailBodyParams) {
+        if (ticket == null) {
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
+        }
+        if (emailSubjectKey == null) {
+            throw new IllegalArgumentException("emailSubjectKey may not be null");
+        }
+        if (emailBodyKey == null) {
+            throw new IllegalArgumentException("emailBodyKey may not be null");
+        }
+
+        String subject = ViewerResourceBundle.getTranslation(emailSubjectKey, BeanUtils.getLocale()).replace("{0}", ticket.getPi());
+        String body = ViewerResourceBundle.getTranslation(emailBodyKey, BeanUtils.getLocale());
+        if (emailBodyParams != null) {
+            for (int i = 0; i < emailBodyParams.size(); ++i) {
+                body = body.replace("{" + i + "}", emailBodyParams.get(i));
+            }
+        }
+
+        try {
+            if (NetTools.postMail(Collections.singletonList(ticket.getEmail()), null, null, subject, body)) {
+                Messages.info("admin__email_sent");
+            } else {
+                Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+            }
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            logger.error(e.getMessage());
+            Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+        }
+
+        return "";
+    }
+
+    /**
+     * 
+     * @param ticket
+     * @return
+     * @throws DAOException
+     */
+    public String activateDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
+        }
+        logger.trace("activateDownloadTicketAction: {}", ticket.getId());
+
+        // Set creation and expiration dates
+        ticket.activate();
+
+        return saveTicketAndNotifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_activation");
+    }
+
+    /**
+     * 
+     * @param ticket
+     * @return
+     * @throws DAOException
+     */
+    public String extendDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
+        }
+        logger.trace("extendDownloadTicketAction: {}", ticket.getId());
+
+        // Set new expiration date
+        ticket.extend(DownloadTicket.VALIDITY_DAYS);
+
+        return saveTicketAndNotifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_extention");
+    }
+
+    /**
+     * 
+     * @param ticket
+     * @return
+     * @throws DAOException
+     */
+    public String renewDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
+        }
+        logger.trace("renewDownloadTicketAction: {}", ticket.getId());
+
+        // Generate new password and reset expiration date
+        ticket.activate();
+
+        return saveTicketAndNotifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_renewal");
+    }
+
+    /**
+     * 
+     * @param ticket
+     * @return
+     * @throws DAOException
+     */
+    public String rejectDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
+        }
+        logger.trace("rejectDownloadTicketAction: {}", ticket.getId());
+
+        if (DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+            Messages.info("deletedSuccessfully");
+        } else {
+            Messages.error("deleteFailure");
+            return "";
+        }
+
+        return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_rejection",
+                Arrays.asList(ticket.getPi(), "info@example.com"));
+    }
+
+    /**
      * 
      * @param downloadTicket
      * @return
      * @throws DAOException
      */
-    public String deleteDownloadTicketAction(DownloadTicket downloadTicket) throws DAOException {
-        if (downloadTicket == null) {
-            throw new IllegalArgumentException("downloadTicket may not be null");
+    public String deleteDownloadTicketAction(DownloadTicket ticket) throws DAOException {
+        if (ticket == null) {
+            throw new IllegalArgumentException("ticket may not be null");
         }
+        logger.trace("deleteDownloadTicketAction: {}", ticket.getId());
 
-        if (DataManager.getInstance().getDao().deleteDownloadTicket(downloadTicket)) {
-            Messages.info("license_deleteSuccess");
+        if (DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+            Messages.info("deletedSuccessfully");
         } else {
-            Messages.error("license_deleteFailure");
+            Messages.error("deleteFailure");
         }
 
         return "pretty:adminDownloadTickets";
@@ -589,7 +810,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * Returns the user ID of <code>currentLicenseType/code>.
+     * Returns the user ID of <code>currentLicenseType</code>.
      *
      * return <code>currentLicenseType.id</code> if loaded and has ID; null if not
      */
@@ -631,7 +852,7 @@ public class AdminLicenseBean implements Serializable {
      */
     public void setCurrentLicense(License currentLicense) {
         if (currentLicense != null) {
-            logger.trace("setCurrentLicense: {}", currentLicense.toString());
+            logger.trace("setCurrentLicense: {}", currentLicense);
             // Prepare privileges working copy (but only if the same license is not already set)
             currentLicense.resetTempData();
             if (!currentLicense.equals(this.currentLicense)) {
@@ -642,7 +863,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * Returns the user ID of <code>currentLicense/code>.
+     * Returns the user ID of <code>currentLicense</code>.
      *
      * return <code>currentLicense.id</code> if loaded and has ID; null if not
      */
@@ -655,7 +876,7 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     * Sets <code>currentLicense/code> by loading it from the DB via the given ID.
+     * Sets <code>currentLicense</code> by loading it from the DB via the given ID.
      *
      * @param id
      * @throws DAOException
@@ -663,45 +884,6 @@ public class AdminLicenseBean implements Serializable {
     public void setCurrentLicenseId(Long id) throws DAOException {
         if (ObjectUtils.notEqual(getCurrentLicenseId(), id)) {
             setCurrentLicense(DataManager.getInstance().getDao().getLicense(id));
-        }
-    }
-
-    /**
-     * @return the currentDownloadTicket
-     */
-    public DownloadTicket getCurrentDownloadTicket() {
-        return currentDownloadTicket;
-    }
-
-    /**
-     * @param currentDownloadTicket the currentDownloadTicket to set
-     */
-    public void setCurrentDownloadTicket(DownloadTicket currentDownloadTicket) {
-        this.currentDownloadTicket = currentDownloadTicket;
-    }
-
-    /**
-     * Returns the user ID of <code>currentDownloadTicket/code>.
-     *
-     * return <code>currentDownloadTicket.id</code> if loaded and has ID; null if not
-     */
-    public Long getCurrentDownloadTicketId() {
-        if (currentDownloadTicket != null && currentDownloadTicket.getId() != null) {
-            return currentDownloadTicket.getId();
-        }
-
-        return null;
-    }
-
-    /**
-     * Sets <code>currentDownloadTicket/code> by loading it from the DB via the given ID.
-     *
-     * @param id
-     * @throws DAOException
-     */
-    public void setDownloadTicketId(Long id) throws DAOException {
-        if (ObjectUtils.notEqual(getCurrentDownloadTicketId(), id)) {
-            setCurrentDownloadTicket(DataManager.getInstance().getDao().getDownloadTicket(id));
         }
     }
 

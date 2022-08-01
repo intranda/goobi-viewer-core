@@ -97,7 +97,6 @@ import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.security.DownloadTicket;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -1570,11 +1569,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteLicenseType(io.goobi.viewer.model.user.LicenseType)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteLicenseType(LicenseType licenseType) throws DAOException {
@@ -1594,9 +1588,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllLicenses()
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<License> getAllLicenses() throws DAOException {
@@ -1612,9 +1604,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getLicense(java.lang.Long)
-     */
+    /** {@inheritDoc} */
     @Override
     public License getLicense(Long id) throws DAOException {
         preQuery();
@@ -1680,8 +1670,8 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
 
+    /** {@inheritDoc} */
     @Override
     public DownloadTicket getDownloadTicket(Long id) throws DAOException {
         preQuery();
@@ -1695,12 +1685,117 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
-    public DownloadTicket getDownloadTicketsForLicenseName(String licenseName, String pi, ILicensee licensee) throws DAOException {
-        // TODO Auto-generated method stub
-        return null;
+    public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<DownloadTicket> cq = cb.createQuery(DownloadTicket.class);
+            Root<DownloadTicket> root = cq.from(DownloadTicket.class);
+            cq.select(root).where(cb.equal(root.get("passwordHash"), passwordHash));
+            return em.createQuery(cq).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct count
+     */
+    @Override
+    public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT count(a) FROM DownloadTicket a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(filterQuery).append(" AND ");
+            }
+            // Only tickets that aren't requests
+            sbQuery.append("a.passwordHash IS NOT NULL AND a.expirationDate IS NOT NULL");
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should filter rows correctly
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM DownloadTicket a");
+            Map<String, String> params = new HashMap<>();
+            String filterQuery = createFilterQuery(null, filters, params);
+            if (StringUtils.isEmpty(filterQuery)) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(filterQuery).append(" AND ");
+            }
+            // Only tickets that aren't requests
+            sbQuery.append("a.passwordHash IS NOT NULL AND a.expirationDate IS NOT NULL");
+            if (StringUtils.isNotBlank(sortField)) {
+                String[] sortFields = sortField.split("_");
+                sbQuery.append(" ORDER BY ");
+                for (String sf : sortFields) {
+                    sbQuery.append("a.").append(sf);
+                    if (descending) {
+                        sbQuery.append(" DESC");
+                    }
+                    sbQuery.append(",");
+                }
+                sbQuery.deleteCharAt(sbQuery.length() - 1);
+            }
+
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+
+            return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return tickets that have never been activated
+     */
+    @Override
+    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<DownloadTicket> cq = cb.createQuery(DownloadTicket.class);
+            Root<DownloadTicket> root = cq.from(DownloadTicket.class);
+            cq.select(root).where(cb.and(root.get("passwordHash").isNull(), root.get("expirationDate").isNull()));
+            return em.createQuery(cq).getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
     public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
         preQuery();
@@ -1710,6 +1805,7 @@ public class JPADAO implements IDAO {
             em.persist(downloadTicket);
             commitTransaction(em);
         } catch (PersistenceException e) {
+            logger.error(e.getMessage());
             handleException(em);
             return false;
         } finally {
@@ -1728,6 +1824,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
+            logger.error(e.getMessage());
             handleException(em);
             return false;
         } finally {
@@ -1746,6 +1843,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
+            logger.error(e.getMessage());
             handleException(em);
             return false;
         } finally {
@@ -2526,8 +2624,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Search o = em.find(Search.class, id);
-            return o;
+            return em.find(Search.class, id);
         } catch (EntityNotFoundException e) {
             return null;
         } finally {
@@ -4209,7 +4306,6 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append("a.targetPI in :targetPIs");
             }
-            logger.trace(sbQuery.toString());
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
             if (owner != null) {
@@ -6324,6 +6420,13 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * 
+     * @param staticFilterQuery
+     * @param filters
+     * @param params
+     * @return
+     */
     static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
         StringBuilder q = new StringBuilder(" ");
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
@@ -6634,7 +6737,7 @@ public class JPADAO implements IDAO {
                         where.append("UPPER(" + tableKey + ".")
                                 .append(keyPart.replace("-", "."))
                                 .append(") LIKE :")
-                                .append(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""));
+                                .append(key.replace(MULTIKEY_SEPARATOR, "").replace("-", ""));
                         keyPartCount++;
                     }
                     where.append(" ) ");
@@ -6671,15 +6774,14 @@ public class JPADAO implements IDAO {
                                 .append(tableKey)
                                 .append(".owner.id)");
                     }
-                    params.put(key.replaceAll(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
+                    params.put(key.replace(MULTIKEY_SEPARATOR, "").replace("-", ""), "%" + value.toUpperCase() + "%");
                 }
                 if (count > 1) {
                     where.append(" )");
                 }
             }
         }
-        String filterString = join.append(where).toString();
-        return filterString;
+        return join.append(where).toString();
     }
 
     @Override
@@ -6708,7 +6810,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     @Override
     public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException {
         preQuery();
@@ -6717,7 +6819,7 @@ public class JPADAO implements IDAO {
             Query q = em.createQuery("SELECT c FROM ClientApplication c WHERE c.clientIdentifier = :clientId");
             q.setParameter("clientId", clientId);
             return (ClientApplication) q.getSingleResult();
-        } catch(NoResultException e) {
+        } catch (NoResultException e) {
             return null;
         } finally {
             close(em);

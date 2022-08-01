@@ -117,6 +117,18 @@
 		cursor: default;
 		padding: 0;
 	}
+	.-bluelink {
+		color: @blue;
+		&:hover {
+			text-decoration: underline;
+		}
+		&:hover,
+		&:active,
+		&:focus,
+		&:active:focus {
+			color: @blue;
+		}
+	}
 	.-redlink {
 		color: @red;
 		&:hover {
@@ -598,6 +610,55 @@
 	&__translations-overview-number {
 		margin-top: 0.8rem;
 		font-size: 1.2rem;
+	}
+
+
+	/* ADMIN BACKEND GRID TABLE */
+	&__grid-table {
+		background: #fff;
+		border: 1px solid #ccc;
+		margin-bottom: 2rem;
+		&.-columns-4 {
+			.admin__grid-table-data-row {
+				display: grid;
+				grid-template-columns: 2fr 2fr 1fr 1fr;
+			}
+			.admin__grid-table-title-row {
+				display: grid;
+				grid-template-columns: 2fr 2fr 1fr 1fr;
+			}
+		}
+	}
+	&__grid-table-title-row {
+		position: sticky;
+		top: 35px;
+		background: white;
+	}
+	&__grid-table-sorting-wrapper {
+		display: flex;
+		padding: 10px 20px;
+		border-bottom: 1px solid #6f6f6f;
+		font-size: 1.6rem;
+		font-weight: 600;
+		button {
+			font-size: 1.6rem;
+			font-weight: 600;
+			padding: 0;
+			background-color: transparent;
+		}
+	}
+	&__grid-table-data-row {
+		&:hover {
+		    background: @lightgray2;
+		    .admin__table-action-link {
+		    	transition: opacity 0.2s ease;
+		    	opacity: 1.0;
+		    }
+		}
+	}
+	&__grid-table-data {
+		word-wrap: anywhere;
+		padding: 15px 20px;
 	}
 
 	/* ADMIN BACKEND FLEX TABLE */

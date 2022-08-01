@@ -104,14 +104,14 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
                     .getIiif()
                     .getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width), new Rotation(rotation), Colortype.DEFAULT,
                             ImageFileFormat.valueOf(format.toUpperCase()));
-            logger.trace("Forwarding " + request.getPathInfo() + " to " + uri);
-            //            getServletContext().getRequestDispatcher(uri).forward(request, response);
 
             response.sendRedirect(uri);
 
         } catch (ContentLibException e) {
             throw new ServletException(e);
         } catch (ViewerConfigurationException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }

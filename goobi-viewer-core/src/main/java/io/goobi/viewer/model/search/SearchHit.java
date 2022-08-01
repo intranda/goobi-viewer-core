@@ -518,7 +518,7 @@ public class SearchHit implements Comparable<SearchHit> {
         try {
             String fulltext = null;
             if (BeanUtils.getRequest() != null
-                    && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
+                    && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false).isGranted()) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
             }
             if (fulltext != null) {
@@ -605,14 +605,14 @@ public class SearchHit implements Comparable<SearchHit> {
                     String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     try {
                         if (StringUtils.isNotBlank(plaintextFilename)) {
-                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false);
+                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false).isGranted();
                             if (access) {
                                 fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
                             } else {
                                 acccessDeniedType = true;
                             }
                         } else if (StringUtils.isNotBlank(altoFilename)) {
-                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false);
+                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false).isGranted();
                             if (access) {
                                 fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
                             } else {

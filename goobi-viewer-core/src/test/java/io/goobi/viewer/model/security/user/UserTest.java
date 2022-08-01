@@ -33,7 +33,6 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -48,7 +47,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
         User user = new User();
         user.setSuperuser(false);
         Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList(SolrConstants.OPEN_ACCESS_VALUE)),
-                IPrivilegeHolder.PRIV_LIST, "PPN123"));
+                IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
     /**
@@ -60,7 +59,8 @@ public class UserTest extends AbstractDatabaseEnabledTest {
         User user = new User();
         user.setSuperuser(true);
         Assert.assertTrue(
-                user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("restricted")), IPrivilegeHolder.PRIV_LIST, "PPN123"));
+                user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("restricted")), IPrivilegeHolder.PRIV_LIST, "PPN123")
+                        .isGranted());
     }
 
     /**
@@ -72,7 +72,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assert.assertNotNull(user);
         List<String> licenceTypes = Arrays.asList(new String[] { "license type 1 name", "license type 3 name" });
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(licenceTypes), IPrivilegeHolder.PRIV_LIST, "PPN123"));
+        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<>(licenceTypes), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
     /**
@@ -84,7 +84,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
         User user = DataManager.getInstance().getDao().getUser(2);
         Assert.assertNotNull(user);
         Assert.assertFalse(user.canSatisfyAllAccessConditions(new HashSet<>(Collections.singletonList("license type 1 name")),
-                IPrivilegeHolder.PRIV_VIEW_IMAGES, "PPN123"));
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, "PPN123").isGranted());
     }
 
     /**
@@ -95,7 +95,7 @@ public class UserTest extends AbstractDatabaseEnabledTest {
     public void canSatisfyAllAccessConditions_shouldReturnTrueIfConditionListEmpty() throws Exception {
         User user = new User();
         user.setSuperuser(false);
-        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<String>(0), IPrivilegeHolder.PRIV_LIST, "PPN123"));
+        Assert.assertTrue(user.canSatisfyAllAccessConditions(new HashSet<String>(0), IPrivilegeHolder.PRIV_LIST, "PPN123").isGranted());
     }
 
     /**

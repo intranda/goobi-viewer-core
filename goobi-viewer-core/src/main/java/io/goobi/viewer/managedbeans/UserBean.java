@@ -24,17 +24,13 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -76,7 +72,6 @@ import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
@@ -100,6 +95,8 @@ public class UserBean implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(UserBean.class);
 
     @Inject
+    private CaptchaBean captchaBean;
+    @Inject
     private NavigationHelper navigationHelper;
 
     private User user;
@@ -116,8 +113,6 @@ public class UserBean implements Serializable {
     private transient String passwordOne = "";
     private transient String passwordTwo = "";
 
-    private SecurityQuestion securityQuestion = null;
-    private String securityAnswer;
     /** Honey pot field invisible to human users. */
     private String lastName;
     private String redirectUrl = null;
@@ -125,13 +120,6 @@ public class UserBean implements Serializable {
     private String transkribusUserName;
     private String transkribusPassword;
     private Boolean hasAdminBackendAccess;
-
-    /** Reusable Random object. */
-    Random random = new SecureRandom();
-
-    Map<String, Integer> loginAttempts = new HashMap<>();
-
-    // private CompletableFuture<Optional<User>> loginFuture = null;
 
     /**
      * Empty constructor.
@@ -169,12 +157,15 @@ public class UserBean implements Serializable {
             return "";
         }
         // Check whether the security question has been answered correct, if configured
-        if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
+        if (captchaBean != null && !captchaBean.checkAnswer()) {
+            captchaBean.reset();
             Messages.error("user__security_question_wrong");
             logFailedUserRegistration();
             logger.debug("Wrong security question answer.");
             return "";
+
         }
+
         // Check whether the invisible field lastName has been filled (real users cannot do that)
         if (StringUtils.isNotEmpty(lastName)) {
             logFailedUserRegistration();
@@ -249,24 +240,24 @@ public class UserBean implements Serializable {
      */
     public String activateUserAccountAction() throws DAOException {
         if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(activationKey)) {
-            User user = DataManager.getInstance().getDao().getUserByEmail(email);
-            if (user != null && !user.isActive()) {
-                if (activationKey.equals(user.getActivationKey())) {
+            User u = DataManager.getInstance().getDao().getUserByEmail(email);
+            if (u != null && !u.isActive()) {
+                if (activationKey.equals(u.getActivationKey())) {
                     // Activate user
-                    user.setActivationKey(null);
-                    user.setActive(true);
-                    if (DataManager.getInstance().getDao().updateUser(user)) {
+                    u.setActivationKey(null);
+                    u.setActive(true);
+                    if (DataManager.getInstance().getDao().updateUser(u)) {
                         Messages.info(ViewerResourceBundle.getTranslation("user_accountActivationSuccess", null));
-                        logger.debug("User account successfully activated: " + user.getEmail());
+                        logger.debug("User account successfully activated: {}", u.getEmail());
                     } else {
                         Messages.error(ViewerResourceBundle.getTranslation("errSave", null));
                     }
                 } else {
-                    logger.debug("Activation key mismatch (expected: '" + user.getActivationKey() + "' (received: '" + activationKey + "').");
+                    logger.debug("Activation key mismatch (expected: '{}' (received: '{}').", u.getActivationKey(), activationKey);
                     Messages.error(ViewerResourceBundle.getTranslation("user_accountActivationWrongData", null));
                 }
             } else {
-                logger.debug("User not found or account already activated: " + email);
+                logger.debug("User not found or account already activated: {}", email);
             }
             activationKey = null;
         }
@@ -342,9 +333,9 @@ public class UserBean implements Serializable {
                 Messages.error("errLoginWrong");
             } else if (oUser.isPresent()) { //login successful
                 try {
-                    User user = oUser.get();
+                    User u = oUser.get();
                     if (this.user != null) {
-                        if (this.user.equals(user)) {
+                        if (this.user.equals(u)) {
                             logger.debug("User already logged in");
                             return;
                         }
@@ -352,26 +343,26 @@ public class UserBean implements Serializable {
                         throw new AuthenticationProviderException("errLoginError");
                     }
                     wipeSession(result.getRequest());
-                    DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(user, request);
+                    DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
-                    user.setLastLogin(LocalDateTime.now());
-                    if (!DataManager.getInstance().getDao().updateUser(user)) {
+                    u.setLastLogin(LocalDateTime.now());
+                    if (!DataManager.getInstance().getDao().updateUser(u)) {
                         logger.error("Could not update user in DB.");
                     }
-                    setUser(user);
+                    setUser(u);
                     createFeedback();
                     if (request != null && request.getSession(false) != null) {
-                        request.getSession(false).setAttribute("user", user);
+                        request.getSession(false).setAttribute("user", u);
                     }
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
                         logger.trace("Redirecting to {}", redirectUrl);
-                        String redirectUrl = this.redirectUrl;
+                        String url = this.redirectUrl;
                         this.redirectUrl = "";
-                        response.sendRedirect(redirectUrl);
+                        response.sendRedirect(url);
                     } else if (response != null) {
                         Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
                         if (currentPath.isPresent()) {
-                            logger.trace("Redirecting to current url " + currentPath.get().getCombinedPrettyfiedUrl());
+                            logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
                             response.sendRedirect(
                                     ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.get().getCombinedPrettyfiedUrl());
                         } else {
@@ -392,15 +383,14 @@ public class UserBean implements Serializable {
                         if (role != null) {
                             for (String groupName : provider.getAddUserToGroups()) {
                                 UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(groupName);
-                                if (userGroup != null && !userGroup.getMembers().contains(user)) {
-                                    userGroup.addMember(user, role);
-                                    logger.debug("Added user {} to user group '{}'", user.getId(), userGroup.getName());
+                                if (userGroup != null && !userGroup.getMembers().contains(u)) {
+                                    userGroup.addMember(u, role);
+                                    logger.debug("Added user {} to user group '{}'", u.getId(), userGroup.getName());
                                 }
                             }
                         }
                     }
                     this.loggedInProvider = provider;
-                    return;
                 } catch (DAOException | IOException | IndexUnreachableException | PresentationException | IllegalStateException e) {
                     //user may login, but setting up viewer account failed
                     provider.logout();
@@ -427,8 +417,7 @@ public class UserBean implements Serializable {
         logger.trace("logout");
 
         HttpServletRequest request = BeanUtils.getRequest();
-        HttpServletResponse response = BeanUtils.getResponse();
-        String redirectUrl = redirect(request, response);
+        String url = redirect(request);
 
         user.setTranskribusSession(null);
         setUser(null);
@@ -454,29 +443,27 @@ public class UserBean implements Serializable {
         }
         HttpSession session = request.getSession(false);
         session.invalidate();
-        return redirectUrl;
+        return url;
     }
 
     /**
      * @param request
      * @param response
-     * @throws AuthenticationProviderException
      */
-    private String redirect(HttpServletRequest request, HttpServletResponse response) throws AuthenticationProviderException {
+    private String redirect(HttpServletRequest request) {
         Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
         if (StringUtils.isNotEmpty(redirectUrl)) {
             if ("#".equals(redirectUrl)) {
                 logger.trace("Stay on current page");
             }
             logger.trace("Redirecting to {}", redirectUrl);
-            String redirectUrl = this.redirectUrl;
+            String url = this.redirectUrl;
             this.redirectUrl = "";
-            //            Messages.info("logoutSuccessful");
 
             // Do not redirect to user backend pages because LoginFilter won't work here for some reason
             String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
-                return redirectUrl;
+            if (url.length() < servletPath.length() || !LoginFilter.isRestrictedUri(url.substring(servletPath.length()))) {
+                return url;
             }
         } else if (oCurrentPath.isPresent()) {
             ViewerPath currentPath = oCurrentPath.get();
@@ -485,8 +472,7 @@ public class UserBean implements Serializable {
                 return "pretty:index";
             }
             logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());
-            String redirect = currentPath.getCombinedPrettyfiedUrl();
-            return redirect;
+            return currentPath.getCombinedPrettyfiedUrl();
         } else {
             // IF ViewerPath is unavailable, extract URI via PrettyContext
             PrettyContext prettyContext = PrettyContext.getCurrentInstance(request);
@@ -495,6 +481,7 @@ public class UserBean implements Serializable {
                 return "pretty:index";
             }
         }
+
         return "";
     }
 
@@ -520,7 +507,7 @@ public class UserBean implements Serializable {
             Set<String> attributesToRemove = new HashSet<>();
             while (attributeNames.hasMoreElements()) {
                 String attribute = attributeNames.nextElement();
-                if (attribute.startsWith(IPrivilegeHolder._PRIV_PREFIX)) {
+                if (attribute.startsWith(IPrivilegeHolder.PREFIX_PRIV)) {
                     attributesToRemove.add(attribute);
 
                 }
@@ -545,7 +532,7 @@ public class UserBean implements Serializable {
                         .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {
                             throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
 
@@ -562,9 +549,9 @@ public class UserBean implements Serializable {
     public List<User> getAllUsers() throws DAOException {
         List<User> ret = new ArrayList<>();
 
-        for (User user : DataManager.getInstance().getDao().getAllUsers(true)) {
-            if (!user.isSuperuser() && !user.equals(getUser())) {
-                ret.add(user);
+        for (User u : DataManager.getInstance().getDao().getAllUsers(true)) {
+            if (!u.isSuperuser() && !u.equals(getUser())) {
+                ret.add(u);
             }
         }
 
@@ -627,17 +614,17 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String sendPasswordResetLinkAction() throws DAOException {
-        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        User u = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
-        if (user != null && !user.isOpenIdUser()) {
-            if (user.isActive()) {
-                user.setActivationKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
+        if (u != null && !u.isOpenIdUser()) {
+            if (u.isActive()) {
+                u.setActivationKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
                     requesterIp = NetTools.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                 }
-                String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + user.getEmail() + "/" + user.getActivationKey() + "/";
+                String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + u.getEmail() + "/" + u.getActivationKey() + "/";
 
                 if (DataManager.getInstance().getDao().updateUser(user)) {
                     try {
@@ -650,10 +637,8 @@ public class UserBean implements Serializable {
                             Messages.info("user_retrieveAccountConfirmationEmailMessage");
                             return "user?faces-redirect=true";
                         }
-                        logger.error("Could not send passwort reset link e-mail to: " + user.getEmail());
-                    } catch (UnsupportedEncodingException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (MessagingException e) {
+                        logger.error("Could not send passwort reset link e-mail to: {}", user.getEmail());
+                    } catch (UnsupportedEncodingException | MessagingException e) {
                         logger.error(e.getMessage(), e);
                     }
                 }
@@ -663,7 +648,7 @@ public class UserBean implements Serializable {
             }
 
             // Send new activation mail if not yet activated
-            if (sendActivationEmail(user)) {
+            if (sendActivationEmail(u)) {
                 Messages.info(ViewerResourceBundle.getTranslation("user_activationEmailReSent", null));
             } else {
                 Messages.error(ViewerResourceBundle.getTranslation("errSendEmail", null));
@@ -682,26 +667,24 @@ public class UserBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String resetPasswordAction() throws DAOException {
-        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        User u = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
-        if (user != null && user.isActive() && !user.isOpenIdUser()) {
-            if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(user.getActivationKey())) {
+        if (u != null && u.isActive() && !u.isOpenIdUser()) {
+            if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(u.getActivationKey())) {
                 String newPassword = StringTools.generateHash(String.valueOf(System.currentTimeMillis())).substring(0, 8);
-                user.setNewPassword(newPassword);
-                user.setActivationKey(null);
+                u.setNewPassword(newPassword);
+                u.setActivationKey(null);
                 try {
                     if (NetTools.postMail(Collections.singletonList(email), null, null,
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
-                            && DataManager.getInstance().getDao().updateUser(user)) {
+                            && DataManager.getInstance().getDao().updateUser(u)) {
                         email = null;
                         Messages.info("user_retrieveAccountPasswordResetMessage");
                         return "user?faces-redirect=true";
                     }
-                    logger.error("Could not send new password e-mail to: " + user.getEmail());
-                } catch (UnsupportedEncodingException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (MessagingException e) {
+                    logger.error("Could not send new password e-mail to: {}", u.getEmail());
+                } catch (UnsupportedEncodingException | MessagingException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
@@ -753,10 +736,10 @@ public class UserBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
-        // logger.trace("createFeedback");
         lastName = null;
-        securityAnswer = null;
-        securityQuestion = null;
+        if (captchaBean != null) {
+            captchaBean.reset();
+        }
 
         feedback = new Feedback();
         if (user != null) {
@@ -776,7 +759,7 @@ public class UserBean implements Serializable {
                 Optional.ofNullable(BeanUtils.getNavigationHelper())
                         .map(NavigationHelper::getCurrentPrettyUrl)
                         .ifPresent(u -> feedback.setUrl(u));
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
 
@@ -792,11 +775,12 @@ public class UserBean implements Serializable {
      */
     public String submitFeedbackAction(boolean setCurrentUrl) {
         // Check whether the security question has been answered correct, if configured
-        if (securityQuestion != null && !securityQuestion.isAnswerCorrect(securityAnswer)) {
+        if (captchaBean != null && !captchaBean.checkAnswer()) {
+            captchaBean.reset();
             Messages.error("user__security_question_wrong");
-            logger.debug("Wrong security question answer.");
             return "";
         }
+
         // Check whether the invisible field lastName has been filled (real users cannot do that)
         if (StringUtils.isNotEmpty(lastName)) {
             logger.debug("Honeypot field entry: {}", lastName);
@@ -804,7 +788,7 @@ public class UserBean implements Serializable {
         }
         if (!EmailValidator.validateEmailAddress(this.feedback.getSenderAddress())) {
             Messages.error("email_errlnvalid");
-            logger.debug("Invalid email: " + this.feedback.getSenderAddress());
+            logger.debug("Invalid email: {}", this.feedback.getSenderAddress());
             return "";
         }
         if (StringUtils.isBlank(feedback.getName())) {
@@ -840,11 +824,7 @@ public class UserBean implements Serializable {
                 Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                         .replace("{0}", feedback.getRecipientAddress()));
             }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-            Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", feedback.getRecipientAddress()));
-        } catch (MessagingException e) {
+        } catch (UnsupportedEncodingException | MessagingException e) {
             logger.error(e.getMessage(), e);
             Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
                     .replace("{0}", feedback.getRecipientAddress()));
@@ -1131,43 +1111,6 @@ public class UserBean implements Serializable {
     public void resetPasswordFields() {
         passwordOne = "";
         passwordTwo = "";
-    }
-
-    /**
-     * Selects a random security question from configured list and sets <code>currentSecurityQuestion</code> to it.
-     *
-     * @return always true (do not change since that would break rendered conditions on security questions in xhtml)
-     * @should not reset securityQuest if not yet answered
-     */
-    public boolean resetSecurityQuestion() {
-        List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
-        if (!questions.isEmpty() && (securityQuestion == null || securityQuestion.isAnswered())) {
-            // Reset if quesions not empty and security question is not yet set or has been already answered
-            securityQuestion = questions.get(random.nextInt(questions.size()));
-        }
-
-        return true;
-    }
-
-    /**
-     * @return the securityQuestion
-     */
-    public SecurityQuestion getSecurityQuestion() {
-        return securityQuestion;
-    }
-
-    /**
-     * @return the securityAnswer
-     */
-    public String getSecurityAnswer() {
-        return securityAnswer;
-    }
-
-    /**
-     * @param securityAnswer the securityAnswer to set
-     */
-    public void setSecurityAnswer(String securityAnswer) {
-        this.securityAnswer = securityAnswer;
     }
 
     /**

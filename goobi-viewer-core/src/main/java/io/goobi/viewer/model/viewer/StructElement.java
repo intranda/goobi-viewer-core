@@ -735,7 +735,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request);
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request).isGranted();
         } catch (RecordNotFoundException e) {
             return false;
         }

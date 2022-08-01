@@ -128,7 +128,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private static int imageContainerWidth = 600;
 
-    private final Object lock = new Object();
+    private final transient Object lock = new Object();
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -142,8 +142,6 @@ public class ActiveDocumentBean implements Serializable {
     private ImageDeliveryBean imageDelivery;
     @Inject
     private BreadcrumbBean breadcrumbBean;
-    @Inject
-    private ContentBean contentBean;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -403,7 +401,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
                     boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
                             new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
-                            (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                            (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted();
                     if (!access) {
                         logger.debug("User may not open {}", topStructElement.getPi());
                         try {
@@ -473,7 +471,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
-                            viewManager.getMainMimeType(), imageDelivery);
+                            viewManager.getMimeType(), imageDelivery);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                     viewManager.setToc(createTOC());
                 } else {
@@ -578,7 +576,7 @@ public class ActiveDocumentBean implements Serializable {
         TOC toc = new TOC();
         synchronized (toc) {
             if (viewManager != null) {
-                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(), tocCurrentPage);
                 // The TOC object will correct values that are too high, so update the local value, if necessary
                 if (toc.getCurrentPage() != this.tocCurrentPage) {
                     this.tocCurrentPage = toc.getCurrentPage();
@@ -1605,7 +1603,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
                     viewManager.getToc()
-                            .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                            .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(),
                                     this.tocCurrentPage);
                 }
             }
@@ -2277,6 +2275,13 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws DAOException
+     */
     public GeoMap generateGeoMap(String pi) throws PresentationException, DAOException {
         try {
             if ("-".equals(pi)) {
@@ -2335,7 +2340,7 @@ public class ActiveDocumentBean implements Serializable {
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
             if (subDocs != null) {
                 for (SolrDocument solrDocument : subDocs) {
-                    List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
+                    List<GeoMapFeature> docFeatures = new ArrayList<>();
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
@@ -2398,7 +2403,7 @@ public class ActiveDocumentBean implements Serializable {
      * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
      */
     public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
-        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
+        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel : null);
         this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
     }
 
@@ -2411,18 +2416,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
     }
-
-    //    /**
-    //     *
-    //     * @return ViewManager.doublePageMode; false if ViewManager is null
-    //     */
-    //    public boolean isDoublePageMode() {
-    //        if (viewManager == null) {
-    //            return false;
-    //        }
-    //
-    //        return viewManager.isDoublePageMode();
-    //    }
 
     /**
      * This method augments the setter <code>ViewManager.setDoublePageMode(boolean)</code> with URL modifications to reflect the mode.
@@ -2525,8 +2518,9 @@ public class ActiveDocumentBean implements Serializable {
     public boolean isRequiresWebSocket() {
         if (viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
             return viewManager.getTopStructElement().getMetadataFields().containsKey(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
-        } else {
-            return false;
         }
+
+        return false;
     }
+
 }

@@ -45,7 +45,7 @@
       <!-- include file, if it is not explicitly excluded -->
       <!-- (either above, or in the excludeCSS variable, which can be set in template files) -->
       <c:if test="#{!path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
-        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}" />
+        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
       </c:if>
     </c:forEach>
 
@@ -53,7 +53,7 @@
       THEME CSS
     ==================== -->
     <c:if test="#{!excludeCSS.contains('themeCSS')}">
- 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}" />
+ 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
     </c:if>
 
     <!-- SHOW CSS NAMES IN CONSOLE -->

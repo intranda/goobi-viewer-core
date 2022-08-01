@@ -145,7 +145,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
             boolean access = false;
             try {
                 access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST,
-                        request);
+                    request).isGranted();
             } catch (DAOException e) {
                 logger.debug("DAOException thrown here: {}", e.getMessage());
                 try {
