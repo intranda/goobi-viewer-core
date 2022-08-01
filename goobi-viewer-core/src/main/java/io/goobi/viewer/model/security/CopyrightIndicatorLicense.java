@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.security;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -53,6 +54,10 @@ public class CopyrightIndicatorLicense {
      */
     public List<String> getIcons() {
         return icons;
+    }
+    
+    public List<String> getIconPaths(String iconResourceFolder) {
+        return this.icons.stream().map(i -> iconResourceFolder + i).collect(Collectors.toList());
     }
 
 }
