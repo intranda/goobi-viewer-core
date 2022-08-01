@@ -3298,7 +3298,8 @@ public class ConfigurationTest extends AbstractTest {
         CopyrightIndicatorLicense result = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseForValue("VGWORT");
         Assert.assertNotNull(result);
         Assert.assertEquals("COPYRIGHT_DESCRIPTION_VGWORT", result.getDescription());
-        Assert.assertEquals("paragraph50.svg", result.getIcon());
+        Assert.assertEquals(1, result.getIcons().size());
+        Assert.assertEquals("paragraph50.svg", result.getIcons().get(0));
     }
 
 }

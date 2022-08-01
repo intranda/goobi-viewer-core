@@ -5250,8 +5250,8 @@ public class Configuration extends AbstractConfiguration {
             String content = config.getString("[@content]");
             if (value.equals(content)) {
                 String description = config.getString("[@description]");
-                String icon = config.getString(XML_PATH_ATTRIBUTE_ICON);
-                return new CopyrightIndicatorLicense(description, icon);
+                String[] icons = config.getStringArray("icon");
+                return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons): Collections.emptyList());
             }
         }
 

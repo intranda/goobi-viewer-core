@@ -21,22 +21,24 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.util.List;
+
 /**
  *
  */
 public class CopyrightIndicatorLicense {
 
     private final String description;
-    private final String icon;
+    private final List<String> icons;
 
     /**
      * 
      * @param description
      * @param icon
      */
-    public CopyrightIndicatorLicense(String description, String icon) {
+    public CopyrightIndicatorLicense(String description, List<String> icons) {
         this.description = description;
-        this.icon = icon;
+        this.icons = icons;
     }
 
     /**
@@ -47,9 +49,10 @@ public class CopyrightIndicatorLicense {
     }
 
     /**
-     * @return the icon
+     * @return the icons
      */
-    public String getIcon() {
-        return icon;
+    public List<String> getIcons() {
+        return icons;
     }
+
 }

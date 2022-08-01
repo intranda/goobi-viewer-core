@@ -1098,8 +1098,13 @@
             </status>
 
             <license field="MD_ACCESSCONDITIONCOPYRIGHT">
-                <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0" icon="cc0.svg" />
-                <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT" icon="paragraph50.svg" />
+                <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
+                    <!-- icon: one or more icons are allowed per value -->
+                    <icon>cc0.svg</icon>
+                </value>
+                <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
+                    <icon>paragraph50.svg</icon>
+                </value>
             </license>
         </copyrightIndicator>
 	</webGuiDisplay>

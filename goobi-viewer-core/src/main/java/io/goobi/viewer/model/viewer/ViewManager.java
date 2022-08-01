@@ -4069,7 +4069,7 @@ public class ViewManager implements Serializable {
             }
             // Default
             if (copyrightIndicatorLicense == null) {
-                copyrightIndicatorLicense = new CopyrightIndicatorLicense("", "no.svg");
+                copyrightIndicatorLicense = new CopyrightIndicatorLicense("", Collections.emptyList());
             }
         }
 
