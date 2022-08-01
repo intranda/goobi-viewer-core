@@ -280,16 +280,29 @@ public class Search implements Serializable {
                 SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
-    public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator) throws IndexUnreachableException {
-        return generateFinalSolrQuery(facets, advancedSearchGroupOperator, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+    /**
+     * 
+     * @param facets
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String generateFinalSolrQuery(SearchFacets facets) throws IndexUnreachableException {
+        return generateFinalSolrQuery(facets, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
-    public String generateFinalSolrQuery(SearchFacets facets, int advancedSearchGroupOperator, SearchAggregationType aggregationType)
+    /**
+     * 
+     * @param facets
+     * @param aggregationType
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String generateFinalSolrQuery(SearchFacets facets, SearchAggregationType aggregationType)
             throws IndexUnreachableException {
         String currentQuery = SearchHelper.prepareQuery(this.query);
         String termQuery = null;
 
-        String query = SearchHelper.buildFinalQuery(currentQuery, termQuery, false, aggregationType);
+        String q = SearchHelper.buildFinalQuery(currentQuery, termQuery, false, aggregationType);
 
         // Apply current facets
         String subElementQueryFilterSuffix = "";
@@ -300,7 +313,7 @@ public class Search implements Serializable {
             }
         }
 
-        return query + subElementQueryFilterSuffix;
+        return q + subElementQueryFilterSuffix;
     }
 
     /**
@@ -524,16 +537,14 @@ public class Search implements Serializable {
         List<StringPair> useSortFields = getAllSortFields();
         List<SearchHit> foundHits = Collections.emptyList();
         // Actual hits for listing
-        switch (aggregationType) {
-            case AGGREGATE_TO_TOPSTRUCT:
-                foundHits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                        searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
-                break;
-            case NO_AGGREGATION:
-                foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
-                        searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
-                break;
+        if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
+            foundHits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                    searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
+        } else if (SearchAggregationType.NO_AGGREGATION.equals(aggregationType)) {
+            foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                    searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
         }
+
         this.hits.addAll(foundHits);
     }
 

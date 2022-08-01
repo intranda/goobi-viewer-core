@@ -183,8 +183,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
 
-    private volatile FutureTask<Boolean> downloadReady;     //NOSONAR   Future is thread-save
-    private volatile FutureTask<Boolean> downloadComplete;  //NOSONAR   Future is thread-save
+    private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
+    private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
 
     /**
      * Whether to only display the current search parameters rather than the full input mask
@@ -906,11 +906,11 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
         if (this.currentSearch != null) {
-            String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
+            String query = this.currentSearch.generateFinalSolrQuery(null);
             return query;
         }
 
-        return new Search().generateFinalSolrQuery(null, advancedSearchGroupOperator);
+        return new Search().generateFinalSolrQuery(null);
     }
 
     public List<String> getFilterQueries() {
