@@ -55,9 +55,5 @@ public class CopyrightIndicatorLicense {
     public List<String> getIcons() {
         return icons;
     }
-    
-    public List<String> getIconPaths(String iconResourceFolder) {
-        return this.icons.stream().map(i -> iconResourceFolder + i).collect(Collectors.toList());
-    }
 
 }

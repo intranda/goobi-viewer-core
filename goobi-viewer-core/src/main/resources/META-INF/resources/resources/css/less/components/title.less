@@ -4,7 +4,7 @@
    ==============================================================*/
 /* TITLE */
 .title {
-	margin-bottom: 2rem;
+	// margin-bottom: 2rem;
 	/* HEADER */
 	&__header {
 		h1, h2 {
@@ -25,7 +25,11 @@
 		display: none; // custom setting, default is display: none;
 		margin-right: 1rem;
 	}
-	&__header-label {}
+	&__header-label {
+		min-width: 70%;
+		margin-bottom: 2rem;
+		margin-right: auto;
+	}
 	/* BODY */
 	&__body {
 		display: none;
@@ -87,7 +91,16 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.title {
+		&__header {
+			h1, h2 {
+				flex-wrap: wrap;
+			}
+		}
+	}
+}
+
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
