@@ -381,7 +381,7 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get CMDI record file in the requested language.",
             description = "If possible, directly read a CMDI file associated with the record")
-    public String getCmdiLangauge(
+    public String getCmdiLanguage(
             @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @PathParam("lang") String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         logger.trace("getCmdi({}, {})", pi, language);
