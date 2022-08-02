@@ -17,9 +17,25 @@
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
 	    <div class="metadata__title-wrapper">
-	    	<h1 class="metadata__title">
-	    	    #{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg[metadataViewLabel]}
-	    	</h1>
+	    	<div id="title" class="title">
+	    		<!-- TITLE HEADER -->
+				<div class="title__header">
+					<h1 class="h2">
+	
+						<!-- FA* is this still needed? What is the purpose? -->
+						<!-- PAGE TYPE -->
+						<span class="title__header-page-type">
+							<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
+						</span>
+	
+						<!-- NAME OF THE RECORD -->
+						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+	
+						<viewerComponent:copyrightIndicator />
+	
+					</h1>
+				</div>
+			</div>
             <!-- ADD TO BOOKMARK -->
             <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
                     <button type="button" class="btn btn--icon metadata__bookmark-button"

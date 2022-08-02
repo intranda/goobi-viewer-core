@@ -13,9 +13,12 @@
     <composite:implementation>
     	
 		<h:panelGroup rendered="#{configurationBean.copyrightIndicatorEnabled}" layout="block" id="copyrightIndicator" styleClass="copyright-indicator" pt:data-popover-element="#copyrightInformation" 
-												pt:data-popover-dismiss="click-outside" 
+												pt:data-popover-dismiss="click-outside"
+												pt:data-trigger="focus"
+												pt:data-placement="top"
+												pt:data-boundary="window"
 												pt:aria-label="#{msg.copyright__information}" 
-												pt:data-original-title="#{msg.copyright__information}" pt:title="">
+												pt:data-original-title="#{msg.copyright__information}" pt:title="#{msg.copyright__information}" pt:tabindex="0" pt:role="button">
 
 					<!-- TRAFFIC LIGHT STYLE -->
  						<ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">

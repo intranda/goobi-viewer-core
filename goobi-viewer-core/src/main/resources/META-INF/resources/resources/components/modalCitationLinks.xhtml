@@ -48,7 +48,7 @@
 				                         <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
 				                         <div class="widget-usage__citelinks-input-wrapper">
 				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
-				                        <a id="citeLinkWork"
+				                        <a id="citeLinkUrl"
 				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
 				                            data-copy="work-citelink"
 				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -62,7 +62,7 @@
 				                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
 					                       <div class="widget-usage__citelinks-row -internal">
 					                       <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
-									        <a id="citeLinkWork"
+									        <a id="citeLinkInternal"
 					                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
 					                            data-copy="work-citelink"
 					                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -80,7 +80,7 @@
 				            <ui:fragment
                                 rendered="#{activeDocumentBean.viewManager.displayCiteLinkDocstruct and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('docstruct')) > 0}">
 				                <div class="widget-usage__citelinks-block">
-				                <h3 id="titlePage" class="widget-usage__citelinks-subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h3>
+				                <h3 id="titleModalCitationPage" class="widget-usage__citelinks-subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h3>
 				                <h:outputText rendered="#{configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText != null}">
 				                    <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksDocstructIntroText]}:</div>
 				                </h:outputText>
@@ -103,7 +103,7 @@
 				                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
 				                       <div class="widget-usage__citelinks-row -internal">
 				                       <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
-				                        <a id="citeLinkWork"
+				                        <a id="citeLinkModalCitationInternal"
 				                            class="widget-usage__citelink-work widget-usage__citelinks-copy-to-clipboard"
 				                            data-copy="work-citelink"
 				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -120,17 +120,17 @@
 				            <ui:fragment
 				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkPage and !activeDocumentBean.viewManager.doublePageMode and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')) > 0}">
 				                <div class="widget-usage__citelinks-block">
-				                <h3 id="titleImage" class="widget-usage__citelinks-subtitle">#{msg.image}</h3>
+				                <h3 id="titleImageModalCitation" class="widget-usage__citelinks-subtitle">#{msg.image}</h3>
 				                <h:outputText rendered="sidebarWidgetUsageCitationLinksImageIntroText != null}">
 				                    <div class="widget-usage__citelinks-info-text">#{msg[configurationBean.sidebarWidgetUsageCitationLinksImageIntroText]}:</div>
 				                </h:outputText>
-				                <c:forEach var="link" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
+				                <c:forEach var="link" varStatus="index" items="#{configurationBean.getSidebarWidgetUsageCitationLinksForLevel('image')}">
 				                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.getValue(activeDocumentBean.viewManager) != null}">
 				                        <div class="widget-usage__citelinks-row">
 				                        <div class="widget-usage__citelinks-label">#{msg[link.label]}:</div>
 				                        <div class="widget-usage__citelinks-input-wrapper">
 				                        <h:inputText styleClass="widget-usage__citelinks-input" value="#{link.getValue(activeDocumentBean.viewManager)}" disabled="true" />
-				                        <a id="citeLinkPage"
+				                        <a id="citeLinkUrn#{index.count}"
 				                            class="widget-usage__citelink-page widget-usage__citelinks-copy-to-clipboard"
 				                            data-copy="page-citelink"
 				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -143,7 +143,7 @@
 				                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
 				                      <div class="widget-usage__citelinks-row -internal">
 				                      <div class="widget-usage__citelinks-internal">#{msg.label__citation_link_internal}:</div>
-				                        <a id="citeLinkPage"
+				                        <a id="citeLinkUrnPage"
 				                            class="widget-usage__citelink-page widget-usage__citelinks-copy-to-clipboard"
 				                            data-copy="page-citelink"
 				                            data-clipboard-text="#{link.getUrl(activeDocumentBean.viewManager)}"

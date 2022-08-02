@@ -13,9 +13,6 @@
 	<!-- USER COMMENTS -->
 	<ui:fragment
 		rendered="#{activeDocumentBean.allowUserComments}">
-		<!-- JUMP TO THIS ANCHOR AFTER LOGIN -->
-		<a name="userComments"></a>
-
 		<div id="userComments" class="user-comments">
 			<!-- USER NOT LOGGED IN -->
 			<ui:fragment rendered="#{!userBean.loggedIn}">
