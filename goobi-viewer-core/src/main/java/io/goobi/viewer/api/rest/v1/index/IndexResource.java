@@ -119,7 +119,7 @@ public class IndexResource {
     @Operation(tags = { "index" }, summary = "Solr schema version")
     public String getSchemaVersion() {
         String[] result = SolrTools.checkSolrSchemaName();
-        int status = Integer.valueOf(result[0]);
+        int status = Integer.parseInt(result[0]);
         if (status == 200) {
             return "OK";
         }
@@ -150,8 +150,7 @@ public class IndexResource {
 
         String finalQuery =
                 new StringBuilder().append(query).append(SearchHelper.getAllSuffixes(servletRequest, true, true)).toString();
-        logger.debug("q: {}", finalQuery);
-        long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
+        long count = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 0, null, null, null).getResults().getNumFound();
         JSONObject json = new JSONObject();
         json.put("count", count);
         return json.toString();
@@ -188,7 +187,8 @@ public class IndexResource {
             Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
         }
-        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.boostTopLevelDocstructs, params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
+        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.boostTopLevelDocstructs,
+                params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
         logger.trace("query: {}", query);
 
@@ -214,7 +214,6 @@ public class IndexResource {
             if (params.includeChildHits) {
                 paramMap = SearchHelper.getExpandQueryParams(params.query);
             }
-            //                        QueryResponse response = DataManager.getInstance().getSearchIndex().search(query, params.offset, count, sortFieldList, null, fieldList );
             QueryResponse response =
                     DataManager.getInstance()
                             .getSearchIndex()
@@ -249,8 +248,8 @@ public class IndexResource {
             @Schema(description = "Raw SOLR streaming expression",
                     example = "search(collection1,q=\"+ISANCHOR:*\", sort=\"YEAR asc\", fl=\"YEAR,PI,DOCTYPE\", rows=5, qt=\"/select\")") String expression) {
         String solrUrl = DataManager.getInstance().getSearchIndex().getSolrServerUrl();
-        logger.trace("Call solr " + solrUrl);
-        logger.trace("Streaming expression " + expression);
+        logger.trace("Call solr {}", solrUrl);
+        logger.trace("Streaming expression {}", expression);
         return executeStreamingExpression(expression, solrUrl);
     }
 
@@ -293,7 +292,7 @@ public class IndexResource {
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
-            throws IOException, IndexUnreachableException {
+            throws IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = filterQuery;
@@ -308,7 +307,6 @@ public class IndexResource {
             //search query. Ignore all polygon results or the heatmap will have hits everywhere
             finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
         }
-        logger.debug("q: {}", finalQuery);
 
         return DataManager.getInstance()
                 .getSearchIndex()
@@ -327,13 +325,13 @@ public class IndexResource {
             @Parameter(description = "Additional query to filter results by") @QueryParam("query") @DefaultValue("*:*") String filterQuery,
             @Parameter(description = "Facetting to be applied to results") @QueryParam("facetQuery") @DefaultValue("") String facetQuery,
             @Parameter(description = "The SOLR field to be used as label for each feature") @QueryParam("labelField") String labelField)
-            throws IOException, IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException, PresentationException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         String finalQuery = filterQuery;
         List<String> facetQueries = new ArrayList<>();
 
-        if(StringUtils.isNotBlank(facetQuery)) {
+        if (StringUtils.isNotBlank(facetQuery)) {
             facetQueries.add(facetQuery);
         }
 
@@ -344,7 +342,6 @@ public class IndexResource {
                             .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
                             .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
                             .toString();
-            logger.debug("q: {}", finalQuery);
         } else {
             String coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
             facetQueries.add(coordQuery);
