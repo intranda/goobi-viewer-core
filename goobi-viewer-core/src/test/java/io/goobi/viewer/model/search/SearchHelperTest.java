@@ -24,7 +24,6 @@ package io.goobi.viewer.model.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1768,15 +1767,31 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#buildExpandQueryFromFacets(List,List)
-     * @verifies only use allowed queries if list not empty
+     * @verifies only use queries that match allowed regex
      */
     @Test
-    public void buildExpandQueryFromFacets_shouldOnlyUseAllowedQueriesIfListNotEmpty() throws Exception {
+    public void buildExpandQueryFromFacets_shouldOnlyUseQueriesThatMatchAllowedRegex() throws Exception {
+        // Regular query
         List<String> facets = new ArrayList<>(2);
         facets.add("FOO:bar");
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
         Assert.assertEquals("+FOO:bar +DOCTYPE:DOCSTRCT",
                 SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("FOO:bar")));
+        
+        // Via regex
+        String regex = "\\(FACET_DC:\"a.b[\\.\\w]*\" OR FACET_DC:a.b[\\.\\w]*\\.\\*\\)";
+
+        facets = new ArrayList<>(2);
+        facets.add("(FACET_DC:\"a.x\" OR FACET_DC:a.x.*)");
+        facets.add("(FACET_DC:\"a.b\" OR FACET_DC:a.b.*)");
+        Assert.assertEquals("+(FACET_DC:\"a.b\" OR FACET_DC:a.b.*) +DOCTYPE:DOCSTRCT",
+                SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList(regex)));
+
+        facets = new ArrayList<>(2);
+        facets.add("(FACET_DC:\"a.x.c.d\" OR FACET_DC:a.x.c.d*)");
+        facets.add("(FACET_DC:\"a.b.c.d\" OR FACET_DC:a.b.c.d.*)");
+        Assert.assertEquals("+(FACET_DC:\"a.b.c.d\" OR FACET_DC:a.b.c.d.*) +DOCTYPE:DOCSTRCT",
+                SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList(regex)));
     }
 
     /**

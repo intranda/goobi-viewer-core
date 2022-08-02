@@ -636,7 +636,7 @@ public class AdminLicenseBean implements Serializable {
             throw new IllegalArgumentException("emailBodyKey may not be null");
         }
 
-        String subject = ViewerResourceBundle.getTranslation(emailSubjectKey, BeanUtils.getLocale()).replace("{0}", ticket.getPi());
+        String subject = ViewerResourceBundle.getTranslation(emailSubjectKey, BeanUtils.getLocale()).replace("{0}", ticket.getLabel());
         String body = ViewerResourceBundle.getTranslation(emailBodyKey, BeanUtils.getLocale());
         if (emailBodyParams != null) {
             for (int i = 0; i < emailBodyParams.size(); ++i) {

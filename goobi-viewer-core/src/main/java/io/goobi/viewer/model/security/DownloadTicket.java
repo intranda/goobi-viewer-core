@@ -186,6 +186,15 @@ public class DownloadTicket implements Serializable {
     }
 
     /**
+     * Returns the title of the associated record, with a fallback to PI.
+     * 
+     * @return title if present; otherwise pi
+     */
+    public String getLabel() {
+        return StringUtils.isNotEmpty(title) ? title : pi;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>id</code>.
      * </p>

@@ -233,7 +233,7 @@
 												data-placement="top"
 												data-trigger="hover"
 												data-require-confirmation="true"
-												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.pi, ticket.defaultValidityAsString)}"
+												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email, ticket.label, ticket.defaultValidityAsString)}"
 												jsf:action="#{adminLicenseBean.extendDownloadTicketAction(ticket)}"
 												aria-label="#{msg.extend}: #{ticket.id}">
 												#{msg.admin__download_tickets_extend}</button>
@@ -246,7 +246,7 @@
 												data-placement="top"
 												data-trigger="hover"
 												data-require-confirmation="true"
-												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_extend_confirm, ticket.email)}"
+												data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_renew_confirm, ticket.email, ticket.label, ticket.defaultValidityAsString)}"
 												jsf:action="#{adminLicenseBean.renewDownloadTicketAction(ticket)}"
 												aria-label="#{msg.extend}: #{ticket.id}">
 												#{msg.admin__download_tickets_renew}</button>
@@ -254,7 +254,7 @@
 										<!-- DELETE -->
 										<button class="admin__table-action-link -redlink"
 											data-require-confirmation="true"
-											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.email, ticket.pi)}"
+											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__download_tickets_delete_confirm, ticket.email, ticket.label)}"
 											jsf:action="#{adminLicenseBean.deleteDownloadTicketAction(ticket)}"
 											aria-label="#{msg.delete}: #{ticket.id}">
 											#{msg.delete}</button>

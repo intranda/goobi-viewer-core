@@ -987,15 +987,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getTitleBarMetadata()
-     * @verifies return all configured metadata elements
-     */
-    @Test
-    public void getTitleBarMetadata_shouldReturnAllConfiguredMetadataElements() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getTitleBarMetadata().size());
-    }
-
-    /**
      * @see Configuration#getUnconditionalImageAccessMaxWidth()
      * @verifies return correct value
      */
