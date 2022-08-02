@@ -3270,14 +3270,14 @@ public final class SearchHelper {
      * 
      * @param facetQueries List of individual facet queries
      * @param allFacetQueries
-     * @param allowedFacetQueries Optional list containing regexes for allowed facet queries
+     * @param allowedFacetQueryRegexes Optional list containing regexes for allowed facet queries
      * @return Expand query
      * @should return empty string if list null or empty
      * @should construct query correctly
-     * @should only use allowed queries if list not empty
+     * @should only use queries that match allowed regex
      * @should return empty string of no query allowed
      */
-    public static String buildExpandQueryFromFacets(List<String> allFacetQueries, List<String> allowedFacetQueries) {
+    public static String buildExpandQueryFromFacets(List<String> allFacetQueries, List<String> allowedFacetQueryRegexes) {
         if (allFacetQueries == null || allFacetQueries.isEmpty()) {
             return "";
         }
@@ -3287,10 +3287,10 @@ public final class SearchHelper {
             if (StringUtils.isBlank(q)) {
                 continue;
             }
-            if (allowedFacetQueries == null || allowedFacetQueries.isEmpty()) {
+            if (allowedFacetQueryRegexes == null || allowedFacetQueryRegexes.isEmpty()) {
                 sb.append(" +").append(q);
             } else {
-                for (String allowedFacetQuery : allowedFacetQueries) {
+                for (String allowedFacetQuery : allowedFacetQueryRegexes) {
                     Pattern p = Pattern.compile(allowedFacetQuery);
                     Matcher m = p.matcher(q);
                     if (m.matches()) {
