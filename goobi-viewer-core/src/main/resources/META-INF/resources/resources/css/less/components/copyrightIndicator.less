@@ -85,7 +85,7 @@
 	&__traffic-light-style {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
+		align-items: flex-end;
 		&-circle-wrapper {
 		    // padding: 6px 10px;
 		    // border-radius: 7px;
@@ -158,7 +158,11 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.copyright-indicator {}
+	.copyright-indicator {
+		&__traffic-light-style {
+			align-items: flex-start;
+		}
+	}
 }
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
