@@ -24,10 +24,17 @@
 	&__image-fragment, 
 	&__citelinks {
 		margin-bottom: 15px;
-		a {}
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		align-items: flex-start;
+		a, form {
+			display: flex;
+			align-items: center;
+		}
 		.badge {
-			padding-top: 0.3rem;
-			line-height: 1.2rem; 
+			padding: 0.5rem;
+			// line-height: 1.2rem; 
 			display: inline-block;
 			&:hover,  
 			&:active,
@@ -69,10 +76,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		a {}
-		.badge {
-			margin-right: 0.4rem;
-			margin-bottom: 0.5rem;
-		}
 	}
 	&__page-download-alto {}
 	&__page-download-fulltext {}
