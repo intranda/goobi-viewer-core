@@ -640,7 +640,7 @@ public class AdminLicenseBean implements Serializable {
         String body = ViewerResourceBundle.getTranslation(emailBodyKey, BeanUtils.getLocale());
         if (emailBodyParams != null) {
             for (int i = 0; i < emailBodyParams.size(); ++i) {
-                body = body.replace("{" + i + "}", emailBodyParams.get(i));
+                body = body.replace("{" + i + "}", emailBodyParams.get(i) != null ? emailBodyParams.get(i) : "NOT FOUND");
             }
         }
 
@@ -707,7 +707,7 @@ public class AdminLicenseBean implements Serializable {
         logger.trace("renewDownloadTicketAction: {}", ticket.getId());
 
         // Generate new password and reset expiration date
-        ticket.activate();
+        ticket.reset();
 
         return saveTicketAndNotifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_renewal");
     }
@@ -743,7 +743,7 @@ public class AdminLicenseBean implements Serializable {
      */
     public String deleteDownloadTicketAction(DownloadTicket ticket) throws DAOException {
         if (ticket == null) {
-            throw new IllegalArgumentException("ticket may not be null");
+            throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
         logger.trace("deleteDownloadTicketAction: {}", ticket.getId());
 
