@@ -168,7 +168,7 @@ public class MetsResolver extends HttpServlet {
                 logger.error(e.getMessage());
             }
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.debug(e.getMessage());
             try {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
             } catch (IOException e1) {
