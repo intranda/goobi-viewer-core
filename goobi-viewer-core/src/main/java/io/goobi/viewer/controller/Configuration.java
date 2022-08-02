@@ -108,7 +108,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
-    
+
     private static final String XML_PATH_ATTRIBUTE_ICON = "[@icon]";
 
     private Set<String> stopwords;
@@ -388,63 +388,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getConnectorVersionUrl() {
         return getLocalString("urls.connectorVersion", "http://localhost:8080/viewer/oai/tools?action=getVersion");
-    }
-
-    /**
-     * Returns the list of configured metadata for the title bar component. TODO Allow templates and then retire this method.
-     *
-     * @should return all configured metadata elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<Metadata> getTitleBarMetadata() {
-        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("metadata.titleBarMetadataList.metadata");
-        if (elements == null) {
-            return Collections.emptyList();
-        }
-
-        List<Metadata> ret = new ArrayList<>(elements.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = elements.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
-            String label = sub.getString("[@label]");
-            String masterValue = sub.getString("[@value]");
-            boolean group = sub.getBoolean("[@group]", false);
-            int type = sub.getInt("[@type]", 0);
-            List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
-            List<MetadataParameter> paramList = null;
-            if (params != null) {
-                paramList = new ArrayList<>();
-                for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = params.iterator(); it2.hasNext();) {
-                    HierarchicalConfiguration<ImmutableNode> sub2 = it2.next();
-                    String fieldType = sub2.getString("[@type]");
-                    String source = sub2.getString("[@source]", null);
-                    String key = sub2.getString("[@key]");
-                    String altKey = sub2.getString("[@altKey]");
-                    String masterValueFragment = sub2.getString("[@value]");
-                    String defaultValue = sub2.getString("[@defaultValue]");
-                    String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
-                    String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                    String condition = sub2.getString("[@condition]");
-                    boolean addUrl = sub2.getBoolean("[@url]", false);
-                    boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
-                    boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                    paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
-                            .setSource(source)
-                            .setKey(key)
-                            .setAltKey(altKey)
-                            .setMasterValueFragment(masterValueFragment)
-                            .setDefaultValue(defaultValue)
-                            .setPrefix(prefix)
-                            .setSuffix(suffix)
-                            .setCondition(condition)
-                            .setAddUrl(addUrl)
-                            .setTopstructValueFallback(topstructValueFallback)
-                            .setTopstructOnly(topstructOnly));
-                }
-            }
-            ret.add(new Metadata(label, masterValue, paramList).setGroup(group).setType(type));
-        }
-
-        return ret;
     }
 
     /**
@@ -5190,7 +5133,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isCopyrightIndicatorEnabled() {
         return getLocalBoolean("webGuiDisplay.copyrightIndicator[@enabled]", false);
     }
-    
+
     /**
      * 
      * @return
@@ -5251,7 +5194,7 @@ public class Configuration extends AbstractConfiguration {
             if (value.equals(content)) {
                 String description = config.getString("[@description]");
                 String[] icons = config.getStringArray("icon");
-                return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons): Collections.emptyList());
+                return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : Collections.emptyList());
             }
         }
 

@@ -88,7 +88,6 @@ import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
-import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -157,9 +156,6 @@ public class ActiveDocumentBean implements Serializable {
     private boolean volume = false;
     private boolean group = false;
     protected long topDocumentIddoc = 0;
-
-    /** Metadata displayed in title.xhtml */
-    private List<Metadata> titleBarMetadata = new ArrayList<>();
 
     // TODO move to SearchBean
     private BrowseElement prevHit;
@@ -252,7 +248,6 @@ public class ActiveDocumentBean implements Serializable {
             String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
             topDocumentIddoc = 0;
-            titleBarMetadata.clear();
             logid = "";
             action = "";
             prevHit = null;
@@ -358,7 +353,6 @@ public class ActiveDocumentBean implements Serializable {
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();
-            titleBarMetadata.clear();
 
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
@@ -498,18 +492,6 @@ public class ActiveDocumentBean implements Serializable {
                 }
                 if (structElement.isGroup()) {
                     group = true;
-                }
-
-                // Populate title bar metadata
-                StructElement topSe = viewManager.getCurrentStructElement().getTopStruct();
-                // logger.debug("topSe: {}", topSe.getId());
-                if (topSe != null) {
-                    for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), md.getSortFields(), BeanUtils.getLocale());
-                        if (!md.isBlank()) {
-                            titleBarMetadata.add(md);
-                        }
-                    }
                 }
 
                 viewManager.setCurrentImageOrderString(imageToShow);
@@ -766,17 +748,6 @@ public class ActiveDocumentBean implements Serializable {
         synchronized (lock) {
             return imageToShow;
         }
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>titleBarMetadata</code>.
-     * </p>
-     *
-     * @return the titleBarMetadata
-     */
-    public List<Metadata> getTitleBarMetadata() {
-        return Metadata.filterMetadata(titleBarMetadata, selectedRecordLanguage, null);
     }
 
     /**
