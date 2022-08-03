@@ -124,7 +124,8 @@ public class SolrTools {
                             ret.add(new StringPair(fieldConfigSplit[0].trim(), fieldConfigSplit[1].trim()));
                             break;
                         default:
-                            logger.warn("Cannot parse sorting field configuration: {}", fieldConfig);
+                            logger.warn("Cannot parse sorting field configuration");
+                            break;
                     }
 
                 }
