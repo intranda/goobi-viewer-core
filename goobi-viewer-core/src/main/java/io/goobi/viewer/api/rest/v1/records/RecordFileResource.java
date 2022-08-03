@@ -163,6 +163,7 @@ public class RecordFileResource {
     public Response getPDF(
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentLibException {
+        filename = StringTools.stripPatternBreakingChars(filename);
         logger.trace("getPDF: {}/{}", pi, filename);
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
         try {
@@ -204,7 +205,7 @@ public class RecordFileResource {
             logger.error("Failed to probe file content type");
         }
 
-        return (out) -> {
+        return out -> {
             try (InputStream in = Files.newInputStream(path)) {
                 IOUtils.copy(in, out);
             }

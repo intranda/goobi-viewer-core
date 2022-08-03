@@ -43,6 +43,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.messages.MessagesTranslation;
 import io.goobi.viewer.model.translations.Translation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,19 +75,20 @@ public class TranslationResource {
     @GET
     @Path(ApiUrls.LOCALIZATION_TRANSLATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"localization"}, summary = "Get translations for message keys", description = "Pass a list of message keys to get translations for all configured languages")
+    @Operation(tags = { "localization" }, summary = "Get translations for message keys",
+            description = "Pass a list of message keys to get translations for all configured languages")
     @ApiResponse(responseCode = "200", description = "Return translations for given keys")
     @ApiResponse(responseCode = "400", description = "No keys passed")
     public TranslationList getTranslations(
             @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") String keys) throws IllegalRequestException {
+        keys = StringTools.stripPatternBreakingChars(keys);
         logger.trace("getTranslations: {}", keys);
 
         Collection<String> keysCollection;
-        if(StringUtils.isBlank(keys)) {
+        if (StringUtils.isBlank(keys)) {
             throw new IllegalRequestException("Must provide query parameter 'keys'");
-        } else {
-            keysCollection = Arrays.asList(keys.split(","));
         }
+        keysCollection = Arrays.asList(keys.split(","));
 
         List<Translation> translations = new ArrayList<>();
         for (String key : keysCollection) {
