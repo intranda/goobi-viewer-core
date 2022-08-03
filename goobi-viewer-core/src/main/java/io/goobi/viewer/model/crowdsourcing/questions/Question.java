@@ -22,10 +22,10 @@
 package io.goobi.viewer.model.crowdsourcing.questions;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,26 +34,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.faces.event.ValueChangeEvent;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +60,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.StringListConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -83,7 +77,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @Entity
 @Table(name = "cs_questions")
 @JsonInclude(Include.NON_EMPTY)
-public class Question {
+public class Question implements Serializable {
+
+    private static final long serialVersionUID = 1230983333894006339L;
 
     private static final Logger logger = LoggerFactory.getLogger(Question.class);
 
@@ -118,7 +114,7 @@ public class Question {
 
     @Column(name = "metadata_fields", nullable = true, columnDefinition = "LONGTEXT")
     @Convert(converter = StringListConverter.class)
-    private List<String> metadataFields  = new ArrayList<>();
+    private List<String> metadataFields = new ArrayList<>();
 
     @Transient
     private Map<String, Boolean> metadataFieldSelection = null;
@@ -181,8 +177,9 @@ public class Question {
      * Call when metadata list changes
      */
     public void serializeMetadataFields() {
-        if(QuestionType.METADATA.equals(getQuestionType())) {
-            this.metadataFields = getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
+        if (QuestionType.METADATA.equals(getQuestionType())) {
+            this.metadataFields =
+                    getMetadataFieldSelection().entrySet().stream().filter(e -> e.getValue()).map(e -> e.getKey()).collect(Collectors.toList());
         }
     }
 
@@ -343,7 +340,7 @@ public class Question {
      * @param metadataToAdd the metadataToAdd to set
      */
     public void setMetadataToAdd(String metadataToAdd) {
-        if(StringUtils.isNotBlank(metadataToAdd)) {
+        if (StringUtils.isNotBlank(metadataToAdd)) {
             addMetadataField(metadataToAdd);
         }
     }
@@ -364,15 +361,19 @@ public class Question {
     @JsonIgnore
     public List<String> getAvailableMetadataFields() throws IndexUnreachableException {
         Locale locale = BeanUtils.getLocale();
-        return DataManager.getInstance().getSearchIndex().getAllFieldNames().stream()
-        .filter(field -> field.startsWith("MD_"))
-        .filter(field -> !field.endsWith("_UNTOKENIZED"))
-        .map(field -> field.replaceAll("_LANG_.*", ""))
-//        .filter(field -> !this.metadataFields.contains(field))
-        .distinct()
-        .sorted((f1,f2) -> Messages.translate(f1, locale).compareToIgnoreCase(Messages.translate(f2, locale)))
-        .collect(Collectors.toList());
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getAllFieldNames()
+                .stream()
+                .filter(field -> field.startsWith("MD_"))
+                .filter(field -> !field.endsWith("_UNTOKENIZED"))
+                .map(field -> field.replaceAll("_LANG_.*", ""))
+                //        .filter(field -> !this.metadataFields.contains(field))
+                .distinct()
+                .sorted((f1, f2) -> Messages.translate(f1, locale).compareToIgnoreCase(Messages.translate(f2, locale)))
+                .collect(Collectors.toList());
     }
+
     /**
      * <p>
      * Setter for the field <code>targetFrequency</code>.
@@ -451,19 +452,20 @@ public class Question {
      * @throws SolrServerException
      */
     public Map<String, Boolean> getMetadataFieldSelection() {
-        if(this.metadataFieldSelection == null) {
+        if (this.metadataFieldSelection == null) {
             try {
-                this.metadataFieldSelection = getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
-            } catch(IndexUnreachableException e) {
+                this.metadataFieldSelection =
+                        getAvailableMetadataFields().stream().collect(Collectors.toMap(field -> field, field -> this.metadataFields.contains(field)));
+            } catch (IndexUnreachableException e) {
                 //If the possible fields cannot be retrieved from solr, just show the already selected ones
-                logger.error("Failed to load all possible metadata fields " + e.toString());
+                logger.error("Failed to load all possible metadata fields: {}", e.getMessage());
                 this.metadataFieldSelection = this.metadataFields.stream().collect(Collectors.toMap(field -> field, field -> Boolean.TRUE));
             }
         }
         return metadataFieldSelection;
     }
 
-    public List<String> getSelectedMetadataFields() throws SolrServerException, IOException {
+    public List<String> getSelectedMetadataFields() {
         return this.getMetadataFieldSelection().entrySet().stream().filter(Entry::getValue).map(Entry::getKey).collect(Collectors.toList());
     }
 

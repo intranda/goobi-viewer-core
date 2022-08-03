@@ -64,7 +64,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 @Entity
 @Table(name = "license_types")
-public class LicenseType implements IPrivilegeHolder, ILicenseType, Serializable {
+public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType, Serializable {
 
     private static final long serialVersionUID = 9206827867178660886L;
 
@@ -286,12 +286,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType, Serializable
             return false;
         }
 
-        switch (name) {
-            case LICENSE_TYPE_CMS:
-                return true;
-            default:
-                return false;
-        }
+        return LICENSE_TYPE_CMS.equals(name);
     }
 
     /**
@@ -306,12 +301,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType, Serializable
             return false;
         }
 
-        switch (name) {
-            case LICENSE_TYPE_LEGAL_DISCLAIMER:
-                return true;
-            default:
-                return false;
-        }
+        return LICENSE_TYPE_LEGAL_DISCLAIMER.equals(name);
     }
 
     /**
@@ -475,7 +465,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType, Serializable
         if (isUgcType()) {
             ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
         } else {
-            ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+            ret = new ArrayList<>(Arrays.asList(PRIVS_RECORD));
         }
         if (privileges != null) {
             ret.removeAll(privileges);
@@ -490,8 +480,8 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType, Serializable
      */
     @Override
     public List<String> getSortedPrivileges(Set<String> privileges) {
-        List<String> ret = new ArrayList<>(IPrivilegeHolder.PRIVS_RECORD.length);
-        for (String priv : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD)) {
+        List<String> ret = new ArrayList<>(PRIVS_RECORD.length);
+        for (String priv : Arrays.asList(PRIVS_RECORD)) {
             if (privileges.contains(priv)) {
                 ret.add(priv);
                 // logger.trace("has priv: {}", priv);

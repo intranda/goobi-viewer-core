@@ -58,7 +58,7 @@ import io.goobi.viewer.api.rest.bindings.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -74,7 +74,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -139,6 +138,11 @@ public class CampaignItemResource {
     @CORSBinding
     public CampaignItem getItemForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
+        if (pi == null) {
+            return null;
+        }
+
+        pi = StringTools.stripPatternBreakingChars(pi);
         logger.debug("getItemForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign == null) {
@@ -159,10 +163,11 @@ public class CampaignItemResource {
             }
             logger.debug("pageStatusMap set");
         }
+        String herePi = pi;
         if (campaign.isShowLog()) {
             item.setLog(campaign.getLogMessages()
                     .stream()
-                    .filter(m -> m.getPi().equals(pi))
+                    .filter(m -> m.getPi().equals(herePi))
                     .map(clm -> new LogMessage(clm, servletRequest))
                     .collect(Collectors.toList()));
         }
@@ -203,10 +208,14 @@ public class CampaignItemResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi, @PathParam("page") int page) throws DAOException {
-        logger.debug("setItemForManifest: {}/{}", pi, page);
         if (item == null) {
             throw new IllegalArgumentException("item may not be null");
         }
+
+        if (pi != null) {
+            pi = StringTools.stripPatternBreakingChars(pi);
+        }
+        logger.debug("setItemForManifest: {}/{}", pi, page);
         CrowdsourcingStatus status = item.getRecordStatus();
         if (status == null) {
             logger.error("Status not found: {}", item.getRecordStatus());
@@ -241,31 +250,53 @@ public class CampaignItemResource {
         DataManager.getInstance().getDao().updateCampaign(campaign);
     }
 
-    private void updateAnnotationStatusForPage(Campaign campaign, String pi, int page, CrowdsourcingStatus crowdsourcingStatus,
+    /**
+     * 
+     * @param campaign
+     * @param pi
+     * @param page
+     * @param crowdsourcingStatus
+     * @param user
+     * @throws DAOException
+     */
+    private static void updateAnnotationStatusForPage(Campaign campaign, String pi, int page, CrowdsourcingStatus crowdsourcingStatus,
             Optional<User> user) throws DAOException {
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
         for (CrowdsourcingAnnotation anno : annotations) {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
-            if(CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
+            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
                 anno.setReviewer(user.get());
             }
             DataManager.getInstance().getDao().updateAnnotation(anno);
         }
     }
 
-    private void updateAnnotationStatusForRecord(Campaign campaign, String pi, CrowdsourcingStatus crowdsourcingStatus,
+    /**
+     * 
+     * @param campaign
+     * @param pi
+     * @param crowdsourcingStatus
+     * @param user
+     * @throws DAOException
+     */
+    private static void updateAnnotationStatusForRecord(Campaign campaign, String pi, CrowdsourcingStatus crowdsourcingStatus,
             Optional<User> user) throws DAOException {
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
         for (CrowdsourcingAnnotation anno : annotations) {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
-            if(CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
+            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
                 anno.setReviewer(user.get());
             }
             DataManager.getInstance().getDao().updateAnnotation(anno);
         }
     }
 
-    private PublicationStatus getPublicationStatus(CrowdsourcingStatus crowdsourcingStatus) {
+    /**
+     * 
+     * @param crowdsourcingStatus
+     * @return
+     */
+    private static PublicationStatus getPublicationStatus(CrowdsourcingStatus crowdsourcingStatus) {
         switch (crowdsourcingStatus) {
             case ANNOTATE:
                 return PublicationStatus.CREATING;
@@ -294,13 +325,16 @@ public class CampaignItemResource {
     @CORSBinding
     public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") String pi, @Context HttpServletRequest request)
             throws URISyntaxException, DAOException {
+        if (pi != null) {
+            pi = StringTools.stripPatternBreakingChars(pi);
+        }
         logger.debug("getAnnotationsForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (CrowdsourcingAnnotation anno : annotations) {
-            if(StringUtils.isNotBlank(anno.getBody())) {
+            if (StringUtils.isNotBlank(anno.getBody())) {
                 WebAnnotation webAnno = new AnnotationConverter(urls).getAsWebAnnotation(anno);
                 webAnnotations.add(webAnno);
             }
@@ -324,11 +358,15 @@ public class CampaignItemResource {
     @CORSBinding
     public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") String pi)
             throws URISyntaxException, DAOException {
+        if (pi != null) {
+            pi = StringTools.stripPatternBreakingChars(pi);
+        }
         logger.debug("setAnnotationsForManifest: {}", pi);
 
         IDAO dao = DataManager.getInstance().getDao();
         Campaign campaign = dao.getCampaign(campaignId);
 
+        String herePi = pi;
         for (AnnotationPage page : pages) {
             URI targetURI = URI.create(page.getId());
             String pageOrderString = urls.parseParameter(
@@ -339,7 +377,7 @@ public class CampaignItemResource {
 
             List<CrowdsourcingAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
             List<CrowdsourcingAnnotation> newAnnotations =
-                    page.annotations.stream().map(anno -> createPersistentAnnotation(pi, pageOrder, anno)).collect(Collectors.toList());
+                    page.annotations.stream().map(anno -> createPersistentAnnotation(herePi, pageOrder, anno)).collect(Collectors.toList());
 
             //delete existing annotations not contained in response
             for (CrowdsourcingAnnotation anno : existingAnnotations) {
@@ -347,7 +385,7 @@ public class CampaignItemResource {
                     try {
                         dao.deleteAnnotation(anno);
                     } catch (DAOException e) {
-                        logger.error("Error deleting annotation " + e.toString());
+                        logger.error("Error deleting annotation: {}", e.getMessage());
                     }
                 }
             }
@@ -362,7 +400,7 @@ public class CampaignItemResource {
                         dao.updateAnnotation(anno);
                     }
                 } catch (DAOException e) {
-                    logger.error("Error persisting annotation " + e.toString());
+                    logger.error("Error persisting annotation: {}", e.getMessage());
                 }
             }
         }
@@ -383,8 +421,7 @@ public class CampaignItemResource {
                 id = Long.parseLong(idString);
             }
         }
-        CrowdsourcingAnnotation pAnno = new CrowdsourcingAnnotation(anno, id, pi, pageOrder);
-        return pAnno;
+        return new CrowdsourcingAnnotation(anno, id, pi, pageOrder);
     }
 
     /**

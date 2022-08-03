@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Arrays;
 
 import javax.servlet.ServletException;
@@ -64,103 +63,124 @@ public class MetsResolver extends HttpServlet {
     private static final String[] FIELDS =
             { SolrConstants.ACCESSCONDITION, SolrConstants.DATAREPOSITORY, SolrConstants.PI_TOPSTRUCT, SolrConstants.SOURCEDOCFORMAT };
 
-    /**
-     * <p>
-     * main.
-     * </p>
-     *
-     * @param args an array of {@link java.lang.String} objects.
-     */
-    public static void main(String[] args) {
-        String s = "/opt/digiverso/data/";
-        URI p = URI.create(s);
-        System.out.println(p + " is absolute: " + p.isAbsolute());
-    }
-
     /** {@inheritDoc} */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
         String urn = request.getParameter("urn");
         if (id == null && urn == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
         if (id != null && !PIValidator.validatePi(id)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
 
+        String query = null;
+        if (id != null) {
+            query = SolrConstants.PI + ":\"" + id + '"';
+        } else {
+            query = SolrConstants.URN + ":\"" + urn + '"';
+        }
+        SolrDocumentList hits = null;
         try {
-            String query = null;
-            if (id != null) {
-                query = SolrConstants.PI + ":\"" + id + '"';
-            } else if (urn != null) {
-                query = SolrConstants.URN + ":\"" + urn + '"';
+            hits = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(FIELDS));
+        } catch (PresentationException | IndexUnreachableException e) {
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
             }
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(FIELDS));
-            if (hits == null || hits.isEmpty()) {
+            return;
+        }
+        if (hits == null || hits.isEmpty()) {
+            try {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
-                return;
+            } catch (IOException e) {
+                logger.error(e.getMessage());
             }
-            if (hits.getNumFound() > 1) {
-                // show multiple match, that indicates corrupted index
+            return;
+        }
+        if (hits.getNumFound() > 1) {
+            // show multiple match, that indicates corrupted index
+            try {
                 response.sendError(HttpServletResponse.SC_CONFLICT, ERRTXT_MULTIMATCH);
-                return;
+            } catch (IOException e) {
+                logger.error(e.getMessage());
             }
+            return;
+        }
 
-            SolrDocument doc = hits.get(0);
-            id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+        SolrDocument doc = hits.get(0);
+        id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
 
-            // If the user has no listing privilege for this record, act as if it does not exist
-            boolean access =
+        // If the user has no listing privilege for this record, act as if it does not exist
+        boolean access = false;
+        try {
+            access =
                     AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
-            if (!access) {
-                logger.debug("User may not download metadata for {}", id);
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
-                return;
+        } catch (IndexUnreachableException | DAOException e) {
+            logger.error(e.getMessage(), e);
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
             }
+            return;
+        }
+        if (!access) {
+            logger.debug("User may not download metadata for {}", id);
+            try {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+            return;
+        }
 
-            String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-            String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+        String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
+        String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
 
-            String filePath =
-                    DataFileTools.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
+        String filePath =
+                DataFileTools.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
 
-            response.setContentType("text/xml");
-            File file = new File(filePath);
-            response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
-            try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
-                int bytesRead = 0;
-                byte[] byteArray = new byte[300];
+        response.setContentType("text/xml");
+        File file = new File(filePath);
+        response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
+        try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
+            int bytesRead = 0;
+            byte[] byteArray = new byte[300];
+            try {
                 while ((bytesRead = fis.read(byteArray)) != -1) {
                     out.write(byteArray, 0, bytesRead);
                 }
                 out.flush();
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 logger.error(e.getMessage());
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
             }
-        } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
+        } catch (FileNotFoundException e) {
+            logger.debug(e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         }
-
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
-    }
-
 }

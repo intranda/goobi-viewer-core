@@ -96,7 +96,6 @@ public class RecordsListResource {
         // logger.trace("rows: {}", rows);
 
         String finalQuery = createQuery(query, start, end, subtheme);
-        logger.debug("listManifests final query: {}", finalQuery);
 
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
 
@@ -131,7 +130,6 @@ public class RecordsListResource {
             finalQuery += " +" + discriminatorField + ":" + subtheme;
         }
         finalQuery += SearchHelper.getAllSuffixes(servletRequest, true, true);
-        ;
 
         return finalQuery;
     }

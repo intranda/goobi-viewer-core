@@ -69,7 +69,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ViewerRestServiceBinding
 public class AuthorityResource {
 
-    private final static Logger logger = LoggerFactory.getLogger(AuthorityResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthorityResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -87,8 +87,8 @@ public class AuthorityResource {
     public String getIdentity(
             @Parameter(description = "Identifier url of the resource") @QueryParam("id") String url,
             @Parameter(description = "Metadata template to use") @QueryParam("template") String template,
-            @Parameter(description = "Language to use for metadata fields") @QueryParam("lang") String lang) throws ContentNotFoundException, PresentationException {
-        logger.trace("getNormData: {}", url);
+            @Parameter(description = "Language to use for metadata fields") @QueryParam("lang") String lang)
+            throws ContentNotFoundException, PresentationException {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
@@ -119,12 +119,12 @@ public class AuthorityResource {
             }
         }
 
-        Record record = NormDataImporter.getSingleRecord(url);
-        if (record == null) {
+        Record rec = NormDataImporter.getSingleRecord(url);
+        if (rec == null) {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        List<NormData> normDataList = record.getNormDataList();
+        List<NormData> normDataList = rec.getNormDataList();
         if (normDataList == null) {
             logger.trace("Normdata map is empty");
             throw new ContentNotFoundException("Resource not found");
@@ -175,11 +175,17 @@ public class AuthorityResource {
 
         try {
             return jsonArray.toString();
-        } catch(NoSuchMethodError e) {
+        } catch (NoSuchMethodError e) {
             throw new PresentationException("Error creating json of normdata from " + url);
         }
     }
 
+    /**
+     * 
+     * @param normData
+     * @param locale
+     * @return
+     */
     static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
         JSONObject jsonObj = new JSONObject();
         String translation = ViewerResourceBundle.getTranslation(normData.getKey(), locale);

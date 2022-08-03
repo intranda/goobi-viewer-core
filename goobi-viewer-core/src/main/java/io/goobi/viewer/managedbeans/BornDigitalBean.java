@@ -138,13 +138,16 @@ public class BornDigitalBean implements Serializable {
             return "";
         }
 
+        if (captchaBean == null) {
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return "";
+        }
+
         // Check whether the security question has been answered correct, if configured
-        if (captchaBean != null) {
-            if (!captchaBean.checkAnswer()) {
-                captchaBean.reset();
-                Messages.error("user__security_question_wrong");
-                return "";
-            }
+        if (!captchaBean.checkAnswer()) {
+            captchaBean.reset();
+            Messages.error("user__security_question_wrong");
+            return "";
         }
 
         DownloadTicket ticket = new DownloadTicket();
