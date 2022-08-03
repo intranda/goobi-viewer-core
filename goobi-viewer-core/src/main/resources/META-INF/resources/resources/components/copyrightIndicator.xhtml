@@ -20,6 +20,23 @@
 												pt:aria-label="#{msg.copyright__information}" 
 												pt:data-original-title="#{msg.copyright__information}" pt:title="#{msg.copyright__information}" pt:tabindex="0" pt:role="button">
 
+					<!-- POPOVER CONTENT -->
+					<ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">		
+								
+						<div class="copyright-indicator__hidden-information">
+							<div id="copyrightInformation"><h:outputText escape="false" value="#{msg.copyright__information_unclear}" /></div>			   
+						</div>
+					
+					</ui:fragment>
+
+					<ui:fragment rendered="#{not empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">		
+									
+						<div class="copyright-indicator__hidden-information">
+							<div id="copyrightInformation"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" /></div>			   
+						</div>
+					
+					</ui:fragment>							
+
 					<!-- TRAFFIC LIGHT STYLE -->
  						<ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 						<div class="copyright-indicator__traffic-light-style">
@@ -30,6 +47,10 @@
 							</div>
 							<div class="copyright-indicator__traffic-light-style-icon-wrapper">
 							
+							<ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
+								<ui:include src="#{navigationHelper.getResource('images/licence/unclear.svg')}"/>
+							</ui:fragment>
+							
 							<c:forEach var="icon" items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
 								<ui:include src="#{navigationHelper.getResource('images/licence/'.concat(icon))}"/>
 							</c:forEach>
@@ -37,11 +58,7 @@
 							</div>
 						</div>
 					</ui:fragment>
-								
-					<div class="copyright-indicator__hidden-information">
-						<div id="copyrightInformation"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" /></div>			   
-					</div>
-											
+			
 					<!-- LABEL STYLE -->
 					<ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'badge'}" >
 						<div class="copyright-indicator__label-style
@@ -59,6 +76,10 @@
 						
 							<div class="copyright-indicator__icon-wrapper">
 							<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
+							
+							<ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
+								<ui:include src="#{navigationHelper.getResource('images/licence/unclear.svg')}"/>
+							</ui:fragment>
 							
 							<c:forEach var="icon" items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
 								<ui:include src="#{navigationHelper.getResource('images/licence/'.concat(icon))}"/>
