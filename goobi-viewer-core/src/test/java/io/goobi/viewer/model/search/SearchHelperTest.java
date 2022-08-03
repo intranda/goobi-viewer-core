@@ -1191,7 +1191,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, 0, null);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, 0);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }

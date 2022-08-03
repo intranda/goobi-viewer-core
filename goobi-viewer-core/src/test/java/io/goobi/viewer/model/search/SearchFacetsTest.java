@@ -149,6 +149,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         try {
             facetString = URLDecoder.decode(facetString, SearchBean.URL_ENCODING);
         } catch (UnsupportedEncodingException e) {
+            //
         }
         Assert.assertNotSame("-", facetString);
         String[] facetStringSplit = facetString.split(";;");
@@ -235,7 +236,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("MD_FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND YEAR:[c TO d]", facets.generateFacetFilterQuery(true, false));
+        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND YEAR:[c TO d]", facets.generateFacetFilterQuery(true));
     }
 
     /**
@@ -245,7 +246,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateFacetFilterQuery_shouldReturnNullIfFacetListIsEmpty() throws Exception {
         SearchFacets facets = new SearchFacets();
-        Assert.assertNull(facets.generateFacetFilterQuery(true, false));
+        Assert.assertNull(facets.generateFacetFilterQuery(true));
     }
 
     /**
@@ -256,7 +257,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void generateFacetFilterQuery_shouldSkipRangeFacetFieldsIfSoRequested() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false, false));
+        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
     }
 
     /**
@@ -267,7 +268,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void generateFacetFilterQuery_shouldSkipSubelementFields() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":figure");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false, false));
+        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
     }
 
     /**

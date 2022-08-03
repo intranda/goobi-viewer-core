@@ -143,7 +143,6 @@ public class CampaignItemResource {
         }
 
         pi = StringTools.stripPatternBreakingChars(pi);
-        logger.debug("getItemForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign == null) {
             throw new ContentNotFoundException("No campaign found with id " + campaignId);
@@ -175,7 +174,7 @@ public class CampaignItemResource {
             List<String> allMetadataFields =
                     campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
             String query = SolrConstants.PI + ":" + pi;
-            logger.debug("Query: {}", query);
+            // logger.debug("Query: {}", query);
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, allMetadataFields);
             if (doc == null) {
                 throw new ContentNotFoundException("Record not found: " + pi);
@@ -215,7 +214,7 @@ public class CampaignItemResource {
         if (pi != null) {
             pi = StringTools.stripPatternBreakingChars(pi);
         }
-        logger.debug("setItemForManifest: {}/{}", pi, page);
+        // logger.debug("setItemForManifest: {}/{}", pi, page);
         CrowdsourcingStatus status = item.getRecordStatus();
         if (status == null) {
             logger.error("Status not found: {}", item.getRecordStatus());
@@ -328,7 +327,7 @@ public class CampaignItemResource {
         if (pi != null) {
             pi = StringTools.stripPatternBreakingChars(pi);
         }
-        logger.debug("getAnnotationsForManifest: {}", pi);
+        // logger.debug("getAnnotationsForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
 
@@ -361,7 +360,7 @@ public class CampaignItemResource {
         if (pi != null) {
             pi = StringTools.stripPatternBreakingChars(pi);
         }
-        logger.debug("setAnnotationsForManifest: {}", pi);
+        // logger.debug("setAnnotationsForManifest: {}", pi);
 
         IDAO dao = DataManager.getInstance().getDao();
         Campaign campaign = dao.getCampaign(campaignId);

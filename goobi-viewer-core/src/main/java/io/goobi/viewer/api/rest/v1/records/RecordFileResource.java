@@ -164,7 +164,6 @@ public class RecordFileResource {
             @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
             throws ContentLibException {
         filename = StringTools.stripPatternBreakingChars(filename);
-        logger.trace("getPDF: {}/{}", pi, filename);
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
         try {
             return Response.seeOther(PathConverter.toURI(url)).build();

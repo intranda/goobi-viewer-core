@@ -385,7 +385,6 @@ public class RecordResource {
             @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @PathParam("lang") String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         language = StringTools.stripPatternBreakingChars(language);
-        logger.trace("getCmdi({}, {})", pi, language);
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);

@@ -61,7 +61,6 @@ public class XServiceAuthenticationResponse {
             throw new IllegalArgumentException("xml may not be null");
         }
 
-        logger.trace(xml);
         Document doc = XmlTools.getDocumentFromString(xml, encoding);
         if (doc == null || doc.getRootElement() == null || doc.getRootElement().getChild("z305") == null) {
             throw new IllegalArgumentException("xml invalid or incomplete");

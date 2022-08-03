@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -123,7 +124,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query);
-            logger.trace("Resolver query: {}", query);
+            // logger.trace("Resolver query: {}", query);
             if (hits.getNumFound() == 0) {
                 try {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
@@ -145,7 +146,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
             boolean access = false;
             try {
                 access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST,
-                    request).isGranted();
+                        request).isGranted();
             } catch (DAOException e) {
                 logger.debug("DAOException thrown here: {}", e.getMessage());
                 try {
@@ -168,7 +169,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
                 }
             }
             if (!access) {
-                logger.debug("User may not list {}", identifier);
+                logger.debug("User may not list record");
                 try {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 } catch (IOException e) {
