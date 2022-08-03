@@ -35,7 +35,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -83,36 +82,41 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
 
         String pi = path.getName(0).toString();
         String id = FilenameUtils.getBaseName(path.getName(3).toString());
-        String format = FilenameUtils.getExtension(path.getName(3).toString());
         String widthString = path.getName(1).toString();
         String rotation = path.getName(2).toString();
 
+        int width;
         try {
-
-            int width;
+            width = Integer.parseInt(widthString);
+        } catch (NullPointerException | NumberFormatException e) {
+            logger.error("Size parameter must be a number, but is {}", widthString);
             try {
-                width = Integer.parseInt(widthString);
-            } catch (NullPointerException | NumberFormatException e) {
-                throw new IllegalRequestException("Size parameter must be a number, but is " + widthString);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Size parameter must be a number, but is: " + widthString);
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
             }
+            return;
+        }
 
-            String baseUri = DataManager.getInstance().getRestApiManager().getContentApiManager()
-                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, id).build())
-                    .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id);
+        String baseUri = DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, id).build())
+                .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id);
 
+        try {
+            String format = FilenameUtils.getExtension(path.getName(3).toString());
             String uri = BeanUtils.getImageDeliveryBean()
                     .getIiif()
                     .getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width), new Rotation(rotation), Colortype.DEFAULT,
                             ImageFileFormat.valueOf(format.toUpperCase()));
-
             response.sendRedirect(uri);
-
-        } catch (ContentLibException e) {
-            throw new ServletException(e);
-        } catch (ViewerConfigurationException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+        } catch (IllegalArgumentException | ViewerConfigurationException | IOException | IllegalRequestException e) {
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         }
     }
 }
