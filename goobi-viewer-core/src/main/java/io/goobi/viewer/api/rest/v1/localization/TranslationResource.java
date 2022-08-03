@@ -82,7 +82,6 @@ public class TranslationResource {
     public TranslationList getTranslations(
             @QueryParam("keys") @Parameter(description = "A comma separated list of message keys") String keys) throws IllegalRequestException {
         keys = StringTools.stripPatternBreakingChars(keys);
-        logger.trace("getTranslations: {}", keys);
 
         Collection<String> keysCollection;
         if (StringUtils.isBlank(keys)) {

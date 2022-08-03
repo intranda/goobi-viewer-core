@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -115,19 +114,16 @@ public class AccessConditionUtils {
         switch (action) {
             case "image":
             case "application":
-                switch (FilenameUtils.getExtension(contentFileName).toLowerCase()) {
-                    // This check is needed so that the "application" action cannot be abused to download images w/o the proper permission
-                    case "pdf":
-                        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                                IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-                    default:
-                        if (isThumbnail) {
-                            return checkAccessPermissionForThumbnail(request, pi, contentFileName);
-                            //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
-                        }
-                        return checkAccessPermissionForImage(request, pi, contentFileName);
-                    //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access);
+                if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(contentFileName))) {
+                    return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
+                            IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
                 }
+                if (isThumbnail) {
+                    return checkAccessPermissionForThumbnail(request, pi, contentFileName);
+                    //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
+                }
+                return checkAccessPermissionForImage(request, pi, contentFileName);
+            //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access);
             case "text":
             case "ocrdump":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -280,15 +276,15 @@ public class AccessConditionUtils {
             }
 
             Map<String, AccessPermission> ret = new HashMap<>(requiredAccessConditions.size());
-            for (String pageFileName : requiredAccessConditions.keySet()) {
-                Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
+            for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
+                Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
-                ret.put(pageFileName, access);
+                ret.put(entry.getKey(), access);
             }
             return ret;
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(e.getMessage());
             return Collections.emptyMap();
         }
     }
@@ -321,7 +317,7 @@ public class AccessConditionUtils {
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(e.getMessage());
         }
 
         return AccessPermission.denied();
@@ -606,8 +602,7 @@ public class AccessConditionUtils {
             Set<String> requiredAccessConditions = new HashSet<>();
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(query, 1, null,
-                            Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
+                    .search(query, 1, null, Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT));
             for (SolrDocument doc : hits) {
                 Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                 if (fieldsAccessConddition != null) {
@@ -1052,23 +1047,23 @@ public class AccessConditionUtils {
                         .append(" -(")
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
-                logger.trace("License relevance query: {}",
-                        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString())));
+                // logger.trace("License relevance query: {}",
+                // StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString())));
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
-                            licenseType.getName(), StringTools.stripPatternBreakingChars(query));
+                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
+                    // licenseType.getName(), StringTools.stripPatternBreakingChars(query));
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
-                        logger.trace(
-                                "License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. All restrictions lifted.",
-                                licenseType.getName(), StringTools.stripPatternBreakingChars(query));
+                        //                        logger.trace(
+                        //                                "License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. All restrictions lifted.",
+                        //                                licenseType.getName(), StringTools.stripPatternBreakingChars(query));
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
                     }
                 }
-                logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(),
-                        StringTools.stripPatternBreakingChars(query));
+                // logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(),
+                // StringTools.stripPatternBreakingChars(query));
             }
 
             //no individual file conditions. Write same licenseTypes for all files
@@ -1108,7 +1103,7 @@ public class AccessConditionUtils {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc("+" + SolrConstants.PI + ":\"" + pi + '"',
-                        Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA }));
+                        Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.ACCESSCONDITION_PDF_PERCENTAGE_QUOTA));
         if (doc == null) {
             throw new RecordNotFoundException(pi + " not found in index");
         }
@@ -1223,12 +1218,12 @@ public class AccessConditionUtils {
 
         return hasTicket != null && hasTicket;
     }
-    
+
     public static boolean addPermissionToSession(String pi, HttpSession session) {
         if (pi == null || session == null) {
             return false;
         }
-        
+
         String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
         session.setAttribute(attributeName, true);
         return true;

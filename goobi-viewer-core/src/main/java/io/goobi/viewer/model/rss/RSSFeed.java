@@ -80,13 +80,20 @@ public class RSSFeed {
     private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
 
     /** Constant <code>FIELDS</code> */
-    public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
+    private static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
             SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.NUMVOLUMES,
             SolrConstants.PERSON_ONEFIELD,
             SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL,
             SolrConstants.THUMBPAGENO,
             SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
+
+    /**
+     * 
+     */
+    private RSSFeed() {
+        //
+    }
 
     /**
      * <p>
@@ -98,11 +105,10 @@ public class RSSFeed {
      * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static SyndFeed createRss(String rootPath, String query, int maxItems)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         return createRss(rootPath, query, null, null, maxItems, null, true);
     }
 
@@ -118,7 +124,7 @@ public class RSSFeed {
         List<String> allFields = new ArrayList<>();
         for (String string : FIELDS) {
             allFields.add(string);
-            allFields.add(string + "_LANG_" + locale.getLanguage().toUpperCase());
+            allFields.add(string + SolrConstants._LANG_ + locale.getLanguage().toUpperCase());
         }
         return allFields;
     }
@@ -139,8 +145,7 @@ public class RSSFeed {
      * @should produce feed correctly
      */
     public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems, String sortField,
-            boolean sortDescending)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            boolean sortDescending) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -149,11 +154,6 @@ public class RSSFeed {
         }
         if (locale == null) {
             locale = ViewerResourceBundle.getDefaultLocale();
-        }
-
-        logger.trace("RSS query: {}", query);
-        if (filterQueries != null) {
-            logger.trace("RSS filter queries: {}", filterQueries.toString());
         }
 
         SyndFeed feed = new SyndFeedImpl();
@@ -191,7 +191,6 @@ public class RSSFeed {
                     && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
                     && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
             boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
-            // boolean ePublication = MimeType.APPLICATION.getName().equals(doc.getFieldValue(SolrConstants.MIMETYPE));
             SolrDocument topDoc = null;
             SolrDocument ownerDoc = null;
             if (child || page) {
@@ -376,16 +375,6 @@ public class RSSFeed {
         }
         feed.setEntries(entries);
 
-        // // TODO read information from config file
-
-        // Image digiversoLogo = new Image();
-        // // TODO ico funktioniert nicht, muss gif/png sein
-        // digiversoLogo.setURL("http://www.intranda.com/images/favicon.ico");
-        // digiversoLogo.setTitle("digiverso");
-        // digiversoLogo.setLink("http://intranda.com");
-        // myChannel.setImage(digiversoLogo);
-        //
-
         return feed;
     }
 
@@ -441,8 +430,6 @@ public class RSSFeed {
     public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language,
             String sortField, boolean sortDescending)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        // String feedType = "rss_2.0";
-
         Locale locale = null;
         if (StringUtils.isNotBlank(language)) {
             locale = Locale.forLanguageTag(language);
@@ -450,8 +437,6 @@ public class RSSFeed {
         if (locale == null) {
             locale = ViewerResourceBundle.getDefaultLocale();
         }
-
-        logger.trace("RSS query: {}", query);
 
         Channel feed = new Channel();
         feed.setTitle(DataManager.getInstance().getConfiguration().getRssTitle());
@@ -480,7 +465,6 @@ public class RSSFeed {
                     && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
                     && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
             boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
-            // boolean ePublication = MimeType.APPLICATION.getName().equals(doc.getFieldValue(SolrConstants.MIMETYPE));
             SolrDocument topDoc = null;
             SolrDocument ownerDoc = null;
             if (child || page) {
@@ -515,8 +499,7 @@ public class RSSFeed {
             String author = "";
             String authorRss = "";
             String publisher = "";
-            String placeAndTime = "";
-            // String descValue = "";
+            StringBuilder sbPlaceAndTime = new StringBuilder();
             String thumbnail = "";
             String urn = "";
             String urnLink = "";
@@ -577,11 +560,10 @@ public class RSSFeed {
                             break;
                         case SolrConstants.YEARPUBLISH:
                         case SolrConstants.PLACEPUBLISH:
-                            if (StringUtils.isBlank(placeAndTime)) {
-                                placeAndTime = value.toString();
-                            } else {
-                                placeAndTime = placeAndTime + ", " + value;
+                            if (sbPlaceAndTime.length() > 0) {
+                                sbPlaceAndTime.append(", ");
                             }
+                            sbPlaceAndTime.append(value);
                             break;
                         case SolrConstants.URN:
                             urn = value.toString();
@@ -625,8 +607,8 @@ public class RSSFeed {
                 description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("DATECREATED", locale), imported));
             }
 
-            if (StringUtils.isNotBlank(placeAndTime)) {
-                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("rss_published", locale), placeAndTime));
+            if (sbPlaceAndTime.length() > 0) {
+                description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("rss_published", locale), sbPlaceAndTime.toString()));
             }
             if (StringUtils.isNotBlank(bookSeries)) {
                 description.addMetadata(new RssMetadata(ViewerResourceBundle.getTranslation("rss_bookSeries", locale), bookSeries));
@@ -661,15 +643,6 @@ public class RSSFeed {
             feed.addItem(entry);
         }
 
-        // // TODO read information from config file
-
-        // Image digiversoLogo = new Image();
-        // // TODO ico funktioniert nicht, muss gif/png sein
-        // digiversoLogo.setURL("http://www.intranda.com/images/favicon.ico");
-        // digiversoLogo.setTitle("digiverso");
-        // digiversoLogo.setLink("http://intranda.com");
-        // myChannel.setImage(digiversoLogo);
-        //
         Collections.sort(feed.getItems());
 
         return feed;
@@ -690,72 +663,6 @@ public class RSSFeed {
                 .append('/')
                 .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, pageNo, null, pageType, true))
                 .toString();
-    }
-
-    /**
-     * <p>
-     * createImageUrl.
-     * </p>
-     *
-     * @param rootPath a {@link java.lang.String} object.
-     * @param anchor a boolean.
-     * @param ePublication a boolean.
-     * @param pi a {@link java.lang.String} object.
-     * @param thumbnail a {@link java.lang.String} object.
-     * @param thumbWidth a int.
-     * @param thumbHeight a int.
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public static String createImageUrl(String rootPath, boolean anchor, boolean ePublication, String pi, String thumbnail, int thumbWidth,
-            int thumbHeight) {
-        String imageUrl = null;
-        if (ePublication) {
-            // E-publication thumbnail
-            imageUrl =
-                    new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                            .append(rootPath)
-                            .append("/resources/themes/")
-                            .append(DataManager.getInstance().getConfiguration().getTheme())
-                            .append("/images/thumbnail_epub.jpg")
-                            .append("&width=")
-                            .append(thumbWidth)
-                            .append("&height=")
-                            .append(thumbHeight)
-                            .append("&rotate=0&format=png&resolution=72&ignoreWatermark=true")
-                            .toString();
-        } else if (anchor && StringUtils.isEmpty(thumbnail)) {
-            // Anchor thumbnail
-            imageUrl =
-                    new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                            .append(rootPath)
-                            .append("/resources/themes/")
-                            .append(DataManager.getInstance().getConfiguration().getTheme())
-                            .append("/images/multivolume_thumbnail.jpg")
-                            .append("&width=")
-                            .append(thumbWidth)
-                            .append("&height=")
-                            .append(thumbHeight)
-                            .append("&rotate=0&format=png&resolution=72&ignoreWatermark=true")
-                            .toString();
-
-        } else if (StringUtils.isNotEmpty(thumbnail)) {
-            StringBuilder sbImageUrl =
-                    new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
-            if (!thumbnail.startsWith("http")) {
-                sbImageUrl.append(pi).append('/');
-            }
-            sbImageUrl.append(thumbnail)
-                    .append("&width=")
-                    .append(thumbWidth)
-                    .append("&height=")
-                    .append(thumbHeight)
-                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
-                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "")
-                    .toString();
-            imageUrl = sbImageUrl.toString();
-        }
-        return imageUrl;
     }
 
     /**
@@ -791,14 +698,27 @@ public class RSSFeed {
                 filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true, false);
             }
 
-            Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+            return RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
                     query, filterQueries, maxHits, language, sortField, sortDescending);
-            return rss;
         } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
             throw new ContentLibException(e.toString());
         }
     }
 
+    /**
+     * 
+     * @param language
+     * @param maxHits
+     * @param subtheme
+     * @param query
+     * @param facets
+     * @param facetQueryOperator
+     * @param servletRequest
+     * @param sortField
+     * @param sortDescending
+     * @return
+     * @throws ContentLibException
+     */
     public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets, Integer facetQueryOperator,
             HttpServletRequest servletRequest, String sortField, boolean sortDescending)
             throws ContentLibException {
@@ -827,12 +747,23 @@ public class RSSFeed {
             return output
                     .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), query, filterQueries,
                             language, maxHits, sortField, sortDescending));
-
         } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
             throw new ContentLibException(e.toString());
         }
     }
 
+    /**
+     * 
+     * @param query
+     * @param bookshelfId
+     * @param partnerId
+     * @param servletRequest
+     * @param addSuffixes
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
     private static String createQuery(String query, Long bookshelfId, String partnerId, HttpServletRequest servletRequest, boolean addSuffixes)
             throws IndexUnreachableException, PresentationException, DAOException {
         // Build query, if none given
@@ -870,5 +801,4 @@ public class RSSFeed {
 
         return sbQuery.toString();
     }
-
 }

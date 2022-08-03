@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -99,7 +98,7 @@ public class IdentifierResolver extends HttpServlet {
             return;
         }
 
-        for (Entry<String,String[]> entry : parameterMap.entrySet()) {
+        for (Entry<String, String[]> entry : parameterMap.entrySet()) {
             if (entry.getValue() == null || entry.getValue().length == 0) {
                 continue;
             }
@@ -108,7 +107,7 @@ public class IdentifierResolver extends HttpServlet {
                 moreFields.put(Integer.valueOf(number), entry.getValue()[0]);
             } else if (entry.getKey().startsWith("value") && entry.getKey().length() > "value".length()) {
                 String number = entry.getKey().substring("value".length());
-                moreValues.put(Integer.valueOf(number),entry.getValue()[0]);
+                moreValues.put(Integer.valueOf(number), entry.getValue()[0]);
             }
         }
     }
@@ -198,7 +197,7 @@ public class IdentifierResolver extends HttpServlet {
 
             sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
             String query = sbQuery.toString();
-            logger.trace("query: {}", StringTools.stripPatternBreakingChars(query));
+            // logger.trace("query: {}", StringTools.stripPatternBreakingChars(query));
 
             // 3. evaluate the search
             SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
@@ -211,7 +210,7 @@ public class IdentifierResolver extends HttpServlet {
                         logger.error(e.getMessage());
                     }
                 } else {
-                    logger.trace("not found: {}:{}", fieldName, fieldValue);
+                    // logger.trace("not found: {}:{}", fieldName, fieldValue);
                     try {
                         redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
                     } catch (IOException | ServletException e) {
@@ -327,14 +326,7 @@ public class IdentifierResolver extends HttpServlet {
                     logger.error(e.getMessage(), e);
                 }
             }
-        } catch (PresentationException e) {
-            logger.debug(e.getMessage());
-            try {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-                logger.error(e1.getMessage());
-            }
-        } catch (IndexUnreachableException e) {
+        } catch (PresentationException | IndexUnreachableException e) {
             logger.debug(e.getMessage());
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -355,7 +347,7 @@ public class IdentifierResolver extends HttpServlet {
      * @throws ServletException
      */
     private void doPageSearch(String fieldValue, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        logger.trace("doPageSearch {}", fieldValue);
+        // logger.trace("doPageSearch {}", fieldValue);
         // A.1 Search for documents, that contain the request param in their page field
 
         // A.2 Evaluate the search
