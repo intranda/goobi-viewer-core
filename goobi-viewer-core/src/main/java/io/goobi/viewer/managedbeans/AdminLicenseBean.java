@@ -593,12 +593,9 @@ public class AdminLicenseBean implements Serializable {
     /**
      * 
      * @param ticket
-     * @param emailSubjectKey
-     * @param emailBodyKey
-     * @return
      * @throws DAOException
      */
-    private static String saveTicketAndNotifyOwner(DownloadTicket ticket, String emailSubjectKey, String emailBodyKey) throws DAOException {
+    private static void saveTicket(DownloadTicket ticket) throws DAOException {
         if (ticket == null) {
             throw new IllegalArgumentException(EXCEPTION_TICKET_MAY_NOT_BE_NULL);
         }
@@ -609,12 +606,7 @@ public class AdminLicenseBean implements Serializable {
             Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
         } else {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
-            return "";
         }
-
-        // Notify owner
-        return notifyOwner(ticket, emailSubjectKey, emailBodyKey,
-                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
     }
 
     /**
@@ -673,7 +665,11 @@ public class AdminLicenseBean implements Serializable {
         // Set creation and expiration dates
         ticket.activate();
 
-        return saveTicketAndNotifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_activation");
+        saveTicket(ticket);
+
+        // Notify owner
+        return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_activation",
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
     }
 
     /**
@@ -691,7 +687,10 @@ public class AdminLicenseBean implements Serializable {
         // Set new expiration date
         ticket.extend(DownloadTicket.VALIDITY_DAYS);
 
-        return saveTicketAndNotifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_extention");
+        saveTicket(ticket);
+
+        return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_extention",
+                Arrays.asList(ticket.getPi(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
     }
 
     /**
@@ -709,7 +708,11 @@ public class AdminLicenseBean implements Serializable {
         // Generate new password and reset expiration date
         ticket.reset();
 
-        return saveTicketAndNotifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_renewal");
+        saveTicket(ticket);
+
+        // Notify owner
+        return notifyOwner(ticket, StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, "download_ticket__email_body_renewal",
+                Arrays.asList(ticket.getPi(), ticket.getPassword(), DateTools.formatterDEDateTimeNoSeconds.format(ticket.getExpirationDate())));
     }
 
     /**
