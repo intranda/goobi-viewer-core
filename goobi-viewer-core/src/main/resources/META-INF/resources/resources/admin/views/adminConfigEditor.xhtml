@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	
+	<h:head>
+		<title>Konfiguration</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ 
+ 		<h:outputStylesheet library="css" name="codemirror.css" /> 
+ 		<h:outputStylesheet library="css" name="fullscreen.css" />
+ 		<h:outputStylesheet library="css" name="index.css" /> 
+ 		<h:outputStylesheet library="webjars" name="font-awesome/6.1.2/css/fontawesome-jsf.css" />
+ 		<h:outputStylesheet library="webjars" name="font-awesome/6.1.2/css/all-jsf.css" />
+		
+		<h:outputScript target="body">
+			var readOnly;
+		</h:outputScript>
+		
+ 		<h:outputScript library="js" name="codemirror.js" target="body" />
+ 		<h:outputScript library="js" name="xml.js" target="body" />
+ 		<h:outputScript library="js" name="properties.js" target="body" />
+ 		<h:outputScript library="js" name="fullscreen.js" target="body" />
+   		<h:outputScript library="js" name="index.js" target="body" /> 		
+
+	</h:head>
+	<h:body rendered="#{configEditorBean.renderBackend}">
+		
+		
+		<div id="header">
+			<h1>Konfiguration</h1>
+			<p id="header-text">
+				<h:outputText value="Auf dieser Seite können die Konfigurationsdateien des Goobi Viewers 
+				und der dazugehörigen Komponenten editiert werden. Backups werden automatisch angelegt. 
+				&#34;zzz&#34; markierte Einträge bedeuten, dass sie noch geprüft werden müssen. Die Zeichenfolge 
+				&#34;zzz&#34; wird in der Oberfläche automatisch herausgefiltert! " />
+			</p>
+		</div>
+		
+		
+		<div id="main">
+						
+			<div id="left">
+				<p><h:outputText value="Konfigurationsdatei" /></p>
+				<h:form id="editor-form">
+<!--  				
+					<h:inputTextarea id="editor" cols="170" rows="87" value="#{configEditorBean.fileContent}" 
+									disabled="#{not(configEditorBean.editable)}"/>
+ -->					
+ 					<h:inputTextarea id="editor"
+ 									 cols="170"
+ 									 rows="87"
+ 									 value="#{configEditorBean.fileContent}" />
+					 					
+					<hr/>
+					
+					<h:panelGroup layout="block" styleClass="save-cancel-buttons">
+						<h:commandButton value="Save"
+										 type="submit" 
+										 styleClass="buttons general-buttons"
+										 action="#{configEditorBean.saveFile}" 
+										 accesskey="s"
+										 onclick="saveEditor();"
+										 disabled="#{not(configEditorBean.editable)}">
+										 
+							<f:ajax execute="@form" render="backup-form:backup-table :output"/>
+						</h:commandButton>
+						<h:commandButton value="Cancel"
+										 styleClass="buttons general-buttons"
+										 action="#{configEditorBean.cancelEdition}"
+										 accesskey="c"
+										 disabled="#{not(configEditorBean.editable)}">
+							<f:ajax excute="@form" render="@all"/>
+						</h:commandButton>
+					</h:panelGroup>
+					
+
+				</h:form>
+			</div>
+			
+
+			
+			<div id="right">
+				<div id="right-up">
+					<p class="label">
+						<h:outputText value="Dateien"/>
+					</p>
+					<p class="description">
+						<h:outputText value="Bitte wähle aus der folgenden Liste die zu bearbeitende Datei:" />
+					</p>
+					<h:form id="file-form">
+						<h:dataTable value="#{configEditorBean.fileRecordsModel}"
+									 id="file-table"
+									 var="record" 
+									 border="1" 
+									 cellspacing="0" 
+									 cellpadding="17">
+									 
+							<h:column>
+								<f:facet name="header"></f:facet>
+								<h:commandLink value="#{record.fileName}"
+											   action="#{configEditorBean.showBackups}"
+											   name="#{record.number}"
+											   onclick="setEditable(false, #{record.number}, false);">
+									<f:ajax execute="@this" render="@all"/>
+									
+								</h:commandLink>
+							</h:column>
+										
+							<h:column>
+								<f:facet name="header"></f:facet>
+								<h:commandButton value="#{record.writable ? '&#xf304;' : '&#xf06e;'}"
+												 styleClass="buttons edit-buttons fa fa-solid"
+												 action="#{configEditorBean.editFile(record.writable)}"
+												 name="#{record.number}"
+												 rendered="#{record.readable}" 
+												 onclick="setEditable(#{record.writable}, #{record.number}, true);">
+												 
+									<f:ajax execute="@this" render="@all" immediate="true"/>
+								</h:commandButton>
+							
+							</h:column>
+						</h:dataTable>
+					</h:form>
+					<div id="currentConfigFileType" style="position: absolute; visibility: hidden">
+						#{configEditorBean.currentConfigFileType}
+					</div>
+				</div>
+				
+				<div id="right-down">
+					<p class="label">
+						<h:outputText value="Backups"/>
+					</p>
+					<p class="description">
+						<h:outputText value="Folgende Backups stehen für die ausgewählte Konfigurationsdatei zur Verfügung:"/>
+					</p>
+					<h:form id="backup-form">
+						<h:dataTable id="backup-table"
+									 value="#{configEditorBean.backupRecordsModel}" 
+									 var="record" 
+									 border="1" 
+									 cellspacing="0" 
+									 cellpadding="7">
+									 
+							<h:column>
+								<f:facet name="header"></f:facet>
+								<h:outputText value="#{record.name}" />
+							</h:column>
+										
+							<h:column>
+								<f:facet name="header"></f:facet>
+				
+							
+								<h:commandButton styleClass="buttons download-buttons fa fa-solid"
+												 value="&#xf019;" 
+												 action="#{configEditorBean.downloadFile}"
+												 disabled="#{not(configEditorBean.downloadable)}" >
+												 
+									<f:ajax execute="@form" render=":output" />
+								</h:commandButton>
+
+							</h:column>
+						</h:dataTable>
+					</h:form>
+				</div>
+			</div>
+			
+
+		</div>
+		
+		
+		<div id="footer">
+			<h:outputText id="output" value="#{configEditorBean.hiddenText}" />
+		</div>
+		
+		
+	</h:body>
+
+</html>
