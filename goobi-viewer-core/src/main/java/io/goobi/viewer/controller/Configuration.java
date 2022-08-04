@@ -202,7 +202,6 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param stopwordsFilePath a {@link java.lang.String} object.
      * @return a {@link java.util.Set} object.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      * @should load all stopwords
      * @should remove parts starting with pipe
@@ -210,7 +209,7 @@ public class Configuration extends AbstractConfiguration {
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
      */
-    protected static Set<String> loadStopwords(String stopwordsFilePath) throws FileNotFoundException, IOException {
+    protected static Set<String> loadStopwords(String stopwordsFilePath) throws IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
             throw new IllegalArgumentException("stopwordsFilePath may not be null or empty");
         }
@@ -225,15 +224,13 @@ public class Configuration extends AbstractConfiguration {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
-                if (StringUtils.isNotBlank(line)) {
-                    if (line.charAt(0) != '#') {
-                        int pipeIndex = line.indexOf('|');
-                        if (pipeIndex != -1) {
-                            line = line.substring(0, pipeIndex).trim();
-                        }
-                        if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
-                            ret.add(line);
-                        }
+                if (StringUtils.isNotBlank(line) && line.charAt(0) != '#') {
+                    int pipeIndex = line.indexOf('|');
+                    if (pipeIndex != -1) {
+                        line = line.substring(0, pipeIndex).trim();
+                    }
+                    if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
+                        ret.add(line);
                     }
                 }
             }
@@ -251,22 +248,6 @@ public class Configuration extends AbstractConfiguration {
     public Set<String> getStopwords() {
         return stopwords;
     }
-
-    /**
-     * <p>
-     * reloadingRequired.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    //    public boolean reloadingRequired() {
-    //        boolean ret = false;
-    //        if (getConfigLocal() != null) {
-    //            ret = getConfigLocal().getReloadingStrategy().reloadingRequired() || config.getReloadingStrategy().reloadingRequired();
-    //        }
-    //        ret = config.getReloadingStrategy().reloadingRequired();
-    //        return ret;
-    //    }
 
     /*********************************** direct config results ***************************************/
 
@@ -534,7 +515,6 @@ public class Configuration extends AbstractConfiguration {
         if (usingTemplate == null) {
             return Collections.emptyList();
         }
-        //                logger.debug("template requested: " + template + ", using: " + usingTemplate.getString("[@name]"));
         List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.configurationsAt("metadata");
         if (elements == null) {
             logger.warn("Template '{}' contains no metadata elements.", usingTemplate.getRootElementName());
@@ -698,7 +678,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
-        //        HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
             if (subElement.getString("[@name]").equals(template)) {
@@ -842,8 +821,7 @@ public class Configuration extends AbstractConfiguration {
             // no or multiple occurrences
         }
         if (sub != null) {
-            Metadata md = getMetadataFromSubnodeConfig(sub, false, 0);
-            return md;
+            return getMetadataFromSubnodeConfig(sub, false, 0);
         }
 
         return new Metadata();
@@ -1137,14 +1115,14 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns collection names to be omitted from search results, listings etc.
      *
-     * @param field a {@link java.lang.String} object.
-     * @should return all configured elements
+     * @param field a {@link java.lang.String} object
      * @return a {@link java.util.List} object.
+     * @should return all configured elements
      */
     public List<String> getCollectionBlacklist(String field) {
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
         if (collection == null) {
-            return null;
+            return Collections.emptyList();
         }
         return getLocalList(collection, null, "blacklist.collection", Collections.<String> emptyList());
     }
@@ -2069,7 +2047,7 @@ public class Configuration extends AbstractConfiguration {
             }
             List<Object> answerNodes = node.getList("allowedAnswer", Collections.emptyList());
             if (answerNodes.isEmpty()) {
-                logger.warn("Security question '{}' has no configured answers, skipping...");
+                logger.warn("Security question '{}' has no configured answers, skipping...", questionKey);
                 continue;
             }
             Set<String> allowedAnswers = new HashSet<>(answerNodes.size());
@@ -3067,8 +3045,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isTitlePdfEnabled() {
-        boolean enabled = getLocalBoolean("pdf.titlePdfEnabled", true);
-        return enabled;
+        return getLocalBoolean("pdf.titlePdfEnabled", true);
     }
 
     /**
@@ -3510,10 +3487,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getImageViewZoomScales(PageType view, ImageType image) throws ViewerConfigurationException {
         List<String> defaultList = new ArrayList<>();
-        //        defaultList.add("600");
-        //        defaultList.add("900");
-        //        defaultList.add("1500");
-
         BaseHierarchicalConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, image);
         if (zoomImageViewConfig != null) {
             String[] scales = zoomImageViewConfig.getStringArray("scale");
@@ -4028,7 +4001,6 @@ public class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
             String templateName = subElement.getString("[@name]");
-            //            String groupBy = subElement.getString("[@groupBy]");
             if (templateName != null) {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;
@@ -4565,7 +4537,7 @@ public class Configuration extends AbstractConfiguration {
             try {
                 intList.add(Integer.valueOf(s));
             } catch (NullPointerException | NumberFormatException e) {
-                logger.error("Illegal config at 'viewer.pageBrowse.pageBrowseStep': " + s);
+                logger.error("Illegal config at 'viewer.pageBrowse.pageBrowseStep': {}", s);
             }
         }
         return intList;
@@ -5041,8 +5013,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isAllowRedirectCollectionToWork() {
-        boolean redirect = getLocalBoolean("collections.redirectToWork", true);
-        return redirect;
+        return getLocalBoolean("collections.redirectToWork", true);
     }
 
     /**
@@ -5054,8 +5025,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getTwitterUserName() {
-        String token = getLocalString("embedding.twitter.userName");
-        return token;
+        return getLocalString("embedding.twitter.userName");
     }
 
     /**
