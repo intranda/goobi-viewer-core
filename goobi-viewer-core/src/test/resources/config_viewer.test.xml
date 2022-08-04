@@ -1206,14 +1206,15 @@
 		<siteID>siteID_value</siteID>
 	</piwik>
 
-	<sitemap>
+    <!-- sitelinks/@enabled: If true, the link to the sitelinks page will be displayed. Default is true. -->
+    <sitelinks enabled="false">
 		<!-- sitelinksField: Field for which the sitelinks page will list all available 
 			values (similar to term browsing) -->
 		<sitelinksField>YEAR</sitelinksField>
 		<!-- sitelinksFilterQuery: Solr query which will filter the results for 
 			each field value (e.g. only top-level dosctructs) -->
 		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
-	</sitemap>
+	</sitelinks>
 
 	<!-- Web API configuration -->
 	<webapi>

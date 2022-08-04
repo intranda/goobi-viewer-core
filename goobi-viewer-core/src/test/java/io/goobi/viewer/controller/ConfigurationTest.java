@@ -2510,6 +2510,15 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isSitelinksEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSitelinksEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSitelinksEnabled());
+    }
+
+    /**
      * @see Configuration#getSitelinksFilterQuery()
      * @verifies return correct value
      */
@@ -3301,5 +3310,4 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, result.getIcons().size());
         Assert.assertEquals("paragraph50.svg", result.getIcons().get(0));
     }
-
 }

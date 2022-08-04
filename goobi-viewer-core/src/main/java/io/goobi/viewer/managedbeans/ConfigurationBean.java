@@ -1113,6 +1113,17 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
+     * isSitelinksEnabled.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isSitelinksEnabled() {
+        return DataManager.getInstance().getConfiguration().isSitelinksEnabled();
+    }
+
+    /**
+     * <p>
      * getRestApiUrl.
      * </p>
      *
@@ -1414,7 +1425,7 @@ public class ConfigurationBean implements Serializable {
     /**
      * @deprecated Superseded by isCopyrightIndicatorEnabled
      */
-    @Deprecated (since = "22.07")
+    @Deprecated(since = "22.07")
     public boolean isDisplayCopyrightInfo() {
         return false;
     }

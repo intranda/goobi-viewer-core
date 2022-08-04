@@ -4994,7 +4994,16 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSitelinksField() {
-        return getLocalString("sitemap.sitelinksField");
+        return getLocalString("sitelinks.sitelinksField");
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isSitelinksEnabled() {
+        return getLocalBoolean("sitelinks[@enabled]", true);
     }
 
     /**
@@ -5006,7 +5015,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSitelinksFilterQuery() {
-        return getLocalString("sitemap.sitelinksFilterQuery");
+        return getLocalString("sitelinks.sitelinksFilterQuery");
     }
 
     /**
