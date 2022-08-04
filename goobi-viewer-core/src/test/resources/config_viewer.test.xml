@@ -1077,7 +1077,7 @@
 		<!-- displayCrowdsourcingModuleLinks: Switch to enable crowdsourcing transcription links (default is false) -->
         <displayCrowdsourcingModuleLinks>true</displayCrowdsourcingModuleLinks>
         
-        <!-- copyrightIndicator: TODO -->
+        <!-- copyrightIndicator/@enabled: If true, copyright status of the current record will be visualized with colors and icons. Default is false. -->
         <copyrightIndicator enabled="true" style="trafficlight">
             <status field="MD_ACCESSCONDITION">
                 <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
