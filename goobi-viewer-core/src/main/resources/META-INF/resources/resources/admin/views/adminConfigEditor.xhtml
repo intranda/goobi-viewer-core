@@ -19,9 +19,9 @@
     <ui:define name="content">
 
       <!-- TITLE -->
-      <div class="admin__title-bar">
-        <h1 class="admin__title">#{msg.admin__clients__title}</h1>
-      </div>
+      	<div class="admin__title-bar">
+        	<h1 class="admin__title">#{msg.admin__clients__title}</h1>
+      	</div>
 		 
 		
 		<div id="header">
@@ -106,7 +106,7 @@
 										
 							<h:column>
 								<f:facet name="header"></f:facet>
-								<h:commandButton value="#{record.writable ? '&#xf304;' : '&#xf06e;'}"
+								<h:commandButton value="#{record.writable ? '&#xf303;' : '&#xf06e;'}"
 												 styleClass="buttons edit-buttons fa fa-solid"
 												 action="#{configEditorBean.editFile(record.writable)}"
 												 name="#{record.number}"
@@ -120,15 +120,17 @@
 						</h:dataTable>
 					</h:form>
 					<div id="currentConfigFileType" style="position: absolute; visibility: hidden">
-<!-- 						#{configEditorBean.currentConfigFileType} -->
-							abc
+						#{configEditorBean.currentConfigFileType}
+						
 					</div>
 				</div>
 				
 				<script>
+					var readOnly;
 					initTextArea();
 
 				</script>
+
 				
 				<div id="right-down">
 					<p class="label">
@@ -178,5 +180,5 @@
 		
 		
 
- </ui:define>
+	</ui:define>
 </ui:composition>
