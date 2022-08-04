@@ -100,6 +100,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TOC;
@@ -4049,7 +4050,7 @@ public class ViewManager implements Serializable {
             }
             // Default
             if (copyrightIndicatorStatus == null) {
-                copyrightIndicatorStatus = CopyrightIndicatorStatus.OPEN;
+                copyrightIndicatorStatus = new CopyrightIndicatorStatus(Status.OPEN, "");
             }
         }
 

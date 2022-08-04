@@ -81,6 +81,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
@@ -109,6 +110,7 @@ public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
+    private static final String XML_PATH_ATTRIBUTE_DESCRIPTION = "[@description]";
     private static final String XML_PATH_ATTRIBUTE_ICON = "[@icon]";
 
     private Set<String> stopwords;
@@ -5167,11 +5169,13 @@ public class Configuration extends AbstractConfiguration {
             String content = config.getString("[@content]");
             if (value.equals(content)) {
                 String statusName = config.getString("[@status]");
-                CopyrightIndicatorStatus ret = CopyrightIndicatorStatus.getByName(statusName);
-                if (ret == null) {
+                Status status = CopyrightIndicatorStatus.Status.getByName(statusName);
+                if (status == null) {
                     logger.warn("No copyright indicator status found for configured name: {}", statusName);
+                    status = Status.OPEN;
                 }
-                return ret;
+                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                return new CopyrightIndicatorStatus(status, description);
             }
         }
 
@@ -5192,7 +5196,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             String content = config.getString("[@content]");
             if (value.equals(content)) {
-                String description = config.getString("[@description]");
+                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
                 String[] icons = config.getStringArray("icon");
                 return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : Collections.emptyList());
             }
@@ -5459,7 +5463,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("translations/group/@name may not be empty.");
                 continue;
             }
-            String description = groupNode.getString("[@description]");
+            String description = groupNode.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
             List<HierarchicalConfiguration<ImmutableNode>> keyNodes = groupNode.configurationsAt("key");
             TranslationGroup group = TranslationGroup.create(id, type, name, description, keyNodes.size());
             for (HierarchicalConfiguration<ImmutableNode> keyNode : keyNodes) {

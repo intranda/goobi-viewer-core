@@ -41,9 +41,9 @@
  						<ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 						<div class="copyright-indicator__traffic-light-style">
 							<div class="copyright-indicator__traffic-light-style-circle-wrapper">
-							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.name() == 'OPEN' ? '-green' : ''}"><i class="fa fa-check" aria-hidden="true"></i></div>
-							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.name() == 'PARTIAL' ? '-yellow' : ''}"><i class="fa fa-info" aria-hidden="true"></i></div>
-							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.name() == 'LOCKED' ? '-red' : ''}"><i class="fa fa-times" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'OPEN' ? '-green' : ''}"><i class="fa fa-check" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'PARTIAL' ? '-yellow' : ''}"><i class="fa fa-info" aria-hidden="true"></i></div>
+							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'LOCKED' ? '-red' : ''}"><i class="fa fa-times" aria-hidden="true"></i></div>
 							</div>
 							<div class="copyright-indicator__traffic-light-style-icon-wrapper">
 							
@@ -62,9 +62,9 @@
 					<!-- LABEL STYLE -->
 					<ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'badge'}" >
 						<div class="copyright-indicator__label-style
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.name() == 'OPEN' ? '-green' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.name() == 'PARTIAL' ? '-yellow' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.name() == 'LOCKED' ? '-red' : ''}">
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'OPEN' ? '-green' : ''}
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'PARTIAL' ? '-yellow' : ''}
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'LOCKED' ? '-red' : ''}">
 							
 							<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
 							<div class="copyright-indicator__dot-wrapper">

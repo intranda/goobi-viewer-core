@@ -3263,12 +3263,21 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getCopyrightIndicatorStatusForValue_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(CopyrightIndicatorStatus.OPEN,
-                DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Freier Zugang"));
-        Assert.assertEquals(CopyrightIndicatorStatus.PARTIAL,
-                DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Eingeschränker Zugang"));
-        Assert.assertEquals(CopyrightIndicatorStatus.LOCKED,
-                DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Gesperrter Zugang"));
+        CopyrightIndicatorStatus status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Freier Zugang");
+        Assert.assertNotNull(status);
+        Assert.assertEquals(CopyrightIndicatorStatus.Status.OPEN, status.getStatus());
+        Assert.assertEquals("COPYRIGHT_STATUS_OPEN", status.getDescription());
+
+        status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Eingeschränker Zugang");
+        Assert.assertNotNull(status);
+        Assert.assertEquals(CopyrightIndicatorStatus.Status.PARTIAL, status.getStatus());
+        Assert.assertEquals("COPYRIGHT_STATUS_PARTIAL", status.getDescription());
+
+        status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Gesperrter Zugang");
+        Assert.assertNotNull(status);
+        Assert.assertEquals(CopyrightIndicatorStatus.Status.LOCKED, status.getStatus());
+        Assert.assertEquals("COPYRIGHT_STATUS_LOCKED", status.getDescription());
+
     }
 
     /**
