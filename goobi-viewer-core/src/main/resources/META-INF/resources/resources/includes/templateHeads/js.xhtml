@@ -135,7 +135,30 @@
       ['riotTags',
         ['templateMirador'],
         'resources/javascript/dist/riot-tags.js'
+      ],
+      ['codemirror',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/codemirror.js'
+      ],
+      
+      ['codemirrorFullscreen',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/codemirrorFullscreen.js'
+      ],
+      ['codemirrorProperties',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/codemirrorProperties.js'
+      ],
+      ['codemirrorXML',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/codemirrorXML.js'
+      ],
+      
+      ['codemirrorCustom',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/codemirrorCustom.js'
       ]
+      
     ]}" />
     <!-- INCLUDE FILES IF CONDITIONS ARE MET -->
     <c:forEach var="path" items="#{jsPaths}">

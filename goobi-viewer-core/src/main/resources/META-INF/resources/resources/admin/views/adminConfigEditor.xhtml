@@ -1,36 +1,28 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html lang="en"
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:b="http://bootsfaces.net/ui"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:pe="http://primefaces.org/ui/extensions">
-	
-	<h:head>
-		<title>Konfiguration</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
- 
- 		<h:outputStylesheet library="css" name="codemirror.css" /> 
- 		<h:outputStylesheet library="css" name="fullscreen.css" />
- 		<h:outputStylesheet library="css" name="index.css" /> 
- 		<h:outputStylesheet library="webjars" name="font-awesome/6.1.2/css/fontawesome-jsf.css" />
- 		<h:outputStylesheet library="webjars" name="font-awesome/6.1.2/css/all-jsf.css" />
-		
-		<h:outputScript target="body">
-			var readOnly;
-		</h:outputScript>
-		
- 		<h:outputScript library="js" name="codemirror.js" target="body" />
- 		<h:outputScript library="js" name="xml.js" target="body" />
- 		<h:outputScript library="js" name="properties.js" target="body" />
- 		<h:outputScript library="js" name="fullscreen.js" target="body" />
-   		<h:outputScript library="js" name="index.js" target="body" /> 		
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-	</h:head>
-	<h:body rendered="#{configEditorBean.renderBackend}">
-		
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminClients')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+
+      <!-- TITLE -->
+      <div class="admin__title-bar">
+        <h1 class="admin__title">#{msg.admin__clients__title}</h1>
+      </div>
+		 
 		
 		<div id="header">
 			<h1>Konfiguration</h1>
@@ -128,9 +120,15 @@
 						</h:dataTable>
 					</h:form>
 					<div id="currentConfigFileType" style="position: absolute; visibility: hidden">
-						#{configEditorBean.currentConfigFileType}
+<!-- 						#{configEditorBean.currentConfigFileType} -->
+							abc
 					</div>
 				</div>
+				
+				<script>
+					initTextArea();
+
+				</script>
 				
 				<div id="right-down">
 					<p class="label">
@@ -179,6 +177,6 @@
 		</div>
 		
 		
-	</h:body>
 
-</html>
+ </ui:define>
+</ui:composition>

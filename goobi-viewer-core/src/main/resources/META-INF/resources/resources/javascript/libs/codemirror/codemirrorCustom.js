@@ -13,8 +13,7 @@ if (readOnly === undefined) {
 	readOnly = true;
 }
 
-initTextArea();
-
+ 
 var table = document.getElementById("file-form:file-table");
 var rows = document.getElementsByTagName("tr");
 
