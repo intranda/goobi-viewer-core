@@ -31,23 +31,24 @@
 						<!-- NAME OF THE RECORD -->
 						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 	
+			            <!-- ADD TO BOOKMARK -->
+			            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+			                    <button type="button" class="btn btn--icon metadata__bookmark-button"
+			                        data-bookmark-list-type="add" 
+			                        data-pi="#{activeDocumentBean.viewManager.pi}"
+			                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
+			                        <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">
+			                            <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
+			                            <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+			                        </span>
+			                    </button>
+			            </ui:fragment>
+	
 						<viewerComponent:copyrightIndicator />
 	
 					</h1>
 				</div>
 			</div>
-            <!-- ADD TO BOOKMARK -->
-            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
-                    <button type="button" class="btn btn--icon metadata__bookmark-button"
-                        data-bookmark-list-type="add" 
-                        data-pi="#{activeDocumentBean.viewManager.pi}"
-                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
-                        <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">
-                            <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
-                            <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
-                        </span>
-                    </button>
-            </ui:fragment>
 	    </div>
 	    
         <!-- BORN DIGITAL MATERIALS -->
