@@ -30,15 +30,14 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.collections4.comparators.ReverseComparator;
 import org.apache.commons.lang3.StringUtils;
@@ -96,7 +95,6 @@ public class SolrSearchIndex {
     private static final int TIMEOUT_SO = 30000;
     private static final int TIMEOUT_CONNECTION = 30000;
 
-    public boolean initialized = false;
     private long lastPing = 0;
 
     /** Application-scoped map containing already looked up data repository names of records. */
@@ -125,7 +123,7 @@ public class SolrSearchIndex {
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
      */
     public void checkReloadNeeded() {
-        if (client == null || !(client instanceof HttpSolrClient)) {
+        if (!(client instanceof HttpSolrClient)) {
             return;
         }
 
@@ -335,7 +333,6 @@ public class SolrSearchIndex {
         solrQuery.set(SpellingParams.SPELLCHECK_ACCURACY, Float.toString(accuracy));
         solrQuery.set(SpellingParams.SPELLCHECK_BUILD, build);
         try {
-            QueryResponse resp = client.query(solrQuery);
             QueryRequest request = new QueryRequest(solrQuery);
             SpellCheckResponse response = request.process(client).getSpellCheckResponse();
             return response.getSuggestions().stream().flatMap(suggestion -> suggestion.getAlternatives().stream()).collect(Collectors.toList());
@@ -506,7 +503,7 @@ public class SolrSearchIndex {
         SolrDocument ret = null;
         SolrDocumentList hits =
                 search(new StringBuilder(SolrConstants.IDDOC).append(':').append(iddoc).toString(), 0, 1, null, null, null).getResults();
-        if (hits != null && hits.size() > 0) {
+        if (hits != null && !hits.isEmpty()) {
             ret = hits.get(0);
         }
 
@@ -528,7 +525,7 @@ public class SolrSearchIndex {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
         SolrDocument ret = null;
         SolrDocumentList hits = search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 0, 1, null, null, null).getResults();
-        if (hits != null && hits.size() > 0) {
+        if (hits != null && !hits.isEmpty()) {
             ret = hits.get(0);
         }
 
@@ -540,9 +537,9 @@ public class SolrSearchIndex {
         SolrDocument ret = null;
         if (StringUtils.isNoneBlank(pi, divId)) {
             // logger.trace("getDocumentByIddoc: {}", iddoc);
-            String query = SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.LOGID + ":" + divId;
+            String query = SolrConstants.PI_TOPSTRUCT + ":" + pi + SolrConstants.SOLR_QUERY_AND + SolrConstants.LOGID + ":" + divId;
             SolrDocumentList hits = search(query, 0, 1, null, null, null).getResults();
-            if (hits != null && hits.size() > 0) {
+            if (hits != null && !hits.isEmpty()) {
                 ret = hits.get(0);
             }
         } else if (StringUtils.isNotBlank(pi)) {
@@ -566,7 +563,6 @@ public class SolrSearchIndex {
 
         String query = new StringBuilder(fieldName).append(":*").append(querySuffix).toString();
         logger.trace("generateFilteredTagCloud query: {}", query);
-        // Pattern p = Pattern.compile("\\w+");
         Pattern p = Pattern.compile(StringTools.REGEX_WORDS);
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
 
@@ -735,11 +731,6 @@ public class SolrSearchIndex {
         logger.trace("query: {}", query);
         String luceneOwner = SolrConstants.IDDOC_OWNER;
         SolrDocument pageDoc = getFirstDoc(query, Collections.singletonList(luceneOwner));
-        //            if (pageDoc == null) {
-        //                query = query.replace(" AND DOCTYPE:PAGE", " AND FILENAME:*");
-        //                luceneOwner = "IDDOC_IMAGEOWNER";
-        //                pageDoc = getFirstDoc(query, Collections.singletonList(luceneOwner));
-        //            }
         if (pageDoc != null) {
             String iddoc = (String) pageDoc.getFieldValue(luceneOwner);
             return Long.valueOf(iddoc);
@@ -1004,15 +995,14 @@ public class SolrSearchIndex {
         solrQuery.setFacetLimit(-1); // no limit
 
         if (params != null && !params.isEmpty()) {
-            for (String key : params.keySet()) {
-                solrQuery.set(key, params.get(key));
+            for (Entry<String, String> entry : params.entrySet()) {
+                solrQuery.set(entry.getKey(), entry.getValue());
                 // logger.trace("&{}={}", key, params.get(key));
             }
         }
 
         try {
-            QueryResponse resp = client.query(solrQuery);
-            return resp;
+            return client.query(solrQuery);
         } catch (SolrServerException e) {
             if (e.getMessage().startsWith("Server refused connection")) {
                 logger.warn("Solr offline; Query: {}", solrQuery.getQuery());
@@ -1055,11 +1045,11 @@ public class SolrSearchIndex {
                 Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
                 List<String> list = new ArrayList<>();
-                for (String name : fieldInfoMap.keySet()) {
-                    FieldInfo info = fieldInfoMap.get(name);
+                for (Entry<String, FieldInfo> entry : fieldInfoMap.entrySet()) {
+                    FieldInfo info = entry.getValue();
                     if (info != null && info.getType() != null && (info.getType().toLowerCase().contains("string")
                             || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong"))) {
-                        list.add(name);
+                        list.add(entry.getKey());
                     }
                 }
                 this.solrFields = list;
@@ -1088,7 +1078,6 @@ public class SolrSearchIndex {
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
-            FieldInfo info = fieldInfoMap.get(name);
             if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED")) && !name.contains("_LANG_")) {
                 list.add(name);
             }
@@ -1276,13 +1265,9 @@ public class SolrSearchIndex {
             }
             sbValueQuery.append(')');
 
-            logger.trace("label query: {}", queryRoot + sbValueQuery.toString());
+            logger.trace("label query: {}{}", queryRoot, sbValueQuery.toString());
 
             SolrDocumentList result = search(queryRoot + sbValueQuery.toString(), Arrays.asList(fields));
-            //          if (result.isEmpty()) {
-            //              return Collections.emptyMap();
-            //          }
-
             for (SolrDocument doc : result) {
                 String value = SolrTools.getSingleFieldStringValue(doc, "MD_VALUE");
                 String label = String.valueOf(doc.getFirstValue(labelField));
@@ -1328,7 +1313,8 @@ public class SolrSearchIndex {
      * @return
      * @throws IndexUnreachableException
      */
-    public String getHeatMap(String solrField, String wktRegion, String query, String filterQuery, Integer gridLevel) throws IndexUnreachableException {
+    public String getHeatMap(String solrField, String wktRegion, String query, String filterQuery, Integer gridLevel)
+            throws IndexUnreachableException {
 
         HeatmapFacetMap facetMap = new HeatmapFacetMap(solrField)
                 .setHeatmapFormat(HeatmapFacetMap.HeatmapFormat.INTS2D)
@@ -1347,11 +1333,10 @@ public class SolrSearchIndex {
             QueryResponse response = request.process(client);
             final NestableJsonFacet topLevelFacet = response.getJsonFacetingResponse();
             final HeatmapJsonFacet heatmap = topLevelFacet.getHeatmapFacetByName("heatmapFacet");
-            if(heatmap != null) {
+            if (heatmap != null) {
                 return getAsJson(heatmap);
-            } else {
-                return "{}";
             }
+            return "{}";
         } catch (SolrServerException | IOException e) {
             throw new IndexUnreachableException("Error getting facet heatmap: " + e.toString());
         }
@@ -1361,7 +1346,7 @@ public class SolrSearchIndex {
      * @param heatmap
      * @return
      */
-    private String getAsJson(HeatmapJsonFacet heatmap) {
+    private static String getAsJson(HeatmapJsonFacet heatmap) {
         JSONObject json = new JSONObject();
         json.put("gridLevel", heatmap.getGridLevel());
         json.put("columns", heatmap.getNumColumns());
