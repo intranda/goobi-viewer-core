@@ -3977,11 +3977,9 @@ public class ViewManager implements Serializable {
             throw new RecordNotFoundException(pi);
         }
 
-        long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
+        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
         StructElement topDocument = new StructElement(iddoc, doc);
-        ViewManager ret = new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
-
-        return ret;
+        return new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
     }
 
     /**
@@ -4050,7 +4048,7 @@ public class ViewManager implements Serializable {
             }
             // Default
             if (copyrightIndicatorStatus == null) {
-                copyrightIndicatorStatus = new CopyrightIndicatorStatus(Status.OPEN, "");
+                copyrightIndicatorStatus = new CopyrightIndicatorStatus(Status.OPEN, "COPYRIGHT_STATUS_OPEN");
             }
         }
 
