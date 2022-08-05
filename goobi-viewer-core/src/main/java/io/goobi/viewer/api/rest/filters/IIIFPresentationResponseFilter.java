@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
@@ -33,6 +34,7 @@ import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
+import io.goobi.viewer.controller.NetTools;
 
 /**
  * <p>
@@ -59,24 +61,23 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
 
         Object responseObject = response.getEntity();
-        if (responseObject != null && responseObject instanceof AbstractPresentationModelElement2) {
+        if (responseObject instanceof AbstractPresentationModelElement2) {
             AbstractPresentationModelElement2 element = (AbstractPresentationModelElement2) responseObject;
-            setResponseCharset(response, "UTF-8");
+            setResponseCharset(response, StandardCharsets.UTF_8.name());
             element.setContext(CONTEXT_PRESENTATION_2);
-        } else if (responseObject != null && responseObject instanceof AbstractPresentationModelElement3) {
+        } else if (responseObject instanceof AbstractPresentationModelElement3) {
             AbstractPresentationModelElement3 element = (AbstractPresentationModelElement3) responseObject;
-            response.getHeaders().remove("Content-Type");
-            response.getHeaders().add("Content-Type", CONTENT_TYPE_IIIF3);
-//            setResponseCharset(response, "UTF-8");
+            response.getHeaders().remove(NetTools.HTTP_HEADER_CONTENT_TYPE);
+            response.getHeaders().add(NetTools.HTTP_HEADER_CONTENT_TYPE, CONTENT_TYPE_IIIF3);
             element.setContext(CONTEXT_PRESENTATION_3);
-        } else if (responseObject != null && responseObject instanceof SearchResult) {
+        } else if (responseObject instanceof SearchResult) {
             SearchResult element = (SearchResult) responseObject;
             setResponseCharset(response, "UTF-8");
             element.addContext(CONTEXT_PRESENTATION_3);
             if (!element.getHits().isEmpty()) {
                 element.addContext(CONTEXT_SEARCH);
             }
-        } else if (responseObject != null && responseObject instanceof AutoSuggestResult) {
+        } else if (responseObject instanceof AutoSuggestResult) {
             AutoSuggestResult element = (AutoSuggestResult) responseObject;
             setResponseCharset(response, "UTF-8");
             element.addContext(CONTEXT_SEARCH);
@@ -93,9 +94,9 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
      * @param charset a {@link java.lang.String} object.
      */
     public void setResponseCharset(ContainerResponseContext response, String charset) {
-        String contentType = response.getHeaderString("Content-Type") + ";charset=" + charset;
-        response.getHeaders().remove("Content-Type");
-        response.getHeaders().add("Content-Type", contentType);
+        String contentType = response.getHeaderString(NetTools.HTTP_HEADER_CONTENT_TYPE) + ";charset=" + charset;
+        response.getHeaders().remove(NetTools.HTTP_HEADER_CONTENT_TYPE);
+        response.getHeaders().add(NetTools.HTTP_HEADER_CONTENT_TYPE, contentType);
     }
 
 }

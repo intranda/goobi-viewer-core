@@ -24,9 +24,11 @@ package io.goobi.viewer.api.rest;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,8 +91,7 @@ public abstract class AbstractApiUrlManager {
             if (url.contains(before) && url.contains(after)) {
                 int urlBeforeEnd = url.indexOf(before) + before.length();
                 int urlAfterStart = after.length() > 0 ? (after.length() > 1 ? url.indexOf(after) : url.length() - 1) : url.length();
-                String paramValue = url.substring(urlBeforeEnd, urlAfterStart);
-                return paramValue;
+                return url.substring(urlBeforeEnd, urlAfterStart);
             }
             return "";
         }
@@ -191,7 +192,6 @@ public abstract class AbstractApiUrlManager {
                 urlString = urlString.substring(0, urlString.length() - 1);
             }
 
-
             return urlString;
         }
     }
@@ -228,7 +228,7 @@ public abstract class AbstractApiUrlManager {
 
         @Override
         public ApiPathQueries query(String key, Object value) {
-            if(value != null) {
+            if (value != null) {
                 this.queries.put(key, value);
             }
             return this;
@@ -241,18 +241,20 @@ public abstract class AbstractApiUrlManager {
 
         @Override
         public String build() {
-            String path = super.build();
+            StringBuilder sbPath = new StringBuilder(super.build());
             String querySeparator = "?";
-            for (String queryParam : queries.keySet()) {
-                String value = queries.get(queryParam).toString();
+            for (Entry<String, Object> entry : queries.entrySet()) {
+                String value = entry.getValue().toString();
                 try {
-                    value = URLEncoder.encode(value, "UTF-8");
+                    value = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
                 } catch (UnsupportedEncodingException e) {
+                    logger.error(e.getMessage());
                 }
-                path = path + querySeparator + queryParam + "=" + value;
+                sbPath.append(querySeparator).append(entry.getKey()).append('=').append(value);
                 querySeparator = "&";
             }
-            return path;
+
+            return sbPath.toString();
         }
     }
 
@@ -263,8 +265,7 @@ public abstract class AbstractApiUrlManager {
 
         public ApiInfo() {
             this("", "", "");
-        };
-
+        }
 
         public ApiInfo(String name, String version, String specification) {
             this.name = name;
@@ -286,15 +287,15 @@ public abstract class AbstractApiUrlManager {
                     .target(getApiUrl() + "/")
                     .request(MediaType.APPLICATION_JSON)
                     .get(ApiInfo.class);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return new ApiInfo();
         }
     }
 
-    public enum Version  {
-            v1,
-            v2;
+    public enum Version {
+        v1,
+        v2;
     }
 
 }
