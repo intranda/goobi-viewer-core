@@ -4,11 +4,11 @@
    ==============================================================*/
 /* METADATA */
 /* BLOCK */
+/* THESE PROPERTIES HAVE IMPACT ON VIEWER BACKEND RECORD NOTES AS WELL */
 .metadata {
 	position: relative;
     margin-bottom: 1.3125rem;
 	&__title-wrapper {
-		display: flex;
 		margin-bottom: 1.5rem;
 		& + .metadata__element-wrapper {
 				.metadata__elements-h2:first-child {
@@ -51,9 +51,7 @@
 		    }
 		}
 	}
-    .fa {
-    	margin-right: 5px;
-    }
+
 	/* ELEMENTS / EVENTS */
 	&__elements,
 	&__events {
@@ -77,6 +75,7 @@
 			}
 		}
 	}
+	/* THESE PROPERTIES HAVE IMPACT ON VIEWER BACKEND RECORD NOTES AS WELL */
 	&__element,
 	&__event {}
 	&__element-dl,
@@ -142,6 +141,11 @@
 		// display: none;
 		margin-bottom: 1rem;
 		margin-top: 3.5rem;
+	}
+	&__element-wrapper {
+		.fa {
+	    	margin-right: 5px;
+	    }
 	}
 	&__element-wrapper-single {
 		background: white;

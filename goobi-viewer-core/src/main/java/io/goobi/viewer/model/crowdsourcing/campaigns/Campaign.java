@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -56,7 +58,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.PostLoad;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -77,7 +78,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -106,7 +106,9 @@ import io.goobi.viewer.solr.SolrConstants;
 @Entity
 @Table(name = "cs_campaigns")
 @JsonInclude(Include.NON_EMPTY)
-public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
+public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Serializable {
+
+    private static final long serialVersionUID = 3169479611322444516L;
 
     /**
      * The visibility of the campaign to other users
@@ -455,8 +457,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
         }
 
         long count = 0;
-        for (String pi : statistics.keySet()) {
-            CampaignRecordStatistic statistic = statistics.get(pi);
+        for (Entry<String, CampaignRecordStatistic> entry : statistics.entrySet()) {
+            CampaignRecordStatistic statistic = entry.getValue();
             if (statistic == null) {
                 continue;
             }
@@ -487,12 +489,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
     public long getNumRecordsToAnnotate() throws IndexUnreachableException {
         long all = getNumRecords();
         long count = 0;
-        for (String pi : statistics.keySet()) {
-            CampaignRecordStatistic statistic = statistics.get(pi);
+        for (Entry<String, CampaignRecordStatistic> entry : statistics.entrySet()) {
+            CampaignRecordStatistic statistic = entry.getValue();
             switch (statistic.getStatus()) {
                 case REVIEW:
                 case FINISHED:
                     count++;
+                    break;
                 default:
                     break;
             }
@@ -954,7 +957,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public static Long getId(URI idAsURI) {
 
-        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
+        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString()); //NOSONAR  no catastrophic backtracking detected
         if (matcher.find()) {
             String idString = matcher.group(1);
             return Long.parseLong(idString);
@@ -1421,7 +1424,8 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getRandomizedTarget(CrowdsourcingStatus status, String piToIgnore, User user) throws PresentationException, IndexUnreachableException {
+    public String getRandomizedTarget(CrowdsourcingStatus status, String piToIgnore, User user)
+            throws PresentationException, IndexUnreachableException {
         List<String> pis = getSolrQueryResults().stream()
                 .filter(result -> !result.equals(piToIgnore))
                 .filter(result -> isRecordStatus(result, status))

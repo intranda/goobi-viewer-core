@@ -26,7 +26,6 @@ import java.net.URLEncoder;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -54,14 +53,6 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
 public class LoginFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
-
-    /* (non-Javadoc)
-     * @see javax.servlet.Filter#destroy()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void destroy() {
-    }
 
     /* (non-Javadoc)
      * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
@@ -176,7 +167,7 @@ public class LoginFilter implements Filter {
                 }
 
                 //any URIs leading to campaign annotation/review
-                if (uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) {
+                if (uri.matches(".*/campaigns/\\d+/(review|annotate)/.*")) { //NOSONAR no catastrophic backtracking detected
                     return true;
                 }
 
@@ -192,13 +183,5 @@ public class LoginFilter implements Filter {
         }
 
         return false;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void init(FilterConfig arg0) throws ServletException {
     }
 }

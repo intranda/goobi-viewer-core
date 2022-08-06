@@ -30,7 +30,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,6 +97,7 @@ import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -2181,13 +2181,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getDownloadJobByMetadata_shouldReturnCorrectObject() throws Exception {
         {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.TYPE, "PI_1", null);
+            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, "PI_1", null);
             Assert.assertNotNull(job);
             Assert.assertEquals(PDFDownloadJob.class, job.getClass());
             Assert.assertEquals(Long.valueOf(1), job.getId());
         }
         {
-            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.TYPE, "PI_1", "LOG_0001");
+            DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.LOCAL_TYPE, "PI_1", "LOG_0001");
             Assert.assertNotNull(job);
             Assert.assertEquals(EPUBDownloadJob.class, job.getClass());
             Assert.assertEquals(Long.valueOf(2), job.getId());
@@ -3296,5 +3296,43 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     private static void updateComment(IDAO dao, long id, String content, long duration) throws InterruptedException, DAOException {
         Thread.sleep(duration);
         dao.executeUpdate("UPDATE annotations_comments SET body='" + content + "' WHERE annotation_id=" + id);
+    }
+
+    /**
+     * @see JPADAO#getDownloadTicketCount(Map)
+     * @verifies return correct count
+     */
+    @Test
+    public void getDownloadTicketCount_shouldReturnCorrectCount() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.emptyMap()));
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
+    }
+
+    /**
+     * @see JPADAO#getActiveDownloadTickets(int,int,String,boolean,Map)
+     * @verifies filter rows correctly
+     */
+    @Test
+    public void getActiveDownloadTickets_shouldFilterRowsCorrectly() throws Exception {
+        Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTickets(0, 10, null, false, null).size());
+        Assert.assertEquals(0,
+                DataManager.getInstance()
+                        .getDao()
+                        .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "user2@example.com"))
+                        .size());
+        Assert.assertEquals(1,
+                DataManager.getInstance().getDao().getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456")).size());
+    }
+
+    /**
+     * @see JPADAO#getDownloadTicketRequests()
+     * @verifies return tickets that have never been activated
+     */
+    @Test
+    public void getDownloadTicketRequests_shouldReturnTicketsThatHaveNeverBeenActivated() throws Exception {
+        List<DownloadTicket> result = DataManager.getInstance().getDao().getDownloadTicketRequests();
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(Long.valueOf(3), result.get(0).getId());
     }
 }

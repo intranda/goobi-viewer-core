@@ -72,6 +72,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -92,7 +93,6 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -121,7 +121,6 @@ public class CMSMediaResource {
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
-
 
     /**
      * <p>
@@ -189,7 +188,7 @@ public class CMSMediaResource {
     @Produces("application/pdf")
     @CORSBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
-            throws ContentNotFoundException, DAOException {
+            throws ContentNotFoundException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -214,7 +213,7 @@ public class CMSMediaResource {
     @Produces("image/svg+xml")
     @CORSBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
-            throws ContentNotFoundException, DAOException {
+            throws ContentNotFoundException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -239,7 +238,7 @@ public class CMSMediaResource {
     @Produces("image/x-icon")
     @CORSBinding
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
-            throws ContentNotFoundException, DAOException {
+            throws ContentNotFoundException {
         String decFilename = StringTools.decodeUrl(filename);
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -261,7 +260,8 @@ public class CMSMediaResource {
 
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
-    public String serveVideoContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    public String serveVideoContent(@PathParam("filename") String filename)
+            throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
@@ -270,7 +270,8 @@ public class CMSMediaResource {
 
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
-    public String serveAudioContent(@PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    public String serveAudioContent(@PathParam("filename") String filename)
+            throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
@@ -290,13 +291,14 @@ public class CMSMediaResource {
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
-    public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException, DAOException {
+    public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
         String decFilename = StringTools.decodeUrl(filename);
-        decFilename = FilenameUtils.getName(decFilename); // Make sure filename doesn't inject a path traversal
+        decFilename = Paths.get(decFilename).getFileName().toString(); // Make sure filename doesn't inject a path traversal
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         Path path = Paths.get(cmsMediaFolder.toAbsolutePath().toString(), decFilename);
+
         try {
             if (Files.isRegularFile(path)) {
                 String encoding = "windows-1252";
@@ -455,7 +457,8 @@ public class CMSMediaResource {
      * @param item
      */
     public static void removeFromImageCache(CMSMediaItem item) {
-        String identifier = DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
+        String identifier =
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
         CacheUtils.deleteFromCache(identifier, true, true);
     }
 
@@ -534,8 +537,7 @@ public class CMSMediaResource {
          */
         public List<MediaItem> getMediaItems() {
             return mediaItems;
-        };
-
+        }
     }
 
     /**
@@ -606,7 +608,7 @@ public class CMSMediaResource {
 
     }
 
-    private String serveMediaContent(String type, Path file) throws PresentationException, IndexUnreachableException, WebApplicationException {
+    private String serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 
         if (Files.isRegularFile(file)) {

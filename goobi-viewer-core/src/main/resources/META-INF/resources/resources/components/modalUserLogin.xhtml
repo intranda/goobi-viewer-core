@@ -249,7 +249,7 @@
 									</div>
 
 									<!-- USER LOGIN TYPE CREATE ACCOUNT -->
-									<ui:fragment rendered="#{userBean.userRegistrationEnabled and userBean.resetSecurityQuestion()}">
+									<ui:fragment rendered="#{userBean.userRegistrationEnabled and captchaBean.resetSecurityQuestion()}">
 										<div id="loginTypeCreateAccount"
 											class="user-login-modal__body-login-type create">
 											<p class="user-login-modal__create-account-info">#{msg.login__create_new_account__info}:</p>
@@ -299,15 +299,15 @@
 														
 												</div>
 
-												<ui:fragment rendered="#{userBean.securityQuestion != null}">
+												<ui:fragment rendered="#{captchaBean.securityQuestion != null}">
 													<div class="form-group form-row no-gutters">
 														<label for="userCreateAccountConfirm"
-															class="control-label col-12 col-lg-12">#{msg.user__security_question}: #{msg[userBean.securityQuestion.questionKey]}</label>
+															class="control-label col-12 col-lg-12">#{msg.user__security_question}: #{msg[captchaBean.securityQuestion.questionKey]}</label>
 													<div class="col-12 col-lg-12">	
 															<span></span>
 															<h:inputSecret id="userCreateAccountConfirm"
 																styleClass="form-control"
-																autocomplete="off" value="#{userBean.securityAnswer}"
+																autocomplete="off" value="#{captchaBean.securityAnswer}"
 																required="true"
 																requiredMessage="#{msg.user__security_question_required_msg}">
 																<f:passThroughAttribute name="autocomplete" value="new-password" />

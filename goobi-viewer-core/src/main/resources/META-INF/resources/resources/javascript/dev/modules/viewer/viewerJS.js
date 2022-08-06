@@ -480,6 +480,7 @@ var viewerJS = (function () {
 		viewer.handleFragmentAction();
 	}
 	
+	// IF #feedback HASH IS RECOGNIZED MAKE OPEN MODAL LINK OUT OF IT
 	viewer.handleFragmentAction = function() {
 		let hash = location.hash;
 		if(hash) {
@@ -528,12 +529,18 @@ var viewerJS = (function () {
 			var allCheckboxesChecked = false;
 			var allTextFieldsFilled = false;
 			
+			if ($checkboxes.length == 0) {
+				// console.log('no checkboxes to check, so allCheckboxesChecked is true');
+				var allCheckboxesChecked = true;
+			}
+			
+			
 			// CHECK ALL REQUIRED CHECKBOXES AND TEXT FIELDS + CHECK IF RADIO BUTTONS "UNCHECKED"
 			$checkboxes.add($texts).add($uncheckedRadios).on("change paste keyup cut", (e) => {
 				$checkboxes.each((index, element) => {
 					if ( $(element).is(':checked') ) {
 						let isChecked = true;
-						 // console.log("all boxes checked");
+						  // console.log("all boxes checked");
 						 // console.log(allCheckboxesChecked);
 						 allCheckboxesChecked = true;
 					} else {
@@ -550,10 +557,13 @@ var viewerJS = (function () {
 						if(!text) {
 							allTextFieldsFilled = false;
 							// console.log(allTextFieldsFilled);
+							// console.log($texts);
+							// console.log('NO - not all texts filled');
 							return false;
 						} else {
 							allTextFieldsFilled = true;
-							// console.log(allTextFieldsFilled);
+							// console.log($texts);
+							// console.log('YES - all texts filled');
 						}
 					});
 				

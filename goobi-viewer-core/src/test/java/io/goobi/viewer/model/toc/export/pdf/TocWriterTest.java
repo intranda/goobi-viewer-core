@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.model.toc.export.pdf;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -59,7 +62,7 @@ public class TocWriterTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testCreateRandomPdf() throws FileNotFoundException, IOException, WriteTocException {
         File outputFile = new File("target/toc.pdf");
-
+        assertFalse(outputFile.exists());
         List<TOCElement> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             list.add(createRandomTOCElement());
@@ -68,7 +71,13 @@ public class TocWriterTest extends AbstractDatabaseAndSolrEnabledTest {
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
             TocWriter writer = new TocWriter("Its a me", "Inhaltsverzeichnis");
             writer.createPdfDocument(fos, list);
+            assertTrue(outputFile.exists());
+        } finally {
+            if(outputFile.exists()) {
+                outputFile.delete();
+            }
         }
+        
     }
 
     private static TOCElement createRandomTOCElement() {

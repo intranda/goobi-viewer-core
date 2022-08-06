@@ -63,6 +63,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -388,7 +389,7 @@ public class TocMaker {
             boolean accessPermissionPdf;
             try {
                 accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                        logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+                        logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request).isGranted();
             } catch (RecordNotFoundException e) {
                 logger.error("Record not found in index: {}", topStructPi);
                 continue;
@@ -504,7 +505,7 @@ public class TocMaker {
                 try {
                     if (FacesContext.getCurrentInstance() != null
                             && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null, IPrivilegeHolder.PRIV_LIST,
-                                    request)) {
+                                    request).isGranted()) {
                         continue;
                     }
                 } catch (RecordNotFoundException e) {
@@ -547,7 +548,7 @@ public class TocMaker {
                 boolean accessPermissionPdf;
                 try {
                     accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
-                            volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+                            volumeLogId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request).isGranted();
                 } catch (RecordNotFoundException e) {
                     logger.error("Record not found in index: {}", topStructPi);
                     continue;
@@ -625,7 +626,7 @@ public class TocMaker {
         logger.trace("populateTocTree: {}; number of items in toc: {}", pi, ret.size());
 
         // Check PDF download permissions for all docstructs and save into map
-        Map<String, Boolean> pdfPermissionMap = null;
+        Map<String, AccessPermission> pdfPermissionMap = null;
         if (sourceFormatPdfAllowed && DataManager.getInstance().getConfiguration().isTocPdfEnabled()) {
             pdfPermissionMap =
                     AccessConditionUtils.checkAccessPermissionByIdentiferForAllLogids(pi, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, BeanUtils.getRequest());
@@ -719,7 +720,7 @@ public class TocMaker {
      * @throws PresentationException
      */
     private static void addTocElementsRecusively(List<TOCElement> ret, Map<String, List<SolrDocument>> childrenMap, SolrDocument doc, int level,
-            boolean addChildren, Map<String, Boolean> pdfPermissionMap, String mimeType, String footerId) throws PresentationException {
+            boolean addChildren, Map<String, AccessPermission> pdfPermissionMap, String mimeType, String footerId) throws PresentationException {
         String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         String docstructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
@@ -741,8 +742,8 @@ public class TocMaker {
 
         IMetadataValue label = buildLabel(doc, docstructType);
         boolean accessPermissionPdf = false;
-        if (pdfPermissionMap != null && logId != null && pdfPermissionMap.get(logId)) {
-            accessPermissionPdf = pdfPermissionMap.get(logId);
+        if (pdfPermissionMap != null && logId != null && pdfPermissionMap.get(logId) != null) {
+            accessPermissionPdf = pdfPermissionMap.get(logId).isGranted();
         }
         TOCElement tocElement = new TOCElement(label, pageNo, pageNoLabel, iddoc, logId, level, pi, null, accessPermissionPdf, isAnchor,
                 pageNo != null, mimeType, docstructType, footerId);
@@ -835,7 +836,7 @@ public class TocMaker {
                     } else if (param.getAltKey() != null && doc.getFirstValue(param.getAltKey()) != null) {
                         // Translate alternative index field value, if available
                         value = ViewerResourceBundle.getTranslations(String.valueOf(doc.getFirstValue(param.getAltKey())));
-                    } else if(StringUtils.isNotBlank(param.getDefaultValue())){
+                    } else if (StringUtils.isNotBlank(param.getDefaultValue())) {
                         // Translate key, if no index field found
                         value = ViewerResourceBundle.getTranslations(param.getDefaultValue());
                     } else {

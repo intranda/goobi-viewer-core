@@ -66,7 +66,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>11</maven.compiler.release>
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
@@ -90,7 +89,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.4.1</ics.version>
+		<ics.version>3.4.3</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.2.2</iiif-api-model.version>
@@ -98,7 +97,7 @@
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
-		<citationstyles.version>22.4</citationstyles.version>
+		<citationstyles.version>22.7</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.15</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
@@ -139,20 +138,20 @@
 		<json.version>20220320</json.version>
 		<jsoup.version>1.15.2</jsoup.version>
 		<junit.version>4.13.2</junit.version>
-		<mariadb-java-client.version>2.7.5</mariadb-java-client.version>
+		<mariadb-java-client.version>3.0.7</mariadb-java-client.version>
 		<mockito.version>4.6.1</mockito.version>
 		<mockserver.version>5.13.2</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.13.3</omnifaces.version>
-		<openpdf.version>1.3.28</openpdf.version>
+		<openpdf.version>1.3.29</openpdf.version>
 		<poi.version>5.2.2</poi.version>
 		<prettyfaces.version>3.5.1.Final</prettyfaces.version>
 		<rome.version>1.18.0</rome.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j.version>2.18.0</log4j.version>
 		<solr.version>8.11.1</solr.version>
-		<saml-client.version>4.0.0</saml-client.version>
-		<swagger.version>2.2.1</swagger.version>
+		<saml-client.version>4.0.2</saml-client.version>
+		<swagger.version>2.2.2</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -688,8 +687,6 @@
 			<artifactId>swagger-integration</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>net.bull.javamelody</groupId> <artifactId>javamelody-core</artifactId>
-			<version>1.85.0</version> </dependency> -->
 	</dependencies>
 
 
@@ -785,7 +782,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
-				<configuration>
+                <configuration>
+                    <release>11</release>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
 					<!--compilerArgument>-Xlint:unchecked</compilerArgument -->
 				</configuration>
@@ -949,7 +947,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.3.1</version>
+						<version>10.3.2</version>
 					</dependency>
 				</dependencies>
 				<executions>

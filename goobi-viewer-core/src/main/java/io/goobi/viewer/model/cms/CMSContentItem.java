@@ -289,7 +289,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
 
     @Column(name = "sorting")
     @Enumerated(EnumType.STRING)
-    private Sorting sorting  = Sorting.alphanumeric;
+    private Sorting sorting = Sorting.alphanumeric;
 
     /**
      * This object may contain item type specific functionality (methods and transient properties)
@@ -335,11 +335,12 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /**
-     * Contructs a copy of the given item, inheriting all non-transient properties This is a shallow copy, but all affected properties are either
+     * Constructs a copy of the given item, inheriting all non-transient properties This is a shallow copy, but all affected properties are either
      * primitives or strings anyway Except mediaItem which is a shared resource
      *
      * @param blueprint a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
      * @param owner a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
+     * @should clone blueprint correctly
      */
     public CMSContentItem(CMSContentItem blueprint, CMSPageLanguageVersion owner) {
         if (blueprint.id != null) {
@@ -424,19 +425,6 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
             return Integer.compare(this.getOrder(), o.getOrder());
         }
         return itemId.compareTo(o.getItemId());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Returns a copy of this object's configuration. Use this to create content item instances of template items for pages.
-     *
-     * @should clone item correctly
-     */
-    @Override
-    public CMSContentItem clone() {
-        CMSContentItem clone = new CMSContentItem(this, null);
-        return clone;
     }
 
     /**
@@ -871,7 +859,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         }
         List<CMSPage> pages = nestedPages.stream()
                 .filter(CMSPage::isPublished)
-                .filter(child -> this.getCategories().isEmpty() || !CollectionUtils.intersection(this.getCategories(), child.getCategories()).isEmpty())
+                .filter(child -> this.getCategories().isEmpty()
+                        || !CollectionUtils.intersection(this.getCategories(), child.getCategories()).isEmpty())
                 .collect(Collectors.toList());
         return pages;
     }
@@ -891,18 +880,20 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         int offset = getListOffset();
 
         AtomicInteger totalPages = new AtomicInteger(0);
-        Stream<CMSPage> nestedPagesStream = DataManager.getInstance().getDao().getAllCMSPages().stream()
+        Stream<CMSPage> nestedPagesStream = DataManager.getInstance()
+                .getDao()
+                .getAllCMSPages()
+                .stream()
                 .filter(CMSPage::isPublished)
                 .filter(child -> getCategories().isEmpty() || !CollectionUtils.intersection(getCategories(), child.getCategories()).isEmpty())
                 .peek(child -> totalPages.incrementAndGet());
 
-
-        if(isRandomizeItems()) {
+        if (isRandomizeItems()) {
             nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
         } else {
             nestedPagesStream = nestedPagesStream.sorted(new CMSPage.PageComparator());
         }
-        if(isPaginated()) {
+        if (isPaginated()) {
             nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
         }
 
@@ -1109,7 +1100,8 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         List<String> list = new ArrayList<>(dcStrings.keySet());
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(getBaseCollection()) || c.startsWith(getBaseCollection() + "."))
-                .filter(c -> (isIgnoreHierarchy()) ? true : ( StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains(".") ))
+                .filter(c -> (isIgnoreHierarchy()) ? true
+                        : (StringUtils.isBlank(getBaseCollection()) ? !c.contains(".") : !c.replace(getBaseCollection() + ".", "").contains(".")))
                 .collect(Collectors.toList());
         Collections.sort(list);
         return list;
@@ -1152,7 +1144,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
         collection.setBaseLevels(getCollectionBaseLevels());
         collection.setDisplayParentCollections(isCollectionDisplayParents());
         collection.setIgnore(getIgnoreCollectionsAsList());
-        if(isIgnoreHierarchy()) {
+        if (isIgnoreHierarchy()) {
             collection.setIgnoreHierarchy(true);
         } else if (isCollectionOpenExpanded()) {
             collection.setShowAllHierarchyLevels(true);

@@ -79,6 +79,9 @@ import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
@@ -106,6 +109,9 @@ import io.goobi.viewer.solr.SolrConstants;
 public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
+
+    private static final String XML_PATH_ATTRIBUTE_DESCRIPTION = "[@description]";
+    private static final String XML_PATH_ATTRIBUTE_ICON = "[@icon]";
 
     private Set<String> stopwords;
 
@@ -180,7 +186,9 @@ public class Configuration extends AbstractConfiguration {
         // Load stopwords
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
-        } catch (FileNotFoundException e) {
+        } catch (
+
+        FileNotFoundException e) {
             logger.error(e.getMessage());
             stopwords = new HashSet<>(0);
         } catch (IOException | IllegalArgumentException e) {
@@ -382,63 +390,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getConnectorVersionUrl() {
         return getLocalString("urls.connectorVersion", "http://localhost:8080/viewer/oai/tools?action=getVersion");
-    }
-
-    /**
-     * Returns the list of configured metadata for the title bar component. TODO Allow templates and then retire this method.
-     *
-     * @should return all configured metadata elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<Metadata> getTitleBarMetadata() {
-        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("metadata.titleBarMetadataList.metadata");
-        if (elements == null) {
-            return Collections.emptyList();
-        }
-
-        List<Metadata> ret = new ArrayList<>(elements.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = elements.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
-            String label = sub.getString("[@label]");
-            String masterValue = sub.getString("[@value]");
-            boolean group = sub.getBoolean("[@group]", false);
-            int type = sub.getInt("[@type]", 0);
-            List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
-            List<MetadataParameter> paramList = null;
-            if (params != null) {
-                paramList = new ArrayList<>();
-                for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = params.iterator(); it2.hasNext();) {
-                    HierarchicalConfiguration<ImmutableNode> sub2 = it2.next();
-                    String fieldType = sub2.getString("[@type]");
-                    String source = sub2.getString("[@source]", null);
-                    String key = sub2.getString("[@key]");
-                    String altKey = sub2.getString("[@altKey]");
-                    String masterValueFragment = sub2.getString("[@value]");
-                    String defaultValue = sub2.getString("[@defaultValue]");
-                    String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
-                    String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                    String condition = sub2.getString("[@condition]");
-                    boolean addUrl = sub2.getBoolean("[@url]", false);
-                    boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", false);
-                    boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                    paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
-                            .setSource(source)
-                            .setKey(key)
-                            .setAltKey(altKey)
-                            .setMasterValueFragment(masterValueFragment)
-                            .setDefaultValue(defaultValue)
-                            .setPrefix(prefix)
-                            .setSuffix(suffix)
-                            .setCondition(condition)
-                            .setAddUrl(addUrl)
-                            .setTopstructValueFallback(topstructValueFallback)
-                            .setTopstructOnly(topstructOnly));
-                }
-            }
-            ret.add(new Metadata(label, masterValue, paramList).setGroup(group).setType(type));
-        }
-
-        return ret;
     }
 
     /**
@@ -1145,6 +1096,10 @@ public class Configuration extends AbstractConfiguration {
         return null;
     }
 
+    /**
+     * 
+     * @return
+     */
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
         if (list == null || list.isEmpty()) {
@@ -1160,8 +1115,8 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param field a {@link java.lang.String} object.
-     * @should return all configured elements
      * @return a {@link java.util.List} object.
+     * @should return all configured elements
      */
     public List<DcSortingList> getCollectionSorting(String field) {
 
@@ -1267,8 +1222,8 @@ public class Configuration extends AbstractConfiguration {
      * getCollectionHierarchyField.
      * </p>
      *
-     * @should return first field where hierarchy enabled
      * @return a {@link java.lang.String} object.
+     * @should return first field where hierarchy enabled
      */
     public String getCollectionHierarchyField() {
 
@@ -1384,8 +1339,7 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     public boolean isUseIIIFApiUrlForCmsMediaUrls() {
-        boolean use = getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
-        return use;
+        return getLocalBoolean("urls.iiif[@useForCmsMedia]", true);
     }
 
     /**
@@ -2069,7 +2023,6 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a {@link java.lang.String} object.
      */
-    @SuppressWarnings("static-method")
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
     }
@@ -4906,7 +4859,7 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getIIIFDescriptionFields() {
         return getLocalList("webapi.iiif.descriptionFields.field", new ArrayList<>());
     }
-    
+
     public List<String> getIIIFLabelFields() {
         return getLocalList("webapi.iiif.labelFields.field", new ArrayList<>());
     }
@@ -5015,19 +4968,19 @@ public class Configuration extends AbstractConfiguration {
     public String getLabelIIIFRenderingAlto() {
         return getLocalString("webapi.iiif.rendering.alto.label", null);
     }
-    
+
     public boolean isVisibleIIIFSeeAlsoMets() {
         return getLocalBoolean("webapi.iiif.seeAlso.mets[@enabled]", true);
     }
-    
+
     public String getLabelIIIFSeeAlsoMets() {
         return getLocalString("webapi.iiif.seeAlso.mets.label", "METS/MODS");
     }
-    
+
     public boolean isVisibleIIIFSeeAlsoLido() {
         return getLocalBoolean("webapi.iiif.seeAlso.lido[@enabled]", true);
     }
-    
+
     public String getLabelIIIFSeeAlsoLido() {
         return getLocalString("webapi.iiif.seeAlso.lido.label", "LIDO");
     }
@@ -5041,7 +4994,16 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSitelinksField() {
-        return getLocalString("sitemap.sitelinksField");
+        return getLocalString("sitelinks.sitelinksField");
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isSitelinksEnabled() {
+        return getLocalBoolean("sitelinks[@enabled]", true);
     }
 
     /**
@@ -5053,7 +5015,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSitelinksFilterQuery() {
-        return getLocalString("sitemap.sitelinksFilterQuery");
+        return getLocalString("sitelinks.sitelinksFilterQuery");
     }
 
     /**
@@ -5174,16 +5136,91 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
     }
 
-    public String getAccessConditionDisplayField() {
-        return getLocalString("webGuiDisplay.displayCopyrightInfo.accessConditionField", null);
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isCopyrightIndicatorEnabled() {
+        return getLocalBoolean("webGuiDisplay.copyrightIndicator[@enabled]", false);
     }
 
-    public String getCopyrightDisplayField() {
-        return getLocalString("webGuiDisplay.displayCopyrightInfo.copyrightField", null);
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getCopyrightIndicatorStyle() {
+        return getLocalString("webGuiDisplay.copyrightIndicator[@style]", "badge");
     }
 
-    public boolean isDisplayCopyrightInfo() {
-        return getLocalBoolean("webGuiDisplay.displayCopyrightInfo.visible", false);
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getCopyrightIndicatorStatusField() {
+        return getLocalString("webGuiDisplay.copyrightIndicator.status[@field]");
+    }
+
+    /**
+     * 
+     * @param value
+     * @should return correct value
+     */
+    public CopyrightIndicatorStatus getCopyrightIndicatorStatusForValue(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webGuiDisplay.copyrightIndicator.status.value");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            String content = config.getString("[@content]");
+            if (value.equals(content)) {
+                String statusName = config.getString("[@status]");
+                Status status = CopyrightIndicatorStatus.Status.getByName(statusName);
+                if (status == null) {
+                    logger.warn("No copyright indicator status found for configured name: {}", statusName);
+                    status = Status.OPEN;
+                }
+                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                return new CopyrightIndicatorStatus(status, description);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param value
+     * @should return correct value
+     */
+    public CopyrightIndicatorLicense getCopyrightIndicatorLicenseForValue(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("value may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webGuiDisplay.copyrightIndicator.license.value");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            String content = config.getString("[@content]");
+            if (value.equals(content)) {
+                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                String[] icons = config.getStringArray("icon");
+                return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : Collections.emptyList());
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getCopyrightIndicatorLicenseField() {
+        return getLocalString("webGuiDisplay.copyrightIndicator.license[@field]");
     }
 
     public boolean isDisplaySocialMediaShareLinks() {
@@ -5266,14 +5303,12 @@ public class Configuration extends AbstractConfiguration {
 
     public GeoMapMarker getMarkerForMapSearch() {
         HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.search.marker");
-        GeoMapMarker marker = readGeoMapMarker(config);
-        return marker;
+        return readGeoMapMarker(config);
     }
 
     public GeoMapMarker getMarkerForFacetting() {
         HierarchicalConfiguration<ImmutableNode> config = getLocalConfigurationAt("maps.facet.marker");
-        GeoMapMarker marker = readGeoMapMarker(config);
-        return marker;
+        return readGeoMapMarker(config);
     }
 
     public boolean includeCoordinateFieldsFromMetadataDocs() {
@@ -5305,7 +5340,7 @@ public class Configuration extends AbstractConfiguration {
             String name = config.getString(".", "default");
             marker = new GeoMapMarker(name);
             marker.setExtraClasses(config.getString("[@extraClasses]", marker.getExtraClasses()));
-            marker.setIcon(config.getString("[@icon]", marker.getIcon()));
+            marker.setIcon(config.getString(XML_PATH_ATTRIBUTE_ICON, marker.getIcon()));
             marker.setIconColor(config.getString("[@iconColor]", marker.getIconColor()));
             marker.setIconRotate(config.getInt("[@iconRotate]", marker.getIconRotate()));
             marker.setMarkerColor(config.getString("[@markerColor]", marker.getMarkerColor()));
@@ -5363,7 +5398,7 @@ public class Configuration extends AbstractConfiguration {
             String url = node.getString("[@url]", "");
             if (StringUtils.isNotBlank(url)) {
                 String label = node.getString("[@label]", url);
-                String icon = node.getString("[@icon]", "");
+                String icon = node.getString(XML_PATH_ATTRIBUTE_ICON, "");
                 LicenseDescription license = new LicenseDescription(url);
                 license.setLabel(label);
                 license.setIcon(icon);
@@ -5389,7 +5424,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
         nodeTypes.get(0).getString(getReCaptchaSiteKey());
         return nodeTypes.stream()
-                .collect(Collectors.toMap(node -> node.getString("[@name]"), node -> node.getString("[@icon]")));
+                .collect(Collectors.toMap(node -> node.getString("[@name]"), node -> node.getString(XML_PATH_ATTRIBUTE_ICON)));
     }
 
     /**
@@ -5437,7 +5472,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("translations/group/@name may not be empty.");
                 continue;
             }
-            String description = groupNode.getString("[@description]");
+            String description = groupNode.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
             List<HierarchicalConfiguration<ImmutableNode>> keyNodes = groupNode.configurationsAt("key");
             TranslationGroup group = TranslationGroup.create(id, type, name, description, keyNodes.size());
             for (HierarchicalConfiguration<ImmutableNode> keyNode : keyNodes) {
@@ -5472,16 +5507,24 @@ public class Configuration extends AbstractConfiguration {
     public boolean isFuzzySearchEnabled() {
         return getLocalBoolean("search.fuzzy[@enabled]", false);
     }
-    
-    /**
-    *
-    * @return
-    * @should return correct value
-    */
-   public boolean isUseFacetsAsExpandQuery() {
-       return getLocalBoolean("search.useFacetsAsExpandQuery", false);
-   }
 
+    /**
+     *
+     * @return
+     * @should return correct value
+     */
+    public boolean isUseFacetsAsExpandQuery() {
+        return getLocalBoolean("search.useFacetsAsExpandQuery[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<String> getAllowedFacetsForExpandQuery() {
+        return getLocalList("search.useFacetsAsExpandQuery.facetQuery");
+    }
 
     /**
      * 
@@ -5536,23 +5579,23 @@ public class Configuration extends AbstractConfiguration {
     public String getContentUploadRejectionReasonPropertyName() {
         return getLocalString("upload.rejectionReasonPropertyName");
     }
-    
+
     public String getCrowdsourcingCampaignItemOrder() {
         return getLocalString("campaigns.itemOrder", "fixed");
     }
-    
+
     public int getGeomapAnnotationZoom() {
         return getLocalInt("campaigns.annotations.geoCoordinates.zoom", 7);
     }
-    
+
     public int getCrowdsourcingCampaignGeomapZoom() {
         return getLocalInt("campaigns.geoMap.zoom", 7);
     }
-    
+
     public String getCrowdsourcingCampaignGeomapLngLat() {
         return getLocalString("campaigns.geoMap.lngLat", "11.073397, 49.451993");
     }
-    
+
     public String getCrowdsourcingCampaignGeomapTilesource() {
         return getLocalString("campaigns.geoMap.tilesource", "mapbox");
 

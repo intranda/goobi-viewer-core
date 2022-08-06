@@ -531,7 +531,6 @@ public abstract class AbstractBuilder {
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFLabelFields());
-
         return new ArrayList<>(fields);
     }
 

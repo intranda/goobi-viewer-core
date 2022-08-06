@@ -362,7 +362,7 @@ public enum PageType {
         String defaultPageTypeName = DataManager.getInstance().getConfiguration().getDocstructTargetPageType("_DEFAULT");
         PageType defaultPageType = PageType.getByName(defaultPageTypeName);
         if (StringUtils.isNotEmpty(defaultPageTypeName) && defaultPageType == null) {
-            logger.error("docstructTargetPageType configured for '_DEFAULT' does not exist: {}", docStructType, defaultPageTypeName);
+            logger.error("docstructTargetPageType configured for '_DEFAULT' does not exist: {}", docStructType);
         }
 
         if (preferredPageType != null) {
@@ -429,7 +429,7 @@ public enum PageType {
         if (StringUtils.isBlank(pagePath)) {
             return false;
         }
-        pagePath = pagePath.replaceAll("^\\/|\\/$", "");
+        pagePath = pagePath.replaceAll("(^\\/)|(\\/$)", "");
         return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.path) || pagePath.equalsIgnoreCase(getName());
     }
 

@@ -69,8 +69,11 @@ const depsPathsJS = [
 
   { // jQuery UI
     expand:true,
-    cwd: 'node_modules/jquery-ui-dist/',
-    src: ['LICENSE.txt', 'jquery-ui.min.js'], 
+    cwd: nodeModules,
+	src: [
+		'jquery-ui/dist/jquery-ui.min.js',
+		'jquery-ui/LICENCE.txt'
+    ],
     flatten: true,
     dest:`${jsLibsDir}jqueryUi/`
   },
@@ -298,11 +301,10 @@ const depsPathsCSS = [
 
    { // JQUERY UI
     expand: true,
-    cwd: 'node_modules/jquery-ui-dist/',
+    cwd: `${nodeModules}/jquery-ui/dist/themes/base/`,
     src: [
       'jquery-ui.min.css',
-      'jquery-ui.structure.min.css'
-    ], 
+    ],
     flatten: false,
     dest:`${cssLibsDir}jQueryUi/`
   },

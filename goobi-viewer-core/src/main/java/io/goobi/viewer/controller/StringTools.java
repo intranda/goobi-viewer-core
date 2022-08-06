@@ -31,6 +31,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
@@ -39,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,7 +77,7 @@ public class StringTools {
     /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code> */
     public static final String REGEX_WORDS = "[a-zäáàâöóòôüúùûëéèêßñ0123456789]+";
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
-    public static final String DEFAULT_ENCODING = "UTF-8";
+    public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
 
     /** Constant <code>SLASH_REPLACEMENT="U002F"</code> */
     public static final String SLASH_REPLACEMENT = "U002F";
@@ -88,6 +91,13 @@ public class StringTools {
     public static final String PERCENT_REPLACEMENT = "U0025";
     /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
     public static final String PLUS_REPLACEMENT = "U002B";
+
+    /**
+     * Private construct to prevent instantiation.
+     */
+    private StringTools() {
+        //
+    }
 
     /**
      * Escpae url for submitted form data. A space is encoded as '+'.
@@ -259,8 +269,8 @@ public class StringTools {
 
         return s.replace("\r\n", replaceWith)
                 .replace("\n", replaceWith)
-                .replaceAll("\r", replaceWith)
-                .replaceAll("<br>", replaceWith)
+                .replace("\r", replaceWith)
+                .replace("<br>", replaceWith)
                 .replaceAll("<br\\s*/>", replaceWith);
     }
 
@@ -521,8 +531,8 @@ public class StringTools {
         }
         // Replace in HTML
         if (!replacements.isEmpty()) {
-            for (String key : replacements.keySet()) {
-                html = html.replace(key, replacements.get(key));
+            for (Entry<String, String> entry : replacements.entrySet()) {
+                html = html.replace(entry.getKey(), entry.getValue());
             }
         }
 
@@ -587,7 +597,6 @@ public class StringTools {
         return ret;
     }
 
-
     /**
      * <p>
      * getMatch.
@@ -634,13 +643,13 @@ public class StringTools {
     public static String generateHash(String myString) {
         String answer = "";
         try {
-            byte[] defaultBytes = myString.getBytes("UTF-8");
+            byte[] defaultBytes = myString.getBytes(StandardCharsets.UTF_8.name());
             MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
             algorithm.reset();
             algorithm.update(defaultBytes);
-            byte messageDigest[] = algorithm.digest();
+            byte[] messageDigest = algorithm.digest();
 
-            StringBuffer hexString = new StringBuffer();
+            StringBuilder hexString = new StringBuilder();
             for (byte element : messageDigest) {
                 String hex = Integer.toHexString(0xFF & element);
                 if (hex.length() == 1) {
@@ -649,9 +658,7 @@ public class StringTools {
                 hexString.append(hex);
             }
             answer = hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e.getMessage(), e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
         }
 
@@ -714,19 +721,20 @@ public class StringTools {
 
     /**
      * Try to parse the given string as integer.
+     * 
      * @param s the string to parse
      * @return An Optional containing the parsed int. If the string is blank or cannot be parsed to an integer, an empty Optional is returned
      */
     public static Optional<Integer> parseInt(String s) {
-        if(StringUtils.isBlank(s)) {
+        if (StringUtils.isBlank(s)) {
             return Optional.empty();
-        } else {
-            try {
-                int i = Integer.parseInt(s);
-                return Optional.of(i);
-            } catch(NumberFormatException e) {
-                return Optional.empty();
-            }
+        }
+
+        try {
+            int i = Integer.parseInt(s);
+            return Optional.of(i);
+        } catch (NumberFormatException e) {
+            return Optional.empty();
         }
     }
 
@@ -763,7 +771,20 @@ public class StringTools {
         } else {
             page = Integer.valueOf(range);
         }
-        return new int[]{page, page2};
+        return new int[] { page, page2 };
+    }
+
+    /**
+     * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths
+     * 
+     * @param data
+     * @return a cleaned up string which can be savely used
+     */
+    public static String cleanUserGeneratedData(String data) {
+        String cleaned = stripJS(data);
+        cleaned = stripPatternBreakingChars(cleaned);
+        cleaned = Paths.get(cleaned).getFileName().toString();
+        return cleaned;
     }
 
 }

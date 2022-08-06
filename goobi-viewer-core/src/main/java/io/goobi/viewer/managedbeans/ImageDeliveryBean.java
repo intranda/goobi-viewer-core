@@ -155,7 +155,7 @@ public class ImageDeliveryBean implements Serializable {
             objects3d = new Object3DHandler(config);
         }
         footer = new WatermarkHandler(config, config.getIIIFApiUrl());
-        thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
+        thumbs = new ThumbnailHandler(iiif, this.staticImagesURI);
         if (contentUrlManager != null) {
             pdf = new PdfHandler(footer, contentUrlManager);
         } else {

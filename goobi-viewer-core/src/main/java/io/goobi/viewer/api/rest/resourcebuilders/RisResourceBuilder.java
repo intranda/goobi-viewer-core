@@ -77,7 +77,8 @@ public class RisResourceBuilder {
         response.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
         try {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)
+                    .isGranted()) {
                 throw new ContentNotFoundException("Resource not found");
             }
         } catch (RecordNotFoundException e1) {
@@ -123,7 +124,8 @@ public class RisResourceBuilder {
      */
     public String getRIS(StructElement se) throws ContentNotFoundException, IndexUnreachableException, DAOException {
         try {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(se.getPi(), se.getLogid(), IPrivilegeHolder.PRIV_LIST, request)
+                    .isGranted()) {
                 throw new ContentNotFoundException("Resource not found");
             }
         } catch (RecordNotFoundException e) {

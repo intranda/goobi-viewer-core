@@ -40,7 +40,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -54,12 +53,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.DownloadBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.api.rest.v1.records.RecordResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -114,7 +111,7 @@ public class DownloadResource {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
-        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.TYPE, pi, logId);
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, pi, logId);
         if (downloadJob != null) {
             return downloadJob;
         } else {
@@ -144,7 +141,7 @@ public class DownloadResource {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
-        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.TYPE, pi, logId);
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, pi, logId);
         if (downloadJob != null) {
             if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
                 return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
@@ -166,7 +163,7 @@ public class DownloadResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
-        return getOrCreateDownloadJob(pi, logId, email, PDFDownloadJob.TYPE);
+        return getOrCreateDownloadJob(pi, logId, email, PDFDownloadJob.LOCAL_TYPE);
 
     }
 
@@ -188,7 +185,7 @@ public class DownloadResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentNotFoundException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(PDFDownloadJob.TYPE)) {
+        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE)) {
             return downloadJob;
         } else {
             throw new ContentNotFoundException("No PDF download job found for identifier " + pi);
@@ -213,7 +210,7 @@ public class DownloadResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentLibException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(PDFDownloadJob.TYPE)) {
+        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE)) {
             if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
                 return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
             } else {
@@ -234,7 +231,7 @@ public class DownloadResource {
     public String putPDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
-        return getOrCreateDownloadJob(pi, "", email, PDFDownloadJob.TYPE);
+        return getOrCreateDownloadJob(pi, "", email, PDFDownloadJob.LOCAL_TYPE);
 
     }
 
@@ -260,7 +257,7 @@ public class DownloadResource {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
-        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.TYPE, pi, logId);
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.LOCAL_TYPE, pi, logId);
         if (downloadJob != null) {
             return downloadJob;
         } else {
@@ -290,7 +287,7 @@ public class DownloadResource {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
-        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.TYPE, pi, logId);
+        DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.LOCAL_TYPE, pi, logId);
         if (downloadJob != null) {
             if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
                 return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
@@ -312,7 +309,7 @@ public class DownloadResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
-        return getOrCreateDownloadJob(pi, logId, email, EPUBDownloadJob.TYPE);
+        return getOrCreateDownloadJob(pi, logId, email, EPUBDownloadJob.LOCAL_TYPE);
 
     }
 
@@ -334,7 +331,7 @@ public class DownloadResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentNotFoundException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(EPUBDownloadJob.TYPE)) {
+        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE)) {
             return downloadJob;
         } else {
             throw new ContentNotFoundException("No EPUB download job found for identifier " + pi);
@@ -359,7 +356,7 @@ public class DownloadResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentLibException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(EPUBDownloadJob.TYPE)) {
+        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE)) {
             if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
                 return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
             } else {
@@ -379,7 +376,7 @@ public class DownloadResource {
     public String putEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
-        return getOrCreateDownloadJob(pi, "", email, EPUBDownloadJob.TYPE);
+        return getOrCreateDownloadJob(pi, "", email, EPUBDownloadJob.LOCAL_TYPE);
 
     }
 
@@ -455,7 +452,7 @@ public class DownloadResource {
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(PDFDownloadJob.TYPE))
+                .filter(job -> job.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE))
                 .collect(Collectors.toList());
         return downloadJobs;
     }
@@ -479,7 +476,7 @@ public class DownloadResource {
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(PDFDownloadJob.TYPE))
+                .filter(job -> job.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE))
                 .collect(Collectors.toList());
         if (!downloadJobs.isEmpty()) {
             List<String> results = new ArrayList<>();
@@ -514,7 +511,7 @@ public class DownloadResource {
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(EPUBDownloadJob.TYPE))
+                .filter(job -> job.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE))
                 .collect(Collectors.toList());
         return downloadJobs;
     }
@@ -537,7 +534,7 @@ public class DownloadResource {
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(EPUBDownloadJob.TYPE))
+                .filter(job -> job.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE))
                 .collect(Collectors.toList());
         if (!downloadJobs.isEmpty()) {
             List<String> results = new ArrayList<>();

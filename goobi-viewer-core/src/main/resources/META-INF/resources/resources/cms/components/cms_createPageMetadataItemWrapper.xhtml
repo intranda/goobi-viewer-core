@@ -4,33 +4,30 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:t="http://myfaces.apache.org/tomahawk"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface />
 
     <composite:implementation>
-        <div id="cmsCreatePageMetadataItemWrapper">
+        <div id="cmsCreatePageMetadataItemWrapper" class="admin__default-block">
             <!-- METADATA ITEM TYPE -->
-            <div class="page-metadata-item page-metadata-item-type">
+            <div class="page-metadata-item page-metadata-item-type ">
                 <h2>
-                    #{msg.cms_pageMetadata_template}
-					<button
-						type="button"
-						class="info-btn btn btn--clear">
-						<i class="fa fa-question-circle" aria-hidden="true"></i>
-					</button>
+                    #{msg[cmsBean.selectedPage.template.name]}
                 </h2>
 
-                <div class="row">
-                    <div class="col-6 col-sm-3 col-md-12 col-lg-12">
+                <div class="cms-create-page__template-box">
+                    <div class="cms-create-page__template-box-image">
                         <img alt="Template Icon" src="#{cmsBean.getIconUrlByTemplateId(cmsBean.selectedPage.template.id)}" title="#{msg.label__cms_template_id}: #{cmsBean.selectedPage.template.id}"/>
                     </div>
-                    <div class="col-6 col-sm-9 col-md-12 col-lg-12">
+                    <div class="cms-create-page__template-box-text">
                         <p>
-                            <h:outputText value="#{msg[cmsBean.selectedPage.template.name]}" />
+                            <h:outputText value="#{msg[cmsBean.selectedPage.template.description]}" />
                         </p>
                     </div>
+					<div class="mx-clearfloats"></div>
                 </div>
 
                 <script type="text/javascript">
@@ -44,106 +41,28 @@
                         container : "body"
                     });
                 </script>
+
             </div>
+            
+            
+             <h3 class="admin__sidebar-divider-top">#{msg.cms_pageMetadata_privacyStatus}</h3>
+             
+				<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
+		
+		         <div class="admin__radio-switch mb-3">
+		             <h:selectOneRadio group="cmsPageStatusVisibility" value="#{cmsBean.selectedPage.published}"
+		                 immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
+		                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+		             </h:selectOneRadio>
+		             <h:selectOneRadio group="cmsPageStatusVisibility" value="#{cmsBean.selectedPage.published}"
+		                 immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
+		                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+		             </h:selectOneRadio>
+		             <span class="toggle-outside"><span class="toggle-inside"></span></span>
+		         </div>
 
-            <!-- METADATA ITEM STATUS -->
-            <h:panelGroup id="metadata-status">
-                <div class="page-metadata-item page-metadata-item-status">
-                    <h2>#{msg.cms_pageMetadata_creationStatus}</h2>
-
-                    <dl class="dl-horizontal">
-                        <dt>
-                            <h:outputText value="#{msg.cms_pageMetadata_pageId}:" />
-                        </dt>
-                        <dd>
-                            <h:panelGroup rendered="#{cmsBean.selectedPage.id != null or ''}">
-                                <h:outputText value="#{cmsBean.selectedPage.id}" />
-                            </h:panelGroup>
-                            <h:panelGroup rendered="#{cmsBean.selectedPage.id == null or ''}">
-							#{msg.cms_createPage_missingIdText}
-						</h:panelGroup>
-                        </dd>
-                        <dt>
-                            <h:outputText value="#{msg.cms_pageMetadata_pageURL}:" />
-                        </dt>
-                        <dd>
-                            <h:outputText value="#{cmsBean.getUrl(cmsBean.selectedPage)}" />
-                        </dd>
-                        <dt>
-                            <h:outputText value="#{msg.cms_pageMetadata_date}:" />
-                        </dt>
-                        <dd>
-                            <h:outputText value="#{cmsBean.selectedPage.dateCreated}">
-                                <f:converter converterId="localDateTimeConverter" />
-                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                            </h:outputText>
-                        </dd>
-                        <dt>
-                            <h:outputText value="#{msg.cms_pageMetadata_lastEdited}:" />
-                        </dt>
-                        <dd>
-                            <h:outputText value="#{cmsBean.selectedPage.dateUpdated}">
-                                <f:converter converterId="localDateTimeConverter" />
-                                <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                            </h:outputText>
-                        </dd>
-                    </dl>
-                </div>
-            </h:panelGroup>
-
-            <!-- METADATA ITEM CATEGORIES -->
-            <div class="page-metadata-item page-metadata-item__categories">
-                <h:panelGroup id="classifications_group">
-                    <h2>#{msg.admin__cms_categories}</h2>
-
-                    <!-- METADATA ITEM SELECTED CATEGORIES -->
-                    <h:panelGroup id="selected_categories">
-                        <div class="page-metadata-item__categories-selected-categories">
-                            <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
-                                <ui:fragment rendered="#{category.selected}">
-                                    <div class="badge badge-violet">#{category.value.name}</div>
-                                </ui:fragment>
-                            </ui:repeat>
-                        </div>
-                    </h:panelGroup>
-
-                    <!-- METADATA ITEM SELECTABLE CATEGORIES -->
-                    <div class="page-metadata-item__categories-selectable-categories">
-                        <!-- METADATA ITEM SELECTABLE CATEGORIES SELECT -->
-                        <div class="page-metadata-item__categories-selectable-categories-select">
-                            <div class="cms-module__option-dropdown">
-                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-                                <ul>
-                                    <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
-										<li>
-                                            <label>
-                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
-                                                	<f:ajax render="metadata_component:selected_categories" />
-                                                </h:selectBooleanCheckbox>
-                                                #{selectable.value.name}
-                                            </label>
-                                        </li>
-                                    </ui:repeat>
-                                </ul>
-                            </div>
-                        </div>
-                   	</div>
-                </h:panelGroup>
-            </div>
-
-            <!-- metadata item privacy status -->
-            <div class="page-metadata-item page-metadata-item-privacy-status">
-                <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
-
-                <h:selectOneRadio value="#{cmsBean.selectedPage.published}" layout="pageDirection" id="pageMetadataItemPrivacyStatusRadioTable">
-                    <f:ajax event="valueChange" />
-                    <f:selectItem id="select_private" itemLabel="#{msg.cms_pageMetadata_private}" itemValue="#{false}"></f:selectItem>
-                    <f:selectItem id="select_public" itemLabel="#{msg.cms_pageMetadata_public}" itemValue="#{true}"></f:selectItem>
-                </h:selectOneRadio>
-            </div>
-
-            <!-- metadata item action -->
-            <div class="page-metadata-item page-metadata-item-action">
+            <!-- CMS PAGE ACTION -->
+            <div class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-3">
                 <ul>
                     <li>
                         <!-- preview description text -->
@@ -153,9 +72,16 @@
                         </div>
 
                         <!-- preview page -->
-                        <button type="button" id="preview-button" class="btn btn--default" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}">
+<!--                         <button type="button" id="preview-button" class="btn btndefault" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}"> -->
+<!--                             #{msg.cms_pagePreview} -->
+<!--                         </button> -->
+                        
+                        
+                        <a id="showPageButton" class="btn btn--default" target="_blank" href="#{cmsBean.getUrl(cmsBean.selectedPage)}">
                             #{msg.cms_pagePreview}
-                        </button>
+                        </a>
+                        
+                        
                     </li>
                     <li>
                         <!-- delete page -->
@@ -213,6 +139,379 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        		
+        		</div>
+
+				<!-- PRETTY/ALTERNATIVE/SPEAKING URL -->
+				<div class="admin__default-block">
+				
+			        <h2>#{msg.cms_page_pretty_url}</h2>
+	
+			        <div class="admin__form-help-text in mb-3">#{msg.cms_page_pretty_url_help_new}</div>
+	
+		            <!-- AREA FOR AJAX REFRESH -->
+		            <h:panelGroup id="prettyUrlGroup">
+		                <!-- VALIDATION MESSAGE -->
+		                <div class="cms-module__option-message">
+		                    <h:messages for="prettyUrl" 
+		                        infoClass="cms-module__option-message-status success" 
+		                        warnClass="cms-module__option-message-status warning"
+		                        errorClass="cms-module__option-message-status danger" />
+		
+		                    <div class="cms-module__option-message-mark">
+		                        <i class="fa fa-check" aria-hidden="true"></i>
+		                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+		                    </div>
+		                </div>
+		                
+		                <!-- INPUT TEXT -->
+		                <h:inputText 
+		                    id="prettyUrl" 
+		                    value="#{cmsBean.selectedPage.persistentUrl}" 
+		                    styleClass="form-control"
+		                    pt:data-target="prettyUrlHolder"
+		                    pt:data-input-restricted="url"
+		                    pt:data-input-restricted-message="#{msg.alert__character_not_allowed_in_url}" />
+		            </h:panelGroup>
+		            
+		            <div data-target="cmsPageUrlPreview" class="admin__small-info mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
+				
+				</div>
+				
+            	<!-- BREADCRUMBS -->
+				<div class="admin__default-block">
+					<h2>#{msg.title__breadcrumbs}</h2>
+		
+					<div class="admin__form-help-text in mb-3">#{msg.cms_page_breadcrumb_parent_help_new}</div>
+		
+					<!-- AREA FOR AJAX REFRESH -->
+					<h:panelGroup id="pageBreadcrumbParentGroup">
+						<!-- VALIDATION MESSAGE -->
+						<div class="cms-module__option-message">
+							<h:messages for="pageBreadcrumbParent"
+								infoClass="cms-module__option-message-status success"
+								warnClass="cms-module__option-message-status warning"
+								errorClass="cms-module__option-message-status danger" />
+		
+							<div class="cms-module__option-message-mark">
+								<i class="fa fa-check" aria-hidden="true"></i> <i
+									class="fa fa-exclamation" aria-hidden="true"></i>
+							</div>
+						</div>
+		
+						<!-- SELECT MENU -->
+						<div class="custom-control custom-control--select">
+							<h:selectOneMenu id="pageBreadcrumbParent"
+								styleClass="form-control"
+								value="#{cmsBean.selectedPage.parentPageId}">
+								<f:selectItem itemValue="#{null}" itemLabel="-" />
+								<f:selectItems
+									value="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}"
+									var="availablePage" itemValue="#{availablePage.id}"
+									itemLabel="#{availablePage.title}" />
+								<f:ajax event="change" render="pageBreadcrumbParentGroup" />
+							</h:selectOneMenu>
+						</div>
+		
+						<ui:fragment rendered="#{cmsBean.selectedPage.parentPageId != null and cmsBean.selectedPage.parentPageId != ''}">
+		
+						<div data-target="cmsPageBreadcrumbsPreview"
+							class="admin__small-info mt-2">#{msg.title__preview}:
+							#{msg.home} >
+							#{cmsBean.getCMSPage(cmsBean.selectedPage.parentPageId).title} >
+							#{cmsBean.selectedPage.getLanguageVersion(locale).title}</div>
+							
+						</ui:fragment>
+		
+					</h:panelGroup>
+		
+				</div>
+		
+				<!-- CATEGORIES -->
+				<div class="admin__default-block">
+		                <h:panelGroup id="classifications_group">
+		                    <h2>#{msg.admin__cms_categories}</h2>
+		
+							<div class="admin__form-help-text in mb-3">#{msg.admin__cms_categories_help}</div>
+		
+		                    <!-- METADATA ITEM SELECTED CATEGORIES -->
+		                    <h:panelGroup id="selected_categories">
+		                        <div class="page-metadata-item__categories-selected-categories">
+		                            <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
+		                                <ui:fragment rendered="#{category.selected}">
+		                                    <div class="badge badge-violet">#{category.value.name}</div>
+		                                </ui:fragment>
+		                            </ui:repeat>
+		                        </div>
+		                    </h:panelGroup>
+		
+		                    <!-- METADATA ITEM SELECTABLE CATEGORIES -->
+		                    <div class="page-metadata-item__categories-selectable-categories">
+		                        <!-- METADATA ITEM SELECTABLE CATEGORIES SELECT -->
+		                        <div class="page-metadata-item__categories-selectable-categories-select">
+		                            <div class="cms-module__option-dropdown">
+		                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+		                                <ul>
+		                                    <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
+												<li>
+		                                            <label>
+		                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
+		                                                	<f:ajax render="metadata_component:selected_categories" />
+		                                                </h:selectBooleanCheckbox>
+		                                                #{selectable.value.name}
+		                                            </label>
+		                                        </li>
+		                                    </ui:repeat>
+		                                </ul>
+		                            </div>
+		                        </div>
+		                   	</div>
+		                </h:panelGroup>
+				</div>
+
+        		
+        	<!-- SET RELATED RECORD -->	
+        	<div class="admin__default-block">
+        	
+	            <h2>#{msg.cms_page_related_pi}</h2>
+	            
+	            <div class="admin__form-help-text in mb-3">#{msg.cms_page_related_pi_help}</div>
+        	
+
+			            <!-- AREA FOR AJAX REFRESH -->
+			            <h:panelGroup id="relatedPiInputGroup">
+			                <!-- VALIDATION MESSAGE -->
+			                <div class="cms-module__option-message">
+			                    <h:messages for="relatedPiInput" 
+			                        infoClass="cms-module__option-message-status success" 
+			                        warnClass="cms-module__option-message-status warning"
+			                        errorClass="cms-module__option-message-status danger" />
+			
+			                    <div class="cms-module__option-message-mark">
+			                        <i class="fa fa-check" aria-hidden="true"></i>
+			                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+			                    </div>
+			                </div>
+			                
+			                <!-- INPUT TEXT -->
+			                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control" pt:data-target="relatedPiInputField">
+			                
+			                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
+			                    <f:ajax event="blur" render="relatedPiInputGroup useAsDefaultRecordViewGroup" />
+			                </h:inputText>
+			                
+						<!-- SCRIPT FOR RELATED RECORD -->
+						<script>
+						if ( !$('[data-target="relatedPiInputField"]').val()) {
+							$('[data-target="useDefaultViewToggleBox"]').hide();
+						}
+						
+						$('[data-target="relatedPiInputField"]').keyup(function() {
+							if ( !$('[data-target="relatedPiInputField"]').val()) {
+								$('[data-target="useDefaultViewToggleBox"]').fadeOut('fast');
+							} else {
+								$('[data-target="useDefaultViewToggleBox"]').fadeIn('fast');
+							}
+						});
+						
+						</script>
+			                
+			            </h:panelGroup>
+
+			    		<!-- USE AS DEFAULT RECORD VIEW TOGGLE YES NO -->
+			    		<div data-target="useDefaultViewToggleBox" class="cms-create-page__use-as-default-view-toggle-wrapper">
+				    		<h3 class="mt-3">#{msg.cms_page_use_as_default_record_view}</h3>
+				    		<div class="admin__form-help-text in mb-3 mt-1">#{msg.cms_page_use_as_default_record_view_help}</div>
+				    
+				            <!-- AREA FOR AJAX REFRESH -->
+				            <h:panelGroup id="useAsDefaultRecordViewGroup" layout="block" styleClass="cms-module__option-checkbox">
+	
+	                            <div class="admin__radio-switch">
+	                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
+	                                    immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
+	                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                </h:selectOneRadio>
+	                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
+	                                    immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
+	                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                </h:selectOneRadio>
+	                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                            </div>
+				            </h:panelGroup>
+						</div>
+
+			    </div>
+
+				<!-- SET SUBTHEME -->
+				<div class="admin__default-block">
+		                 <h2>#{msg.cms_page_subtheme_discriminator}</h2>
+		                 
+		                 <div class="admin__form-help-text in mb-3">#{msg.cms_page_subtheme_discriminator_help}</div>
+		                
+				            <!-- AREA FOR AJAX REFRESH -->
+				            <h:panelGroup id="subthemeDiscriminatorGroup">
+				                <!-- VALIDATION MESSAGE -->
+				                <div class="cms-module__option-message">
+				                    <h:messages for="subthemeDiscriminator" 
+				                        infoClass="cms-module__option-message-status success" 
+				                        warnClass="cms-module__option-message-status warning"
+				                        errorClass="cms-module__option-message-status danger" />
+				
+				                    <div class="cms-module__option-message-mark">
+				                        <i class="fa fa-check" aria-hidden="true"></i>
+				                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+				                    </div>
+				                </div>
+				                
+				                <!-- SELECT MENU -->
+				                <div class="custom-control custom-control--select">
+				                    <h:selectOneMenu 
+				                        id="subthemeDiscriminator" 
+				                        styleClass="form-control" 
+				                        value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
+				                        disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
+				                        required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
+				                        requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
+				                        <f:selectItem 
+				                        	itemDisabled="#{cmsBean.isSubthemeRequired(userBean.user)}"
+				                            itemValue="#{null}"
+				                            itemLabel="-" />
+				                        <f:selectItems value="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" />
+				                        <f:ajax event="change" render="subthemeDiscriminatorGroup" />
+				                    </h:selectOneMenu>
+				                </div>
+				            </h:panelGroup>
+				            <!-- INLINE HELP -->
+				            <span class="cms-module__option-control-helptext">#{msg.cms_page_subtheme_discriminator_help}</span>
+        		</div>
+			
+			<!-- ADD CSS CLASS FOR THIS CMS PAGE -->
+           	<div class="admin__default-block">
+           	
+		        <h2>#{msg.cms_wrapperElementClass}</h2>
+
+		        <div class="admin__form-help-text in mb-3">#{msg.cms_wrapperElementClass_help}</div>
+           	
+	            <!-- AREA FOR AJAX REFRESH -->
+	            <h:panelGroup id="cssClassGroup">
+	                <!-- VALIDATION MESSAGE -->
+	                <div class="cms-module__option-message">
+	                    <h:messages for="cssClass" 
+	                        infoClass="cms-module__option-message-status success" 
+	                        warnClass="cms-module__option-message-status warning"
+	                        errorClass="cms-module__option-message-status danger" />
+	
+	                    <div class="cms-module__option-message-mark">
+	                        <i class="fa fa-check" aria-hidden="true"></i>
+	                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+	                    </div>
+	                </div>
+	                
+	                <!-- INPUT TEXT -->
+	                <h:inputText 
+	                    id="cssClass" 
+	                    value="#{cmsBean.selectedPage.wrapperElementClass}" 
+	                    styleClass="form-control" 
+	                    pt:data-target="quickCSSInputField"/>
+	            </h:panelGroup>
+            	<div data-target="cmsPageJumpToQuickCSSLink" class="admin__small-info mt-2"><a target="_blank" href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a></div>
+
+            </div>
+            
+           	<div class="admin__default-block">
+           	
+		    <h2>#{msg.cms_page_url_parameters}</h2>
+
+		    <div class="admin__form-help-text in mb-3">#{msg.cms_page_url_parameters_help}</div>
+		    
+			<!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="urlParametersGroup" layout="block" styleClass="cms-module__option-checkbox">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="urlParameters" 
+                        infoClass="cms-module__option-message-status success" 
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- ALLOW URL PARAMS TOGGLE -->
+                 <div class="admin__radio-switch">
+                     <h:selectOneRadio onclick="cmsJS.createPage.disablePreview();" group="cmsPageAllowUrlParams" value="#{cmsBean.selectedPage.mayContainUrlParameters}"
+                         immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
+                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                     </h:selectOneRadio>
+                     <h:selectOneRadio onclick="cmsJS.createPage.disablePreview();" group="cmsPageAllowUrlParams" value="#{cmsBean.selectedPage.mayContainUrlParameters}"
+                         immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
+                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                     </h:selectOneRadio>
+                     <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                 </div>
+                    
+                    
+                    
+            </h:panelGroup>
+            
+            
+            </div>   
+            
+            
+				<!-- SCRIPT FOR PRETTY URL PREVIEW -->
+				<script>
+				
+				if (!$('[data-target="prettyUrlHolder"]').val()) {
+						$('[data-target="cmsPageUrlPreview"]').hide();
+				}
+
+		        var prettyUrlText = $('[data-target="prettyUrlHolder"]').val();
+		        var lblValue = document.getElementById("prettyUrlTextHolder");
+		        lblValue.innerText = prettyUrlText;
+				
+				$('[data-target="prettyUrlHolder"]').keyup(function() {
+			        var prettyUrlText = $('[data-target="prettyUrlHolder"]').val();
+			        
+					if (!$('[data-target="prettyUrlHolder"]').val()) {
+						$('[data-target="cmsPageUrlPreview"]').fadeOut('fast');
+					} else {
+						$('[data-target="cmsPageUrlPreview"]').fadeIn('fast');
+					}
+					
+			        lblValue.innerText = prettyUrlText;
+			        var setLink = $('[data-target="prettyUrlLinkTarget"]').text();
+			        console.log(setLink);
+					$('[data-target="prettyUrlLinkTarget"]').attr("href", setLink);
+				});
+
+				</script>
+				
+				<!-- SCRIPT FOR RELATED RECORD -->
+				<script>
+				if ( !$('[data-target="relatedPiInputField"]').val()) {
+					$('[data-target="useDefaultViewToggleBox"]').hide();
+				}
+				</script>
+				
+				<!-- SCRIPT FOR JUMP TO QUICK CSS LINK -->
+				<script>
+				if ( !$('[data-target="quickCSSInputField"]').val()) {
+					$('[data-target="cmsPageJumpToQuickCSSLink"]').hide();
+				}
+				
+				$('[data-target="quickCSSInputField"]').keyup(function() {
+					if ( !$('[data-target="quickCSSInputField"]').val()) {
+						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeOut('fast');
+					} else {
+						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeIn('fast');
+					}
+				});
+				
+				</script>
+                                                       
+
+        		
     </composite:implementation>
 </ui:composition>

@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.viewer.pageloader;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,11 +36,9 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.jboss.weld.persistence.PersistenceApiAbstraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -53,8 +50,8 @@ import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * <p>
@@ -64,6 +61,14 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 public abstract class AbstractPageLoader implements IPageLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractPageLoader.class);
+
+    /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */
+    protected static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,
+            SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME, SolrConstants.FILENAME_ALTO,
+            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3,
+            SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE,
+            SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION,
+            SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.BOOL_DOUBLE_IMAGE };
 
     /**
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
@@ -242,8 +247,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
                             pe.setHeight(info.getHeight());
                             pe.setWidth(info.getWidth());
                         });
-            } catch (Throwable e) {
-                logger.warn("Error reading image size of " + pe.getFilename() + ": " + e.toString());
+            } catch (Exception e) {
+                logger.warn("Error reading image size of {}: {}", pe.getFirstFileName(), e.toString());
             }
         }
 
@@ -312,7 +317,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @should construct single page item correctly
      * @should construct double page item correctly
      */
-    protected static SelectPageItem buildPageSelectItem(String labelTemplate, int pageNo, String orderLabel, Integer nextPageNo, String nextOderLabel) {
+    protected static SelectPageItem buildPageSelectItem(String labelTemplate, int pageNo, String orderLabel, Integer nextPageNo,
+            String nextOderLabel) {
         if (labelTemplate == null) {
             throw new IllegalArgumentException("labelTemplate may not be null");
         }

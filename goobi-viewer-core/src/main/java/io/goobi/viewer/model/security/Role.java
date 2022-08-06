@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,7 +43,9 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Role implements Serializable {
+
+    private static final long serialVersionUID = -264290351046020590L;
 
     /** Constant <code>SUPERUSER_ROLE="admin"</code> */
     public static final String SUPERUSER_ROLE = "admin";

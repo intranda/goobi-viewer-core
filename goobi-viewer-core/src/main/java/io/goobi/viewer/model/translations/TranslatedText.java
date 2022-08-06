@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.translations;
 
+import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -42,7 +42,9 @@ import io.goobi.viewer.api.rest.serialization.TranslatedTextSerializer;
  *
  */
 @JsonSerialize(using = TranslatedTextSerializer.class)
-public class TranslatedText extends MultiLanguageMetadataValue implements IPolyglott {
+public class TranslatedText extends MultiLanguageMetadataValue implements IPolyglott, Serializable {
+
+    private static final long serialVersionUID = -3725829912057184396L;
 
     private Locale selectedLocale;
 
@@ -178,6 +180,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
         return this.getValues().stream().map(ValuePair::getValue).mapToInt(String::hashCode).sum();
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(TranslatedText.class)) {
             TranslatedText other = (TranslatedText) obj;
@@ -197,5 +200,4 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
         return false;
     }
-
 }

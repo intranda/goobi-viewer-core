@@ -57,11 +57,11 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class AbstractAnnotationBuilder {
 
-    private final static Logger logger  = LoggerFactory.getLogger(AbstractAnnotationBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractAnnotationBuilder.class);
 
-    public static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
-            SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS, SolrConstants.ACCESSCONDITION, SolrConstants.MD_ANNOTATION_ID};
-
+    protected static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
+            SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS, SolrConstants.ACCESSCONDITION,
+            SolrConstants.MD_ANNOTATION_ID };
 
     private final AbstractBuilder restBuilder;
 
@@ -71,24 +71,20 @@ public class AbstractAnnotationBuilder {
     }
 
     public String getAnnotationQuery() {
-        String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
-        return query;
+        return "+" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
     }
 
     public String getAnnotationQuery(String pi) {
-        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " " + getAnnotationQuery();
-        return query;
+        return "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " " + getAnnotationQuery();
     }
 
     public String getAnnotationQuery(String pi, int pageNo) {
-        String query = "+" + SolrConstants.ORDER + ":" + pageNo + " " + getAnnotationQuery(pi);
-        return query;
+        return "+" + SolrConstants.ORDER + ":" + pageNo + " " + getAnnotationQuery(pi);
     }
 
     /**
-     * Search for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only
-     * included for backwards compatibility purposes. The correct identifier is MD_ANNOTATION_ID since it reflects the
-     * original sql identifier
+     * Search for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only included for backwards
+     * compatibility purposes. The correct identifier is MD_ANNOTATION_ID since it reflects the original sql identifier
      *
      * @param iddoc
      * @return
@@ -97,8 +93,8 @@ public class AbstractAnnotationBuilder {
         return "+(" + SolrConstants.MD_ANNOTATION_ID + ":annotation_" + id + " " + SolrConstants.IDDOC + ":" + id + ")";
     }
 
-
-    public List<SolrDocument> getAnnotationDocuments(String query, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+    public List<SolrDocument> getAnnotationDocuments(String query, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException {
         return getAnnotationDocuments(query, getDefaultSortFields(), request);
     }
 
@@ -114,15 +110,18 @@ public class AbstractAnnotationBuilder {
         return Arrays.asList(sortField1, sortField2, sortField3);
     }
 
-    public List<SolrDocument> getAnnotationDocuments(String query, List<StringPair> sortFields,  HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+    public List<SolrDocument> getAnnotationDocuments(String query, List<StringPair> sortFields, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException {
         return getAnnotationDocuments(query, 0, SolrSearchIndex.MAX_HITS, sortFields, request);
     }
 
-    public List<SolrDocument> getAnnotationDocuments(String query, int first, int rows, List<StringPair> sortFields, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
-        if(sortFields ==  null) {
+    public List<SolrDocument> getAnnotationDocuments(String query, int first, int rows, List<StringPair> sortFields, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException {
+        if (sortFields == null) {
             sortFields = getDefaultSortFields();
         }
-        SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, Arrays.asList(UGC_SOLR_FIELDS)).getResults();
+        SolrDocumentList hits =
+                DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, Arrays.asList(UGC_SOLR_FIELDS)).getResults();
         if (hits.isEmpty()) {
             return Collections.emptyList();
         }
@@ -134,15 +133,14 @@ public class AbstractAnnotationBuilder {
         return Optional.ofNullable(hit);
     }
 
-
     private static boolean isAccessGranted(SolrDocument doc, String query, HttpServletRequest request) {
         String accessCondition = SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION);
-        if(StringUtils.isBlank(accessCondition) || "OPENACCESS".equalsIgnoreCase(accessCondition)) {
+        if (StringUtils.isBlank(accessCondition) || "OPENACCESS".equalsIgnoreCase(accessCondition)) {
             return true;
-        } else if(request != null){
+        } else if (request != null) {
             try {
                 return AccessConditionUtils.checkAccessPermission(Collections.singleton(accessCondition),
-                        IPrivilegeHolder.PRIV_VIEW_UGC, query, request);
+                        IPrivilegeHolder.PRIV_VIEW_UGC, query, request).isGranted();
             } catch (IndexUnreachableException | PresentationException | DAOException e) {
                 logger.error("Failed to check access to annotation", e);
                 return false;
@@ -153,7 +151,9 @@ public class AbstractAnnotationBuilder {
     }
 
     public long getAnnotationCount(HttpServletRequest request) throws PresentationException, IndexUnreachableException {
-        SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(getAnnotationQuery(), SolrSearchIndex.MAX_HITS, null, Arrays.asList(SolrConstants.ACCESSCONDITION));
+        SolrDocumentList hits = DataManager.getInstance()
+                .getSearchIndex()
+                .search(getAnnotationQuery(), SolrSearchIndex.MAX_HITS, null, Arrays.asList(SolrConstants.ACCESSCONDITION));
         if (hits.isEmpty()) {
             return 0;
         }
@@ -164,15 +164,15 @@ public class AbstractAnnotationBuilder {
         return restBuilder;
     }
 
-    public Optional<IAnnotation> getAnnotation(String idString){
+    public Optional<IAnnotation> getAnnotation(String idString) {
         int underscoreIndex = idString.lastIndexOf("_");
-        Long id = Long.parseLong(idString.substring(underscoreIndex > -1 ? underscoreIndex+1 : 0));
+        Long id = Long.parseLong(idString.substring(underscoreIndex > -1 ? underscoreIndex + 1 : 0));
 
         try {
             CrowdsourcingAnnotation pa = DataManager.getInstance().getDao().getAnnotation(id);
             return Optional.ofNullable(pa).map(a -> new AnnotationConverter().getAsWebAnnotation(a));
         } catch (DAOException e) {
-            logger.error("Error getting annotation " + idString + " from DAO: " + e.toString());
+            logger.error("Error getting annotation {} from DAO: {}", idString, e.toString());
             return Optional.empty();
         }
     }

@@ -404,7 +404,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
-        Mockito.when(page.getFilename()).thenReturn(pageFilename);
+        Mockito.when(page.getFirstFileName()).thenReturn(pageFilename);
         Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
         Mockito.when(page.getMimeType()).thenReturn("image/tiff");
         Mockito.when(page.getBaseMimeType()).thenReturn("image");

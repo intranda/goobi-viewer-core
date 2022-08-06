@@ -54,8 +54,8 @@
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
                                 <i class="fa fa-key" aria-hidden="true"></i>
                                 <span>#{msg.admin__licenses}</span>
-                                <ui:fragment rendered="#{fn:length(adminBean.notConfiguredAccessConditions) gt 0}">
-                            	   <span class="admin-widget__counter">#{fn:length(adminBean.notConfiguredAccessConditions)}</span>
+                                <ui:fragment rendered="#{fn:length(adminLicenseBean.notConfiguredAccessConditions) gt 0}">
+                            	   <span class="admin-widget__counter">#{fn:length(adminLicenseBean.notConfiguredAccessConditions)}</span>
                             	</ui:fragment>
                             </h:outputLink>
                             <div >
@@ -66,6 +66,12 @@
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRights')}/">
                                 <i class="fa fa-lock" aria-hidden="true"></i>
                                 <span>#{msg.admin__rights}</span>
+                                <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 0 and adminLicenseBean.downloadTicketRequests.size() le 99}">
+									<span class="admin-widget__counter">#{adminLicenseBean.downloadTicketRequests.size()}</span>
+								</ui:fragment>
+                                <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 99}">
+									<span class="admin-widget__counter -small">99+</span>
+								</ui:fragment>
                             </h:outputLink>
                         </li>
                     </ui:fragment> 

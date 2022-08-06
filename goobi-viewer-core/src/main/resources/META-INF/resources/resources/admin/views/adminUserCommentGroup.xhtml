@@ -208,7 +208,7 @@
                                                 
 	                                                <h:panelGroup id="GroupOwner">
 	                                                    <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.userGroup != null}">
-	                                                     <div class="mt-1 d-flex justify-content-start crowdsourcing-annotations__sidebar-owner">
+	                                                     <div class="mt-1 d-flex justify-content-start admin__small-info">
 	                                                      <label for="groupOwnerName" class="pr-1 mb-0">#{msg.owner}:</label>
 	                                                      <h:outputLink id="groupOwnerName"
 	                                                          value="#{navigationHelper.applicationUrl}admin/users/edit/#{adminCommentBean.currentCommentGroup.userGroup.owner.id}/">

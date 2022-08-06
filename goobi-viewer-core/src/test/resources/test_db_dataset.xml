@@ -278,16 +278,22 @@
     <comment_groups comment_group_id="1" title="admin__comment_groups_all_comments_title" description="admin__comment_groups_all_comments_desc" user_group_id="3" send_email_notifications="1" core_type="1" />
     <comment_groups comment_group_id="2" title="test" description="desc" core_type="0" solr_query="DC:dcmetadata" user_group_id="1" send_email_notifications="1" />
 
-    <annotations_crowdsourcing annotation_id="1" body="&quot;a&quot;" date_created="2019-09-19 00:00:00.000000000" creator_id="1" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
-    <annotations_crowdsourcing annotation_id="2" body="&quot;b&quot;" date_created="2019-09-19 00:00:00.000000000" reviewer_id="1" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
-    <annotations_crowdsourcing annotation_id="3" body="&quot;c&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
-    <annotations_crowdsourcing annotation_id="4" body="&quot;d&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
-    <annotations_crowdsourcing annotation_id="5" body="&quot;e&quot;" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
+    <annotations_crowdsourcing annotation_id="1" body="&quot;a&quot;" access_condition="OPENACCESS" motivation="describing" publication_status="PUBLISHED" date_created="2019-09-19 00:00:00.000000000" creator_id="1" generator_id="1" target="&quot;aa&quot;" target_pi="PI_1" target_page="1" />
+    <annotations_crowdsourcing annotation_id="2" body="&quot;b&quot;" access_condition="OPENACCESS" motivation="describing" publication_status="PUBLISHED" date_created="2019-09-19 00:00:00.000000000" reviewer_id="1" generator_id="1" target="&quot;bb&quot;" target_pi="PI_2" target_page="6" />
+    <annotations_crowdsourcing annotation_id="3" body="&quot;c&quot;" access_condition="OPENACCESS" motivation="describing" publication_status="PUBLISHED" date_created="2019-09-19 00:00:00.000000000" generator_id="2" target="&quot;cc&quot;" target_pi="PI_1" />
+    <annotations_crowdsourcing annotation_id="4" body="&quot;d&quot;" access_condition="OPENACCESS" motivation="describing" publication_status="PRIVATE" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;dd&quot;" target_pi="PI_1" />
+    <annotations_crowdsourcing annotation_id="5" body="&quot;e&quot;" access_condition="OPENACCESS" motivation="describing" publication_status="REVIEW" date_created="2019-09-19 00:00:00.000000000" generator_id="3" target="&quot;ee&quot;" target_pi="PI_2" />
     
     <client_applications client_application_id="1" client_identifier="74b2b989-753f-4eea-a3f9-8fa7243f3966" access_status="NON_APPLICABLE" name="all clients" date_registered="2022-06-08 00:00:00.000000000" date_last_access="2022-06-08 00:00:00.000000000"></client_applications>
     <client_applications client_application_id="2" client_identifier="1234-abcd-4321" access_status="REQUESTED" name="First client" subnet_mask="127.0.0.0/16" date_registered="2022-06-08 00:00:00.000000000" date_last_access="2022-06-08 00:00:00.000000000"></client_applications>
     <client_applications client_application_id="3" client_identifier="7890-abcd-0987" access_status="GRANTED" name="Second client" subnet_mask="192.168.172.0/16" date_registered="2022-06-08 00:00:00.000000000" date_last_access="2022-06-08 00:00:00.000000000"></client_applications>
     
+    <download_tickets download_ticket_id="1" date_created="2022-07-01 12:00:00.000000000" expiration_date="2022-07-15 12:00:00.000000000"
+        email="user1@example.com" password_hash="$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO" pi="PPN123" title="Lorem Ipsum" />
+    <download_tickets download_ticket_id="2" date_created="2022-07-19 11:40:00.000000000" expiration_date="2032-08-02 11:40:00.000000000"
+        email="user1@example.com" password_hash="$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO" pi="PPN456" title="Foo Bar" />
+    <download_tickets download_ticket_id="3" date_created="2022-07-19 11:55:00.000000000"
+        email="user2@example.com" pi="PPN123" title="Foo Bar" request_message="Pretty please?" />
     
 </dataset>
 

@@ -27,9 +27,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -107,21 +104,6 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1, statistics.size());
         Assert.assertEquals(1, statistics.get(0).getReviewers().size());
         Assert.assertFalse(statistics.get(0).getReviewers().contains(user));
-    }
-
-    /**
-     * @see AdminBean#getGroupedLicenseTypeSelectItems()
-     * @verifies group license types in select item groups correctly
-     */
-    @Test
-    public void getGroupedLicenseTypeSelectItems_shouldGroupLicenseTypesInSelectItemGroupsCorrectly() throws Exception {
-        AdminBean bean = new AdminBean();
-        bean.init();
-
-        List<SelectItem> items = bean.getGroupedLicenseTypeSelectItems();
-        Assert.assertEquals(2, items.size());
-        Assert.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
-        Assert.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
     }
 
     /**
@@ -205,8 +187,8 @@ public class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.addUserRoleAction();
 
         assertEquals(2, bean.dirtyUserRoles.size());
-        assertEquals(bean.dirtyUserRoles.get(ur1), "save");
-        assertEquals(bean.dirtyUserRoles.get(ur2), "save");
+        assertEquals("save", bean.dirtyUserRoles.get(ur1));
+        assertEquals("save", bean.dirtyUserRoles.get(ur2));
 
         bean.saveUserGroupAction();
 

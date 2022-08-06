@@ -39,7 +39,7 @@
                     </div>
                     <ui:repeat var="client" value="#{notConfiguredClients}">
 	                    <a href="#{request.contextPath}/admin/clients/edit/#{client.id}/"
-	                        class="row admin__license-unconfigured-entry">
+	                        class="row admin__clients-unconfigured-entry">
 	                            <div class="col-10 -textlink">
 									#{client.clientIdentifier} (IP: #{client.clientIp})
 	                            </div>

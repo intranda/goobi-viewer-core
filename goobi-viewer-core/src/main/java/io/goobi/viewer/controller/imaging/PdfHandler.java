@@ -153,7 +153,7 @@ public class PdfHandler {
             return urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
         }
         StringBuilder sb = new StringBuilder(this.iiifUrl);
-        sb.append("image").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
+        sb.append("pdf").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
         return sb.toString();
     }
 

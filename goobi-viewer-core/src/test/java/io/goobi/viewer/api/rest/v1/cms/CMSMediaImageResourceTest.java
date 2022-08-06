@@ -21,7 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -37,10 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.model.cms.CMSMediaItem;
@@ -103,7 +102,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         CMSMediaItem media = new CMSMediaItem();
         media.setFileName(filename);
         String apiUrl = urls.getApiUrl();
-        ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(urls), DataManager.getInstance().getConfiguration(), null);
+        ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(urls), null);
         String imageUrl = thumbs.getThumbnailUrl(media, 100, 200);
         //System.out.println(imageUrl);
         assertTrue(imageUrl.startsWith(apiUrl));
@@ -117,7 +116,6 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         String resourceURI = resource.getResourceURI().toString();
         assertTrue(resourceURI.startsWith(apiUrl));
         assertTrue(resourceURI + " should contain " + filenameEnc, resourceURI.contains(filenameEnc));
-
 
     }
 

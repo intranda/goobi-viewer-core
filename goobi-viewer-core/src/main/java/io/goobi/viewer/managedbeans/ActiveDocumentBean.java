@@ -88,7 +88,6 @@ import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
-import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -128,7 +127,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private static int imageContainerWidth = 600;
 
-    private final Object lock = new Object();
+    private final transient Object lock = new Object();
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -142,8 +141,6 @@ public class ActiveDocumentBean implements Serializable {
     private ImageDeliveryBean imageDelivery;
     @Inject
     private BreadcrumbBean breadcrumbBean;
-    @Inject
-    private ContentBean contentBean;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -159,9 +156,6 @@ public class ActiveDocumentBean implements Serializable {
     private boolean volume = false;
     private boolean group = false;
     protected long topDocumentIddoc = 0;
-
-    /** Metadata displayed in title.xhtml */
-    private List<Metadata> titleBarMetadata = new ArrayList<>();
 
     // TODO move to SearchBean
     private BrowseElement prevHit;
@@ -254,7 +248,6 @@ public class ActiveDocumentBean implements Serializable {
             String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
             topDocumentIddoc = 0;
-            titleBarMetadata.clear();
             logid = "";
             action = "";
             prevHit = null;
@@ -360,7 +353,6 @@ public class ActiveDocumentBean implements Serializable {
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();
-            titleBarMetadata.clear();
 
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
@@ -403,7 +395,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
                     boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
                             new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
-                            (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                            (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted();
                     if (!access) {
                         logger.debug("User may not open {}", topStructElement.getPi());
                         try {
@@ -473,7 +465,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
-                            viewManager.getMainMimeType(), imageDelivery);
+                            viewManager.getMimeType(), imageDelivery);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                     viewManager.setToc(createTOC());
                 } else {
@@ -500,18 +492,6 @@ public class ActiveDocumentBean implements Serializable {
                 }
                 if (structElement.isGroup()) {
                     group = true;
-                }
-
-                // Populate title bar metadata
-                StructElement topSe = viewManager.getCurrentStructElement().getTopStruct();
-                // logger.debug("topSe: {}", topSe.getId());
-                if (topSe != null) {
-                    for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                        md.populate(topSe, String.valueOf(topSe.getLuceneId()), md.getSortFields(), BeanUtils.getLocale());
-                        if (!md.isBlank()) {
-                            titleBarMetadata.add(md);
-                        }
-                    }
                 }
 
                 viewManager.setCurrentImageOrderString(imageToShow);
@@ -578,7 +558,7 @@ public class ActiveDocumentBean implements Serializable {
         TOC toc = new TOC();
         synchronized (toc) {
             if (viewManager != null) {
-                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(), tocCurrentPage);
                 // The TOC object will correct values that are too high, so update the local value, if necessary
                 if (toc.getCurrentPage() != this.tocCurrentPage) {
                     this.tocCurrentPage = toc.getCurrentPage();
@@ -768,17 +748,6 @@ public class ActiveDocumentBean implements Serializable {
         synchronized (lock) {
             return imageToShow;
         }
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>titleBarMetadata</code>.
-     * </p>
-     *
-     * @return the titleBarMetadata
-     */
-    public List<Metadata> getTitleBarMetadata() {
-        return Metadata.filterMetadata(titleBarMetadata, selectedRecordLanguage, null);
     }
 
     /**
@@ -1605,7 +1574,7 @@ public class ActiveDocumentBean implements Serializable {
                 if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
                         && viewManager != null) {
                     viewManager.getToc()
-                            .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                            .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(),
                                     this.tocCurrentPage);
                 }
             }
@@ -1993,7 +1962,7 @@ public class ActiveDocumentBean implements Serializable {
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
             try {
-                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
+                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null
                         || !DownloadJob.ocrFolderExists(viewManager.getPi())) {
                     return false;
                 }
@@ -2016,7 +1985,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public boolean isAccessPermissionPdf() {
         synchronized (this) {
-            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
+            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.LOCAL_TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
                 return false;
             }
 
@@ -2029,11 +1998,11 @@ public class ActiveDocumentBean implements Serializable {
      * @return
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
-        if (downloadType.equals(EPUBDownloadJob.TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
+        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
             return false;
         }
         PageType pageType = PageType.getByName(pageTypeName);
-        boolean pdf = PDFDownloadJob.TYPE.equals(downloadType);
+        boolean pdf = PDFDownloadJob.LOCAL_TYPE.equals(downloadType);
         if (pageType != null) {
             switch (pageType) {
                 case viewToc:
@@ -2277,6 +2246,13 @@ public class ActiveDocumentBean implements Serializable {
         return widget;
     }
 
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws DAOException
+     */
     public GeoMap generateGeoMap(String pi) throws PresentationException, DAOException {
         try {
             if ("-".equals(pi)) {
@@ -2335,7 +2311,7 @@ public class ActiveDocumentBean implements Serializable {
             SolrDocumentList subDocs = DataManager.getInstance().getSearchIndex().getDocs(subDocQuery, subDocFields);
             if (subDocs != null) {
                 for (SolrDocument solrDocument : subDocs) {
-                    List<GeoMapFeature> docFeatures = new ArrayList<GeoMapFeature>();
+                    List<GeoMapFeature> docFeatures = new ArrayList<>();
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
@@ -2398,7 +2374,7 @@ public class ActiveDocumentBean implements Serializable {
      * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
      */
     public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
-        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel.toString() : null);
+        logger.trace("setSelectedDownloadOption: {}", selectedDownloadOptionLabel != null ? selectedDownloadOptionLabel : null);
         this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
     }
 
@@ -2411,18 +2387,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
     }
-
-    //    /**
-    //     *
-    //     * @return ViewManager.doublePageMode; false if ViewManager is null
-    //     */
-    //    public boolean isDoublePageMode() {
-    //        if (viewManager == null) {
-    //            return false;
-    //        }
-    //
-    //        return viewManager.isDoublePageMode();
-    //    }
 
     /**
      * This method augments the setter <code>ViewManager.setDoublePageMode(boolean)</code> with URL modifications to reflect the mode.
@@ -2516,16 +2480,18 @@ public class ActiveDocumentBean implements Serializable {
 
         return viewManager.isAllowUserComments();
     }
-    
+
     /**
      * Check if the current page should initialize a WebSocket
+     * 
      * @return true if a document is loaded and it contains the field {@link SolrConstants.ACCESSCONDITION_CONCURRENTUSE}
      */
     public boolean isRequiresWebSocket() {
-        if(viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
+        if (viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
             return viewManager.getTopStructElement().getMetadataFields().containsKey(SolrConstants.ACCESSCONDITION_CONCURRENTUSE);
-        } else {
-            return false;
         }
+
+        return false;
     }
+
 }

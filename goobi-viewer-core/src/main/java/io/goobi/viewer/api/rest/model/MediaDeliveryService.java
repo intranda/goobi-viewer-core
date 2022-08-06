@@ -53,6 +53,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
  */
 public class MediaDeliveryService {
 
+    private static final String CONTENT_RANGE_HEADER = "Content-Range";
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
@@ -101,9 +102,9 @@ public class MediaDeliveryService {
         // Validate and process range -------------------------------------------------------------
         List<Section> sections;
         try {
-            sections = getSections(request, response, length, lastModified, eTag);
+            sections = getSections(request, length, lastModified, eTag);
         } catch (IllegalRequestException e) {
-            response.setHeader("Content-Range", "bytes */" + length); // Required in 416.
+            response.setHeader(CONTENT_RANGE_HEADER, "bytes */" + length); // Required in 416.
             response.sendError(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
             return;
         }
@@ -147,7 +148,7 @@ public class MediaDeliveryService {
                 // Return full file.
                 Section sec = new Section(length);
                 response.setContentType(contentType);
-                response.setHeader("Content-Range", "bytes " + sec.start + "-" + sec.end + "/" + sec.total);
+                response.setHeader(CONTENT_RANGE_HEADER, "bytes " + sec.start + "-" + sec.end + "/" + sec.total);
 
                 // Content length is not directly predictable in case of GZIP.
                 // So only add it if there is no means of GZIP, else browser will hang.
@@ -163,7 +164,7 @@ public class MediaDeliveryService {
                 // Return single part of file.
                 Section sec = sections.get(0);
                 response.setContentType(contentType);
-                response.setHeader("Content-Range", "bytes " + sec.start + "-" + sec.end + "/" + sec.total);
+                response.setHeader(CONTENT_RANGE_HEADER, "bytes " + sec.start + "-" + sec.end + "/" + sec.total);
                 response.setHeader("Content-Length", String.valueOf(sec.length));
                 response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
                 copy(input, output, sec);
@@ -175,7 +176,7 @@ public class MediaDeliveryService {
                 response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
 
                 // Cast back to ServletOutputStream to get the easy println methods.
-                ServletOutputStream sos = (ServletOutputStream) response.getOutputStream();
+                ServletOutputStream sos = response.getOutputStream();
 
                 // Copy multi part range.
                 for (Section sec : sections) {
@@ -235,17 +236,17 @@ public class MediaDeliveryService {
      * @throws IOException
      * @throws IllegalRequestException
      */
-    private List<Section> getSections(HttpServletRequest request, HttpServletResponse response, long length, long lastModified, String eTag)
-            throws IOException, IllegalRequestException {
+    private List<Section> getSections(HttpServletRequest request, long length, long lastModified, String eTag)
+            throws IllegalRequestException {
         // Prepare some variables. The full Section represents the complete file.
-        List<Section> sections = new ArrayList<Section>();
+        List<Section> sections = new ArrayList<>();
 
         // Validate and process Range and If-Range headers.
         String range = request.getHeader("Range");
         if (range != null) {
 
             // Range header should match format "bytes=n-n,n-n,n-n..." or "bytes=n-". If not, then return 416.
-            if (!range.matches("^bytes=(,?\\d+(?:-\\d{0,9})?)+$")) {
+            if (!matchesRangeHeaderPattern(range)) {
                 throw new IllegalRequestException("Range has wrong syntax: " + range);
             }
 
@@ -291,6 +292,26 @@ public class MediaDeliveryService {
         return sections;
     }
 
+    protected static boolean matchesRangeHeaderPattern(String range) {
+        
+        if(range.matches("bytes=.+")) {
+            String rangeParts = range.substring(6);
+            String[] parts = rangeParts.split(",\\s*");
+            if(parts.length > 0) {
+                for (String part : parts) {
+                    if(!part.matches("\\d+-|-\\d+|\\d+-\\d+")) {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Returns a status code for a response indicating cached content If the return value is empty, the no caching can be achieved and the request
      * needs to continue
@@ -301,7 +322,7 @@ public class MediaDeliveryService {
      * @param eTag
      * @throws IOException
      */
-    private Optional<Integer> getCachingResponse(HttpServletRequest request, long lastModified, String eTag) throws IOException {
+    private Optional<Integer> getCachingResponse(HttpServletRequest request, long lastModified, String eTag) {
         // If-None-Match header should contain "*" or ETag. If so, then return 304.
         String ifNoneMatch = request.getHeader("If-None-Match");
         if (ifNoneMatch != null && matches(ifNoneMatch, eTag)) {
@@ -340,7 +361,11 @@ public class MediaDeliveryService {
      * @return True if the given match header matches the given value.
      */
     private static boolean matches(String matchHeader, String toMatch) {
-        String[] matchValues = matchHeader.split("\\s*,\\s*");
+        String[] matchValues = matchHeader.split(",");
+        //trim surrounding spaces now. If included into split regex, they could potentially lead to 
+        for (int i = 0; i < matchValues.length; i++) {
+            matchValues[i] = matchValues[i].trim();
+        }
         Arrays.sort(matchValues);
         return Arrays.binarySearch(matchValues, toMatch) > -1 || Arrays.binarySearch(matchValues, "*") > -1;
     }
@@ -367,7 +392,11 @@ public class MediaDeliveryService {
      * @return True if the given accept header accepts the given value.
      */
     private static boolean accepts(String acceptHeader, String toAccept) {
-        String[] acceptValues = acceptHeader.split("\\s*(,|;)\\s*");
+        String[] acceptValues = acceptHeader.split("[,;]");
+        //trim surrounding spaces now. If included into split regex, they could potentially lead to 
+        for (int i = 0; i < acceptValues.length; i++) {
+            acceptValues[i] = acceptValues[i].trim();
+        }
         Arrays.sort(acceptValues);
         return Arrays.binarySearch(acceptValues, toAccept) > -1 || Arrays.binarySearch(acceptValues, toAccept.replaceAll("/.*$", "/*")) > -1
                 || Arrays.binarySearch(acceptValues, "*/*") > -1;
