@@ -138,7 +138,7 @@
 		<json.version>20220320</json.version>
 		<jsoup.version>1.15.2</jsoup.version>
 		<junit.version>4.13.2</junit.version>
-		<mariadb-java-client.version>3.0.6</mariadb-java-client.version>
+		<mariadb-java-client.version>3.0.7</mariadb-java-client.version>
 		<mockito.version>4.6.1</mockito.version>
 		<mockserver.version>5.13.2</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
