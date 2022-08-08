@@ -37,12 +37,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -85,10 +87,9 @@ public class FileTools {
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
      * @return a {@link java.lang.String} object.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static String getStringFromFilePath(String filePath) throws FileNotFoundException, IOException {
+    public static String getStringFromFilePath(String filePath) throws IOException {
         return getStringFromFile(new File(filePath), null);
     }
 
@@ -100,10 +101,9 @@ public class FileTools {
      * @should read text file correctly
      * @should throw FileNotFoundException if file not found
      * @return a {@link java.lang.String} object.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static String getStringFromFile(File file, String encoding) throws FileNotFoundException, IOException {
+    public static String getStringFromFile(File file, String encoding) throws IOException {
         return getStringFromFile(file, encoding, null);
     }
 
@@ -114,10 +114,9 @@ public class FileTools {
      * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
      * @param convertToEncoding Optional target encoding for conversion
      * @return a {@link java.lang.String} object.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static String getStringFromFile(File file, String encoding, String convertToEncoding) throws FileNotFoundException, IOException {
+    public static String getStringFromFile(File file, String encoding, String convertToEncoding) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");
         }
@@ -186,16 +185,12 @@ public class FileTools {
             encoding = StringTools.DEFAULT_ENCODING;
         }
 
-        Scanner scanner = null;
         StringBuilder text = new StringBuilder();
-        String NL = System.getProperty("line.separator");
-        try {
-            scanner = new Scanner(new ByteArrayInputStream(bytes), encoding);
+        String nl = System.getProperty("line.separator");
+        try (Scanner scanner = new Scanner(new ByteArrayInputStream(bytes), encoding);) {
             while (scanner.hasNextLine()) {
-                text.append(scanner.nextLine()).append(NL);
+                text.append(scanner.nextLine()).append(nl);
             }
-        } finally {
-            scanner.close();
         }
         result = text.toString();
         return result.trim();
@@ -237,10 +232,9 @@ public class FileTools {
      * @param gzipFile a {@link java.io.File} object.
      * @param newFile a {@link java.io.File} object.
      * @should throw FileNotFoundException if file not found
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static void decompressGzipFile(File gzipFile, File newFile) throws FileNotFoundException, IOException {
+    public static void decompressGzipFile(File gzipFile, File newFile) throws IOException {
         try (FileInputStream fis = new FileInputStream(gzipFile); GZIPInputStream gis = new GZIPInputStream(fis);
                 FileOutputStream fos = new FileOutputStream(newFile)) {
             byte[] buffer = new byte[1024];
@@ -259,10 +253,9 @@ public class FileTools {
      * @param file a {@link java.io.File} object.
      * @param gzipFile a {@link java.io.File} object.
      * @should throw FileNotFoundException if file not found
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static void compressGzipFile(File file, File gzipFile) throws FileNotFoundException, IOException {
+    public static void compressGzipFile(File file, File gzipFile) throws IOException {
         try (FileInputStream fis = new FileInputStream(file); FileOutputStream fos = new FileOutputStream(gzipFile);
                 GZIPOutputStream gzipOS = new GZIPOutputStream(fos)) {
             byte[] buffer = new byte[1024];
@@ -282,10 +275,9 @@ public class FileTools {
      * @param zipFile Target file
      * @param level Compression level 0-9
      * @should throw FileNotFoundException if file not found
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static void compressZipFile(List<File> files, File zipFile, Integer level) throws FileNotFoundException, IOException {
+    public static void compressZipFile(List<File> files, File zipFile, Integer level) throws IOException {
         if (files == null || files.isEmpty()) {
             throw new IllegalArgumentException("files may not be empty or null");
         }
@@ -319,10 +311,9 @@ public class FileTools {
      * @param level a {@link java.lang.Integer} object.
      * @should throw FileNotFoundException if file not found
      * @param contentMap a {@link java.util.Map} object.
-     * @throws java.io.FileNotFoundException if any.
      * @throws java.io.IOException if any.
      */
-    public static void compressZipFile(Map<Path, String> contentMap, File zipFile, Integer level) throws FileNotFoundException, IOException {
+    public static void compressZipFile(Map<Path, String> contentMap, File zipFile, Integer level) throws IOException {
         if (contentMap == null || contentMap.isEmpty()) {
             throw new IllegalArgumentException("texts may not be empty or null");
         }
@@ -334,9 +325,9 @@ public class FileTools {
             if (level != null) {
                 zos.setLevel(level);
             }
-            for (Path path : contentMap.keySet()) {
-                try (InputStream in = IOUtils.toInputStream(contentMap.get(path), "UTF-8")) {
-                    zos.putNextEntry(new ZipEntry(path.getFileName().toString()));
+            for (Entry<Path, String> entry : contentMap.entrySet()) {
+                try (InputStream in = IOUtils.toInputStream(entry.getValue(), StandardCharsets.UTF_8.name())) {
+                    zos.putNextEntry(new ZipEntry(entry.getKey().getFileName().toString()));
                     byte[] buffer = new byte[1024];
                     int len;
                     while ((len = in.read(buffer)) != -1) {
@@ -367,10 +358,10 @@ public class FileTools {
         }
         if (create) {
             Files.createDirectory(path);
-            logger.info("Created folder: {}", path.toAbsolutePath().toString());
+            logger.info("Created folder: {}", path.toAbsolutePath());
             return true;
         }
-        logger.error("Folder not found: {}", path.toAbsolutePath().toString());
+        logger.error("Folder not found: {}", path.toAbsolutePath());
         return false;
     }
 
@@ -417,7 +408,6 @@ public class FileTools {
     public static String adaptPathForWindows(String path) {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.indexOf("win") >= 0 && path.startsWith("/opt/")) {
-            //            path = path.replace("/opt", "C:");
             path = "C:" + path;
         } else if (os.indexOf("win") >= 0 && path.startsWith("file:///C:/opt/")) {
             // In case Paths.get() automatically adds "C:" to Unix paths on Windows machines, remove the "C:"
@@ -437,7 +427,7 @@ public class FileTools {
      */
     public static String probeContentType(URI uri) throws IOException {
         String type = URLConnection.guessContentTypeFromName(uri.toString());
-        if ("text/plain".equals(type)) {
+        if (StringConstants.MIMETYPE_TEXT_PLAIN.equals(type)) {
             if (!uri.isAbsolute() || uri.getScheme().equals("file")) {
                 Path path = PathConverter.getPath(uri);
                 try (InputStream in = Files.newInputStream(path)) {
@@ -454,7 +444,7 @@ public class FileTools {
                     try (InputStream in = con.getInputStream()) {
                         type = URLConnection.guessContentTypeFromStream(in);
                         if (type == null) {
-                            type = "text/plain";
+                            type = StringConstants.MIMETYPE_TEXT_PLAIN;
                         }
                     }
                 } finally {
@@ -482,7 +472,7 @@ public class FileTools {
         try (InputStream in = IOUtils.toInputStream(content, StringTools.getCharset(content))) {
             String type = URLConnection.guessContentTypeFromStream(in);
             if (type == null) {
-                type = "text/plain";
+                type = StringConstants.MIMETYPE_TEXT_PLAIN;
             }
             return type;
         } catch (IOException e) {
@@ -564,15 +554,11 @@ public class FileTools {
                 URL url = new URL(urlString);
                 URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
                         url.getQuery(), url.getRef());
-                //                URI uri = new URI(URLEncoder.encode(urlString, StringTools.DEFAULT_ENCODING));
                 if (urlString.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
                     urlString = urlString.substring(0, urlString.length() - 1);
                 }
                 path = Paths.get(uri.getPath());
-                //                urlStringlocal = uri.getPath();
-            } catch (URISyntaxException e) {
-                logger.error(e.getMessage(), e);
-            } catch (MalformedURLException e) {
+            } catch (URISyntaxException | MalformedURLException e) {
                 logger.error(e.getMessage(), e);
             }
         }

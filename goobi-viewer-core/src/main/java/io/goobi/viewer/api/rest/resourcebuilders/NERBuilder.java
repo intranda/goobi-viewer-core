@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.MultiPageReference;
@@ -43,7 +42,6 @@ import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.PageReference;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.api.rest.model.ner.TagGroup;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -64,29 +62,19 @@ public class NERBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(NERBuilder.class);
 
-    private final AbstractApiUrlManager urls;
-
-    public NERBuilder() {
-        this.urls = new ApiUrls();
-    }
-
-    public NERBuilder(AbstractApiUrlManager urls) {
-        this.urls = urls;
-    }
-
     public DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
         StringBuilder query = new StringBuilder();
         query.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
 
         if (start != null && end != null) {
-            query.append(" AND ").append(SolrConstants.ORDER).append(":[").append(start).append(" TO ").append(end).append("]");
+            query.append(SolrConstants.SOLR_QUERY_AND).append(SolrConstants.ORDER).append(":[").append(start).append(" TO ").append(end).append("]");
         } else if (start != null) {
-            query.append(" AND ").append(SolrConstants.ORDER).append(":[").append(start).append(" TO *]");
+            query.append(SolrConstants.SOLR_QUERY_AND).append(SolrConstants.ORDER).append(":[").append(start).append(" TO *]");
         } else if (end != null) {
-            query.append(" AND ").append(SolrConstants.ORDER).append(":[* TO ").append(end).append("]");
+            query.append(SolrConstants.SOLR_QUERY_AND).append(SolrConstants.ORDER).append(":[* TO ").append(end).append("]");
         } else {
-            query.append(" AND ").append(SolrConstants.DOCTYPE).append(":PAGE");
+            query.append(SolrConstants.SOLR_QUERY_AND).append(SolrConstants.DOCTYPE).append(":PAGE");
         }
 
         return getNERTagsByQuery(request, query.toString(), type, rangeSize);
@@ -201,9 +189,9 @@ public class NERBuilder {
         if (solrDoc != null && solrDoc.containsKey(SolrConstants.ORDER)) {
             String orderString = SolrTools.getAsString(solrDoc.getFieldValue(SolrConstants.ORDER));
             try {
-                //                Integer.parseInt(orderString);
                 return Integer.parseInt(orderString);
             } catch (NumberFormatException e) {
+                //
             }
         }
         return null;

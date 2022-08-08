@@ -61,6 +61,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -1045,7 +1046,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         try {
             StringPair alto = DataFileTools.loadAlto(altoFileName);
             //Text from alto is always plain text
-            textContentType = "text/plain";
+            textContentType = StringConstants.MIMETYPE_TEXT_PLAIN;
             if (alto != null) {
                 altoText = alto.getOne();
                 altoCharset = alto.getTwo();
