@@ -92,6 +92,7 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.toc.TOCElement;
@@ -393,15 +394,25 @@ public class ActiveDocumentBean implements Serializable {
                 // Do not open records who may not be listed for the current user
                 List<String> requiredAccessConditions = topStructElement.getMetadataValues(SolrConstants.ACCESSCONDITION);
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
-                    boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
-                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
-                            (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted();
-                    if (!access) {
+                    AccessPermission access =
+                            AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
+                                    new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
+                                    (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                    if (!access.isGranted()) {
                         logger.debug("User may not open {}", topStructElement.getPi());
                         try {
                             throw new RecordNotFoundException(lastReceivedIdentifier);
                         } finally {
                             lastReceivedIdentifier = null;
+                        }
+                    }
+                    // If license type is configured to redirect to a URL, redirect here
+                    if (access.isRedirect() && StringUtils.isNotEmpty(access.getRedirectUrl())) {
+                        try {
+                            BeanUtils.getResponse().sendRedirect(access.getRedirectUrl());
+                        } catch (IOException e) {
+                           logger.error(e.getMessage());
+                           return;
                         }
                     }
 

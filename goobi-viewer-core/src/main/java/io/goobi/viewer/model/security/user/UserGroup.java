@@ -216,7 +216,10 @@ public class UserGroup implements ILicensee, Serializable {
                 // License grants privilege
                 if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                        return AccessPermission.granted()
+                                .setTicketRequired(license.isTicketRequired())
+                                .setRedirect(license.getLicenseType().isRedirect())
+                                .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
@@ -224,7 +227,10 @@ public class UserGroup implements ILicensee, Serializable {
                                 .getSearchIndex()
                                 .getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             logger.debug("Permission found for user group: {} (query: {})", name, query);
-                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                            return AccessPermission.granted()
+                                    .setTicketRequired(license.isTicketRequired())
+                                    .setRedirect(license.getLicenseType().isRedirect())
+                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                         }
                     }
                 }

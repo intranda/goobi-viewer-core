@@ -179,7 +179,10 @@ public class IpRange implements ILicensee, Serializable {
             if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
                 // No privilege name given
                 if (StringUtils.isEmpty(privilegeName)) {
-                    return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                    return AccessPermission.granted()
+                            .setTicketRequired(license.isTicketRequired())
+                            .setRedirect(license.getLicenseType().isRedirect())
+                            .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                 }
                 // LicenseType grants privilege
                 if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
@@ -188,13 +191,19 @@ public class IpRange implements ILicensee, Serializable {
                 // License grants privilege
                 if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                        return AccessPermission.granted()
+                                .setTicketRequired(license.isTicketRequired())
+                                .setRedirect(license.getLicenseType().isRedirect())
+                                .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
                         if (DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             logger.debug("Permission found for IP range: {} (query: {})", name, query);
-                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                            return AccessPermission.granted()
+                                    .setTicketRequired(license.isTicketRequired())
+                                    .setRedirect(license.getLicenseType().isRedirect())
+                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                         }
                     }
                 }

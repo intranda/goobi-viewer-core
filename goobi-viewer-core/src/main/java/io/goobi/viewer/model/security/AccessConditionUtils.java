@@ -825,17 +825,25 @@ public class AccessConditionUtils {
         Map<String, AccessPermission> result =
                 checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, client, query);
         boolean ticketRequired = false;
+        boolean redirect = false;
+        String redirectUrl = null;
         for (Entry<String, AccessPermission> entry : result.entrySet()) {
             // Preserve ticket requirement
             if (entry.getValue().isTicketRequired()) {
                 ticketRequired = true;
+            }
+            if (entry.getValue().isRedirect()) {
+                redirect = true;
+            }
+            if (StringUtils.isNotEmpty(entry.getValue().getRedirectUrl())) {
+                redirectUrl = entry.getValue().getRedirectUrl();
             }
             if (!entry.getValue().isGranted()) {
                 return AccessPermission.denied();
             }
         }
 
-        return AccessPermission.granted().setTicketRequired(ticketRequired);
+        return AccessPermission.granted().setTicketRequired(ticketRequired).setRedirect(redirect).setRedirectUrl(redirectUrl);
     }
 
     /**

@@ -32,6 +32,8 @@ public class AccessPermission implements Serializable {
 
     private boolean granted = false;
     private boolean ticketRequired = false;
+    private boolean redirect = false;
+    private String redirectUrl;
 
     /**
      * @return {@link AccessPermission} with denied status
@@ -78,9 +80,41 @@ public class AccessPermission implements Serializable {
         this.ticketRequired = ticketRequired;
         return this;
     }
-    
+
+    /**
+     * @return the redirect
+     */
+    public boolean isRedirect() {
+        return redirect;
+    }
+
+    /**
+     * @param redirect the redirect to set
+     * @return this
+     */
+    public AccessPermission setRedirect(boolean redirect) {
+        this.redirect = redirect;
+        return this;
+    }
+
+    /**
+     * @return the redirectUrl
+     */
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    /**
+     * @param redirectUrl the redirectUrl to set
+     * @return this
+     */
+    public AccessPermission setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return "Granted: " + granted + ", ticket required: " + ticketRequired;
+        return "Granted: " + granted + ", ticket required: " + ticketRequired + ", redirect: " + redirect + ", redirectUrl: " + redirectUrl;
     }
 }

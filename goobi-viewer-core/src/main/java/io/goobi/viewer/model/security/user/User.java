@@ -338,7 +338,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                 // License grants privilege
                 if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                        return AccessPermission.granted()
+                                .setTicketRequired(license.isTicketRequired())
+                                .setRedirect(license.getLicenseType().isRedirect())
+                                .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         StringBuilder sbQuery = new StringBuilder();
@@ -347,7 +350,10 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
                                 .getSearchIndex()
                                 .getFirstDoc(sbQuery.toString(), Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             logger.trace("Permission found for user: {} (query: {})", id, sbQuery);
-                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                            return AccessPermission.granted()
+                                    .setTicketRequired(license.isTicketRequired())
+                                    .setRedirect(license.getLicenseType().isRedirect())
+                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                         }
                     }
                 }

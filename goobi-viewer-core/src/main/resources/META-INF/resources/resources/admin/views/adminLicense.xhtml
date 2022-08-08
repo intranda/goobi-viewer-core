@@ -63,21 +63,16 @@
                                     <div class="col-9 admin__form-input">
                                     
                                 	<viewerComponent:toggleSwitch
-									name="openAccessToggle"
-									value="#{adminLicenseBean.currentLicenseType.openAccess}"
-									toggleTarget=".admin__license-functions"
-									toggleActionLeft="show"
-									toggleActionRight="hide"/>    
-                                    
-
+									   name="openAccessToggle"
+									   value="#{adminLicenseBean.currentLicenseType.openAccess}"
+									   toggleTarget=".admin__license-functions"
+									   toggleActionLeft="show"
+									   stoggleActionRight="hide"/>    
                                         <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
-                                        
-                                        
-                                        
-                                        
                                     </div>
                                 </div>
 
+                                <!-- MOVING WALL -->
                                 <div class="form-group form-row admin__license-functions mb-0">
                                     <div class="col-2 control-label admin__form-label">
                                         <span>#{msg.movingWall}:</span>
@@ -95,6 +90,32 @@
                                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
                                         </div>
                                         <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- REDIRECT TO PAGE -->
+                                <div class="form-group form-row admin__license-functions mb-0">
+                                    <div class="col-2 control-label admin__form-label">
+                                        <span>#{msg.admin__license_functions_redirect}:</span>
+                                    </div>
+                                    <div class="col-9 admin__form-input">
+                                        <div class="admin__radio-switch redirectToggle">
+                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
+                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                            </h:selectOneRadio>
+                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
+                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                            </h:selectOneRadio>
+                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                        </div>
+                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_redirect_desc}</span>
+                                        <!-- TODO: hide when toggle switch off -->
+                                        <div>
+                                            <h:inputText value="#{adminLicenseBean.currentLicenseType.redirectUrl}"
+                                                id="redirectUrl" styleClass="form-control" />
+                                        </div>
                                     </div>
                                 </div>
 
