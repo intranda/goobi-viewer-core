@@ -36,7 +36,9 @@
                 </h:panelGroup>
 
                 <div class="tpl-search__content">
-					<h1 >#{cmsPage.title}</h1>
+    				<ui:fragment rendered="#{navigationHelper.currentPage != 'search'}">
+						<h1 >#{cmsPage.title}</h1>
+					</ui:fragment>
 					
 					<!-- TEXT -->
 					<h:panelGroup id="cmsTextContent">
