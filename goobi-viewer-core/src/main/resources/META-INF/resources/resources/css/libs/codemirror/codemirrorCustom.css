@@ -36,7 +36,11 @@ table tr {
 table td {
 	border: none !important;
 	padding-left: 17px;
-	padding-right: 7px;
+	padding-right: 0;
+}
+
+table td:nth-of-type(2) {
+	padding-left: 0;
 }
 
 table tr:hover {
@@ -111,6 +115,7 @@ a {
 	padding: 7px 23px 23px 23px;
 	border: 1px solid #cccccc;
 	margin-bottom: 37px;
+	width: max-content;
 }
 
 #right-down {

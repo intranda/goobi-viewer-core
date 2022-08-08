@@ -1,5 +1,5 @@
 console.log("index.js invoked");
-	
+
 var configFileTextArea;
 var type;
 var configFileEditor;
@@ -7,30 +7,30 @@ var readOnly;
 var selected_row;
 //var nightMode;
 //var theme;
-	
-	
+  	 
+/*	
 if (readOnly === undefined) {
 	readOnly = true;
 }
-	
+*/ 	 
 //initTextArea();
 					 
-var table = document.getElementById("file-form:file-table");
-var rows = document.getElementsByTagName("tr");
-	
-for (let i = 0; i < rows.length; ++i) {
-	var currentRow = table.rows[i];
-	currentRow.setAttribute('id', 'row'+i);
-	currentRow.onclick = function() {
-	/*
-		Array.from(this.parentElement.children).forEach(function(el){
-			el.classList.remove('selected-row');
-		});
-	*/ 
-	[...this.parentElement.children].forEach((el) => el.classList.remove("selected-row"));
-	this.classList.add('selected-row');
-	};
-}
+//var table = document.getElementById("file-form:file-table");
+//var rows = document.getElementsByTagName("tr");
+//	
+//for (let i = 0; i < rows.length; ++i) {
+//	var currentRow = table.rows[i];
+//	currentRow.setAttribute('id', 'row'+i);
+//	currentRow.onclick = function() {
+//	/*
+//		Array.from(this.parentElement.children).forEach(function(el){
+//			el.classList.remove('selected-row');
+//		});
+//	*/ 
+//	[...this.parentElement.children].forEach((el) => el.classList.remove("selected-row"));
+//	this.classList.add('selected-row');
+//	};
+//}
 
 function initTextArea() {
 	let fileTypeElement = document.getElementById("currentConfigFileType");
@@ -56,9 +56,9 @@ function initTextArea() {
 
 	if (configFileTextArea !== null) {
 		if (configFileEditor) {
-//			configFileEditor.toTextArea();
-			configFileEditor = null;
-			console.log("CodeMirror Editor freed!");
+			configFileEditor.toTextArea();
+//			configFileEditor = null;
+			console.log("CodeMirror Editor freed!"); 
 		}
 		configFileEditor = CodeMirror.fromTextArea(configFileTextArea, {
 			lineNumbers: true,

@@ -106,7 +106,7 @@
 										
 							<h:column>
 								<f:facet name="header"></f:facet>
-								<h:commandButton value="#{record.writable ? '&#xf303;' : '&#xf06e;'}"
+								<h:commandButton value="#{record.writable ? '&#xf040;' : '&#xf06e;'}"
 												 styleClass="buttons edit-buttons fa fa-solid"
 												 action="#{configEditorBean.editFile(record.writable)}"
 												 name="#{record.number}"
@@ -124,7 +124,7 @@
 						
 					</div>
 				</div>
-				
+<!-- 				
 				<script>
 					var readOnly;
 					if (readOnly === undefined){
@@ -133,7 +133,7 @@
 					initTextArea();
 
 				</script>
-
+ -->
 				
 				<div id="right-down">
 					<p class="label">
@@ -180,6 +180,14 @@
 		<div id="footer">
 			<h:outputText id="output" value="#{configEditorBean.hiddenText}" />
 		</div>
+		
+		<script>			
+			var readOnly;
+			if (readOnly === undefined){
+				readOnly = true;
+			}
+			initTextArea();  
+		</script>
 		
 		
 
