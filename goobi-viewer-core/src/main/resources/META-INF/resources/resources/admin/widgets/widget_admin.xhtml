@@ -95,9 +95,12 @@
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
                                 <i class="fa fa-exchange" aria-hidden="true"></i>
                                 <span>#{msg.admin__translations__link}</span>
-                                <ui:fragment rendered="#{adminBean.configuredTranslationGroups.stream().filter(group -> !group.loadError).filter(group -> group.entryCount - group.fullyTranslatedEntryCount > 0).count() gt 0}">
-                                    <span class="admin-widget__counter">#{adminBean.configuredTranslationGroups.stream().filter(group -> !group.loadError).filter(group -> group.entryCount - group.fullyTranslatedEntryCount > 0).count()}</span>
-                                </ui:fragment>
+                                <c:if test="#{adminBean.configuredTranslationGroups.stream().filter(group -> !group.loadError).filter(group -> group.entryCount - group.fullyTranslatedEntryCount > 0).count() gt 0 and adminBean.hasAccessPermissingForTranslationFiles}">
+                                	<span class="admin-widget__counter">#{adminBean.configuredTranslationGroups.stream().filter(group -> !group.loadError).filter(group -> group.entryCount - group.fullyTranslatedEntryCount > 0).count()}</span>
+								</c:if>
+                                <c:if test="#{!adminBean.hasAccessPermissingForTranslationFiles}">
+                                    <span class="admin-widget__counter -redMark"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
+								</c:if>
                             </h:outputLink>
                         </li>
                         <li class="#{navigationHelper.currentPage == 'adminThemes' ? 'active' : ''}">

@@ -1077,12 +1077,12 @@
 		<!-- displayCrowdsourcingModuleLinks: Switch to enable crowdsourcing transcription links (default is false) -->
         <displayCrowdsourcingModuleLinks>true</displayCrowdsourcingModuleLinks>
         
-        <!-- copyrightIndicator: TODO -->
+        <!-- copyrightIndicator/@enabled: If true, copyright status of the current record will be visualized with colors and icons. Default is false. -->
         <copyrightIndicator enabled="true" style="trafficlight">
             <status field="MD_ACCESSCONDITION">
-                <value content="Freier Zugang" status="OPEN" />
-                <value content="Eingeschränker Zugang" status="PARTIAL" />
-                <value content="Gesperrter Zugang" status="LOCKED" />
+                <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
+                <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
+                <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
             </status>
 
             <license field="MD_ACCESSCONDITIONCOPYRIGHT">
@@ -1206,14 +1206,15 @@
 		<siteID>siteID_value</siteID>
 	</piwik>
 
-	<sitemap>
+    <!-- sitelinks/@enabled: If true, the link to the sitelinks page will be displayed. Default is true. -->
+    <sitelinks enabled="false">
 		<!-- sitelinksField: Field for which the sitelinks page will list all available 
 			values (similar to term browsing) -->
 		<sitelinksField>YEAR</sitelinksField>
 		<!-- sitelinksFilterQuery: Solr query which will filter the results for 
 			each field value (e.g. only top-level dosctructs) -->
 		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
-	</sitemap>
+	</sitelinks>
 
 	<!-- Web API configuration -->
 	<webapi>

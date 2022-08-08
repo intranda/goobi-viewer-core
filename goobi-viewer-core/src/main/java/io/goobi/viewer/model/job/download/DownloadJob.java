@@ -237,7 +237,6 @@ public abstract class DownloadJob implements Serializable {
                 downloadJob.setLastRequested(LocalDateTime.now());
                 downloadJob.updateStatus();
             }
-            logger.debug("Requested download job {}", downloadJob);
 
             /*set observer email*/
             String useEmail = null;

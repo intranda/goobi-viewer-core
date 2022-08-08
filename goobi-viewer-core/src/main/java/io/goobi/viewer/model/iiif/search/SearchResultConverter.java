@@ -504,7 +504,7 @@ public class SearchResultConverter {
     private OpenAnnotation createAnnotation(String metadataField, SolrDocument doc) {
         String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
         String logId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID);
-        Boolean isWork = SolrTools.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
+        boolean isWork = SolrTools.getSingleFieldBooleanValue(doc, SolrConstants.ISWORK);
         Integer thumbPageNo = SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO);
         OpenAnnotation anno = new OpenAnnotation(getMetadataAnnotationURI(pi, logId, metadataField));
         anno.setMotivation(Motivation.DESCRIBING);

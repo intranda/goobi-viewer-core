@@ -24,25 +24,49 @@ package io.goobi.viewer.model.security;
 /**
  * 
  */
-public enum CopyrightIndicatorStatus {
+public class CopyrightIndicatorStatus {
 
-    OPEN,
-    PARTIAL,
-    LOCKED;
+    public enum Status {
+        OPEN,
+        PARTIAL,
+        LOCKED;
+
+        /**
+         * 
+         * @param name Status name to match
+         * @return
+         * @should return correct value
+         */
+        public static Status getByName(String name) {
+            for (Status status : values()) {
+                if (status.name().equals(name)) {
+                    return status;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    private final Status status;
+    private final String description;
+
+    public CopyrightIndicatorStatus(Status status, String description) {
+        this.status = status;
+        this.description = description;
+    }
 
     /**
-     * 
-     * @param name Status name to match
-     * @return
-     * @should return correct value
+     * @return the status
      */
-    public static CopyrightIndicatorStatus getByName(String name) {
-        for (CopyrightIndicatorStatus status : values()) {
-            if (status.name().equals(name)) {
-                return status;
-            }
-        }
+    public Status getStatus() {
+        return status;
+    }
 
-        return null;
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
     }
 }

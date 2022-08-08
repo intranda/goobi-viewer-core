@@ -100,6 +100,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.toc.TOC;
@@ -3976,11 +3977,9 @@ public class ViewManager implements Serializable {
             throw new RecordNotFoundException(pi);
         }
 
-        long iddoc = Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC));
+        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
         StructElement topDocument = new StructElement(iddoc, doc);
-        ViewManager ret = new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
-
-        return ret;
+        return new ViewManager(topDocument, AbstractPageLoader.create(topDocument), iddoc, null, null, null);
     }
 
     /**
@@ -4049,7 +4048,7 @@ public class ViewManager implements Serializable {
             }
             // Default
             if (copyrightIndicatorStatus == null) {
-                copyrightIndicatorStatus = CopyrightIndicatorStatus.OPEN;
+                copyrightIndicatorStatus = new CopyrightIndicatorStatus(Status.OPEN, "COPYRIGHT_STATUS_OPEN");
             }
         }
 

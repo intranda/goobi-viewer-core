@@ -47,9 +47,9 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.RestApiManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -90,9 +90,6 @@ public class ThumbnailHandler {
             { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL,
                     SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
 
-    private final int thumbWidth;
-    private final int thumbHeight;
-    private final String anchorThumbnailMode;
     private final String staticImagesPath;
 
     private static final Logger logger = LoggerFactory.getLogger(ThumbnailHandler.class);
@@ -105,14 +102,10 @@ public class ThumbnailHandler {
      * </p>
      *
      * @param iiifUrlHandler a {@link io.goobi.viewer.controller.imaging.IIIFUrlHandler} object.
-     * @param configuration a {@link io.goobi.viewer.controller.Configuration} object.
      * @param staticImagesPath a {@link java.lang.String} object.
      */
-    public ThumbnailHandler(IIIFUrlHandler iiifUrlHandler, Configuration configuration, String staticImagesPath) {
+    public ThumbnailHandler(IIIFUrlHandler iiifUrlHandler, String staticImagesPath) {
         this.iiifUrlHandler = iiifUrlHandler;
-        thumbWidth = configuration.getThumbnailsWidth();
-        thumbHeight = configuration.getThumbnailsHeight();
-        anchorThumbnailMode = configuration.getAnchorThumbnailMode();
         this.staticImagesPath = staticImagesPath;
     }
 
@@ -137,17 +130,17 @@ public class ThumbnailHandler {
             logger.error(e.toString(), e);
         }
         return null;
-        //        return Paths.get(staticImagesPath, filename).toUri();
     }
 
     /**
-     * Returns a link to a small image representating the given page. The size depends on viewer configuration
+     * Returns a link to a small image representing the given page. The size depends on viewer configuration
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(PhysicalElement page) {
-        return getThumbnailUrl(page, thumbWidth, thumbHeight);
+        return getThumbnailUrl(page, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**
@@ -183,7 +176,7 @@ public class ThumbnailHandler {
             String size = "!" + width + "," + height;
             return iiifUrlHandler.getUrlManager()
                     .path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_IMAGE_IIIF)
-                    .params(pi, "full", size, "0", "default", "jpg")
+                    .params(pi, "full", size, "0", StringConstants.DEFAULT, "jpg")
                     .build();
         }
 
@@ -325,12 +318,11 @@ public class ThumbnailHandler {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
         IPageLoader pageLoader = AbstractPageLoader.create(struct);
-        PhysicalElement page = pageLoader.getPage(order);
-        return page;
+        return pageLoader.getPage(order);
     }
 
     /**
-     * Returns a link to an image representating the given page of the given size (to be exact: the largest image size which fits within the given
+     * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
@@ -364,7 +356,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", "default", "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT, "jpg");
         }
     }
 
@@ -376,7 +368,7 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(PhysicalElement page) {
-        return getSquareThumbnailUrl(page, thumbWidth);
+        return getSquareThumbnailUrl(page, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
     /**
@@ -399,46 +391,49 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return IIIFUrlResolver.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT, "jpg");
         }
     }
 
     /**
-     * Returns a link to a small image representating the given document. The size depends on viewer configuration
+     * Returns a link to a small image representing the given document. The size depends on viewer configuration
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc) {
-        return getThumbnailUrl(doc, thumbWidth, thumbHeight);
+        return getThumbnailUrl(doc, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
 
     }
 
     /**
-     * Returns a link to a small image representating the given document with the given pi. The size depends on viewer configuration
+     * Returns a link to a small image representing the given document with the given pi. The size depends on viewer configuration
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(StructElement doc, String pi) {
-        return getThumbnailUrl(doc, pi, thumbWidth, thumbHeight);
+        return getThumbnailUrl(doc, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
 
     }
 
     /**
-     * Returns a link to a small image representating the given document. The size depends on viewer configuration
+     * Returns a link to a small image representing the given document. The size depends on viewer configuration
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
-        return getThumbnailUrl(getStructElement(doc), thumbWidth, thumbHeight);
+        return getThumbnailUrl(getStructElement(doc), DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**
-     * Returns a link to a small image representating the given document. The size depends on viewer configuration. The image may be cut at the longer
+     * Returns a link to a small image representing the given document. The size depends on viewer configuration. The image may be cut at the longer
      * side to provide a square image
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -446,7 +441,7 @@ public class ThumbnailHandler {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getSquareThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
-        return getSquareThumbnailUrl(getStructElement(doc), thumbWidth);
+        return getSquareThumbnailUrl(getStructElement(doc), DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
     /**
@@ -460,8 +455,7 @@ public class ThumbnailHandler {
             iddoc = Long.valueOf(value);
         }
         try {
-            StructElement ele = new StructElement(iddoc, doc);
-            return ele;
+            return new StructElement(iddoc, doc);
         } catch (IndexUnreachableException e) {
             logger.error("Unable to create StructElement", e);
             return new StructElement();
@@ -469,7 +463,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to an image representating the given page of the given size (to be exact: the largest image size which fits within the given
+     * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
@@ -484,7 +478,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to an image representating the given page of the given size. The image will be cut at the longer side to create a square image
+     * Returns a link to an image representing the given page of the given size. The image will be cut at the longer side to create a square image
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param size a int.
@@ -497,7 +491,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to an image representating the given document of the given size (to be exact: the largest image size which fits within the given
+     * Returns a link to an image representing the given document of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      *
      * @param se Needs to have the fields {@link io.goobi.viewer.controller.SolrConstants.MIMETYPE} and
@@ -534,7 +528,7 @@ public class ThumbnailHandler {
             if (doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
                 region = doc.getShapeMetadata().get(0).getCoords();
             }
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", "default", "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", StringConstants.DEFAULT, "jpg");
         } else {
             return null;
         }
@@ -581,7 +575,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", "default",
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT,
                     format.getFileExtension());
         }
     }
@@ -594,7 +588,7 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(StructElement se) {
-        return getSquareThumbnailUrl(se, thumbWidth);
+        return getSquareThumbnailUrl(se, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
     /**
@@ -615,7 +609,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, se.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg");
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, se.getPi(), Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT,
+                    "jpg");
         }
     }
 
@@ -656,8 +651,6 @@ public class ThumbnailHandler {
         }
 
         String thumbnailUrl = null;
-
-        // TODO use enum
         switch (page.getBaseMimeType()) {
             case "image":
                 thumbnailUrl = page.getFilepath();
@@ -683,10 +676,14 @@ public class ThumbnailHandler {
                     case "application/object":
                         thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                         break;
+                    default:
+                        break;
                 }
                 break;
             case "object":
                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                break;
+            default:
                 break;
         }
         return thumbnailUrl;
@@ -698,15 +695,15 @@ public class ThumbnailHandler {
      *         digital material and - depending on configuration - anchors)
      */
     private String getImagePath(StructElement doc) {
-
         String thumbnailUrl = null;
+        String anchorThumbnailMode = DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();
 
         if (doc == null) {
             return null;
         } else if (doc.isAnchor()) {
-            if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
+            if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(anchorThumbnailMode)) {
                 thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
-            } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(this.anchorThumbnailMode)) {
+            } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
                 try {
                     StructElement volume = doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS));
                     if (volume != null) {
@@ -718,8 +715,7 @@ public class ThumbnailHandler {
                     logger.error("Unable to retrieve first volume of " + doc + "from index", e);
                 }
             } else {
-                logger.error(
-                        "Unknown value in viewer.anchorThumbnailMode: " + this.anchorThumbnailMode + ". No thumbnail can be rendered for " + doc);
+                logger.error("Unknown value in viewer.anchorThumbnailMode: {}. No thumbnail can be rendered for {}", anchorThumbnailMode, doc);
             }
         } else {
             DocType docType = getDocType(doc).orElse(DocType.DOCSTRCT);
@@ -732,18 +728,13 @@ public class ThumbnailHandler {
                     break;
                 case METADATA:
                     MetadataGroupType metadataGroupType = getMetadataGroupType(doc).orElse(MetadataGroupType.SUBJECT);
-                    switch (metadataGroupType) {
-                        case PERSON:
-                            thumbnailUrl = getThumbnailPath(PERSON_THUMB).toString();
-                            break;
-                        default:
-                            break;
+                    if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
+                        thumbnailUrl = getThumbnailPath(PERSON_THUMB).toString();
                     }
                     break;
                 case DOCSTRCT:
                 case PAGE:
                 default:
-                    // TODO use enum
                     String mimeType = getMimeType(doc).orElse("unknown");
                     BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
                     if (baseMimeType != null) {
@@ -772,10 +763,14 @@ public class ThumbnailHandler {
                                     case "application/object":
                                         thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                                         break;
+                                    default:
+                                        break;
                                 }
                                 break;
                             case "object":
                                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                                break;
+                            default:
                                 break;
                         }
                     }
@@ -844,7 +839,8 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> item) {
-        return getThumbnailUrl(item, thumbWidth, thumbHeight);
+        return getThumbnailUrl(item, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**
@@ -854,7 +850,8 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(CMSMediaItem item) {
-        return getThumbnailUrl(Optional.ofNullable(item), thumbWidth, thumbHeight);
+        return getThumbnailUrl(Optional.ofNullable(item), DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**
@@ -907,7 +904,8 @@ public class ThumbnailHandler {
      * @return
      */
     public String getThumbnailUrl(URI baseUri) {
-        return getThumbnailUrl(baseUri, thumbWidth, thumbHeight, false);
+        return getThumbnailUrl(baseUri, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight(), false);
     }
 
     /**
@@ -929,7 +927,8 @@ public class ThumbnailHandler {
      * @return
      */
     public String getSquareThumbnailUrl(URI baseUri) {
-        return getThumbnailUrl(baseUri, thumbWidth, thumbWidth, true);
+        return getThumbnailUrl(baseUri, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsWidth(), true);
     }
 
     /**
@@ -961,9 +960,8 @@ public class ThumbnailHandler {
         }
         RegionRequest region = square ? RegionRequest.SQUARE : RegionRequest.FULL;
         try {
-            String url = this.iiifUrlHandler.getIIIFImageUrl(baseUri.toString(), region, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT,
+            return this.iiifUrlHandler.getIIIFImageUrl(baseUri.toString(), region, Scale.getScaleMethod(size), Rotation.NONE, Colortype.DEFAULT,
                     format);
-            return url;
         } catch (IllegalRequestException | ServiceNotImplementedException e) {
             logger.error("Error creating thumbnail url", e);
             return "";
@@ -1002,8 +1000,7 @@ public class ThumbnailHandler {
             String fileUrl = "file://" + viewerHomePath + cmsMediaFolder + filename;
             String encFilePath = BeanUtils.escapeCriticalUrlChracters(fileUrl);
             encFilePath = URLEncoder.encode(encFilePath, "utf-8");
-            String url = contentApiUrl + "image/-/" + encFilePath;
-            return url;
+            return contentApiUrl + "image/-/" + encFilePath;
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e.toString());
         }
@@ -1036,7 +1033,7 @@ public class ThumbnailHandler {
             if (imagePath.toLowerCase().endsWith(".png")) {
                 format = "png";
             }
-            String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format);
+            String url = this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT, format);
             url += "?updated=" + item.getLastModifiedTime();
             return url;
         }).orElse("");
@@ -1062,7 +1059,7 @@ public class ThumbnailHandler {
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> item) {
-        return getSquareThumbnailUrl(item, thumbWidth);
+        return getSquareThumbnailUrl(item, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
     /**
@@ -1092,7 +1089,7 @@ public class ThumbnailHandler {
             size = width + ",";
         } else if ((width == null || (width.equals(0)) && !height.equals(0))) {
             size = "," + height;
-        } else if (!width.equals(0) && !height.equals(0)) {
+        } else if (!width.equals(0)) {
             size = "!" + width + "," + height;
         }
         return size;

@@ -81,6 +81,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
+import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.security.SecurityQuestion;
 import io.goobi.viewer.model.security.authentication.BibliothecaProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
@@ -109,7 +110,20 @@ public class Configuration extends AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
+    private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
+    private static final String XML_PATH_ATTRIBUTE_DEFAULT = "[@default]";
+    private static final String XML_PATH_ATTRIBUTE_DESCRIPTION = "[@description]";
     private static final String XML_PATH_ATTRIBUTE_ICON = "[@icon]";
+    private static final String XML_PATH_ATTRIBUTE_LABEL = "[@label]";
+    private static final String XML_PATH_ATTRIBUTE_NAME = "[@name]";
+    private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
+    private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
+
+    private static final String XML_PATH_SEARCH_SORTING_FIELD = "search.sorting.field";
+    private static final String XML_PATH_TOC_TITLEBARLABEL_TEMPLATE = "toc.titleBarLabel.template";
+    private static final String XML_PATH_USER_AUTH_PROVIDERS_PROVIDER = "user.authenticationProviders.provider(";
+
+    private static final String VALUE_DEFAULT = "_DEFAULT";
 
     private Set<String> stopwords;
 
@@ -130,8 +144,6 @@ public class Configuration extends AbstractConfiguration {
                                 .setFileName(configFilePath)
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                                 .setThrowExceptionOnMissing(false));
-        //alternative to .setBasePath from ClassLoader
-        //builder.getFileHandler().setFile(new File(builder.getFileHandler().getURL().getFile()));
         if (builder.getFileHandler().getFile().exists()) {
             try {
                 builder.getConfiguration();
@@ -408,9 +420,9 @@ public class Configuration extends AbstractConfiguration {
         List<MetadataView> ret = new ArrayList<>(metadataPageList.size());
         for (HierarchicalConfiguration<ImmutableNode> metadataView : metadataPageList) {
             int index = metadataView.getInt("[@index]", 0);
-            String label = metadataView.getString("[@label]");
-            String url = metadataView.getString("[@url]", "");
-            String condition = metadataView.getString("[@condition]");
+            String label = metadataView.getString(XML_PATH_ATTRIBUTE_LABEL);
+            String url = metadataView.getString(XML_PATH_ATTRIBUTE_URL, "");
+            String condition = metadataView.getString(XML_PATH_ATTRIBUTE_CONDITION);
             MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition);
             ret.add(view);
         }
@@ -484,10 +496,10 @@ public class Configuration extends AbstractConfiguration {
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-            if (subElement.getString("[@name]").equals(template)) {
+            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
-            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+            } else if (VALUE_DEFAULT.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 defaultTemplate = subElement;
             }
         }
@@ -551,13 +563,13 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("sub may not be null");
         }
 
-        String label = sub.getString("[@label]");
+        String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
         String masterValue = sub.getString("[@value]");
         String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
         boolean singleString = sub.getBoolean("[@singleString]", true);
         int number = sub.getInt("[@number]", -1);
-        int type = sub.getInt("[@type]", 0);
+        int type = sub.getInt(XML_PATH_ATTRIBUTE_TYPE, 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
         String labelField = sub.getString("[@labelField]");
         String sortField = sub.getString("[@sortField]");
@@ -567,7 +579,7 @@ public class Configuration extends AbstractConfiguration {
             paramList = new ArrayList<>(params.size());
             for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = params.iterator(); it2.hasNext();) {
                 HierarchicalConfiguration<ImmutableNode> sub2 = it2.next();
-                String fieldType = sub2.getString("[@type]");
+                String fieldType = sub2.getString(XML_PATH_ATTRIBUTE_TYPE);
                 String source = sub2.getString("[@source]", null);
                 String dest = sub2.getString("[@dest]", null);
                 String key = sub2.getString("[@key]");
@@ -576,8 +588,8 @@ public class Configuration extends AbstractConfiguration {
                 String defaultValue = sub2.getString("[@defaultValue]");
                 String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                 String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                String condition = sub2.getString("[@condition]");
-                boolean addUrl = sub2.getBoolean("[@url]", false);
+                String condition = sub2.getString(XML_PATH_ATTRIBUTE_CONDITION);
+                boolean addUrl = sub2.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
                 boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
                 boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
                 List<MetadataReplaceRule> replaceRules = Collections.emptyList();
@@ -587,7 +599,7 @@ public class Configuration extends AbstractConfiguration {
                     replaceRules = new ArrayList<>(replaceRuleElements.size());
                     for (Iterator<HierarchicalConfiguration<ImmutableNode>> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
                         HierarchicalConfiguration<ImmutableNode> sub3 = it3.next();
-                        String replaceCondition = sub3.getString("[@condition]");
+                        String replaceCondition = sub3.getString(XML_PATH_ATTRIBUTE_CONDITION);
                         Character character = null;
                         try {
                             int charIndex = sub3.getInt("[@char]");
@@ -680,7 +692,7 @@ public class Configuration extends AbstractConfiguration {
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-            if (subElement.getString("[@name]").equals(template)) {
+            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
             }
@@ -877,9 +889,9 @@ public class Configuration extends AbstractConfiguration {
         List<CitationLink> ret = new ArrayList<>();
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = links.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> sub = it.next();
-            String type = sub.getString("[@type]");
+            String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
             String level = sub.getString("[@for]");
-            String label = sub.getString("[@label]");
+            String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
             String field = sub.getString("[@field]");
             String pattern = sub.getString("[@pattern]");
             boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
@@ -918,7 +930,7 @@ public class Configuration extends AbstractConfiguration {
 
         List<DownloadOption> ret = new ArrayList<>(configs.size());
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
-            ret.add(new DownloadOption().setLabel(config.getString("[@label]"))
+            ret.add(new DownloadOption().setLabel(config.getString(XML_PATH_ATTRIBUTE_LABEL))
                     .setFormat(config.getString("[@format]"))
                     .setBoxSizeInPixel(config.getString("[@boxSizeInPixel]")));
         }
@@ -1419,7 +1431,7 @@ public class Configuration extends AbstractConfiguration {
         }
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = values.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> sub = it.next();
-            if (sub.getBoolean("[@default]", false)) {
+            if (sub.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)) {
                 return sub.getInt(".");
             }
         }
@@ -1485,7 +1497,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("No advanced search field name defined, skipping.");
                 continue;
             }
-            String label = subElement.getString("[@label]", null);
+            String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, null);
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
@@ -1569,7 +1581,7 @@ public class Configuration extends AbstractConfiguration {
 
         List<String> ret = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> node : fields) {
-            if (!type.equals(node.getString("[@type]"))) {
+            if (!type.equals(node.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 continue;
             }
             String value = node.getString(".");
@@ -1663,7 +1675,7 @@ public class Configuration extends AbstractConfiguration {
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
             if (subElement.getString(".").equals(field)) {
-                return subElement.getString("[@label]", "");
+                return subElement.getString(XML_PATH_ATTRIBUTE_LABEL, "");
             }
         }
 
@@ -2091,20 +2103,20 @@ public class Configuration extends AbstractConfiguration {
         int max = myConfigToUse.getMaxIndex("user.authenticationProviders.provider");
         List<IAuthenticationProvider> providers = new ArrayList<>(max + 1);
         for (int i = 0; i <= max; i++) {
-            String label = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@label]");
-            String name = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@name]");
-            String endpoint = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@endpoint]", null);
-            String image = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@image]", null);
-            String type = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@type]", "");
-            boolean visible = myConfigToUse.getBoolean("user.authenticationProviders.provider(" + i + ")[@enabled]", true);
-            String clientId = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientId]", null);
-            String clientSecret = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@clientSecret]", null);
-            String idpMetadataUrl = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@idpMetadataUrl]", null);
+            String label = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")" + XML_PATH_ATTRIBUTE_LABEL);
+            String name = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@name]");
+            String endpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@endpoint]", null);
+            String image = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@image]", null);
+            String type = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@type]", "");
+            boolean visible = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
+            String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
+            String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
+            String idpMetadataUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@idpMetadataUrl]", null);
             String relyingPartyIdentifier =
-                    myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@relyingPartyIdentifier]", null);
-            String samlPublicKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@publicKeyPath]", null);
-            String samlPrivateKeyPath = myConfigToUse.getString("user.authenticationProviders.provider(" + i + ")[@privateKeyPath]", null);
-            long timeoutMillis = myConfigToUse.getLong("user.authenticationProviders.provider(" + i + ")[@timeout]", 60000);
+                    myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@relyingPartyIdentifier]", null);
+            String samlPublicKeyPath = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@publicKeyPath]", null);
+            String samlPrivateKeyPath = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@privateKeyPath]", null);
+            long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (visible) {
                 IAuthenticationProvider provider = null;
@@ -2144,7 +2156,7 @@ public class Configuration extends AbstractConfiguration {
                 if (provider != null) {
                     // Look for user group configurations to which users shall be automatically added when logging in
                     List<String> addToUserGroupList =
-                            getLocalList(myConfigToUse, null, "user.authenticationProviders.provider(" + i + ").addUserToGroup", null);
+                            getLocalList(myConfigToUse, null, XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ").addUserToGroup", null);
                     if (addToUserGroupList != null) {
                         provider.setAddUserToGroups(addToUserGroupList);
                         // logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString());
@@ -2644,7 +2656,6 @@ public class Configuration extends AbstractConfiguration {
 
         }
 
-        // logger.trace("Tree view for {} not allowed", docStructType);
         return false;
     }
 
@@ -2677,6 +2688,8 @@ public class Configuration extends AbstractConfiguration {
                 case "hierarchicalField":
                 case "geoField":
                     ret.add(node.getString("."));
+                    break;
+                default:
                     break;
             }
         }
@@ -2887,13 +2900,13 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getDefaultSortField() {
-        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("search.sorting.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         if (fields == null || fields.isEmpty()) {
             return SolrConstants.SORT_RELEVANCE;
         }
 
         for (HierarchicalConfiguration<ImmutableNode> fieldConfig : fields) {
-            if (fieldConfig.getBoolean("[@default]", false)) {
+            if (fieldConfig.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)) {
                 return fieldConfig.getString(".");
             }
 
@@ -2911,7 +2924,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<String> getSortFields() {
-        return getLocalList("search.sorting.field");
+        return getLocalList(XML_PATH_SEARCH_SORTING_FIELD);
     }
 
     public Collection<SearchSortingOption> getSearchSortingOptions() {
@@ -2946,7 +2959,7 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     public Optional<String> getSearchSortingKeyAscending(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt("search.sorting.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
             String configField = conf.getString(".");
             if (StringUtils.equals(configField, field)) {
@@ -2957,7 +2970,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public Optional<String> getSearchSortingKeyDescending(String field) {
-        List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt("search.sorting.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
             String configField = conf.getString(".");
             if (StringUtils.equals(configField, field)) {
@@ -3435,7 +3448,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getZoomImageViewType(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getString("[@type]");
+        return getZoomImageViewConfig(view, image).getString(XML_PATH_ATTRIBUTE_TYPE);
     }
 
     /**
@@ -3532,14 +3545,14 @@ public class Configuration extends AbstractConfiguration {
                         int resolution = Integer.parseInt(res);
                         resolutions.add(resolution);
                     } catch (NullPointerException | NumberFormatException e) {
-                        logger.warn("Cannot parse " + res + " as int");
+                        logger.warn("Cannot parse {} as an integer", res);
                     }
                 }
                 map.put(size, resolutions);
             }
         }
         if (map.isEmpty()) {
-            map.put(512, Arrays.asList(new Integer[] { 1, 32 }));
+            map.put(512, Arrays.asList(1, 32));
         }
         return map;
     }
@@ -3751,8 +3764,8 @@ public class Configuration extends AbstractConfiguration {
             String address = node.getString(".", "");
             if (StringUtils.isNotBlank(address)) {
                 String id = node.getString("[@id]", "genId_" + (++counter));
-                String label = node.getString("[@label]", address);
-                boolean defaultRecipient = node.getBoolean("[@default]", false);
+                String label = node.getString(XML_PATH_ATTRIBUTE_LABEL, address);
+                boolean defaultRecipient = node.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false);
                 ret.add(new EmailRecipient(id, label, address, defaultRecipient));
             }
         }
@@ -3913,10 +3926,10 @@ public class Configuration extends AbstractConfiguration {
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-            if (subElement.getString("[@name]").equals(template)) {
+            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
-            } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
+            } else if (VALUE_DEFAULT.equals(subElement.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 defaultTemplate = subElement;
             }
         }
@@ -4000,12 +4013,12 @@ public class Configuration extends AbstractConfiguration {
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-            String templateName = subElement.getString("[@name]");
+            String templateName = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (templateName != null) {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;
                     break;
-                } else if ("_DEFAULT".equals(templateName)) {
+                } else if (VALUE_DEFAULT.equals(templateName)) {
                     defaultTemplate = subElement;
                 }
             }
@@ -4051,12 +4064,12 @@ public class Configuration extends AbstractConfiguration {
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
         for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
             HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-            String templateName = subElement.getString("[@name]");
+            String templateName = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (templateName != null) {
                 if (templateName.equals(template)) {
                     usingTemplate = subElement;
                     break;
-                } else if ("_DEFAULT".equals(templateName)) {
+                } else if (VALUE_DEFAULT.equals(templateName)) {
                     defaultTemplate = subElement;
                 }
             }
@@ -4668,7 +4681,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
             String field = node.getString(".", "");
             if (StringUtils.isNotBlank(field)) {
-                String label = node.getString("[@label]");
+                String label = node.getString(XML_PATH_ATTRIBUTE_LABEL);
                 ret.add(new ExportFieldConfiguration(field).setLabel(label));
             }
         }
@@ -4771,7 +4784,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> fieldNode : fields) {
             String value = fieldNode.getString(".");
             if (value != null && value.equals(field)) {
-                return fieldNode.getString("[@label]", "");
+                return fieldNode.getString(XML_PATH_ATTRIBUTE_LABEL, "");
             }
         }
         return "";
@@ -4964,7 +4977,16 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSitelinksField() {
-        return getLocalString("sitemap.sitelinksField");
+        return getLocalString("sitelinks.sitelinksField");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isSitelinksEnabled() {
+        return getLocalBoolean("sitelinks[@enabled]", true);
     }
 
     /**
@@ -4976,7 +4998,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getSitelinksFilterQuery() {
-        return getLocalString("sitemap.sitelinksFilterQuery");
+        return getLocalString("sitelinks.sitelinksFilterQuery");
     }
 
     /**
@@ -5000,8 +5022,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      */
     public String getWebApiToken() {
-        String token = getLocalString("webapi.authorization.token", "");
-        return token;
+        return getLocalString("webapi.authorization.token", "");
     }
 
     /**
@@ -5137,11 +5158,13 @@ public class Configuration extends AbstractConfiguration {
             String content = config.getString("[@content]");
             if (value.equals(content)) {
                 String statusName = config.getString("[@status]");
-                CopyrightIndicatorStatus ret = CopyrightIndicatorStatus.getByName(statusName);
-                if (ret == null) {
+                Status status = CopyrightIndicatorStatus.Status.getByName(statusName);
+                if (status == null) {
                     logger.warn("No copyright indicator status found for configured name: {}", statusName);
+                    status = Status.OPEN;
                 }
-                return ret;
+                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                return new CopyrightIndicatorStatus(status, description);
             }
         }
 
@@ -5162,7 +5185,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             String content = config.getString("[@content]");
             if (value.equals(content)) {
-                String description = config.getString("[@description]");
+                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
                 String[] icons = config.getStringArray("icon");
                 return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : Collections.emptyList());
             }
@@ -5185,7 +5208,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public boolean isDisplayAnchorLabelInTitleBar(String template) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_TOC_TITLEBARLABEL_TEMPLATE);
         HierarchicalConfiguration<ImmutableNode> subConf = getMatchingConfig(templateList, template);
         if (subConf != null) {
             return subConf.getBoolean("displayAnchorTitle", false);
@@ -5195,7 +5218,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public String getAnchorLabelInTitleBarPrefix(String template) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_TOC_TITLEBARLABEL_TEMPLATE);
         HierarchicalConfiguration<ImmutableNode> subConf = getMatchingConfig(templateList, template);
         if (subConf != null) {
             return subConf.getString("displayAnchorTitle[@prefix]", "");
@@ -5205,7 +5228,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public String getAnchorLabelInTitleBarSuffix(String template) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("toc.titleBarLabel.template");
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_TOC_TITLEBARLABEL_TEMPLATE);
         HierarchicalConfiguration<ImmutableNode> subConf = getMatchingConfig(templateList, template);
         if (subConf != null) {
             return subConf.getString("displayAnchorTitle[@suffix]", " ");
@@ -5330,10 +5353,10 @@ public class Configuration extends AbstractConfiguration {
         HierarchicalConfiguration<ImmutableNode> conf = null;
         HierarchicalConfiguration<ImmutableNode> defaultConf = null;
         for (HierarchicalConfiguration<ImmutableNode> subConf : templateList) {
-            if (name.equalsIgnoreCase(subConf.getString("[@name]"))) {
+            if (name.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 conf = subConf;
                 break;
-            } else if ("_DEFAULT".equalsIgnoreCase(subConf.getString("[@name]"))) {
+            } else if (VALUE_DEFAULT.equalsIgnoreCase(subConf.getString(XML_PATH_ATTRIBUTE_NAME))) {
                 defaultConf = subConf;
             }
         }
@@ -5352,9 +5375,9 @@ public class Configuration extends AbstractConfiguration {
         List<LicenseDescription> licenses = new ArrayList<>();
         List<HierarchicalConfiguration<ImmutableNode>> licenseNodes = getLocalConfigurationsAt("metadata.licenses.license");
         for (HierarchicalConfiguration<ImmutableNode> node : licenseNodes) {
-            String url = node.getString("[@url]", "");
+            String url = node.getString(XML_PATH_ATTRIBUTE_URL, "");
             if (StringUtils.isNotBlank(url)) {
-                String label = node.getString("[@label]", url);
+                String label = node.getString(XML_PATH_ATTRIBUTE_LABEL, url);
                 String icon = node.getString(XML_PATH_ATTRIBUTE_ICON, "");
                 LicenseDescription license = new LicenseDescription(url);
                 license.setLabel(label);
@@ -5381,7 +5404,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
         nodeTypes.get(0).getString(getReCaptchaSiteKey());
         return nodeTypes.stream()
-                .collect(Collectors.toMap(node -> node.getString("[@name]"), node -> node.getString(XML_PATH_ATTRIBUTE_ICON)));
+                .collect(Collectors.toMap(node -> node.getString(XML_PATH_ATTRIBUTE_NAME), node -> node.getString(XML_PATH_ATTRIBUTE_ICON)));
     }
 
     /**
@@ -5414,7 +5437,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> groupNodes = getLocalConfigurationsAt("translations.group");
         int id = 0;
         for (HierarchicalConfiguration<ImmutableNode> groupNode : groupNodes) {
-            String typeValue = groupNode.getString("[@type]");
+            String typeValue = groupNode.getString(XML_PATH_ATTRIBUTE_TYPE);
             if (StringUtils.isBlank(typeValue)) {
                 logger.warn("translations/group/@type may not be empty.");
                 continue;
@@ -5424,12 +5447,12 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("Unknown translations/group/@type: {}", typeValue);
                 continue;
             }
-            String name = groupNode.getString("[@name]");
+            String name = groupNode.getString(XML_PATH_ATTRIBUTE_NAME);
             if (StringUtils.isBlank(name)) {
                 logger.warn("translations/group/@name may not be empty.");
                 continue;
             }
-            String description = groupNode.getString("[@description]");
+            String description = groupNode.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
             List<HierarchicalConfiguration<ImmutableNode>> keyNodes = groupNode.configurationsAt("key");
             TranslationGroup group = TranslationGroup.create(id, type, name, description, keyNodes.size());
             for (HierarchicalConfiguration<ImmutableNode> keyNode : keyNodes) {

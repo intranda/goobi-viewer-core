@@ -93,6 +93,9 @@ public class NetTools {
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
     /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
+    
+    public static final String HTTP_HEADER_CONTENT_DISPOSITION ="Content-Disposition";
+    public static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
 
     public static final String PARAM_CLEAR_CACHE_ALL = "all";
     public static final String PARAM_CLEAR_CACHE_CONTENT = "content";
