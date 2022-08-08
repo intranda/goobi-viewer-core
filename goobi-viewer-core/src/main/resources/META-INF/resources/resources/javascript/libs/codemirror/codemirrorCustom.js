@@ -34,11 +34,13 @@ for (let i = 0; i < rows.length; ++i) {
 
 function initTextArea() {
 	let fileTypeElement = document.getElementById("currentConfigFileType");
+	console.log("fileTypeElement = " + fileTypeElement);
 	if (fileTypeElement !== null){
 		type = fileTypeElement.innerHTML.trim(); // "properties" or "xml"
 	} else {
 		type = "xml";
 	}
+	console.log("type = " + type);
 //	nightMode = document.getElementById("nightMode").innerHTML.trim(); // "true" or "false"
 	if (typeof type == "undefined") {
 		type = "xml";
@@ -54,7 +56,9 @@ function initTextArea() {
 
 	if (configFileTextArea !== null) {
 		if (configFileEditor) {
-			configFileEditor.toTextArea();
+//			configFileEditor.toTextArea();
+			configFileEditor = null;
+			console.log("CodeMirror Editor freed!");
 		}
 		configFileEditor = CodeMirror.fromTextArea(configFileTextArea, {
 			lineNumbers: true,
@@ -74,12 +78,15 @@ function initTextArea() {
 			}
 			
 		}); 
+		console.log("CodeMirror Editor constructed!");
 //		configFileEditor.focus();
-
+/*
 		setTimeout(function(){
 			configFileEditor.refresh();	
 		}, 100);
+*/ 
 	}
+ 
 }
 
 function setEditable(editable, number, isButton) {

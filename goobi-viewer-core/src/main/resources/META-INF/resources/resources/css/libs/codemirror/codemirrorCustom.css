@@ -56,7 +56,7 @@ a:hover {
 
 div {
 	border: 0;
-
+	 
 }
 
 a {
@@ -201,4 +201,14 @@ a {
 .CodeMirror-lines{
 	padding-left: 0;
 	padding-top: 0;
+}
+/*
+#editor-form:nth-child(3) {
+	display: none;
+	visibility: hidden;
+}
+*/
+#editor-form > div:nth-of-type(2) {
+	display: none;
+	visibility: hidden;
 }
