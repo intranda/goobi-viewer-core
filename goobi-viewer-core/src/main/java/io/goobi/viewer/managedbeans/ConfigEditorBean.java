@@ -1,5 +1,6 @@
 package io.goobi.viewer.managedbeans;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.administration.configeditor.*;
 
 import java.io.File;
@@ -41,10 +42,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
+
 
 
 @ManagedBean
@@ -52,7 +58,9 @@ import org.xml.sax.SAXException;
 public class ConfigEditorBean implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	private static final String installationPath = "/home/zehong/work/test/JSF-fileIO/config/"; // should be changed to Goobi-Viewer installation path
+//	private static final String installationPath = "/home/zehong/work/test/JSF-fileIO/config/"; // should be changed to Goobi-Viewer installation path
+	private static final String installationPath = DataManager.getInstance().getConfiguration().getConfigLocalPath(); 
+	private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
 	
 	private static final FilesListing filesListing = new FilesListing();
 	
@@ -490,15 +498,16 @@ public class ConfigEditorBean implements Serializable{
 				System.out.println(buffer);
 			}
 		} catch (IOException e) {
-			/*
+			
 			if (GetAction.isClientAbort(e)) {
 				//hiddenText = String.format("Download of '%s' aborted: %s", fileName, e.getMessage());
 				System.out.println(String.format("Download of '%s' aborted: %s", fileName, e.getMessage()));
+				logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
 				return;
 			} else {
 				throw e;
-			}*/
-			e.printStackTrace();
+			}
+//			e.printStackTrace();
 		}
 		System.out.println("After catch");
 //		outputStream.flush();
