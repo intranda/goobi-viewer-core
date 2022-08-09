@@ -30,8 +30,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-//import javax.swing.JFileChooser;
-//import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -52,13 +50,11 @@ import org.xml.sax.SAXException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 
 
-
 @ManagedBean
 @SessionScoped
 public class ConfigEditorBean implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-//	private static final String installationPath = "/home/zehong/work/test/JSF-fileIO/config/"; // should be changed to Goobi-Viewer installation path
 	private static final String installationPath = DataManager.getInstance().getConfiguration().getConfigLocalPath(); 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
 	
@@ -122,12 +118,7 @@ public class ConfigEditorBean implements Serializable{
 	public void init() {
 		if (!renderBackend) {
 			// Give a message that the config-editor is not activated.
-//			
-//			JOptionPane.showMessageDialog(null,
-//					"Der Konfig-Editor ist deaktiviert!",
-//					"Warnung",
-//					JOptionPane.INFORMATION_MESSAGE);
-			System.out.println("Der Konfig Editor ist deaktiviert!");
+			logger.info("The ConfigEditor is not activated!");
 			return;
 		}
 
@@ -215,7 +206,6 @@ public class ConfigEditorBean implements Serializable{
 	
 	public void changeNightMode() {
 		nightMode = !nightMode;
-		System.out.println(nightMode ? "night" : "day");
 	}
 
 	///////////////////// Hidden Text /////////////////////////
@@ -250,11 +240,10 @@ public class ConfigEditorBean implements Serializable{
 			fileContent = Files.readString(filePath);
 			temp = fileContent;
 		} catch(OverlappingFileLockException oe) {
-			System.out.println("The region specified is already locked by another file.");
+			logger.trace("The region specified is already locked by another file.", oe);
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.trace("IOException caught in the method openFile()", e);
 		} finally {
 			fileInputStream.close();
 		}
@@ -267,7 +256,6 @@ public class ConfigEditorBean implements Serializable{
 	}
 	
 	public void saveFile() throws IOException {
-		System.out.println("Save Clicked!");
 		
 		// No need to duplicate if no modification is done.
 		if (temp.equals(fileContent)) {
@@ -276,16 +264,14 @@ public class ConfigEditorBean implements Serializable{
 		}
 				
 		// Use the filename without extension to create a folder for its backup_copies.
-		String path = backupsPath + files[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "");
-		File backupFolder = new File(path);
-		if (!backupFolder.exists()) {
-			backupFolder.mkdir();
+		String newBackupFolderPath = backupsPath + files[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "");
+		File newBackupFolder = new File(newBackupFolderPath);
+		if (!newBackupFolder.exists()) {
+			newBackupFolder.mkdir();
 		}
 		// Save the latest modification to the original path.
 		Path originalPath = Path.of(files[fileInEditionNumber].getAbsolutePath());
-		// Use a time stamp to distinguish the backups.
-		String timeStamp = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss").format(new java.util.Date());
-		Path filePath = Path.of(path + "/" + files[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "") + "_" + timeStamp + fullCurrentConfigFileType);
+		
 		try {
 			Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
 			// if the "config-viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
@@ -326,24 +312,29 @@ public class ConfigEditorBean implements Serializable{
 				
 				// save the modified content again
 				fileContent = Files.readString(originalPath);
-			
+				
+				if (temp.equals(fileContent)) {
+					hiddenText = "No Valid Modification Detected!";
+					return;
+				}
 			}
-			Files.writeString(filePath, fileContent, StandardCharsets.UTF_8); // save changes to backup files
+
+			// Use a time stamp to distinguish the backups.
+			String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS").format(new java.util.Date()).replaceAll(":", "").replaceFirst("[.]", "");
+			Path newBackupPath = Path.of(newBackupFolderPath + "/" + files[fileInEditionNumber].getName() + "." + timeStamp);
+			// save changes to backup files
+			Files.writeString(newBackupPath, fileContent, StandardCharsets.UTF_8); 
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.trace("IOException caught in the method saveFile()", e);
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.trace("SAXException caught in the method saveFile()", e);
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.trace("ParserConfigurationException caught in the method saveFile()", e);
 		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.trace("TransformerConfigurationException caught in the method saveFile()", e);
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.trace("TransformerException caught in the method saveFile()", e);
 		} finally {
 			fileOutputStream.close();
 		}
@@ -351,7 +342,7 @@ public class ConfigEditorBean implements Serializable{
 		temp = fileContent;
 		
 		// refresh the backup metadata
-		backupFiles = backupFolder.listFiles();
+		backupFiles = newBackupFolder.listFiles();
 		Arrays.sort(backupFiles, (a,b) -> Long.compare(a.lastModified(), b.lastModified()));
 		backupNames = new String[backupFiles.length];
 		backupRecords = new ArrayList<BackupRecord>();
@@ -377,8 +368,9 @@ public class ConfigEditorBean implements Serializable{
 		
 		fileInEditionNumber = record.getNumber();
 		editable = writable;
-		System.out.println("fileInEditionNumber: " + fileInEditionNumber + " " + record.getFileName());
-		System.out.println(fileRecordsModel.getRowIndex());
+		
+		logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, record.getFileName());
+		
 		File backups = new File(backupsPath + files[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "")); 
 		if (backups.exists()) {
 			backupFiles = backups.listFiles();
@@ -403,127 +395,50 @@ public class ConfigEditorBean implements Serializable{
 		try {
 			openFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.trace("IOException caught in the method showBackups(boolean)", e);
 		} 
 	}
-/*	
-// The following method saves everything into the "Downloads" folder.
-//
-	public void downloadFile() {
-		String downloads = System.getProperty("user.home") + "/Downloads/";
-		
-		BackupRecord record = backupRecordsModel.getRowData();
-		backupNumber = record.getNumber();
-
-		try {
-//			String absPath = backupFiles[backupNumber].getAbsolutePath();
-			InputStream in = new FileInputStream(new File(backupFiles[backupNumber].getAbsolutePath()));
-//			Files.copy(in,  Paths.get(backupFiles[backupNumber].getName()), StandardCopyOption.REPLACE_EXISTING);
-
-			Files.copy(in,  Paths.get(downloads + fileNames[fileInEditionNumber].replaceFirst("[.][^.]+$", "").replaceFirst(fullCurrentConfigFileType, "") + "_" + record.getName() + fullCurrentConfigFileType), StandardCopyOption.REPLACE_EXISTING);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			System.out.println(downloads+record.getName());
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		hiddenText = "File downloaded!";
-	}
-*/
-/*	
-	public void downloadFile() {
-		String downloads = System.getProperty("user.home") + "/Downloads/";
-		
-		BackupRecord record = backupRecordsModel.getRowData();
-		backupNumber = record.getNumber();
-		
-		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new File(downloads));
-		chooser.setDialogTitle("Select folder to save");
-		chooser.setDialogType(JFileChooser.SAVE_DIALOG);
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		chooser.setAcceptAllFileFilterUsed(false);
-		chooser.showSaveDialog(null);
-		
-//		System.out.println(chooser.getSelectedFile());
-//		System.out.println(chooser.getSelectedFile().getClass().getName()); // java.io.File
-		
-		String storagePath = chooser.getSelectedFile().toString();
-		
-		try {
-			InputStream in = new FileInputStream(new File(backupFiles[backupNumber].getAbsolutePath()));
-			Files.copy(in,  Paths.get(storagePath + "/" + fileNames[fileInEditionNumber].replaceFirst("[.][^.]+$", "").replaceFirst(fullCurrentConfigFileType, "") + "_" + record.getName() + fullCurrentConfigFileType), StandardCopyOption.REPLACE_EXISTING);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		hiddenText = "File downloaded!";
-	}
-*/
 	
 	public void downloadFile() throws IOException {
 		BackupRecord record = backupRecordsModel.getRowData();
 		backupNumber = record.getNumber();
 		File backupFile = new File(backupFiles[backupNumber].getAbsolutePath());
-		String fileName = fileNames[fileInEditionNumber].replaceFirst("[.][^.]+$", "").replaceFirst(fullCurrentConfigFileType, "") + "_" + record.getName() + fullCurrentConfigFileType;
-		
-		System.out.println("fileName is " + fileName);
+		String fileName = fileNames[fileInEditionNumber].concat(".").concat(record.getName());
 		
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext ec = facesContext.getExternalContext();
 		ec.responseReset();
-		ec.setResponseContentType("text/" + currentConfigFileType);
-		
-		System.out.println(currentConfigFileType);
-		
-		ec.setResponseHeader("Content-Length", String.valueOf(Files.size(backupFile.toPath())));
-		
-		System.out.println(Files.size(backupFile.toPath()));
-		
+		ec.setResponseContentType("text/".concat(currentConfigFileType));		
+		ec.setResponseHeader("Content-Length", String.valueOf(Files.size(backupFile.toPath())));		
 		ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-		OutputStream outputStream = ec.getResponseOutputStream();
-		
-		System.out.println("outputStream opened!");
-		
+		OutputStream outputStream = ec.getResponseOutputStream();		
 		try(FileInputStream fileInputStream = new FileInputStream(backupFile)){
 			byte[] buffer = new byte[1024];
 			int bytesRead = 0;
 			while ((bytesRead = fileInputStream.read(buffer)) != -1) {
 				outputStream.write(buffer, 0, bytesRead);
-				System.out.println(buffer);
 			}
 		} catch (IOException e) {
 			
 			if (GetAction.isClientAbort(e)) {
-				//hiddenText = String.format("Download of '%s' aborted: %s", fileName, e.getMessage());
-				System.out.println(String.format("Download of '%s' aborted: %s", fileName, e.getMessage()));
 				logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
 				return;
 			} else {
 				throw e;
 			}
-//			e.printStackTrace();
 		}
-		System.out.println("After catch");
 //		outputStream.flush();
 //		outputStream.close();
 		facesContext.responseComplete();
 		hiddenText = "File downloaded!";
-		System.out.println(hiddenText);
 	}
 	
 	public void cancelEdition() {
 		try {
-			System.out.println("Cancel clicked!");
 			openFile();
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.trace("Exception caught in cancelEdition()", e);
 		}
 	}
 
