@@ -73,15 +73,15 @@ public abstract class AbstractLicensee implements ILicensee {
      * @return
      */
     public AccessPermission getAccessPermissionFromMap(Map<String, AccessPermission> permissionMap) {
-        if (permissionMap.isEmpty()) {
-            return AccessPermission.denied();
-        }
-
         // It should be sufficient if the user can satisfy one required license
+        boolean granted = false;
         boolean ticketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
         for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
+            if (entry.getValue().isGranted()) {
+                granted = true;
+            }
             if (entry.getValue().isTicketRequired()) {
                 ticketRequired = true;
             }
@@ -92,7 +92,10 @@ public abstract class AbstractLicensee implements ILicensee {
                 redirectUrl = entry.getValue().getRedirectUrl();
             }
         }
-        
-        return AccessPermission.granted().setTicketRequired(ticketRequired).setRedirect(redirect).setRedirectUrl(redirectUrl);
+        if (granted) {
+            return AccessPermission.granted().setTicketRequired(ticketRequired).setRedirect(redirect).setRedirectUrl(redirectUrl);
+        }
+
+        return AccessPermission.denied();
     }
 }

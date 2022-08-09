@@ -643,8 +643,7 @@ public class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
-            HttpServletRequest request)
-            throws IndexUnreachableException, PresentationException, DAOException {
+            HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         User user = BeanUtils.getUserFromRequest(request);
         if (user == null) {
             UserBean userBean = BeanUtils.getUserBean();
@@ -869,6 +868,7 @@ public class AccessConditionUtils {
      * @should return false if not all license types allow privilege by default
      * @should return true if ip range allows access
      * @should not return true if no ip range matches
+     * @should capture redirect metadata if on any license type
      */
     static Map<String, AccessPermission> checkAccessPermissions(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
@@ -909,21 +909,27 @@ public class AccessConditionUtils {
             return accessMap;
         }
 
-        for (String key : licenseMap.keySet()) {
-            List<LicenseType> relevantLicenseTypes = licenseMap.get(key);
+        for (Entry<String, List<LicenseType>> entry : licenseMap.entrySet()) {
+            List<LicenseType> relevantLicenseTypes = entry.getValue();
             requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
             if (relevantLicenseTypes.isEmpty()) {
                 // No relevant license types for this file, set to false and continue
                 logger.trace("No relevant license types.");
-                accessMap.put(key, AccessPermission.denied());
+                accessMap.put(entry.getKey(), AccessPermission.denied());
                 continue;
             }
 
             // If all relevant license types allow the requested privilege by default, allow access
             boolean licenseTypeAllowsPriv = true;
+            boolean redirect = false;
+            String redirectUrl = null;
             // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
             for (LicenseType licenseType : relevantLicenseTypes) {
                 requiredAccessConditions.add(licenseType.getName());
+                if (licenseType.isRedirect()) {
+                    redirect = true;
+                    redirectUrl = licenseType.getRedirectUrl();
+                }
                 if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
                         && !licenseType.isRestrictionsExpired(query)) {
                     // logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
@@ -932,28 +938,27 @@ public class AccessConditionUtils {
             }
             if (licenseTypeAllowsPriv) {
                 // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
-                accessMap.put(key, AccessPermission.granted());
+                accessMap.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
             } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
                 logger.trace("Privilege '{}' is OpenAccess", privilegeName);
-                accessMap.put(key, AccessPermission.granted());
+                accessMap.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
             } else {
                 // Check IP range
                 if (StringUtils.isNotEmpty(remoteAddress)) {
                     if (NetTools.isIpAddressLocalhost(remoteAddress)
                             && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
                         logger.trace("Access granted to localhost");
-                        accessMap.put(key, AccessPermission.granted());
+                        accessMap.put(entry.getKey(), AccessPermission.granted());
                         continue;
                     }
                     // Check whether the requested privilege is allowed to this IP range (for all access conditions)
                     for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                        // logger.debug("ip range: " + ipRange.getSubnetMask());
                         if (ipRange.matchIp(remoteAddress)) {
                             AccessPermission access =
                                     ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null);
                             if (access.isGranted()) {
                                 logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                                accessMap.put(key, access);
+                                accessMap.put(entry.getKey(), access);
                             }
                         }
                     }
@@ -964,7 +969,7 @@ public class AccessConditionUtils {
                     AccessPermission access =
                             user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
                     if (access.isGranted()) {
-                        accessMap.put(key, access);
+                        accessMap.put(entry.getKey(), access);
                     }
                 }
 
@@ -975,7 +980,7 @@ public class AccessConditionUtils {
                     if (client.isPresent()) {
                         AccessPermission access = client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
                         if (access.isGranted()) {
-                            accessMap.put(key, access);
+                            accessMap.put(entry.getKey(), access);
                             clientAccessGranted = true;
                         }
                     }
@@ -986,7 +991,7 @@ public class AccessConditionUtils {
                             AccessPermission access =
                                     allClients.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
                             if (access.isGranted()) {
-                                accessMap.put(key, access);
+                                accessMap.put(entry.getKey(), access);
                             }
                         }
                     }
