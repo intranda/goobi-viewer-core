@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -82,7 +81,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.security.AccessPermission;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
@@ -97,7 +95,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 @Entity
 @Table(name = "users")
-public class User implements ILicensee, HttpSessionBindingListener, Serializable, Comparable<User> {
+public class User extends AbstractLicensee implements HttpSessionBindingListener, Serializable, Comparable<User> {
 
     private static final long serialVersionUID = 549769987121664488L;
 
@@ -314,53 +312,11 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             if (BeanUtils.getUserBean() != null && BeanUtils.getUserBean().isAdmin()) {
                 return email;
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.warn(e.getMessage());
         }
 
         return NetTools.scrambleEmailAddress(email);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
-        // No privilege name given
-        if (StringUtils.isEmpty(privilegeName)) {
-            return AccessPermission.granted();
-        }
-        for (License license : getLicenses()) {
-            if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
-                // LicenseType grants privilege
-                if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
-                    return AccessPermission.granted();
-                }
-                // License grants privilege
-                if (license.getPrivileges().contains(privilegeName)) {
-                    if (StringUtils.isEmpty(license.getConditions())) {
-                        return AccessPermission.granted()
-                                .setTicketRequired(license.isTicketRequired())
-                                .setRedirect(license.getLicenseType().isRedirect())
-                                .setRedirectUrl(license.getLicenseType().getRedirectUrl());
-                    } else if (StringUtils.isNotEmpty(pi)) {
-                        // If PI and Solr condition subquery are present, check via Solr
-                        StringBuilder sbQuery = new StringBuilder();
-                        sbQuery.append(SolrConstants.PI).append(':').append(pi).append(" AND (").append(license.getConditions()).append(')');
-                        if (DataManager.getInstance()
-                                .getSearchIndex()
-                                .getFirstDoc(sbQuery.toString(), Collections.singletonList(SolrConstants.IDDOC)) != null) {
-                            logger.trace("Permission found for user: {} (query: {})", id, sbQuery);
-                            return AccessPermission.granted()
-                                    .setTicketRequired(license.isTicketRequired())
-                                    .setRedirect(license.getLicenseType().isRedirect())
-                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl());
-                        }
-                    }
-                }
-            }
-        }
-
-        return AccessPermission.denied();
     }
 
     /**
@@ -497,18 +453,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
 
         }
 
-        // It should be sufficient if the user can satisfy one required license
-        if (!permissionMap.isEmpty()) {
-            // TODO Prefer license with ticket requirement?
-            for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
-                if (entry.getValue().isTicketRequired()) {
-                    return entry.getValue();
-                }
-            }
-            return AccessPermission.granted();
-        }
-
-        return AccessPermission.denied();
+        return getAccessPermissionFromMap(permissionMap);
     }
 
     /** {@inheritDoc} */
@@ -1420,9 +1365,7 @@ public class User implements ILicensee, HttpSessionBindingListener, Serializable
             return isSuperuser() || isHasCmsPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
         } catch (PresentationException e) {
             logger.error(e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage(), e);
-        } catch (DAOException e) {
+        } catch (IndexUnreachableException | DAOException e) {
             logger.error(e.getMessage(), e);
         }
 

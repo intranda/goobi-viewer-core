@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.security.user;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,7 +39,9 @@ import io.goobi.viewer.model.security.Role;
  */
 @Entity
 @Table(name = "user_role")
-public class UserRole {
+public class UserRole implements Serializable {
+
+    private static final long serialVersionUID = -4122020685959116944L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

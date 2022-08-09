@@ -407,9 +407,12 @@ public class ActiveDocumentBean implements Serializable {
                         }
                     }
                     // If license type is configured to redirect to a URL, redirect here
+                    logger.trace("redirect: {}", access.isRedirect());
                     if (access.isRedirect() && StringUtils.isNotEmpty(access.getRedirectUrl())) {
+                        logger.debug("Redirecting to {}", access.getRedirectUrl());
                         try {
                             BeanUtils.getResponse().sendRedirect(access.getRedirectUrl());
+                            return;
                         } catch (IOException e) {
                            logger.error(e.getMessage());
                            return;
