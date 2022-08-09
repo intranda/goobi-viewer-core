@@ -20,12 +20,15 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import io.goobi.viewer.controller.DataManager;
+
 
 public class FilesListing implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String configFile = "/home/zehong/work/test/JSF-fileIO/config/config-viewer.xml";
+//	private static final String configFile = "/home/zehong/work/test/JSF-fileIO/config/config-viewer.xml";
+	private static final String configFile = DataManager.getInstance().getConfiguration().getConfigLocalPath() + "config_viewer.xml"; 
 	
 	private static List<String> configPaths; // paths where the editable/viewable config files live
 	private static boolean enabled;
@@ -34,6 +37,7 @@ public class FilesListing implements Serializable{
 		// Get information from "config-viewer.xml"
 		try {
 			System.out.println("static initialization started");
+			System.out.println(configFile);
 			XMLInputFactory inputFactory = XMLInputFactory.newInstance();
 			InputStream in = new FileInputStream(configFile);
 			XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
