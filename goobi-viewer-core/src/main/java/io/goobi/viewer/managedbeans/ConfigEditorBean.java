@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -24,10 +25,12 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+//import javax.swing.JFileChooser;
+//import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -111,10 +114,12 @@ public class ConfigEditorBean implements Serializable{
 	public void init() {
 		if (!renderBackend) {
 			// Give a message that the config-editor is not activated.
-			JOptionPane.showMessageDialog(null,
-					"Der Konfig-Editor ist deaktiviert!",
-					"Warnung",
-					JOptionPane.INFORMATION_MESSAGE);
+//			
+//			JOptionPane.showMessageDialog(null,
+//					"Der Konfig-Editor ist deaktiviert!",
+//					"Warnung",
+//					JOptionPane.INFORMATION_MESSAGE);
+			System.out.println("Der Konfig Editor ist deaktiviert!");
 			return;
 		}
 
@@ -421,7 +426,7 @@ public class ConfigEditorBean implements Serializable{
 		hiddenText = "File downloaded!";
 	}
 */
-	
+/*	
 	public void downloadFile() {
 		String downloads = System.getProperty("user.home") + "/Downloads/";
 		
@@ -450,6 +455,57 @@ public class ConfigEditorBean implements Serializable{
 		}
 		
 		hiddenText = "File downloaded!";
+	}
+*/
+	
+	public void downloadFile() throws IOException {
+		BackupRecord record = backupRecordsModel.getRowData();
+		backupNumber = record.getNumber();
+		File backupFile = new File(backupFiles[backupNumber].getAbsolutePath());
+		String fileName = fileNames[fileInEditionNumber].replaceFirst("[.][^.]+$", "").replaceFirst(fullCurrentConfigFileType, "") + "_" + record.getName() + fullCurrentConfigFileType;
+		
+		System.out.println("fileName is " + fileName);
+		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext ec = facesContext.getExternalContext();
+		ec.responseReset();
+		ec.setResponseContentType("text/" + currentConfigFileType);
+		
+		System.out.println(currentConfigFileType);
+		
+		ec.setResponseHeader("Content-Length", String.valueOf(Files.size(backupFile.toPath())));
+		
+		System.out.println(Files.size(backupFile.toPath()));
+		
+		ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		OutputStream outputStream = ec.getResponseOutputStream();
+		
+		System.out.println("outputStream opened!");
+		
+		try(FileInputStream fileInputStream = new FileInputStream(backupFile)){
+			byte[] buffer = new byte[1024];
+			int bytesRead = 0;
+			while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
+				System.out.println(buffer);
+			}
+		} catch (IOException e) {
+			/*
+			if (GetAction.isClientAbort(e)) {
+				//hiddenText = String.format("Download of '%s' aborted: %s", fileName, e.getMessage());
+				System.out.println(String.format("Download of '%s' aborted: %s", fileName, e.getMessage()));
+				return;
+			} else {
+				throw e;
+			}*/
+			e.printStackTrace();
+		}
+		System.out.println("After catch");
+//		outputStream.flush();
+//		outputStream.close();
+		facesContext.responseComplete();
+		hiddenText = "File downloaded!";
+		System.out.println(hiddenText);
 	}
 	
 	public void cancelEdition() {

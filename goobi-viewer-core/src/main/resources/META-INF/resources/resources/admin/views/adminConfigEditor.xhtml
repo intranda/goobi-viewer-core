@@ -164,7 +164,7 @@
 												 action="#{configEditorBean.downloadFile}"
 												 disabled="#{not(configEditorBean.downloadable)}" >
 												 
-									<f:ajax execute="@form" render=":output" />
+									<f:ajax execute="@this" render="@all" />  
 								</h:commandButton>
 
 							</h:column>
