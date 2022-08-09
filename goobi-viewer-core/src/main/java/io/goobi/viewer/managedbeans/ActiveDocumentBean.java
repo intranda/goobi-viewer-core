@@ -41,6 +41,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -407,15 +408,14 @@ public class ActiveDocumentBean implements Serializable {
                         }
                     }
                     // If license type is configured to redirect to a URL, redirect here
-                    logger.trace("redirect: {}", access.isRedirect());
                     if (access.isRedirect() && StringUtils.isNotEmpty(access.getRedirectUrl())) {
                         logger.debug("Redirecting to {}", access.getRedirectUrl());
                         try {
-                            BeanUtils.getResponse().sendRedirect(access.getRedirectUrl());
+                            FacesContext.getCurrentInstance().getExternalContext().redirect(access.getRedirectUrl());
                             return;
                         } catch (IOException e) {
-                           logger.error(e.getMessage());
-                           return;
+                            logger.error(e.getMessage());
+                            return;
                         }
                     }
 
