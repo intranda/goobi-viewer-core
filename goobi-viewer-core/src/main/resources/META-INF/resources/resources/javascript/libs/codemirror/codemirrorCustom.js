@@ -6,7 +6,7 @@ var configFileEditor;
 var readOnly;
 var selected_row;
 //var nightMode;
-//var theme;
+var theme;
   	 
 /*	
 if (readOnly === undefined) {
@@ -45,6 +45,9 @@ function initTextArea() {
 	if (typeof type == "undefined") {
 		type = "xml";
 	}
+	if (typeof theme == "undefined") {
+		theme = "default";
+	}
 //	
 //	if (nightMode == "true") {
 //		theme = "blackboard";
@@ -63,6 +66,7 @@ function initTextArea() {
 		configFileEditor = CodeMirror.fromTextArea(configFileTextArea, {
 			lineNumbers: true,
 			mode: type,
+			theme: theme,
 			readOnly: readOnly,
 			autofocus: true,
 			indextUnit: 4,
@@ -74,6 +78,9 @@ function initTextArea() {
 					if (cm.getOption("fullScreen")) {
 						cm.setOption("fullScreen", false);
 					}
+				},
+				"Ctrl-D": function(cm) {
+					cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
 				}
 			}
 			
