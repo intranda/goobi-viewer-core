@@ -447,6 +447,13 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      */
     public void setRedirect(boolean redirect) {
         this.redirect = redirect;
+        // Automatically remove any privileges except listing, if redirect mode is on
+        if (redirect) {
+            privilegesCopy.clear();
+            privilegesCopy.add(PRIV_LIST);
+        } else {
+            privilegesCopy.remove(PRIV_LIST);
+        }
     }
 
     /**
