@@ -25,7 +25,7 @@
 		 
 		
 		<div id="header">
-			<h1>Konfiguration</h1>
+			<h1>KonfigurationXX</h1>
 			<p id="header-text">
 				<h:outputText value="Auf dieser Seite können die Konfigurationsdateien des Goobi Viewers 
 				und der dazugehörigen Komponenten editiert werden. Backups werden automatisch angelegt. 
@@ -44,12 +44,19 @@
 					<h:inputTextarea id="editor" cols="170" rows="87" value="#{configEditorBean.fileContent}" 
 									disabled="#{not(configEditorBean.editable)}"/>
  -->					
- 					<h:inputTextarea id="editor"
- 									 cols="170"
- 									 rows="87"
- 									 value="#{configEditorBean.fileContent}" />
-					 					
-					<hr/>
+<!--  					<h:inputTextarea id="editor" -->
+<!--  									 cols="170" -->
+<!--  									 rows="87" -->
+<!--  									 value="#{configEditorBean.fileContent}" /> -->
+ 									 
+ 					<div>inhalt:</div>
+ 					<div id="codeEditorContainer"></div>
+ 					
+ 					<!-- HIDDEN CONTENT -->
+ 					<div id="codemirrorFileContent"><h:outputText escape="false" value="#{configEditorBean.fileContent}"/></div>				 
+ 									 
+
+
 					
 					<h:panelGroup layout="block" styleClass="save-cancel-buttons">
 						<h:commandButton value="Save"
@@ -119,9 +126,9 @@
 							</h:column>
 						</h:dataTable>
 					</h:form>
+					
 					<div id="currentConfigFileType" style="position: absolute; visibility: hidden">
 						#{configEditorBean.currentConfigFileType}
-						
 					</div>
 				</div>
 <!-- 				
@@ -134,7 +141,10 @@
 
 				</script>
  -->
-				
+				<script>
+					initCodemirrorEditor();  
+				</script>
+
 				<div id="right-down">
 					<p class="label">
 						<h:outputText value="Backups"/>
