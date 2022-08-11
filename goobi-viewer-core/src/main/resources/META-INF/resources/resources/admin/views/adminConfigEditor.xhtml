@@ -12,7 +12,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminClients')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminConfigEditor')}" />
         </f:metadata>
     </ui:define>
 
@@ -20,12 +20,12 @@
 
       <!-- TITLE -->
       	<div class="admin__title-bar">
-        	<h1 class="admin__title">#{msg.admin__clients__title}</h1>
+        	<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
       	</div>
 		 
 		
 		<div id="header">
-			<h1>Konfiguration</h1>
+<!-- 			<h1>Konfiguration</h1> -->
 			<p id="header-text">
 				<h:outputText value="Auf dieser Seite können die Konfigurationsdateien des Goobi Viewers 
 				und der dazugehörigen Komponenten editiert werden. Backups werden automatisch angelegt. 
