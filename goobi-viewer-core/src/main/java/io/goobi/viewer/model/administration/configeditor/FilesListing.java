@@ -56,7 +56,6 @@ public class FilesListing implements Serializable{
 					// get the maximum number of backups
 					Attribute attrMaximum = startElement.getAttributeByName(new QName("maximum"));
 					maxBackups = (attrMaximum == null) ? 0 : Integer.parseInt(attrMaximum.getValue().toString());
-					System.out.println(maxBackups);
 
 					// Block entrance found, "enabled" assigned, time for another loop
 					break;		
