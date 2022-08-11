@@ -34,6 +34,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -47,7 +48,6 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
-
 
 @ManagedBean
 @SessionScoped
@@ -231,6 +231,8 @@ public class ConfigEditorBean implements Serializable {
 
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
+                // outputLock also locks reading this file in Windows, so read it prior to creating the lock
+                fileContent = Files.readString(filePath);
                 fileOutputStream = new FileOutputStream(pathString, true); // appending instead of covering 
                 outputChannel = fileOutputStream.getChannel();
                 outputLock = outputChannel.tryLock();
@@ -242,9 +244,10 @@ public class ConfigEditorBean implements Serializable {
                 if (inputLock == null) {
                     throw new OverlappingFileLockException();
                 }
+                fileContent = Files.readString(filePath);
             }
 
-            fileContent = Files.readString(filePath);
+            // fileContent = IOUtils.toString(fileInputStream, StandardCharsets.UTF_8.name());
             temp = fileContent;
         } catch (OverlappingFileLockException oe) {
             logger.trace("The region specified is already locked by another process.", oe);
@@ -283,7 +286,9 @@ public class ConfigEditorBean implements Serializable {
         Path originalPath = Path.of(files[fileInEditionNumber].getAbsolutePath());
 
         try {
-            Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
+            // Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
+            // In Windows, the exact same stream/channel that holds the outputLock must be used to write to avoid IOException
+            IOUtils.write(fileContent, fileOutputStream, StandardCharsets.UTF_8);
             // if the "config-viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
             if (isConfigViewer) {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
