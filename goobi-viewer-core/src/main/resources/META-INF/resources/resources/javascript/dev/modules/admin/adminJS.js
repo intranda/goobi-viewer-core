@@ -39,11 +39,10 @@ var adminJS = ( function() {
         }
         //Initialize sticky elements for admin pages
         viewerJS.stickyElements.init({initAdmin:true});
+	
     };
     
-    return admin;
-    
-} )( jQuery );
+
 
 
 $( document ).ready(function() {
@@ -54,38 +53,114 @@ $( document ).ready(function() {
 		$(this).parents().siblings('.admin__form-help-text').toggleClass('in');
 	});
 
-// hide license functions if open access toggle is yes
-	// check if toggle yes on page load
-//	if ($('.openAccessToggle input:nth-of-type(2)').prop('checked')) {
-//			  $('.admin__license-functions').hide();
-//		  }
-//	// check if toggle status changes
-//	$(".openAccessToggle input").change(function(){
-//	  if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
-//	   $('.admin__license-functions').animate({
-//		    height: "toggle",
-//		    opacity: "toggle"
-//		}, 250);
-//	  else if ($('.openAccessToggle input:nth-of-type(1)').is(':checked'))
-//	   $('.admin__license-functions').animate({
-//		    height: "toggle",
-//		    opacity: "toggle"
-//		}, 250);
-//	});
+
+
+
+ 
+	$('[data-target="toggleTarget"]').each(function() {
+		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
+			$(this).next('.admin__license-selectable-block').hide();
+		}
+	});
 	
-	// LICENCE SWITCH TOGGLES PARTLY EXCLUSIVE
+	// check if radio button status changes
+	$("body").one("click", '[data-target="toggleTarget"]', function(event) {
+		$('[data-target="toggleTarget"] input').change(function() {
+			if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
+				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
+					opacity: "toggle"
+				}, 250);
+			}
+			else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
+				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
+					opacity: "toggle"
+				}, 250);
+			}
+		});
+	});
+	
+
+// toggle next cms right block after radio button (hidden if prop yes checked)
 		// check if toggle yes on page load then hide
 
 	// $("body").on("click", '[data-toggle="helptext"]', function()
+			
+	$('.blockAfterRadioToggler').each(function() {
+		if ($(this).find("input:nth-of-type(2)").prop('checked')) {
+			$(this).next('.admin__license-selectable-block').hide();
+		}
+	});
+ 
+	// check if radio button status changes
+	$("body").one("click", '.blockAfterRadioToggler', function(event) { 
+		$('.blockAfterRadioToggler input').change(function() {
+			if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
+				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
+			    opacity: "toggle"
+				}, 250);
+			}
+			else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
+				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
+			    opacity: "toggle"
+				}, 250);
+			}
+		});
+	});
+
+	// pdf quota radio switch - change color of box according to state
+	$('#pdf_download_quota_info_box').each(function() {
+		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
+			$(this).children('.admin__default-block').addClass('-gray-box');
+		}
+	}); 
+	$("body").on("click", '#pdf_download_quota_info_box', function() {
+		if ($('#pdf_download_quota_info_box').find("input:nth-of-type(1)").prop('checked')) {
+			$('#pdf_download_quota_info_box').children('.admin__default-block').addClass('-gray-box');
+		}
+		else {
+			$('#pdf_download_quota_info_box').children('.admin__default-block').removeClass('-gray-box');
+		}
+	});	
+
+	// vertical language tabs focus effect
+	$("body").on("focus", ".admin__language-tabs-vertical-textarea", function() {
+		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#3365a9", "border-right-color": "#fff"})
+	});
+
+	$("body").on("focusout", ".admin__language-tabs-vertical-textarea", function() {
+		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#ccc", "border-right-color": "#fff"})
+	});
+	
+	// hiding the new tab option for cms menus if link value is '#'
+	$('.cms-module__option-url').each(function() {
+		if ($(this).val() == "#") {
+			$(this).parent().parent().next(".cms-module__option-group").hide();
+		}
+	});
+		// check if form input value changes
+		$('.cms-module__option-url').each(function() {
+			$(this).on('keyup change ready', function() {
+				if ($(this).val() == "#") {
+					$(this).parent().parent().next(".cms-module__option-group").fadeOut();
+				}
+				else {
+					$(this).parent().parent().next(".cms-module__option-group").fadeIn();
+				}
+			});
+		});
+
+
+// END DOCUMENT READY
+});
+
+
+    admin.licenceToggles = {
+
+
+	        init: function() {
 
 function elementLicenceTogglerFunction() {
 
-//	$('[data-target="licenceExclusiveCheck"]').each(function() {
-//		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
-//			$(this).next('.admin__license-selectable-block').hide();
-//		}
-//	});
-	
 	// WATCH CHANGES
 	
 	var $watchedElements = $("[data-watched-element]");
@@ -222,107 +297,15 @@ function elementLicenceTogglerFunction() {
                     // console.log('default');
             }
 
-	});
-
-	});
-}
-
-elementLicenceTogglerFunction();
-
-
- 
-	$('[data-target="toggleTarget"]').each(function() {
-		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
-			$(this).next('.admin__license-selectable-block').hide();
-		}
-	});
-	
-	// check if radio button status changes
-	$("body").one("click", '[data-target="toggleTarget"]', function(event) {
-		$('[data-target="toggleTarget"] input').change(function() {
-			if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
-				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-					opacity: "toggle"
-				}, 250);
-			}
-			else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
-				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-					opacity: "toggle"
-				}, 250);
-			}
-		});
-	});
-	
-
-// toggle next cms right block after radio button (hidden if prop yes checked)
-		// check if toggle yes on page load then hide
-
-	// $("body").on("click", '[data-toggle="helptext"]', function()
-			
-	$('.blockAfterRadioToggler').each(function() {
-		if ($(this).find("input:nth-of-type(2)").prop('checked')) {
-			$(this).next('.admin__license-selectable-block').hide();
-		}
-	});
- 
-	// check if radio button status changes
-	$("body").one("click", '.blockAfterRadioToggler', function(event) { 
-		$('.blockAfterRadioToggler input').change(function() {
-			if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
-				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-			    opacity: "toggle"
-				}, 250);
-			}
-			else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
-				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-			    opacity: "toggle"
-				}, 250);
-			}
-		});
-	});
-
-	// pdf quota radio switch - change color of box according to state
-	$('#pdf_download_quota_info_box').each(function() {
-		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
-			$(this).children('.admin__default-block').addClass('-gray-box');
-		}
-	}); 
-	$("body").on("click", '#pdf_download_quota_info_box', function() {
-		if ($('#pdf_download_quota_info_box').find("input:nth-of-type(1)").prop('checked')) {
-			$('#pdf_download_quota_info_box').children('.admin__default-block').addClass('-gray-box');
-		}
-		else {
-			$('#pdf_download_quota_info_box').children('.admin__default-block').removeClass('-gray-box');
-		}
-	});	
-
-	// vertical language tabs focus effect
-	$("body").on("focus", ".admin__language-tabs-vertical-textarea", function() {
-		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#3365a9", "border-right-color": "#fff"})
-	});
-
-	$("body").on("focusout", ".admin__language-tabs-vertical-textarea", function() {
-		$(this).siblings('.admin__language-tabs-vertical').find('.admin__language-tab-vertical.active a').css({"border-color": "#ccc", "border-right-color": "#fff"})
-	});
-	
-	// hiding the new tab option for cms menus if link value is '#'
-	$('.cms-module__option-url').each(function() {
-		if ($(this).val() == "#") {
-			$(this).parent().parent().next(".cms-module__option-group").hide();
-		}
-	});
-		// check if form input value changes
-		$('.cms-module__option-url').each(function() {
-			$(this).on('keyup change ready', function() {
-				if ($(this).val() == "#") {
-					$(this).parent().parent().next(".cms-module__option-group").fadeOut();
-				}
-				else {
-					$(this).parent().parent().next(".cms-module__option-group").fadeIn();
-				}
 			});
-		});
+		
+			});
+		}
+		elementLicenceTogglerFunction();
+        }
 
-
-// END DOCUMENT READY
-});
+	}
+	
+    return admin;
+    
+} )( jQuery );

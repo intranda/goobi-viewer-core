@@ -95,6 +95,7 @@
                                 </div>
                                 
                                 <!-- REDIRECT TO PAGE -->
+                                <h:panelGroup layout="block" id="urlInputGroup">
                                 <div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">
 	                                <div class="form-group form-row admin__license-functions mb-0">
 	                                    <div class="col-2 control-label admin__form-label">
@@ -122,12 +123,19 @@
 	                                
 	                                	<div class="col-2"></div>
 		                                <div class="col-9 admin__form-input mb-3 mt-2">
+		                                	<!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
 		                                    <h:inputText value="#{adminLicenseBean.currentLicenseType.redirectUrl}"
-		                                        id="redirectUrl" styleClass="form-control" />
+		                                        id="redirectUrl" styleClass="form-control" 
+		                                        validator="URISyntaxValidator">
+<!-- 												<f:ajax event="valueChange" render="urlInputGroup"/> -->
+		                                    </h:inputText>
+		                                        
 		                                </div>
 	
 	                                </div>
                                 </div>
+                                
+                                </h:panelGroup>
 
                                 <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-target-visibility="keepVisible">
                                     <hr />
@@ -307,6 +315,10 @@
                     </h:form>
                 </h:panelGroup>
             </div>
+            <script>
+           	adminJS.licenceToggles.init();
+            </script>
+            
         </f:view>
     </ui:define>
 
