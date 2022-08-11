@@ -97,9 +97,8 @@ public class ConfigEditorBean implements Serializable {
     private boolean downloadable = false;
 
     // Fields for File-IO
-    private FileInputStream fileInputStream = null;
     private FileOutputStream fileOutputStream = null;
-    private FileChannel inputChannel, outputChannel;
+    private FileChannel outputChannel;
     private FileLock inputLock = null, outputLock = null;
 
     // Whether the opened config file is "config-viewer.xml"
@@ -218,10 +217,9 @@ public class ConfigEditorBean implements Serializable {
 
         String pathString = files[fileInEditionNumber].getAbsolutePath();
         Path filePath = Path.of(pathString);
-        try {
-            fileInputStream = new FileInputStream(pathString);
-            inputChannel = fileInputStream.getChannel();
-
+        try (FileInputStream fis = new FileInputStream(pathString)) {
+            FileChannel inputChannel = fis.getChannel();
+            
             if (fileOutputStream != null) {
                 if (outputLock.isValid()) {
                     outputLock.release();
@@ -246,8 +244,6 @@ public class ConfigEditorBean implements Serializable {
                 }
                 fileContent = Files.readString(filePath);
             }
-
-            // fileContent = IOUtils.toString(fileInputStream, StandardCharsets.UTF_8.name());
             temp = fileContent;
         } catch (OverlappingFileLockException oe) {
             logger.trace("The region specified is already locked by another process.", oe);
@@ -258,7 +254,6 @@ public class ConfigEditorBean implements Serializable {
             if (inputLock != null && inputLock.isValid()) {
                 inputLock.release();
             }
-            fileInputStream.close();
         }
 
         hiddenText = "New File Chosen!";
@@ -273,6 +268,10 @@ public class ConfigEditorBean implements Serializable {
         // No need to duplicate if no modification is done.
         if (temp.equals(fileContent)) {
             hiddenText = "No Modification Detected!";
+            return;
+        }
+        if (fileOutputStream == null) {
+            logger.error("No FileOutputStream");
             return;
         }
 
@@ -450,9 +449,8 @@ public class ConfigEditorBean implements Serializable {
             if (GetAction.isClientAbort(e)) {
                 logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
                 return;
-            } else {
-                throw e;
             }
+            throw e;
         }
         //		outputStream.flush();
         //		outputStream.close();
