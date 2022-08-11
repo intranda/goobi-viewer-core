@@ -21,6 +21,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 
 
 public class FilesListing implements Serializable{
@@ -68,6 +69,7 @@ public class FilesListing implements Serializable{
 						} else {
 							event = eventReader.nextEvent();
 							configPaths.add(event.asCharacters().getData());
+//							configPaths.add(FileTools.adaptPathForWindows(event.asCharacters().getData()));
 						}
 					}
 					if (event.isEndElement()) {
@@ -104,7 +106,7 @@ public class FilesListing implements Serializable{
 			files = new File[0];
 			
 			for (String configPath : configPaths) {
-				File f = new File(configPath);
+				File f = new File(FileTools.adaptPathForWindows(configPath));
 				files = Stream.concat(Arrays.stream(files), Arrays.stream(f.listFiles(filter))).toArray(File[] :: new);
 			}
 			

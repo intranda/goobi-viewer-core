@@ -1,6 +1,7 @@
 package io.goobi.viewer.managedbeans;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.model.administration.configeditor.*;
 
 import java.io.File;
@@ -123,7 +124,7 @@ public class ConfigEditorBean implements Serializable{
 		}
 
 		// Create the folder "backups" if necessary.
-		backupsPath = installationPath + "backups/";
+		backupsPath = FileTools.adaptPathForWindows(installationPath + "backups/");
 		File backups = new File(backupsPath);
 		if (!backups.exists()) {
 			backups.mkdir();
@@ -249,7 +250,7 @@ public class ConfigEditorBean implements Serializable{
 			fileContent = Files.readString(filePath);
 			temp = fileContent;
 		} catch(OverlappingFileLockException oe) {
-			logger.trace("The region specified is already locked by another file.", oe);
+			logger.trace("The region specified is already locked by another process.", oe);
 			
 		} catch (IOException e) {
 			logger.trace("IOException caught in the method openFile()", e);
