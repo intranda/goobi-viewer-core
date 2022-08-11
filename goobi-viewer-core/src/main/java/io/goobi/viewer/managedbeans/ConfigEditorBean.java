@@ -66,12 +66,16 @@ public class ConfigEditorBean implements Serializable{
 	private static ArrayList<FileRecord> fileRecords;
 	private static DataModel<FileRecord> fileRecordsModel;
 	private static List<String> configPaths; // paths where the editable / viewable config files live, which should not be modified
+	private static int maxBackups; // maximum number of backup files that can be stored
+	private static boolean limitedBackups; // default to be unlimited given non-positive maxBackups
 	static {
 		files = filesListing.getFiles();
 		fileNames = filesListing.getFileNames();
 		fileRecords = filesListing.getFileRecords();
 		fileRecordsModel = filesListing.getFileRecordsModel();
 		configPaths = filesListing.getConfigPaths();
+		maxBackups = filesListing.getMaxBackups();
+		limitedBackups = maxBackups > 0;
 	}
 	
 	// Whether to render the backend or not
@@ -297,8 +301,9 @@ public class ConfigEditorBean implements Serializable{
 				// get the parent node <configEditor>
 				Node configEditor = document.getElementsByTagName("configEditor").item(0);
 				
-				// set the attribute "enabled"
-				configEditor.getAttributes().item(0).setNodeValue(renderBackend ? "true" : "false");
+				// set the values of the attributes "enabled" and "maximum" back
+				configEditor.getAttributes().getNamedItem("enabled").setNodeValue(renderBackend ? "true" : "false");
+				configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(maxBackups));
 				
 				// get the list of all <directory> elements
 				NodeList directoryList = configEditor.getChildNodes();
@@ -359,10 +364,18 @@ public class ConfigEditorBean implements Serializable{
 		
 		// refresh the backup metadata
 		backupFiles = newBackupFolder.listFiles();
-		Arrays.sort(backupFiles, (a,b) -> Long.compare(a.lastModified(), b.lastModified()));
-		backupNames = new String[backupFiles.length];
+		Arrays.sort(backupFiles, (a,b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
+		
+		int length = backupFiles.length;
+		if (limitedBackups && length > maxBackups) {
+			// remove the oldest backup
+			backupFiles[length-1].delete();
+			length -= 1;
+		}
+		
+		backupNames = new String[length];
 		backupRecords = new ArrayList<BackupRecord>();
-		for (int i = 0; i < backupFiles.length; ++i) {
+		for (int i = 0; i < length; ++i) {
 			backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
 			backupRecords.add(new BackupRecord(backupNames[i], i));
 		}
@@ -390,7 +403,7 @@ public class ConfigEditorBean implements Serializable{
 		File backups = new File(backupsPath + files[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "")); 
 		if (backups.exists()) {
 			backupFiles = backups.listFiles();
-			Arrays.sort(backupFiles, (a,b) -> Long.compare(a.lastModified(), b.lastModified()));
+			Arrays.sort(backupFiles, (a,b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
 			backupNames = new String[backupFiles.length];
 			backupRecords = new ArrayList<BackupRecord>();
 			for (int i = 0; i < backupFiles.length; ++i) {

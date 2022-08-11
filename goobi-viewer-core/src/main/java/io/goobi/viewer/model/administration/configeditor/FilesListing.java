@@ -32,6 +32,7 @@ public class FilesListing implements Serializable{
 	
 	private static List<String> configPaths; // paths where the editable/viewable config files live
 	private static boolean enabled;
+	private static int maxBackups;
 	static {
 		configPaths = new ArrayList<String>();
 		// Get information from "config-viewer.xml"
@@ -49,8 +50,13 @@ public class FilesListing implements Serializable{
 						continue; // keep looking for the entrance of configEditor
 					}
 					// get the attribute value of configEditor - "enabled"
-					Attribute attr = startElement.getAttributeByName(new QName("enabled"));
-					enabled = attr.getValue().toLowerCase().equals("true");
+					Attribute attrEnabled = startElement.getAttributeByName(new QName("enabled"));
+					enabled = attrEnabled.getValue().toLowerCase().equals("true");
+					
+					// get the maximum number of backups
+					Attribute attrMaximum = startElement.getAttributeByName(new QName("maximum"));
+					maxBackups = (attrMaximum == null) ? 0 : Integer.parseInt(attrMaximum.getValue().toString());
+					System.out.println(maxBackups);
 
 					// Block entrance found, "enabled" assigned, time for another loop
 					break;		
@@ -143,6 +149,10 @@ public class FilesListing implements Serializable{
 
 	public List<String> getConfigPaths() {
 		return configPaths;
+	}
+
+	public int getMaxBackups() {
+		return maxBackups;
 	}
 	
 	
