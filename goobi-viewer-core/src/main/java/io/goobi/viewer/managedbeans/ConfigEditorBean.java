@@ -96,10 +96,10 @@ public class ConfigEditorBean implements Serializable{
 	private boolean downloadable = false;
 	
 	// Fields for File-IO
-	private FileInputStream fileInputStream;
-	private FileOutputStream fileOutputStream;
+	private FileInputStream fileInputStream = null;
+	private FileOutputStream fileOutputStream = null;
 	private FileChannel inputChannel, outputChannel;
-	private FileLock inputLock, outputLock;
+	private FileLock inputLock = null, outputLock = null;
 	
 	// Whether the opened config file is "config-viewer.xml"
 	private boolean isConfigViewer; 
@@ -225,6 +225,9 @@ public class ConfigEditorBean implements Serializable{
 			inputChannel = fileInputStream.getChannel();
 
 			if (fileOutputStream != null) {
+				if (outputLock.isValid()) {
+					outputLock.release();
+				}
 				fileOutputStream.close();
 			}
 			
@@ -232,9 +235,15 @@ public class ConfigEditorBean implements Serializable{
 			if (editable) {
 				fileOutputStream = new FileOutputStream(pathString, true); // appending instead of covering 
 				outputChannel = fileOutputStream.getChannel();
-				outputLock = outputChannel.lock();
+				outputLock = outputChannel.tryLock();
+				if (outputLock == null) {
+					throw new OverlappingFileLockException();
+				}
 			} else { // READ_ONLY
-				inputLock = inputChannel.lock(0, Long.MAX_VALUE, true);
+				inputLock = inputChannel.tryLock(0, Long.MAX_VALUE, true);
+				if (inputLock == null) {
+					throw new OverlappingFileLockException();
+				}
 			}
 			
 			fileContent = Files.readString(filePath);
@@ -245,6 +254,9 @@ public class ConfigEditorBean implements Serializable{
 		} catch (IOException e) {
 			logger.trace("IOException caught in the method openFile()", e);
 		} finally {
+			if (inputLock != null && inputLock.isValid()) {
+				inputLock.release();
+			}
 			fileInputStream.close();
 		}
 		
@@ -336,6 +348,9 @@ public class ConfigEditorBean implements Serializable{
 		} catch (TransformerException e) {
 			logger.trace("TransformerException caught in the method saveFile()", e);
 		} finally {
+			if (outputLock != null && outputLock.isValid()) {
+				outputLock.release();
+			}
 			fileOutputStream.close();
 		}
 				
@@ -430,6 +445,7 @@ public class ConfigEditorBean implements Serializable{
 //		outputStream.flush();
 //		outputStream.close();
 		facesContext.responseComplete();
+		outputStream.close();
 		hiddenText = "File downloaded!";
 	}
 	
