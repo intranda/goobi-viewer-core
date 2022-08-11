@@ -333,8 +333,8 @@ public class ConfigEditorBean implements Serializable {
             // Use a time stamp to distinguish the backups.
             String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS").format(new java.util.Date()).replace(":", "").replaceFirst("[.]", "");
             Path newBackupPath = Path.of(newBackupFolderPath + "/" + files[fileInEditionNumber].getName() + "." + timeStamp);
-            // save changes to backup files
-            Files.writeString(newBackupPath, fileContent, StandardCharsets.UTF_8);
+            // save the original content to backup files
+            Files.writeString(newBackupPath, temp, StandardCharsets.UTF_8);
 
         } catch (IOException e) {
             logger.trace("IOException caught in the method saveFile()", e);
