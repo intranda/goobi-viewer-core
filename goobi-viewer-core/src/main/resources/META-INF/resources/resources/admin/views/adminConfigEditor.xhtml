@@ -1,205 +1,159 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminClients')}" />
-        </f:metadata>
-    </ui:define>
-
-    <ui:define name="content">
-
-      <!-- TITLE -->
-      	<div class="admin__title-bar">
-        	<h1 class="admin__title">#{msg.admin__clients__title}</h1>
-      	</div>
-		 
-		
-		<div id="header">
-			<h1>KonfigurationXX</h1>
-			<p id="header-text">
-				<h:outputText value="Auf dieser Seite können die Konfigurationsdateien des Goobi Viewers 
-				und der dazugehörigen Komponenten editiert werden. Backups werden automatisch angelegt. 
-				&#34;zzz&#34; markierte Einträge bedeuten, dass sie noch geprüft werden müssen. Die Zeichenfolge 
-				&#34;zzz&#34; wird in der Oberfläche automatisch herausgefiltert! " />
-			</p>
-		</div>
-		
-		
-		<div id="main">
-						
-			<div id="left">
-				<p><h:outputText value="Konfigurationsdatei" /></p>
-				<h:form id="editor-form">
-<!--  				
-					<h:inputTextarea id="editor" cols="170" rows="87" value="#{configEditorBean.fileContent}" 
-									disabled="#{not(configEditorBean.editable)}"/>
- -->					
-<!--  					<h:inputTextarea id="editor" -->
-<!--  									 cols="170" -->
-<!--  									 rows="87" -->
-<!--  									 value="#{configEditorBean.fileContent}" /> -->
- 									 
- 					<div>inhalt:</div>
- 					<div id="codeEditorContainer"></div>
- 					
- 					<!-- HIDDEN CONTENT -->
- 					<div id="codemirrorFileContent"><h:outputText escape="false" value="#{configEditorBean.fileContent}"/></div>				 
- 									 
+<ui:define name="metadata">
+	<f:metadata>
+		<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminConfigEditor')}" />
+	</f:metadata>
+</ui:define>
 
 
-					
-					<h:panelGroup layout="block" styleClass="save-cancel-buttons">
-						<h:commandButton value="Save"
-										 type="submit" 
-										 styleClass="buttons general-buttons"
-										 action="#{configEditorBean.saveFile}" 
-										 accesskey="s"
-										 onclick="saveEditor();"
-										 disabled="#{not(configEditorBean.editable)}">
-										 
-							<f:ajax execute="@form" render="backup-form:backup-table :output"/>
-						</h:commandButton>
-						<h:commandButton value="Cancel"
-										 styleClass="buttons general-buttons"
-										 action="#{configEditorBean.cancelEdition}"
-										 accesskey="c"
-										 disabled="#{not(configEditorBean.editable)}">
-							<f:ajax excute="@form" render="@all"/>
-						</h:commandButton>
-					</h:panelGroup>
-					
+<ui:define name="content">
+	<f:view contentType="text/html" encoding="utf-8">
+		<div id="configEditorView">
+			<h:outputText
+				rendered="#{userBean.admin and adminBean.translationLocked}"
+				value="#{msg.admin__translation_locked}" />
+
+
+				<h:form id="adminTranslationsEditForm" prependId="false">
+
+					<div class="admin__title-bar">
+						<!-- TITLE -->
+						<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
+					</div>
+
+					<div class="admin__content-inner-content">
+						<ui:fragment
+							rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
+							<!-- INFO TEXT -->
+							<div class="admin__info-text">
+								<h:outputText
+									value="#{msg.admin__translations_edit_description}"
+									escape="false" />
+							</div>
+						</ui:fragment>
+
+						<div class="admin__content-wrapper">
+							<div class="admin__content-main -sticky -refreshHCsticky">
+								<h2>#{msg.dateiinhalt}</h2>
+
+								<!-- CODEMIRROR EDITOR FORM -->
+								<h:form id="editor-form">
+									<!--  				
+									<h:inputTextarea id="editor" cols="170" rows="87" value="#{configEditorBean.fileContent}" 
+													disabled="#{not(configEditorBean.editable)}"/>
+				 -->
+				 					<!-- TEXTAREA -->
+									<h:inputTextarea id="editor" cols="170" rows="87"
+										value="#{configEditorBean.fileContent}" />
+
+									<h:panelGroup layout="block" styleClass="save-cancel-buttons">
+										<h:commandButton value="Save" type="submit"
+											styleClass="buttons general-buttons"
+											action="#{configEditorBean.saveFile}" accesskey="s"
+											onclick="saveEditor();"
+											disabled="#{not(configEditorBean.editable)}">
+
+											<f:ajax execute="@form"
+												render="backup-form:backup-table :output" />
+										</h:commandButton>
+										<h:commandButton value="Cancel"
+											styleClass="buttons general-buttons"
+											action="#{configEditorBean.cancelEdition}" accesskey="c"
+											disabled="#{not(configEditorBean.editable)}">
+											<f:ajax excute="@form" render="@all" />
+										</h:commandButton>
+									</h:panelGroup>
+
+								</h:form>
+
+								<p class="label">
+									<h:outputText value="Dateien" />
+								</p>
+								<p class="description">
+									<h:outputText value="Bitte wähle aus der folgenden Liste die zu bearbeitende Datei:" />
+								</p>
+								<h:form id="file-form">
+									<h:dataTable value="#{configEditorBean.fileRecordsModel}" id="file-table" var="record" border="1" cellspacing="0" cellpadding="17">
+
+										<h:column>
+											<f:facet name="header"></f:facet>
+											<h:commandLink value="#{record.fileName}"
+												action="#{configEditorBean.showBackups}"
+												name="#{record.number}"
+												onclick="setEditable(false, #{record.number}, false);">
+												<f:ajax execute="@this" render="@all" />
+
+											</h:commandLink>
+										</h:column>
+
+										<h:column>
+											<f:facet name="header"></f:facet>
+											<h:commandButton
+												value="#{record.writable ? '&#xf040;' : '&#xf06e;'}"
+												styleClass="buttons edit-buttons fa fa-solid"
+												action="#{configEditorBean.editFile(record.writable)}"
+												name="#{record.number}" rendered="#{record.readable}"
+												onclick="setEditable(#{record.writable}, #{record.number}, true);">
+
+												<f:ajax execute="@this" render="@all" immediate="true" />
+											</h:commandButton>
+
+										</h:column>
+									</h:dataTable>
+								</h:form>
+
+								<div id="currentConfigFileType"
+									style="position: absolute; visibility: hidden">
+									#{configEditorBean.currentConfigFileType}</div>
+
+
+							</div>
+							<div class="admin__content-side">
+							
+								<div class="admin__default-block">
+								
+								<h:form id="backup-form">
+								
+								<ui:repeat var="record" value="#{configEditorBean.backupRecordsModel}">
+								<div class="">#{record.name} <h:commandButton
+											styleClass="buttons download-buttons fa fa-solid"
+											value="&#xf019;" action="#{configEditorBean.downloadFile}"
+											disabled="#{not(configEditorBean.downloadable)}">
+
+											<f:ajax execute="@this" render="@all" />
+										</h:commandButton></div>	
+								
+								</ui:repeat>
+								
+								</h:form>
+
+								</div>
+
+							</div>
+						</div>
+					</div>
 
 				</h:form>
-			</div>
-			
 
-			
-			<div id="right">
-				<div id="right-up">
-					<p class="label">
-						<h:outputText value="Dateien"/>
-					</p>
-					<p class="description">
-						<h:outputText value="Bitte wähle aus der folgenden Liste die zu bearbeitende Datei:" />
-					</p>
-					<h:form id="file-form">
-						<h:dataTable value="#{configEditorBean.fileRecordsModel}"
-									 id="file-table"
-									 var="record" 
-									 border="1" 
-									 cellspacing="0" 
-									 cellpadding="17">
-									 
-							<h:column>
-								<f:facet name="header"></f:facet>
-								<h:commandLink value="#{record.fileName}"
-											   action="#{configEditorBean.showBackups}"
-											   name="#{record.number}"
-											   onclick="setEditable(false, #{record.number}, false);">
-									<f:ajax execute="@this" render="@all"/>
-									
-								</h:commandLink>
-							</h:column>
-										
-							<h:column>
-								<f:facet name="header"></f:facet>
-								<h:commandButton value="#{record.writable ? '&#xf040;' : '&#xf06e;'}"
-												 styleClass="buttons edit-buttons fa fa-solid"
-												 action="#{configEditorBean.editFile(record.writable)}"
-												 name="#{record.number}"
-												 rendered="#{record.readable}" 
-												 onclick="setEditable(#{record.writable}, #{record.number}, true);">
-												 
-									<f:ajax execute="@this" render="@all" immediate="true"/>
-								</h:commandButton>
-							
-							</h:column>
-						</h:dataTable>
-					</h:form>
-					
-					<div id="currentConfigFileType" style="position: absolute; visibility: hidden">
-						#{configEditorBean.currentConfigFileType}
-					</div>
-				</div>
-<!-- 				
-				<script>
+				<script>			
 					var readOnly;
 					if (readOnly === undefined){
 						readOnly = true;
 					}
-					initTextArea();
-
+					initTextArea();  
 				</script>
- -->
-				<script>
-					initCodemirrorEditor();  
-				</script>
-
-				<div id="right-down">
-					<p class="label">
-						<h:outputText value="Backups"/>
-					</p>
-					<p class="description">
-						<h:outputText value="Folgende Backups stehen für die ausgewählte Konfigurationsdatei zur Verfügung:"/>
-					</p>
-					<h:form id="backup-form">
-						<h:dataTable id="backup-table"
-									 value="#{configEditorBean.backupRecordsModel}" 
-									 var="record" 
-									 border="1" 
-									 cellspacing="0" 
-									 cellpadding="7">
-									 
-							<h:column>
-								<f:facet name="header"></f:facet>
-								<h:outputText value="#{record.name}" />
-							</h:column>
-										
-							<h:column>
-								<f:facet name="header"></f:facet>
-				
-							
-								<h:commandButton styleClass="buttons download-buttons fa fa-solid"
-												 value="&#xf019;" 
-												 action="#{configEditorBean.downloadFile}"
-												 disabled="#{not(configEditorBean.downloadable)}" >
-												 
-									<f:ajax execute="@this" render="@all" />  
-								</h:commandButton>
-
-							</h:column>
-						</h:dataTable>
-					</h:form>
-				</div>
-			</div>
-			
-
 		</div>
-		
-		
-		<div id="footer">
-			<h:outputText id="output" value="#{configEditorBean.hiddenText}" />
-		</div>
-		
-		<script>			
-			var readOnly;
-			if (readOnly === undefined){
-				readOnly = true;
-			}
-			initTextArea();  
-		</script>
-		
-		
+	</f:view>
+</ui:define>
 
-	</ui:define>
 </ui:composition>
