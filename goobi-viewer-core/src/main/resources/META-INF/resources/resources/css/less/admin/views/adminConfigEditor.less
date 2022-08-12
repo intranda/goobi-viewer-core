@@ -1,0 +1,88 @@
+/* ==============================================================
+   Admin Config Editor
+   style declarations for adminConfigEditor.xhtml
+   ==============================================================*/
+
+#adminConfigEditor {
+	#codemirrorFileContent {
+		display: none;
+	}
+	.admin {
+		&__overlay-bar {
+			flex-direction: row;
+			justify-content: flex-end;
+			&.-slideOut {
+				display: flex;
+				animation: slideInOut 0.25s ease 0s 1 forwards;
+			}
+			&.-slideIn {
+				display: flex;
+				animation: slideInUp 0.25s ease 0s 1 forwards;
+			}
+		}
+	}
+	// ANIMATION FOR SLIDE IN THE SAVE AND CANCEL BUTTON
+	@keyframes slideInUp {
+	  from {
+	    -webkit-transform: translate3d(0, 100%, 0);
+	    transform: translate3d(0, 100%, 0);
+	    visibility: visible;
+	  }
+	
+	  to {
+	    -webkit-transform: translate3d(0, 0, 0);
+	    transform: translate3d(0, 0, 0);
+	  }
+	}
+	
+	.-slideInUp {
+	  -webkit-animation-name: slideInUp;
+	  animation-name: slideInUp;
+	}
+	
+	@keyframes slideInOut {
+	  from {
+	    -webkit-transform: translate3d(0, 0, 0);
+	    transform: translate3d(0, 0, 0);
+
+	  }
+	
+	  to {
+	    -webkit-transform: translate3d(0, 100%, 0);
+	    transform: translate3d(0, 100%, 0);
+	    visibility: visible;
+	  }
+	}
+	
+	.-slideInUp {
+	  animation-name: slideInOut;
+	}
+	
+}
+.admin {
+	&__config-editor {
+		&-file-selection-inner {
+			display: flex;
+			flex-wrap: wrap;
+			border: 1px solid #ccc;
+		}
+		&-file-selection-single-entry {
+			flex: 0 0 100%;
+			max-width: 100%;
+			padding: 15px 35px 15px 15px;
+			border-bottom: 1px solid #ccc;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
