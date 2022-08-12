@@ -57,7 +57,7 @@
 				                    		value="#{msg.save}" 
 				                    		type="submit" 
 				                    		styleClass="btn btn--success admin__overlay-bar-action" 
-				                    		action="#{configEditorBean.saveFile}"
+				                    		action="#{configEditorBean.saveCurrentFileAction}"
 											onclick="writeCMcontentIntoTextArea();" >
 											
 											<f:ajax excute="@form" render="@all" />
@@ -70,7 +70,7 @@
 <!-- 						<h:commandButton value="Save" -->
 <!-- 										 type="submit"  -->
 <!-- 										 styleClass="buttons general-buttons" -->
-<!-- 										 action="#{configEditorBean.saveFile}"  -->
+<!-- 										 action="#{configEditorBean.saveCurrentFileAction}"  -->
 <!-- 										 accesskey="s" -->
 <!-- 										 onclick="saveEditor();" -->
 <!-- 										 disabled="#{not(configEditorBean.editable)}"> -->

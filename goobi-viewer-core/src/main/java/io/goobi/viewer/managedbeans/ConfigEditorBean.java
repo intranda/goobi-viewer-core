@@ -1,8 +1,28 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.managedbeans;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -15,7 +35,9 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -34,7 +56,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -46,6 +67,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
@@ -58,6 +80,9 @@ public class ConfigEditorBean implements Serializable {
     private static final long serialVersionUID = -4120457702630667052L;
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
+
+    /** Manual edit locks for files. */
+    private static final Map<Path, String> fileLocks = new HashMap<>();
 
     private final FilesListing filesListing = new FilesListing();
 
@@ -82,9 +107,9 @@ public class ConfigEditorBean implements Serializable {
     private boolean downloadable = false;
 
     // Fields for File-IO
-    private FileOutputStream fileOutputStream = null;
-    private FileChannel outputChannel;
-    private FileLock inputLock = null, outputLock = null;
+    //    private transient FileOutputStream fileOutputStream = null;
+    private transient FileLock inputLock = null;
+    //    private transient FileLock outputLock = null;
 
     // Whether the opened config file is "config_viewer.xml"
     private boolean isConfigViewer;
@@ -146,6 +171,7 @@ public class ConfigEditorBean implements Serializable {
     }
 
     public void setFileContent(String fileContent) {
+        logger.trace("setFileContent: {}", fileContent);
         this.fileContent = fileContent;
     }
 
@@ -197,30 +223,33 @@ public class ConfigEditorBean implements Serializable {
     }
     ///////////////////////////////////////////////////////////
 
-    public void openFile() throws IOException {
-
-        String pathString = filesListing.getFiles()[fileInEditionNumber].getAbsolutePath();
-        Path filePath = Path.of(pathString);
-        try (FileInputStream fis = new FileInputStream(pathString)) {
+    public synchronized void openFile() throws IOException {
+        Path filePath = filesListing.getFiles()[fileInEditionNumber].toPath();
+        try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
             FileChannel inputChannel = fis.getChannel();
 
-            if (fileOutputStream != null) {
-                if (outputLock.isValid()) {
-                    outputLock.release();
-                }
-                fileOutputStream.close();
-            }
+            //            if (fileOutputStream != null) {
+            //                if (outputLock.isValid()) {
+            //                    outputLock.release();
+            //                }
+            //                fileOutputStream.close();
+            //            }
 
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
-                // outputLock also locks reading this file in Windows, so read it prior to creating the lock
-                fileContent = Files.readString(filePath);
-                fileOutputStream = new FileOutputStream(pathString, false); // appending instead of covering 
-                outputChannel = fileOutputStream.getChannel();
-                outputLock = outputChannel.tryLock();
-                if (outputLock == null) {
+                String sessionId = BeanUtils.getSession().getId();
+                if (fileLocks.containsKey(filePath) && !fileLocks.get(filePath).equals(sessionId)) {
                     throw new OverlappingFileLockException();
                 }
+                fileLocks.put(filePath, sessionId);
+                logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
+                // outputLock also locks reading this file in Windows, so read it prior to creating the lock
+                fileContent = Files.readString(filePath);
+                //                fileOutputStream = new FileOutputStream(pathString, false); // appending instead of covering 
+                //                outputLock = fileOutputStream.getChannel().tryLock();
+                //                if (outputLock == null) {
+                //                    throw new OverlappingFileLockException();
+                //                }
             } else { // READ_ONLY
                 inputLock = inputChannel.tryLock(0, Long.MAX_VALUE, true);
                 if (inputLock == null) {
@@ -247,17 +276,22 @@ public class ConfigEditorBean implements Serializable {
         showBackups(writable);
     }
 
-    public void saveFile() throws IOException {
-
+    /**
+     * 
+     */
+    public synchronized String saveCurrentFileAction() throws IOException {
+        logger.trace("saveCurrentFileAction");
         // No need to duplicate if no modification is done.
-        if (temp.equals(fileContent)) {
-            hiddenText = "No Modification Detected!";
-            return;
-        }
-        if (fileOutputStream == null) {
-            logger.error("No FileOutputStream");
-            return;
-        }
+//        if (temp.equals(fileContent)) {
+//            hiddenText = "No Modification Detected!";
+//            return "";
+//        }
+        //        if (fileOutputStream == null) {
+        //            logger.error("No FileOutputStream");
+        //            return "";
+        //        }
+        
+        logger.trace("fileContent:\n{}", fileContent);
 
         // Use the filename without extension to create a folder for its backup_copies.
         String newBackupFolderPath = backupsPath + filesListing.getFiles()[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "");
@@ -269,9 +303,9 @@ public class ConfigEditorBean implements Serializable {
         Path originalPath = Path.of(filesListing.getFiles()[fileInEditionNumber].getAbsolutePath());
 
         try {
-            // Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
+            Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
             // In Windows, the exact same stream/channel that holds the outputLock must be used to write to avoid IOException
-            IOUtils.write(fileContent, fileOutputStream, StandardCharsets.UTF_8);
+            //            IOUtils.write(fileContent, fileOutputStream, StandardCharsets.UTF_8);
             // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
             if (isConfigViewer) {
                 logger.debug("Saving {}", Configuration.CONFIG_FILE_NAME);
@@ -319,7 +353,7 @@ public class ConfigEditorBean implements Serializable {
 
                 if (temp.equals(fileContent)) {
                     hiddenText = "No Valid Modification Detected!";
-                    return;
+                    return "";
                 }
             }
 
@@ -328,7 +362,6 @@ public class ConfigEditorBean implements Serializable {
             Path newBackupPath = Path.of(newBackupFolderPath + "/" + filesListing.getFiles()[fileInEditionNumber].getName() + "." + timeStamp);
             // save the original content to backup files
             Files.writeString(newBackupPath, temp, StandardCharsets.UTF_8);
-            Messages.info("updatedSuccessfully");
         } catch (IOException e) {
             logger.trace("IOException caught in the method saveFile()", e);
         } catch (SAXException e) {
@@ -340,10 +373,12 @@ public class ConfigEditorBean implements Serializable {
         } catch (TransformerException e) {
             logger.trace("TransformerException caught in the method saveFile()", e);
         } finally {
-            if (outputLock != null && outputLock.isValid()) {
-                outputLock.release();
-            }
-            fileOutputStream.close();
+            fileLocks.remove(originalPath);
+            logger.trace("{} lock removed", originalPath.toAbsolutePath());
+            //            if (outputLock != null && outputLock.isValid()) {
+            //                outputLock.release();
+            //            }
+            //            fileOutputStream.close();
         }
 
         temp = fileContent;
@@ -370,6 +405,9 @@ public class ConfigEditorBean implements Serializable {
         downloadable = true;
 
         hiddenText = "File saved!";
+        Messages.info("updatedSuccessfully");
+
+        return "";
     }
 
     public void showBackups() {
