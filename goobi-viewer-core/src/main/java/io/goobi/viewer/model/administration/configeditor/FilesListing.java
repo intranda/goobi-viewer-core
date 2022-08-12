@@ -73,7 +73,6 @@ public class FilesListing implements Serializable {
             fileNames = new String[files.length];
             for (int i = 0; i < files.length; ++i) {
                 fileNames[i] = files[i].getName();
-                logger.trace("file: " +fileNames[i]);
                 fileRecords.add(new FileRecord(fileNames[i], i, files[i].canRead(), files[i].canWrite()));
             }
 

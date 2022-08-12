@@ -36,8 +36,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -121,6 +124,7 @@ public class ConfigEditorBean implements Serializable {
     private boolean nightMode = false;
 
     public ConfigEditorBean() {
+        //
     }
 
     @PostConstruct
@@ -225,8 +229,14 @@ public class ConfigEditorBean implements Serializable {
 
     public synchronized void openFile() throws IOException {
         Path filePath = filesListing.getFiles()[fileInEditionNumber].toPath();
+        String sessionId = BeanUtils.getSession().getId();
         try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
             FileChannel inputChannel = fis.getChannel();
+            
+            // Release write lock
+            if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
+                fileLocks.remove(filePath);
+            }
 
             //            if (fileOutputStream != null) {
             //                if (outputLock.isValid()) {
@@ -237,9 +247,11 @@ public class ConfigEditorBean implements Serializable {
 
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
-                String sessionId = BeanUtils.getSession().getId();
+           
+                // File already locked by someone else
                 if (fileLocks.containsKey(filePath) && !fileLocks.get(filePath).equals(sessionId)) {
-                    throw new OverlappingFileLockException();
+                    Messages.error("admin__config_editor__file_locked_msg");
+                    return;
                 }
                 fileLocks.put(filePath, sessionId);
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
@@ -277,21 +289,31 @@ public class ConfigEditorBean implements Serializable {
     }
 
     /**
+     * Saves the currently open file.
      * 
+     * @return Navigation outcome
      */
-    public synchronized String saveCurrentFileAction() throws IOException {
+    public synchronized String saveCurrentFileAction() {
         logger.trace("saveCurrentFileAction");
         // No need to duplicate if no modification is done.
-//        if (temp.equals(fileContent)) {
-//            hiddenText = "No Modification Detected!";
-//            return "";
-//        }
+        //        if (temp.equals(fileContent)) {
+        //            hiddenText = "No Modification Detected!";
+        //            return "";
+        //        }
         //        if (fileOutputStream == null) {
         //            logger.error("No FileOutputStream");
         //            return "";
         //        }
-        
+
         logger.trace("fileContent:\n{}", fileContent);
+        // Save the latest modification to the original path.
+        Path originalPath = Path.of(filesListing.getFiles()[fileInEditionNumber].getAbsolutePath());
+
+        // Abort if file locked by someone else
+        if (fileLocks.containsKey(originalPath) && !fileLocks.get(originalPath).equals(BeanUtils.getSession().getId())) {
+            Messages.error("admin__config_editor__file_locked_msg");
+            return "";
+        }
 
         // Use the filename without extension to create a folder for its backup_copies.
         String newBackupFolderPath = backupsPath + filesListing.getFiles()[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "");
@@ -299,8 +321,6 @@ public class ConfigEditorBean implements Serializable {
         if (!newBackupFolder.exists()) {
             newBackupFolder.mkdir();
         }
-        // Save the latest modification to the original path.
-        Path originalPath = Path.of(filesListing.getFiles()[fileInEditionNumber].getAbsolutePath());
 
         try {
             Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
@@ -308,7 +328,7 @@ public class ConfigEditorBean implements Serializable {
             //            IOUtils.write(fileContent, fileOutputStream, StandardCharsets.UTF_8);
             // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
             if (isConfigViewer) {
-                logger.debug("Saving {}", Configuration.CONFIG_FILE_NAME);
+                logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
                 boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
                 int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups();
                 List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
@@ -414,6 +434,10 @@ public class ConfigEditorBean implements Serializable {
         showBackups(false);
     }
 
+    /**
+     * 
+     * @param writable
+     */
     public void showBackups(boolean writable) {
         FileRecord rec = filesListing.getFileRecordsModel().getRowData();
         isConfigViewer = rec.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
@@ -454,7 +478,8 @@ public class ConfigEditorBean implements Serializable {
     }
 
     /**
-     * 
+     * @param rec {@link BackupRecord} for which to download the file
+     * @return Navigation outcome
      * @throws IOException
      */
     public String downloadFile(BackupRecord rec) throws IOException {
@@ -490,13 +515,34 @@ public class ConfigEditorBean implements Serializable {
         return "";
     }
 
+    /**
+     * TODO
+     */
     public void cancelEdition() {
         try {
             openFile();
-
         } catch (Exception e) {
             logger.trace("Exception caught in cancelEdition()", e);
         }
     }
 
+    /**
+     * Removes file locks for the given session id.
+     * 
+     * @param sessionId
+     */
+    public static void clearLocksForSessionId(String sessionId) {
+        Set<Path> toClear = new HashSet<>();
+        for (Entry<Path, String> entry : fileLocks.entrySet()) {
+            if (entry.getValue().equals(sessionId)) {
+                toClear.add(entry.getKey());
+            }
+        }
+        if (!toClear.isEmpty()) {
+            for (Path path : toClear) {
+                fileLocks.remove(path);
+                logger.debug("Released edit lock for {}", path.toAbsolutePath());
+            }
+        }
+    }
 }
