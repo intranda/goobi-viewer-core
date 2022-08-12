@@ -158,28 +158,91 @@ var theme;
 
 
 
-function initTextArea() {
-  
-var targetTextArea = document.getElementById('editor-form:editor');
 
-cmEditor = CodeMirror.fromTextArea(targetTextArea, {
-    mode: "xml",
-    lineNumbers: true,
-  theme: 'default',
-});
+
+
+
+
+function initTextArea() {
+	
+	// GET THE CURRENT FILE TYPE OF CHOSEN FILE
+	let fileTypeElement = document.getElementById("currentConfigFileType");
+	console.log("fileTypeElement = " + fileTypeElement);
+	if (fileTypeElement !== null){
+		type = fileTypeElement.innerHTML.trim(); // "properties" or "xml"
+	} else {
+		type = "xml";
+	}
+	console.log("type = " + type);
+	if (typeof type == "undefined") {
+		type = "xml";
+	}
+	if (typeof theme == "undefined") {
+		theme = "default";
+	}
+    
+	// TARGETED TEXTAREA WITH CODE CONTENT
+	var targetTextArea = document.getElementById('editor-form:editor');
+	
+	// INIT EDITOR MAIN
+	cmEditor = CodeMirror.fromTextArea(targetTextArea, {
+			lineNumbers: true,
+			mode: type,
+			theme: theme,
+			readOnly: readOnly,
+			autofocus: true,
+			indextUnit: 4,
+			extraKeys: {
+				"F11": function(cm) {
+					cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+				},
+				"Esc": function(cm) {
+					if (cm.getOption("fullScreen")) {
+						cm.setOption("fullScreen", false);
+					}
+				},
+				"Ctrl-D": function(cm) {
+					cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
+				}
+			}
+	});
+	console.log("CodeMirror Editor constructed!");
+
+
+	// listen for CodeMirror changes
+	var startEditorValue = cmEditor.getValue();
+	var debounce = null;
+	
+	cmEditor.on('change', function(){
+		
+		// debounce for good performance
+	   	clearTimeout(debounce);
+		   debounce = setTimeout(function(){
+			var newEditorValue = cmEditor.getValue();                  
+			if ((cmEditor.doc.changeGeneration() == 1) || (startEditorValue == newEditorValue)) {
+				// console.log('editor is clean');
+				 $('.admin__overlay-bar').removeClass('-slideIn');
+				 $('.admin__overlay-bar').addClass('-slideOut');
+				 $('.admin__overlay-bar').on('animationend webkitAnimationEnd', function() { 
+				    $('.admin__overlay-bar').removeClass('-slideOut');
+				 });
+			} else {
+				// console.log('editor not clean');
+				 $('.admin__overlay-bar').addClass('-slideIn');
+			}
+			// console.log('debounced'); 
+	   }, 350);               
+	}); 
+
+	// SAVE BUTTON FUNCTIONALITY
+	$( document ).ready(function() {
+		$('[data-cm="save"]').on('click', function() {
+		             cmEditor.save()
+		});
+	});
 
 };
 
-
-$( document ).ready(function() {
-
-	// SAVE BUTTON FUNCTIONALITY
-	$('[data-cm="save"]').on('click', function() {
-	             cmEditor.save()
-	});
-});
-
-  	 
 /*	
 if (readOnly === undefined) {
 	readOnly = true;
@@ -189,20 +252,7 @@ if (readOnly === undefined) {
 
 //function initTextArea() {
 //
-//	let fileTypeElement = document.getElementById("currentConfigFileType");
-//	console.log("fileTypeElement = " + fileTypeElement);
-//	if (fileTypeElement !== null){
-//		type = fileTypeElement.innerHTML.trim(); // "properties" or "xml"
-//	} else {
-//		type = "xml";
-//	}
-//	console.log("type = " + type);
-//	if (typeof type == "undefined") {
-//		type = "xml";
-//	}
-//	if (typeof theme == "undefined") {
-//		theme = "default";
-//	}
+
 //
 //	configFileTextArea = document.getElementById("newStuff");
 //
@@ -213,7 +263,7 @@ if (readOnly === undefined) {
 //			console.log("CodeMirror Editor to textarea done!"); 
 //		}
 
-//		var configFileEditor = CodeMirror.fromTextArea(configFileTextArea, {
+////		var configFileEditor = CodeMirror.fromTextArea(configFileTextArea, {
 //			lineNumbers: true,
 //			mode: type,
 //			theme: theme,
@@ -250,34 +300,7 @@ if (readOnly === undefined) {
 		
 
 
-//		console.log("CodeMirror Editor constructed!");
 
-
-		// listen for CodeMirror changes
-//		var startEditorValue = configFileEditor.getValue();
-//		var debounce = null;
-//		
-//		configFileEditor.on('change', function(configFileEditor){
-//			
-//			// debounce for good performance
-//		   	clearTimeout(debounce);
-//			   debounce = setTimeout(function(){
-//				var newEditorValue = configFileEditor.getValue();                  
-//				if ((configFileEditor.doc.changeGeneration() == 1) || (startEditorValue == newEditorValue)) {
-//					// console.log('editor is clean');
-//					 $('.admin__overlay-bar').removeClass('-slideIn');
-//					 $('.admin__overlay-bar').addClass('-slideOut');
-//					 $('.admin__overlay-bar').on('animationend webkitAnimationEnd', function() { 
-//					    $('.admin__overlay-bar').removeClass('-slideOut');
-//					 });
-//				} else {
-//					// console.log('editor not clean');
-//					 $('.admin__overlay-bar').addClass('-slideIn');
-//				}
-//				// console.log('debounced'); 
-//		   }, 350);               
-//		}); 
-//	}
 
 
 //$('[data-codemirror="save"]').on('click', function() {

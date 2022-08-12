@@ -25,11 +25,19 @@
 						<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
 					</div>
 
+					
+
 					<div class="admin__content-inner-content">
 
 						<div class="admin__content-wrapper">
 							<div class="admin__content-main -sticky -refreshHCsticky">
-								<h2>#{msg.dateiinhalt}</h2>
+							
+							<!-- INFO TEXT -->
+	                        <div class="admin__info-text">
+	                            <h:outputText value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." escape="false" />
+	                        </div>
+                        
+								<h2>#{msg.Konfigurationsdatei}: Name</h2>
 
 								<!-- CODEMIRROR EDITOR FORM -->
 								<h:form id="editor-form">
@@ -44,10 +52,13 @@
 										
 										<script>			
 											var readOnly;
-											if (readOnly === undefined){
-												readOnly = true;
-											}
-											initTextArea();  
+											readOnly = false;
+// 											if (readOnly === undefined){
+// 												readOnly = true;
+// 											}
+											initTextArea();
+											
+											
 
 
 
@@ -55,36 +66,28 @@
 										
 				                    <div class="admin__overlay-bar">
 				                    	
-				                    	<h:commandButton 
-				                    		value="#{msg.cancel}" 
-				                    		disabled="#{not(configEditorBean.editable)}" 
-				                    		styleClass="btn btn--default admin__overlay-bar-action" 
-				                    		action="#{configEditorBean.cancelEdition}" >
-				                    		
-											<f:ajax execute="@form" render="backup-form" />
-										</h:commandButton>
-				                    	
-				                    	<button 
-				                    		type="button" 
-				                    		class="btn btn--success admin__overlay-bar-action abc"  
-											data-cm="save">
-											JSSAVE
-										</button>
-
-				                    	
-				                    	
-				                    	<h:commandButton 
-				                    		value="#{msg.save}" 
-				                    		type="submit" 
-				                    		styleClass="btn btn--success admin__overlay-bar-action" 
-				                    		action="#{configEditorBean.saveCurrentFileAction}"
-											onclick="writeCMcontentIntoTextArea();" >
-											
-											<f:ajax excute="@form" render="@all" />
-										</h:commandButton>
-
-				                    </div>
+					                    <div class="admin__config-editor-overlay-bar-buttons-wrapper">
+					                    	<h:commandButton 
+					                    		value="#{msg.cancel}" 
+					                    		disabled="#{not(configEditorBean.editable)}" 
+					                    		styleClass="btn btn--default admin__overlay-bar-action" 
+					                    		action="#{configEditorBean.cancelEdition}" >
+					                    		
+												<f:ajax execute="@form" render="backup-form" />
+											</h:commandButton>
+	
+					                    	<h:commandButton 
+					                    		value="#{msg.save}" 
+					                    		type="submit" 
+					                    		styleClass="btn btn--success admin__overlay-bar-action" 
+					                    		action="#{configEditorBean.saveCurrentFileAction}"
+					                    		pt:data-cm="save">
+												<f:ajax excute="@form" render="@all" />
+											</h:commandButton>
+	
+					                    </div>
 										
+									</div>
 
 <!-- 					<h:panelGroup layout="block" styleClass="save-cancel-buttons"> -->
 <!-- 						<h:commandButton value="Save" -->
@@ -121,7 +124,7 @@
 							<!-- AVAILABLE CONFIG AND PROPERTIES FILES BLOCK -->
 							<div class="admin__default-block">
 
-								<p>Dateien:</p>
+								<h2>Dateien</h2>
 
 								<h:form id="file-form">
 
@@ -139,7 +142,7 @@
 													action="#{configEditorBean.editFile(record.writable)}"
 													name="#{record.number}" rendered="#{record.readable}"
 													onclick="setEditable(#{record.writable}, #{record.number}, true);">
-													<f:ajax execute="@this" render="editor-form file-form" immediate="true" />
+													<f:ajax execute="@this" render="editor-form file-form backup-form" immediate="true" />
 												</h:commandButton>
 												
 												
@@ -172,21 +175,27 @@
 							<!-- BACKUP FILES BLOCK -->
 							<div class="admin__default-block">
 
-							<p>Backups:</p>
+							<h2>Backups</h2>
 							
 								<h:form id="backup-form">
 								
-								<ui:repeat var="record" value="#{configEditorBean.backupRecordsModel}">
-								    <div class="">#{record.name}
-								        <h:commandButton
-											styleClass="buttons download-buttons fa fa-solid"
-											value="&#xf019;" action="#{configEditorBean.downloadFile(record)}"
+								<!-- TO DO CONDITION -->
+<!-- 								<ui:fragment rendered="#{configEditorBean.backupRecordsModel.length() > 0}"> -->
+									
+									<div class="admin__config-editor-backup-wrapper">
+									<ui:repeat var="record" value="#{configEditorBean.backupRecordsModel}">
+	
+								        <h:commandLink styleClass="btn btn--clean admin__config-editor-backup-single-entry" action="#{configEditorBean.downloadFile(record)}"
 											disabled="#{not(configEditorBean.downloadable)}">
-<!-- 											<f:ajax execute="@this" render="@all" /> -->
-										</h:commandButton></div>	
-								
-								</ui:repeat>
-								
+												<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
+												<span class="admin__config-editor-backup-single-entry-icon"><i class="fa fa-download"></i></span>
+										</h:commandLink>
+	
+									
+									</ui:repeat>
+									</div>
+									
+<!-- 								</ui:fragment> -->
 								</h:form>
 
 							</div>
