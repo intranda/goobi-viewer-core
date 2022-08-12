@@ -22,24 +22,12 @@
 				rendered="#{userBean.admin and adminBean.translationLocked}"
 				value="#{msg.admin__translation_locked}" />
 
-
-				<h:form id="adminTranslationsEditForm" prependId="false">
-
 					<div class="admin__title-bar">
 						<!-- TITLE -->
 						<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
 					</div>
 
 					<div class="admin__content-inner-content">
-						<ui:fragment
-							rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
-							<!-- INFO TEXT -->
-							<div class="admin__info-text">
-								<h:outputText
-									value="#{msg.admin__translations_edit_description}"
-									escape="false" />
-							</div>
-						</ui:fragment>
 
 						<div class="admin__content-wrapper">
 							<div class="admin__content-main -sticky -refreshHCsticky">
@@ -52,7 +40,7 @@
 									<h:inputTextarea id="editor" cols="170" rows="87"
 										value="#{configEditorBean.fileContent}" />
 										
-										
+										<script>console.log('something happened');</script>
 										
 				                    <div class="admin__overlay-bar">
 				                    	
@@ -60,8 +48,7 @@
 				                    		value="#{msg.cancel}" 
 				                    		disabled="#{not(configEditorBean.editable)}" 
 				                    		styleClass="btn btn--default admin__overlay-bar-action" 
-				                    		action="#{configEditorBean.cancelEdition}" 
-				                    		accesskey="c">
+				                    		action="#{configEditorBean.cancelEdition}" >
 				                    		
 											<f:ajax execute="@form" render="backup-form" />
 										</h:commandButton>
@@ -70,9 +57,8 @@
 				                    		value="#{msg.save}" 
 				                    		type="submit" 
 				                    		styleClass="btn btn--success admin__overlay-bar-action" 
-				                    		action="#{configEditorBean.saveFile}" 
-				                    		accesskey="s"
-											onclick="saveEditor();" >
+				                    		action="#{configEditorBean.saveFile}"
+											onclick="writeCMcontentIntoTextArea();" >
 											
 											<f:ajax excute="@form" render="@all" />
 										</h:commandButton>
@@ -80,25 +66,25 @@
 				                    </div>
 										
 
-					<h:panelGroup layout="block" styleClass="save-cancel-buttons">
-						<h:commandButton value="Save"
-										 type="submit" 
-										 styleClass="buttons general-buttons"
-										 action="#{configEditorBean.saveFile}" 
-										 accesskey="s"
-										 onclick="saveEditor();"
-										 disabled="#{not(configEditorBean.editable)}">
+<!-- 					<h:panelGroup layout="block" styleClass="save-cancel-buttons"> -->
+<!-- 						<h:commandButton value="Save" -->
+<!-- 										 type="submit"  -->
+<!-- 										 styleClass="buttons general-buttons" -->
+<!-- 										 action="#{configEditorBean.saveFile}"  -->
+<!-- 										 accesskey="s" -->
+<!-- 										 onclick="saveEditor();" -->
+<!-- 										 disabled="#{not(configEditorBean.editable)}"> -->
 										 
-							<f:ajax execute="@form" render="backup-form:backup-table :output"/>
-						</h:commandButton>
-						<h:commandButton value="Cancel"
-										 styleClass="buttons general-buttons"
-										 action="#{configEditorBean.cancelEdition}"
-										 accesskey="c"
-										 disabled="#{not(configEditorBean.editable)}">
-							<f:ajax execute="@form" render="@all"/>
-						</h:commandButton>
-					</h:panelGroup>
+<!-- 							<f:ajax execute="@form" render="backup-form:backup-table :output"/> -->
+<!-- 						</h:commandButton> -->
+<!-- 						<h:commandButton value="Cancel" -->
+<!-- 										 styleClass="buttons general-buttons" -->
+<!-- 										 action="#{configEditorBean.cancelEdition}" -->
+<!-- 										 accesskey="c" -->
+<!-- 										 disabled="#{not(configEditorBean.editable)}"> -->
+<!-- 							<f:ajax execute="@form" render="@all"/> -->
+<!-- 						</h:commandButton> -->
+<!-- 					</h:panelGroup> -->
 
 
 								</h:form>
@@ -182,8 +168,6 @@
 							</div>
 						</div>
 					</div>
-
-				</h:form>
 
 				<script>			
 					var readOnly;

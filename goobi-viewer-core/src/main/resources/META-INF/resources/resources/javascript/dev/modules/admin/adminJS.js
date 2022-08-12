@@ -209,7 +209,7 @@ function initTextArea() {
 		if (configFileEditor) {
 			configFileEditor.toTextArea();
 //			configFileEditor = null;
-			console.log("CodeMirror Editor freed!"); 
+			console.log("CodeMirror Editor to textarea done!"); 
 		}
 		configFileEditor = CodeMirror.fromTextArea(configFileTextArea, {
 			lineNumbers: true,
@@ -235,6 +235,12 @@ function initTextArea() {
 		});
 		console.log("CodeMirror Editor constructed!");
 
+		
+		
+		
+		
+		
+		
 		
 		// listen for CodeMirror changes
 		var startEditorValue = configFileEditor.getValue();
@@ -262,14 +268,7 @@ function initTextArea() {
 		}); 
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
+
 		
 //		configFileEditor.focus();
 /*
@@ -290,8 +289,9 @@ function setEditable(editable, number, isButton) {
 	}
 }
 
-function saveEditor() {
+function writeCMcontentIntoTextArea() {
 	configFileEditor.save();
+	console.log('js editor saved into textarea');
 }
 
 
