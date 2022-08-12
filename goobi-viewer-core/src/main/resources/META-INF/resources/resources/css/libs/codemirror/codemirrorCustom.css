@@ -1,9 +1,3 @@
-
-#codemirrorFileContent {
-	display: none;
-}
-
-
 /* @charset "UTF-8"; */
 
 /* * { */
@@ -218,7 +212,7 @@
 /* 	display: none; */
 /* 	visibility: hidden; */
 /* } */
-/* */ */
+/* */
 /* #editor-form > div:nth-of-type(2) { */
 /* 	display: none; */
 /* 	visibility: hidden; */

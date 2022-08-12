@@ -146,9 +146,6 @@ $( document ).ready(function() {
 // END DOCUMENT READY
 });
 
-
-
-
 console.log("index.js invoked");
 
 var configFileTextArea;
@@ -235,8 +232,45 @@ function initTextArea() {
 				}
 			}
 			
-		}); 
+		});
 		console.log("CodeMirror Editor constructed!");
+
+		
+		// listen for CodeMirror changes
+		var startEditorValue = configFileEditor.getValue();
+		var debounce = null;
+		
+		configFileEditor.on('change', function(configFileEditor){
+			
+			// debounce for good performance
+		   	clearTimeout(debounce);
+			   debounce = setTimeout(function(){
+				var newEditorValue = configFileEditor.getValue();                  
+				if ((configFileEditor.doc.changeGeneration() == 1) || (startEditorValue == newEditorValue)) {
+					// console.log('editor is clean');
+					 $('.admin__overlay-bar').removeClass('-slideIn');
+					 $('.admin__overlay-bar').addClass('-slideOut');
+					 $('.admin__overlay-bar').on('animationend webkitAnimationEnd', function() { 
+					    $('.admin__overlay-bar').removeClass('-slideOut');
+					 });
+				} else {
+					// console.log('editor not clean');
+					 $('.admin__overlay-bar').addClass('-slideIn');
+				}
+				// console.log('debounced'); 
+		   }, 350);               
+		}); 
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 //		configFileEditor.focus();
 /*
 		setTimeout(function(){
