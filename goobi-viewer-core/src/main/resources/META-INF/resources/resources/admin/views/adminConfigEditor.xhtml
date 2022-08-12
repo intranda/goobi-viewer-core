@@ -77,7 +77,7 @@
 				                    		value="#{msg.save}" 
 				                    		type="submit" 
 				                    		styleClass="btn btn--success admin__overlay-bar-action" 
-				                    		action="#{configEditorBean.saveFile}"
+				                    		action="#{configEditorBean.saveCurrentFileAction}"
 											onclick="writeCMcontentIntoTextArea();" >
 											
 											<f:ajax excute="@form" render="@all" />

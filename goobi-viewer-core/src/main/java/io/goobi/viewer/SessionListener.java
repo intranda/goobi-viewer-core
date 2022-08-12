@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
+import io.goobi.viewer.managedbeans.ConfigEditorBean;
 
 /**
  * <p>
@@ -65,6 +66,8 @@ public class SessionListener implements HttpSessionListener {
             if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
                 AdminBean.setTranslationGroupsEditorSession(null);
             }
+            // Release file edit locks
+            ConfigEditorBean.clearLocksForSessionId(sessionId);
         }
     }
 }

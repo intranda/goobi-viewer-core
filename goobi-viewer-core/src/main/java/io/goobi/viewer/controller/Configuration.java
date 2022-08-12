@@ -125,6 +125,8 @@ public class Configuration extends AbstractConfiguration {
 
     private static final String VALUE_DEFAULT = "_DEFAULT";
 
+    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
+
     private Set<String> stopwords;
 
     /**
@@ -167,7 +169,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         // Load local config file
-        File fileLocal = new File(getConfigLocalPath() + "config_viewer.xml");
+        File fileLocal = new File(getConfigLocalPath() + CONFIG_FILE_NAME);
         builderLocal =
                 new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
@@ -3962,7 +3964,7 @@ public class Configuration extends AbstractConfiguration {
     public String getSubthemeMainTheme() {
         String theme = getLocalString("viewer.theme[@mainTheme]");
         if (StringUtils.isEmpty(theme)) {
-            logger.error("Theme name could not be read - config_viewer.xml may not be well-formed.");
+            logger.error("Theme name could not be read - {} may not be well-formed.", CONFIG_FILE_NAME);
         }
         return getLocalString("viewer.theme[@mainTheme]");
     }
