@@ -43,6 +43,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.messages.Messages;
@@ -75,7 +76,6 @@ public class ConfigEditorBean implements Serializable {
     private DataModel<BackupRecord> backupRecordsModel;
     private File[] backupFiles;
     private String[] backupNames;
-    private int backupNumber;
     private String backupsPath; // to maintain the backup files
 
     // Whether there is anything to download
@@ -274,6 +274,7 @@ public class ConfigEditorBean implements Serializable {
             IOUtils.write(fileContent, fileOutputStream, StandardCharsets.UTF_8);
             // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
             if (isConfigViewer) {
+                logger.debug("Saving {}", Configuration.CONFIG_FILE_NAME);
                 boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
                 int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups();
                 List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
@@ -377,7 +378,7 @@ public class ConfigEditorBean implements Serializable {
 
     public void showBackups(boolean writable) {
         FileRecord rec = filesListing.getFileRecordsModel().getRowData();
-        isConfigViewer = rec.getFileName().equals("config_viewer.xml"); // Modifications of "config_viewer.xml" should be limited
+        isConfigViewer = rec.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
         currentConfigFileType = rec.getFileType();
         fullCurrentConfigFileType = ".".concat(currentConfigFileType);
 
@@ -418,10 +419,13 @@ public class ConfigEditorBean implements Serializable {
      * 
      * @throws IOException
      */
-    public void downloadFile() throws IOException {
-        BackupRecord rec = backupRecordsModel.getRowData();
-        backupNumber = rec.getNumber();
-        File backupFile = new File(backupFiles[backupNumber].getAbsolutePath());
+    public String downloadFile(BackupRecord rec) throws IOException {
+        logger.trace("downloadFile: {}", rec != null ? rec.getName() : "null");
+        if (rec == null) {
+            throw new IllegalArgumentException("rec may not be null");
+        }
+
+        File backupFile = new File(backupFiles[rec.getNumber()].getAbsolutePath());
         String fileName = filesListing.getFileNames()[fileInEditionNumber].concat(".").concat(rec.getName());
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -430,24 +434,22 @@ public class ConfigEditorBean implements Serializable {
         ec.setResponseContentType("text/".concat(currentConfigFileType));
         ec.setResponseHeader("Content-Length", String.valueOf(Files.size(backupFile.toPath())));
         ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        OutputStream outputStream = ec.getResponseOutputStream();
-        try (FileInputStream fileInputStream = new FileInputStream(backupFile)) {
+        try (OutputStream outputStream = ec.getResponseOutputStream(); FileInputStream fileInputStream = new FileInputStream(backupFile)) {
             byte[] buffer = new byte[1024];
             int bytesRead = 0;
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
-
             if (GetAction.isClientAbort(e)) {
                 logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
-                return;
+                return "";
             }
             throw e;
         }
         facesContext.responseComplete();
-        outputStream.close();
         hiddenText = "File downloaded!";
+        return "";
     }
 
     public void cancelEdition() {

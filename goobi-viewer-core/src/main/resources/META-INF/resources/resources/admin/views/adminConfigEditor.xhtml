@@ -111,12 +111,12 @@
 								<h:form id="backup-form">
 								
 								<ui:repeat var="record" value="#{configEditorBean.backupRecordsModel}">
-								<div class="">#{record.name} <h:commandButton
+								    <div class="">#{record.name}
+								        <h:commandButton
 											styleClass="buttons download-buttons fa fa-solid"
-											value="&#xf019;" action="#{configEditorBean.downloadFile}"
+											value="&#xf019;" action="#{configEditorBean.downloadFile(record)}"
 											disabled="#{not(configEditorBean.downloadable)}">
-
-											<f:ajax execute="@this" render="@all" />
+<!-- 											<f:ajax execute="@this" render="@all" /> -->
 										</h:commandButton></div>	
 								
 								</ui:repeat>
