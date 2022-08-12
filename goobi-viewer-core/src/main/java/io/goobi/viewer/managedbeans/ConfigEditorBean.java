@@ -45,6 +45,7 @@ import org.xml.sax.SAXException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
@@ -101,7 +102,7 @@ public class ConfigEditorBean implements Serializable {
     private FileChannel outputChannel;
     private FileLock inputLock = null, outputLock = null;
 
-    // Whether the opened config file is "config-viewer.xml"
+    // Whether the opened config file is "config_viewer.xml"
     private boolean isConfigViewer;
 
     // Used to render the CodeMirror editor properly, values can be "properties" or "xml"
@@ -219,7 +220,7 @@ public class ConfigEditorBean implements Serializable {
         Path filePath = Path.of(pathString);
         try (FileInputStream fis = new FileInputStream(pathString)) {
             FileChannel inputChannel = fis.getChannel();
-            
+
             if (fileOutputStream != null) {
                 if (outputLock.isValid()) {
                     outputLock.release();
@@ -231,7 +232,7 @@ public class ConfigEditorBean implements Serializable {
             if (editable) {
                 // outputLock also locks reading this file in Windows, so read it prior to creating the lock
                 fileContent = Files.readString(filePath);
-                fileOutputStream = new FileOutputStream(pathString, true); // appending instead of covering 
+                fileOutputStream = new FileOutputStream(pathString, false); // appending instead of covering 
                 outputChannel = fileOutputStream.getChannel();
                 outputLock = outputChannel.tryLock();
                 if (outputLock == null) {
@@ -288,8 +289,12 @@ public class ConfigEditorBean implements Serializable {
             // Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
             // In Windows, the exact same stream/channel that holds the outputLock must be used to write to avoid IOException
             IOUtils.write(fileContent, fileOutputStream, StandardCharsets.UTF_8);
-            // if the "config-viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
+            // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
             if (isConfigViewer) {
+                boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
+                int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups();
+                List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
+
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
                 Document document = documentBuilder.parse(originalPath.toFile());
@@ -299,8 +304,8 @@ public class ConfigEditorBean implements Serializable {
                 Node configEditor = document.getElementsByTagName("configEditor").item(0);
 
                 // set the values of the attributes "enabled" and "maximum" back
-                configEditor.getAttributes().getNamedItem("enabled").setNodeValue(renderBackend ? "true" : "false");
-                configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(maxBackups));
+                configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
+                configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(origConfigEditorMax));
 
                 // get the list of all <directory> elements
                 NodeList directoryList = configEditor.getChildNodes();
@@ -311,7 +316,7 @@ public class ConfigEditorBean implements Serializable {
                     configEditor.removeChild(node);
                 }
                 // rewrite the backed-up values "configPaths" into this block
-                for (String configPath : DataManager.getInstance().getConfiguration().getConfigEditorDirectories()) {
+                for (String configPath : origConfigEditorDirectories) {
                     Node newNode = document.createElement("directory");
                     newNode.setTextContent(configPath);
                     configEditor.appendChild(document.createTextNode("\n\t"));
@@ -339,7 +344,7 @@ public class ConfigEditorBean implements Serializable {
             Path newBackupPath = Path.of(newBackupFolderPath + "/" + files[fileInEditionNumber].getName() + "." + timeStamp);
             // save the original content to backup files
             Files.writeString(newBackupPath, temp, StandardCharsets.UTF_8);
-
+            Messages.info("updatedSuccessfully");
         } catch (IOException e) {
             logger.trace("IOException caught in the method saveFile()", e);
         } catch (SAXException e) {
@@ -388,7 +393,7 @@ public class ConfigEditorBean implements Serializable {
 
     public void showBackups(boolean writable) {
         FileRecord record = fileRecordsModel.getRowData();
-        isConfigViewer = record.getFileName().equals("config-viewer.xml"); // Modifications of "config-viewer.xml" should be limited
+        isConfigViewer = record.getFileName().equals("config_viewer.xml"); // Modifications of "config_viewer.xml" should be limited
         currentConfigFileType = record.getFileType();
         fullCurrentConfigFileType = ".".concat(currentConfigFileType);
 
@@ -452,8 +457,6 @@ public class ConfigEditorBean implements Serializable {
             }
             throw e;
         }
-        //		outputStream.flush();
-        //		outputStream.close();
         facesContext.responseComplete();
         outputStream.close();
         hiddenText = "File downloaded!";
