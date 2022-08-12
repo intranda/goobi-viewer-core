@@ -5580,4 +5580,31 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("campaigns.geoMap.tilesource", "mapbox");
 
     }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isConfigEditorEnabled() {
+        return getLocalBoolean("configEditor[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getConfigEditorMaximumBackups() {
+        return getLocalInt("configEditor[@maximum]", 0);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<String> getConfigEditorDirectories() {
+        return getLocalList("configEditor.directory", Collections.emptyList());
+    }
 }
