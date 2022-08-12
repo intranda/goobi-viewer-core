@@ -58,25 +58,9 @@ public class ConfigEditorBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
 
-    private static final FilesListing filesListing = new FilesListing();
+    private final FilesListing filesListing = new FilesListing();
 
-    private static File[] files;
-    private static String[] fileNames;
-    private static List<FileRecord> fileRecords;
-    private static DataModel<FileRecord> fileRecordsModel;
-    private static int maxBackups; // maximum number of backup files that can be stored
-    private static boolean limitedBackups; // default to be unlimited given non-positive maxBackups
-    static {
-        files = filesListing.getFiles();
-        fileNames = filesListing.getFileNames();
-        fileRecords = filesListing.getFileRecords();
-        fileRecordsModel = filesListing.getFileRecordsModel();
-        maxBackups = filesListing.getMaxBackups();
-        limitedBackups = maxBackups > 0;
-    }
-
-    // Whether to render the backend or not
-    private boolean renderBackend;
+    private List<FileRecord> fileRecords;
 
     // Fields for FileEdition
     private int fileInEditionNumber;
@@ -112,12 +96,11 @@ public class ConfigEditorBean implements Serializable {
     private boolean nightMode = false;
 
     public ConfigEditorBean() {
-        renderBackend = filesListing.isEnabled();
     }
 
     @PostConstruct
     public void init() {
-        if (!renderBackend) {
+        if (!DataManager.getInstance().getConfiguration().isConfigEditorEnabled()) {
             // Give a message that the config-editor is not activated.
             logger.warn("The ConfigEditor is not activated!");
             return;
@@ -139,15 +122,15 @@ public class ConfigEditorBean implements Serializable {
     }
 
     public boolean isRenderBackend() {
-        return renderBackend;
+        return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
     public DataModel<FileRecord> getFileRecordsModel() {
-        return fileRecordsModel;
+        return filesListing.getFileRecordsModel();
     }
 
     public String[] getFileNames() {
-        return fileNames;
+        return filesListing.getFileNames();
     }
 
     public int getFileInEditionNumber() {
@@ -216,7 +199,7 @@ public class ConfigEditorBean implements Serializable {
 
     public void openFile() throws IOException {
 
-        String pathString = files[fileInEditionNumber].getAbsolutePath();
+        String pathString = filesListing.getFiles()[fileInEditionNumber].getAbsolutePath();
         Path filePath = Path.of(pathString);
         try (FileInputStream fis = new FileInputStream(pathString)) {
             FileChannel inputChannel = fis.getChannel();
@@ -277,13 +260,13 @@ public class ConfigEditorBean implements Serializable {
         }
 
         // Use the filename without extension to create a folder for its backup_copies.
-        String newBackupFolderPath = backupsPath + files[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "");
+        String newBackupFolderPath = backupsPath + filesListing.getFiles()[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "");
         File newBackupFolder = new File(newBackupFolderPath);
         if (!newBackupFolder.exists()) {
             newBackupFolder.mkdir();
         }
         // Save the latest modification to the original path.
-        Path originalPath = Path.of(files[fileInEditionNumber].getAbsolutePath());
+        Path originalPath = Path.of(filesListing.getFiles()[fileInEditionNumber].getAbsolutePath());
 
         try {
             // Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
@@ -341,7 +324,7 @@ public class ConfigEditorBean implements Serializable {
 
             // Use a time stamp to distinguish the backups.
             String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS").format(new java.util.Date()).replace(":", "").replaceFirst("[.]", "");
-            Path newBackupPath = Path.of(newBackupFolderPath + "/" + files[fileInEditionNumber].getName() + "." + timeStamp);
+            Path newBackupPath = Path.of(newBackupFolderPath + "/" + filesListing.getFiles()[fileInEditionNumber].getName() + "." + timeStamp);
             // save the original content to backup files
             Files.writeString(newBackupPath, temp, StandardCharsets.UTF_8);
             Messages.info("updatedSuccessfully");
@@ -369,7 +352,8 @@ public class ConfigEditorBean implements Serializable {
         Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
 
         int length = backupFiles.length;
-        if (limitedBackups && length > maxBackups) {
+        if (DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups() > 0
+                && length > DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups()) {
             // remove the oldest backup
             backupFiles[length - 1].delete();
             length -= 1;
@@ -392,17 +376,17 @@ public class ConfigEditorBean implements Serializable {
     }
 
     public void showBackups(boolean writable) {
-        FileRecord record = fileRecordsModel.getRowData();
-        isConfigViewer = record.getFileName().equals("config_viewer.xml"); // Modifications of "config_viewer.xml" should be limited
-        currentConfigFileType = record.getFileType();
+        FileRecord rec = filesListing.getFileRecordsModel().getRowData();
+        isConfigViewer = rec.getFileName().equals("config_viewer.xml"); // Modifications of "config_viewer.xml" should be limited
+        currentConfigFileType = rec.getFileType();
         fullCurrentConfigFileType = ".".concat(currentConfigFileType);
 
-        fileInEditionNumber = record.getNumber();
+        fileInEditionNumber = rec.getNumber();
         editable = writable;
 
-        logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, record.getFileName());
+        logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, rec.getFileName());
 
-        File backups = new File(backupsPath + files[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", ""));
+        File backups = new File(backupsPath + filesListing.getFiles()[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", ""));
         if (backups.exists()) {
             backupFiles = backups.listFiles();
             Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
@@ -430,11 +414,15 @@ public class ConfigEditorBean implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @throws IOException
+     */
     public void downloadFile() throws IOException {
-        BackupRecord record = backupRecordsModel.getRowData();
-        backupNumber = record.getNumber();
+        BackupRecord rec = backupRecordsModel.getRowData();
+        backupNumber = rec.getNumber();
         File backupFile = new File(backupFiles[backupNumber].getAbsolutePath());
-        String fileName = fileNames[fileInEditionNumber].concat(".").concat(record.getName());
+        String fileName = filesListing.getFileNames()[fileInEditionNumber].concat(".").concat(rec.getName());
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext ec = facesContext.getExternalContext();

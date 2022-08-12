@@ -11,12 +11,18 @@ import java.util.stream.Stream;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.managedbeans.ConfigEditorBean;
 
 public class FilesListing implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1261644749731156548L;
+
+    private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
 
     private File[] files = null;
     private String[] fileNames = null;
@@ -25,7 +31,7 @@ public class FilesListing implements Serializable {
 
     public FilesListing() {
         // No need to bother if it is disabled
-        if (isEnabled()) {
+        if (DataManager.getInstance().getConfiguration().isConfigEditorEnabled()) {
             fileRecords = new ArrayList<>();
             FilenameFilter filter = new FilenameFilter() {
                 @Override
@@ -39,12 +45,14 @@ public class FilesListing implements Serializable {
             for (String configPath : DataManager.getInstance().getConfiguration().getConfigEditorDirectories()) {
                 File f = new File(FileTools.adaptPathForWindows(configPath));
                 files = Stream.concat(Arrays.stream(files), Arrays.stream(f.listFiles(filter))).toArray(File[]::new);
+              
             }
 
             Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
             fileNames = new String[files.length];
             for (int i = 0; i < files.length; ++i) {
                 fileNames[i] = files[i].getName();
+                logger.trace("file: " +fileNames[i]);
                 fileRecords.add(new FileRecord(fileNames[i], i, files[i].canRead(), files[i].canWrite()));
             }
 
@@ -66,10 +74,6 @@ public class FilesListing implements Serializable {
 
     public DataModel<FileRecord> getFileRecordsModel() {
         return fileRecordsModel;
-    }
-
-    public boolean isEnabled() {
-        return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
     public int getMaxBackups() {
