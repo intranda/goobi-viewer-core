@@ -39,13 +39,20 @@
                         
 								<h2>#{msg.Konfigurationsdatei}: Name</h2>
 
+								<div class="admin__config-editor-form-wrapper">
+								
+								<!-- AJAX LOADING OVERLAY -->
+								<span class="ajax_loader"> 
+									<img src="#{request.contextPath}/resources/images/AJAX_preloader_white.svg" class="img-responsive" alt="Waiting..." />
+								</span>
+
 								<!-- CODEMIRROR EDITOR FORM -->
 								<h:form id="editor-form">
 								
 <!-- 								<textarea id="newStuff">#{configEditorBean.fileContent}leercontent</textarea> -->
 
 				 					<!-- TEXTAREA -->
-									<h:inputTextarea id="editor" cols="20" rows="20"
+									<h:inputTextarea id="editor" class="admin__config-editor-textarea" cols="80" rows="80"
 										value="#{configEditorBean.fileContent}" />
 										
 										<script>console.log('something happened');</script>
@@ -56,8 +63,10 @@
 // 											if (readOnly === undefined){
 // 												readOnly = true;
 // 											}
-											initTextArea();
-											
+
+												$( document ).ready(function() {
+													initTextArea();
+												});
 											
 
 
@@ -81,7 +90,8 @@
 					                    		type="submit" 
 					                    		styleClass="btn btn--success admin__overlay-bar-action" 
 					                    		action="#{configEditorBean.saveCurrentFileAction}"
-					                    		pt:data-cm="save">
+					                    		pt:data-cm="save"
+					                    		onclick="viewerJS.showLoader();">
 												<f:ajax excute="@form" render="@all" />
 											</h:commandButton>
 	
@@ -111,6 +121,8 @@
 
 
 								</h:form>
+								
+								</div>
 
 								<!-- CHECK THIS + ADAPT STYLING -->
 								<div id="currentConfigFileType"
@@ -130,39 +142,32 @@
 
 									<div class="admin__config-editor-file-selection-inner"
 										id="file-table">
+										
+
 
 										<ui:repeat var="record"
 											value="#{configEditorBean.fileRecordsModel}">
 
 											<div class="admin__config-editor-file-selection-single-entry">
+												<div class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
-												<h:commandButton
-													value="#{record.fileName}"
-													styleClass="buttons edit-buttons"
-													action="#{configEditorBean.editFile(record.writable)}"
-													name="#{record.number}" rendered="#{record.readable}"
-													onclick="setEditable(#{record.writable}, #{record.number}, true);">
-													<f:ajax execute="@this" render="editor-form file-form backup-form" immediate="true" />
-												</h:commandButton>
+													<h:commandButton
+														value="#{record.fileName}"
+														styleClass="admin__config-editor-file-selection-single-entry-button"
+														action="#{configEditorBean.editFile(record.writable)}"
+														name="#{record.number}" rendered="#{record.readable}"
+														onclick="setEditable(#{record.writable}, #{record.number}, true); viewerJS.showLoader();">
+														<f:ajax execute="@this" render="editor-form file-form backup-form" immediate="true" />
+													</h:commandButton>
+													
+													<div class="admin__config-editor-file-selection-single-entry-button-status">
+													
+													</div>
 												
-												
-<!-- 												<h:commandLink value="#{record.fileName}" -->
-<!-- 													action="#{configEditorBean.showBackups}" -->
-<!-- 													name="#{record.number}" -->
-<!-- 													onclick="setEditable(false, #{record.number}, false);"> -->
-<!-- 													<f:ajax execute="@this" render="@all" /> -->
-<!-- 												</h:commandLink> -->
+												</div>
 
 
 
-<!-- 												<h:commandButton -->
-<!-- 													value="#{record.writable ? '&#xf040;' : '&#xf06e;'}" -->
-<!-- 													styleClass="buttons edit-buttons fa fa-solid" -->
-<!-- 													action="#{configEditorBean.editFile(record.writable)}" -->
-<!-- 													name="#{record.number}" rendered="#{record.readable}" -->
-<!-- 													onclick="setEditable(#{record.writable}, #{record.number}, true);"> -->
-<!-- 													<f:ajax execute="@this" render="@all" immediate="true" /> -->
-<!-- 												</h:commandButton> -->
 											</div>
 
 										</ui:repeat>

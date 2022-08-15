@@ -237,7 +237,8 @@ function initTextArea() {
 	// SAVE BUTTON FUNCTIONALITY
 	$( document ).ready(function() {
 		$('[data-cm="save"]').on('click', function() {
-		             cmEditor.save()
+		             cmEditor.save();
+					 console.log('editor is saved now');
 		});
 	});
 
