@@ -37,7 +37,7 @@
 	                            <h:outputText value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." escape="false" />
 	                        </div>
                         
-								<h2>#{msg.Konfigurationsdatei}: Name</h2>
+								<h2>#{msg.admin__config_editor__actual_file}: Name</h2>
 
 								<div class="admin__config-editor-form-wrapper">
 								
@@ -48,14 +48,13 @@
 
 								<!-- CODEMIRROR EDITOR FORM -->
 								<h:form id="editor-form">
-								
-<!-- 								<textarea id="newStuff">#{configEditorBean.fileContent}leercontent</textarea> -->
 
 				 					<!-- TEXTAREA -->
-									<h:inputTextarea id="editor" class="admin__config-editor-textarea" cols="80" rows="80"
+									<h:inputTextarea id="editor" class="admin__config-editor-textarea" cols="80" rows="10"
 										value="#{configEditorBean.fileContent}" />
 										
 										<script>console.log('something happened');</script>
+										
 										
 										<script>			
 											var readOnly;
@@ -89,10 +88,10 @@
 					                    		value="#{msg.save}" 
 					                    		type="submit" 
 					                    		styleClass="btn btn--success admin__overlay-bar-action" 
-					                    		action="#{configEditorBean.saveCurrentFileAction}"
 					                    		pt:data-cm="save"
-					                    		onclick="viewerJS.showLoader();">
-												<f:ajax excute="@form" render="@all" />
+					                    		onclick="viewerJS.showLoader();"
+					                    		action="#{configEditorBean.saveCurrentFileAction}">
+												
 											</h:commandButton>
 	
 					                    </div>
@@ -136,7 +135,7 @@
 							<!-- AVAILABLE CONFIG AND PROPERTIES FILES BLOCK -->
 							<div class="admin__default-block">
 
-								<h2>Dateien</h2>
+								<h2>#{msg.admin__config_editor__files}</h2>
 
 								<h:form id="file-form">
 
@@ -145,10 +144,10 @@
 										
 
 
-										<ui:repeat var="record"
-											value="#{configEditorBean.fileRecordsModel}">
+										<ui:repeat var="record" varStatus="status" value="#{configEditorBean.fileRecordsModel}">
 
-											<div class="admin__config-editor-file-selection-single-entry">
+
+											<div class="admin__config-editor-file-selection-single-entry #{configEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
 												<div class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
 													<h:commandButton
@@ -160,10 +159,27 @@
 														<f:ajax execute="@this" render="editor-form file-form backup-form" immediate="true" />
 													</h:commandButton>
 													
-													<div class="admin__config-editor-file-selection-single-entry-button-status">
-													
+												<ui:fragment rendered="#{!record.writable}">
+													<div class="admin__config-editor-file-selection-single-entry-button-wrapper-info" title="msg.admin__config_editor__not_writable"
+														data-toggle="tooltip"
+														data-placement="left"
+														data-trigger="hover">
+														<i class="fa fa-pencil" aria-hidden="true"></i>
+														<i class="fa fa-ban" aria-hidden="true"></i>
 													</div>
-												
+												</ui:fragment>	
+													
+												<ui:fragment rendered="#{!record.readable}">
+													<div class="admin__config-editor-file-selection-single-entry-button-wrapper-info" title="msg.admin__config_editor__not_writable"
+														data-toggle="tooltip"
+														data-placement="left"
+														data-trigger="hover">
+														<i class="fa fa-pencil" aria-hidden="true"></i>
+														<i class="fa fa-ban" aria-hidden="true"></i>
+													</div>
+												</ui:fragment>	
+													
+													
 												</div>
 
 
@@ -180,7 +196,7 @@
 							<!-- BACKUP FILES BLOCK -->
 							<div class="admin__default-block">
 
-							<h2>Backups</h2>
+							<h2>#{msg.admin__config_editor__backups}</h2>
 							
 								<h:form id="backup-form">
 								
