@@ -125,24 +125,23 @@ public class ViewerResourceBundle extends ResourceBundle {
             @Override
             public void run() {
                 try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
-                    final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                    //                    final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                     while (true) {
                         final WatchKey wk = watchService.take();
                         for (WatchEvent<?> event : wk.pollEvents()) {
                             final Path changed = (Path) event.context();
                             final String fileName = changed.getFileName().toString();
-                            logger.trace("File has been modified: {}", fileName);
                             if (fileName.startsWith("messages_")) {
+                                logger.trace("File has been modified: {}", fileName);
                                 final String language = fileName.substring(9, 11);
                                 reloadNeededMap.put(language, true);
                                 logger.debug("File '{}' (language: {}) has been modified, triggering bundle reload...",
-                                        changed.getFileName().toString(), language);
+                                        changed.getFileName(), language);
                             }
                         }
                         if (!wk.reset()) {
                             break;
                         }
-                        // Thread.sleep(100);
                     }
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
@@ -613,7 +612,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return getAllLocales(servletContext);
             } catch (NullPointerException e) {
                 logger.warn("No faces context instance available");
-                allLocales = Arrays.asList( Locale.ENGLISH, Locale.GERMAN);
+                allLocales = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
             }
         }
         return allLocales;
