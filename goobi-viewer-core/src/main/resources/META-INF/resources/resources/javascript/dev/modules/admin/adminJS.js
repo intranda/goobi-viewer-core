@@ -184,6 +184,8 @@ function initTextArea() {
 	// TARGETED TEXTAREA WITH CODE CONTENT
 	var targetTextArea = document.getElementById('editor-form:editor');
 	
+
+	
 	// INIT EDITOR MAIN
 	cmEditor = CodeMirror.fromTextArea(targetTextArea, {
 			lineNumbers: true,
@@ -235,14 +237,18 @@ function initTextArea() {
 	}); 
 
 	// SAVE BUTTON FUNCTIONALITY
-	$( document ).ready(function() {
 		$('[data-cm="save"]').on('click', function() {
-		             cmEditor.save();
-					 console.log('editor is saved now');
+			cmEditor.save();
+			console.log('editor is saved now');
 		});
-	});
 
 };
+	
+//function saveEditor() {
+//	cmEditor.save();
+//	console.log('editor is saved now: saveeditor');
+//}
+
 
 /*	
 if (readOnly === undefined) {
