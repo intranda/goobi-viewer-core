@@ -10,127 +10,103 @@
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-<ui:define name="metadata">
-	<f:metadata>
-		<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminConfigEditor')}" />
-	</f:metadata>
-</ui:define>
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminConfigEditor')}" />
+		</f:metadata>
+	</ui:define>
 
-<ui:define name="content">
-	<f:view contentType="text/html" encoding="utf-8">
-		<div id="adminConfigEditor">
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="adminConfigEditor">
 
-					<div class="admin__title-bar">
-						<!-- TITLE -->
-						<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
-					</div>
+				<div class="admin__title-bar">
+					<!-- TITLE -->
+					<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
+				</div>
 
-					
+				<div class="admin__content-inner-content">
 
-					<div class="admin__content-inner-content">
+					<div class="admin__content-wrapper">
+						<div class="admin__content-main -sticky -refreshHCsticky">
 
-						<div class="admin__content-wrapper">
-							<div class="admin__content-main -sticky -refreshHCsticky">
-							
 							<!-- INFO TEXT -->
-	                        <div class="admin__info-text">
-	                            <h:outputText value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet." escape="false" />
-	                        </div>
+							<div class="admin__info-text">
+								<h:outputText
+									value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+									escape="false" />
+							</div>
 
-                                <!-- TODO: refresh after selecting file -->
-								<h2>#{msg.admin__config_editor__actual_file}: #{configEditorBean.fileInEditionName}</h2>
+							<!-- TODO: refresh after selecting file -->
+							<h:form id="configEditorActualFile">
+								<h2>#{msg.admin__config_editor__actual_file}:
+									#{configEditorBean.fileInEditionName}</h2>
+							</h:form>
 
-								<div class="admin__config-editor-form-wrapper">
-								
+							<div class="admin__config-editor-form-wrapper">
+
 								<!-- AJAX LOADING OVERLAY -->
-								<span class="ajax_loader"> 
-									<img src="#{request.contextPath}/resources/images/AJAX_preloader_white.svg" class="img-responsive" alt="Waiting..." />
+								<span class="ajax_loader"> <img
+									src="#{request.contextPath}/resources/images/AJAX_preloader_white.svg"
+									class="img-responsive" alt="Waiting..." />
 								</span>
 
 								<!-- CODEMIRROR EDITOR FORM -->
 								<h:form id="editor-form">
 
-				 					<!-- TEXTAREA -->
-									<h:inputTextarea id="editor" class="admin__config-editor-textarea" cols="80" rows="10"
+									<!-- TEXTAREA -->
+									<h:inputTextarea id="editor"
+										class="admin__config-editor-textarea" cols="80" rows="10"
 										value="#{configEditorBean.fileContent}" />
-										
-										<script>console.log('something happened');</script>
-										
-										
-										<script>			
+
+									<script>console.log('something happened');</script>
+
+
+									<script>			
 											var readOnly;
 											readOnly = false;
 // 											if (readOnly === undefined){
 // 												readOnly = true;
 // 											}
-
 												$( document ).ready(function() {
 													initTextArea();
 												});
-											
-
-
 
 										</script>
-										
-				                    <div class="admin__overlay-bar">
-				                    	
-					                    <div class="admin__config-editor-overlay-bar-buttons-wrapper">
-					                    	<h:commandButton 
-					                    		value="#{msg.cancel}" 
-					                    		disabled="#{not(configEditorBean.editable)}" 
-					                    		styleClass="btn btn--default admin__overlay-bar-action" 
-					                    		action="#{configEditorBean.cancelEdition}" >
-					                    		
+
+									<div class="admin__overlay-bar">
+
+										<div class="admin__config-editor-overlay-bar-buttons-wrapper">
+											<h:commandButton value="#{msg.cancel}"
+												disabled="#{not(configEditorBean.editable)}"
+												styleClass="btn btn--default admin__overlay-bar-action"
+												action="#{configEditorBean.cancelEdition}">
+
 												<f:ajax execute="@form" render="backup-form" />
 											</h:commandButton>
-	
-					                    	<h:commandButton 
-					                    		value="#{msg.save}" 
-					                    		type="submit" 
-					                    		styleClass="btn btn--success admin__overlay-bar-action" 
-					                    		pt:data-cm="save"
-					                    		onclick="viewerJS.showLoader();"
-					                    		action="#{configEditorBean.saveCurrentFileAction}">
-												
+
+											<h:commandButton value="#{msg.save}" type="submit"
+												styleClass="btn btn--success admin__overlay-bar-action"
+												pt:data-cm="save" onclick="viewerJS.showLoader();"
+												action="#{configEditorBean.saveCurrentFileAction}">
+
 											</h:commandButton>
-	
-					                    </div>
-										
+
+										</div>
+
 									</div>
-
-<!-- 					<h:panelGroup layout="block" styleClass="save-cancel-buttons"> -->
-<!-- 						<h:commandButton value="Save" -->
-<!-- 										 type="submit"  -->
-<!-- 										 styleClass="buttons general-buttons" -->
-<!-- 										 action="#{configEditorBean.saveFile}"  -->
-<!-- 										 accesskey="s" -->
-<!-- 										 onclick="saveEditor();" -->
-<!-- 										 disabled="#{not(configEditorBean.editable)}"> -->
-										 
-<!-- 							<f:ajax execute="@form" render="backup-form:backup-table :output"/> -->
-<!-- 						</h:commandButton> -->
-<!-- 						<h:commandButton value="Cancel" -->
-<!-- 										 styleClass="buttons general-buttons" -->
-<!-- 										 action="#{configEditorBean.cancelEdition}" -->
-<!-- 										 accesskey="c" -->
-<!-- 										 disabled="#{not(configEditorBean.editable)}"> -->
-<!-- 							<f:ajax execute="@form" render="@all"/> -->
-<!-- 						</h:commandButton> -->
-<!-- 					</h:panelGroup> -->
-
-
 								</h:form>
-								
-								</div>
-
-								<!-- CHECK THIS + ADAPT STYLING -->
-								<div id="currentConfigFileType"
-									style="position: absolute; visibility: hidden">
-									#{configEditorBean.currentConfigFileType}</div>
 
 							</div>
-							<!-- SIDEBAR -->
+
+							<!-- CHECK THIS + ADAPT STYLING -->
+							<div id="currentConfigFileType"
+								style="position: absolute; visibility: hidden">
+								#{configEditorBean.currentConfigFileType}</div>
+
+						</div>
+						<!-- SIDEBAR -->
 						<div class="admin__content-side">
 
 							<!-- AVAILABLE CONFIG AND PROPERTIES FILES BLOCK -->
@@ -142,45 +118,40 @@
 
 									<div class="admin__config-editor-file-selection-inner"
 										id="file-table">
-										
 
 
-										<ui:repeat var="record" varStatus="status" value="#{configEditorBean.fileRecordsModel}">
+
+										<ui:repeat var="record" varStatus="status"
+											value="#{configEditorBean.fileRecordsModel}">
 
 
-											<div class="admin__config-editor-file-selection-single-entry #{configEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
-												<div class="admin__config-editor-file-selection-single-entry-button-wrapper">
+											<div
+												class="admin__config-editor-file-selection-single-entry #{configEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
+												<div
+													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
-													<h:commandButton
-														value="#{record.fileName}"
+													<h:commandButton value="#{record.fileName}"
 														styleClass="admin__config-editor-file-selection-single-entry-button"
 														action="#{configEditorBean.editFile(record.writable)}"
 														name="#{record.number}" rendered="#{record.readable}"
 														onclick="setEditable(#{record.writable}, #{record.number}, true); viewerJS.showLoader();">
-														<f:ajax execute="@this" render="editor-form file-form backup-form" immediate="true" />
+														<f:ajax execute="@this"
+															render="editor-form file-form backup-form configEditorActualFile"
+															immediate="true" />
 													</h:commandButton>
-													
-												<ui:fragment rendered="#{!record.writable}">
-													<div class="admin__config-editor-file-selection-single-entry-button-wrapper-info" title="msg.admin__config_editor__not_writable"
-														data-toggle="tooltip"
-														data-placement="left"
-														data-trigger="hover">
-														<i class="fa fa-pencil" aria-hidden="true"></i>
-														<i class="fa fa-ban" aria-hidden="true"></i>
-													</div>
-												</ui:fragment>	
-													
-												<ui:fragment rendered="#{!record.readable}">
-													<div class="admin__config-editor-file-selection-single-entry-button-wrapper-info" title="msg.admin__config_editor__not_writable"
-														data-toggle="tooltip"
-														data-placement="left"
-														data-trigger="hover">
-														<i class="fa fa-pencil" aria-hidden="true"></i>
-														<i class="fa fa-ban" aria-hidden="true"></i>
-													</div>
-												</ui:fragment>	
-													
-													
+
+													<ui:fragment rendered="#{!record.writable}">
+														<div
+															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
+															title="msg.admin__config_editor__not_writable"
+															data-toggle="tooltip" data-placement="left"
+															data-trigger="hover">
+															<i class="fa fa-pencil" aria-hidden="true"></i> <i
+																class="fa fa-ban" aria-hidden="true"></i>
+														</div>
+													</ui:fragment>
+
+
 												</div>
 
 
@@ -197,37 +168,41 @@
 							<!-- BACKUP FILES BLOCK -->
 							<div class="admin__default-block">
 
-							<h2>#{msg.admin__config_editor__backups}</h2>
-							
+								<h2>#{msg.admin__config_editor__backups}</h2>
+
 								<h:form id="backup-form">
-								
-								<!-- TO DO CONDITION -->
-<!-- 								<ui:fragment rendered="#{configEditorBean.backupRecordsModel.length() > 0}"> -->
-									
+
+									<!-- TO DO CONDITION -->
+									<!-- 								<ui:fragment rendered="#{configEditorBean.backupRecordsModel.length() > 0}"> -->
+
 									<div class="admin__config-editor-backup-wrapper">
-									<ui:repeat var="record" value="#{configEditorBean.backupRecordsModel}">
-	
-								        <h:commandLink styleClass="btn btn--clean admin__config-editor-backup-single-entry" action="#{configEditorBean.downloadFile(record)}"
-											disabled="#{not(configEditorBean.downloadable)}">
+										<ui:repeat var="record"
+											value="#{configEditorBean.backupRecordsModel}">
+
+											<h:commandLink
+												styleClass="btn btn--clean admin__config-editor-backup-single-entry"
+												action="#{configEditorBean.downloadFile(record)}"
+												disabled="#{not(configEditorBean.downloadable)}">
 												<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
-												<span class="admin__config-editor-backup-single-entry-icon"><i class="fa fa-download"></i></span>
-										</h:commandLink>
-	
-									
-									</ui:repeat>
+												<span class="admin__config-editor-backup-single-entry-icon"><i
+													class="fa fa-download"></i></span>
+											</h:commandLink>
+
+
+										</ui:repeat>
 									</div>
-									
-<!-- 								</ui:fragment> -->
+
+									<!-- 								</ui:fragment> -->
 								</h:form>
 
 							</div>
 
 						</div>
 					</div>
-					</div>
+				</div>
 
-		</div>
-	</f:view>
-</ui:define>
+			</div>
+		</f:view>
+	</ui:define>
 
 </ui:composition>
