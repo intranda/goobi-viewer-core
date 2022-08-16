@@ -40,8 +40,7 @@
 
 							<!-- TODO: refresh after selecting file -->
 							<h:form id="configEditorActualFile">
-								<h2>#{msg.admin__config_editor__actual_file}:
-									#{configEditorBean.fileInEditionName}</h2>
+								<h2>#{msg.admin__config_editor__actual_file}: #{configEditorBean.fileInEditionName}</h2>
 							</h:form>
 
 							<div class="admin__config-editor-form-wrapper">
@@ -140,16 +139,31 @@
 															immediate="true" />
 													</h:commandButton>
 
-													<ui:fragment rendered="#{!record.writable}">
+
+												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}">
+													<ui:fragment rendered="#{!record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="msg.admin__config_editor__not_writable"
+															title="#{msg.admin__config_editor__not_readable}"
+															data-toggle="tooltip" data-placement="left"
+															data-trigger="hover">
+															<i class="fa fa-eye" aria-hidden="true"></i>
+															<i class="fa fa-ban" aria-hidden="true"></i>
+														</div>
+													</ui:fragment>
+													<ui:fragment rendered="#{!record.writable and record.readable}">
+														<div
+															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
+															title="#{msg.admin__config_editor__not_writable}"
 															data-toggle="tooltip" data-placement="left"
 															data-trigger="hover">
 															<i class="fa fa-pencil" aria-hidden="true"></i> <i
 																class="fa fa-ban" aria-hidden="true"></i>
 														</div>
 													</ui:fragment>
+												</h:panelGroup>	
+													
+													
 
 
 												</div>
