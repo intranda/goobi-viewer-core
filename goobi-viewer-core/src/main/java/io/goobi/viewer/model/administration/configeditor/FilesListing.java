@@ -24,6 +24,7 @@ package io.goobi.viewer.model.administration.configeditor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,18 +38,17 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.managedbeans.ConfigEditorBean;
 
 public class FilesListing implements Serializable {
 
     private static final long serialVersionUID = -1261644749731156548L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(FilesListing.class);
 
     private File[] files = null;
     private String[] fileNames = null;
     private List<FileRecord> fileRecords = null;
-    private DataModel<FileRecord> fileRecordsModel = null;
+    private transient DataModel<FileRecord> fileRecordsModel = null;
 
     public FilesListing() {
         // No need to bother if it is disabled
@@ -56,11 +56,12 @@ public class FilesListing implements Serializable {
             refresh();
         }
     }
-    
+
     /**
      * 
      */
     public void refresh() {
+        logger.trace("refresh");
         fileRecords = new ArrayList<>();
         FilenameFilter filter = new FilenameFilter() {
             @Override
@@ -74,14 +75,14 @@ public class FilesListing implements Serializable {
         for (String configPath : DataManager.getInstance().getConfiguration().getConfigEditorDirectories()) {
             File f = new File(FileTools.adaptPathForWindows(configPath));
             files = Stream.concat(Arrays.stream(files), Arrays.stream(f.listFiles(filter))).toArray(File[]::new);
-          
+
         }
 
         Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
         fileNames = new String[files.length];
         for (int i = 0; i < files.length; ++i) {
             fileNames[i] = files[i].getName();
-            fileRecords.add(new FileRecord(fileNames[i], i, files[i].canRead(), files[i].canWrite()));
+            fileRecords.add(new FileRecord(fileNames[i], i, Files.isReadable(files[i].toPath()), Files.isWritable(files[i].toPath())));
         }
 
         fileRecordsModel = new ListDataModel<>(fileRecords);
