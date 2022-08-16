@@ -87,12 +87,12 @@ public class ConfigEditorBean implements Serializable {
     /** Manual edit locks for files. */
     private static final Map<Path, String> fileLocks = new HashMap<>();
 
+    /** Object that handles the reading of listed failes. */
     private final FilesListing filesListing = new FilesListing();
-
-    private List<FileRecord> fileRecords;
 
     // Fields for FileEdition
     private int fileInEditionNumber;
+    private FileRecord currentFileRecord;
     private String fileContent;
     private String temp = ""; // Used to check if the content of the textarea is modified
 
@@ -171,7 +171,7 @@ public class ConfigEditorBean implements Serializable {
      * @return Name of the file that corresponds to fileInEditionNumber
      */
     public String getFileInEditionName() {
-        if (filesListing.getFileNames().length > fileInEditionNumber) {
+        if (fileInEditionNumber != -1 && filesListing.getFileNames().length > fileInEditionNumber) {
             return filesListing.getFileNames()[fileInEditionNumber];
         }
 
@@ -191,12 +191,7 @@ public class ConfigEditorBean implements Serializable {
     }
 
     public void setFileContent(String fileContent) {
-        logger.trace("setFileContent: {}", fileContent);
         this.fileContent = fileContent;
-    }
-
-    public List<FileRecord> getFileRecords() {
-        return fileRecords;
     }
 
     public List<BackupRecord> getBackupRecords() {
@@ -244,6 +239,12 @@ public class ConfigEditorBean implements Serializable {
     ///////////////////////////////////////////////////////////
 
     public synchronized void openFile() throws IOException {
+        if (fileInEditionNumber < 0) {
+            return;
+        }
+
+        currentFileRecord = filesListing.getFileRecords().get(fileInEditionNumber);
+
         Path filePath = filesListing.getFiles()[fileInEditionNumber].toPath();
         String sessionId = BeanUtils.getSession().getId();
         try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
@@ -432,7 +433,7 @@ public class ConfigEditorBean implements Serializable {
                 Files.delete(backupFiles[length - 1].toPath());
                 length -= 1;
             } catch (IOException e) {
-               logger.error(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
 
@@ -539,13 +540,32 @@ public class ConfigEditorBean implements Serializable {
     /**
      * TODO
      */
-    public void cancelEdition() {
+    public String cancelAction() {
+        logger.trace("cancel");
         try {
+            
+            fileContent = null;
+            // Release read lock
+            if (inputLock != null && inputLock.isValid()) {
+                inputLock.release();
+            }
+            // Release write lock
+            if (fileInEditionNumber >= 0) {
+                Path filePath = filesListing.getFiles()[fileInEditionNumber].toPath();
+                if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(BeanUtils.getSession().getId())) {
+                    fileLocks.remove(filePath);
+                }
+            }
+
+            fileInEditionNumber = -1;
+
             refresh();
             openFile();
         } catch (Exception e) {
             logger.trace("Exception caught in cancelEdition()", e);
         }
+
+        return "";
     }
 
     /**

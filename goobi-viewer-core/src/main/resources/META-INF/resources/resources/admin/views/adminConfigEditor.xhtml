@@ -78,19 +78,18 @@
 									<div class="admin__overlay-bar">
 
 										<div class="admin__config-editor-overlay-bar-buttons-wrapper">
+										    <!-- CANCEL -->
 											<h:commandButton value="#{msg.cancel}"
 												disabled="#{not(configEditorBean.editable)}"
 												styleClass="btn btn--default admin__overlay-bar-action"
-												action="#{configEditorBean.cancelEdition}">
-
+												action="#{configEditorBean.cancelAction}">
 												<f:ajax execute="@form" render="backup-form" />
 											</h:commandButton>
-
+											<!-- SAVE -->
 											<h:commandButton value="#{msg.save}" type="submit"
 												styleClass="btn btn--success admin__overlay-bar-action"
 												pt:data-cm="save" onclick="viewerJS.showLoader();"
 												action="#{configEditorBean.saveCurrentFileAction}">
-
 											</h:commandButton>
 
 										</div>
