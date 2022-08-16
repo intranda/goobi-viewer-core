@@ -162,6 +162,18 @@ public class ConfigEditorBean implements Serializable {
         return filesListing.getFileNames();
     }
 
+    /**
+     * 
+     * @return Name of the file that corresponds to fileInEditionNumber
+     */
+    public String getFileInEditionName() {
+        if (filesListing.getFileNames().length > fileInEditionNumber) {
+            return filesListing.getFileNames()[fileInEditionNumber];
+        }
+
+        return "";
+    }
+
     public int getFileInEditionNumber() {
         return fileInEditionNumber;
     }
@@ -232,7 +244,7 @@ public class ConfigEditorBean implements Serializable {
         String sessionId = BeanUtils.getSession().getId();
         try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
             FileChannel inputChannel = fis.getChannel();
-            
+
             // Release write lock
             if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
                 fileLocks.remove(filePath);
@@ -247,7 +259,7 @@ public class ConfigEditorBean implements Serializable {
 
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
-           
+
                 // File already locked by someone else
                 if (fileLocks.containsKey(filePath) && !fileLocks.get(filePath).equals(sessionId)) {
                     Messages.error("admin__config_editor__file_locked_msg");
