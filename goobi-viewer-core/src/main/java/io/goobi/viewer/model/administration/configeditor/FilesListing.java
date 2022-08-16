@@ -69,7 +69,7 @@ public class FilesListing implements Serializable {
                 return name.endsWith(".xml") || name.endsWith(".properties");
             }
         };
-
+        
         files = new File[0];
 
         for (String configPath : DataManager.getInstance().getConfiguration().getConfigEditorDirectories()) {
