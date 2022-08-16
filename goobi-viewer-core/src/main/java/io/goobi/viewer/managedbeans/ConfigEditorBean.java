@@ -154,6 +154,10 @@ public class ConfigEditorBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
+    public void refresh() {
+        filesListing.refresh();
+    }
+
     public DataModel<FileRecord> getFileRecordsModel() {
         return filesListing.getFileRecordsModel();
     }
@@ -411,6 +415,7 @@ public class ConfigEditorBean implements Serializable {
             //                outputLock.release();
             //            }
             //            fileOutputStream.close();
+            refresh();
         }
 
         temp = fileContent;
@@ -423,8 +428,12 @@ public class ConfigEditorBean implements Serializable {
         if (DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups() > 0
                 && length > DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups()) {
             // remove the oldest backup
-            backupFiles[length - 1].delete();
-            length -= 1;
+            try {
+                Files.delete(backupFiles[length - 1].toPath());
+                length -= 1;
+            } catch (IOException e) {
+               logger.error(e.getMessage());
+            }
         }
 
         backupNames = new String[length];
@@ -532,6 +541,7 @@ public class ConfigEditorBean implements Serializable {
      */
     public void cancelEdition() {
         try {
+            refresh();
             openFile();
         } catch (Exception e) {
             logger.trace("Exception caught in cancelEdition()", e);
