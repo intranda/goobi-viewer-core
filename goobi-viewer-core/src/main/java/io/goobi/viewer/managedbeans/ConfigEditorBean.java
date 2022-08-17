@@ -35,12 +35,7 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -73,6 +68,7 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.configeditor.BackupRecord;
+import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
 
@@ -85,7 +81,7 @@ public class ConfigEditorBean implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
 
     /** Manual edit locks for files. */
-    private static final Map<Path, String> fileLocks = new HashMap<>();
+    private static final FileLocks fileLocks = new FileLocks();
 
     /** Object that handles the reading of listed files. */
     private final FilesListing filesListing = new FilesListing();
@@ -232,7 +228,7 @@ public class ConfigEditorBean implements Serializable {
             return false;
         }
 
-        return fileLocks.containsKey(fileRecord.getFile()) && !fileLocks.get(fileRecord.getFile()).equals(BeanUtils.getSession().getId());
+        return fileLocks.isFileLockedByOthers(fileRecord.getFile(), BeanUtils.getSession().getId());
     }
 
     public boolean isNightMode() {
@@ -252,15 +248,15 @@ public class ConfigEditorBean implements Serializable {
             return;
         }
 
+        String sessionId = BeanUtils.getSession().getId();
         if (currentFileRecord != null) {
-            fileLocks.remove(currentFileRecord.getFile());
-            logger.trace("Released write lock: {}", currentFileRecord.getFileName());
+            fileLocks.unlockFile(currentFileRecord.getFile(), sessionId);
         }
 
         currentFileRecord = filesListing.getFileRecords().get(fileInEditionNumber);
 
         Path filePath = currentFileRecord.getFile();
-        String sessionId = BeanUtils.getSession().getId();
+
         try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
             FileChannel inputChannel = fis.getChannel();
 
@@ -280,11 +276,11 @@ public class ConfigEditorBean implements Serializable {
             if (editable) {
 
                 // File already locked by someone else
-                if (fileLocks.containsKey(filePath) && !fileLocks.get(filePath).equals(sessionId)) {
+                if (fileLocks.isFileLockedByOthers(filePath, sessionId)) {
                     Messages.error("admin__config_editor__file_locked_msg");
                     return;
                 }
-                fileLocks.put(filePath, sessionId);
+                fileLocks.lockFile(filePath, sessionId);
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
                 // outputLock also locks reading this file in Windows, so read it prior to creating the lock
                 fileContent = Files.readString(filePath);
@@ -322,8 +318,7 @@ public class ConfigEditorBean implements Serializable {
             return "";
         }
 
-        fileLocks.remove(currentFileRecord.getFile());
-        logger.trace("{} lock removed", currentFileRecord.getFile().toAbsolutePath());
+        fileLocks.unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
         //            if (outputLock != null && outputLock.isValid()) {
         //                outputLock.release();
         //            }
@@ -368,7 +363,7 @@ public class ConfigEditorBean implements Serializable {
         Path originalPath = currentFileRecord.getFile();
 
         // Abort if file locked by someone else
-        if (fileLocks.containsKey(originalPath) && !fileLocks.get(originalPath).equals(BeanUtils.getSession().getId())) {
+        if (fileLocks.isFileLockedByOthers(originalPath, BeanUtils.getSession().getId())) {
             Messages.error("admin__config_editor__file_locked_msg");
             return "";
         }
@@ -573,22 +568,10 @@ public class ConfigEditorBean implements Serializable {
     public String cancelAction() {
         logger.trace("cancel");
         try {
+            
+            // TODO
 
             fileContent = null;
-            // Release read lock
-            if (inputLock != null && inputLock.isValid()) {
-                inputLock.release();
-            }
-            // Release write lock
-            if (fileInEditionNumber >= 0) {
-                Path filePath = currentFileRecord.getFile();
-                if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(BeanUtils.getSession().getId())) {
-                    fileLocks.remove(filePath);
-                }
-            }
-
-            fileInEditionNumber = -1;
-            currentFileRecord = null;
 
             refresh();
             openFile();
@@ -605,17 +588,6 @@ public class ConfigEditorBean implements Serializable {
      * @param sessionId
      */
     public static void clearLocksForSessionId(String sessionId) {
-        Set<Path> toClear = new HashSet<>();
-        for (Entry<Path, String> entry : fileLocks.entrySet()) {
-            if (entry.getValue().equals(sessionId)) {
-                toClear.add(entry.getKey());
-            }
-        }
-        if (!toClear.isEmpty()) {
-            for (Path path : toClear) {
-                fileLocks.remove(path);
-                logger.debug("Released edit lock for {}", path.toAbsolutePath());
-            }
-        }
+        fileLocks.clearLocksForSessionId(sessionId);
     }
 }
