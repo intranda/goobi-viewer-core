@@ -193,7 +193,9 @@ function initTextArea() {
 			theme: theme,
 			readOnly: readOnly,
 			autofocus: true,
-			indextUnit: 4,
+			indentUnit: 2,
+			tabSize: 2,
+			indentWithTabs: true,
 			extraKeys: {
 				"F11": function(cm) {
 					cm.setOption("fullScreen", !cm.getOption("fullScreen"));
@@ -205,7 +207,12 @@ function initTextArea() {
 				},
 				"Ctrl-D": function(cm) {
 					cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
-				}
+				},
+				"Ctrl-S": function(cm) {
+					console.log('savorizored');
+					document.querySelector('[data-cm="save"]').click();
+				},
+				"Ctrl-E": "findPersistent",
 			}
 	});
 	console.log("CodeMirror Editor constructed!");
