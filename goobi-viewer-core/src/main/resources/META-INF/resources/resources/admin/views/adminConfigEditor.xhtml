@@ -131,7 +131,7 @@
 													<h:commandButton value="#{record.fileName}"
 														styleClass="admin__config-editor-file-selection-single-entry-button"
 														action="#{configEditorBean.editFile(record.writable)}"
-														name="#{record.number}" rendered="#{record.readable}"
+														name="#{record.number}" disabled="#{!record.readable}"
 														onclick="setEditable(#{record.writable}, #{record.number}, true); viewerJS.showLoader();">
 														<f:ajax execute="@this"
 															render="editor-form file-form backup-form configEditorActualFile"
@@ -156,10 +156,20 @@
 															title="#{msg.admin__config_editor__not_writable}"
 															data-toggle="tooltip" data-placement="left"
 															data-trigger="hover">
-															<i class="fa fa-pencil" aria-hidden="true"></i> <i
-																class="fa fa-ban" aria-hidden="true"></i>
+															<i class="fa fa-pencil" aria-hidden="true"></i>
+															<i class="fa fa-ban" aria-hidden="true"></i>
 														</div>
 													</ui:fragment>
+                                                    <ui:fragment rendered="#{configEditorBean.isFileLocked(record)}">
+                                                        <div
+                                                            class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
+                                                            title="#{msg.admin__config_editor__not_writable}"
+                                                            data-toggle="tooltip" data-placement="left"
+                                                            data-trigger="hover">
+                                                            <i class="fa fa-lock" aria-hidden="true"></i>
+                                                            <i class="fa fa-ban" aria-hidden="true"></i>
+                                                        </div>
+                                                    </ui:fragment>
 												</h:panelGroup>	
 													
 													

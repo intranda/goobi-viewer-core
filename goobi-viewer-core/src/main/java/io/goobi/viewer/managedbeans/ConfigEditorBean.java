@@ -87,12 +87,12 @@ public class ConfigEditorBean implements Serializable {
     /** Manual edit locks for files. */
     private static final Map<Path, String> fileLocks = new HashMap<>();
 
-    /** Object that handles the reading of listed failes. */
+    /** Object that handles the reading of listed files. */
     private final FilesListing filesListing = new FilesListing();
 
     // Fields for FileEdition
-    private int fileInEditionNumber;
-    private FileRecord currentFileRecord;
+    private int fileInEditionNumber = -1;
+    private transient FileRecord currentFileRecord;
     private String fileContent;
     private String temp = ""; // Used to check if the content of the textarea is modified
 
@@ -101,7 +101,7 @@ public class ConfigEditorBean implements Serializable {
 
     // Fields for Backups
     private List<BackupRecord> backupRecords;
-    private DataModel<BackupRecord> backupRecordsModel;
+    private transient DataModel<BackupRecord> backupRecordsModel;
     private File[] backupFiles;
     private String[] backupNames;
     private String backupsPath; // to maintain the backup files
@@ -118,7 +118,6 @@ public class ConfigEditorBean implements Serializable {
     private boolean isConfigViewer;
 
     // Used to render the CodeMirror editor properly, values can be "properties" or "xml"
-    private String currentConfigFileType;
     private String fullCurrentConfigFileType; // "." + currentConfigFileType
 
     private boolean nightMode = false;
@@ -146,7 +145,7 @@ public class ConfigEditorBean implements Serializable {
         backupFiles = null;
         backupNames = null;
         backupRecords = new ArrayList<>(Arrays.asList(
-                new BackupRecord("No Backup File Found", -1)));
+                new BackupRecord("admin__config_editor__no_backups", -1)));
         backupRecordsModel = new ListDataModel<>(backupRecords);
     }
 
@@ -162,17 +161,13 @@ public class ConfigEditorBean implements Serializable {
         return filesListing.getFileRecordsModel();
     }
 
-    public String[] getFileNames() {
-        return filesListing.getFileNames();
-    }
-
     /**
      * 
      * @return Name of the file that corresponds to fileInEditionNumber
      */
     public String getFileInEditionName() {
-        if (fileInEditionNumber != -1 && filesListing.getFileNames().length > fileInEditionNumber) {
-            return filesListing.getFileNames()[fileInEditionNumber];
+        if (currentFileRecord != null) {
+            return currentFileRecord.getFileName();
         }
 
         return "";
@@ -219,7 +214,27 @@ public class ConfigEditorBean implements Serializable {
     }
 
     public String getCurrentConfigFileType() {
-        return currentConfigFileType;
+        if (currentFileRecord != null) {
+            logger.trace("file type: " + currentFileRecord.getFileType());
+            return currentFileRecord.getFileType();
+        }
+
+        logger.trace("currentFileRecord null");
+        return "";
+    }
+
+    /**
+     * Determines whether the given fileRecord is locked by a different user session.
+     * 
+     * @param fileRecord
+     * @return
+     */
+    public boolean isFileLocked(FileRecord fileRecord) {
+        if (fileRecord == null) {
+            return false;
+        }
+
+        return fileLocks.containsKey(fileRecord.getFile()) && !fileLocks.get(fileRecord.getFile()).equals(BeanUtils.getSession().getId());
     }
 
     public boolean isNightMode() {
@@ -230,30 +245,31 @@ public class ConfigEditorBean implements Serializable {
         nightMode = !nightMode;
     }
 
-    ///////////////////// Hidden Text /////////////////////////
-    private String hiddenText = "Hi, how are you doing?";
-
-    public String getHiddenText() {
-        return hiddenText;
-    }
-    ///////////////////////////////////////////////////////////
-
+    /**
+     * 
+     * @throws IOException
+     */
     public synchronized void openFile() throws IOException {
         if (fileInEditionNumber < 0) {
             return;
         }
+        
+        if(currentFileRecord != null) {
+            fileLocks.remove(currentFileRecord.getFile());
+            logger.trace("Released write lock: {}", currentFileRecord.getFileName());
+        }
 
         currentFileRecord = filesListing.getFileRecords().get(fileInEditionNumber);
 
-        Path filePath = filesListing.getFiles()[fileInEditionNumber].toPath();
+        Path filePath = currentFileRecord.getFile();
         String sessionId = BeanUtils.getSession().getId();
         try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
             FileChannel inputChannel = fis.getChannel();
 
             // Release write lock
-            if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
-                fileLocks.remove(filePath);
-            }
+//            if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
+//                fileLocks.remove(filePath);
+//            }
 
             //            if (fileOutputStream != null) {
             //                if (outputLock.isValid()) {
@@ -297,12 +313,10 @@ public class ConfigEditorBean implements Serializable {
                 inputLock.release();
             }
         }
-
-        hiddenText = "New File Chosen!";
     }
 
     public void editFile(boolean writable) {
-        showBackups(writable);
+        selectFileAndShowBackups(writable);
     }
 
     /**
@@ -312,6 +326,11 @@ public class ConfigEditorBean implements Serializable {
      */
     public synchronized String saveCurrentFileAction() {
         logger.trace("saveCurrentFileAction");
+        if (currentFileRecord == null) {
+            logger.error("No record selected");
+            return "";
+        }
+
         // No need to duplicate if no modification is done.
         //        if (temp.equals(fileContent)) {
         //            hiddenText = "No Modification Detected!";
@@ -324,7 +343,7 @@ public class ConfigEditorBean implements Serializable {
 
         logger.trace("fileContent:\n{}", fileContent);
         // Save the latest modification to the original path.
-        Path originalPath = Path.of(filesListing.getFiles()[fileInEditionNumber].getAbsolutePath());
+        Path originalPath = currentFileRecord.getFile();
 
         // Abort if file locked by someone else
         if (fileLocks.containsKey(originalPath) && !fileLocks.get(originalPath).equals(BeanUtils.getSession().getId())) {
@@ -333,7 +352,7 @@ public class ConfigEditorBean implements Serializable {
         }
 
         // Use the filename without extension to create a folder for its backup_copies.
-        String newBackupFolderPath = backupsPath + filesListing.getFiles()[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", "");
+        String newBackupFolderPath = backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", "");
         File newBackupFolder = new File(newBackupFolderPath);
         if (!newBackupFolder.exists()) {
             newBackupFolder.mkdir();
@@ -389,14 +408,13 @@ public class ConfigEditorBean implements Serializable {
                 fileContent = Files.readString(originalPath);
 
                 if (temp.equals(fileContent)) {
-                    hiddenText = "No Valid Modification Detected!";
                     return "";
                 }
             }
 
             // Use a time stamp to distinguish the backups.
             String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS").format(new java.util.Date()).replace(":", "").replaceFirst("[.]", "");
-            Path newBackupPath = Path.of(newBackupFolderPath + "/" + filesListing.getFiles()[fileInEditionNumber].getName() + "." + timeStamp);
+            Path newBackupPath = Path.of(newBackupFolderPath + "/" + currentFileRecord.getFileName() + "." + timeStamp);
             // save the original content to backup files
             Files.writeString(newBackupPath, temp, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -446,32 +464,30 @@ public class ConfigEditorBean implements Serializable {
         backupRecordsModel = new ListDataModel<>(backupRecords);
         downloadable = true;
 
-        hiddenText = "File saved!";
         Messages.info("updatedSuccessfully");
 
         return "";
     }
 
     public void showBackups() {
-        showBackups(false);
+        selectFileAndShowBackups(false);
     }
 
     /**
      * 
      * @param writable
      */
-    public void showBackups(boolean writable) {
-        FileRecord rec = filesListing.getFileRecordsModel().getRowData();
-        isConfigViewer = rec.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
-        currentConfigFileType = rec.getFileType();
-        fullCurrentConfigFileType = ".".concat(currentConfigFileType);
+    public void selectFileAndShowBackups(boolean writable) {
+        currentFileRecord = filesListing.getFileRecordsModel().getRowData();
+        isConfigViewer = currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
+        fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
 
-        fileInEditionNumber = rec.getNumber();
+        fileInEditionNumber = currentFileRecord.getNumber();
         editable = writable;
 
-        logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, rec.getFileName());
+        logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, currentFileRecord.getFileName());
 
-        File backups = new File(backupsPath + filesListing.getFiles()[fileInEditionNumber].getName().replaceFirst("[.][^.]+$", ""));
+        File backups = new File(backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", ""));
         if (backups.exists()) {
             backupFiles = backups.listFiles();
             Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
@@ -511,12 +527,12 @@ public class ConfigEditorBean implements Serializable {
         }
 
         File backupFile = new File(backupFiles[rec.getNumber()].getAbsolutePath());
-        String fileName = filesListing.getFileNames()[fileInEditionNumber].concat(".").concat(rec.getName());
+        String fileName = currentFileRecord.getFileName().concat(".").concat(rec.getName());
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext ec = facesContext.getExternalContext();
         ec.responseReset();
-        ec.setResponseContentType("text/".concat(currentConfigFileType));
+        ec.setResponseContentType("text/".concat(currentFileRecord != null ? currentFileRecord.getFileType() : ""));
         ec.setResponseHeader("Content-Length", String.valueOf(Files.size(backupFile.toPath())));
         ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         try (OutputStream outputStream = ec.getResponseOutputStream(); FileInputStream fileInputStream = new FileInputStream(backupFile)) {
@@ -533,7 +549,6 @@ public class ConfigEditorBean implements Serializable {
             throw e;
         }
         facesContext.responseComplete();
-        hiddenText = "File downloaded!";
         return "";
     }
 
@@ -543,7 +558,7 @@ public class ConfigEditorBean implements Serializable {
     public String cancelAction() {
         logger.trace("cancel");
         try {
-            
+
             fileContent = null;
             // Release read lock
             if (inputLock != null && inputLock.isValid()) {
@@ -551,13 +566,14 @@ public class ConfigEditorBean implements Serializable {
             }
             // Release write lock
             if (fileInEditionNumber >= 0) {
-                Path filePath = filesListing.getFiles()[fileInEditionNumber].toPath();
+                Path filePath = currentFileRecord.getFile();
                 if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(BeanUtils.getSession().getId())) {
                     fileLocks.remove(filePath);
                 }
             }
 
             fileInEditionNumber = -1;
+            currentFileRecord = null;
 
             refresh();
             openFile();

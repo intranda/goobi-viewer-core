@@ -24,7 +24,6 @@ package io.goobi.viewer.model.administration.configeditor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,9 +44,7 @@ public class FilesListing implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(FilesListing.class);
 
-    private File[] files = null;
-    private String[] fileNames = null;
-    private List<FileRecord> fileRecords = null;
+    private transient List<FileRecord> fileRecords = null;
     private transient DataModel<FileRecord> fileRecordsModel = null;
 
     public FilesListing() {
@@ -69,9 +66,8 @@ public class FilesListing implements Serializable {
                 return name.endsWith(".xml") || name.endsWith(".properties");
             }
         };
-        
-        files = new File[0];
 
+        File[] files = new File[0];
         for (String configPath : DataManager.getInstance().getConfiguration().getConfigEditorDirectories()) {
             File f = new File(FileTools.adaptPathForWindows(configPath));
             files = Stream.concat(Arrays.stream(files), Arrays.stream(f.listFiles(filter))).toArray(File[]::new);
@@ -79,21 +75,11 @@ public class FilesListing implements Serializable {
         }
 
         Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
-        fileNames = new String[files.length];
         for (int i = 0; i < files.length; ++i) {
-            fileNames[i] = files[i].getName();
-            fileRecords.add(new FileRecord(fileNames[i], i, Files.isReadable(files[i].toPath()), Files.isWritable(files[i].toPath())));
+            fileRecords.add(new FileRecord(files[i].toPath(), i));
         }
 
         fileRecordsModel = new ListDataModel<>(fileRecords);
-    }
-
-    public File[] getFiles() {
-        return files;
-    }
-
-    public String[] getFileNames() {
-        return fileNames;
     }
 
     public List<FileRecord> getFileRecords() {

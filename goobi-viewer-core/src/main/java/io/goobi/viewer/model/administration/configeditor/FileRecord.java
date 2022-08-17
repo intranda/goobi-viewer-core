@@ -21,28 +21,24 @@
  */
 package io.goobi.viewer.model.administration.configeditor;
 
-import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public class FileRecord implements Serializable {
+public class FileRecord {
 
-    private static final long serialVersionUID = -1074497836317565196L;
+    private final Path file;
+    private final int number;
+    private final String fileType;
 
-    private String fileName;
-    private int number;
-    private boolean readable;
-    private boolean writable;
-    private String fileType;
-
-    public FileRecord() {
-
-    }
-
-    public FileRecord(String fileName, int number, boolean readable, boolean writable) {
-        this.fileName = fileName;
+    /**
+     * 
+     * @param file
+     * @param number
+     */
+    public FileRecord(Path file, int number) {
+        this.file = file;
         this.number = number;
-        this.readable = readable;
-        this.writable = writable;
-        this.fileType = getFileTypeFromName(fileName);
+        this.fileType = getFileTypeFromName(file.getFileName().toString());
     }
 
     private static String getFileTypeFromName(String name) {
@@ -53,8 +49,12 @@ public class FileRecord implements Serializable {
         return name.substring(lastIndex + 1);
     }
 
+    public Path getFile() {
+        return file;
+    }
+
     public String getFileName() {
-        return fileName;
+        return file.getFileName().toString();
     }
 
     public int getNumber() {
@@ -62,11 +62,11 @@ public class FileRecord implements Serializable {
     }
 
     public boolean isReadable() {
-        return readable;
+        return Files.isReadable(file);
     }
 
     public boolean isWritable() {
-        return writable;
+        return Files.isWritable(file);
     }
 
     public String getFileType() {
