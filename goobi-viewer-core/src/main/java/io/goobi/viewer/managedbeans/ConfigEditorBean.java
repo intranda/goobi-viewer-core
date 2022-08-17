@@ -215,11 +215,9 @@ public class ConfigEditorBean implements Serializable {
 
     public String getCurrentConfigFileType() {
         if (currentFileRecord != null) {
-            logger.trace("file type: " + currentFileRecord.getFileType());
             return currentFileRecord.getFileType();
         }
 
-        logger.trace("currentFileRecord null");
         return "";
     }
 
@@ -227,7 +225,7 @@ public class ConfigEditorBean implements Serializable {
      * Determines whether the given fileRecord is locked by a different user session.
      * 
      * @param fileRecord
-     * @return
+     * @return true if file path locked by other session id; false otherwise
      */
     public boolean isFileLocked(FileRecord fileRecord) {
         if (fileRecord == null) {
@@ -253,8 +251,8 @@ public class ConfigEditorBean implements Serializable {
         if (fileInEditionNumber < 0) {
             return;
         }
-        
-        if(currentFileRecord != null) {
+
+        if (currentFileRecord != null) {
             fileLocks.remove(currentFileRecord.getFile());
             logger.trace("Released write lock: {}", currentFileRecord.getFileName());
         }
@@ -267,9 +265,9 @@ public class ConfigEditorBean implements Serializable {
             FileChannel inputChannel = fis.getChannel();
 
             // Release write lock
-//            if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
-//                fileLocks.remove(filePath);
-//            }
+            //            if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
+            //                fileLocks.remove(filePath);
+            //            }
 
             //            if (fileOutputStream != null) {
             //                if (outputLock.isValid()) {
@@ -313,6 +311,30 @@ public class ConfigEditorBean implements Serializable {
                 inputLock.release();
             }
         }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String closeCurrentFileAction() {
+        if (currentFileRecord == null) {
+            return "";
+        }
+
+        fileLocks.remove(currentFileRecord.getFile());
+        logger.trace("{} lock removed", currentFileRecord.getFile().toAbsolutePath());
+        //            if (outputLock != null && outputLock.isValid()) {
+        //                outputLock.release();
+        //            }
+        //            fileOutputStream.close();
+
+        fileInEditionNumber = -1;
+        currentFileRecord = null;
+
+        refresh();
+
+        return "";
     }
 
     public void editFile(boolean writable) {
@@ -428,13 +450,6 @@ public class ConfigEditorBean implements Serializable {
         } catch (TransformerException e) {
             logger.trace("TransformerException caught in the method saveFile()", e);
         } finally {
-            fileLocks.remove(originalPath);
-            logger.trace("{} lock removed", originalPath.toAbsolutePath());
-            //            if (outputLock != null && outputLock.isValid()) {
-            //                outputLock.release();
-            //            }
-            //            fileOutputStream.close();
-            refresh();
         }
 
         temp = fileContent;
