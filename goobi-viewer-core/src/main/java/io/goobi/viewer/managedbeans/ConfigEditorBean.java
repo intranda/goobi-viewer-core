@@ -96,7 +96,7 @@ public class ConfigEditorBean implements Serializable {
     private boolean editable = false;
 
     // Fields for Backups
-    private List<BackupRecord> backupRecords;
+        private List<BackupRecord> backupRecords;
     private transient DataModel<BackupRecord> backupRecordsModel;
     private File[] backupFiles;
     private String[] backupNames;
@@ -500,20 +500,22 @@ public class ConfigEditorBean implements Serializable {
         File backups = new File(backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", ""));
         if (backups.exists()) {
             backupFiles = backups.listFiles();
-            Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
-            backupNames = new String[backupFiles.length];
-            backupRecords = new ArrayList<>();
-            for (int i = 0; i < backupFiles.length; ++i) {
-                backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
-                backupRecords.add(new BackupRecord(backupNames[i], i));
+            if (backupFiles.length > 0) {
+                Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
+                backupNames = new String[backupFiles.length];
+                backupRecords = new ArrayList<>();
+                for (int i = 0; i < backupFiles.length; ++i) {
+                    backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
+                    backupRecords.add(new BackupRecord(backupNames[i], i));
+                }
+                downloadable = true;
             }
-            downloadable = true;
 
         } else {
             backupFiles = null;
             backupNames = null;
             backupRecords = new ArrayList<>(Arrays.asList(
-                    new BackupRecord("No Backup File Found", -1)));
+                    new BackupRecord("admin__config_editor__no_backups", -1)));
             downloadable = false;
         }
         backupRecordsModel = new ListDataModel<>(backupRecords);
@@ -568,7 +570,7 @@ public class ConfigEditorBean implements Serializable {
     public String cancelAction() {
         logger.trace("cancel");
         try {
-            
+
             // TODO
 
             fileContent = null;
