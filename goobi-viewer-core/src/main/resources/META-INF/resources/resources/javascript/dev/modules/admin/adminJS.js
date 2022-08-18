@@ -142,7 +142,6 @@ $( document ).ready(function() {
 		});
 	});
 
-
 // END DOCUMENT READY
 });
 
@@ -155,12 +154,6 @@ var readOnly;
 var selected_row;
 //var nightMode;
 var theme;
-
-
-
-
-
-
 
 
 function initTextArea() {
@@ -208,7 +201,7 @@ function initTextArea() {
 					cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
 				},
 				"Ctrl-S": function(cm) {
-					console.log('savorizored');
+					// console.log('manually saved with key combo');
 					document.querySelector('[data-cm="save"]').click();
 				},
 				"Ctrl-E": "findPersistent",
@@ -254,7 +247,7 @@ function initTextArea() {
 	// SAVE BUTTON FUNCTIONAL
 		$('[data-cm="save"]').on('click', function() {
 			cmEditor.save();
-			console.log('editor is saved now');
+			// console.log('editor is saved by button now');
 		});
 		
 	// CANCEL BUTTON FUNCTION
@@ -266,80 +259,6 @@ function initTextArea() {
 	});
 
 };
-	
-//function saveEditor() {
-//	cmEditor.save();
-//	console.log('editor is saved now: saveeditor');
-//}
-
-
-/*	
-if (readOnly === undefined) {
-	readOnly = true;
-}
-*/ 	 
-
-
-//function initTextArea() {
-//
-
-//
-//	configFileTextArea = document.getElementById("newStuff");
-//
-
-//	if (configFileTextArea !== null) {
-//		if (configFileEditor) {
-//			configFileEditor.toTextArea();
-//			console.log("CodeMirror Editor to textarea done!"); 
-//		}
-
-////		var configFileEditor = CodeMirror.fromTextArea(configFileTextArea, {
-//			lineNumbers: true,
-//			mode: type,
-//			theme: theme,
-//			readOnly: readOnly,
-//			autofocus: true,
-//			indextUnit: 4,
-//			extraKeys: {
-//				"F11": function(cm) {
-//					cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-//				},
-//				"Esc": function(cm) {
-//					if (cm.getOption("fullScreen")) {
-//						cm.setOption("fullScreen", false);
-//					}
-//				},
-//				"Ctrl-D": function(cm) {
-//					cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
-//				}
-//			}
-			
-//		});
-		
-//		console.log('theme: ' + theme);
-//		console.log('mode: ' + type);
-
-
-		
-
-	
-//		function writeCMcontentIntoTextArea() {
-//			configFileEditor.save();
-//			console.log('js editor saved into textarea');
-//		}
-		
-
-
-
-
-
-//$('[data-codemirror="save"]').on('click', function() {
-//	configFileEditor.save();
-//	console.log('js editor saved into textarea');
-//});
-//	
-//}
-
 
 function setEditable(editable, number, isButton) {
 	selected_row = document.getElementById('row'+number);
@@ -349,15 +268,6 @@ function setEditable(editable, number, isButton) {
 		alert("Die Rechte im Dateisystem müssen korrigiert werden um diese Datei zu bearbeiten.");
 	}
 }
-
-
-
-		
-		
-//function saveEditor() {
-//	configFileEditor.save();
-//}
-
 
 
 
