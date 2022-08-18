@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -154,18 +155,6 @@ public class ConfigEditorBean implements Serializable {
 
     public DataModel<FileRecord> getFileRecordsModel() {
         return filesListing.getFileRecordsModel();
-    }
-
-    /**
-     * 
-     * @return Name of the file that corresponds to fileInEditionNumber
-     */
-    public String getFileInEditionName() {
-        if (currentFileRecord != null) {
-            return currentFileRecord.getFileName();
-        }
-
-        return "";
     }
 
     public int getFileInEditionNumber() {
@@ -328,11 +317,12 @@ public class ConfigEditorBean implements Serializable {
 
         refresh();
 
-        return "";
+        return "pretty:adminConfigEditor";
     }
 
-    public void editFile(boolean writable) {
+    public String editFile(boolean writable) {
         selectFileAndShowBackups(writable);
+        return "pretty:adminConfigEditorFilename";
     }
 
     /**
@@ -349,7 +339,6 @@ public class ConfigEditorBean implements Serializable {
 
         // No need to duplicate if no modification is done.
         //        if (temp.equals(fileContent)) {
-        //            hiddenText = "No Modification Detected!";
         //            return "";
         //        }
         //        if (fileOutputStream == null) {
@@ -568,13 +557,7 @@ public class ConfigEditorBean implements Serializable {
     public String cancelAction() {
         logger.trace("cancel");
         try {
-
             // TODO
-
-            fileContent = null;
-
-            refresh();
-            openFile();
         } catch (Exception e) {
             logger.trace("Exception caught in cancelEdition()", e);
         }
@@ -589,5 +572,52 @@ public class ConfigEditorBean implements Serializable {
      */
     public static void clearLocksForSessionId(String sessionId) {
         fileLocks.clearLocksForSessionId(sessionId);
+    }
+
+    /**
+     * 
+     * @return File name of the currently selected file record row
+     */
+    public String getCurrentFileName() {
+        if (currentFileRecord == null) {
+            return "-";
+        }
+
+        return currentFileRecord.getFileName();
+    }
+
+    /**
+     * Getter for the URL pattern.
+     * 
+     * @param fileName
+     * @throws FileNotFoundException
+     */
+    public void setCurrentFileName(String fileName) throws FileNotFoundException {
+        logger.trace("setCurrentFileName: {}", fileName);
+        if (currentFileRecord != null && currentFileRecord.getFileName().equals(fileName)) {
+            return;
+        }
+
+        if ("-".equals(fileName)) {
+            closeCurrentFileAction();
+            return;
+        }
+
+        refresh();
+
+        int row = 0;
+        for (FileRecord fileRecord : filesListing.getFileRecords()) {
+            if (fileRecord.getFileName().equals(fileName)) {
+                //                fileInEditionNumber = row;
+                // currentFileRecord = fileRecord;
+                filesListing.getFileRecordsModel().setRowIndex(row);
+                selectFileAndShowBackups(fileRecord.isWritable());
+
+                return;
+            }
+            row++;
+        }
+
+        throw new FileNotFoundException(fileName);
     }
 }

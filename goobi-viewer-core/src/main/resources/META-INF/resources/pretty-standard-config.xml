@@ -912,10 +912,6 @@
         <pattern value="/admin/legal/disclaimer/" />
         <view-id value="/resources/admin/views/adminDisclaimer.xhtml" />
     </url-mapping>
-    <url-mapping id="adminConfigEditor">
-        <pattern value="/admin/configeditor/" />
-        <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
-    </url-mapping>
 
 	<!-- THEME CONFIGS -->
     <url-mapping id="adminThemes">
@@ -929,14 +925,14 @@
     </url-mapping>
     
     <!-- CONFIG EDITOR -->
-    <url-mapping id="adminConfig">
+    <url-mapping id="adminConfigEditor">
         <pattern value="/admin/config/" />
         <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
+        <action onPostback="false">#{configEditorBean.closeCurrentFileAction}</action>
     </url-mapping>
-    <url-mapping id="adminConfigEdit">
-        <pattern value="/admin/config/edit/#{fileName}/" />
+    <url-mapping id="adminConfigEditorFilename">
+        <pattern value="/admin/config/edit/#{currentFileName:configEditorBean.currentFileName}/" />
         <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
-        <action onPostback="false">#{configEditorBean.setFileName(fileName)}</action>
     </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->

@@ -44,10 +44,11 @@
 							<div class="admin__config-editor-current-file-wrapper">
 								<h:form id="configEditorActualFile">
 									<h2>#{msg.admin__config_editor__actual_file}:
-										#{configEditorBean.fileInEditionName}</h2>
+										#{configEditorBean.currentFileName}</h2>
 								</h:form>
 
 
+                                <ui:fragment rendered="#{configEditorBean.currentFileName != '-'}">
 									<h:form>
 										<div class="admin__config-editor-release-button-wrapper">
 											<i class="fa fa-times-circle" aria-hidden="true"></i>
@@ -61,12 +62,11 @@
 											</a>
 											</div>
 									</h:form>
-								</div>
-								<div>
-
-
-
+								</ui:fragment>
 							</div>
+						<div>
+
+					</div>
 
 							<div class="admin__config-editor-form-wrapper">
 
