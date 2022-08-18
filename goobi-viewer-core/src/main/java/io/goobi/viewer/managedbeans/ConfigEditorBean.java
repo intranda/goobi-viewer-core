@@ -96,7 +96,7 @@ public class ConfigEditorBean implements Serializable {
     private boolean editable = false;
 
     // Fields for Backups
-        private List<BackupRecord> backupRecords;
+    private List<BackupRecord> backupRecords;
     private transient DataModel<BackupRecord> backupRecordsModel;
     private File[] backupFiles;
     private String[] backupNames;
@@ -140,8 +140,7 @@ public class ConfigEditorBean implements Serializable {
         // Initialize Backup List 
         backupFiles = null;
         backupNames = null;
-        backupRecords = new ArrayList<>(Arrays.asList(
-                new BackupRecord("admin__config_editor__no_backups", -1)));
+        backupRecords = new ArrayList<>();
         backupRecordsModel = new ListDataModel<>(backupRecords);
     }
 
@@ -466,7 +465,7 @@ public class ConfigEditorBean implements Serializable {
         }
 
         backupNames = new String[length];
-        backupRecords = new ArrayList<>();
+        backupRecords.clear();
         for (int i = 0; i < length; ++i) {
             backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
             backupRecords.add(new BackupRecord(backupNames[i], i));
@@ -503,7 +502,7 @@ public class ConfigEditorBean implements Serializable {
             if (backupFiles.length > 0) {
                 Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
                 backupNames = new String[backupFiles.length];
-                backupRecords = new ArrayList<>();
+                backupRecords.clear();
                 for (int i = 0; i < backupFiles.length; ++i) {
                     backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
                     backupRecords.add(new BackupRecord(backupNames[i], i));
@@ -514,8 +513,7 @@ public class ConfigEditorBean implements Serializable {
         } else {
             backupFiles = null;
             backupNames = null;
-            backupRecords = new ArrayList<>(Arrays.asList(
-                    new BackupRecord("admin__config_editor__no_backups", -1)));
+            backupRecords.clear();
             downloadable = false;
         }
         backupRecordsModel = new ListDataModel<>(backupRecords);
