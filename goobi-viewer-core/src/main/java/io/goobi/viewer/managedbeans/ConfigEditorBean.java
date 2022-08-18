@@ -40,12 +40,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.inject.Named;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -74,7 +74,7 @@ import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
 
-@ManagedBean
+@Named
 @SessionScoped
 public class ConfigEditorBean implements Serializable {
 
