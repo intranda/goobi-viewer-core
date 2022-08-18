@@ -234,7 +234,7 @@
 											value="#{configEditorBean.backupRecordsModel}">
 
 											<ui:fragment
-												rendered="#{not empty configEditorBean.backupRecordsModel}">
+												rendered="#{configEditorBean.backupRecordsModel.rowCount != 0}">
 
 												<h:commandLink
 													styleClass="btn btn--clean admin__config-editor-backup-single-entry"
@@ -247,8 +247,7 @@
 
 											</ui:fragment>
 
-											<ui:fragment rendered="#{empty configEditorBean.backupRecordsModel}">
-
+											<ui:fragment rendered="#{configEditorBean.backupRecordsModel.rowCount == 0}">
 												<span
 													class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
 													<span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
