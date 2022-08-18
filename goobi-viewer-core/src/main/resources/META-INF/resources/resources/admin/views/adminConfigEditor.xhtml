@@ -48,21 +48,21 @@
 								</h:form>
 
 
-								<div
-									class="admin__config-editor-current-file-release-button-wrapper">
 									<h:form>
-										<button
-											class="btn btn--clean" data-toggle="tooltip"
+										<div class="admin__config-editor-release-button-wrapper">
+											<i class="fa fa-times-circle" aria-hidden="true"></i>
+											<a
+											class="btn btn--clean admin__config-editor-release-button" data-toggle="tooltip"
 											data-placement="top" data-trigger="hover"
-	                                        data-require-confirmation="true"
-	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm)}"
+											data-require-confirmation="true"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm, ipRange.name)}"
 											title="#{msg.admin__config_editor__release_button_tooltip}"
 											jsf:action="#{configEditorBean.closeCurrentFileAction}">
-											<i class="fa fa-times-circle" aria-hidden="true"></i>
-										</button>
+											</a>
+											</div>
 									</h:form>
 								</div>
-								<div></div>
+								<div>
 
 
 
