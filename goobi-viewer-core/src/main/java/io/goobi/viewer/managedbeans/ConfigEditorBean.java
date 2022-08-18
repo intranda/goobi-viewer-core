@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URLDecoder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -552,20 +553,6 @@ public class ConfigEditorBean implements Serializable {
     }
 
     /**
-     * TODO
-     */
-    public String cancelAction() {
-        logger.trace("cancel");
-        try {
-            // TODO
-        } catch (Exception e) {
-            logger.trace("Exception caught in cancelEdition()", e);
-        }
-
-        return "";
-    }
-
-    /**
      * Removes file locks for the given session id.
      * 
      * @param sessionId
@@ -594,12 +581,15 @@ public class ConfigEditorBean implements Serializable {
      */
     public void setCurrentFileName(String fileName) throws FileNotFoundException {
         logger.trace("setCurrentFileName: {}", fileName);
-        if (currentFileRecord != null && currentFileRecord.getFileName().equals(fileName)) {
-            return;
-        }
 
         if ("-".equals(fileName)) {
             closeCurrentFileAction();
+            return;
+        }
+
+        String decodedFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+
+        if (currentFileRecord != null && currentFileRecord.getFileName().equals(decodedFileName)) {
             return;
         }
 
@@ -607,17 +597,13 @@ public class ConfigEditorBean implements Serializable {
 
         int row = 0;
         for (FileRecord fileRecord : filesListing.getFileRecords()) {
-            if (fileRecord.getFileName().equals(fileName)) {
-                //                fileInEditionNumber = row;
-                // currentFileRecord = fileRecord;
+            if (fileRecord.getFileName().equals(decodedFileName)) {
                 filesListing.getFileRecordsModel().setRowIndex(row);
                 selectFileAndShowBackups(fileRecord.isWritable());
-
-                return;
             }
             row++;
         }
 
-        throw new FileNotFoundException(fileName);
+        throw new FileNotFoundException(decodedFileName);
     }
 }
