@@ -173,14 +173,13 @@ function initTextArea() {
 	} else {
 		type = "xml";
 	}
-	console.log("type = " + type);
 	if (typeof type == "undefined") {
 		type = "xml";
 	}
 	if (typeof theme == "undefined") {
 		theme = "default";
 	}
-    
+	console.log("type changed to = " + type);
 	// TARGETED TEXTAREA WITH CODE CONTENT
 	var targetTextArea = document.getElementById('editor-form:editor');
 	
@@ -192,7 +191,7 @@ function initTextArea() {
 			mode: type,
 			theme: theme,
 			readOnly: readOnly,
-			autofocus: true,
+			autofocus: false,
 			indentUnit: 2,
 			tabSize: 2,
 			indentWithTabs: true,
@@ -215,9 +214,18 @@ function initTextArea() {
 				"Ctrl-E": "findPersistent",
 			}
 	});
-	console.log("CodeMirror Editor constructed!");
+	// console.log("CodeMirror Editor constructed!");
 
-
+	// CLEAR EDITOR AND SHOW AN OVERLAY IF NO FILE SELECT
+	if (fileTypeElement.innerHTML.trim() == '') {
+		cmEditor.setValue("");
+		cmEditor.clearHistory();
+		$('[data-cm="overlay"]').show();
+	}
+	else {
+		cmEditor.focus();
+		$('[data-cm="overlay"]').hide();
+	}
 	// listen for CodeMirror changes
 	var startEditorValue = cmEditor.getValue();
 	var debounce = null;
@@ -243,11 +251,19 @@ function initTextArea() {
 	   }, 350);               
 	}); 
 
-	// SAVE BUTTON FUNCTIONALITY
+	// SAVE BUTTON FUNCTIONAL
 		$('[data-cm="save"]').on('click', function() {
 			cmEditor.save();
 			console.log('editor is saved now');
 		});
+		
+	// CANCEL BUTTON FUNCTION
+	// RESETS ALL EDITS
+	$('[data-cm="cancel"]').on('click', function() {
+		var startContent = cmEditor.getTextArea().value;
+		cmEditor.setValue(startContent);
+		cmEditor.clearHistory();
+	});
 
 };
 	

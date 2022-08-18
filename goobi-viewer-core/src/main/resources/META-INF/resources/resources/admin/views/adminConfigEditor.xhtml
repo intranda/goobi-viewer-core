@@ -24,7 +24,7 @@
 				<div class="admin__title-bar">
 					<!-- TITLE -->
 					<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
-					
+
 				</div>
 
 				<div class="admin__content-inner-content">
@@ -34,19 +34,45 @@
 
 							<!-- INFO TEXT -->
 							<div class="admin__info-text">
-								<h:outputText
-									value="#{msg.admin__config_editor__description}"
+								<h:outputText value="#{msg.admin__config_editor__description}"
 									escape="false" />
 							</div>
-							
 
 
-							<!-- TODO: refresh after selecting file -->
-							<h:form id="configEditorActualFile">
-								<h2>#{msg.admin__config_editor__actual_file}: #{configEditorBean.fileInEditionName}</h2>
-							</h:form>
+
+							<!-- CURRENT FILE NAME -->
+							<div class="admin__config-editor-current-file-wrapper">
+								<h:form id="configEditorActualFile">
+									<h2>#{msg.admin__config_editor__actual_file}:
+										#{configEditorBean.fileInEditionName}</h2>
+								</h:form>
+
+
+								<div
+									class="admin__config-editor-current-file-release-button-wrapper">
+									<h:form>
+										<button
+											class="btn btn--clean" data-toggle="tooltip"
+											data-placement="top" data-trigger="hover"
+	                                        data-require-confirmation="true"
+	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm)}"
+											title="#{msg.admin__config_editor__release_button_tooltip}"
+											jsf:action="#{configEditorBean.closeCurrentFileAction}">
+											<i class="fa fa-times-circle" aria-hidden="true"></i>
+										</button>
+									</h:form>
+								</div>
+								<div></div>
+
+
+
+							</div>
 
 							<div class="admin__config-editor-form-wrapper">
+
+								<!-- GENERIC OVERLAY -->
+								<div class="admin__config-editor-form-wrapper-overlay"
+									data-cm="overlay"></div>
 
 								<!-- AJAX LOADING OVERLAY -->
 								<span class="ajax_loader"> <img
@@ -80,12 +106,13 @@
 									<div class="admin__overlay-bar">
 
 										<div class="admin__config-editor-overlay-bar-buttons-wrapper">
-										    <!-- CANCEL -->
-											<h:commandButton value="#{msg.cancel}"
+											<!-- CANCEL -->
+											<h:commandButton value="#{msg.reset}"
 												disabled="#{not(configEditorBean.editable)}"
 												styleClass="btn btn--default admin__overlay-bar-action"
+												pt:data-cm="cancel"
 												action="#{configEditorBean.cancelAction}">
-												<f:ajax execute="@form" render="backup-form" />
+												<f:ajax execute="@form" render="nothing" />
 											</h:commandButton>
 
 											<!-- SAVE -->
@@ -98,13 +125,12 @@
 										</div>
 
 									</div>
-									
+
 									<!-- CHECK THIS + ADAPT STYLING -->
 									<div id="currentConfigFileType"
 										style="position: absolute; visibility: hidden">
-										#{configEditorBean.currentConfigFileType}
-									</div>
-									
+										#{configEditorBean.currentConfigFileType}</div>
+
 								</h:form>
 
 							</div>
@@ -146,40 +172,42 @@
 													</h:commandButton>
 
 
-												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}">
+													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
 													<ui:fragment rendered="#{!record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
 															title="#{msg.admin__config_editor__not_readable}"
 															data-toggle="tooltip" data-placement="left"
 															data-trigger="hover">
-															<i class="fa fa-eye" aria-hidden="true"></i>
-															<i class="fa fa-ban" aria-hidden="true"></i>
+															<i class="fa fa-eye" aria-hidden="true"></i> <i
+																class="fa fa-ban" aria-hidden="true"></i>
 														</div>
 													</ui:fragment>
-													<ui:fragment rendered="#{!record.writable and record.readable}">
+													<ui:fragment
+														rendered="#{!record.writable and record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
 															title="#{msg.admin__config_editor__not_writable}"
 															data-toggle="tooltip" data-placement="left"
 															data-trigger="hover">
-															<i class="fa fa-pencil" aria-hidden="true"></i>
-															<i class="fa fa-ban" aria-hidden="true"></i>
+															<i class="fa fa-pencil" aria-hidden="true"></i> <i
+																class="fa fa-ban" aria-hidden="true"></i>
 														</div>
 													</ui:fragment>
-                                                    <ui:fragment rendered="#{configEditorBean.isFileLocked(record)}">
-                                                        <div
-                                                            class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-                                                            title="#{msg.admin__config_editor__not_writable}"
-                                                            data-toggle="tooltip" data-placement="left"
-                                                            data-trigger="hover">
-                                                            <i class="fa fa-lock" aria-hidden="true"></i>
-                                                            <i class="fa fa-ban" aria-hidden="true"></i>
-                                                        </div>
-                                                    </ui:fragment>
-												</h:panelGroup>	
-													
-													
+													<ui:fragment
+														rendered="#{configEditorBean.isFileLocked(record)}">
+														<div
+															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
+															title="#{msg.admin__config_editor__not_writable}"
+															data-toggle="tooltip" data-placement="left"
+															data-trigger="hover">
+															<i class="fa fa-lock" aria-hidden="true"></i> <i
+																class="fa fa-ban" aria-hidden="true"></i>
+														</div>
+													</ui:fragment>
+													<!-- 												</h:panelGroup>	 -->
+
+
 
 
 												</div>
@@ -201,15 +229,12 @@
 								<h2>#{msg.admin__config_editor__backups}</h2>
 
 								<h:form id="backup-form">
-
-									<!-- TO DO CONDITION -->
-									<!-- 								<ui:fragment rendered="#{configEditorBean.backupRecordsModel.length() > 0}"> -->
-
 									<div class="admin__config-editor-backup-wrapper">
 										<ui:repeat var="record"
 											value="#{configEditorBean.backupRecordsModel}">
 
-											<ui:fragment rendered="#{record.number != -1}">
+											<ui:fragment
+												rendered="#{not empty configEditorBean.backupRecordsModel}">
 
 												<h:commandLink
 													styleClass="btn btn--clean admin__config-editor-backup-single-entry"
@@ -219,124 +244,122 @@
 													<span class="admin__config-editor-backup-single-entry-icon"><i
 														class="fa fa-download"></i></span>
 												</h:commandLink>
-											
+
 											</ui:fragment>
-											
-											<ui:fragment rendered="#{record.number == -1}">
-											
-												<span class="btn btn--clean admin__config-editor-backup-single-entry">
+
+											<ui:fragment rendered="#{empty configEditorBean.backupRecordsModel}">
+
+												<span
+													class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
 													<span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
 												</span>
-												
+
 											</ui:fragment>
 
 
 										</ui:repeat>
 									</div>
-
-									<!-- 								</ui:fragment> -->
 								</h:form>
 
 							</div>
-							
-							
+
+
 							<div class="admin__default-block">
 
 								<h2>#{msg.admin__config_editor__shortcuts_list_title}</h2>
-								
+
 								<div class="admin__form-help-text in mb-2">
-									#{msg.admin__config_editor__shortcuts_help}
-								</div>
-							
-							<div class="admin__config-editor-shortcuts-wrapper">
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_search}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">F</div>
+									#{msg.admin__config_editor__shortcuts_help}</div>
+
+								<div class="admin__config-editor-shortcuts-wrapper">
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_search}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">F</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_next}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">G</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_prev}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">SHIFT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">G</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_replace}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">SHIFT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">F</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_indent}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">SHIFT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">TAB</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_save}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">S</div>
+										</div>
+									</div>
+									<!-- 								<div class="admin__config-editor-shortcuts-entry"> -->
+									<!-- 									<div class="admin__config-editor-shortcuts-text">Keep search open</div> -->
+									<!-- 									<div class="admin__config-editor-shortcuts-key-wrapper"> -->
+									<!-- 										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div> -->
+									<!-- 										<div class="admin__config-editor-shortcuts-key-spacer">+</div> -->
+									<!-- 										<div class="admin__config-editor-shortcuts-key">E</div> -->
+									<!-- 									</div> -->
+									<!-- 								</div> -->
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_fullscreen}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">F11</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_dark}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">D</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_linejump}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">ALT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">G</div>
+										</div>
 									</div>
 								</div>
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_next}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">G</div>
-									</div>
-								</div>
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_prev}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">SHIFT</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">G</div>
-									</div>
-								</div>
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_replace}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">SHIFT</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">F</div>
-									</div>
-								</div>
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_indent}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">SHIFT</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">TAB</div>
-									</div>
-								</div>
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_save}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">S</div>
-									</div>
-								</div>
-<!-- 								<div class="admin__config-editor-shortcuts-entry"> -->
-<!-- 									<div class="admin__config-editor-shortcuts-text">Keep search open</div> -->
-<!-- 									<div class="admin__config-editor-shortcuts-key-wrapper"> -->
-<!-- 										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div> -->
-<!-- 										<div class="admin__config-editor-shortcuts-key-spacer">+</div> -->
-<!-- 										<div class="admin__config-editor-shortcuts-key">E</div> -->
-<!-- 									</div> -->
-<!-- 								</div> -->
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_fullscreen}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">F11</div>
-									</div>
-								</div>
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_dark}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">D</div>
-									</div>
-								</div>
-								<div class="admin__config-editor-shortcuts-entry">
-									<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_linejump}</div>
-									<div class="admin__config-editor-shortcuts-key-wrapper">
-										<div class="admin__config-editor-shortcuts-key">ALT</div>
-										<div class="admin__config-editor-shortcuts-key-spacer">+</div>
-										<div class="admin__config-editor-shortcuts-key">G</div>
-									</div>
-								</div>
+
 							</div>
-							
-								</div>
-							
-							
-							
+
+
+
 
 						</div>
 					</div>
