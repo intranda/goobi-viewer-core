@@ -76,11 +76,11 @@ import io.goobi.viewer.model.administration.configeditor.FilesListing;
 
 @Named
 @SessionScoped
-public class ConfigEditorBean implements Serializable {
+public class AdminConfigEditorBean implements Serializable {
 
     private static final long serialVersionUID = -4120457702630667052L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigEditorBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminConfigEditorBean.class);
 
     /** Manual edit locks for files. */
     private static final FileLocks fileLocks = new FileLocks();
@@ -120,7 +120,7 @@ public class ConfigEditorBean implements Serializable {
 
     private boolean nightMode = false;
 
-    public ConfigEditorBean() {
+    public AdminConfigEditorBean() {
         //
     }
 
@@ -604,7 +604,6 @@ public class ConfigEditorBean implements Serializable {
 
         int row = 0;
         for (FileRecord fileRecord : filesListing.getFileRecords()) {
-            logger.trace(fileRecord.getFileName());
             if (fileRecord.getFileName().equals(decodedFileName)) {
                 filesListing.getFileRecordsModel().setRowIndex(row);
                 selectFileAndShowBackups(fileRecord.isWritable());

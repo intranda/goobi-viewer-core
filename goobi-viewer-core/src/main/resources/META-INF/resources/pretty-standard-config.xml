@@ -928,10 +928,10 @@
     <url-mapping id="adminConfigEditor">
         <pattern value="/admin/config/" />
         <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
-        <action onPostback="false">#{configEditorBean.closeCurrentFileAction}</action>
+        <action onPostback="false">#{adminConfigEditorBean.closeCurrentFileAction}</action>
     </url-mapping>
     <url-mapping id="adminConfigEditorFilename">
-        <pattern value="/admin/config/edit/#{currentFileName:configEditorBean.currentFileName}/" />
+        <pattern value="/admin/config/edit/#{currentFileName:adminConfigEditorBean.currentFileName}/" />
         <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
     </url-mapping>
 

@@ -44,11 +44,11 @@
 							<div class="admin__config-editor-current-file-wrapper">
 								<h:form id="configEditorActualFile">
 									<h2>#{msg.admin__config_editor__actual_file}:
-										#{configEditorBean.currentFileName}</h2>
+										#{adminConfigEditorBean.currentFileName}</h2>
 								</h:form>
 
 
-                                <ui:fragment rendered="#{configEditorBean.currentFileName != '-'}">
+                                <ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
 									<h:form>
 										<div class="admin__config-editor-release-button-wrapper">
 											<i class="fa fa-times-circle" aria-hidden="true"></i>
@@ -58,7 +58,7 @@
 											data-require-confirmation="true"
 	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm, ipRange.name)}"
 											title="#{msg.admin__config_editor__release_button_tooltip}"
-											jsf:action="#{configEditorBean.closeCurrentFileAction}">
+											jsf:action="#{adminConfigEditorBean.closeCurrentFileAction}">
 											</a>
 											</div>
 									</h:form>
@@ -86,7 +86,7 @@
 									<!-- TEXTAREA -->
 									<h:inputTextarea id="editor"
 										class="admin__config-editor-textarea" cols="80" rows="10"
-										value="#{configEditorBean.fileContent}" />
+										value="#{adminConfigEditorBean.fileContent}" />
 
 									<script>console.log('something happened');</script>
 
@@ -108,7 +108,7 @@
 										<div class="admin__config-editor-overlay-bar-buttons-wrapper">
 											<!-- CANCEL -->
 											<h:commandButton value="#{msg.reset}"
-												disabled="#{not(configEditorBean.editable)}"
+												disabled="#{not(adminConfigEditorBean.editable)}"
 												styleClass="btn btn--default admin__overlay-bar-action"
 												pt:data-cm="cancel">
 												<f:ajax execute="@form" render="nothing" />
@@ -118,7 +118,7 @@
 											<h:commandButton value="#{msg.save}" type="submit"
 												styleClass="btn btn--success admin__overlay-bar-action"
 												pt:data-cm="save" onclick="viewerJS.showLoader();"
-												action="#{configEditorBean.saveCurrentFileAction}">
+												action="#{adminConfigEditorBean.saveCurrentFileAction}">
 											</h:commandButton>
 
 										</div>
@@ -128,7 +128,7 @@
 									<!-- CHECK THIS + ADAPT STYLING -->
 									<div id="currentConfigFileType"
 										style="position: absolute; visibility: hidden">
-										#{configEditorBean.currentConfigFileType}</div>
+										#{adminConfigEditorBean.currentConfigFileType}</div>
 
 								</h:form>
 
@@ -153,16 +153,16 @@
 
 
 										<ui:repeat var="record" varStatus="status"
-											value="#{configEditorBean.fileRecordsModel}">
+											value="#{adminConfigEditorBean.fileRecordsModel}">
 
 											<div
-												class="admin__config-editor-file-selection-single-entry #{configEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
+												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
 													<h:commandButton value="#{record.fileName}"
 														styleClass="admin__config-editor-file-selection-single-entry-button"
-														action="#{configEditorBean.editFile(record.writable)}"
+														action="#{adminConfigEditorBean.editFile(record.writable)}"
 														name="#{record.number}" disabled="#{!record.readable}"
 														onclick="viewerJS.showLoader();">
 														<f:ajax execute="@this"
@@ -194,7 +194,7 @@
 														</div>
 													</ui:fragment>
 													<ui:fragment
-														rendered="#{configEditorBean.isFileLocked(record)}">
+														rendered="#{adminConfigEditorBean.isFileLocked(record)}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
 															title="#{msg.admin__config_editor__not_writable}"
@@ -230,15 +230,15 @@
 								<h:form id="backup-form">
 									<div class="admin__config-editor-backup-wrapper">
 										<ui:repeat var="record"
-											value="#{configEditorBean.backupRecordsModel}">
+											value="#{adminConfigEditorBean.backupRecordsModel}">
 
 											<ui:fragment
-												rendered="#{configEditorBean.backupRecordsModel.rowCount != 0}">
+												rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount != 0}">
 
 												<h:commandLink
 													styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-													action="#{configEditorBean.downloadFile(record)}"
-													disabled="#{not(configEditorBean.downloadable)}">
+													action="#{adminConfigEditorBean.downloadFile(record)}"
+													disabled="#{not(adminConfigEditorBean.downloadable)}">
 													<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
 													<span class="admin__config-editor-backup-single-entry-icon"><i
 														class="fa fa-download"></i></span>
@@ -246,7 +246,7 @@
 
 											</ui:fragment>
 
-											<ui:fragment rendered="#{configEditorBean.backupRecordsModel.rowCount == 0}">
+											<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount == 0}">
 												<span
 													class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
 													<span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
