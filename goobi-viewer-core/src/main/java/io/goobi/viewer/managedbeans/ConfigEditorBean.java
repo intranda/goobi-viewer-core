@@ -371,9 +371,6 @@ public class ConfigEditorBean implements Serializable {
             // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
             if (isConfigViewer) {
                 logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
-                boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
-                int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups();
-                List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
 
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
@@ -381,28 +378,38 @@ public class ConfigEditorBean implements Serializable {
                 document.getDocumentElement().normalize();
 
                 // get the parent node <configEditor>
-                Node configEditor = document.getElementsByTagName("configEditor").item(0);
+                NodeList configEditorList = document.getElementsByTagName("configEditor");
+                if (configEditorList != null) {
+                    Node configEditor = document.getElementsByTagName("configEditor").item(0);
 
-                // set the values of the attributes "enabled" and "maximum" back
-                configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
-                configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(origConfigEditorMax));
+                    // set the values of the attributes "enabled" and "maximum" back
+                    if (configEditor.getAttributes().getNamedItem("enabled") != null) {
+                        boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
+                        configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
+                    }
+                    if (configEditor.getAttributes().getNamedItem("maximum") != null) {
+                        int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups();
+                        configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(origConfigEditorMax));
+                    }
 
-                // get the list of all <directory> elements
-                NodeList directoryList = configEditor.getChildNodes();
+                    // get the list of all <directory> elements
+                    NodeList directoryList = configEditor.getChildNodes();
 
-                // remove these modified elements
-                while (directoryList.getLength() > 0) {
-                    Node node = directoryList.item(0);
-                    configEditor.removeChild(node);
+                    // remove these modified elements
+                    while (directoryList.getLength() > 0) {
+                        Node node = directoryList.item(0);
+                        configEditor.removeChild(node);
+                    }
+                    // rewrite the backed-up values "configPaths" into this block
+                    List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
+                    for (String configPath : origConfigEditorDirectories) {
+                        Node newNode = document.createElement("directory");
+                        newNode.setTextContent(configPath);
+                        configEditor.appendChild(document.createTextNode("\n\t"));
+                        configEditor.appendChild(newNode);
+                    }
+                    configEditor.appendChild(document.createTextNode("\n    "));
                 }
-                // rewrite the backed-up values "configPaths" into this block
-                for (String configPath : origConfigEditorDirectories) {
-                    Node newNode = document.createElement("directory");
-                    newNode.setTextContent(configPath);
-                    configEditor.appendChild(document.createTextNode("\n\t"));
-                    configEditor.appendChild(newNode);
-                }
-                configEditor.appendChild(document.createTextNode("\n    "));
 
                 TransformerFactory tf = TransformerFactory.newInstance();
                 Transformer transformer = tf.newTransformer();
