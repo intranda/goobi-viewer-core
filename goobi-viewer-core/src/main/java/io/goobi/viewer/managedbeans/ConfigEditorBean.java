@@ -347,7 +347,7 @@ public class ConfigEditorBean implements Serializable {
         //            return "";
         //        }
 
-        logger.trace("fileContent:\n{}", fileContent);
+        // logger.trace("fileContent:\n{}", fileContent);
         // Save the latest modification to the original path.
         Path originalPath = currentFileRecord.getFile();
 
@@ -604,9 +604,11 @@ public class ConfigEditorBean implements Serializable {
 
         int row = 0;
         for (FileRecord fileRecord : filesListing.getFileRecords()) {
+            logger.trace(fileRecord.getFileName());
             if (fileRecord.getFileName().equals(decodedFileName)) {
                 filesListing.getFileRecordsModel().setRowIndex(row);
                 selectFileAndShowBackups(fileRecord.isWritable());
+                return;
             }
             row++;
         }
