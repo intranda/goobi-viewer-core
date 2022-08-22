@@ -89,6 +89,18 @@
 	                                            <dd class="col-sm-8">
 	                                            	#{adminLicenseBean.getNumRecordsWithAccessCondition(licenseType.name)}
 	                                            </dd>
+	                                            <!-- OVERRIDING LICENSE TYPES -->
+	                                            <ui:fragment rendered="#{not empty licenseType.overridingLicenseTypes}">
+                                                    <dt class="col-sm-4">#{msg.admin__license_overriding}:</dt>
+                                                    <dd class="col-sm-8">
+                                                        <ui:repeat var="overridingLicenseType" value="#{licenseType.overridingLicenseTypes}">
+                                                            <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{overridingLicenseType.id}/"
+                                                                class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{overridingLicenseType.name}">
+                                                                #{overridingLicenseType.name}
+                                                             </a> 
+                                                        </ui:repeat>
+                                                    </dd>
+	                                            </ui:fragment>
 	                                            
                                                 <ui:fragment rendered="#{adminLicenseBean.isLicenseTypeInUse(licenseType)}">
                                                     <dt class="col-sm-4">#{msg.admin__license_licensee}:</dt>
