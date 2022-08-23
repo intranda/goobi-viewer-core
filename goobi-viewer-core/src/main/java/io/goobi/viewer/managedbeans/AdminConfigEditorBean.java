@@ -34,7 +34,7 @@ import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,6 +66,7 @@ import org.xml.sax.SAXException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -92,7 +93,7 @@ public class AdminConfigEditorBean implements Serializable {
     private int fileInEditionNumber = -1;
     private transient FileRecord currentFileRecord;
     private String fileContent;
-    private String temp = ""; // Used to check if the content of the textarea is modified
+    private String unmodifiledFileContent = ""; // Used to check if the content of the textarea is modified
 
     // ReadOnly or editable
     private boolean editable = false;
@@ -278,7 +279,7 @@ public class AdminConfigEditorBean implements Serializable {
                 }
                 fileContent = Files.readString(filePath);
             }
-            temp = fileContent;
+            unmodifiledFileContent = fileContent;
         } catch (OverlappingFileLockException oe) {
             logger.trace("The region specified is already locked by another process.", oe);
 
@@ -340,7 +341,6 @@ public class AdminConfigEditorBean implements Serializable {
         //            return "";
         //        }
 
-        // logger.trace("fileContent:\n{}", fileContent);
         // Save the latest modification to the original path.
         Path originalPath = currentFileRecord.getFile();
 
@@ -348,13 +348,6 @@ public class AdminConfigEditorBean implements Serializable {
         if (fileLocks.isFileLockedByOthers(originalPath, BeanUtils.getSession().getId())) {
             Messages.error("admin__config_editor__file_locked_msg");
             return "";
-        }
-
-        // Use the filename without extension to create a folder for its backup_copies.
-        String newBackupFolderPath = backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", "");
-        File newBackupFolder = new File(newBackupFolderPath);
-        if (!newBackupFolder.exists()) {
-            newBackupFolder.mkdir();
         }
 
         try {
@@ -413,16 +406,19 @@ public class AdminConfigEditorBean implements Serializable {
                 // save the modified content again
                 fileContent = Files.readString(originalPath);
 
-                if (temp.equals(fileContent)) {
+                if (unmodifiledFileContent.equals(fileContent)) {
                     return "";
                 }
             }
 
-            // Use a time stamp to distinguish the backups.
-            String timeStamp = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS").format(new java.util.Date()).replace(":", "").replaceFirst("[.]", "");
-            Path newBackupPath = Path.of(newBackupFolderPath + "/" + currentFileRecord.getFileName() + "." + timeStamp);
-            // save the original content to backup files
-            Files.writeString(newBackupPath, temp, StandardCharsets.UTF_8);
+            // Use the filename without extension to create a folder for its backup_copies.
+            String newBackupFolderPath = backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", "");
+            File newBackupFolder = new File(newBackupFolderPath);
+            if (!newBackupFolder.exists()) {
+                newBackupFolder.mkdir();
+            }
+            createBackup(newBackupFolderPath, currentFileRecord.getFileName(), unmodifiledFileContent);
+            refreshBackups(newBackupFolder);
         } catch (IOException e) {
             logger.trace("IOException caught in the method saveFile()", e);
         } catch (SAXException e) {
@@ -433,14 +429,38 @@ public class AdminConfigEditorBean implements Serializable {
             logger.trace("TransformerConfigurationException caught in the method saveFile()", e);
         } catch (TransformerException e) {
             logger.trace("TransformerException caught in the method saveFile()", e);
-        } finally {
         }
 
-        temp = fileContent;
-        refreshBackups(newBackupFolder);
+        unmodifiledFileContent = fileContent;
 
         Messages.info("updatedSuccessfully");
         return "";
+    }
+
+    /**
+     * Creates a timestamped backup of the given file name and content.
+     * 
+     * @param backupFolderPath Backup folder path
+     * @param backup File name root
+     * @param content File content
+     * @throws IOException
+     */
+    public static void createBackup(String backupFolderPath, String fileName, String content) throws IOException {
+        if (backupFolderPath == null) {
+            throw new IllegalAccessError("backupFolderPath may not be null");
+        }
+        if (fileName == null) {
+            throw new IllegalAccessError("fileName may not be null");
+        }
+        if (content == null) {
+            throw new IllegalAccessError("content may not be null");
+        }
+
+        // Use a time stamp to distinguish the backups.
+        String timeStamp = DateTools.format(LocalDateTime.now(), DateTools.formatterFileName, false);
+        Path newBackupPath = Path.of(backupFolderPath, fileName + "." + timeStamp);
+        // save the original content to backup files
+        Files.writeString(newBackupPath, content, StandardCharsets.UTF_8);
     }
 
     /**

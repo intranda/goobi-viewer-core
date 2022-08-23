@@ -22,23 +22,49 @@
 package io.goobi.viewer.model.administration.configeditor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import io.goobi.viewer.controller.DateTools;
 
 public class BackupRecord implements Serializable {
 
     private static final long serialVersionUID = -7935008140086500081L;
 
+    /** Date/time part of file name */
     private String name;
+    /** Index in list */
     private int number;
 
+    /**
+     * 
+     * @param name
+     * @param i
+     */
     public BackupRecord(String name, int i) {
         this.name = name;
         this.number = i;
     }
 
+    /**
+     * 
+     * @return <code>name</code> as a {@link LocalDateTime}
+     */
+    public LocalDateTime getDate() {
+        return LocalDateTime.parse(name, DateTools.formatterFileName);
+    }
+
+    /**
+     * 
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getNumber() {
         return number;
     }

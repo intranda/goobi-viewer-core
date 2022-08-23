@@ -238,9 +238,15 @@
 							    				<h:commandLink
 							    					styleClass="btn btn--clean admin__config-editor-backup-single-entry"
 							    					action="#{adminConfigEditorBean.downloadFile(record)}">
-							    					<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
-							    					<span class="admin__config-editor-backup-single-entry-icon"><i
-							    						class="fa fa-download"></i></span>
+							    					<span class="admin__config-editor-backup-single-entry-text">
+                                                        <h:outputText value="#{record.date}">
+                                                            <f:converter converterId="localDateTimeConverter" />
+                                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+                                                        </h:outputText>
+							    					</span>
+							    					<span class="admin__config-editor-backup-single-entry-icon">
+							    					    <i class="fa fa-download"></i>
+							    					</span>
 							    				</h:commandLink>
 							    			</ui:repeat>
                                             <ui:fragment rendered="#{!adminConfigEditorBean.backupsAvailable}">
