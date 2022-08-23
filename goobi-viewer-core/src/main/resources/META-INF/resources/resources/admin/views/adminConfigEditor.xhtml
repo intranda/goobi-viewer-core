@@ -145,6 +145,8 @@
 
 								<h2>#{msg.admin__config_editor__files}</h2>
 
+                                <div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__files-help}:</div>
+
 								<h:form id="file-form">
 
 									<div class="admin__config-editor-file-selection-inner"
@@ -189,8 +191,8 @@
 															title="#{msg.admin__config_editor__not_writable}"
 															data-toggle="tooltip" data-placement="left"
 															data-trigger="hover">
-															<i class="fa fa-pencil" aria-hidden="true"></i> <i
-																class="fa fa-ban" aria-hidden="true"></i>
+															<i class="fa fa-pencil" aria-hidden="true"></i>
+                                                            <i class="fa fa-ban" aria-hidden="true"></i>
 														</div>
 													</ui:fragment>
 													<ui:fragment
@@ -200,8 +202,8 @@
 															title="#{msg.admin__config_editor__not_writable}"
 															data-toggle="tooltip" data-placement="left"
 															data-trigger="hover">
-															<i class="fa fa-lock" aria-hidden="true"></i> <i
-																class="fa fa-ban" aria-hidden="true"></i>
+															<i class="fa fa-lock" aria-hidden="true"></i> 
+                                                            <i class="fa fa-ban" aria-hidden="true"></i>
 														</div>
 													</ui:fragment>
 													<!-- 												</h:panelGroup>	 -->
@@ -226,14 +228,15 @@
 							<div class="admin__default-block">
 
 								<h2>#{msg.admin__config_editor__backups}</h2>
+                                
+                                <div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__backups-help}:</div>
 
 								<h:form id="backup-form">
 									<div class="admin__config-editor-backup-wrapper">
 										<ui:repeat var="record"
 											value="#{adminConfigEditorBean.backupRecordsModel}">
 
-											<ui:fragment
-												rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount != 0}">
+											<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount != 0}">
 
 												<h:commandLink
 													styleClass="btn btn--clean admin__config-editor-backup-single-entry"
