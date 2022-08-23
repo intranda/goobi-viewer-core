@@ -233,32 +233,21 @@
 
 							    	<h:form id="backup-form">
 							    		<div class="admin__config-editor-backup-wrapper">
-							    			<ui:repeat var="record"
-							    				value="#{adminConfigEditorBean.backupRecordsModel}">
-
-							    				<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount != 0}">
-
-							    					<h:commandLink
-							    						styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-							    						action="#{adminConfigEditorBean.downloadFile(record)}"
-							    						disabled="#{not(adminConfigEditorBean.downloadable)}">
-							    						<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
-							    						<span class="admin__config-editor-backup-single-entry-icon"><i
-							    							class="fa fa-download"></i></span>
-							    					</h:commandLink>
-
-							    				</ui:fragment>
-
-							    				<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount == 0}">
-							    					<span
-							    						class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
-							    						<span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
-							    					</span>
-
-							    				</ui:fragment>
-
-
+							    			<ui:repeat rendered="#{adminConfigEditorBean.backupsAvailable}"
+							    			    var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
+							    				<h:commandLink
+							    					styleClass="btn btn--clean admin__config-editor-backup-single-entry"
+							    					action="#{adminConfigEditorBean.downloadFile(record)}">
+							    					<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
+							    					<span class="admin__config-editor-backup-single-entry-icon"><i
+							    						class="fa fa-download"></i></span>
+							    				</h:commandLink>
 							    			</ui:repeat>
+                                            <ui:fragment rendered="#{!adminConfigEditorBean.backupsAvailable}">
+                                                <span class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
+                                                    <span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
+                                                </span>
+                                            </ui:fragment>
 							    		</div>
 							    	</h:form>
 

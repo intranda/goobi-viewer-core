@@ -66,7 +66,6 @@ import org.xml.sax.SAXException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -104,9 +103,6 @@ public class AdminConfigEditorBean implements Serializable {
     private File[] backupFiles;
     private String[] backupNames;
     private String backupsPath; // to maintain the backup files
-
-    // Whether there is anything to download
-    private boolean downloadable = false;
 
     // Fields for File-IO
     //    private transient FileOutputStream fileOutputStream = null;
@@ -191,12 +187,8 @@ public class AdminConfigEditorBean implements Serializable {
         this.editable = editable;
     }
 
-    public boolean isDownloadable() {
-        return downloadable;
-    }
-
-    public void setDownloadable(boolean downloadable) {
-        this.downloadable = downloadable;
+    public boolean isBackupsAvailable() {
+        return !backupRecords.isEmpty();
     }
 
     public String getCurrentConfigFileType() {
@@ -460,7 +452,6 @@ public class AdminConfigEditorBean implements Serializable {
         if (backupFolder == null || !Files.isDirectory(backupFolder.toPath())) {
             backupFiles = null;
             backupNames = null;
-            downloadable = false;
             return;
         }
 
@@ -484,17 +475,15 @@ public class AdminConfigEditorBean implements Serializable {
                 }
                 backupFiles = backupFolder.listFiles();
             }
-            
+
             backupNames = new String[length];
             for (int i = 0; i < length; ++i) {
                 backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
                 backupRecords.add(new BackupRecord(backupNames[i], i));
             }
-            downloadable = true;
         } else {
             backupFiles = null;
             backupNames = null;
-            downloadable = false;
         }
 
         backupRecordsModel = new ListDataModel<>(backupRecords);
