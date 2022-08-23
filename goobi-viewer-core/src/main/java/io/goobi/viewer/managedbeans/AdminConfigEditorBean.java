@@ -451,7 +451,12 @@ public class AdminConfigEditorBean implements Serializable {
         return "";
     }
 
+    /**
+     * 
+     * @param backupFolder
+     */
     public void refreshBackups(File backupFolder) {
+        backupRecords.clear();
         if (backupFolder == null || !Files.isDirectory(backupFolder.toPath())) {
             backupFiles = null;
             backupNames = null;
@@ -460,7 +465,6 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         // refresh the backup metadata
-        backupRecords.clear();
         backupFiles = backupFolder.listFiles();
         int length = backupFiles.length;
         if (length > 0) {
