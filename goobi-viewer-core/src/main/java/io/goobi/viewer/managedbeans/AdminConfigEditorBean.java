@@ -66,6 +66,7 @@ import org.xml.sax.SAXException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -444,39 +445,55 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         temp = fileContent;
-
-        // refresh the backup metadata
-        backupFiles = newBackupFolder.listFiles();
-        Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
-
-        int length = backupFiles.length;
-        if (DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups() > 0
-                && length > DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups()) {
-            // remove the oldest backup
-            try {
-                Files.delete(backupFiles[length - 1].toPath());
-                length -= 1;
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-            }
-        }
-
-        backupNames = new String[length];
-        backupRecords.clear();
-        for (int i = 0; i < length; ++i) {
-            backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
-            backupRecords.add(new BackupRecord(backupNames[i], i));
-        }
-        backupRecordsModel = new ListDataModel<>(backupRecords);
-        downloadable = true;
+        refreshBackups(newBackupFolder);
 
         Messages.info("updatedSuccessfully");
-
         return "";
     }
 
-    public void showBackups() {
-        selectFileAndShowBackups(false);
+    public void refreshBackups(File backupFolder) {
+        if (backupFolder == null || !Files.isDirectory(backupFolder.toPath())) {
+            backupFiles = null;
+            backupNames = null;
+            downloadable = false;
+            return;
+        }
+
+        // refresh the backup metadata
+        backupRecords.clear();
+        backupFiles = backupFolder.listFiles();
+        int length = backupFiles.length;
+        if (length > 0) {
+            // Sort by date (descending)
+            if (length > 1) {
+                Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
+            }
+
+            // Trim old backup files, if so configured
+            if (DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups() > 0) {
+                while (length > DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups()) {
+                    try {
+                        Files.delete(backupFiles[length--].toPath());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+                backupFiles = backupFolder.listFiles();
+            }
+            
+            backupNames = new String[length];
+            for (int i = 0; i < length; ++i) {
+                backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
+                backupRecords.add(new BackupRecord(backupNames[i], i));
+            }
+            downloadable = true;
+        } else {
+            backupFiles = null;
+            backupNames = null;
+            downloadable = false;
+        }
+
+        backupRecordsModel = new ListDataModel<>(backupRecords);
     }
 
     /**
@@ -492,34 +509,17 @@ public class AdminConfigEditorBean implements Serializable {
         editable = writable;
 
         logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, currentFileRecord.getFileName());
-
-        File backups = new File(backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", ""));
-        if (backups.exists()) {
-            backupFiles = backups.listFiles();
-            if (backupFiles.length > 0) {
-                Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
-                backupNames = new String[backupFiles.length];
-                backupRecords.clear();
-                for (int i = 0; i < backupFiles.length; ++i) {
-                    backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
-                    backupRecords.add(new BackupRecord(backupNames[i], i));
-                }
-                downloadable = true;
-            }
-
-        } else {
-            backupFiles = null;
-            backupNames = null;
-            backupRecords.clear();
-            downloadable = false;
-        }
-        backupRecordsModel = new ListDataModel<>(backupRecords);
+        refreshBackups(new File(backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", "")));
 
         try {
             openFile();
         } catch (IOException e) {
             logger.trace("IOException caught in the method showBackups(boolean)", e);
         }
+    }
+
+    public void showBackups() {
+        selectFileAndShowBackups(false);
     }
 
     /**
