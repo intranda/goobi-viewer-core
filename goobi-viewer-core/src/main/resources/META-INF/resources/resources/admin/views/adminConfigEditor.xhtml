@@ -225,44 +225,46 @@
 							</div>
 
 							<!-- BACKUP FILES BLOCK -->
-							<div class="admin__default-block">
+                            <ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
+							    <div class="admin__default-block">
 
-								<h2>#{msg.admin__config_editor__backups}</h2>
-                                
-                                <div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__backups_help}:</div>
+							    	<h2>#{msg.admin__config_editor__backups}</h2>
+                                    
+                                    <div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__backups_help}:</div>
 
-								<h:form id="backup-form">
-									<div class="admin__config-editor-backup-wrapper">
-										<ui:repeat var="record"
-											value="#{adminConfigEditorBean.backupRecordsModel}">
+							    	<h:form id="backup-form">
+							    		<div class="admin__config-editor-backup-wrapper">
+							    			<ui:repeat var="record"
+							    				value="#{adminConfigEditorBean.backupRecordsModel}">
 
-											<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount != 0}">
+							    				<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount != 0}">
 
-												<h:commandLink
-													styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-													action="#{adminConfigEditorBean.downloadFile(record)}"
-													disabled="#{not(adminConfigEditorBean.downloadable)}">
-													<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
-													<span class="admin__config-editor-backup-single-entry-icon"><i
-														class="fa fa-download"></i></span>
-												</h:commandLink>
+							    					<h:commandLink
+							    						styleClass="btn btn--clean admin__config-editor-backup-single-entry"
+							    						action="#{adminConfigEditorBean.downloadFile(record)}"
+							    						disabled="#{not(adminConfigEditorBean.downloadable)}">
+							    						<span class="admin__config-editor-backup-single-entry-text">#{record.name}</span>
+							    						<span class="admin__config-editor-backup-single-entry-icon"><i
+							    							class="fa fa-download"></i></span>
+							    					</h:commandLink>
 
-											</ui:fragment>
+							    				</ui:fragment>
 
-											<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount == 0}">
-												<span
-													class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
-													<span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
-												</span>
+							    				<ui:fragment rendered="#{adminConfigEditorBean.backupRecordsModel.rowCount == 0}">
+							    					<span
+							    						class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
+							    						<span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
+							    					</span>
 
-											</ui:fragment>
+							    				</ui:fragment>
 
 
-										</ui:repeat>
-									</div>
-								</h:form>
+							    			</ui:repeat>
+							    		</div>
+							    	</h:form>
 
-							</div>
+							    </div>
+                            </ui:fragment>
 
 
 							<div class="admin__default-block">
