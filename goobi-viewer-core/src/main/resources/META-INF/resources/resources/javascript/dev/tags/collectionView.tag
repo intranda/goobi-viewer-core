@@ -1,7 +1,7 @@
 <collectionView>
 	<div each="{set, index in collectionSets}">
 		<h2 if="{set[0] != ''}">{translator.translate(set[0])}</h2>
-		<collectionList collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}"/>
+		<collectionList collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}" depth="{opts.depth}"/>
 	</div>
 
 <script>
