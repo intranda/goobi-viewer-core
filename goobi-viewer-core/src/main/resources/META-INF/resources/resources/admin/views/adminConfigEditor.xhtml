@@ -48,7 +48,7 @@
 								</h:form>
 
 
-                                <ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
+								<ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
 									<h:form>
 										<div class="admin__config-editor-release-button-wrapper">
 											<i class="fa fa-times-circle" aria-hidden="true"></i>
@@ -56,7 +56,7 @@
 											class="btn btn--clean admin__config-editor-release-button" data-toggle="tooltip"
 											data-placement="top" data-trigger="hover"
 											data-require-confirmation="true"
-	                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm, ipRange.name)}"
+											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm, ipRange.name)}"
 											title="#{msg.admin__config_editor__release_button_tooltip}"
 											jsf:action="#{adminConfigEditorBean.closeCurrentFileAction}">
 											</a>
@@ -145,7 +145,7 @@
 
 								<h2>#{msg.admin__config_editor__files}</h2>
 
-                                <div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__files_help}:</div>
+								<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__files_help}:</div>
 
 								<h:form id="file-form">
 
@@ -202,7 +202,7 @@
 															data-toggle="tooltip" data-placement="left"
 															data-trigger="hover">
 															<i class="fa fa-lock" aria-hidden="true"></i> 
-                                                            <i class="fa fa-ban" aria-hidden="true"></i>
+															<i class="fa fa-ban" aria-hidden="true"></i>
 														</div>
 													</ui:fragment>
 													<!-- 												</h:panelGroup>	 -->
@@ -224,41 +224,39 @@
 							</div>
 
 							<!-- BACKUP FILES BLOCK -->
-                            <ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
-							    <div class="admin__default-block">
+							<ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
+								<div class="admin__default-block">
 
-							    	<h2>#{msg.admin__config_editor__backups}</h2>
-                                    
-                                    <div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__backups_help}:</div>
+									<h2>#{msg.admin__config_editor__backups}</h2>
 
-							    	<h:form id="backup-form">
-							    		<div class="admin__config-editor-backup-wrapper">
-							    			<ui:repeat rendered="#{adminConfigEditorBean.backupsAvailable}"
-							    			    var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
-							    				<h:commandLink
-							    					styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-							    					action="#{adminConfigEditorBean.downloadFile(record)}">
-							    					<span class="admin__config-editor-backup-single-entry-text">
-                                                        <h:outputText value="#{record.date}">
-                                                            <f:converter converterId="localDateTimeConverter" />
-                                                            <f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
-                                                        </h:outputText>
-							    					</span>
-							    					<span class="admin__config-editor-backup-single-entry-icon">
-							    					    <i class="fa fa-download"></i>
-							    					</span>
-							    				</h:commandLink>
-							    			</ui:repeat>
-                                            <ui:fragment rendered="#{!adminConfigEditorBean.backupsAvailable}">
-                                                <span class="btn btn--clean admin__config-editor-backup-single-entry -noHover">
-                                                    <span class="admin__config-editor-backup-single-entry-text">#{msg.admin__config_editor__no_backups}</span>
-                                                </span>
-                                            </ui:fragment>
-							    		</div>
-							    	</h:form>
+									<ui:fragment rendered="#{adminConfigEditorBean.backupsAvailable}">
+										<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__backups_help}:</div>
 
-							    </div>
-                            </ui:fragment>
+										<h:form id="backup-form">
+											<div class="admin__config-editor-backup-wrapper">
+												<ui:repeat var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
+													<h:commandLink
+														styleClass="btn btn--clean admin__config-editor-backup-single-entry"
+														action="#{adminConfigEditorBean.downloadFile(record)}">
+														<span class="admin__config-editor-backup-single-entry-text">
+															<h:outputText value="#{record.date}">
+																<f:converter converterId="localDateTimeConverter" />
+																<f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+															</h:outputText>
+														</span>
+														<span class="admin__config-editor-backup-single-entry-icon">
+															<i class="fa fa-download"></i>
+														</span>
+													</h:commandLink>
+												</ui:repeat>
+											</div>
+										</h:form>
+									</ui:fragment>
+									<ui:fragment rendered="#{!adminConfigEditorBean.backupsAvailable}">
+										<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__no_backups}</div>
+									</ui:fragment>
+								</div>
+							</ui:fragment>
 
 
 							<div class="admin__default-block">
