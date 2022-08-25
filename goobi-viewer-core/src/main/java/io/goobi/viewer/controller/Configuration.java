@@ -59,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -4968,7 +4969,24 @@ public class Configuration extends AbstractConfiguration {
     public String getLabelIIIFSeeAlsoLido() {
         return getLocalString("webapi.iiif.seeAlso.lido.label", "LIDO");
     }
+    
+    public List<ManifestLinkConfiguration> getIIIFSeeAlsoMetadataConfigurations() {
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.seeAlso.metadata");
+        List<ManifestLinkConfiguration> links = new ArrayList<>(configs.size());
+        for (HierarchicalConfiguration config : configs) {
+            String label = config.getString("[@label]", "");
+            String format = config.getString("[@format]", "");
+            MetadataParameter param = new MetadataParameter();
+            param.setKey(config.getString("param[@key]", ""));
+            param.setType(MetadataParameterType.getByKey(config.getString("param[@type]", "")));
+            links.add(new ManifestLinkConfiguration(label, format, param));
+        }
+        return links;
+    }
 
+    
+    
+    
     /**
      * <p>
      * getSitelinksField.
