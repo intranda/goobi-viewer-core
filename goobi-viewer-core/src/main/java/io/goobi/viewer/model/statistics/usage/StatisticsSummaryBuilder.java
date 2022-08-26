@@ -76,13 +76,15 @@ public class StatisticsSummaryBuilder {
     private StatisticsSummary getStatisticsFromSolrDoc(SolrDocument doc) {
         Long[] counts = new Long[] {0l,0l,0l,0l,0l,0l};
         for (String fieldName : doc.getFieldNames()) {
+            if(fieldName.startsWith(StatisticsLuceneFields.RECORD_STATISTICS_PREFIX)) {
             try {
-                Long[] values = (Long[])doc.getFieldValue(fieldName);
+                List<Long> values = (List<Long>)doc.getFieldValue(fieldName);
                 for (int i = 0; i < counts.length; i++) {
-                    counts[i] += values[i];
+                    counts[i] += values.get(i);
                 }
             } catch(ClassCastException e) {
                 logger.warn("Envountered solr doc field of unexcepted type: '{}' : '{}'",  fieldName, doc.getFieldValue(fieldName));
+            }
             }
         }
 
@@ -105,11 +107,16 @@ public class StatisticsSummaryBuilder {
         sb.append("+").append(SolrConstants.DOCTYPE).append(":").append(StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE);
         
         if(filter.isDateRange()) {
-            sb.append(" +").append(StatisticsLuceneFields.DATE).append(":").append("[")
-            .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate()))
-            .append(" TO ").append(StatisticsLuceneFields.solrDateFormatter.format(filter.getEndDate()));
+            sb.append(" +").append(StatisticsLuceneFields.DATE).append(":")
+            .append("[")
+            .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
+            .append(" TO ")
+            .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getEndDate().atStartOfDay()))
+            .append("]");
         } else if(filter.hasStartDateRestriction()) {
-            sb.append(" +").append(StatisticsLuceneFields.DATE).append(":").append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate()));
+            sb.append(" +").append(StatisticsLuceneFields.DATE).append(":")
+            .append("\"").append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
+            .append("\"");
         }
         return sb.toString();
     }
