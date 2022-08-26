@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +44,12 @@ public class StatisticsSummaryBuilderTest {
         
         SolrDocumentList docs = new SolrDocumentList();
         docs.add(new SolrDocument(Map.of(
-                StatisticsLuceneFields.getFieldName("PI_01"), new Long[] {12l, 2l, 0l, 0l, 0l, 0l},
-                StatisticsLuceneFields.getFieldName("PI_04"), new Long[] {4l, 1l, 0l, 0l, 0l, 0l}
+                StatisticsLuceneFields.getFieldName("PI_01"), Arrays.asList( new Long[] {12l, 2l, 0l, 0l, 0l, 0l}),
+                StatisticsLuceneFields.getFieldName("PI_04"), Arrays.asList( new Long[] {4l, 1l, 0l, 0l, 0l, 0l})
                 )));
         docs.add(new SolrDocument(Map.of(
-                StatisticsLuceneFields.getFieldName("PI_01"), new Long[] {6l, 1l, 0l, 0l, 0l, 0l},
-                StatisticsLuceneFields.getFieldName("PI_04"), new Long[] {0l, 0l, 0l, 0l, 0l, 0l}
+                StatisticsLuceneFields.getFieldName("PI_01"), Arrays.asList( new Long[] {6l, 1l, 0l, 0l, 0l, 0l}),
+                StatisticsLuceneFields.getFieldName("PI_04"), Arrays.asList( new Long[] {0l, 0l, 0l, 0l, 0l, 0l})
                 )));
         
         Mockito.when(searchIndex.search(Mockito.contains("DOCTYPE:" + StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE), Mockito.anyList())).thenReturn(docs);
