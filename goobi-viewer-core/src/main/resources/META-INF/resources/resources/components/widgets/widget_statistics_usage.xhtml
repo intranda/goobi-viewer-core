@@ -1,0 +1,54 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
+
+    <composite:interface>
+        	<composite:attribute name="collapse" type="java.lang.Boolean" required="false" default="false"/>
+    </composite:interface>
+
+    <composite:implementation>
+	
+		<c:set scope="request" var="stats" value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}"/>
+	
+	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
+		        <div id="widget-usage-statistics" class="widget">
+		        	<h2>#{msg.widget_usage_statistics__title}</h2>
+		        	<div class="widget__body">
+		        		<div>Total requests: #{stats.getTotalRequests()}</div>
+		        		<div>Unique requests: #{stats.getUniqueRequests()}</div>
+		        		<div>last checked date: #{statisticsBean.getLastUsageStatisticsCheck()}</div> 
+		        		<div>last requested date: #{stats.getLastRecordedDate()}</div>
+		        	</div>
+
+		        </div>
+	        </h:panelGroup>
+	        
+	        <!-- WIDGET WORK COUNT FOLDOUT -->
+	        <h:panelGroup rendered="#{cc.attrs.collapse == true}">
+	        	<div id="widget-usage-statistics" class="widget widget-usage-statistics">
+					<h2 >
+						<a href="#usageStatisticsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="usageStatisticsCollapse">
+						</a>
+					</h2>
+					
+					<div id="usageStatisticsCollapse" class="collapse">
+						<div id="usageStatistics"/>
+					</div>
+		        </div>
+	        </h:panelGroup>
+	 
+    <script>
+    	let date = new Date()
+    	date.setDate(new Date().getDate()-1);
+    	document.getElementById("lastRecordedDate").innerHTML = date.toLocaleDateString();
+    </script>
+    </composite:implementation>
+</ui:composition>

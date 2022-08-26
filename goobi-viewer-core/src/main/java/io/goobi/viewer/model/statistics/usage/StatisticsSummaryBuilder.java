@@ -1,7 +1,10 @@
 package io.goobi.viewer.model.statistics.usage;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +68,9 @@ public class StatisticsSummaryBuilder {
     
     private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException, PresentationException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
-        SolrDocumentList docs = this.searchIndex.search(getSolrQuery(filter), getFieldListForRecords(identifiersToInclude));
+        List<String> fields = getFieldListForRecords(identifiersToInclude);
+        fields.add(StatisticsLuceneFields.DATE);
+        SolrDocumentList docs = this.searchIndex.search(getSolrQuery(filter), fields);
         return docs.stream().reduce(StatisticsSummary.empty(), this::add , StatisticsSummary::add);
     }
     private StatisticsSummary add(StatisticsSummary s, SolrDocument d) {
@@ -89,13 +94,23 @@ public class StatisticsSummaryBuilder {
         }
 
         Map<RequestType, RequestTypeSummary> map = new HashMap<>();
+        LocalDate date = getDate(doc);
         for (int i = 0; i < counts.length; i+=2) {
                 RequestType type = RequestType.getTypeForTotalCountIndex(i);
                 long total = counts[i];
                 long unique = counts[i+1];
-                map.put(type, new RequestTypeSummary(total, unique));
+                map.put(type, new RequestTypeSummary(total, unique, date, date));
         }
         return new StatisticsSummary(map);
+    }
+    
+    private LocalDate getDate(SolrDocument doc) {
+        if(doc.containsKey(StatisticsLuceneFields.DATE)) {            
+            Date date = (Date)doc.getFieldValue(StatisticsLuceneFields.DATE);
+            return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        } else {
+            return null;
+        }
     }
 
     private List<String> getFieldListForRecords(List<String> identifiersToInclude) {
