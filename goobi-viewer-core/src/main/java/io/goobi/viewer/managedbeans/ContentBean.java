@@ -189,7 +189,7 @@ public class ContentBean implements Serializable {
             String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + content.getPi() + " +" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
             try {
                 if (!AccessConditionUtils.checkAccessPermission(Collections.singleton(content.getAccessCondition()),
-                        IPrivilegeHolder.PRIV_VIEW_UGC, query, request)) {
+                        IPrivilegeHolder.PRIV_VIEW_UGC, query, request).isGranted()) {
                     logger.trace("User may not view UGC {}", content.getId());
                     return false;
                 }

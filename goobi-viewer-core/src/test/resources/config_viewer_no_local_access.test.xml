@@ -674,18 +674,6 @@
             </template>
         </metadataView>
 
-		<!-- titleBarMetadataList: defines metadata that is displayed above an 
-			image. The syntax is the same as in mainMetadataList -->
-		<titleBarMetadataList>
-			<metadata label="MD_TITLE" value="">
-				<param type="field" key="MD_TITLE" />
-			</metadata>
-			<metadata label="MD_CREATOR" value="LINK_WIKIPEDIA">
-				<param type="field" key="MD_CREATOR" />
-				<param type="wikipersonfield" key="MD_CREATOR" />
-			</metadata>
-		</titleBarMetadataList>
-
 		<!-- searchHitMetadataList: defines metadata that is displayed in the search 
 			hitlist. The syntax is the same as in mainMetadataList -->
 		<searchHitMetadataList>

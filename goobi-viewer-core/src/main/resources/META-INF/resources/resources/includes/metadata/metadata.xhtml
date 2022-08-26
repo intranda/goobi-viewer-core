@@ -17,27 +17,44 @@
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
 	    <div class="metadata__title-wrapper">
-	    	<h1 class="metadata__title">
-	    	    #{activeDocumentBean.viewManager.metadataViewOnly ? activeDocumentBean.viewManager.topDocument.label : msg[metadataViewLabel]}
-	    	</h1>
-            <!-- ADD TO BOOKMARK -->
-            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
-                    <button type="button" class="btn btn--icon metadata__bookmark-button"
-                        data-bookmark-list-type="add" 
-                        data-pi="#{activeDocumentBean.viewManager.pi}"
-                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
-                        <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">
-                            <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
-                            <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
-                        </span>
-                    </button>
-            </ui:fragment>
+	    	<div id="title" class="title">
+	    		<!-- TITLE HEADER -->
+				<div class="title__header">
+					<h1 class="h2">
+	
+						<!-- FA* is this still needed? What is the purpose? -->
+						<!-- PAGE TYPE -->
+						<span class="title__header-page-type">
+							<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
+						</span>
+	
+						<!-- NAME OF THE RECORD -->
+						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+	
+			            <!-- ADD TO BOOKMARK -->
+			            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+			                    <button type="button" class="btn btn--icon metadata__bookmark-button"
+			                        data-bookmark-list-type="add" 
+			                        data-pi="#{activeDocumentBean.viewManager.pi}"
+			                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
+			                        <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="#{cc.attrs.tooltipPlacement}">
+			                            <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true" ></i>
+			                            <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+			                        </span>
+			                    </button>
+			            </ui:fragment>
+	
+						<viewerComponent:copyrightIndicator />
+	
+					</h1>
+				</div>
+			</div>
 	    </div>
 	    
         <!-- BORN DIGITAL MATERIALS -->
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.bornDigital}">
             <viewerComponent:bornDigital />
-
+            <viewerComponent:modalDownloadTicket />
             <div class="clearfix"></div>
         </h:panelGroup>
 	    

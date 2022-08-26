@@ -142,7 +142,7 @@
       <!-- include file, if it is not explicitly excluded -->
       <!-- (either above, or in the excludeJS variable, which can be set in template files) -->
       <c:if test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0])}">
-        <script type="text/javascript" src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}"></script>
+        <script type="text/javascript" src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}"></script>
       </c:if>
     </c:forEach>
 

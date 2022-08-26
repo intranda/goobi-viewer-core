@@ -282,6 +282,9 @@ public class SolrConstants {
     /** Constant <code>OPEN_ACCESS_VALUE="OPENACCESS"</code> */
     public static final String OPEN_ACCESS_VALUE = "OPENACCESS";
 
+    public static final String PREFIX_FACET = "FACET_";
+    /** Constant <code>PREFIX_="MDNUM"</code> */
+    public static final String PREFIX_MDNUM = "MDNUM_";
     /** Constant <code>WKT_="WKT_"</code> */
     public static final String WKT_ = "WKT_";
     /** Constant <code>GROUPID_="GROUPID_"</code> */
@@ -344,4 +347,7 @@ public class SolrConstants {
     public static final String SORT_RANDOM = "RANDOM";
     public static final String SORT_RELEVANCE = "RELEVANCE";
 
+    public static final String SOLR_QUERY_AND = " AND ";
+    public static final String SOLR_QUERY_OR = " OR ";
+    public static final String SOLR_QUERY_TRUE = ":true";
 }

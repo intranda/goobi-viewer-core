@@ -65,6 +65,7 @@
                 <ignoreVersion>3.0.0</ignoreVersion>
                 <ignoreVersion>3.0.1</ignoreVersion>
                 <ignoreVersion>3.0.2</ignoreVersion>
+                <ignoreVersion>3.0.3</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="org.jboss.weld.servlet" artifactId="weld-servlet-shaded">

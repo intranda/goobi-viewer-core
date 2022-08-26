@@ -12,7 +12,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminRights')}" />
-            <f:event type="preRenderView" listener="#{adminBean.setCurrentLicense(null)}" />
+            <f:event type="preRenderView" listener="#{adminLicenseBean.setCurrentLicense(null)}" />
         </f:metadata>
     </ui:define>
 
@@ -20,7 +20,7 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminLicenseTypes">
                 <h:panelGroup rendered="#{userBean.admin}">
-                    <h:form id="adminLicensesForm" prependId="false">
+
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h1 class="admin__title">#{msg.admin__rights}</h1>
@@ -28,13 +28,22 @@
                         </div>
 
                         <div class="admin__content-inner-content">
-                            <!-- INFO TEXT -->
+
+							<!-- INFO TEXT -->
                             <div class="admin__info-text">
                                 <h:outputText value="#{msg.admin__roles_description_text}" escape="false" />
                             </div>
+                           
+                           <ui:include src="/resources/admin/includes/adminRightsTicketTable.xhtml" />
+                           
+                           <h:form id="adminLicensesForm" prependId="false">
+
+						   <h2 class="admin__licenses-optional-heading">
+						       #{msg.admin__rights_entries_heading}
+						   </h2>
 
                            <div class="admin__entry-list">
-                               <ui:repeat var="license" value="#{adminBean.allLicenses}">
+                               <ui:repeat var="license" value="#{adminLicenseBean.allLicenses}">
                                     <div class="admin__boxed-entry -w50">
                                     	<div class="overflow-hidden">
 	                                        <!-- NAME -->
@@ -98,15 +107,15 @@
 	                                                </ui:repeat>
 	                                                <!-- Added to this license -->
 	                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.privileges)}">
-	                                                    <div class="badge badge-success" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    <div class="badge badge-success" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                </ui:repeat>
 	                                                <!-- Inherited from the selected license type -->
 	                                                <ui:repeat var="priv" value="#{license.getSortedPrivileges(license.licenseType.privileges)}">
-	                                                    <div class="badge badge-secondary" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    <div class="badge badge-secondary" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                </ui:repeat>
 	                                                <!-- All other -->
 	                                                <ui:repeat var="priv" value="#{license.getAvailablePrivileges(license.privileges)}">
-	                                                    <div class="badge badge-light -light" aria-disabled="true" title="#{msg[adminBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminBean.getMessageKeyForPrivilege(priv)]}</div>
+	                                                    <div class="badge badge-light -light" aria-disabled="true" title="#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}">#{msg[adminLicenseBean.getMessageKeyForPrivilege(priv)]}</div>
 	                                                </ui:repeat>
 	                                            </dd>
 	                                        </dl>
@@ -122,7 +131,7 @@
 		                                                class="admin__boxed-entry-actions-delete -redlink"
 		                                                data-require-confirmation="true"
 		                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__right__delete_warning, msg[license.licenseType.name])}"
-		                                                jsf:action="#{adminBean.deleteLicenseAction(license)}"
+		                                                jsf:action="#{adminLicenseBean.deleteLicenseAction(license)}"
 		                                                aria-label="#{msg.delete} #{msg[license.licenseType.name]}" >
 		                                                #{msg.delete}
 		                                            </button>
@@ -133,8 +142,8 @@
                                     </div>
                                 </ui:repeat>
                             </div>
-                        </div>
-                    </h:form>
+                    	</h:form>
+                	</div>
                 </h:panelGroup>
             </div>
         </f:view>

@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
-import java.util.EnumSet;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;

@@ -183,8 +183,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
 
-    private volatile FutureTask<Boolean> downloadReady;     //NOSONAR   Future is thread-save
-    private volatile FutureTask<Boolean> downloadComplete;  //NOSONAR   Future is thread-save
+    private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
+    private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
 
     /**
      * Whether to only display the current search parameters rather than the full input mask
@@ -906,11 +906,11 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
         if (this.currentSearch != null) {
-            String query = this.currentSearch.generateFinalSolrQuery(null, advancedSearchGroupOperator);
+            String query = this.currentSearch.generateFinalSolrQuery(null);
             return query;
         }
 
-        return new Search().generateFinalSolrQuery(null, advancedSearchGroupOperator);
+        return new Search().generateFinalSolrQuery(null);
     }
 
     public List<String> getFilterQueries() {
@@ -1771,11 +1771,11 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
         }
         return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
                 SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
+                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
     }
 
     /**
@@ -1804,15 +1804,13 @@ public class SearchBean implements SearchInterface, Serializable {
             filterQueries.add(customFilterQuery);
         }
         if (currentHitIndex > 0) {
-            //            return currentSearch.getHits().get(currentHitIndex - 1).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
         } else if (currentSearch.getHitsCount() > 0) {
-            //            return currentSearch.getHits().get(currentHitIndex).getBrowseElement();
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
                     SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, BeanUtils.getRequest());
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
         }
 
         return null;

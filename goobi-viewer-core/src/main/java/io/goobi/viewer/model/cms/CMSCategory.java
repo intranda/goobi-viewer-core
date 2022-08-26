@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,7 +42,9 @@ import io.goobi.viewer.exceptions.DAOException;
  */
 @Entity
 @Table(name = "cms_categories")
-public class CMSCategory implements Comparable<CMSCategory> {
+public class CMSCategory implements Comparable<CMSCategory>, Serializable {
+
+    private static final long serialVersionUID = 6403779112449324441L;
 
     /** Unique database ID. */
     @Id
@@ -213,9 +217,9 @@ public class CMSCategory implements Comparable<CMSCategory> {
     public int compareTo(CMSCategory other) {
         if (other != null) {
             return this.getName().compareTo(other.getName());
-        } else {
-            return 0;
         }
+
+        return 0;
     }
 
 }

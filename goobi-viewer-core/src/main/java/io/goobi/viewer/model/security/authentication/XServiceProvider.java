@@ -81,9 +81,7 @@ public class XServiceProvider extends VuFindProvider {
                 XServiceAuthenticationResponse response = new XServiceAuthenticationResponse(resp[1], StringTools.DEFAULT_ENCODING);
                 Optional<User> user = getUser(request, response);
                 result = new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), user, !response.isValid());
-            } catch (JDOMException e) {
-                logger.error(e.getMessage(), e);
-            } catch (IOException e) {
+            } catch (JDOMException | IOException e) {
                 logger.error(e.getMessage(), e);
             }
         }
@@ -146,11 +144,6 @@ public class XServiceProvider extends VuFindProvider {
                 user.setEmail(DEFAULT_EMAIL.replace("{username}", request.getUsername()));
                 logger.trace("Created new user with nickname {}", request.getUsername());
             }
-
-            //set user status
-            //            if (!user.isSuspended()) {
-            //                user.setSuspended(response.isExpired());
-            //            }
 
             // Add to bean and persist
             if (user.getId() == null) {

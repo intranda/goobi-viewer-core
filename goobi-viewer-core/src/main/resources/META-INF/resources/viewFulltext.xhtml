@@ -34,10 +34,26 @@
 
 			<div id="view_fulltext" class="view-fulltext">
 
-				<ui:include src="/resources/includes/title.xhtml">
-					<ui:param name="structure" value="false" />
-					<ui:param name="purl" value="true" />
-				</ui:include>
+				<!-- TITLE -->
+		    	<div id="title" class="title">
+		    		<!-- TITLE HEADER -->
+					<div class="title__header">
+						<h1 class="h2">
+		
+							<!-- FA* is this still needed? What is the purpose? -->
+							<!-- PAGE TYPE -->
+							<span class="title__header-page-type">
+								<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
+							</span>
+		
+							<!-- NAME OF THE RECORD -->
+							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+		
+							<viewerComponent:copyrightIndicator />
+		
+						</h1>
+					</div>
+				</div>
 
 
                     <!-- TODO: Komponente durch imageControls.xhtml ersetzen -->

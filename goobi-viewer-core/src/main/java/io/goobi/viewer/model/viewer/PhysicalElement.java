@@ -61,6 +61,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -76,6 +77,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
@@ -103,14 +105,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public static final String WATERMARK_TEXT_TYPE_PURL = "PURL";
     /** Constant <code>WATERMARK_TEXT_TYPE_SOLR="SOLR:"</code> */
     public static final String WATERMARK_TEXT_TYPE_SOLR = "SOLR:";
+    /** Constant <code>defaultVideoWidth=320</code> */
+    private static final int DEFAULT_VIDEO_WIDTH = 320;
+    /** Constant <code>defaultVideoHeight=240</code> */
+    private static final int DEFAULT_VIDEO_HEIGHT = 240;
 
     private static List<String> watermarkTextConfiguration;
-    /** Constant <code>defaultVideoWidth=320</code> */
-    public static int defaultVideoWidth = 320;
-    /** Constant <code>defaultVideoHeight=240</code> */
-    public static int defaultVideoHeight = 240;
 
-    private final Object lock = new Object();
+    private final transient Object lock = new Object();
 
     /** Persistent identifier. */
     private final String pi;
@@ -143,6 +145,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private boolean fulltextAvailable = false;
 
     private Boolean fulltextAccessPermission;
+    /** True if a download ticket is required before files may be downloaded. Value is set during the access permission check. */
+    private Boolean bornDigitalDownloadTicketRequired = null; // TODO reset when logging in/out or persist in session
     /** File name of the full-text document in the file system. */
     private String fulltextFileName;
     /** File name of the ALTO document in the file system. */
@@ -162,7 +166,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private Set<String> accessConditions = new HashSet<>();
     /** List of <code>StructElement</code>s contained on this page. */
     private List<StructElement> containedStructElements;
-    /** Content type of loaded fulltext **/
+    /** Content type of loaded fulltext */
     private String textContentType = null;
 
     /**
@@ -300,17 +304,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
-        BaseMimeType mimeType = BaseMimeType.getByName(this.mimeType);
-        if (mimeType == null) {
+        BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
+        if (baseMimeType == null) {
             logger.error("Page {} of record '{}' has unknown mime-type: {}", orderLabel, pi, this.mimeType);
             return "";
         }
-        switch (mimeType) {
+        switch (baseMimeType) {
             case IMAGE:
                 return getImageUrl();
             case VIDEO:
             case AUDIO: {
-
                 String format = getFileNames().keySet().stream().findFirst().orElse("");
                 return getMediaUrl(format);
             }
@@ -325,7 +328,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             case SANDBOXED_HTML:
                 return getSandboxedUrl();
             default:
-                logger.error("Page {} of record '{}' has unsupported mime-type: {}", orderLabel, pi, mimeType);
+                logger.error("Page {} of record '{}' has unsupported mime-type: {}", orderLabel, pi, baseMimeType);
                 return "";
         }
     }
@@ -609,8 +612,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         this.height = height;
     }
 
-
-
     /**
      * <p>
      * Getter for the field <code>fileIdRoot</code>.
@@ -654,7 +655,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_IMAGES);
+                IPrivilegeHolder.PRIV_VIEW_IMAGES).isGranted();
     }
 
     /**
@@ -731,7 +732,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT).isGranted();
     }
 
     /**
@@ -749,13 +750,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return the fulltextAccessPermission
      * @throws ViewerConfigurationException
      */
-    public Boolean isFulltextAccessPermission() throws ViewerConfigurationException {
+    public Boolean isFulltextAccessPermission() {
         if (fulltextAccessPermission == null) {
             fulltextAccessPermission = false;
             try {
                 fulltextAccessPermission =
                         AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                                BeanUtils.getRequest());
+                                BeanUtils.getRequest()).isGranted();
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(String.format("Cannot check fulltext access for pi %s and pageNo %d: %s", pi, order, e.toString()));
             } catch (RecordNotFoundException e) {
@@ -795,7 +796,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             }
 
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(BeanUtils.getRequest(), getPi(), filename,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT).isGranted();
         } catch (FileNotFoundException | IndexUnreachableException | DAOException e) {
             return false;
         }
@@ -949,25 +950,22 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if fulltext loaded successfully false otherwise
      * @throws AccessDeniedException
      * @throws IOException
-     * @throws FileNotFoundException
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws ConfigurationException
      * @should load full-text correctly if not yet loaded
      * @should return null if already loaded
      */
-    String loadFullText()
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    String loadFullText() throws AccessDeniedException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (fulltextFileName == null) {
             return null;
-        } else if (!isFulltextAccessPermission()) {
+        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
         try {
-            String text = DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
-            return text;
+            return DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
             return "";
@@ -1000,7 +998,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (searchTerms == null || searchTerms.isEmpty()) {
             return Collections.emptyList();
         }
-        logger.trace("loadWordCoords: {}", searchTerms.toString());
+        logger.trace("loadWordCoords: {}", searchTerms);
 
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
@@ -1041,14 +1039,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         logger.trace("loadAlto: {}", altoFileName);
         if (altoFileName == null) {
             return new StringPair("", null);
-        } else if (!isFulltextAccessPermission()) {
+        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
             throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         try {
             StringPair alto = DataFileTools.loadAlto(altoFileName);
             //Text from alto is always plain text
-            textContentType = "text/plain";
+            textContentType = StringConstants.MIMETYPE_TEXT_PLAIN;
             if (alto != null) {
                 altoText = alto.getOne();
                 altoCharset = alto.getTwo();
@@ -1085,7 +1083,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public void setFileNames(Map<String, String> fileNames) {
         this.fileNames = fileNames;
     }
-    
 
     /**
      * Returns The first matching media filename for this page
@@ -1096,7 +1093,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         String format = getFileNames().keySet().stream().findFirst().orElse("");
         return getFileNameForFormat(format);
     }
-    
+
     /**
      * Returns the fileName alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filePath
      * otherwise
@@ -1148,7 +1145,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return fileName;
     }
 
-
     /**
      * <p>
      * getImageToPdfUrl.
@@ -1177,8 +1173,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
         }
 
-        logger.trace("currentMediaUrl: {}", url.toString());
-        return url.toString();
+        logger.trace("currentMediaUrl: {}", url);
+        return url;
     }
 
     /**
@@ -1193,7 +1189,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return width;
         }
 
-        return defaultVideoWidth;
+        return DEFAULT_VIDEO_WIDTH;
     }
 
     /**
@@ -1208,7 +1204,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return height;
         }
 
-        return defaultVideoHeight;
+        return DEFAULT_VIDEO_HEIGHT;
     }
 
     /**
@@ -1237,7 +1233,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a int.
      */
     public int getPhysicalImageHeight() {
-        return height;
+        return getImageHeight();
     }
 
     /**
@@ -1280,7 +1276,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a int.
      */
     public int getMixWidth() {
-        return width;
+        return getImageWidth();
     }
 
     /**
@@ -1291,7 +1287,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a int.
      */
     public int getPhysicalImageWidth() {
-        return width;
+        return getImageWidth();
     }
 
     /**
@@ -1335,12 +1331,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getPageLinkLabel() {
-        BaseMimeType mimeType = BaseMimeType.getByName(this.mimeType);
-        if (mimeType == null) {
+        BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
+        if (baseMimeType == null) {
             return "viewImage";
         }
 
-        switch (mimeType) {
+        switch (baseMimeType) {
             case IMAGE:
                 return "viewImage";
             case VIDEO:
@@ -1373,7 +1369,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName);
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted();
         } else {
             logger.trace("FacesContext not found");
         }
@@ -1389,23 +1385,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isAccessPermissionImage() throws IndexUnreachableException, DAOException {
-        // logger.trace("AccessPermissionImage");
-        // Prevent access if mime type incompatible
-        if (!BaseMimeType.isImageOrPdfDownloadAllowed(mimeType)) {
-            return false;
-        }
-
-        if (getFilepath().startsWith("http")) {
-            //External urls are always free to use
-            return true;
-        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName);
-        } else {
-            logger.trace("FacesContext not found");
-        }
-
-        return false;
+        return isAccessPermissionObject();
     }
 
     /**
@@ -1427,7 +1407,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName);
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted();
         } else {
             logger.trace("FacesContext not found");
         }
@@ -1448,7 +1428,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                        IPrivilegeHolder.PRIV_ZOOM_IMAGES);
+                        IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
             }
             logger.trace("FacesContext not found");
 
@@ -1468,7 +1448,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                    IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES);
+                    IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
         }
         logger.trace("FacesContext not found");
 
@@ -1493,9 +1473,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
-            boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);
-            // logger.trace("accessPermissionPdf for {}: {}", pi, accessPermissionPdf);
-            return accessPermissionPdf;
+            return AccessConditionUtils.checkAccessPermissionForPagePdf(request, this).isGranted();
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             return false;
@@ -1517,12 +1495,42 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermissionBornDigital() throws IndexUnreachableException, DAOException {
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+            AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+            // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted());
+            //            if (bornDigitalDownloadTicketRequired == null) {
+            bornDigitalDownloadTicketRequired = access.isTicketRequired();
+            // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired());
+            //            }
+            return access.isGranted();
         }
         logger.trace("FacesContext not found");
 
+        bornDigitalDownloadTicketRequired = false; // maybe set to true?
         return false;
+    }
+
+    /**
+     * 
+     * @return true if a download ticket requirement is present and not yet satisfied; false otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public boolean isBornDigitalDownloadTicketRequired() throws IndexUnreachableException, DAOException {
+        //                if (bornDigitalDownloadTicketRequired == null) {
+        isAccessPermissionBornDigital();
+        //                }
+        // logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired);
+
+        // If license requires a download ticket, check agent session for loaded ticket
+        if (Boolean.TRUE.equals(bornDigitalDownloadTicketRequired) && FacesContext.getCurrentInstance() != null
+                && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            boolean hasTicket = AccessConditionUtils.isHasDownloadTicket(pi, BeanUtils.getSession());
+            // logger.trace("User has download ticket: {}", hasTicket);
+            return !hasTicket;
+        }
+
+        return bornDigitalDownloadTicketRequired;
     }
 
     /**
@@ -1535,7 +1543,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT).isGranted();
         }
         logger.trace("FacesContext not found");
 
@@ -1822,8 +1830,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
                     .flatMap(ele -> ele.getShapeMetadata().stream())
                     .collect(Collectors.toList());
-            String json = mapper.writeValueAsString(shapes);
-            return json;
+            return mapper.writeValueAsString(shapes);
         }
     }
 }

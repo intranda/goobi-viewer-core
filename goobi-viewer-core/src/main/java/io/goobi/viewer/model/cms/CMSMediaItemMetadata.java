@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -30,7 +32,9 @@ import javax.persistence.Embeddable;
  * </p>
  */
 @Embeddable
-public class CMSMediaItemMetadata {
+public class CMSMediaItemMetadata implements Serializable {
+
+    private static final long serialVersionUID = -4346127673979299371L;
 
     @Column(name = "language", nullable = false)
     private String language;
@@ -68,7 +72,6 @@ public class CMSMediaItemMetadata {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((language == null) ? 0 : language.hashCode());
-        //        result = prime * result + ((ownerItem == null) ? 0 : ownerItem.hashCode());
         return result;
     }
 

@@ -39,12 +39,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class NERTag {
 
-    public static enum Type {
-        person("person"),
-        location("location", "place"),
-        corporation("corporation", "corporate", "institution", "organization"),
-        event("event"),
-        misc("miscellaneous");
+    public enum Type {
+        PERSON("person"),
+        LOCATION("location", "place"),
+        CORPORATION("corporation", "corporate", "institution", "organization"),
+        EVENT("event"),
+        MISC("miscellaneous");
 
         private List<String> labels;
 

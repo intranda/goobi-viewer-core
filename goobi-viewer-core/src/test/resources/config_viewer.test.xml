@@ -539,9 +539,14 @@
         <!-- fuzzy/@enabled: If true, fuzzy search will be applied. Default is false. -->
         <fuzzy enabled="false" />
         
-        <!-- useFacetsAsExpandQuery: If true, currently selected facets will be used to build the expand query to produce child hits,
+        <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,
             even if no search terms were given. Default is false. -->
-        <useFacetsAsExpandQuery>true</useFacetsAsExpandQuery>
+        <useFacetsAsExpandQuery enabled="true">
+            <!-- facetQuery: (0-n); If at least one facet query is configured here, only active queries that match those listed here
+                will be used for constructing the expand query. -->
+            <facetQuery>(FACET_DC:"foo" OR FACET_DC:foo.*)</facetQuery>
+            <facetQuery>(FACET_DC:"bar" OR FACET_DC:bar.*)</facetQuery>
+        </useFacetsAsExpandQuery>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
@@ -672,18 +677,6 @@
                 </metadata>
             </template>
         </metadataView>
-
-		<!-- titleBarMetadataList: defines metadata that is displayed above an 
-			image. The syntax is the same as in mainMetadataList -->
-		<titleBarMetadataList>
-			<metadata label="MD_TITLE" value="">
-				<param type="field" key="MD_TITLE" />
-			</metadata>
-			<metadata label="MD_CREATOR" value="LINK_WIKIPEDIA">
-				<param type="field" key="MD_CREATOR" />
-				<param type="wikipersonfield" key="MD_CREATOR" />
-			</metadata>
-		</titleBarMetadataList>
 
 		<!-- searchHitMetadataList: defines metadata that is displayed in the search 
 			hitlist. The syntax is the same as in mainMetadataList -->
@@ -1083,6 +1076,25 @@
 		
 		<!-- displayCrowdsourcingModuleLinks: Switch to enable crowdsourcing transcription links (default is false) -->
         <displayCrowdsourcingModuleLinks>true</displayCrowdsourcingModuleLinks>
+        
+        <!-- copyrightIndicator/@enabled: If true, copyright status of the current record will be visualized with colors and icons. Default is false. -->
+        <copyrightIndicator enabled="true" style="trafficlight">
+            <status field="MD_ACCESSCONDITION">
+                <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
+                <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
+                <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
+            </status>
+
+            <license field="MD_ACCESSCONDITIONCOPYRIGHT">
+                <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
+                    <!-- icon: one or more icons are allowed per value -->
+                    <icon>cc0.svg</icon>
+                </value>
+                <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
+                    <icon>paragraph50.svg</icon>
+                </value>
+            </license>
+        </copyrightIndicator>
 	</webGuiDisplay>
 
 
@@ -1194,14 +1206,15 @@
 		<siteID>siteID_value</siteID>
 	</piwik>
 
-	<sitemap>
+    <!-- sitelinks/@enabled: If true, the link to the sitelinks page will be displayed. Default is true. -->
+    <sitelinks enabled="false">
 		<!-- sitelinksField: Field for which the sitelinks page will list all available 
 			values (similar to term browsing) -->
 		<sitelinksField>YEAR</sitelinksField>
 		<!-- sitelinksFilterQuery: Solr query which will filter the results for 
 			each field value (e.g. only top-level dosctructs) -->
 		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
-	</sitemap>
+	</sitelinks>
 
 	<!-- Web API configuration -->
 	<webapi>

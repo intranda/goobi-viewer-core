@@ -41,19 +41,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -62,8 +58,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 @Entity
 @Table(name = "user_groups")
-// @DiscriminatorValue("UserGroup")
-public class UserGroup implements ILicensee, Serializable {
+public class UserGroup extends AbstractLicensee implements Serializable {
 
     private static final long serialVersionUID = -3038659744043035929L;
 
@@ -197,38 +192,6 @@ public class UserGroup implements ILicensee, Serializable {
         return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
-        if (StringUtils.isEmpty(privilegeName)) {
-            return true;
-        }
-        if (getLicenses() != null) {
-            for (License license : getLicenses()) {
-                if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
-                    if (license.getPrivileges().contains(privilegeName) || license.getLicenseType().getPrivileges().contains(privilegeName)) {
-                        if (StringUtils.isEmpty(license.getConditions())) {
-                            // logger.debug("Permission found for user group: {}", name);
-                            return true;
-                        } else if (StringUtils.isNotEmpty(pi)) {
-                            // If PI and Solr condition subquery are present, check via Solr
-                            String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
-                            if (DataManager.getInstance()
-                                    .getSearchIndex()
-                                    .getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC)) != null) {
-                                logger.debug("Permission found for user group: {} (query: {})", name, query);
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
     /**
      * <p>
      * hasUserPrivilege.
@@ -267,7 +230,6 @@ public class UserGroup implements ILicensee, Serializable {
     @Override
     public boolean removeLicense(License license) {
         if (license != null && licenses != null) {
-            // license.setUserGroup(null);
             return licenses.remove(license);
         }
 
@@ -427,7 +389,7 @@ public class UserGroup implements ILicensee, Serializable {
      * @throws DAOException
      */
     public boolean isHasMembers() throws DAOException {
-        return getMemberCount() > 1;    //first member is always the owner, only count members beyond that
+        return getMemberCount() > 1; //first member is always the owner, only count members beyond that
     }
 
     /**
@@ -437,9 +399,10 @@ public class UserGroup implements ILicensee, Serializable {
      * @should count correctly
      */
     public long getMemberCount() throws DAOException {
-       List<User> users = DataManager.getInstance().getDao().getUserRoles(this, null, null).stream().map(UserRole::getUser).collect(Collectors.toList());
-       users.add(owner);
-       return users.stream().distinct().count();
+        List<User> users =
+                DataManager.getInstance().getDao().getUserRoles(this, null, null).stream().map(UserRole::getUser).collect(Collectors.toList());
+        users.add(owner);
+        return users.stream().distinct().count();
     }
 
     /**
@@ -476,10 +439,8 @@ public class UserGroup implements ILicensee, Serializable {
      */
     public Set<User> getMembers() throws DAOException {
         Set<User> ret = new HashSet<>();
-
         for (UserRole membership : getMemberships()) {
             ret.add(membership.getUser());
-            // logger.trace("member: {}", membership.getUser().getEmail());
         }
 
         return ret;

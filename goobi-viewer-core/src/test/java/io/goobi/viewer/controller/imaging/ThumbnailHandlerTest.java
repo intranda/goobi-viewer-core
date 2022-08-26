@@ -32,7 +32,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +39,6 @@ import org.junit.Test;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -69,16 +67,8 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        Configuration configuration = DataManager.getInstance().getConfiguration();
         IIIFUrlHandler iiifHandler = new IIIFUrlHandler(new ApiUrls(ApiUrls.API));
-        handler = new ThumbnailHandler(iiifHandler, configuration, STATIC_IMAGES_PATH);
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
+        handler = new ThumbnailHandler(iiifHandler, STATIC_IMAGES_PATH);
     }
 
     @Test
@@ -379,7 +369,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void getImagePath_shouldReturnImageThumbnailPathCorrectly() throws Exception {
         Assert.assertEquals("00000001.tif",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("image/tiff").build()));
     }
 
@@ -391,11 +381,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
     public void getImagePath_shouldReturnAudioThumbnailPathCorrectly() throws Exception {
         // Page thumbnail
         Assert.assertEquals("00000001.tif",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("audio/mpeg3").build()));
         // Default thumbnail
         Assert.assertEquals("https://example/com/viewer/thumbnail_audio.jpg",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setMimeType("audio").build()));
     }
 
@@ -407,11 +397,11 @@ public class ThumbnailHandlerTest extends AbstractTest {
     public void getImagePath_shouldReturnVideoThumbnailPathCorrectly() throws Exception {
         // Page thumbnail
         Assert.assertEquals("00000001.tif",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("video").build()));
         // Default thumbnail
         Assert.assertEquals("https://example/com/viewer/thumbnail_video.jpg",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setMimeType("video/webm").build()));
     }
 
@@ -422,7 +412,7 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void getImagePath_shouldReturnPdfThumbnailPathCorrectly() throws Exception {
         Assert.assertEquals("https://example/com/viewer/thumbnail_epub.jpg",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/pdf").build()));
     }
 
@@ -433,10 +423,10 @@ public class ThumbnailHandlerTest extends AbstractTest {
     @Test
     public void getImagePath_shouldReturn3dObjectThumbnailPathCorrectly() throws Exception {
         Assert.assertEquals("https://example/com/viewer/thumbnail_3d.png",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/object").build()));
         Assert.assertEquals("https://example/com/viewer/thumbnail_3d.png",
-                new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), "https://example/com/viewer/")
+                new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("object").build()));
     }
 

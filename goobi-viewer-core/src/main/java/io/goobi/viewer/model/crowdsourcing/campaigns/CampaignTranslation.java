@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -37,7 +38,9 @@ import io.goobi.viewer.model.translations.Translation;
  */
 @Entity
 @Table(name = "cs_campaign_translations")
-public class CampaignTranslation extends Translation {
+public class CampaignTranslation extends Translation implements Serializable {
+
+    private static final long serialVersionUID = 3598889812893282906L;
 
     /** Reference to the owning {@link PersistentEntity}. */
     @ManyToOne

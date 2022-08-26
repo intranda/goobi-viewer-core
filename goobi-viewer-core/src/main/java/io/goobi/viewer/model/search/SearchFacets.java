@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -125,7 +126,7 @@ public class SearchFacets implements Serializable {
         }
 
         // Add regular facets
-        String regularQuery = generateFacetFilterQuery(includeRangeFacets, includeGeoFacet);
+        String regularQuery = generateFacetFilterQuery(includeRangeFacets);
         if (StringUtils.isNotEmpty(regularQuery)) {
             ret.add(regularQuery);
         }
@@ -156,7 +157,7 @@ public class SearchFacets implements Serializable {
                 if (advancedSearchGroupOperator == 1) {
                     sbQuery.append(" OR ");
                 } else {
-                    sbQuery.append(" AND ");
+                    sbQuery.append(SolrConstants.SOLR_QUERY_AND);
                 }
             }
             String field = SearchHelper.facetifyField(facetItem.getField());
@@ -185,7 +186,7 @@ public class SearchFacets implements Serializable {
      * @should skip range facet fields if so requested
      * @should skip subelement fields
      */
-    String generateFacetFilterQuery(boolean includeRangeFacets, boolean includeGeoFacet) {
+    String generateFacetFilterQuery(boolean includeRangeFacets) {
         if (currentFacets.isEmpty()) {
             return null;
         }
@@ -346,7 +347,7 @@ public class SearchFacets implements Serializable {
         // logger.trace("getLimitedFacetListForField: {}", field);
         List<IFacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
-            return null;
+            return Collections.emptyList();
         }
         // Remove currently used facets
         facetItems.removeAll(currentFacets);
@@ -412,11 +413,8 @@ public class SearchFacets implements Serializable {
     public boolean isDisplayFacetExpandLink(String field) {
         List<IFacetItem> facetItems = availableFacets.get(field);
         int expandSize = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
-        if (facetItems != null && !isFacetExpanded(field) && expandSize > 0 && facetItems.size() > expandSize) {
-            return true;
-        }
-
-        return false;
+        
+        return facetItems != null && !isFacetExpanded(field) && expandSize > 0 && facetItems.size() > expandSize;
     }
 
     /**
@@ -444,8 +442,7 @@ public class SearchFacets implements Serializable {
             ret = "-";
         }
         try {
-            String eRet = URLEncoder.encode(ret, SearchBean.URL_ENCODING);
-            return eRet;
+            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
         } catch (UnsupportedEncodingException e) {
             return ret;
         }
@@ -493,7 +490,6 @@ public class SearchFacets implements Serializable {
      * @should not reset slider range if slider field among current facets
      */
     public void setCurrentFacetString(String currentFacetString) {
-        logger.trace("setCurrentFacetString: {}", currentFacetString);
         parseFacetString(currentFacetString, currentFacets, labelMap);
     }
 
@@ -536,9 +532,9 @@ public class SearchFacets implements Serializable {
             labelMap = Collections.emptyMap();
         }
         try {
-            facetString = URLDecoder.decode(facetString, "utf-8");
+            facetString = URLDecoder.decode(facetString, StandardCharsets.UTF_8.name());
             facetString = StringTools.unescapeCriticalUrlChracters(facetString);
-            facetString = URLDecoder.decode(facetString, "utf-8");
+            facetString = URLDecoder.decode(facetString, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             //
         }
@@ -739,7 +735,6 @@ public class SearchFacets implements Serializable {
      */
     public String getAbsoluteMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!minValues.containsKey(field)) {
-            //            populateAbsoluteMinMaxValuesForField(field);
             return "0";
         }
         return minValues.get(field);
@@ -755,7 +750,6 @@ public class SearchFacets implements Serializable {
      */
     public String getAbsoluteMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
-            //            populateAbsoluteMinMaxValuesForField(field);
             return "0";
         }
         return maxValues.get(field);
@@ -771,7 +765,6 @@ public class SearchFacets implements Serializable {
      */
     public List<Integer> getValueRange(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
-            //            populateAbsoluteMinMaxValuesForField(field);
             return Collections.emptyList();
         }
         return valueRanges.get(field);
@@ -782,18 +775,16 @@ public class SearchFacets implements Serializable {
      * alphanumeric comparator.
      *
      * @param field
-     * @throws PresentationException
-     * @throws IndexUnreachableException
      * @should populate values correctly
      * @should add all values to list
      */
-    void populateAbsoluteMinMaxValuesForField(String field, List<String> stringValues) throws PresentationException, IndexUnreachableException {
+    void populateAbsoluteMinMaxValuesForField(String field, List<String> stringValues) {
         if (field == null) {
             return;
         }
 
         if (!SolrConstants._CALENDAR_YEAR.equals(field) && !field.startsWith("MDNUM_")) {
-            logger.info("{} is not an integer type field, cannot use with a range query");
+            logger.info("{} is not an integer type field, cannot use with a range query", field);
             return;
         }
 
@@ -812,7 +803,6 @@ public class SearchFacets implements Serializable {
         }
         if (!intValues.isEmpty()) {
             Collections.sort(intValues);
-            // Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
             valueRanges.put(field, intValues);
             minValues.put(field, String.valueOf(intValues.get(0)));
             maxValues.put(field, String.valueOf(intValues.get(intValues.size() - 1)));
@@ -1045,11 +1035,8 @@ public class SearchFacets implements Serializable {
         if (language == null) {
             throw new IllegalArgumentException("language may not be null");
         }
-        if (field.contains(SolrConstants._LANG_) && !field.endsWith(SolrConstants._LANG_ + language.toUpperCase())) {
-            return true;
-        }
-
-        return false;
+        
+        return field.contains(SolrConstants._LANG_) && !field.endsWith(SolrConstants._LANG_ + language.toUpperCase());
     }
 
     /**

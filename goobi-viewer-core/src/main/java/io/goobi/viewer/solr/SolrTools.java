@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
@@ -79,6 +80,13 @@ public class SolrTools {
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
 
     /**
+     * 
+     */
+    private SolrTools() {
+        //
+    }
+
+    /**
      * Returns the comma-separated sorting fields in <code>solrSortFields</code> as a List<StringPair>.
      *
      * @param solrSortFields a {@link java.lang.String} object.
@@ -116,7 +124,8 @@ public class SolrTools {
                             ret.add(new StringPair(fieldConfigSplit[0].trim(), fieldConfigSplit[1].trim()));
                             break;
                         default:
-                            logger.warn("Cannot parse sorting field configuration: {}", fieldConfig);
+                            logger.warn("Cannot parse sorting field configuration");
+                            break;
                     }
 
                 }
@@ -138,7 +147,7 @@ public class SolrTools {
     }
 
     public static Boolean getAsBoolean(Object fieldValue) {
-        if (fieldValue != null && fieldValue instanceof Boolean) {
+        if (fieldValue instanceof Boolean) {
             return (Boolean) fieldValue;
         } else if (fieldValue != null) {
             return Boolean.parseBoolean(getAsString(fieldValue));
@@ -198,9 +207,6 @@ public class SolrTools {
      * @return a {@link java.lang.Object} object.
      */
     public static Object getSingleFieldValue(SolrDocument doc, String field) {
-        //        if(field.equals("MD_TITLE")) {
-        //            field = field + "_LANG_DE";
-        //        }
         Collection<Object> valueList = doc.getFieldValues(field);
         if (valueList != null && !valueList.isEmpty()) {
             return valueList.iterator().next();
@@ -248,16 +254,16 @@ public class SolrTools {
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.lang.Boolean} object.
      */
-    public static Boolean getSingleFieldBooleanValue(SolrDocument doc, String field) {
+    public static boolean getSingleFieldBooleanValue(SolrDocument doc, String field) {
         Object val = getSingleFieldValue(doc, field);
         if (val == null) {
-            return null;
+            return false;
         } else if (val instanceof Boolean) {
             return (Boolean) val;
         } else if (val instanceof String) {
             return Boolean.valueOf((String) val);
         } else {
-            return null;
+            return false;
         }
     }
 
@@ -359,10 +365,10 @@ public class SolrTools {
         int numValues = mdValues.values().stream().mapToInt(list -> list.size()).max().orElse(0);
         for (int i = 0; i < numValues; i++) {
             MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
-            for (String language : mdValues.keySet()) {
-                List<String> stringValues = mdValues.get(language);
+            for (Entry<String, List<String>> entry : mdValues.entrySet()) {
+                List<String> stringValues = entry.getValue();
                 if (i < stringValues.size()) {
-                    value.setValue(stringValues.get(i), language);
+                    value.setValue(stringValues.get(i), entry.getKey());
                 }
             }
             values.add(value);
@@ -396,8 +402,8 @@ public class SolrTools {
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
             String locale = null;
-            if (languageField.startsWith(key + "_LANG_")) {
-                locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
+            if (languageField.startsWith(key + SolrConstants._LANG_)) {
+                locale = languageField.substring(languageField.lastIndexOf(SolrConstants._LANG_) + 6).toLowerCase();
             } else {
                 locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
             }
@@ -427,12 +433,12 @@ public class SolrTools {
             List<String> fieldNames = doc.getMetadataFields()
                     .keySet()
                     .stream()
-                    .filter(field -> field.equals(key) || field.startsWith(key + "_LANG_"))
+                    .filter(field -> field.equals(key) || field.startsWith(key + SolrConstants._LANG_))
                     .collect(Collectors.toList());
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.matches(key + "_LANG_\\w{2,3}")) {
-                    locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
+                    locale = languageField.substring(languageField.lastIndexOf(SolrConstants._LANG_) + 6).toLowerCase();
                 } else {
                     locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
                 }
@@ -752,14 +758,10 @@ public class SolrTools {
             try (StringReader sr = new StringReader(responseBody)) {
                 return XmlTools.getSAXBuilder().build(sr);
             }
-        } catch (ClientProtocolException e) {
+        } catch (ClientProtocolException | JDOMException | HTTPException e) {
             logger.error(e.getMessage(), e);
         } catch (IOException e) {
             logger.error(e.getMessage());
-        } catch (JDOMException e) {
-            logger.error(e.getMessage(), e);
-        } catch (HTTPException e) {
-            logger.error(e.getMessage(), e);
         }
 
         return null;

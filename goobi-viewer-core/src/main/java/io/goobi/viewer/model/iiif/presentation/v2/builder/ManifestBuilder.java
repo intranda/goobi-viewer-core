@@ -68,6 +68,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -307,7 +308,7 @@ public class ManifestBuilder extends AbstractBuilder {
         URI uri = null;
         switch(target) {
             case VIEWER:
-                String pageUrl = ele.getUrl();
+                String pageUrl = ele.getUrl(getMatchingPageType(ele));
                 uri = URI.create(pageUrl);
                 if(!uri.isAbsolute()) {
                     uri = URI.create(this.urls.getApplicationUrl() + pageUrl);
@@ -331,6 +332,17 @@ public class ManifestBuilder extends AbstractBuilder {
                 break;
         }
         return uri;
+    }
+
+
+    private PageType getMatchingPageType(StructElement ele) {
+        PageType pageType = PageType.viewMetadata;
+        if(ele.isHasImages()) {
+            pageType = PageType.viewImage;
+        } else if(ele.isAnchor()) {
+            pageType = PageType.viewToc;
+        }
+        return pageType;
     }
 
     /**

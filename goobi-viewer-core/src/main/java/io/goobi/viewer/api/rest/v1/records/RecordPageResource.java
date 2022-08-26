@@ -50,13 +50,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.api.annotation.IAnnotationCollection;
-import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Layer;
-import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -78,14 +76,12 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -96,7 +92,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @CORSBinding
 public class RecordPageResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecordPageResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -119,8 +115,8 @@ public class RecordPageResource {
     public DocumentReference getNERTags(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @Parameter(description = "Tag type to consider (person, coorporation, event or location)") @QueryParam("type") String type)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        NERBuilder builder = new NERBuilder(urls);
+            throws PresentationException, IndexUnreachableException {
+        NERBuilder builder = new NERBuilder();
         return builder.getNERTags(pi, type, pageNo, pageNo, 1, servletRequest);
     }
 
@@ -138,8 +134,7 @@ public class RecordPageResource {
             ViewerConfigurationException, DAOException, IllegalRequestException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = RecordResource.getBuildeMode(mode);
-        Sequence sequence = builder.getBaseSequence(pi, buildMode, preferedView);
-        return sequence;
+        return builder.getBaseSequence(pi, buildMode, preferedView);
     }
 
     @GET
@@ -164,8 +159,8 @@ public class RecordPageResource {
             throws PresentationException, IndexUnreachableException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
-            URI uri = URI.create(apiPath.query("format", "oa").build());
-            return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
+        URI uri = URI.create(apiPath.query("format", "oa").build());
+        return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, pageNo, false, servletRequest);
     }
 
     @GET
@@ -177,10 +172,9 @@ public class RecordPageResource {
             throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
-            URI uri = URI.create(apiPath.query("format", "oa").build());
-            return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForPageComments(pi, pageNo, uri);
+        URI uri = URI.create(apiPath.query("format", "oa").build());
+        return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForPageComments(pi, pageNo, uri);
     }
-
 
     @GET
     @javax.ws.rs.Path(RECORDS_PAGES_TEXT)
@@ -195,7 +189,8 @@ public class RecordPageResource {
         //        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
         boolean access;
         try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)
+                    .isGranted();
         } catch (RecordNotFoundException e) {
             access = false;
         }
@@ -223,8 +218,7 @@ public class RecordPageResource {
             al.addWithin(layer);
             return al;
         } else {
-            AnnotationList emptyList = new AnnotationList(new SequenceBuilder(urls).getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT, true));
-            return emptyList;
+            return new AnnotationList(new SequenceBuilder(urls).getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT, true));
         }
     }
 }
