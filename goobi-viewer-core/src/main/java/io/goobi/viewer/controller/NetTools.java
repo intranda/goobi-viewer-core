@@ -727,7 +727,7 @@ public class NetTools {
      * @return  true if the request is made by a web crawler
      */
     public static boolean isCrawlerBotRequest(HttpServletRequest request) {
-        String userAgent = request.getHeader("User-Agent");
+        String userAgent = request != null ?  request.getHeader("User-Agent") : "";
         if(StringUtils.isNotBlank(userAgent) && userAgent.matches(CRAWLER_USER_AGENT_REGEX)) {
             return true;
         } else {            
