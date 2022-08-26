@@ -2,11 +2,15 @@ package io.goobi.viewer.model.statistics.usage;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class RequestTypeSummary {
 
     private final long totalRequests;
     private final long uniqueRequests;
+    @JsonIgnore
     private final LocalDate startDate;
+    @JsonIgnore
     private final LocalDate endDate;
     
     public RequestTypeSummary(long totalRequests, long uniqueRequests) {

@@ -2,6 +2,7 @@ package io.goobi.viewer.model.statistics.usage;
 
 import static org.junit.Assert.assertEquals;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
@@ -44,10 +45,12 @@ public class StatisticsSummaryBuilderTest {
         
         SolrDocumentList docs = new SolrDocumentList();
         docs.add(new SolrDocument(Map.of(
+                StatisticsLuceneFields.DATE, new Date(2022, 8, 1),
                 StatisticsLuceneFields.getFieldName("PI_01"), Arrays.asList( new Long[] {12l, 2l, 0l, 0l, 0l, 0l}),
                 StatisticsLuceneFields.getFieldName("PI_04"), Arrays.asList( new Long[] {4l, 1l, 0l, 0l, 0l, 0l})
                 )));
         docs.add(new SolrDocument(Map.of(
+                StatisticsLuceneFields.DATE, new Date(2022, 8, 1),
                 StatisticsLuceneFields.getFieldName("PI_01"), Arrays.asList( new Long[] {6l, 1l, 0l, 0l, 0l, 0l}),
                 StatisticsLuceneFields.getFieldName("PI_04"), Arrays.asList( new Long[] {0l, 0l, 0l, 0l, 0l, 0l})
                 )));
@@ -57,8 +60,8 @@ public class StatisticsSummaryBuilderTest {
 
     private SolrSearchIndex createSolrRecords() throws PresentationException, IndexUnreachableException {
         SolrDocumentList docs = new SolrDocumentList();
-        docs.add(new SolrDocument(Collections.singletonMap(SolrConstants.PI, "PI_01")));
-        docs.add(new SolrDocument(Collections.singletonMap(SolrConstants.PI, "PI_04")));
+        docs.add(new SolrDocument(Map.of(StatisticsLuceneFields.DATE, new Date(2022, 8, 1), SolrConstants.PI, "PI_01")));
+        docs.add(new SolrDocument(Map.of(StatisticsLuceneFields.DATE, new Date(2022, 8, 1), SolrConstants.PI, "PI_04")));
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
         Mockito.when(searchIndex.search(Mockito.eq("+(DC:test) +ISWORK:*"), Mockito.anyList())).thenReturn(docs);
         return searchIndex;

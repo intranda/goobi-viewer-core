@@ -1,5 +1,6 @@
 package io.goobi.viewer.model.statistics.usage;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class StatisticsSummaryBuilder {
     private LocalDate getDate(SolrDocument doc) {
         if(doc.containsKey(StatisticsLuceneFields.DATE)) {            
             Date date = (Date)doc.getFieldValue(StatisticsLuceneFields.DATE);
-            return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            return new Timestamp(date.getTime()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         } else {
             return null;
         }
