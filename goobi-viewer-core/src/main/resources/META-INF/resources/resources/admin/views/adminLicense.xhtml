@@ -106,12 +106,12 @@
 	                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
 	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
 	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-<!-- 	                                                <f:ajax render="redirectUrl" /> -->
+	                                                <f:ajax render="redirectUrl" />
 	                                            </h:selectOneRadio>
 	                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
 	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
 	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-<!-- 	                                                <f:ajax render="redirectUrl" /> -->
+	                                                <f:ajax render="redirectUrl" />
 	                                            </h:selectOneRadio>
 	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                                        </div>
@@ -133,8 +133,8 @@
 	                                                <i class="fa fa-exclamation" aria-hidden="true"></i>
 	                                            </div>
 		                                    <h:inputText value="#{adminLicenseBean.currentLicenseType.redirectUrl}"
-		                                        id="redirectUrl" styleClass="form-control -validation-input" requiredMessage="#{msg.info__input_required}"
-		                                        validator="URISyntaxValidator">
+		                                        id="redirectUrl" required="#{adminLicenseBean.currentLicenseType.redirect}" styleClass="form-control -validation-input" requiredMessage="#{msg.info__input_required}"
+		                                        validator="URISyntaxValidator" validator_requireAbsoluteURI="true" validator_active="#{adminLicenseBean.currentLicenseType.redirect}">
 <!-- 												<f:ajax event="valueChange" render="urlInputGroup"/> -->
 													<!-- required="#{adminLicenseBean.currentLicenseType.redirect}" -->
 		                                    </h:inputText>
