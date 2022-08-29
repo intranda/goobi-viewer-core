@@ -5132,7 +5132,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorStyle() {
-        return getLocalString("webGuiDisplay.copyrightIndicator[@style]", "badge");
+        return getLocalString("webGuiDisplay.copyrightIndicator[@style]", "widget");
     }
 
     /**
