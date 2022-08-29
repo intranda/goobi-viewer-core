@@ -95,6 +95,10 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="metadata" />
+        
+        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'badge'}">
+        	<widgetComponent:widget_copyrightInfo />
+        </ui:fragment>
 
         <widgetComponent:widget_searchInCurrentItem />
 
