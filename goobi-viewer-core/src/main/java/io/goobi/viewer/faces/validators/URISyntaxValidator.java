@@ -49,14 +49,29 @@ public class URISyntaxValidator implements Validator<String> {
     /** {@inheritDoc} */
     @Override
     public void validate(FacesContext context, UIComponent component, String value) throws ValidatorException {
-        try {
-            new URI(value);
-        } catch (URISyntaxException e) {
-            FacesMessage message = new FacesMessage(ViewerResourceBundle.getTranslation("error_invalid_URI", null).replace("{0}", value), "");
-            message.setSeverity(FacesMessage.SEVERITY_ERROR);
-            throw new ValidatorException(message);
+        if (getAsBoolean(component.getAttributes().get("validator_active"))) {
+            try {
+                URI uri = new URI(value);
+                Object requireAbsoluteURI = component.getAttributes().get("validator_requireAbsoluteURI");
+                if (getAsBoolean(requireAbsoluteURI) && !uri.isAbsolute()) {
+                    throw new URISyntaxException(value, "URI is not absolute");
+                }
+            } catch (URISyntaxException e) {
+                FacesMessage message = new FacesMessage(ViewerResourceBundle.getTranslation("error_invalid_URI", null).replace("{0}", value), "");
+                message.setSeverity(FacesMessage.SEVERITY_ERROR);
+                throw new ValidatorException(message);
+            }
         }
+    }
 
+    private boolean getAsBoolean(Object value) {
+        if(value instanceof Boolean) {
+            return ((Boolean) value).booleanValue();
+        } else if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        } else {
+            return false;
+        }
     }
 
 }
