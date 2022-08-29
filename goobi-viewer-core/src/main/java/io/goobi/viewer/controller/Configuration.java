@@ -581,74 +581,7 @@ public class Configuration extends AbstractConfiguration {
             paramList = new ArrayList<>(params.size());
             for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = params.iterator(); it2.hasNext();) {
                 HierarchicalConfiguration<ImmutableNode> sub2 = it2.next();
-                String fieldType = sub2.getString(XML_PATH_ATTRIBUTE_TYPE);
-                String source = sub2.getString("[@source]", null);
-                String dest = sub2.getString("[@dest]", null);
-                String key = sub2.getString("[@key]");
-                String altKey = sub2.getString("[@altKey]");
-                String masterValueFragment = sub2.getString("[@value]");
-                String defaultValue = sub2.getString("[@defaultValue]");
-                String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
-                String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
-                String condition = sub2.getString(XML_PATH_ATTRIBUTE_CONDITION);
-                boolean addUrl = sub2.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
-                boolean topstructValueFallback = sub2.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
-                boolean topstructOnly = sub2.getBoolean("[@topstructOnly]", false);
-                List<MetadataReplaceRule> replaceRules = Collections.emptyList();
-                List<HierarchicalConfiguration<ImmutableNode>> replaceRuleElements = sub2.configurationsAt("replace");
-                if (replaceRuleElements != null) {
-                    // Replacement rules can be applied to a character, a string or a regex
-                    replaceRules = new ArrayList<>(replaceRuleElements.size());
-                    for (Iterator<HierarchicalConfiguration<ImmutableNode>> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
-                        HierarchicalConfiguration<ImmutableNode> sub3 = it3.next();
-                        String replaceCondition = sub3.getString(XML_PATH_ATTRIBUTE_CONDITION);
-                        Character character = null;
-                        try {
-                            int charIndex = sub3.getInt("[@char]");
-                            character = (char) charIndex;
-                        } catch (NoSuchElementException e) {
-                            //
-                        }
-                        String string = null;
-                        try {
-                            string = sub3.getString("[@string]");
-                        } catch (NoSuchElementException e) {
-                            //
-                        }
-                        String regex = null;
-                        try {
-                            regex = sub3.getString("[@regex]");
-                        } catch (NoSuchElementException e) {
-                            //
-                        }
-                        String replaceWith = sub3.getString("");
-                        if (replaceWith == null) {
-                            replaceWith = "";
-                        }
-                        if (character != null) {
-                            replaceRules.add(new MetadataReplaceRule(character, replaceWith, replaceCondition, MetadataReplaceRuleType.CHAR));
-                        } else if (string != null) {
-                            replaceRules.add(new MetadataReplaceRule(string, replaceWith, replaceCondition, MetadataReplaceRuleType.STRING));
-                        } else if (regex != null) {
-                            replaceRules.add(new MetadataReplaceRule(regex, replaceWith, replaceCondition, MetadataReplaceRuleType.REGEX));
-                        }
-                    }
-                }
-
-                paramList.add(new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
-                        .setSource(source)
-                        .setDestination(dest)
-                        .setKey(key)
-                        .setAltKey(altKey)
-                        .setMasterValueFragment(masterValueFragment)
-                        .setDefaultValue(defaultValue)
-                        .setPrefix(prefix)
-                        .setSuffix(suffix)
-                        .setCondition(condition)
-                        .setAddUrl(addUrl)
-                        .setTopstructValueFallback(topstructValueFallback)
-                        .setTopstructOnly(topstructOnly)
-                        .setReplaceRules(replaceRules));
+                paramList.add(MetadataParameter.createFromConfig(sub2, topstructValueFallbackDefaultValue));
             }
         }
 
@@ -675,6 +608,7 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
+
 
     /**
      * <p>
@@ -4976,10 +4910,9 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration config : configs) {
             String label = config.getString("[@label]", "");
             String format = config.getString("[@format]", "");
-            MetadataParameter param = new MetadataParameter();
-            param.setKey(config.getString("param[@key]", ""));
-            param.setType(MetadataParameterType.getByKey(config.getString("param[@type]", "")));
-            links.add(new ManifestLinkConfiguration(label, format, param));
+            MetadataParameter param = MetadataParameter.createFromConfig(config.configurationAt("param"), true);
+            Metadata md = new Metadata("", "", Arrays.asList(param));
+            links.add(new ManifestLinkConfiguration(label, format, md));
         }
         return links;
     }

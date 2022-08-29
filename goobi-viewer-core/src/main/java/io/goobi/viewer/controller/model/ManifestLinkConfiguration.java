@@ -1,23 +1,24 @@
 package io.goobi.viewer.controller.model;
 
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 
 public class ManifestLinkConfiguration {
 
     private final String label;
     private final String format;
-    private final MetadataParameter param;
+    private final Metadata metadata;
     
     /**
      * @param label
      * @param format
      * @param param
      */
-    public ManifestLinkConfiguration(String label, String format, MetadataParameter param) {
+    public ManifestLinkConfiguration(String label, String format, Metadata metadata) {
         super();
         this.label = label;
         this.format = format;
-        this.param = param;
+        this.metadata = metadata;
     }
     
     /**
@@ -32,11 +33,8 @@ public class ManifestLinkConfiguration {
     public String getFormat() {
         return format;
     }
-    /**
-     * @return the param
-     */
-    public MetadataParameter getParam() {
-        return param;
+    public Metadata getMetadata() {
+        return metadata;
     }
 
     
