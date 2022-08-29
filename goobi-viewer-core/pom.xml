@@ -89,7 +89,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.4.4</ics.version>
+		<ics.version>3.5.0</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.2.2</iiif-api-model.version>
@@ -136,7 +136,7 @@
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20220320</json.version>
-		<jsoup.version>1.15.2</jsoup.version>
+		<jsoup.version>1.15.3</jsoup.version>
 		<junit.version>4.13.2</junit.version>
 		<mariadb-java-client.version>3.0.7</mariadb-java-client.version>
 		<mockito.version>4.7.0</mockito.version>
