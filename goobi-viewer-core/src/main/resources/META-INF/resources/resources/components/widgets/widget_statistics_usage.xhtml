@@ -15,9 +15,9 @@
     </composite:interface>
 
     <composite:implementation>
-	
-		<c:set scope="request" var="stats" value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}"/>
-	
+		<ui:fragment rendered="#{statisticsBean.usageStatisticsActive}">
+			<c:set scope="request" var="stats" value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}"/>
+			
 	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
 		        <div id="widget-usage-statistics" class="widget">
 		        	<h2>#{msg.widget_usage_statistics__title}</h2>
@@ -44,11 +44,12 @@
 					</div>
 		        </div>
 	        </h:panelGroup>
-	 
-    <script>
-    	let date = new Date()
-    	date.setDate(new Date().getDate()-1);
-    	document.getElementById("lastRecordedDate").innerHTML = date.toLocaleDateString();
-    </script>
+		 
+		    <script>
+		    	let date = new Date()
+		    	date.setDate(new Date().getDate()-1);
+		    	document.getElementById("lastRecordedDate").innerHTML = date.toLocaleDateString();
+		    </script>
+    </ui:fragment>
     </composite:implementation>
 </ui:composition>

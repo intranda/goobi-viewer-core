@@ -5585,4 +5585,8 @@ public class Configuration extends AbstractConfiguration {
     public boolean isStatisticsEnabled() {
         return getLocalBoolean("statistics[@enabled]", false);
     }
+    
+    public String getCrawlerDetectionRegex() {
+        return getLocalString("statistics.crawlerDetection[@regex]", ".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*");
+    }
 }

@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -93,15 +94,14 @@ public class NetTools {
      * Used to detect requests by web-crawlers
      */
     private static final String CRAWLER_SESSION_MANAGER_VALVE_CLASS_NAME = "org.apache.catalina.valves.CrawlerSessionManagerValve";
-    private static final String CRAWLER_USER_AGENT_REGEX = ".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*";
-    
+
     private static final int HTTP_TIMEOUT = 30000;
     /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
     /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
-    
-    public static final String HTTP_HEADER_CONTENT_DISPOSITION ="Content-Disposition";
+
+    public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
     public static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
 
     public static final String PARAM_CLEAR_CACHE_ALL = "all";
@@ -711,31 +711,29 @@ public class NetTools {
             return false;
         }
     }
-    
+
     public static boolean isValidSubnetMask(String subnetMask) {
-        try {            
+        try {
             new SubnetUtils(subnetMask);
             return true;
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return false;
         }
     }
-    
+
     /**
-     * Check if the request belongs to a session reserved for web crawlers by {@link org.apache.catalina.valves.CrawlerSessionManagerValve}
+     * Check if the request Contains a 'User-Agent' header matching the regex configured in {@link Configuration#getCrawlerDetectionRegex()}.
+     * If it matches, the request is assumed be be from a web-crawler bot and not from a human.
+     * Identifying a web-crawler request via the {@link org.apache.catalina.valves.CrawlerSessionManagerValve} session attribute does not work
+     * for this purpose since it is only applied to the session after the first request
+     * 
      * @param request
-     * @return  true if the request is made by a web crawler
+     * @return true if the request is made by a web crawler
      */
     public static boolean isCrawlerBotRequest(HttpServletRequest request) {
-        String userAgent = request != null ?  request.getHeader("User-Agent") : "";
-        if(StringUtils.isNotBlank(userAgent) && userAgent.matches(CRAWLER_USER_AGENT_REGEX)) {
-            return true;
-        } else {            
-            return Optional.ofNullable(request)
-                    .map(HttpServletRequest::getSession)
-                    .map(session -> session.getAttribute(CRAWLER_SESSION_MANAGER_VALVE_CLASS_NAME) != null)
-                    .orElse(false);
-        }
+        String userAgent = request != null ? request.getHeader("User-Agent") : "";
+        return StringUtils.isNotBlank(userAgent) &&
+                userAgent.matches(DataManager.getInstance().getConfiguration().getCrawlerDetectionRegex());
 
     }
 }
