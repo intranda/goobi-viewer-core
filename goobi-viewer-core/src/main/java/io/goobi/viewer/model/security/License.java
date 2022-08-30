@@ -81,8 +81,6 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(License.class);
 
-    public static final Long ALL_CLIENTS_ID = -1l;
-
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
