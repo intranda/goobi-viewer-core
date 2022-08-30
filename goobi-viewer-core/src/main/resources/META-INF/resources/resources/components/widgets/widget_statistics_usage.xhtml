@@ -22,8 +22,10 @@
 		        <div id="widget-usage-statistics" class="widget">
 		        	<h2>#{msg.widget_usage_statistics__title}</h2>
 		        	<div class="widget__body">
-		        		<div>Total requests: #{stats.getTotalRequests()}</div>
-		        		<div>Unique requests: #{stats.getUniqueRequests()}</div>
+		        		<div>Total views: #{stats.getTotalRequests('RECORD_VIEW')}</div>
+		        		<div>Unique views: #{stats.getUniqueRequests('RECORD_VIEW')}</div>
+		        		<div>Total downloads: #{stats.getTotalRequests('FILE_DOWNLOAD')}</div>
+		        		<div>Unique downloads: #{stats.getUniqueRequests('FILE_DOWNLOAD')}</div>
 		        		<div>last checked date: #{statisticsBean.getLastUsageStatisticsCheck()}</div> 
 		        		<div>last requested date: #{stats.getLastRecordedDate()}</div>
 		        	</div>
