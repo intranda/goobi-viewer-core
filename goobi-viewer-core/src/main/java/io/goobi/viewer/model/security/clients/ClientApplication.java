@@ -584,6 +584,7 @@ public class ClientApplication implements ILicensee, Serializable {
         return isAccessGranted() && matchIp(remoteAddress);
     }
     
+    @JsonIgnore
     public boolean isAllClients() throws DAOException {
         return DataManager.getInstance().getClientManager().isAllClients(this);
     }
