@@ -112,14 +112,14 @@
 				<!-- SCRIPT TO ENABLE TOGGLE/SHOW DETAIL INFORMATION -->
 				<script>
 					$(document).ready(function() {
-						
+
 						$('[data-target="triggerCopyrightInfo"]').click(function() {
 							if ($(this).hasClass('-open')) {
 								$('#widgetCopyrightInfo').slideUp('fast');
 								$('.widget-copyright-info').removeClass('-open');
 								$('.widget-copyright-info').tooltip('enable');
 							}
-							
+
 							else {
 								$('#widgetCopyrightInfo').slideDown('fast');
 								$('.widget-copyright-info').addClass('-open');
@@ -127,8 +127,7 @@
 								$('.widget-copyright-info').tooltip('hide');
 							}
 						});
-						
-						
+
 					});
 				</script>
 

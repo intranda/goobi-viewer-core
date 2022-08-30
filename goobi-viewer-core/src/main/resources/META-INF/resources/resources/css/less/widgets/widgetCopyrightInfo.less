@@ -10,11 +10,12 @@
 	&__dot {
 		color: white;
 		font-size: 30px;
+		display: flex;
 	}
 	&__container {
 		display: flex;
 		gap: 0 10px;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
         &.-green {
 			.widget-copyright-info__status-icon {
@@ -45,7 +46,7 @@
         }
         img,
         svg {
-			height: 26px;
+			height: 30px;
 			max-width: 52px;
             opacity: 1;
         }

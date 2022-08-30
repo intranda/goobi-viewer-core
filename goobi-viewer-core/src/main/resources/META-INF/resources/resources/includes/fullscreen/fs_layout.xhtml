@@ -96,9 +96,14 @@
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
                     <h1 >#{activeDocumentBean.titleBarLabel}</h1>
-                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 						<viewerComponent:copyrightIndicator />
 					</ui:fragment>
+					
+			        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+			        	<widgetComponent:widget_copyrightInfo />
+			        </ui:fragment>
+					
                 </div>
 
                <!-- SEARCH IN CURRENT ITEM -->

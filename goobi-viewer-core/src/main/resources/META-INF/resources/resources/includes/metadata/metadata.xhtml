@@ -44,7 +44,7 @@
 			                    </button>
 			            </ui:fragment>
 	
-	                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+	                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 							<viewerComponent:copyrightIndicator />
 						</ui:fragment>
 	
