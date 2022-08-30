@@ -19,16 +19,27 @@
 			<c:set scope="request" var="stats" value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}"/>
 			
 	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
-		        <div id="widget-usage-statistics" class="widget">
+		        <div id="widgetUsageStatistics" class="widget">
 		        	<h2>#{msg.widget_usage_statistics__title}</h2>
 		        	<div class="widget__body">
-		        		<div>Total views: #{stats.getTotalRequests('RECORD_VIEW')}</div>
-		        		<div>Unique views: #{stats.getUniqueRequests('RECORD_VIEW')}</div>
-		        		<div>Total downloads: #{stats.getTotalRequests('FILE_DOWNLOAD')}</div>
-		        		<div>Unique downloads: #{stats.getUniqueRequests('FILE_DOWNLOAD')}</div>
-		        		<div>last checked date: #{statisticsBean.getLastUsageStatisticsCheck()}</div> 
-		        		<div>last requested date: #{stats.getLastRecordedDate()}</div>
-		        	</div>
+
+						<div class="widget-usage-statistics__info-wrapper">
+							<div class="widget-usage-statistics__key">#{msg.widget_usage_statistics__total_views}:</div>
+							<div class="mb-2"><span class="widget-usage-statistics__value">#{stats.getTotalRequests('RECORD_VIEW')}</span><span class="widget-usage-statistics__updated">(#{msg.widget_usage_statistics__updated_on} <span class="updatedStatistics">#{statisticsBean.getLastUsageStatisticsCheck()}</span>)</span></div>
+							 
+							<div class="widget-usage-statistics__key">#{msg.widget_usage_statistics__total_downloads}:</div>
+							<div><span class="widget-usage-statistics__value">#{stats.getTotalRequests('FILE_DOWNLOAD')}</span><span class="widget-usage-statistics__updated">(#{msg.widget_usage_statistics__updated_on} <span class="updatedStatistics">#{statisticsBean.getLastUsageStatisticsCheck()}</span>)</span></div>
+			        		
+			        	</div>
+		        		
+					</div>
+
+						 
+<!-- 		        		<div>Unique views: #{stats.getUniqueRequests('RECORD_VIEW')}</div> -->
+<!-- 		        		<div>Unique downloads: #{stats.getUniqueRequests('FILE_DOWNLOAD')}</div> -->
+
+<!-- 		        		<div>last requested date: #{stats.getLastRecordedDate()}</div> -->
+
 
 		        </div>
 	        </h:panelGroup>
@@ -48,9 +59,12 @@
 	        </h:panelGroup>
 		 
 		    <script>
-		    	let date = new Date()
+		    $( document ).ready(function() {
+		    	let date = new Date();
 		    	date.setDate(new Date().getDate()-1);
-		    	document.getElementById("lastRecordedDate").innerHTML = date.toLocaleDateString();
+		    	localDateVar = date.toLocaleDateString();
+		    	$(".updatedStatistics").html(localDateVar);
+		    });
 		    </script>
     </ui:fragment>
     </composite:implementation>
