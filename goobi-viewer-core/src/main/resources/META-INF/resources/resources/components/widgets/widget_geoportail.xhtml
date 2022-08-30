@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- interface options -->
+    <composite:interface>
+    	<composite:attribute name="collapse" type="java.lang.Boolean" required="false" default="false"/>
+    </composite:interface>
+
+    <!-- component content -->
+    <composite:implementation>
+    
+    		<script src="//apiv3.geoportail.lu/apiv3loader.js"  type="text/javascript"></script>
+	        <!-- WIDGET WORK COUNT STANDARD -->
+	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
+		        <div id="widgetGeoportail" class="widget widget-geoportail">
+		        	<h2>#{msg.location}</h2>
+		        	<div class="widget__body">
+		        		<div id="map_geoportail" style="width:500px;height:500px;"/>
+		        		<script>
+		        			let urlString = "https://map.geoportail.lu/theme/main?lang=en&amp;version=3&amp;zoom=18&amp;X=680232&amp;Y=6403801&amp;layers=152-320-199-359&amp;opacities=1-1-1-1&amp;bgLayer=blank&amp;crosshair=true";
+		        			let url = new URL(urlString);
+		        			let zoom = url.searchParams.get('zoom');
+		        			let x = url.searchParams.get('X');
+		        			let y = url.searchParams.get('Y');
+		        			let layers = url.searchParams.get('layers');
+		        			let opacities = url.searchParams.get('opacities');
+		        			let bgLayer = url.searchParams.get('bgLayer');
+		        			let crosshair = url.searchParams.get('crosshair');
+		        			console.log("loading map at zoom=",zoom,"x=",x,"y=",y);
+		        			let map = new lux.Map({
+		        			    target: 'map_geoportail',
+		        			    bgLayer: 'basemap_2015_global',
+		        			    zoom: zoom,
+		        			    position: [x, y],
+		        			  });
+		        			console.log("loaded map", map);
+		        		</script>
+		        	</div>
+
+		        </div>
+	        </h:panelGroup>
+	        
+	        <!-- WIDGET WORK COUNT FOLDOUT -->
+	        <h:panelGroup rendered="#{cc.attrs.collapse == true}">
+	        	<div id="widgetGeoportail" class="widget widget-geoportail">
+					<h2 >
+						<a href="#geoportailCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="geoportailCollapse">
+							#{msg.location}
+							<i class="fa fa-arrow-down" aria-hidden="true"></i>
+						</a>
+					</h2>
+					
+					<div id="geoportailCollapse" class="collapse">
+						
+					</div>
+		        </div>
+	        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>
