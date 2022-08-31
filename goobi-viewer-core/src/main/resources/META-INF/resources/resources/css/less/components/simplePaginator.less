@@ -45,7 +45,31 @@
 	&__dots {
 		a, span {}
 	}
-	&__navigate {}
+	&__navigate {
+		&.inactive {
+			a {
+				pointer-events: none;
+				i {				
+					color: black;
+				}
+
+			}
+		}
+		&.navigate_text {
+			border: none;
+			.page-number {
+				&__label {
+					span {						
+						display: inline;
+						background: transparent;
+					}
+				}
+				&__input {
+					display: none;
+				}
+			}
+		}
+	}
 	/* MODIFICATION */
 	li.numeric-paginator__dots {
 		min-width: 0;
