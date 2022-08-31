@@ -785,7 +785,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><ul if="{collection.members && collection.members.length > 0}" class="list"><li each="{child in getChildren(collection)}"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></li></ul></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
 
 riot.tag('raw', '', function(opts) {
     this.root.innerHTML = opts.html;
@@ -795,16 +795,27 @@ this.collections = this.opts.collections;
 
 this.on("mount", () => {
 
+    if(opts.depth == undefined) {
+        opts.depth = 1;
+    } else {
+        opts.depth = parseInt(opts.depth);
+    }
     this.loadSubCollections();
 })
 
 this.loadSubCollections = function() {
-    rxjs.from(this.collections)
-    .pipe(
-    	rxjs.operators.filter( child => this.hasChildren(child) ),
-    	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
-    	rxjs.operators.debounceTime(100)
 
+    let observable = rxjs.from(this.collections);
+
+    for (let level = 0; level < opts.depth; level++) {
+        observable = observable.pipe(
+         	rxjs.operators.filter( child => this.hasChildren(child) ),
+         	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
+         	rxjs.operators.mergeMap( child => child ),
+        );
+    }
+    observable.pipe(
+    	rxjs.operators.debounceTime(100)
     )
     .subscribe( () => {this.update();});
 
@@ -813,7 +824,7 @@ this.loadSubCollections = function() {
 this.fetchMembers = function(collection) {
     return fetch(collection['@id'])
     .then( result => result.json())
-    .then(json => {collection.members = json.members;})
+    .then(json => {collection.members = json.members; return collection.members;})
 }.bind(this)
 
 this.getValue = function(element) {
@@ -826,7 +837,11 @@ this.hasChildren = function(element) {
 }.bind(this)
 
 this.getChildren = function(collection) {
-    return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+    if(collection.members) {
+    	return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+    } else {
+        return [];
+    }
 }.bind(this)
 
 this.hasDescription = function(element) {
@@ -850,7 +865,7 @@ this.getId = function(element) {
 });
 
 
-riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h2 if="{set[0] != \'\'}">{translator.translate(set[0])}</h2><collectionlist collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}"></collectionlist></div>', '', '', function(opts) {
+riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h2 if="{set[0] != \'\'}">{translator.translate(set[0])}</h2><collectionlist collections="{set[1]}" language="{opts.language}" defaultlanguage="{opts.defaultlanguage}" setindex="{index}" depth="{opts.depth}"></collectionlist></div>', '', '', function(opts) {
 
 this.collectionSets = [];
 
@@ -3531,6 +3546,32 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
             viewerJS.handleScrollPositionClick($target);
         }.bind(this)
 });
+riot.tag2('subcollection', '<ul if="{collection.members && collection.members.length > 0}" class="list card-body__list"><li each="{child in getChildren(collection)}"><div class="card-body__links"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></div><subcollection if="{child.members && child.members.length > 0}" collection="{child}"></subcollection></li></ul>', '', '', function(opts) {
+		this.collection = this.opts.collection;
+
+		this.getId = function(element) {
+		    if(!element) {
+		        return undefined;
+		    } else if (Array.isArray(element) && element.length > 0) {
+		        return viewerJS.iiif.getId(element[0]);
+		    } else {
+		        return viewerJS.iiif.getId(element);
+		    }
+		}.bind(this)
+
+		this.getValue = function(element) {
+		    return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
+		}.bind(this)
+
+		this.getChildren = function(collection) {
+		    if(collection.members) {
+		    	return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+		    } else {
+		        return [];
+		    }
+		}.bind(this)
+});
+
 
 
 riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" onclick="{handleClickOnImage}"><img class="thumbnails-image" alt="{getObjectTitle() + \': \' + getValue(canvas.label)}" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {

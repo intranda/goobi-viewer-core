@@ -263,11 +263,18 @@ public class CampaignItemResource {
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
         for (CrowdsourcingAnnotation anno : annotations) {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
-            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
-                anno.setReviewer(user.get());
+            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
+                anno.setAccessCondition(getPublishedAccessCondition(campaign));
+                if(campaign.isReviewModeActive() && user.isPresent()) {
+                    anno.setReviewer(user.get());
+                }
             }
             DataManager.getInstance().getDao().updateAnnotation(anno);
         }
+    }
+
+    private static String getPublishedAccessCondition(Campaign campaign) {
+        return campaign.isRestrictAnnotationAccess() ? campaign.getAccessConditionValue() : SolrConstants.OPEN_ACCESS_VALUE;
     }
 
     /**
@@ -283,8 +290,11 @@ public class CampaignItemResource {
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
         for (CrowdsourcingAnnotation anno : annotations) {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
-            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
-                anno.setReviewer(user.get());
+            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
+                anno.setAccessCondition(getPublishedAccessCondition(campaign));
+                if(campaign.isReviewModeActive() && user.isPresent()) {
+                    anno.setReviewer(user.get());
+                }
             }
             DataManager.getInstance().getDao().updateAnnotation(anno);
         }

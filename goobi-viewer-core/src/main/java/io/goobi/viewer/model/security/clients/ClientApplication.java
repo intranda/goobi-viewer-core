@@ -88,7 +88,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * The IP under which the client first requested registration
      */
-    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13", accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13",
+            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
     @Column(name = "client_ip")
     private String clientIp;
 
@@ -127,7 +128,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * An IP Subnet mask. If present, the client may only log in if its current IP matches the mask
      */
-    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16", accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16",
+            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
     @Column(name = "subnet_mask")
     private String subnetMask;
 
@@ -503,7 +505,10 @@ public class ClientApplication implements ILicensee, Serializable {
                 // License grants privilege
                 if (license.getPrivileges().contains(privilegeName)) {
                     if (StringUtils.isEmpty(license.getConditions())) {
-                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                        return AccessPermission.granted()
+                                .setTicketRequired(license.isTicketRequired())
+                                .setRedirect(license.getLicenseType().isRedirect())
+                                .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                     } else if (StringUtils.isNotEmpty(pi)) {
                         // If PI and Solr condition subquery are present, check via Solr
                         StringBuilder sbQuery = new StringBuilder();
@@ -511,7 +516,10 @@ public class ClientApplication implements ILicensee, Serializable {
                         if (DataManager.getInstance()
                                 .getSearchIndex()
                                 .getFirstDoc(sbQuery.toString(), Collections.singletonList(SolrConstants.IDDOC)) != null) {
-                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
+                            return AccessPermission.granted()
+                                    .setTicketRequired(license.isTicketRequired())
+                                    .setRedirect(license.getLicenseType().isRedirect())
+                                    .setRedirectUrl(license.getLicenseType().getRedirectUrl());
                         }
                     }
                 }
@@ -574,5 +582,10 @@ public class ClientApplication implements ILicensee, Serializable {
      */
     public boolean mayLogIn(String remoteAddress) {
         return isAccessGranted() && matchIp(remoteAddress);
+    }
+    
+    @JsonIgnore
+    public boolean isAllClients() throws DAOException {
+        return DataManager.getInstance().getClientManager().isAllClients(this);
     }
 }

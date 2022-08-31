@@ -105,6 +105,10 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private boolean pdfDownloadQuota = true;
     @Column(name = "concurrent_views_limit")
     private boolean concurrentViewsLimit = true;
+    @Column(name = "redirect")
+    private boolean redirect = false;
+    @Column(name = "redirect_url")
+    private String redirectUrl;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -429,6 +433,41 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      */
     public void setConcurrentViewsLimit(boolean concurrentViewsLimit) {
         this.concurrentViewsLimit = concurrentViewsLimit;
+    }
+
+    /**
+     * @return the redirect
+     */
+    public boolean isRedirect() {
+        return redirect;
+    }
+
+    /**
+     * @param redirect the redirect to set
+     */
+    public void setRedirect(boolean redirect) {
+        this.redirect = redirect;
+        // Automatically remove any privileges except listing, if redirect mode is on
+        if (redirect) {
+            privilegesCopy.clear();
+            privilegesCopy.add(PRIV_LIST);
+        } else {
+            privilegesCopy.remove(PRIV_LIST);
+        }
+    }
+
+    /**
+     * @return the redirectUrl
+     */
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    /**
+     * @param redirectUrl the redirectUrl to set
+     */
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
     }
 
     /**
