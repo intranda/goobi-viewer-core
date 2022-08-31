@@ -45,6 +45,17 @@ const depsPathsJS = [
     dest:`${jsLibsDir}clipboard/`
   },
 
+  { // Codemirror
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'codemirror/lib/codemirror.js', 
+      'codemirror/LICENSE'
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}codemirror/`
+  },
+
   { // HC-STICKY 
     expand: true,
     cwd: nodeModules,
