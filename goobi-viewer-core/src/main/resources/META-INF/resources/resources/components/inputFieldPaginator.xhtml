@@ -48,11 +48,11 @@
                         </a>
                     </li>
 	
-					<li class="numeric-paginator__navigate navigate_text">
-						<div class="page-number__label" onclick="viewerJS.paginator.showPageNumberInput(event)" data-paginator="label">
-							<span>#{cc.attrs.itemActive}</span><span> #{msg.of} </span><span>#{cc.attrs.lastItem}</span>
+					<li class="numeric-paginator__navigate numeric-paginator__navigate-text">
+						<div class="numeric-paginator__page-number-label" onclick="viewerJS.paginator.showPageNumberInput(event)" data-paginator="label">
+							<span>#{cc.attrs.itemActive}</span><span> #{msg.of} </span><span id="paginatorLastPageNumber">#{cc.attrs.lastItem}</span>
 						</div>
-						<div class="page-number__input" data-paginator="input">
+						<div class="numeric-paginator__page-number-input" data-paginator="input">
 							<input data-input="number" onfocusout="viewerJS.paginator.showPageNumberLabel(event)" onchange="viewerJS.paginator.changePageNumber(event)" data-paginator="input-field"></input>
 						</div>
 					</li>

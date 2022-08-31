@@ -65,6 +65,19 @@ var viewerJS = (function(viewer) {
                 _backwardKey = _leftKey;
 			}
 			$(document.body).on("keyup", viewer.paginator.keypressHandler);
+			
+			$( document ).ready(function() {
+			
+			// Make the input field the same size as the text/numbers element
+			var $numericPaginatorLabelWidth = $('.numeric-paginator__page-number-label').width();
+			var $numericPaginatorLabelWidthPX = $numericPaginatorLabelWidth + 'px';
+			var $numericPaginatorInputWrapper = $("[data-paginator='input']");
+			
+			console.log($numericPaginatorLabelWidthPX);
+
+  				$($numericPaginatorInputWrapper).css('width', $numericPaginatorLabelWidthPX);
+			
+			});
 
 		},
 		keypressHandler : function(event) {
@@ -129,7 +142,7 @@ var viewerJS = (function(viewer) {
 		showPageNumberInput: function(e) {
 			let $paginator = $(e.target).parents(".numeric-paginator");
 		    $paginator.find("[data-paginator='label']").hide();
-		    $paginator.find("[data-paginator='input']").show();
+		    $paginator.find("[data-paginator='input']").css('display', 'flex');
 		    $paginator.find("[data-paginator='input-field']").trigger('focus');
 		},
 		showPageNumberLabel: function(e) {
@@ -143,7 +156,11 @@ var viewerJS = (function(viewer) {
 			}
 			let $paginator = $(e.target).parents(".numeric-paginator");
 			let $inputField = $paginator.find("[data-paginator='input-field']");
-		    let targetPageNumber = parseInt($inputField.val());
+			let $lastPageNumber = $('#paginatorLastPageNumber').html();
+		    var targetPageNumber = parseInt($inputField.val());
+
+			if (targetPageNumber > $lastPageNumber) targetPageNumber = $lastPageNumber;
+
 		    if (_debug) {
 		    	console.log("targetPageNumber",targetPageNumber);
 		    }
@@ -154,6 +171,9 @@ var viewerJS = (function(viewer) {
 		        }
 		        window.location.href = targetUrl;
 		    }
+			else {
+				$inputField.val($lastPageNumber);
+			}
 		}
 	};
 
