@@ -152,6 +152,7 @@ public class TaskManager {
                     try {
                         new SearchHitsNotifier().sendNewHitsNotifications();
                     } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.toString());
                     }
                 };
@@ -160,6 +161,7 @@ public class TaskManager {
                     try {
                         deleteExpiredDownloadTickets();
                     } catch (DAOException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -179,6 +181,7 @@ public class TaskManager {
                     try {
                         new SitemapBuilder(request).updateSitemap(outputPath, viewerRootUrl);
                     } catch (IllegalRequestException | AccessDeniedException | JSONException | PresentationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -197,6 +200,7 @@ public class TaskManager {
                     try {
                         updateDownloadJobs();
                     } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -205,6 +209,7 @@ public class TaskManager {
                     try {
                         new StatisticsIndexTask().startTask();
                     } catch (DAOException | IOException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
