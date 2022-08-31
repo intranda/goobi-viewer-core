@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.solr.SolrConstants;
 
 public class StatisticsIndexerTest {
 
@@ -67,6 +68,25 @@ public class StatisticsIndexerTest {
         
     }
     
+    @Test
+    public void testBuildQuery() {
+        LocalDate date = LocalDate.of(2022, 8, 30);
+        String query1 = String.format("+%s:%s +%s:\"%s\"", 
+                SolrConstants.DOCTYPE, 
+                StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
+                StatisticsLuceneFields.DATE,
+                StatisticsLuceneFields.solrDateFormatter.format(date.atStartOfDay()));
+        String query2 = "+{docTypeField}:{doctype} +{dateField}:\"{date}\""
+                .replace("{docTypeField}", SolrConstants.DOCTYPE)
+                .replace("{doctype}", StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE)
+                .replace("{dateField}", StatisticsLuceneFields.DATE)
+                .replace("{date}", StatisticsLuceneFields.solrDateFormatter.format(date.atStartOfDay()));
+        
+        assertEquals(query1, query2);
+        assertEquals("+DOCTYPE:STATISTICS_USAGE +STATISTICS_DATE:\"2022-08-30T00:00:00Z\"", query1);
+        System.out.println(query1);
+    }
+    
     private DailySessionUsageStatistics createStatistics() {
             LocalDate date = LocalDate.of(2022, Month.JULY, 4);
             DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
@@ -83,5 +103,6 @@ public class StatisticsIndexerTest {
     
             return stats;
     }
+    
 
 }

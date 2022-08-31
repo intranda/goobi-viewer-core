@@ -21,6 +21,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 public class StatisticsIndexTask {
@@ -68,9 +69,11 @@ public class StatisticsIndexTask {
                 List<DailySessionUsageStatistics> statsNotIndexed =
                         statsIndexed.entrySet().stream().filter(e -> !e.getValue()).map(Entry::getKey).collect(Collectors.toList());
                 for (DailySessionUsageStatistics stat : statsNotIndexed) {
-                    String query = "+DOCTYPE:{doctype} +usage_statistics_date:{date}"
-                            .replace("{doctype}", StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE)
-                            .replace("{date}", StatisticsLuceneFields.solrDateFormatter.format(stat.getDate()));
+                    String query = String.format("+%s:%s +%s:\"%s\"", 
+                            SolrConstants.DOCTYPE, 
+                            StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
+                            StatisticsLuceneFields.DATE,
+                            StatisticsLuceneFields.solrDateFormatter.format(stat.getDate().atStartOfDay()));
                     SolrDocumentList list = this.solrIndex.search(query);
                     if(!list.isEmpty()) {
                         logger.info("Indexing of usage statistics for {} finished", stat.getDate());
@@ -88,7 +91,7 @@ public class StatisticsIndexTask {
             logger.warn("Checking indexed status of usage statistics has been interrupted");
             Thread.currentThread().interrupt();
         } catch (PresentationException | IndexUnreachableException e1) {
-            logger.warn("Checking indexed status of usage statistics has been interrupted");
+            logger.warn("Checking indexed status of usage statistics failed with error " + e1.toString());
         }
     }
 
