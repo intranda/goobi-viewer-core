@@ -68,18 +68,21 @@
                             </h:form>
                         </div>
                     </div>
+                    
+			        <!-- PAGINATOR -->
+			        <viewerComponent:inputFieldPaginator 
+			        	classSuffix="-top"
+			            itemCount="#{search.lastPage}" 
+			            itemActive="#{search.currentPage}" 
+			            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
+			            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
+
                </div>
 
             <div class="clearfix"></div>
         </h:panelGroup>
 
-        <!-- PAGINATOR -->
-        <viewerComponent:simplePaginator 
-        	classSuffix="-top"
-            itemCount="#{search.lastPage}" 
-            itemActive="#{search.currentPage}" 
-            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
-            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
+
         <div class="clearfix"></div>
         
         <h:form class="search-list__hits__list" id="searchListHitsForm" prependId="false">
@@ -140,7 +143,7 @@
         </h:form>
 
         <!-- PAGINATOR -->
-        <viewerComponent:simplePaginator 
+        <viewerComponent:inputFieldPaginator 
         	classSuffix="-bottom"
             itemCount="#{search.lastPage}" 
             itemActive="#{search.currentPage}" 
