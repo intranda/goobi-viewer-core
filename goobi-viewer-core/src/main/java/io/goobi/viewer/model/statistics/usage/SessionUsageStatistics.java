@@ -241,7 +241,7 @@ public class SessionUsageStatistics {
             requestValues = this.recordRequests.values();
         } else {
             requestValues = this.recordRequests.keySet().stream()
-                    .filter(key -> identifiersToInclude.contains(key))
+                    .filter(identifiersToInclude::contains)
                     .map(key -> this.recordRequests.get(key))
                     .collect(Collectors.toList());
         }

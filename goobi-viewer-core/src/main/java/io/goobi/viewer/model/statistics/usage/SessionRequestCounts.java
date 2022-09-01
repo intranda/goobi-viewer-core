@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -105,6 +106,11 @@ public class SessionRequestCounts {
         return new JSONArray(countsList).toString();
     }
     
+    @Override
+    public int hashCode() {
+        return this.counts.hashCode();
+    }
+    
     /**
      * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s 
      */
@@ -112,8 +118,9 @@ public class SessionRequestCounts {
         if(o != null && o.getClass().equals(this.getClass())) {
             SessionRequestCounts other = (SessionRequestCounts)o;
             if(other.counts.size() == this.counts.size()) {
-                for (RequestType type : this.counts.keySet()) {
-                    Long thisCount = this.counts.get(type);
+                for (Entry<RequestType, Long> entry : this.counts.entrySet()) {
+                    RequestType type = entry.getKey();
+                    Long thisCount = entry.getValue();
                     Long otherCount = other.counts.get(type);
                     if(!Objects.equals(thisCount, otherCount)) {
                         return false;

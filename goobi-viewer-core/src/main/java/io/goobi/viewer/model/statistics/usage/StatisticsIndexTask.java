@@ -135,7 +135,7 @@ public class StatisticsIndexTask {
             logger.warn("Checking indexed status of usage statistics has been interrupted");
             Thread.currentThread().interrupt();
         } catch (PresentationException | IndexUnreachableException e1) {
-            logger.warn("Checking indexed status of usage statistics failed with error " + e1.toString());
+            logger.warn("Checking indexed status of usage statistics failed with error {}" , e1.toString());
         }
     }
 

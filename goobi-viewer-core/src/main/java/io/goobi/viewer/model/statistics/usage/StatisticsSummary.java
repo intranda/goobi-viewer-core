@@ -65,13 +65,13 @@ public class StatisticsSummary {
      * @param includedIdentifiers   A list of record identifiers for which to count the requests. If empty, all requests will be counted
      */
     public StatisticsSummary(DailySessionUsageStatistics dailyStats, List<String> includedIdentifiers) {
-        Map<RequestType, RequestTypeSummary> types = new HashMap<>();
+        Map<RequestType, RequestTypeSummary> tempTypes = new HashMap<>();
         for (RequestType type : RequestType.values()) {
             long total = dailyStats.getTotalRequestCount(type, includedIdentifiers);
             long unique = dailyStats.getUniqueRequestCount(type, includedIdentifiers);
-            types.put(type, new RequestTypeSummary(total, unique, dailyStats.getDate(), dailyStats.getDate()));
+            tempTypes.put(type, new RequestTypeSummary(total, unique, dailyStats.getDate(), dailyStats.getDate()));
         }
-        this.types = types;
+        this.types = tempTypes;
     }
 
     /**
@@ -100,7 +100,7 @@ public class StatisticsSummary {
      * @return  the sum of {@link SummaryStatistics}
      */
     public StatisticsSummary add(StatisticsSummary other) {
-        Map<RequestType, RequestTypeSummary> types = new HashMap<>();
+        Map<RequestType, RequestTypeSummary> combinedTypes = new HashMap<>();
         if(other.getTotalRequests() == 0) {
             return new StatisticsSummary(this.getTypes());
         }
@@ -111,9 +111,9 @@ public class StatisticsSummary {
             long unique = mine.getUniqueRequests() + others.getUniqueRequests();
             LocalDate startDate = mine.getStartDate().isBefore(others.getStartDate()) ? mine.getStartDate() : others.getStartDate();
             LocalDate endDate = mine.getEndDate().isAfter(others.getEndDate()) ? mine.getEndDate() : others.getEndDate();
-            types.put(type, new RequestTypeSummary(total, unique, startDate, endDate));
+            combinedTypes.put(type, new RequestTypeSummary(total, unique, startDate, endDate));
         }
-        StatisticsSummary combined = new StatisticsSummary(types);
+        StatisticsSummary combined = new StatisticsSummary(combinedTypes);
         return combined;
     }
 

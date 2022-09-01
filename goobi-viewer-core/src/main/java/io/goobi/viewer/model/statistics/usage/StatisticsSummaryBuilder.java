@@ -60,7 +60,7 @@ public class StatisticsSummaryBuilder {
      * The DAO from which to query the usage statistics
      * @deprecated statistics are queried from SOLR (via {@link SolrSearchIndex})
      */
-    @Deprecated
+    @Deprecated(since="22.08")
     private final IDAO dao;
     
     /**
@@ -107,14 +107,14 @@ public class StatisticsSummaryBuilder {
      * @throws IndexUnreachableException
      * @deprecated statistics are loaded from solr, using the {@link #loadFromSolr(StatisticsSummaryFilter) method
      */
-    @Deprecated
+    @Deprecated(since="22.08")
     private StatisticsSummary loadFromDAO(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
         List<DailySessionUsageStatistics> days = this.dao.getUsageStatistics(filter.getStartDate(), filter.getEndDate());
         return days.stream().reduce(StatisticsSummary.empty(), (s,d) -> this.add(s, d, identifiersToInclude) , StatisticsSummary::add);
     }
     
-    private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException, PresentationException {
+    private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
         List<String> fields = getFieldListForRecords(identifiersToInclude);
         fields.add(StatisticsLuceneFields.DATE);

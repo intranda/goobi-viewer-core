@@ -86,7 +86,7 @@ public class DailySessionUsageStatistics {
 
     public DailySessionUsageStatistics(DailySessionUsageStatistics orig) {
         this(orig.date, orig.viewerInstance);
-        this.sessions.addAll(orig.sessions.stream().map(s -> new SessionUsageStatistics(s)).collect(Collectors.toList()));
+        this.sessions.addAll(orig.sessions.stream().map(SessionUsageStatistics::new).collect(Collectors.toList()));
     }
 
     public SessionUsageStatistics getSession(String sessionId) {
@@ -160,7 +160,7 @@ public class DailySessionUsageStatistics {
     @Override
     public String toString() {
         String s = "Usage statistics for " + date + " in " + viewerInstance + ". Countains " + sessions.size() + " session instances\n";
-        s += this.sessions.stream().map(e -> e.toString()).collect(Collectors.joining("\n"));
+        s += this.sessions.stream().map(SessionUsageStatistics::toString).collect(Collectors.joining("\n"));
         return s;
 
     }
