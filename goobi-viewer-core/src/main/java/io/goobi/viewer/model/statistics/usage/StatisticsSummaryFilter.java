@@ -84,43 +84,92 @@ public class StatisticsSummaryFilter {
         return filterQuery;
     }    
     
+    /**
+     * Create an instance filtering by a single date
+     * @param date
+     * @return
+     */
     public static StatisticsSummaryFilter ofDate(LocalDate date) {
         return new StatisticsSummaryFilter(date, date, "");
     }
-    
+
+    /**
+     * Create an instance for a range of dates
+     * @param start the first date to include
+     * @param end   the last date to include
+     * @return
+     */
     public static StatisticsSummaryFilter ofDateRange(LocalDate start, LocalDate end) {
         return new StatisticsSummaryFilter(start, end, "");
     }
     
+    /**
+     * Create an instance for a single record identifier
+     * @param pi
+     * @return
+     */
     public static StatisticsSummaryFilter forRecord(String pi) {
         return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, "PI:" + pi);
     }
     
+    /**
+     * Create an instance for all records within a single digital collection
+     * @param collectionName
+     * @return
+     */
     public static StatisticsSummaryFilter ofDigitalCollection(String collectionName) {
         String query = "(DC:{} DC:{}.*)".replace("{}", collectionName);
         return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, query);
     }
     
+    /**
+     * Create an instance for all records returned by a SOLR query
+     * @param query the SOLR query returning all record identifiers which to include in the summary
+     * @return
+     */
     public static StatisticsSummaryFilter ofQuery(String query) {
         return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, query);
     }
 
+    /**
+     * Create an instance of a date range and a SOLR query
+     * @param start the first date to include
+     * @param end   the last date to include
+     * @param query the SOLR query returning all record identifiers which to include in the summary
+     * @return
+     */
     public static StatisticsSummaryFilter of(LocalDate start, LocalDate end, String query) {
         return new StatisticsSummaryFilter(start, end, query);
     }
     
+    /**
+     * Check if a {@link #startDate} has been set for this filter
+     * @return  true if a {@link #startDate} has been set
+     */
     public boolean hasStartDateRestriction() {
         return startDate.isAfter(LOCAL_DATE_MIN);
     }
     
+    /**
+     * Check if a {@link #endDate} has been set for this filter
+     * @return  true if a {@link #endDate} has been set
+     */
     public boolean hasEndDateRestriction() {
         return endDate.isBefore(LOCAL_DATE_MAX);
     }
     
+    /**
+     * Check if the filter is set for a range of dates
+     * @return true if the filter is set for a range of dates (more than a single date
+     */
     public boolean isDateRange() {
         return hasStartDateRestriction() && hasEndDateRestriction() && this.endDate.isAfter(this.startDate);
     }
     
+    /**
+     * Check if a SOLR query has been set for the filter
+     * @return  true if a {@link #filterQuery} has been set for this filter
+     */
     public boolean hasFilterQuery() {
         return StringUtils.isNotBlank(filterQuery);
     }

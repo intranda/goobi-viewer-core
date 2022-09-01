@@ -36,7 +36,8 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 
 /**
- * @author florian Class to be called on requests to be recorded in usage statistics. Stores and updates usage statistics in database on each request
+ * Class to be called on requests to be recorded in usage statistics. Stores and updates usage statistics in database on each request
+ * @author florian 
  */
 public class UsageStatisticsRecorder {
 
@@ -44,21 +45,49 @@ public class UsageStatisticsRecorder {
 
     private static final Logger logger = LoggerFactory.getLogger(UsageStatisticsRecorder.class);
 
+    /**
+     * {@link IDAO} to write recorded request counts to
+     */
     private final IDAO dao;
+    /**
+     * {@link Configuration viewer configuration} to use for settings
+     */
     private final Configuration config;
+    /**
+     * A name for the viewer for which the data is recorded. Usually this is set to the main theme name
+     */
     private final String viewerName;
+    /**
+     * Locks all calls to {@link #recordRequest(RequestType, String, String, String, String)}
+     */
     private final Object dailyStatisticsLock = new Object();
 
+    /**
+     * Default constructor
+     * @param dao   the {@link #dao} to set
+     * @param config    the {@link #config} to set
+     * @param viewerName    the {@link #viewerName} to set
+     */
     public UsageStatisticsRecorder(IDAO dao, Configuration config, String viewerName) {
         this.dao = dao;
         this.config = config;
         this.viewerName = viewerName;
     }
 
+    /**
+     * Check if usage statistics are enabled by configuration
+     * @return  true if {@link Configuration#isStatisticsEnabled()} returns true
+     */
     public boolean isActive() {
         return config.isStatisticsEnabled();
     }
 
+    /**
+     * Add a http request to the usage statistics
+     * @param type  the {@link RequestType} for which to count the request
+     * @param recordIdentifier  the record identifier requested by the request
+     * @param request   a {@link HttpServletRequest}
+     */
     public void recordRequest(RequestType type, String recordIdentifier, HttpServletRequest request) {
         if (isActive() && !NetTools.isCrawlerBotRequest(request)) {
             recordRequest(type, recordIdentifier,
@@ -67,6 +96,14 @@ public class UsageStatisticsRecorder {
         }
     }
 
+    /**
+     * Add a request to the internal request counts
+     * @param type  the {@link RequestType} for which to count the request
+     * @param recordIdentifier  the record identifier requested by the request
+     * @param sessionID     The session issuing this request
+     * @param userAgent     the 'User-Agent' header value of the request
+     * @param clientIP      The IP Address from which the request is issued
+     */
     protected void recordRequest(RequestType type, String recordIdentifier, String sessionID, String userAgent, String clientIP) {
         if (sessionID != null) {
             synchronized (dailyStatisticsLock) {

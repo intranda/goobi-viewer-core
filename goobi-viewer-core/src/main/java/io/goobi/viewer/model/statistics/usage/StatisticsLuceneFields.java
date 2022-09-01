@@ -26,23 +26,49 @@ import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * Contains field names of STATISTICS_USAGE SOLR documents
  * @author florian
  *
  */
 public class StatisticsLuceneFields {
 
+    /**
+     * Format dates to/from the string representation used in SOLR
+     */
     public static final DateTimeFormatter solrDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    
+    /**
+     * DOCTYPE field value for usage statistics documents
+     */
     public static final String USAGE_STATISTICS_DOCTYPE = "STATISTICS_USAGE";
+    /**
+     * SOLR field name containing the name of the viewer instance
+     */
     public static final String VIEWER_NAME = "STATISTICS_VIEWERNAME";
+    /**
+     * SOLR field name containing the date at which the statistics were recorded
+     */
     public static final String DATE = "STATISTICS_DATE";
+    /**
+     * SOLR field prefix for fields containing request counts for individual record identifiers. 
+     * The full field name consists of the prefix followed by a record identifier
+     */
     public static final String RECORD_STATISTICS_PREFIX = "STATISTICS_RECORD_";
-    
+
+    /**
+     * Get the complete SOLR field name for a given record identifier
+     * @param pi the record identifier
+     * @return
+     */
     public static String getFieldName(String pi) {
         return RECORD_STATISTICS_PREFIX + pi;
     }
-
+    
+    /**
+     * Get the record identifier from the given SOLR field name
+     * @param fieldname
+     * @return  the record identifier
+     */
     public static String getPi(String fieldname) {
         if(StringUtils.isNotBlank(fieldname) && fieldname.contains(RECORD_STATISTICS_PREFIX)) {
             return fieldname.replace(RECORD_STATISTICS_PREFIX, "");

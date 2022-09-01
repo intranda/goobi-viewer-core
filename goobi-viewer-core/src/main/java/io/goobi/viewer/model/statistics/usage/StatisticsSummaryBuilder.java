@@ -56,18 +56,44 @@ public class StatisticsSummaryBuilder {
 
     private final Logger logger = LoggerFactory.getLogger(StatisticsSummaryBuilder.class);
     
+    /**
+     * The DAO from which to query the usage statistics
+     * @deprecated statistics are queried from SOLR (via {@link SolrSearchIndex})
+     */
+    @Deprecated
     private final IDAO dao;
+    
+    /**
+     * The SOLR interface from which to query the usage statistics
+     */
     private final SolrSearchIndex searchIndex;
      
+    /**
+     * Constructor using instances from {@link DataManager}
+     * @throws DAOException
+     */
     public StatisticsSummaryBuilder() throws DAOException {
           this(DataManager.getInstance().getDao(), DataManager.getInstance().getSearchIndex());      
     }
     
+    /**
+     * Default constructor
+     * @param dao   the {@link IDAO} to set. May be null since it isn't used
+     * @param searchIndex   the {@link SolrSearchIndex} to set
+     */
     public StatisticsSummaryBuilder(IDAO dao, SolrSearchIndex searchIndex) {
         this.dao = dao;
         this.searchIndex = searchIndex;
     }
     
+    /**
+     * Collect usage statistics from SOLR in a {@link StatisticsSummary}
+     * @param filter    a {@link StatisticsSummaryFilter} to filter results
+     * @return  a {@link StatisticsSummary}
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public StatisticsSummary loadSummary(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException, PresentationException {
         StatisticsSummary fromDAO = loadFromSolr(filter);
         return fromDAO;

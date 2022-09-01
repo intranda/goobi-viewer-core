@@ -37,6 +37,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -45,6 +46,13 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
+/**
+ * Task managed by the viewers {@link TaskManager} which indexes all {@link DailySessionUsageStatistics} up to the day before today.
+ * The task monitors the indexing progress and deletes the {@link DailySessionUsageStatistics} for each day once a STATISTICS_USAGE document exists in the index for that day.
+ * Should run in its own thread
+ * @author florian
+ *
+ */
 public class StatisticsIndexTask {
 
     private static final Logger logger = LoggerFactory.getLogger(StatisticsIndexTask.class);
@@ -57,18 +65,33 @@ public class StatisticsIndexTask {
     private final StatisticsIndexer indexer;
     private final SolrSearchIndex solrIndex;
 
+    /**
+     * Default constructor
+     * @param dao       the DAO from which to collect the usage statistics
+     * @param indexer   the {@link StatisticsIndexer} to use for indexing
+     * @param solrIndex the {@link SolrSearchIndex} for querying the SOLR for indexed STATISTICS_USAGE documents
+     */
     public StatisticsIndexTask(IDAO dao, StatisticsIndexer indexer, SolrSearchIndex solrIndex) {
         this.dao = dao;
         this.indexer = indexer;
         this.solrIndex = solrIndex;
     }
 
+    /**
+     * Constructor using instances from {@link DataManager}
+     * @throws DAOException
+     */
     public StatisticsIndexTask() throws DAOException {
         this.dao = DataManager.getInstance().getDao();
         this.indexer = new StatisticsIndexer();
         this.solrIndex = DataManager.getInstance().getSearchIndex();
     }
 
+    /**
+     * Start the indexint
+     * @throws DAOException
+     * @throws IOException
+     */
     public void startTask() throws DAOException, IOException {
 
         List<DailySessionUsageStatistics> stats = this.dao.getAllUsageStatistics()

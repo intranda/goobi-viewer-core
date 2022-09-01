@@ -28,19 +28,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
+/**
+ * Summary of request counts for a certain date range. Used for delivering record counts to users
+ * 
+ * @author florian
+ *
+ */
 public class StatisticsSummary {
 
+    /**
+     * Request counts sorted by {@link RequestType}
+     */
     private final Map<RequestType, RequestTypeSummary> types;
     
+    /**
+     * Default constructor
+     * @param types Request counts sorted by {@link RequestType}
+     */
     public StatisticsSummary(Map<RequestType, RequestTypeSummary> types) {
         this.types = types;
     }
     
+    /**
+     * Constructor to create an instance from a {@link DailySessionUsageStatistics} object
+     * @param dailyStats        The {@link DailySessionUsageStatistics} from which to retrieve the request counts
+     */
     public StatisticsSummary(DailySessionUsageStatistics dailyStats) {
         this(dailyStats, Collections.emptyList());
     }
     
+    /**
+     *  Constructor to create an instance from a {@link DailySessionUsageStatistics} object filtered by a list of record identifiers
+     * @param dailyStats            The {@link DailySessionUsageStatistics} from which to retrieve the request counts
+     * @param includedIdentifiers   A list of record identifiers for which to count the requests. If empty, all requests will be counted
+     */
     public StatisticsSummary(DailySessionUsageStatistics dailyStats, List<String> includedIdentifiers) {
         Map<RequestType, RequestTypeSummary> types = new HashMap<>();
         for (RequestType type : RequestType.values()) {
@@ -51,6 +74,10 @@ public class StatisticsSummary {
         this.types = types;
     }
 
+    /**
+     * Create an empty summary
+     * @return  an empty {@link StatisticsSummary}
+     */
     public static StatisticsSummary empty() {
         Map<RequestType, RequestTypeSummary> types = new HashMap<>();
         for (RequestType type : RequestType.values()) {
@@ -59,10 +86,19 @@ public class StatisticsSummary {
         return new StatisticsSummary(types);
     }
     
+    /**
+     * Get the request counts sorted by {@link RequestType}
+     * @return  a {@link Map}
+     */
     public Map<RequestType, RequestTypeSummary> getTypes() {
         return types;
     }
 
+    /**
+     * Create a new summary with the sum of request counts from this and another summary
+     * @param other the other {@link SummaryStatistics} to add to this one
+     * @return  the sum of {@link SummaryStatistics}
+     */
     public StatisticsSummary add(StatisticsSummary other) {
         Map<RequestType, RequestTypeSummary> types = new HashMap<>();
         if(other.getTotalRequests() == 0) {
@@ -81,19 +117,33 @@ public class StatisticsSummary {
         return combined;
     }
 
-    
+    /**
+     * Get the total amount for requests for a given {@link RequestType} 
+     * @param types the {@link RequestType}s to count 
+     * @return  number of requests
+     */
     public long getTotalRequests(RequestType... types) {
         return this.types.entrySet().stream()
         .filter(entry -> types == null || types.length == 0 || Arrays.asList(types).contains(entry.getKey()))
         .mapToLong(entry -> entry.getValue().getTotalRequests()).sum();
     }
     
+    /**
+     * Get the number of unique request for a given {@link RequestType} 
+     * @param types the {@link RequestType}s to count 
+     * @return  number of unique requests
+     */
     public long getUniqueRequests(RequestType... types) {
         return this.types.entrySet().stream()
         .filter(entry -> types == null || types.length == 0 || Arrays.asList(types).contains(entry.getKey()))
         .mapToLong(entry -> entry.getValue().getUniqueRequests()).sum();
     }
     
+    /**
+     * Get the last date for which requests have been recorded
+     * @param types the {@link RequestType} to check
+     * @return
+     */
     public LocalDate getLastRecordedDate(RequestType... types) {
         return this.types.entrySet().stream()
                 .filter(entry -> types == null || types.length == 0 || Arrays.asList(types).contains(entry.getKey()))

@@ -50,6 +50,9 @@ import javax.persistence.Table;
 @Table(name = "session_statistics")
 public class SessionUsageStatistics {
    
+    /**
+     * Persistence context unique identifier
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "session_statistics_id")
@@ -82,18 +85,30 @@ public class SessionUsageStatistics {
     @MapKeyColumn(name = "record_identifier")
     @Column(name = "count")
     private Map<String, String> recordRequests = new HashMap<>();
-    
-
+        
+    /**
+     * Empty constructor for persistence context initialization
+     */
     public SessionUsageStatistics() {
         
     }
     
+    /**
+     * Initialize instance for a session
+     * @param sessionId http session identifier
+     * @param userAgent User-Agent header content
+     * @param clientIP  IP-Address the request came from
+     */
     public SessionUsageStatistics(String sessionId, String userAgent, String clientIP) {
         this.sessionId = sessionId;
         this.userAgent = userAgent;
         this.clientIP = clientIP;
     }
     
+    /**
+     * Cloning constructor
+     * @param orig
+     */
     public SessionUsageStatistics(SessionUsageStatistics orig) {
         this.sessionId = orig.sessionId;
         this.userAgent = orig.userAgent;
@@ -102,53 +117,63 @@ public class SessionUsageStatistics {
     }
 
     /**
-     * @return the id
+     * @return the {@link #id}
      */
     public Long getId() {
         return id;
     }
+
     
     /**
-     * @return the sessionId
+     * 
+     * @return the {@link #sessionId}
      */
     public String getSessionId() {
         return sessionId;
     }
-    
+
     /**
-     * @return the userAgent
+     * 
+     * @return the {@link #userAgent}
      */
     public String getUserAgent() {
         return userAgent;
     }
     
     /**
-     * @return the clientIP
+     * @return the {@link #clientIP}
      */
     public String getClientIP() {
         return clientIP;
     }
-    
-    private SessionRequestCounts getRecordRequests(String identifier) {
-        String s = this.recordRequests.get(identifier);
-        return new SessionRequestCounts(s);
-    }
-    
-    private void setRecordRequests(String identifier, SessionRequestCounts counts) {
-        String s = counts.toJsonArray();
-        this.recordRequests.put(identifier, s);
-    }
-    
+
+    /**
+     * Get number of requests for a given {@link RequestType} and record identifier
+     * @param type  the type of the request
+     * @param recordIdentifier the record identifier
+     * @return the number of requests for the type and identifier
+     */
     public long getRecordRequestCount(RequestType type, String recordIdentifier) {
         return Optional.ofNullable(getRecordRequests(recordIdentifier))
                 .map(count -> count.getCount(type))
                 .orElse(0l);
     }
     
+    /**
+     * Get number of requests for a given {@link RequestType}
+     * @param type  the type of the request
+     * @return the number of requests for the type
+     */
     public long getTotalRequestCount(RequestType type) {
         return getTotalRequestCount(type, Collections.emptyList());
     }
     
+    /**
+     * Return the number of requests of a given {@link RequestType} for the record identifiers included in identifiersToInclude
+     * @param type  the type of the request
+     * @param identifiersToInclude  record identifiers for which the number of requests should be counted
+     * @return
+     */
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         Collection<String> requestValues = getRequestedCounts(identifiersToInclude);
         return requestValues.stream().map(SessionRequestCounts::new)
@@ -156,6 +181,11 @@ public class SessionUsageStatistics {
                 .sum();
     }
 
+    /**
+     * Get number of record identifiers which were requested with a given {@link RequestType}
+     * @param type  the type of the request
+     * @return the number of record identifiers requested at least once for the type
+     */
     public long getRequestedRecordsCount(RequestType type) {
         return this.recordRequests.values().stream().map(SessionRequestCounts::new)
                 .mapToLong(count -> count.getCount(type))
@@ -163,6 +193,12 @@ public class SessionUsageStatistics {
                 .sum();
     }
     
+    /**
+     * Set total count of requests for a {@link RequestType} and record identifier to the given number
+     * @param count request count to set
+     * @param type  the type of the request
+     * @param recordIdentifier  the identifier of the requested record
+     */
     public void setRecordRequectCount(RequestType type, String recordIdentifier, long count) {
         synchronized (this.recordRequests) {           
             SessionRequestCounts counts = getRecordRequests(recordIdentifier);
@@ -171,6 +207,11 @@ public class SessionUsageStatistics {
         }
     }
     
+    /**
+     * Increment the total count of requests for a {@link RequestType} and record identifier by one
+     * @param type  the type of the request
+     * @param recordIdentifier  the identifier of the requested record
+     */
     public void incrementRequestCount(RequestType type, String recordIdentifier) {
         synchronized (this.recordRequests) {  
             long count = getRecordRequestCount(type, recordIdentifier);
@@ -178,6 +219,10 @@ public class SessionUsageStatistics {
         }
     }
     
+    /**
+     * Get a list of all record identifiers contained in {@link #recordRequests}
+     * @return list of record identifiers
+     */
     public List<String> getRecordIdentifier() {
         return new ArrayList<>(this.recordRequests.keySet());
     }
@@ -201,5 +246,16 @@ public class SessionUsageStatistics {
                     .collect(Collectors.toList());
         }
         return requestValues;
+    }
+    
+    
+    private SessionRequestCounts getRecordRequests(String identifier) {
+        String s = this.recordRequests.get(identifier);
+        return new SessionRequestCounts(s);
+    }
+    
+    private void setRecordRequests(String identifier, SessionRequestCounts counts) {
+        String s = counts.toJsonArray();
+        this.recordRequests.put(identifier, s);
     }
 }
