@@ -106,11 +106,19 @@ var adminJS = ( function( admin ) {
 								if ( _debug ) {
 									console.log('manually saved with key combo');
 								}
-								document.querySelector('[data-cm="save"]').click();
+								if (readOnlyMode == false) {
+									document.querySelector('[data-cm="save"]').click();
+								}
 							},
 							"Ctrl-E": "findPersistent",
 						}
 				});
+				
+				// check if readOnly mode for current file should be active
+				if (readOnlyMode == true) {
+					cmEditor.setOption("readOnly", true);
+				}
+				
 				if ( _debug ) {
 					console.log("CodeMirror Editor constructed!");
 				}
