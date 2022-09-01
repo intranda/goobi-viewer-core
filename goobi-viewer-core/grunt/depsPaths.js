@@ -49,8 +49,25 @@ const depsPathsJS = [
     expand: true,
     cwd: nodeModules,
     src: [
+	  // BASIC FUNCTIONALITY
       'codemirror/lib/codemirror.js', 
-      'codemirror/LICENSE'
+	  // SEARCH ADDON
+      'codemirror/addon/search/search.js', 
+      'codemirror/addon/search/match-highlighter.js',
+	  'codemirror/addon/search/searchcursor.js',
+	  'codemirror/addon/search/jump-to-line.js',
+	  // FULLSCREEN ADDON
+	  'codemirror/addon/display/fullscreen.js',
+	  // DIALOG NEEDED FOR SEARCH ADDON
+	  'codemirror/addon/dialog/dialog.js', //  - RELIES ON dialog.css
+	  // HIGHLIGHT ACTIVE LINE ADDON
+	  'codemirror/addon/selection/active-line.js',
+	  // XML SYNTAX FILE 
+	  'codemirror/mode/xml/xml.js',
+	  // PROPERTIES SYNTAX FILE 
+	  'codemirror/mode/properties/properties.js',
+	  // LICENSE FILE 
+      'codemirror/LICENSE',
     ],
     flatten: true,
     dest:`${jsLibsDir}codemirror/`

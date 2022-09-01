@@ -187,6 +187,7 @@ function initTextArea() {
 			autofocus: false,
 			indentUnit: 2,
 			tabSize: 2,
+			styleActiveLine: true,
 			indentWithTabs: true,
 			extraKeys: {
 				"F11": function(cm) {
