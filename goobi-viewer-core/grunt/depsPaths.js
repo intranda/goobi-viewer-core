@@ -315,6 +315,19 @@ const depsPathsJS = [
 
 const depsPathsCSS = [
 
+  { // CODEMIRROR
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'codemirror/lib/codemirror.css',
+      'codemirror/addon/display/fullscreen.css',
+      'codemirror/addon/dialog/dialog.css',
+      'codemirror/theme/dracula.css'
+    ], 
+    flatten: true,
+    dest:`${cssLibsDir}codemirror/`
+  },
+
   { // FONT-AWESOME
     expand: true,
     cwd: nodeModules,

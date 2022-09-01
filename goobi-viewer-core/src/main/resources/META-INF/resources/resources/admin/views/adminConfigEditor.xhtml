@@ -87,16 +87,26 @@
 										class="admin__config-editor-textarea" cols="80" rows="10"
 										value="#{adminConfigEditorBean.fileContent}" />
 
+
 									<script>			
-											var readOnly;
-											readOnly = false;
-// 											if (readOnly === undefined){
-// 												readOnly = true;
-// 											}
-											$( document ).ready(function() {
-												adminJS.codemirror.init();
-											});
-										</script>
+										var currentFileIsReadable;
+										readOnlyMode = false;
+										
+										currentFileIsReadable = #{adminConfigEditorBean.currentFileRecord.readable};
+										currentFileIsWritable = #{adminConfigEditorBean.currentFileRecord.writable}
+										
+										console.log('#{adminConfigEditorBean.currentFileRecord.readable}');
+										console.log('#{adminConfigEditorBean.currentFileRecord.writable}');
+										
+										$( document ).ready(function() {
+											adminJS.codemirror.init();
+										});
+										
+										if ((currentFileIsReadable == true) &amp;&amp; (currentFileIsWritable == false)) {
+											readOnlyMode = true;
+											console.log('read only mode active');
+										}
+									</script>
 
 									<div class="admin__overlay-bar">
 
@@ -170,16 +180,16 @@
 
 													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
 
-													<!--ui:fragment rendered="#{!record.readable}">
+													<ui:fragment rendered="#{!record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
 															title="#{msg.admin__config_editor__not_readable}"
-															data-toggle="tooltip" data-placement="left"
+															data-toggle="tooltip" data-placement="top"
 															data-trigger="hover">
 															<i class="fa fa-eye" aria-hidden="true"></i> <i
 																class="fa fa-ban" aria-hidden="true"></i>
 														</div>
-													</ui:fragment-->
+													</ui:fragment>
 													<ui:fragment rendered="#{!record.writable and record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
@@ -193,11 +203,11 @@
 														rendered="#{adminConfigEditorBean.isFileLocked(record)}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__not_writable}"
-															data-toggle="tooltip" data-placement="left"
+															title="#{msg.admin__config_editor__locked}"
+															data-toggle="tooltip" data-placement="top"
 															data-trigger="hover">
 															<i class="fa fa-lock" aria-hidden="true"></i> 
-															<i class="fa fa-ban" aria-hidden="true"></i>
+<!-- 															<i class="fa fa-ban" aria-hidden="true"></i> -->
 														</div>
 													</ui:fragment>
 													<!-- 												</h:panelGroup>	 -->
