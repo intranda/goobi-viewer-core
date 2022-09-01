@@ -5553,8 +5553,8 @@ public class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public int getConfigEditorMaximumBackups() {
-        return getLocalInt("configEditor[@maximum]", 0);
+    public int getConfigEditorBackupFiles() {
+        return getLocalInt("configEditor[@backupFiles]", 0);
     }
 
     /**

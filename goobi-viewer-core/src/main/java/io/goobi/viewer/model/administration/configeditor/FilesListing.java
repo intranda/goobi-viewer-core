@@ -91,7 +91,7 @@ public class FilesListing implements Serializable {
     }
 
     public int getMaxBackups() {
-        return DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups();
+        return DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
     }
 
 }
