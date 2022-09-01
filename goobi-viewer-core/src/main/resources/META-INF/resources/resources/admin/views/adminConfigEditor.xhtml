@@ -87,19 +87,15 @@
 										class="admin__config-editor-textarea" cols="80" rows="10"
 										value="#{adminConfigEditorBean.fileContent}" />
 
-									<script>console.log('something happened');</script>
-
-
 									<script>			
 											var readOnly;
 											readOnly = false;
 // 											if (readOnly === undefined){
 // 												readOnly = true;
 // 											}
-												$( document ).ready(function() {
-													initTextArea();
-												});
-
+											$( document ).ready(function() {
+												adminJS.codemirror.init();
+											});
 										</script>
 
 									<div class="admin__overlay-bar">
