@@ -19,8 +19,8 @@
 			<c:set scope="request" var="stats" value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}"/>
 			
 	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
-		        <div id="widgetUsageStatistics" class="widget">
-		        	<h2>#{msg.widget_usage_statistics__title}</h2>
+		        <div id="widgetUsageStatistics" class="widget widget-statistics-usage">
+		        	<h2 class="widget__title">#{msg.widget_usage_statistics__title}</h2>
 		        	<div class="widget__body">
 
 						<div class="widget-usage-statistics__info-wrapper">
