@@ -164,6 +164,13 @@ public class AdminConfigEditorBean implements Serializable {
         this.fileInEditionNumber = fileInEditionNumber;
     }
 
+    /**
+     * @return the currentFileRecord
+     */
+    public FileRecord getCurrentFileRecord() {
+        return currentFileRecord;
+    }
+
     public String getFileContent() {
         return fileContent;
     }
