@@ -63,6 +63,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBind
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -133,7 +134,8 @@ public class RecordsFilesImageResource extends ImageResource {
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @RecordFileDownloadBinding
+    @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();

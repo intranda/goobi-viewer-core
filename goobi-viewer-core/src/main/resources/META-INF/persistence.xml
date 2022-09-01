@@ -76,6 +76,8 @@
 		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
+		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -201,7 +203,9 @@
         <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
         <class>io.goobi.viewer.model.translations.Translation</class>
         <class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
-		
+        <class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
+        		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />

@@ -22,6 +22,7 @@
 package io.goobi.viewer.dao;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
@@ -2577,6 +2579,18 @@ public interface IDAO {
 
     public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException;
     
+    public List<DailySessionUsageStatistics> getAllUsageStatistics() throws DAOException;
+    
+    public DailySessionUsageStatistics getUsageStatistics(LocalDate date)  throws DAOException; 
+    
+    public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException;
+    
+    public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
+    
+    public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
+    
+    public boolean deleteUsageStatistics(long id) throws DAOException;
+    
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *
@@ -2641,6 +2655,7 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
 
 
 

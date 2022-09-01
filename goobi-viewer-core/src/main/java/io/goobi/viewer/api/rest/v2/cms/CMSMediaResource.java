@@ -85,6 +85,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
 import io.goobi.viewer.api.rest.model.MediaItem;
@@ -94,6 +95,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RestApiException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -117,6 +119,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class CMSMediaResource {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaResource.class);
+    
+    private static final String FILE_NOT_FOUND_MESSAGE = "File {} not found in file system";
+    
     @Context
     protected HttpServletRequest servletRequest;
     @Context
@@ -205,7 +210,7 @@ public class CMSMediaResource {
                 }
             };
         }
-        throw new ContentNotFoundException("File " + path + " not found in file system");
+        throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
     }
 
     @GET
@@ -230,7 +235,7 @@ public class CMSMediaResource {
                 }
             };
         }
-        throw new ContentNotFoundException("File " + path + " not found in file system");
+        throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
     }
 
     @GET
@@ -255,7 +260,7 @@ public class CMSMediaResource {
                 }
             };
         }
-        throw new ContentNotFoundException("File " + path + " not found in file system");
+        throw new ContentNotFoundException(FILE_NOT_FOUND_MESSAGE.replace("{}", path.toString()));
     }
 
     @GET
@@ -384,72 +389,73 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @AdminLoggedInBinding
     public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
             @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
             throws DAOException {
 
+        try {
         if (uploadedInputStream == null) {
-            return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
+            throw new RestApiException("Upload stream is null", Status.NOT_ACCEPTABLE);
         }
-        Optional<User> user = getUser();
-        if (!user.isPresent()) {
-            return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
-        } else if (!user.get().isCmsAdmin()) {
-            return Response.status(Status.FORBIDDEN).entity("User has no permission to upload media files").build();
-        } else {
 
             Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                     DataManager.getInstance().getConfiguration().getCmsMediaFolder());
             Path mediaFile = cmsMediaFolder.resolve(filename);
-            try {
-                Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
+            return writeMediaFile(uploadedInputStream, cmsMediaFolder, mediaFile);
+        } catch (RestApiException e) {
+            return Response.status(e.getStatus()).entity(e.getMessage()).build();
+        }
+    }
 
-                if (!Files.exists(cmsMediaFolder)) {
-                    Files.createDirectory(cmsMediaFolder);
-                }
+    private Response writeMediaFile(InputStream uploadedInputStream, Path cmsMediaFolder, Path mediaFile) throws RestApiException {
+        try {
+            Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(getUser().orElse(null));
+            if (!Files.exists(cmsMediaFolder)) {
+                Files.createDirectory(cmsMediaFolder);
+            }
 
-                CMSMediaItem item = null;
-                if (Files.exists(mediaFile)) {
-                    //re-uploading existing file. Replace file in existing MediaItem
-                    item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(mediaFile.getFileName().toString());
-                    if (item != null) {
-                        logger.error("Found existing media file without mediaItem entry in database. Deleting file");
-                    }
+            CMSMediaItem item = null;
+            if (Files.exists(mediaFile)) {
+                //re-uploading existing file. Replace file in existing MediaItem
+                item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(mediaFile.getFileName().toString());
+                if (item != null) {
+                    logger.error("Found existing media file without mediaItem entry in database. Deleting file");
                 }
-                Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
 
-                if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
-                    logger.debug("Successfully downloaded file {}", mediaFile);
-                    //upload successful. TODO: check file integrity?
-                    if (item == null) {
-                        item = createMediaItem(mediaFile);
-                        requiredCategory.ifPresent(item::addCategory);
-                        DataManager.getInstance().getDao().addCMSMediaItem(item);
-                    } else {
-                        item.setFileName(mediaFile.getFileName().toString());
-                        DataManager.getInstance().getDao().updateCMSMediaItem(item);
-                        removeFromImageCache(item);
-                    }
-                    MediaItem jsonItem = new MediaItem(item, servletRequest);
-                    return Response.status(Status.OK).entity(jsonItem).build();
+            if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
+                logger.debug("Successfully downloaded file {}", mediaFile);
+                if (item == null) {
+                    item = createMediaItem(mediaFile);
+                    requiredCategory.ifPresent(item::addCategory);
+                    DataManager.getInstance().getDao().addCMSMediaItem(item);
+                } else {
+                    item.setFileName(mediaFile.getFileName().toString());
+                    DataManager.getInstance().getDao().updateCMSMediaItem(item);
+                    removeFromImageCache(item);
                 }
+                MediaItem jsonItem = new MediaItem(item, servletRequest);
+                return Response.status(Status.OK).entity(jsonItem).build();
+            } else {                    
                 String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
                 if (Files.exists(mediaFile)) {
                     Files.delete(mediaFile);
                 }
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
-            } catch (AccessDeniedException e) {
-                return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
-            } catch (FileAlreadyExistsException e) {
-                String message =
-                        Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                return Response.status(Status.CONFLICT).entity(message).build();
-            } catch (IOException | DAOException e) {
-                logger.error("Error uploading media file", e);
-                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
-                        e.getMessage());
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+                throw new RestApiException(message, Status.INTERNAL_SERVER_ERROR);
             }
+        } catch (AccessDeniedException e) {
+            throw new RestApiException(e.getMessage(), Status.FORBIDDEN);
+        } catch (FileAlreadyExistsException e) {
+            String message =
+                    Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
+            throw new RestApiException(message, Status.CONFLICT);
+        } catch (IOException | DAOException e) {
+            logger.error("Error uploading media file", e);
+            String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
+                    e.getMessage());
+            throw new RestApiException(message, Status.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -473,7 +479,7 @@ public class CMSMediaResource {
      */
     private static Optional<CMSCategory> getRequiredCategoryForUser(User user) throws DAOException, AccessDeniedException {
 
-        if (!user.hasPrivilegeForAllCategories()) {
+        if (user != null && !user.hasPrivilegeForAllCategories()) {
             List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
             if (!allowedCategories.isEmpty()) {
                 return Optional.of(allowedCategories.get(0));
@@ -520,7 +526,6 @@ public class CMSMediaResource {
             logger.trace("Unable to get user: No user found in session store UserBean instance");
             return Optional.empty();
         }
-        // logger.trace("Found user {}", user);
         return Optional.of(user);
     }
 
@@ -599,12 +604,6 @@ public class CMSMediaResource {
             }
         }
 
-        /**
-         * @return
-         */
-        private int getRandomOrder() {
-            return randomizer.nextBoolean() ? 1 : -1;
-        }
 
     }
 

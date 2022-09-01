@@ -49,6 +49,7 @@ import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
+import io.goobi.viewer.model.statistics.usage.UsageStatisticsRecorder;
 import io.goobi.viewer.model.translations.language.LanguageHelper;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
@@ -107,6 +108,8 @@ public final class DataManager {
     private ClientApplicationManager clientManager = null;
 
     private SecurityManager securityManager = null;
+    
+    private UsageStatisticsRecorder usageStatisticsRecorder = null;
 
     /**
      * <p>
@@ -564,5 +567,19 @@ public final class DataManager {
     
     public void setClientManager(ClientApplicationManager manager) {
         this.clientManager = manager;
+    }
+    
+    public UsageStatisticsRecorder getUsageStatisticsRecorder() throws DAOException {
+        if (usageStatisticsRecorder == null) {
+            synchronized (lock) {
+                usageStatisticsRecorder = new UsageStatisticsRecorder(this.getDao(), this.getConfiguration(), this.getConfiguration().getTheme());
+            }
+        }
+
+        return usageStatisticsRecorder;
+    }
+
+    public void setUsageStatisticsRecorder(UsageStatisticsRecorder usageStatisticsRecorder) {
+        this.usageStatisticsRecorder = usageStatisticsRecorder;
     }
 }

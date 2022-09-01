@@ -610,7 +610,6 @@ public class Configuration extends AbstractConfiguration {
         return ret;
     }
 
-
     /**
      * <p>
      * getNormdataFieldsForTemplate.
@@ -4904,7 +4903,7 @@ public class Configuration extends AbstractConfiguration {
     public String getLabelIIIFSeeAlsoLido() {
         return getLocalString("webapi.iiif.seeAlso.lido.label", "LIDO");
     }
-    
+
     public List<ManifestLinkConfiguration> getIIIFSeeAlsoMetadataConfigurations() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.seeAlso.metadata");
         List<ManifestLinkConfiguration> links = new ArrayList<>(configs.size());
@@ -4918,9 +4917,6 @@ public class Configuration extends AbstractConfiguration {
         return links;
     }
 
-    
-    
-    
     /**
      * <p>
      * getSitelinksField.
@@ -5532,6 +5528,15 @@ public class Configuration extends AbstractConfiguration {
     public String getCrowdsourcingCampaignGeomapTilesource() {
         return getLocalString("campaigns.geoMap.tilesource", "mapbox");
 
+    }
+
+    public boolean isStatisticsEnabled() {
+        return getLocalBoolean("statistics[@enabled]", false);
+    }
+
+    public String getCrawlerDetectionRegex() {
+        return getLocalString("statistics.crawlerDetection[@regex]",
+                ".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*");
     }
 
     /**
