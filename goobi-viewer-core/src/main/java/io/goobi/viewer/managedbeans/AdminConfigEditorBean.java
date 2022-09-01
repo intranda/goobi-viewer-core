@@ -46,6 +46,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -405,6 +406,8 @@ public class AdminConfigEditorBean implements Serializable {
                 }
 
                 TransformerFactory tf = TransformerFactory.newInstance();
+                tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+                tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
                 Transformer transformer = tf.newTransformer();
                 DOMSource src = new DOMSource(document);
                 StreamResult result = new StreamResult(originalPath.toFile());
@@ -552,6 +555,9 @@ public class AdminConfigEditorBean implements Serializable {
         if (rec == null) {
             throw new IllegalArgumentException("rec may not be null");
         }
+        if (currentFileRecord == null) {
+            return "";
+        }
 
         File backupFile = new File(backupFiles[rec.getNumber()].getAbsolutePath());
         String fileName = currentFileRecord.getFileName().concat(".").concat(rec.getName());
@@ -559,7 +565,7 @@ public class AdminConfigEditorBean implements Serializable {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext ec = facesContext.getExternalContext();
         ec.responseReset();
-        ec.setResponseContentType("text/".concat(currentFileRecord != null ? currentFileRecord.getFileType() : ""));
+        ec.setResponseContentType("text/".concat(currentFileRecord.getFileType()));
         ec.setResponseHeader("Content-Length", String.valueOf(Files.size(backupFile.toPath())));
         ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
         try (OutputStream outputStream = ec.getResponseOutputStream(); FileInputStream fileInputStream = new FileInputStream(backupFile)) {
