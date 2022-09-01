@@ -239,11 +239,6 @@ public class AdminConfigEditorBean implements Serializable {
             return;
         }
 
-        String sessionId = BeanUtils.getSession().getId();
-        if (currentFileRecord != null) {
-            fileLocks.unlockFile(currentFileRecord.getFile(), sessionId);
-        }
-
         currentFileRecord = filesListing.getFileRecords().get(fileInEditionNumber);
 
         Path filePath = currentFileRecord.getFile();
@@ -265,7 +260,7 @@ public class AdminConfigEditorBean implements Serializable {
 
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
-
+                String sessionId = BeanUtils.getSession().getId();
                 // File already locked by someone else
                 if (fileLocks.isFileLockedByOthers(filePath, sessionId)) {
                     Messages.error("admin__config_editor__file_locked_msg");
@@ -526,6 +521,11 @@ public class AdminConfigEditorBean implements Serializable {
      * @param writable
      */
     public void selectFileAndShowBackups(boolean writable) {
+        if (currentFileRecord != null) {
+            fileLocks.unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
+            logger.trace("Unlocked file {}", currentFileRecord.getFileName());
+        }
+
         currentFileRecord = filesListing.getFileRecordsModel().getRowData();
         isConfigViewer = currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
         fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
