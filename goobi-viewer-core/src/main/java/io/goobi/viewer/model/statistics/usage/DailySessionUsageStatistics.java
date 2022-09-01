@@ -45,18 +45,19 @@ import io.goobi.viewer.controller.DataManager;
 
 /**
  * Persistence class holding the usage statistics for a single day in the form of a list of {@link SessionUsageStatistics}
+ * 
  * @author florian
  *
  */
 @Entity
 @Table(name = "usage_statistics")
 public class DailySessionUsageStatistics {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_statistics_id")
     private Long id;
-    
+
     /**
      * The date the statistics were recorded
      */
@@ -72,48 +73,47 @@ public class DailySessionUsageStatistics {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "usage_statistics_daily_session", joinColumns = @JoinColumn(name = "usage_statistics_id"),
             inverseJoinColumns = @JoinColumn(name = "session_statistics_id"))
-    private final List<SessionUsageStatistics> sessions = new ArrayList<>();
-    
+    private List<SessionUsageStatistics> sessions = new ArrayList<>();
+
     public DailySessionUsageStatistics(LocalDate date, String viewer) {
         this.date = date;
         this.viewerInstance = viewer;
     }
 
     public DailySessionUsageStatistics() {
-        this(LocalDate.now(), DataManager.getInstance().getConfiguration().getTheme());   
+        this(LocalDate.now(), DataManager.getInstance().getConfiguration().getTheme());
     }
-    
+
     public DailySessionUsageStatistics(DailySessionUsageStatistics orig) {
         this(orig.date, orig.viewerInstance);
         this.sessions.addAll(orig.sessions.stream().map(s -> new SessionUsageStatistics(s)).collect(Collectors.toList()));
     }
-    
+
     public SessionUsageStatistics getSession(String sessionId) {
-        if(StringUtils.isNotBlank(sessionId)) {            
+        if (StringUtils.isNotBlank(sessionId)) {
             return sessions.stream().filter(s -> sessionId.equals(s.getSessionId())).findAny().orElse(null);
-        } else {
-            return null;
         }
+        return null;
     }
-    
+
     public void addSession(SessionUsageStatistics session) {
         this.sessions.add(session);
     }
-    
+
     /**
      * @return the id
      */
     public Long getId() {
         return id;
     }
-    
+
     /**
      * @return the date
      */
     public LocalDate getDate() {
         return date;
     }
-    
+
     /**
      * @return the viewerInstance
      */
@@ -128,19 +128,19 @@ public class DailySessionUsageStatistics {
     public long getTotalRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi)).sum();
     }
-    
+
     public long getTotalRequestCount(RequestType type) {
         return getTotalRequestCount(type, Collections.emptyList());
     }
-    
+
     public long getTotalRequestCount(RequestType type, List<String> identifiersToInclude) {
         return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, identifiersToInclude)).sum();
     }
-    
+
     public long getUniqueRequestCount(RequestType type) {
         return this.sessions.stream().mapToLong(s -> s.getRequestedRecordsCount(type)).sum();
     }
-    
+
     public long getUniqueRequestCount(RequestType type, String pi) {
         return this.sessions.stream().mapToLong(s -> s.getRecordRequestCount(type, pi) > 0 ? 1l : 0l).sum();
     }
@@ -152,11 +152,11 @@ public class DailySessionUsageStatistics {
     public long getUniqueRequestCount(RequestType type, List<String> includedIdentifiers) {
         return this.sessions.stream().mapToLong(s -> s.getTotalRequestCount(type, includedIdentifiers) > 0 ? 1l : 0l).sum();
     }
-    
+
     public List<String> getRecordIdentifier() {
         return this.sessions.stream().flatMap(s -> s.getRecordIdentifier().stream()).distinct().collect(Collectors.toList());
     }
-    
+
     @Override
     public String toString() {
         String s = "Usage statistics for " + date + " in " + viewerInstance + ". Countains " + sessions.size() + " session instances\n";
