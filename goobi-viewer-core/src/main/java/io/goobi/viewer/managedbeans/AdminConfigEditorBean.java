@@ -164,13 +164,6 @@ public class AdminConfigEditorBean implements Serializable {
     public void setFileInEditionNumber(int fileInEditionNumber) {
         this.fileInEditionNumber = fileInEditionNumber;
     }
-    
-    /**
-     * @return the currentFileRecord
-     */
-    public FileRecord getCurrentFileRecord() {
-        return currentFileRecord;
-    }
 
     /**
      * @return the currentFileRecord
@@ -375,7 +368,7 @@ public class AdminConfigEditorBean implements Serializable {
 
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-                
+
                 DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
                 Document document = documentBuilder.parse(originalPath.toFile());
                 document.getDocumentElement().normalize();
