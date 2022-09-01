@@ -495,7 +495,8 @@ public class AdminConfigEditorBean implements Serializable {
             if (DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups() > 0) {
                 while (length > DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups()) {
                     try {
-                        Files.delete(backupFiles[length--].toPath());
+                        Files.delete(backupFiles[--length].toPath());
+                        logger.trace("Rotated away backup: {}", backupFiles[length].toPath().getFileName());
                     } catch (IOException e) {
                         logger.error(e.getMessage());
                     }
@@ -503,7 +504,7 @@ public class AdminConfigEditorBean implements Serializable {
                 backupFiles = backupFolder.listFiles();
             }
 
-            backupNames = new String[length];
+            backupNames = new String[backupFiles.length];
             for (int i = 0; i < length; ++i) {
                 backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
                 backupRecords.add(new BackupRecord(backupNames[i], i));
