@@ -30,6 +30,11 @@
     width: 100%;
     display: flex;
     justify-content: flex-end;
+	flex-wrap: wrap;
+  }
+  &__options-container-heading {
+	margin-right: auto;
+	margin-bottom: 15px;
   }
   &__options {
     display: flex;
@@ -201,12 +206,14 @@
     }
   }
   /* SORTING */
-  &__sorting {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    &__item {
+  &__nav-helper {
+	&-wrapper {
+	    display: flex;
+	    justify-content: space-between;
+	    margin-bottom: 20px;
+	    flex-wrap: wrap;
+	}
+    &-item {
       display: grid;
       grid-template-columns: auto auto;
       grid-column-gap: 20px;
@@ -215,7 +222,7 @@
         height: 100%;
       }
     }
-    &__label {
+    &-label {
       label {
         white-space: nowrap;
         font-weight: normal;
@@ -635,10 +642,30 @@
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
+	
+	
+  .search-list {
+	&__nav-helper {
+	&-wrapper {
+		gap: 15px;
+	}
+    &-item {
+      form {
+      }
+    }
+    &-label {
+      label {
+      }
+    }
+  }
+}
+	
 }
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
+
+	
 }
 
 /* BREAKPOINT FOR TABLETS */

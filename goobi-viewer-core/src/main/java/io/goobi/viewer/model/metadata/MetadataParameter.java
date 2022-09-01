@@ -22,11 +22,19 @@
 package io.goobi.viewer.model.metadata;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 
 /**
  * <p>
@@ -35,6 +43,19 @@ import org.slf4j.LoggerFactory;
  */
 public class MetadataParameter implements Serializable {
 
+    /**
+     * Needed for reading xml config
+     */
+    private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
+    /**
+     * Needed for reading xml config
+     */
+    private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
+    /**
+     * Needed for reading xml config
+     */
+    private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
+    
     public enum MetadataParameterType {
 
         FIELD("field"),
@@ -434,5 +455,77 @@ public class MetadataParameter implements Serializable {
                 .append("; suffix: ")
                 .append(suffix)
                 .toString();
+    }
+    
+
+    public static MetadataParameter createFromConfig(HierarchicalConfiguration<ImmutableNode> config, boolean topstructValueFallbackDefaultValue) {
+        String fieldType = config.getString(XML_PATH_ATTRIBUTE_TYPE);
+        String source = config.getString("[@source]", null);
+        String dest = config.getString("[@dest]", null);
+        String key = config.getString("[@key]");
+        String altKey = config.getString("[@altKey]");
+        String masterValueFragment = config.getString("[@value]");
+        String defaultValue = config.getString("[@defaultValue]");
+        String prefix = config.getString("[@prefix]", "").replace("_SPACE_", " ");
+        String suffix = config.getString("[@suffix]", "").replace("_SPACE_", " ");
+        String condition = config.getString(XML_PATH_ATTRIBUTE_CONDITION);
+        boolean addUrl = config.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
+        boolean topstructValueFallback = config.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
+        boolean topstructOnly = config.getBoolean("[@topstructOnly]", false);
+        List<MetadataReplaceRule> replaceRules = Collections.emptyList();
+        List<HierarchicalConfiguration<ImmutableNode>> replaceRuleElements = config.configurationsAt("replace");
+        if (replaceRuleElements != null) {
+            // Replacement rules can be applied to a character, a string or a regex
+            replaceRules = new ArrayList<>(replaceRuleElements.size());
+            for (Iterator<HierarchicalConfiguration<ImmutableNode>> it3 = replaceRuleElements.iterator(); it3.hasNext();) {
+                HierarchicalConfiguration<ImmutableNode> sub3 = it3.next();
+                String replaceCondition = sub3.getString(XML_PATH_ATTRIBUTE_CONDITION);
+                Character character = null;
+                try {
+                    int charIndex = sub3.getInt("[@char]");
+                    character = (char) charIndex;
+                } catch (NoSuchElementException e) {
+                    //
+                }
+                String string = null;
+                try {
+                    string = sub3.getString("[@string]");
+                } catch (NoSuchElementException e) {
+                    //
+                }
+                String regex = null;
+                try {
+                    regex = sub3.getString("[@regex]");
+                } catch (NoSuchElementException e) {
+                    //
+                }
+                String replaceWith = sub3.getString("");
+                if (replaceWith == null) {
+                    replaceWith = "";
+                }
+                if (character != null) {
+                    replaceRules.add(new MetadataReplaceRule(character, replaceWith, replaceCondition, MetadataReplaceRuleType.CHAR));
+                } else if (string != null) {
+                    replaceRules.add(new MetadataReplaceRule(string, replaceWith, replaceCondition, MetadataReplaceRuleType.STRING));
+                } else if (regex != null) {
+                    replaceRules.add(new MetadataReplaceRule(regex, replaceWith, replaceCondition, MetadataReplaceRuleType.REGEX));
+                }
+            }
+        }
+
+        return new MetadataParameter().setType(MetadataParameterType.getByString(fieldType))
+                .setSource(source)
+                .setDestination(dest)
+                .setKey(key)
+                .setAltKey(altKey)
+                .setMasterValueFragment(masterValueFragment)
+                .setDefaultValue(defaultValue)
+                .setPrefix(prefix)
+                .setSuffix(suffix)
+                .setCondition(condition)
+                .setAddUrl(addUrl)
+                .setTopstructValueFallback(topstructValueFallback)
+                .setTopstructOnly(topstructOnly)
+                .setReplaceRules(replaceRules);
     }
 }

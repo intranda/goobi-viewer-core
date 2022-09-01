@@ -1,0 +1,116 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:x="http://myfaces.apache.org/tomahawk"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<composite:interface>
+		<composite:attribute name="itemCount" required="true" type="java.lang.Integer" />
+		<composite:attribute name="itemActive" required="true" type="java.lang.Integer" />
+		<composite:attribute name="firstItem" required="false" type="java.lang.Integer" default="1"/>
+		<composite:attribute name="lastItem" required="false" type="java.lang.Integer" default="#{cc.attrs.itemCount}"/>
+		<composite:attribute name="urlPrefix" required="true" />
+		<composite:attribute name="urlSuffix" required="false" />
+		<composite:attribute name="rtl" required="false" default="false" />
+		<composite:attribute name="positionBottom" required="false" default="false" />
+		<composite:attribute name="classSuffix" required="false" default="" />
+	</composite:interface>
+
+	<composite:implementation>
+	    <h:panelGroup rendered="#{cc.attrs.itemCount > 1}"
+	        styleClass="#{cc.attrs.rtl ? 'inputfield-paginator -rtl' : 'inputfield-paginator -ltr'} #{cc.attrs.classSuffix}"
+	        layout="block" id="#{cc.clientId}">
+	        <nav aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
+	            <ul>
+	            	<!-- FIRST ITEM -->
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-first-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
+                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}">
+							<ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
+                            </ui:fragment>
+						</a>
+                    </li>
+	                <!-- PREVIOUS ITEM -->
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-prev-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
+                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_previous}">
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
+                            </ui:fragment>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
+                            </ui:fragment>
+                        </a>
+                    </li>
+	
+					<li class="inputfield-paginator__navigate inputfield-paginator__navigate-text">
+						<div class="inputfield-paginator__page-number-input" data-paginator="input">
+							<input data-input="number" onfocusout="viewerJS.paginator.showPageNumberLabel(event)" onchange="viewerJS.paginator.changePageNumber(event)" data-paginator="input-field"></input>
+						</div>
+						<div class="inputfield-paginator__page-number-label" onclick="viewerJS.paginator.showPageNumberInput(event)" data-paginator="label">
+							<span data-paginator="actualPage" id="paginatorActualPageNumber">#{cc.attrs.itemActive}</span><span> #{msg.of} </span><span id="paginatorLastPageNumber">#{cc.attrs.lastItem}</span>
+						</div>
+					</li>
+	                
+	                <!-- NEXT ITEM -->
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-next-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
+                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_next}">
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
+                            </ui:fragment>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
+                            </ui:fragment>
+                        </a>
+                    </li>
+	                <!-- LAST ITEM -->
+                    <li class="inputfield-paginator__navigate inputfield-paginator__navigate-last-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
+                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}">
+                         <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                             <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
+                         </ui:fragment>
+                         <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                             <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
+                         </ui:fragment>
+                        </a>
+                    </li>
+	            </ul>
+	        </nav>
+	        
+	        
+	        <script type="text/javascript">
+	        //Initialize keyboard shortcuts
+			// RUN FUNCTION ONLY ONCE
+	       	if (typeof doClick === 'function') {
+	       			// console.log('already defined - do nothing');
+	       		} else {
+	       			// console.log('not already defined');
+	               	var paginatorConfig = {
+	               	        previous: () => doClick(".inputfield-paginator__navigate.navigate_prev a"),
+	               	        next: () => doClick(".inputfield-paginator__navigate.navigate_next a"),
+	               	        first: () => doClick(".inputfield-paginator .navigate_first a"),
+	               	        last: () => doClick(".inputfield-paginator .navigate_last a"),
+	               	        rightToLeft: "#{activeDocumentBean.viewManager.topDocument.rtl}",
+	               	        firstItem: #{cc.attrs.firstItem},
+	               	        lastItem: #{cc.attrs.lastItem},
+	               	        currentItem: #{cc.attrs.itemActive},
+	               	        targetUrlPrefix: "#{cc.attrs.urlPrefix}",
+	               	        targetUrlSuffix: "/#{cc.attrs.urlSuffix}",
+	               	}
+	               	function doClick(selector) {
+	               	    let query = $(selector);
+	               	    if(query.length) {
+	               	        query.get(0).click();
+	               	    }
+	               	}
+	               	viewerJS.paginator.init(paginatorConfig);
+	       		}
+	        </script>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

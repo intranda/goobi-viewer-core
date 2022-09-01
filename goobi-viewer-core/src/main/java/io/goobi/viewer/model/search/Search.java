@@ -259,28 +259,6 @@ public class Search implements Serializable {
     }
 
     /**
-     * <p>
-     * execute.
-     * </p>
-     *
-     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
-     * @param searchTerms a {@link java.util.Map} object.
-     * @param hitsPerPage a int.
-     * @param advancedSearchGroupOperator a int.
-     * @param locale Selected locale
-     * @param boostTopLevelDocstructs
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false,
-                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-    }
-
-    /**
      * 
      * @param facets
      * @return
@@ -314,6 +292,28 @@ public class Search implements Serializable {
         }
 
         return q + subElementQueryFilterSuffix;
+    }
+
+    /**
+     * <p>
+     * execute.
+     * </p>
+     *
+     * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
+     * @param searchTerms a {@link java.util.Map} object.
+     * @param hitsPerPage a int.
+     * @param advancedSearchGroupOperator a int.
+     * @param locale Selected locale
+     * @param boostTopLevelDocstructs
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
+            boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false,
+                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
     /**

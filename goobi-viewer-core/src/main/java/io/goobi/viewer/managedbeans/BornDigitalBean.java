@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -40,12 +41,16 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.DownloadTicket;
 
+/**
+ * Handles download ticket checks and requests for born-digital files.
+ */
 @Named
 @SessionScoped
 public class BornDigitalBean implements Serializable {
@@ -166,25 +171,47 @@ public class BornDigitalBean implements Serializable {
             captchaBean.reset();
 
             // Notify the requesting party of a successful request via e-mail
-            String subject = ViewerResourceBundle.getTranslation(StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, BeanUtils.getLocale())
-                    .replace("{0}", ticket.getPi());
-            String body = ViewerResourceBundle.getTranslation("download_ticket__email_body_request_sent", BeanUtils.getLocale())
-                    .replace("{0}", ticket.getPi());
+            sendEmailNotification(Collections.singletonList(ticket.getEmail()),
+                    ViewerResourceBundle.getTranslation(StringConstants.MSG_DOWNLOAD_TICKET_EMAIL_SUBJECT, BeanUtils.getLocale())
+                            .replace("{0}", ticket.getPi()),
+                    ViewerResourceBundle.getTranslation("download_ticket__email_body_request_sent", BeanUtils.getLocale())
+                            .replace("{0}", ticket.getPi()));
 
-            try {
-                if (!NetTools.postMail(Collections.singletonList(ticket.getEmail()), null, null, subject, body)) {
-                    Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
-                }
-            } catch (UnsupportedEncodingException | MessagingException e) {
-                logger.error(e.getMessage());
-                Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+            // Notify admin(s)
+            if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress())) {
+                sendEmailNotification(Collections.singletonList(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress()),
+                        ViewerResourceBundle.getTranslation("download_ticket__email_admin_subject", BeanUtils.getLocale())
+                                .replace("{0}", ticket.getEmail())
+                                .replace("{1}", ticket.getPi()),
+                        ViewerResourceBundle.getTranslation("download_ticket__email_admin_body_request_sent", BeanUtils.getLocale())
+                                .replace("{0}", ticket.getEmail())
+                                .replace("{1}", ticket.getPi())
+                                .replace("{2}", ticket.getRequestMessage()));
             }
+
             Messages.info("download_ticket__request_created");
         } else {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
         }
 
         return "";
+    }
+
+    /**
+     * 
+     * @param recipients
+     * @param subject
+     * @param body
+     */
+    private static void sendEmailNotification(List<String> recipients, String subject, String body) {
+        try {
+            if (!NetTools.postMail(recipients, null, null, subject, body)) {
+                Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+            }
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            logger.error(e.getMessage());
+            Messages.error(StringConstants.MSG_ERR_SEND_EMAIL);
+        }
     }
 
     /**
