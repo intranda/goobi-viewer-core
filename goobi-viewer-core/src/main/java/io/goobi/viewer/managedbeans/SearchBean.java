@@ -142,6 +142,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /** Max number of search hits to be displayed on one page. */
     private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
+
+    private boolean hitsPerPageSetterCalled = false;
     /**
      * Currently selected search type (regular, advanced, timeline, ...). This property is not private so it can be altered in unit tests (the setter
      * checks the config and may prevent setting certain values).
@@ -853,7 +855,12 @@ public class SearchBean implements SearchInterface, Serializable {
         //remember the current page to return to hit list in widget_searchResultNavigation
         setLastUsedSearchPage();
 
-        //        String currentQuery = SearchHelper.prepareQuery(searchString);
+        // If hitsPerPage is not one of the available values, reset to default
+        if (!hitsPerPageSetterCalled && !DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().contains(hitsPerPage)) {
+            hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
+            logger.trace("hitsPerPage reset to {}", hitsPerPage);
+        }
+        setHitsPerPageSetterCalled(false);
 
         if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
@@ -2468,6 +2475,21 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setHitsPerPage(int hitsPerPage) {
         logger.trace("setHitsPerPage: {}", hitsPerPage);
         this.hitsPerPage = hitsPerPage;
+        setHitsPerPageSetterCalled(true);
+    }
+
+    /**
+     * @return the hitsPerPageSetterCalled
+     */
+    public boolean isHitsPerPageSetterCalled() {
+        return hitsPerPageSetterCalled;
+    }
+
+    /**
+     * @param hitsPerPageSetterCalled the hitsPerPageSetterCalled to set
+     */
+    public void setHitsPerPageSetterCalled(boolean hitsPerPageSetterCalled) {
+        this.hitsPerPageSetterCalled = hitsPerPageSetterCalled;
     }
 
     /**

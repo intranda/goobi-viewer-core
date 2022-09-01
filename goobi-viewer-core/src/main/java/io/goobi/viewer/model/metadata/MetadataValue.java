@@ -555,4 +555,12 @@ public class MetadataValue implements Serializable {
         }
         return sb.toString();
     }
+    
+    public String getCombinedValue() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < paramValues.size(); i++) {
+            sb.append(getComboValueShort(i));
+        }
+        return sb.toString();
+    }
 }

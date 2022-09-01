@@ -42,7 +42,6 @@
 					</ui:fragment>							
 
 					<!-- TRAFFIC LIGHT STYLE -->
- 						<ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 						<div class="copyright-indicator__traffic-light-style">
 							<div class="copyright-indicator__traffic-light-style-circle-wrapper">
 							    <div class="copyright-indicator__traffic-light-style-circle #{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'OPEN' ? '-green' : ''}"><i class="fa fa-check" aria-hidden="true"></i></div>
@@ -61,38 +60,6 @@
 							
 							</div>
 						</div>
-					</ui:fragment>
-			
-					<!-- LABEL STYLE -->
-					<ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'badge'}" >
-						<div class="copyright-indicator__label-style
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'OPEN' ? '-green' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'PARTIAL' ? '-yellow' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'LOCKED' ? '-red' : ''}">
-							
-							<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
-							<div class="copyright-indicator__dot-wrapper">
-								<div class="copyright-indicator__dot">
-									<!-- PSEUDO FA ELEMENT GETS REPLACED DEPENDING ON GREEN/YELLOW/RED STATE -->
-									<i class="fa copyright-indicator__status-icon" aria-hidden="true"></i>
-								</div>
-							</div>
-						
-							<div class="copyright-indicator__icon-wrapper">
-							<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
-							
-							<ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
-								<ui:include src="#{navigationHelper.getResource('images/licence/unclear.svg')}"/>
-							</ui:fragment>
-							
-							<c:forEach var="icon" items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
-								<ui:include src="#{navigationHelper.getResource('images/licence/'.concat(icon))}"/>
-							</c:forEach>
-							
-
-							</div>
-						</div>
-					</ui:fragment>
 
 		</h:panelGroup>
 	</composite:implementation>

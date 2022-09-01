@@ -63,9 +63,15 @@
 	                                        </div>
 	                                        <!-- DESCRIPTION + OPEN ACCESS + MOVING WALL + PDF QUOTA AND CONCURRENT VIEW NOTICE -->
                                         	<div class="row admin__boxed-entry-description">
-	                                            <ui:fragment rendered="#{licenseType.description ne ''}">
+                                        	
+	                                            <ui:fragment rendered="#{not empty licenseType.description}">
 	                                                <p class="col-12 mb-1">#{licenseType.description}</p>
 	                                            </ui:fragment>
+
+                                                <ui:fragment rendered="#{licenseType.redirect == true}">
+                                                	<p class="col-12 mb-1">#{msg.admin__license_redirect_enabled_description}</p>
+                                                </ui:fragment>
+	                                            
 	                                            <ui:fragment rendered="#{licenseType.openAccess}">
 	                                            	<p class="col-12 mb-1">#{msg.admin__license_open_access_activated_info}</p>
 	                                        	</ui:fragment>
@@ -109,12 +115,13 @@
                                                             <ui:fragment rendered="#{license.user != null}"><span class="admin__license-user">#{license.user.displayName}</span></ui:fragment>
                                                             <ui:fragment rendered="#{license.userGroup != null}"><span class="admin__license-user">#{license.userGroup.name}</span></ui:fragment>
                                                             <ui:fragment rendered="#{license.ipRange != null}"><span class="admin__license-user">#{license.ipRange.name} (#{license.ipRange.subnetMask})</span></ui:fragment>
+                                                        	<ui:fragment rendered="#{license.client != null}"><span class="admin__license-user">#{license.client.isAllClients() ? msg.admin__right_all_clients : license.client.name}</span></ui:fragment>
                                                         </ui:repeat>
                                                     </dd>
                                                 </ui:fragment>
 	
 	                                            <!-- FUNCTIONS -->
-	                                            <ui:fragment rendered="#{!licenseType.openAccess and empty licenseType.description}">
+	                                            <ui:fragment rendered="#{!licenseType.openAccess and licenseType.redirect == false}">
 	                                                <dt class="col-sm-4">#{msg.admin__license_functions}:</dt>
 	                                                <dd class="col-sm-8">
 	                                                    <ui:repeat var="priv" value="#{licenseType.getSortedPrivileges(licenseType.privileges)}">
@@ -126,7 +133,7 @@
 	                                                </dd>
 	                                            </ui:fragment>
 
-                                                <ui:fragment rendered="#{not empty licenseType.redirectUrl}">
+                                                <ui:fragment rendered="#{not empty licenseType.redirectUrl and licenseType.redirect == true}">
                                                     <dt class="col-sm-4">#{msg.admin__license_functions_redirect}:</dt>
                                                     <dd class="col-sm-8">
 														<a href="#{licenseType.redirectUrl}" target="_blank">#{licenseType.redirectUrl}</a>
