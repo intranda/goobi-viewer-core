@@ -1,17 +1,23 @@
-/**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
  *          - http://digiverso.com
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package io.goobi.viewer.model.statistics.usage;
 
@@ -26,17 +32,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 
 /**
- * @author florian
  * Class holding counts of requests of different {@link RequestType}s. Should be serialized to a string to dao storage
+ * @author florian
  */
 public class SessionRequestCounts {
 
     private final Map<RequestType, Long> counts = new HashMap<>();
     
+    /**
+     * Empty default constructor 
+     */
     public SessionRequestCounts() {
         
     }
     
+    /**
+     * Constructor to deserialize data from a string
+     * @param data
+     */
     public SessionRequestCounts(String data) {
         if(StringUtils.isNotBlank(data)) {            
             JSONArray array = new JSONArray(data);
@@ -50,19 +63,37 @@ public class SessionRequestCounts {
         }
     }
     
+    /**
+     * Set the total count of requests for a given {@link RequestType}
+     * @param type
+     * @param count
+     */
     public void setCount(RequestType type, long count) {
         this.counts.put(type, count);
     }
     
+    /**
+     * Increment the total count of requests for a given {@link RequestType} by one
+     * @param type
+     */
     public void incrementCount(RequestType type) {
         Long current = getCount(type);
         setCount(type, current+1);
     }
     
+    /**
+     * Get the total count of requests for a given {@link RequestType}
+     * @param type
+     * @return
+     */
     public Long getCount(RequestType type) {
         return Optional.ofNullable(this.counts.get(type)).orElse(0l);
     }
     
+    /**
+     * Turn into a json representation
+     * @return  a json String
+     */
     public String toJsonArray() {
         int numTypes = RequestType.values().length;
         List<Long> countsList = Arrays.asList(new Long[numTypes]);
@@ -74,6 +105,9 @@ public class SessionRequestCounts {
         return new JSONArray(countsList).toString();
     }
     
+    /**
+     * Two SessionRequestCounts are equal if the have the same request counts for all {@link RequestType}s 
+     */
     public boolean equals(Object o) {
         if(o != null && o.getClass().equals(this.getClass())) {
             SessionRequestCounts other = (SessionRequestCounts)o;
