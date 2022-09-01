@@ -259,7 +259,7 @@ function initTextArea() {
 		cmEditor.clearHistory();
 	});
 
-};
+}; 
 
 function setEditable(editable, number, isButton) {
 	selected_row = document.getElementById('row'+number);

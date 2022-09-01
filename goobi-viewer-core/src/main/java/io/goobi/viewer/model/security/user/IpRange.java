@@ -23,11 +23,9 @@ package io.goobi.viewer.model.security.user;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -40,24 +38,20 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
-import io.goobi.viewer.model.security.ILicensee;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -66,8 +60,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 @Entity
 @Table(name = "ip_ranges")
-// @DiscriminatorValue("IpRange")
-public class IpRange implements ILicensee, Serializable {
+public class IpRange extends AbstractLicensee implements  Serializable {
 
     private static final long serialVersionUID = 2221051822633497315L;
 
@@ -171,38 +164,6 @@ public class IpRange implements ILicensee, Serializable {
         return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        for (License license : getLicenses()) {
-            // logger.trace("License: {}", license.getId());
-            if (license.isValid() && license.getLicenseType().getName().equals(licenseName)) {
-                // No privilege name given
-                if (StringUtils.isEmpty(privilegeName)) {
-                    return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
-                }
-                // LicenseType grants privilege
-                if (license.getLicenseType().getPrivileges().contains(privilegeName)) {
-                    return AccessPermission.granted();
-                }
-                // License grants privilege
-                if (license.getPrivileges().contains(privilegeName)) {
-                    if (StringUtils.isEmpty(license.getConditions())) {
-                        return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
-                    } else if (StringUtils.isNotEmpty(pi)) {
-                        // If PI and Solr condition subquery are present, check via Solr
-                        String query = SolrConstants.PI + ":" + pi + " AND (" + license.getConditions() + ")";
-                        if (DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC)) != null) {
-                            logger.debug("Permission found for IP range: {} (query: {})", name, query);
-                            return AccessPermission.granted().setTicketRequired(license.isTicketRequired());
-                        }
-                    }
-                }
-            }
-        }
-
-        return AccessPermission.denied();
-    }
 
     /**
      * <p>
@@ -235,17 +196,8 @@ public class IpRange implements ILicensee, Serializable {
                 permissionMap.put(accessCondition, access);
             }
         }
-        if (!permissionMap.isEmpty()) {
-            // TODO Prefer license with ticket requirement?
-            for (Entry<String, AccessPermission> entry : permissionMap.entrySet()) {
-                if (entry.getValue().isTicketRequired()) {
-                    return entry.getValue();
-                }
-            }
-            return AccessPermission.granted();
-        }
-
-        return AccessPermission.denied();
+        
+        return getAccessPermissionFromMap(permissionMap);
     }
 
     /** {@inheritDoc} */
@@ -267,7 +219,6 @@ public class IpRange implements ILicensee, Serializable {
     @Override
     public boolean removeLicense(License license) {
         if (license != null && licenses != null) {
-            // license.setIpRange(null);
             return licenses.remove(license);
         }
 
