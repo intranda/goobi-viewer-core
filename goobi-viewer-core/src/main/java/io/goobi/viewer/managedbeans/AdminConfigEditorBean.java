@@ -379,7 +379,7 @@ public class AdminConfigEditorBean implements Serializable {
                         configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
                     }
                     if (configEditor.getAttributes().getNamedItem("maximum") != null) {
-                        int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups();
+                        int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
                         configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(origConfigEditorMax));
                     }
 
@@ -492,8 +492,8 @@ public class AdminConfigEditorBean implements Serializable {
             }
 
             // Trim old backup files, if so configured
-            if (DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups() > 0) {
-                while (length > DataManager.getInstance().getConfiguration().getConfigEditorMaximumBackups()) {
+            if (DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles() > 0) {
+                while (length > DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles()) {
                     try {
                         Files.delete(backupFiles[--length].toPath());
                         logger.trace("Rotated away backup: {}", backupFiles[length].toPath().getFileName());
