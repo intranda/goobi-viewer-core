@@ -2135,14 +2135,20 @@ public final class SearchHelper {
         if (StringUtils.isEmpty(query)) {
             return Collections.emptyList();
         }
+
+        // 1) Remove outer ()
+
+        //        regex: (\([A-Za-z() ]+\))
+
+        // Extract individual fields
+        // regex: ([[A-Z]+:\([()A-Za-z ]+\)+)
+
+        // Regular query
+        // ((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
         
-//        regex: (\([A-Za-z() ]+\))
-//        
-//        ((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar)))
-//                AND 
-//               (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
-        
-       
+        // Phrase query
+        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
+
         return null;
     }
 
