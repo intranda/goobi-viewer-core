@@ -20,7 +20,7 @@
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="adminConfigEditor">
-
+                <ui:fragment rendered="#{userBean.admin and configurationBean.configEditorEnabled}">
 				<div class="admin__title-bar">
 					<!-- TITLE -->
 					<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
@@ -352,13 +352,16 @@
 
 							</div>
 
-
-
-
 						</div>
 					</div>
 				</div>
-
+                </ui:fragment>
+                
+                <ui:fragment rendered="#{!configurationBean.configEditorEnabled}">
+                    <div class="alert alert-danger" role="alert">
+                        <h:outputText rendered="#{errMsg == null}" value="#{msg.errFunctionalityDisabled}" />
+                    </div>
+                </ui:fragment>
 			</div>
 		</f:view>
 	</ui:define>
