@@ -89,23 +89,13 @@
 
 
 									<script>			
-										var currentFileIsReadable;
-										readOnlyMode = false;
-										
-										currentFileIsReadable = #{adminConfigEditorBean.currentFileRecord.readable};
-										currentFileIsWritable = #{adminConfigEditorBean.currentFileRecord.writable}
-										
-										console.log('#{adminConfigEditorBean.currentFileRecord.readable}');
-										console.log('#{adminConfigEditorBean.currentFileRecord.writable}');
-										
+																														
 										$( document ).ready(function() {
-											adminJS.codemirror.init();
+											adminJS.codemirror.init({
+											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
+											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable}
+											});
 										});
-										
-										if ((currentFileIsReadable == true) &amp;&amp; (currentFileIsWritable == false)) {
-											readOnlyMode = true;
-											console.log('read only mode active');
-										}
 									</script>
 
 									<div class="admin__overlay-bar">

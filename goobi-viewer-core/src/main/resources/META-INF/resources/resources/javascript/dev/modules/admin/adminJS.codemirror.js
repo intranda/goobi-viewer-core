@@ -24,32 +24,45 @@
 var adminJS = ( function( admin ) {
     'use strict';
     
-    var _debug = false;
+    const _debug = true;
+    const _default = {
+    	currentFileIsReadable: false,
+    	currentFileIsWritable: false
+    }
 
     admin.codemirror = {
         /**
          * @description Method which initializes the codemirror editor in the backend.
          * @method init
          */
-        init: function() {
+        init: function(config) {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'adminJS.codemirror.init' );
                 console.log( '##############################' );
             }
-           
-			var configFileTextArea;
-			var type;
-			var configFileEditor;
-			var readOnly;
-			var selected_row;
-			var activeLineToggler;
-			var cmEditor;
-			//var nightMode;
-			var theme;
-			
-			
-			function initTextArea() {
+            
+            this.config = $.extend(true, {}, _default, config);
+            if(_debug) {console.log("codemirror config", this.config)};
+
+			this.initTextArea();
+			this.initOnBeforeUnload();
+
+        },
+        initOnBeforeUnload: function() {
+        	window.onbeforeunload = () => {
+        		console.log("unload page");
+        		return false;
+        	}
+        },
+        isReadOnly: function() {
+        	return this.config.currentFileIsReadable && !this.config.currentFileIsWritable;
+        },
+        initTextArea: function() {
+      
+				var activeLineToggler;
+				var type;
+				var theme;
 				
 				// GET THE CURRENT FILE TYPE OF CHOSEN FILE
 				let fileTypeElement = document.getElementById("currentConfigFileType");
@@ -80,11 +93,10 @@ var adminJS = ( function( admin ) {
 				}
 			
 				// INIT EDITOR MAIN
-				cmEditor = CodeMirror.fromTextArea(targetTextArea, {
+				this.cmEditor = CodeMirror.fromTextArea(targetTextArea, {
 						lineNumbers: true,
 						mode: type,
 						theme: theme,
-						readOnly: readOnly,
 						autofocus: false,
 						indentUnit: 2,
 						tabSize: 2,
@@ -106,7 +118,7 @@ var adminJS = ( function( admin ) {
 								if ( _debug ) {
 									console.log('manually saved with key combo');
 								}
-								if (readOnlyMode == false) {
+								if (this.isReadOnly() == false) {
 									document.querySelector('[data-cm="save"]').click();
 								}
 							},
@@ -115,7 +127,7 @@ var adminJS = ( function( admin ) {
 				});
 				
 				// check if readOnly mode for current file should be active
-				if (readOnlyMode == true) {
+				if (this.isReadOnly() == true) {
 					cmEditor.setOption("readOnly", true);
 				}
 				
@@ -180,20 +192,7 @@ var adminJS = ( function( admin ) {
 					cmEditor.clearHistory();
 				});
 			
-			}; 
-			
-			function setEditable(editable, number, isButton) {
-				selected_row = document.getElementById('row'+number);
-				
-				readOnly = !editable;
-				if (readOnly && isButton) {
-					alert("Die Rechte im Dateisystem müssen korrigiert werden um diese Datei zu bearbeiten.");
-				}
-			}
-			
-			initTextArea();
-
-        }
+			},
 	}
 	
 	return admin;
