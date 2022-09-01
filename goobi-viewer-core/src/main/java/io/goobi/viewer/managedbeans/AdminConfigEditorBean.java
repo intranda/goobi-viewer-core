@@ -367,6 +367,8 @@ public class AdminConfigEditorBean implements Serializable {
                 logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
 
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                
                 DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
                 Document document = documentBuilder.parse(originalPath.toFile());
                 document.getDocumentElement().normalize();
