@@ -75,9 +75,8 @@
 									data-cm="overlay"></div>
 
 								<!-- AJAX LOADING OVERLAY -->
-								<span class="ajax_loader"> <img
-									src="#{request.contextPath}/resources/images/AJAX_preloader_white.svg"
-									class="img-responsive" alt="Waiting..." />
+								<span class="ajax_loader">
+									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive" alt="Waiting..." />
 								</span>
 
 								<!-- CODEMIRROR EDITOR FORM -->
@@ -237,7 +236,11 @@
 												<ui:repeat var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
 													<h:commandLink
 														styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-														action="#{adminConfigEditorBean.downloadFile(record)}">
+														action="#{adminConfigEditorBean.downloadFile(record)}"
+														pt:data-toggle="tooltip"
+														pt:data-trigger="hover"
+														pt:data-placement="left"
+														pt:title="#{msg.downloadButton}">
 														<span class="admin__config-editor-backup-single-entry-text">
 															<h:outputText value="#{record.date}">
 																<f:converter converterId="localDateTimeConverter" />
