@@ -53,6 +53,7 @@
     "sweetalert2": "~11.4.19",
     "swiper": "~6.8.4",
     "three": "~0.132.2",
-    "tinymce": "~5.10.0"
+    "tinymce": "~5.10.0",
+    "codemirror": "^5.0.0"
   }
 }

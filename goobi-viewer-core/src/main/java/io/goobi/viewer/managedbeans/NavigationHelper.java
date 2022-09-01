@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -156,9 +155,9 @@ public class NavigationHelper implements Serializable {
      */
     @PostConstruct
     public void init() {
-        try {            
+        try {
             locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             locale = ViewerResourceBundle.getFallbackLocale();
         }
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
@@ -318,8 +317,6 @@ public class NavigationHelper implements Serializable {
         //after setting page, detemine subtheme
         setSubThemeDiscriminatorValue();
     }
-
-
 
     /**
      * <p>
@@ -502,7 +499,7 @@ public class NavigationHelper implements Serializable {
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
             PageType pageType = PageType.getByName(pageName);
-            if(pageType== null || PageType.other == pageType) {
+            if (pageType == null || PageType.other == pageType) {
                 this.currentPage = PageType.admin.name();
             } else {
                 this.currentPage = pageType.name();
@@ -1200,8 +1197,8 @@ public class NavigationHelper implements Serializable {
                     && BeanUtils.getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
                 String path =
                         "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + "/urlMappings/viewImageFullscreen.xhtml";
-                logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the "
-                        + DataManager.getInstance().getConfiguration().getTheme() + " theme.");
+                logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the '{}' theme.",
+                        DataManager.getInstance().getConfiguration().getTheme());
                 return path;
             }
             if (imageDisplayType.equalsIgnoreCase("classic")) {
@@ -1209,8 +1206,8 @@ public class NavigationHelper implements Serializable {
                 return "/viewImageFullscreen.xhtml";
             }
         }
-        logger.error("No correct configuration, use the standard Fullscreen Image view. Detected: " + imageDisplayType
-                + " from <zoomFullscreenView/> in the config_viewer.xml.");
+        logger.error("No correct configuration, use the standard Fullscreen Image view. Detected: {} from <zoomFullscreenView/> in the {}.",
+                imageDisplayType, Configuration.CONFIG_FILE_NAME);
 
         return "/viewImageFullscreen.xhtml";
     }
@@ -1589,17 +1586,15 @@ public class NavigationHelper implements Serializable {
         return (String) BeanUtils.getRequest().getSession(false).getAttribute("lastRequest");
     }
 
-
     public String getSessionIPAddress() {
         String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
         return ipAddress;
     }
 
-
     public Optional<String> getSessionId() {
         return Optional.ofNullable(FacesContext.getCurrentInstance())
-        .map(FacesContext::getExternalContext)
-        .map(extCtx -> extCtx.getSessionId(false));
+                .map(FacesContext::getExternalContext)
+                .map(extCtx -> extCtx.getSessionId(false));
     }
 
     /**
@@ -1664,7 +1659,7 @@ public class NavigationHelper implements Serializable {
         // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
         return StringEscapeUtils.escapeJava(msg);
     }
-    
+
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
      * Does not carry out character escaping
@@ -2083,7 +2078,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public List<Integer> getRange(long from, long to) {
-        List<Integer> range = IntStream.range((int)from, (int)to+1).boxed().collect(Collectors.toList());
+        List<Integer> range = IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
         return range;
     }
 }

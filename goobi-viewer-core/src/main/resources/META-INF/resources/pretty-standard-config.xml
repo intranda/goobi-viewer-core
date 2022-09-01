@@ -923,6 +923,17 @@
         <view-id value="/resources/admin/views/adminThemesEdit.xhtml" />
         <action onPostback="false">#{adminThemeEditBean.setCurrentThemeName(themeName)}</action>
     </url-mapping>
+    
+    <!-- CONFIG EDITOR -->
+    <url-mapping id="adminConfigEditor">
+        <pattern value="/admin/config/" />
+        <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
+        <action onPostback="false">#{adminConfigEditorBean.closeCurrentFileAction}</action>
+    </url-mapping>
+    <url-mapping id="adminConfigEditorFilename">
+        <pattern value="/admin/config/edit/#{currentFileName:adminConfigEditorBean.currentFileName}/" />
+        <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
+    </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">

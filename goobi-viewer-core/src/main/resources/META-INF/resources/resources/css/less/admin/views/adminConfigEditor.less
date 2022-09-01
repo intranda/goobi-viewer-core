@@ -1,0 +1,326 @@
+/* ==============================================================
+   Admin Config Editor
+   style declarations for adminConfigEditor.xhtml
+   ==============================================================*/
+
+#adminConfigEditor {
+	.admin__content-main {
+		z-index: 2;
+	}
+	padding-bottom: 90px;
+	textarea {
+		// display: block !important;
+	}
+	.CodeMirror {
+		height: calc(~"100vh - 250px");
+	}
+	#codemirrorFileContent {
+		display: none;
+	}
+	.admin {
+		&__overlay-bar {
+			// display: flex !important;
+			flex-direction: row;
+			justify-content: flex-end;
+			&.-slideOut {
+				display: flex;
+				animation: slideInOut 0.25s ease 0s 1 forwards;
+			}
+			&.-slideIn {
+				display: flex;
+				animation: slideInUp 0.25s ease 0s 1 forwards;
+			}
+		}
+	}
+	// ANIMATION FOR SLIDE IN THE SAVE AND CANCEL BUTTON
+	@keyframes slideInUp {
+	  from {
+	    -webkit-transform: translate3d(0, 100%, 0);
+	    transform: translate3d(0, 100%, 0);
+	    visibility: visible;
+	  }
+	
+	  to {
+	    -webkit-transform: translate3d(0, 0, 0);
+	    transform: translate3d(0, 0, 0);
+	  }
+	}
+	
+	.-slideInUp {
+	  -webkit-animation-name: slideInUp;
+	  animation-name: slideInUp;
+	}
+	
+	@keyframes slideInOut {
+	  from {
+	    -webkit-transform: translate3d(0, 0, 0);
+	    transform: translate3d(0, 0, 0);
+
+	  }
+	
+	  to {
+	    -webkit-transform: translate3d(0, 100%, 0);
+	    transform: translate3d(0, 100%, 0);
+	    visibility: visible;
+	  }
+	}
+	
+	.-slideInUp {
+	  animation-name: slideInOut;
+	}
+	
+	.delay-animation(@items, @delay) {
+	  .loopingClass(0); // Start loop
+	  
+	  .loopingClass(@index) when (@index <= @items) {
+	    &:nth-child(@{index}) {
+	        animation-delay: unit((@index * @delay),s);
+	    }
+	
+	    .loopingClass(@index + 1); // Increment loop
+	  }
+	}
+	
+	/* =================================== */
+	
+	@numitems: 20;
+	@delay: 0.1;
+
+	
+	.admin__config-editor-backup-single-entry {
+		animation: fadeInDown 0.15s ease-in 0s 1 forwards;
+		.delay-animation(@numitems, @delay);
+	}
+	
+	/* Animation */
+	
+	@keyframes fadeInDown {
+	  from { opacity: 0;
+			 transform: translateX(-10px);
+		   }
+	  to { opacity: 1; 
+		   transform: translateX(0px);}
+	}
+	
+}
+.admin {
+	&__config-editor {
+		&-current-file-wrapper {
+			display: flex;
+			#configEditorActualFile {
+				flex-grow: 1;
+			}
+		}
+		&-form-wrapper {
+			position: relative;
+			.ajax_loader {
+				img {
+					width: 60px;
+					position: absolute;
+					right: 40px;
+					top: 20px;
+					background: rgba(0, 0, 0, 0.5);
+					border-radius: 50%;
+					padding: 10px;
+				}
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					display: none;
+					background: rgba(0,0,0,0.1);
+					z-index: 5;
+			}
+		}
+		&-form-wrapper-overlay {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			display: none;
+			z-index: 5;
+			background: rgba(0,0,0,0.1);
+		}
+		&-textarea {
+			display: none;
+		}
+		&-release-button-wrapper {
+			display: flex;
+			position: relative;
+			.fa {
+				font-size: 20px;
+			}
+		}
+		&-release-button {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			right: 0;
+			top: 0;
+		}
+		&-file-selection-inner {
+			display: flex;
+			flex-wrap: wrap;
+			border: 1px solid #ccc;
+		}
+		&-file-selection-single-entry {
+			flex: 0 0 100%;
+			max-width: 100%;
+			padding: .5rem 1rem;
+			border-bottom: 1px solid #ccc;
+			transition: background 0.2s ease;
+			&:last-child {
+				border-bottom: none;
+			}
+			&:hover {
+				background: #f1f2f3;
+			}
+			&.-selectedFile {
+				background: @blue;
+				color: white;
+				&:hover,
+				&:focus,
+				&:active,
+				&:active:focus {
+					color: white;
+				}
+			}
+			&.-isReadOnly {
+				pointer-events: none;
+			}
+		}
+		&-file-selection-single-entry-button-wrapper {
+			width: 100%;
+			display: flex;
+			position: relative;
+			overflow: hidden;
+		}
+		&-file-selection-single-entry-button-wrapper-info-wrapper {
+			margin-left: auto;
+			display: flex;
+		}
+		&-file-selection-single-entry-button-wrapper-info {
+			position: relative;
+			.fa-pencil, .fa-eye, .fa-lock {
+				position: relative;
+				width: 24px;
+				height: 24px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-size: 14px;
+			}
+			.fa-ban {
+				position: absolute;
+				top: 0;
+				left: 0;
+				display: flex;
+				justify-content: center;
+				width: 24px;
+				height: 24px;
+				align-items: center;
+				color: red;
+				font-size: 24px;
+				opacity: 0.4;
+				transform: rotate(90deg);
+			}
+		}
+		&-file-selection-single-entry-button {
+			font-size: 1.4rem;	
+			padding-right: 22px;
+			text-align: left;
+			user-select: none;
+			border: none;
+			background: transparent;
+			color: inherit;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+			flex-grow: 1;
+		}
+		&-backup-single-entry {
+			display: flex;
+			align-items: center;
+			opacity: 0;
+			padding: .5rem 1rem;
+			padding-right: 2rem;
+			border-bottom: 1px solid #ccc;
+			&:last-child {
+				border-bottom: none;
+			}
+			&:hover {
+				background: #f1f2f3;
+			}
+			&.-noHover {
+				&:hover {
+					background: transparent;
+				}
+			}
+		}
+		&-backup-single-entry-text {
+			max-width: 290px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		&-backup-single-entry-icon {
+			margin-left: auto;
+		}
+		&-backup-wrapper {
+			border: 1px solid #ccc;
+		}
+		&-backup-single-entry-outer {
+			border-bottom: 1px solid #ccc;
+		}
+		&-overlay-bar-buttons-wrapper {
+			display: flex;
+			gap: 20px;
+			margin-right: 20px;
+		}
+		&-shortcuts-wrapper {
+			display: flex;
+			flex-direction: column;
+		}
+		&-shortcuts-entry {
+			display: flex;
+			flex-direction: column;
+			// align-items: center;
+			margin-bottom: 17px;
+		}
+		&-shortcuts-text {
+			font-weight: 700;
+			// flex: 0 0 120px;
+			max-width: 250px;
+			margin-bottom: 3px;
+		}
+		&-shortcuts-key-wrapper {
+			display: flex;
+			align-items: center;
+		}
+		&-shortcuts-key-spacer {
+			margin-left: 8px;
+			margin-right: 8px;
+		}
+		&-shortcuts-key {
+		    box-shadow: rgb(132 132 132 / 0.16) 0px 0px 3px;
+		    font-size: 14px; 
+		    padding: 0.2em 1em;
+		    border: 1px solid;
+		    border-color: #d6d6d6 #b4b4b4 #b4b4b4 #d6d6d6;
+		    border-radius: 4px;
+		    background-color: #F2F2F2;
+		    background-image: linear-gradient(top, #FCFCFC, #E0E0E0);
+		}
+		
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

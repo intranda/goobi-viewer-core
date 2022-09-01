@@ -39,10 +39,11 @@ var adminJS = ( function() {
         }
         //Initialize sticky elements for admin pages
         viewerJS.stickyElements.init({initAdmin:true});
-	
     };
-    
 
+    return admin;
+    
+} )( jQuery );
 
 
 $( document ).ready(function() {
@@ -53,35 +54,27 @@ $( document ).ready(function() {
 		$(this).parents().siblings('.admin__form-help-text').toggleClass('in');
 	});
 
-
-
-
- 
-	$('[data-target="toggleTarget"]').each(function() {
-		if ($(this).find("input:nth-of-type(1)").prop('checked')) {
-			$(this).next('.admin__license-selectable-block').hide();
-		}
+// hide license functions if open access toggle is yes
+	// check if toggle yes on page load
+	if ($('.openAccessToggle input:nth-of-type(2)').prop('checked')) {
+			  $('.admin__license-functions').hide();
+		  }
+	// check if toggle status changes
+	$(".openAccessToggle input").change(function(){
+	  if ($('.openAccessToggle input:nth-of-type(2)').is(':checked'))
+	   $('.admin__license-functions').animate({
+		    height: "toggle",
+		    opacity: "toggle"
+		}, 250);
+	  else if ($('.openAccessToggle input:nth-of-type(1)').is(':checked'))
+	   $('.admin__license-functions').animate({
+		    height: "toggle",
+		    opacity: "toggle"
+		}, 250);
 	});
-	
-	// check if radio button status changes
-	$("body").one("click", '[data-target="toggleTarget"]', function(event) {
-		$('[data-target="toggleTarget"] input').change(function() {
-			if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(2)').is(':checked')) {
-				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-					opacity: "toggle"
-				}, 250);
-			}
-			else if ($(this).parent('.admin__radio-switch').find('input:nth-of-type(1)').is(':checked')) {
-				$(this).closest('.blockAfterRadioToggler').next('.admin__license-selectable-block').animate({
-					opacity: "toggle"
-				}, 250);
-			}
-		});
-	});
-	
 
-// toggle next cms right block after radio button (hidden if prop yes checked)
-		// check if toggle yes on page load then hide
+// toggle next cms right block after radio button
+		// check if toggle yes on page load
 
 	// $("body").on("click", '[data-toggle="helptext"]', function()
 			
@@ -137,175 +130,19 @@ $( document ).ready(function() {
 			$(this).parent().parent().next(".cms-module__option-group").hide();
 		}
 	});
-		// check if form input value changes
-		$('.cms-module__option-url').each(function() {
-			$(this).on('keyup change ready', function() {
-				if ($(this).val() == "#") {
-					$(this).parent().parent().next(".cms-module__option-group").fadeOut();
-				}
-				else {
-					$(this).parent().parent().next(".cms-module__option-group").fadeIn();
-				}
-			});
+	// check if form input value changes
+	$('.cms-module__option-url').each(function() {
+		$(this).on('keyup change ready', function() {
+			if ($(this).val() == "#") {
+				$(this).parent().parent().next(".cms-module__option-group").fadeOut();
+			}
+			else {
+				$(this).parent().parent().next(".cms-module__option-group").fadeIn();
+			}
 		});
-
+	});
 
 // END DOCUMENT READY
 });
 
 
-    admin.licenceToggles = {
-
-
-	        init: function() {
-
-function elementLicenceTogglerFunction() {
-
-	// WATCH CHANGES
-	
-	var $watchedElements = $("[data-watched-element]");
-	
-	$("body").one("click", $($watchedElements), function(event) {
-		$($watchedElements).find('input').change(function() {
-			
-			// console.log($(this));
-			
-			let clickedWatchedElement = $(this).closest($watchedElements);
-			// console.log(clickedWatchedElement);
-			let id = $(this).closest($watchedElements).attr("data-watched-element");
-			let keepFunctionsVisible = $('[data-target-visibility="keepVisible"]');
-			let redirectInputField = $('[data-target-redirect="input"]')
-			
-			var watchedElementsInputsNo = $($watchedElements).find('.admin__radio-switch input:nth-of-type(1)');
-			var watchedElementInputThis = $(clickedWatchedElement).find('.admin__radio-switch input:nth-of-type(1)');
-			
-			var clickedWatchedElementYes = '';
-			if ($(clickedWatchedElement).find('input:nth-of-type(2)').is(':checked')) {
-				var clickedWatchedElementYes = true;
-				// console.log('toggle on yes');
-			} else {
-				var clickedWatchedElementYes = false;
-				// console.log('toggle on no');
-			}
-
-            switch (true) {
-                case (id == 'exclusiveAndInput'):
-					// IF CHECKBOX YES
-					if (clickedWatchedElementYes == true) {
-						// console.log('exlusiveandinput is true')
-						$($watchedElements).not(clickedWatchedElement).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-						$(keepFunctionsVisible).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-						$(redirectInputField).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						// $(watchedElementsInputsNo).not(watchedElementInputThis).prop('checked', true);
-					}
-					// IF CHECKBOX NO
-					if (clickedWatchedElementYes == false) {
-						// console.log('exlusiveandinput is false');
-						$($watchedElements).not(clickedWatchedElement).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						$(keepFunctionsVisible).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						$(redirectInputField).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-					}
-                    break;
-                case (id == 'keepFunctions'):
-					// IF CHECKBOX YES
-					if (clickedWatchedElementYes == true) {
-						// console.log('keepfunctions is true');
-						$($watchedElements).not(clickedWatchedElement, keepFunctionsVisible).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-						$(keepFunctionsVisible).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						$(redirectInputField).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-						$(watchedElementsInputsNo).not(watchedElementInputThis).prop('checked', true);
-					}
-					// IF CHECKBOX NO
-					if (clickedWatchedElementYes == false) {
-						// console.log('keepfunctions is false');
-						$($watchedElements).not(clickedWatchedElement).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						$(keepFunctionsVisible).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						$(redirectInputField).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-					}
-                    break;
-                case (id == 'exclusive'):
-					if (clickedWatchedElementYes == true) {
-					// IF CHECKBOX YES
-						// console.log('exlusive is true');
-						$($watchedElements).not(clickedWatchedElement).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-						$(keepFunctionsVisible).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-						$(redirectInputField).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-						$(watchedElementsInputsNo).not(watchedElementInputThis).prop('checked', true);
-					}
-					if (clickedWatchedElementYes == false) {
-						// console.log('exlusive is false');
-						$($watchedElements).not(clickedWatchedElement).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						$(keepFunctionsVisible).animate({
-                        	height: "show",
-                            opacity: 1
-                            }, 250);
-						$(redirectInputField).animate({
-                        	height: "hide",
-                            opacity: 0
-                            }, 250);
-					}
-                    break;
-                default:
-                    // console.log('default');
-            }
-
-			});
-		
-			});
-		}
-		elementLicenceTogglerFunction();
-        }
-
-	}
-	
-    return admin;
-    
-} )( jQuery );

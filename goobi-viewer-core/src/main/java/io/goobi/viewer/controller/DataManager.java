@@ -270,7 +270,7 @@ public final class DataManager {
     public Configuration getConfiguration() {
         if (configuration == null) {
             synchronized (lock) {
-                configuration = new Configuration("config_viewer.xml");
+                configuration = new Configuration(Configuration.CONFIG_FILE_NAME);
             }
         }
 
