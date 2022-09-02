@@ -87,7 +87,14 @@
 										class="admin__config-editor-textarea" cols="80" rows="10"
 										value="#{adminConfigEditorBean.fileContent}" />
 
+									<!-- TOOLTIPS FOR NOT READABLE FILES -->
+									<script>
+										$(document).ready(function(){
+											  $('.-isNotReadable').tooltip({title: "#{msg.admin__config_editor__not_readable}", placement: "top"});
+										});
+									</script>
 
+									<!-- VARIABLES IF READ OR WRITABLE -->
 									<script>			
 																														
 										$( document ).ready(function() {
@@ -153,7 +160,7 @@
 											value="#{adminConfigEditorBean.fileRecordsModel}">
 
 											<div
-												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
+												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
@@ -170,16 +177,12 @@
 
 													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
 
-													<ui:fragment rendered="#{!record.readable}">
-														<div
-															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__not_readable}"
-															data-toggle="tooltip" data-placement="top"
-															data-trigger="hover">
-															<i class="fa fa-eye" aria-hidden="true"></i> <i
-																class="fa fa-ban" aria-hidden="true"></i>
-														</div>
-													</ui:fragment>
+
+
+
+
+
+
 													<ui:fragment rendered="#{!record.writable and record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
@@ -235,7 +238,7 @@
 														action="#{adminConfigEditorBean.downloadFile(record)}"
 														pt:data-toggle="tooltip"
 														pt:data-trigger="hover"
-														pt:data-placement="left"
+														pt:data-placement="top"
 														pt:title="#{msg.downloadButton}">
 														<span class="admin__config-editor-backup-single-entry-text">
 															<h:outputText value="#{record.date}">
