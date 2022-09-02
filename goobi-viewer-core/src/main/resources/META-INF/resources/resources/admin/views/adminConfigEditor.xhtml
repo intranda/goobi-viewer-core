@@ -4,6 +4,7 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
@@ -46,23 +47,6 @@
 									<h2>#{msg.admin__config_editor__actual_file}:
 										#{adminConfigEditorBean.currentFileName}</h2>
 								</h:form>
-
-
-								<ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
-									<h:form>
-										<div class="admin__config-editor-release-button-wrapper">
-											<i class="fa fa-times-circle" aria-hidden="true"></i>
-											<a
-											class="btn btn--clean admin__config-editor-release-button" data-toggle="tooltip"
-											data-placement="top" data-trigger="hover"
-											data-require-confirmation="true"
-											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm, ipRange.name)}"
-											title="#{msg.admin__config_editor__release_button_tooltip}"
-											jsf:action="#{adminConfigEditorBean.closeCurrentFileAction}">
-											</a>
-											</div>
-									</h:form>
-								</ui:fragment>
 							</div>
 						<div>
 
@@ -93,7 +77,8 @@
 										$( document ).ready(function() {
 											adminJS.codemirror.init({
 											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
-											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable}
+											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable},
+												currentFilePath: "#{adminConfigEditorBean.currentFilePath}",
 											});
 										});
 									</script>

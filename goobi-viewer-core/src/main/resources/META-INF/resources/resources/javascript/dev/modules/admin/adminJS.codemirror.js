@@ -27,7 +27,8 @@ var adminJS = ( function( admin ) {
     const _debug = true;
     const _default = {
     	currentFileIsReadable: false,
-    	currentFileIsWritable: false
+    	currentFileIsWritable: false,
+    	currentFilePath: undefined,
     }
 
     admin.codemirror = {
@@ -49,10 +50,25 @@ var adminJS = ( function( admin ) {
 
 			this.initTextArea();
 			this.initOnBeforeUnload();
-
+			this.initWebsocket();
+        },
+        initWebsocket: function() {
+        	this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET);
+			this.socket.onOpen.subscribe(() => {
+				let messageObject = {
+					fileToLock: this.config.currentFilePath
+				}
+				let message = JSON.stringify(messageObject);
+				if(_debug)console.log("sending message", message);
+				this.socket.sendMessage(message);
+			});
         },
         initOnBeforeUnload: function() {
-        	window.onbeforeunload = () => this.dirty ? false : undefined;
+	        window.addEventListener('beforeunload',(event) => {
+	        	if(this.dirty) {
+	        		event.returnValue = false;
+	        	} 
+	        });
         },
         isReadOnly: function() {
         	return this.config.currentFileIsReadable && !this.config.currentFileIsWritable;
