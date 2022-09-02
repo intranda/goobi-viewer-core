@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -48,8 +47,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jdom2.Attribute;
@@ -59,7 +56,6 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.Configuration;
@@ -73,7 +69,7 @@ import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
-import io.goobi.viewer.model.misc.XMLError;
+import io.goobi.viewer.model.xml.XMLError;
 
 @Named
 @SessionScoped
@@ -338,9 +334,26 @@ public class AdminConfigEditorBean implements Serializable {
             return "";
         }
 
-        // TODO check XML validity
-
         try {
+            // Check XML validity
+            if ("xml".equals(currentFileRecord.getFileType())) {
+                List<XMLError> errors = XmlTools.checkXMLWellformed(fileContent);
+                if (!errors.isEmpty()) {
+                    boolean abort = false;
+                    for (XMLError error : errors) {
+                        Messages.error(String.format("%s: Line %d column %d: %s", error.getSeverity(), error.getLine(), error.getColumn(),
+                                error.getMessage()));
+                        if (error.getSeverity().equals("ERROR") || error.getSeverity().equals("FATAL")) {
+                            abort = true;
+                        }
+                    }
+                    if (abort) {
+                        Messages.error("admin__config_editor__error_save_xml_invalid");
+                        return "";
+                    }
+                }
+            }
+
             // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
             if (isConfigViewer()) {
                 logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
@@ -398,18 +411,8 @@ public class AdminConfigEditorBean implements Serializable {
             }
             createBackup(newBackupFolderPath, currentFileRecord.getFileName(), unmodifiledFileContent);
             refreshBackups(newBackupFolder);
-        } catch (IOException e) {
-            logger.trace("IOException caught in the method saveFile()", e);
-        } catch (JDOMException e) {
+        } catch (IOException | JDOMException | ParserConfigurationException | SAXException e) {
             logger.error(e.getMessage(), e);
-            //        } catch (SAXException e) {
-            //            logger.trace("SAXException caught in the method saveFile()", e);
-            //        } catch (ParserConfigurationException e) {
-            //            logger.trace("ParserConfigurationException caught in the method saveFile()", e);
-            //        } catch (TransformerConfigurationException e) {
-            //            logger.trace("TransformerConfigurationException caught in the method saveFile()", e);
-            //        } catch (TransformerException e) {
-            //            logger.trace("TransformerException caught in the method saveFile()", e);
         }
 
         unmodifiledFileContent = fileContent;
@@ -417,25 +420,6 @@ public class AdminConfigEditorBean implements Serializable {
         Messages.info("updatedSuccessfully");
         return "";
     }
-    //
-//        private List<XMLError> checkXMLWellformed(String xml) throws ParserConfigurationException, SAXException, IOException {
-//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//            factory.setValidating(false);
-//            factory.setNamespaceAware(true);
-//    
-//            DocumentBuilder builder = factory.newDocumentBuilder();
-//            ReportErrorsErrorHandler eh = new ReportErrorsErrorHandler();
-//            builder.setErrorHandler(eh);
-//    
-//            ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
-//            try {
-//                builder.parse(bais);
-//            } catch (SAXParseException e) {
-//                //ignore this, because we collect the errors in the errorhandler and give them to the user.
-//            }
-//    
-//            return eh.getErrors();
-//        }
 
     /**
      * Creates a timestamped backup of the given file name and content.
