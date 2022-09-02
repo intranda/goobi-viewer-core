@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -46,6 +47,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -69,6 +71,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.Procedure;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.configeditor.BackupRecord;
@@ -246,18 +249,6 @@ public class AdminConfigEditorBean implements Serializable {
         try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
             FileChannel inputChannel = fis.getChannel();
 
-            // Release write lock
-            //            if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
-            //                fileLocks.remove(filePath);
-            //            }
-
-            //            if (fileOutputStream != null) {
-            //                if (outputLock.isValid()) {
-            //                    outputLock.release();
-            //                }
-            //                fileOutputStream.close();
-            //            }
-
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
                 String sessionId = BeanUtils.getSession().getId();
@@ -270,11 +261,6 @@ public class AdminConfigEditorBean implements Serializable {
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
                 // outputLock also locks reading this file in Windows, so read it prior to creating the lock
                 fileContent = Files.readString(filePath);
-                //                fileOutputStream = new FileOutputStream(pathString, false); // appending instead of covering 
-                //                outputLock = fileOutputStream.getChannel().tryLock();
-                //                if (outputLock == null) {
-                //                    throw new OverlappingFileLockException();
-                //                }
             } else { // READ_ONLY
                 inputLock = inputChannel.tryLock(0, Long.MAX_VALUE, true);
                 if (inputLock == null) {
@@ -304,18 +290,23 @@ public class AdminConfigEditorBean implements Serializable {
             return "";
         }
 
-        fileLocks.unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
-        //            if (outputLock != null && outputLock.isValid()) {
-        //                outputLock.release();
-        //            }
-        //            fileOutputStream.close();
-
         fileInEditionNumber = -1;
         currentFileRecord = null;
 
         refresh();
 
         return "pretty:adminConfigEditor";
+    }
+    
+    /**
+     * Unlock the given file for the given session id in the static (global) fileLocks object
+     * @param file
+     * @param sessionId
+     */
+    public static void unlockFile(Path file, String sessionId) {
+        if(file != null) {            
+            fileLocks.unlockFile(file, sessionId);
+        }
     }
 
     public String editFile(boolean writable) {
@@ -378,9 +369,9 @@ public class AdminConfigEditorBean implements Serializable {
                         boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
                         configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
                     }
-                    if (configEditor.getAttributes().getNamedItem("maximum") != null) {
+                    if (configEditor.getAttributes().getNamedItem("backupFiles") != null) {
                         int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
-                        configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(origConfigEditorMax));
+                        configEditor.getAttributes().getNamedItem("backupFiles").setNodeValue(String.valueOf(origConfigEditorMax));
                     }
 
                     // get the list of all <directory> elements
@@ -522,10 +513,6 @@ public class AdminConfigEditorBean implements Serializable {
      * @param writable
      */
     public void selectFileAndShowBackups(boolean writable) {
-        if (currentFileRecord != null) {
-            fileLocks.unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
-            logger.trace("Unlocked file {}", currentFileRecord.getFileName());
-        }
 
         currentFileRecord = filesListing.getFileRecordsModel().getRowData();
         isConfigViewer = currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
@@ -642,5 +629,10 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         throw new FileNotFoundException(decodedFileName);
+    }
+
+    public Path getCurrentFilePath() {
+        Path file = Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);
+        return file;
     }
 }
