@@ -71,18 +71,13 @@
 										class="admin__config-editor-textarea" cols="80" rows="10"
 										value="#{adminConfigEditorBean.fileContent}" />
 
-									<!-- TOOLTIPS FOR NOT READABLE FILES -->
-									<script>
-										$(document).ready(function(){
-											  $('.-isNotReadable').tooltip({title: "#{msg.admin__config_editor__not_readable}", placement: "top"});
-										});
-									</script>
 
 									<!-- VARIABLES IF READ OR WRITABLE -->
 									<script>			
 																														
 										$( document ).ready(function() {
 											adminJS.codemirror.init({
+												fileNotReadableMsgKey: '#{msg.admin__config_editor__not_readable}',
 											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
 											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable},
 												currentFilePath: "#{adminConfigEditorBean.currentFilePath}",
@@ -220,11 +215,7 @@
 												<ui:repeat var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
 													<h:commandLink
 														styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-														action="#{adminConfigEditorBean.downloadFile(record)}"
-														pt:data-toggle="tooltip"
-														pt:data-trigger="hover"
-														pt:data-placement="top"
-														pt:title="#{msg.downloadButton}">
+														action="#{adminConfigEditorBean.downloadFile(record)}">
 														<span class="admin__config-editor-backup-single-entry-text">
 															<h:outputText value="#{record.date}">
 																<f:converter converterId="localDateTimeConverter" />
@@ -232,7 +223,7 @@
 															</h:outputText>
 														</span>
 														<span class="admin__config-editor-backup-single-entry-icon">
-															<i class="fa fa-download"></i>
+															<i class="fa fa-download" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadButton}"></i>
 														</span>
 													</h:commandLink>
 												</ui:repeat>

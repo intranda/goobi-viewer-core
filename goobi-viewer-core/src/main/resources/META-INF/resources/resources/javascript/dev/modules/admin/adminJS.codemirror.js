@@ -51,6 +51,7 @@ var adminJS = ( function( admin ) {
 			this.initTextArea();
 			this.initOnBeforeUnload();
 			this.initWebsocket();
+			this.initTooltipHelpers();
         },
         initWebsocket: function() {
         	this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET);
@@ -74,6 +75,20 @@ var adminJS = ( function( admin ) {
         	return this.config.currentFileIsReadable && !this.config.currentFileIsWritable;
 
         },
+		initTooltipHelpers: function () {
+			var _this = this;
+			$(document).ready( () => {
+				  $('.-isNotReadable').tooltip({title: _this.config.fileNotReadableMsgKey, placement: "top"});
+			});
+			
+			$( ".admin__config-editor-backup-single-entry" ).hover(
+					  function() {
+					    $(this).find('.admin__config-editor-backup-single-entry-icon .fa-download').tooltip('show');
+					  }, function() {
+					    $(this).find('.admin__config-editor-backup-single-entry-icon .fa-download').tooltip('hide');
+					  }
+			);
+		},
         initTextArea: function() {
 				var activeLineToggler;
 				var type;
