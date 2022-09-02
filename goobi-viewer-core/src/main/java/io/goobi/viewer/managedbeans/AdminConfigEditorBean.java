@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -72,6 +73,7 @@ import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
+import io.goobi.viewer.model.misc.XMLError;
 
 @Named
 @SessionScoped
@@ -107,9 +109,6 @@ public class AdminConfigEditorBean implements Serializable {
     //    private transient FileOutputStream fileOutputStream = null;
     private transient FileLock inputLock = null;
     //    private transient FileLock outputLock = null;
-
-    // Whether the opened config file is "config_viewer.xml"
-    private boolean isConfigViewer;
 
     // Used to render the CodeMirror editor properly, values can be "properties" or "xml"
     private String fullCurrentConfigFileType; // "." + currentConfigFileType
@@ -243,18 +242,6 @@ public class AdminConfigEditorBean implements Serializable {
         try (FileInputStream fis = new FileInputStream(filePath.toFile())) {
             FileChannel inputChannel = fis.getChannel();
 
-            // Release write lock
-            //            if (fileLocks.containsKey(filePath) && fileLocks.get(filePath).equals(sessionId)) {
-            //                fileLocks.remove(filePath);
-            //            }
-
-            //            if (fileOutputStream != null) {
-            //                if (outputLock.isValid()) {
-            //                    outputLock.release();
-            //                }
-            //                fileOutputStream.close();
-            //            }
-
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
                 String sessionId = BeanUtils.getSession().getId();
@@ -267,11 +254,6 @@ public class AdminConfigEditorBean implements Serializable {
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
                 // outputLock also locks reading this file in Windows, so read it prior to creating the lock
                 fileContent = Files.readString(filePath);
-                //                fileOutputStream = new FileOutputStream(pathString, false); // appending instead of covering 
-                //                outputLock = fileOutputStream.getChannel().tryLock();
-                //                if (outputLock == null) {
-                //                    throw new OverlappingFileLockException();
-                //                }
             } else { // READ_ONLY
                 inputLock = inputChannel.tryLock(0, Long.MAX_VALUE, true);
                 if (inputLock == null) {
@@ -301,18 +283,24 @@ public class AdminConfigEditorBean implements Serializable {
             return "";
         }
 
-        fileLocks.unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
-        //            if (outputLock != null && outputLock.isValid()) {
-        //                outputLock.release();
-        //            }
-        //            fileOutputStream.close();
-
         fileInEditionNumber = -1;
         currentFileRecord = null;
 
         refresh();
 
         return "pretty:adminConfigEditor";
+    }
+
+    /**
+     * Unlock the given file for the given session id in the static (global) fileLocks object
+     * 
+     * @param file
+     * @param sessionId
+     */
+    public static void unlockFile(Path file, String sessionId) {
+        if (file != null) {
+            fileLocks.unlockFile(file, sessionId);
+        }
     }
 
     public String editFile(boolean writable) {
@@ -350,9 +338,11 @@ public class AdminConfigEditorBean implements Serializable {
             return "";
         }
 
+        // TODO check XML validity
+
         try {
             // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
-            if (isConfigViewer) {
+            if (isConfigViewer()) {
                 logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
                 org.jdom2.Document doc = XmlTools.getDocumentFromString(fileContent, StandardCharsets.UTF_8.name());
                 if (doc != null && doc.getRootElement() != null) {
@@ -390,57 +380,6 @@ public class AdminConfigEditorBean implements Serializable {
 
                     fileContent = new XMLOutputter().outputString(doc);
                 }
-
-                //                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                //                dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-                //
-                //                DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-                //                Document document = documentBuilder.parse(originalPath.toFile());
-                //                documentBuilder.document.getDocumentElement().normalize();
-                //
-                //                // get the parent node <configEditor>
-                //                NodeList configEditorList = document.getElementsByTagName("configEditor");
-                //                if (configEditorList != null) {
-                //                    Node configEditor = document.getElementsByTagName("configEditor").item(0);
-                //
-                //                    // set the values of the attributes "enabled" and "backupFiles" back
-                //                    if (configEditor.getAttributes() != null) {
-                //                        if (configEditor.getAttributes().getNamedItem("enabled") != null) {
-                //                            boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
-                //                            configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
-                //                        }
-                //                        if (configEditor.getAttributes().getNamedItem("backupFiles") != null) {
-                //                            int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
-                //                            configEditor.getAttributes().getNamedItem("backupFiles").setNodeValue(String.valueOf(origConfigEditorMax));
-                //                        }
-                //                    }
-                //
-                //                    // get the list of all <directory> elements
-                //                    NodeList directoryList = configEditor.getChildNodes();
-                //
-                //                    // remove these modified elements
-                //                    while (directoryList.getLength() > 0) {
-                //                        Node node = directoryList.item(0);
-                //                        configEditor.removeChild(node);
-                //                    }
-                //                    // rewrite the backed-up values "configPaths" into this block
-                //                    List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
-                //                    for (String configPath : origConfigEditorDirectories) {
-                //                        Node newNode = document.createElement("directory");
-                //                        newNode.setTextContent(configPath);
-                //                        configEditor.appendChild(document.createTextNode("\n\t"));
-                //                        configEditor.appendChild(newNode);
-                //                    }
-                //                    configEditor.appendChild(document.createTextNode("\n    "));
-                //                }
-
-                //                TransformerFactory tf = TransformerFactory.newInstance();
-                //                tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                //                tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                //                Transformer transformer = tf.newTransformer();
-                //                DOMSource src = new DOMSource(document);
-                //                StreamResult result = new StreamResult(originalPath.toFile());
-                //                transformer.transform(src, result);
             }
 
             if (unmodifiledFileContent.equals(fileContent)) {
@@ -479,24 +418,24 @@ public class AdminConfigEditorBean implements Serializable {
         return "";
     }
     //
-    //    private List<XMLError> checkXMLWellformed(String xml) throws ParserConfigurationException, SAXException, IOException {
-    //        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    //        factory.setValidating(false);
-    //        factory.setNamespaceAware(true);
-    //
-    //        DocumentBuilder builder = factory.newDocumentBuilder();
-    //        ReportErrorsErrorHandler eh = new ReportErrorsErrorHandler();
-    //        builder.setErrorHandler(eh);
-    //
-    //        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes("UTF-8"));
-    //        try {
-    //            builder.parse(bais);
-    //        } catch (SAXParseException e) {
-    //            //ignore this, because we collect the errors in the errorhandler and give them to the user.
-    //        }
-    //
-    //        return eh.getErrors();
-    //    }
+        private List<XMLError> checkXMLWellformed(String xml) throws ParserConfigurationException, SAXException, IOException {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setValidating(false);
+            factory.setNamespaceAware(true);
+    
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            ReportErrorsErrorHandler eh = new ReportErrorsErrorHandler();
+            builder.setErrorHandler(eh);
+    
+            ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
+            try {
+                builder.parse(bais);
+            } catch (SAXParseException e) {
+                //ignore this, because we collect the errors in the errorhandler and give them to the user.
+            }
+    
+            return eh.getErrors();
+        }
 
     /**
      * Creates a timestamped backup of the given file name and content.
@@ -573,16 +512,18 @@ public class AdminConfigEditorBean implements Serializable {
 
     /**
      * 
+     * @return
+     */
+    public boolean isConfigViewer() {
+        return currentFileRecord != null && currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME);
+    }
+
+    /**
+     * 
      * @param writable
      */
     public void selectFileAndShowBackups(boolean writable) {
-        if (currentFileRecord != null) {
-            fileLocks.unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
-            logger.trace("Unlocked file {}", currentFileRecord.getFileName());
-        }
-
         currentFileRecord = filesListing.getFileRecordsModel().getRowData();
-        isConfigViewer = currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
         fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
 
         fileInEditionNumber = currentFileRecord.getNumber();
@@ -696,5 +637,10 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         throw new FileNotFoundException(decodedFileName);
+    }
+
+    public Path getCurrentFilePath() {
+        Path file = Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);
+        return file;
     }
 }

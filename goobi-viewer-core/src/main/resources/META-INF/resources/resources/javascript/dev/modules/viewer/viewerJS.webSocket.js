@@ -34,6 +34,7 @@
     //pseudo-constant containing path to socket
     viewer.WebSocket.PATH_SESSION_SOCKET = "/session.socket";
     viewer.WebSocket.PATH_CAMPAIGN_SOCKET = "/crowdsourcing/campaign.socket";
+    viewer.WebSocket.PATH_CONFIG_EDITOR_SOCKET = "/admin/config/edit.socket";
 
     //prototype methods
     viewer.WebSocket.prototype.sendMessage = function(message) {

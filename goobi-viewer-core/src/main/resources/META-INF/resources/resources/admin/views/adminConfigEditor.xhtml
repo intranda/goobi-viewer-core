@@ -4,6 +4,7 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
@@ -46,23 +47,6 @@
 									<h2>#{msg.admin__config_editor__actual_file}:
 										#{adminConfigEditorBean.currentFileName}</h2>
 								</h:form>
-
-
-								<ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
-									<h:form>
-										<div class="admin__config-editor-release-button-wrapper">
-											<i class="fa fa-times-circle" aria-hidden="true"></i>
-											<a
-											class="btn btn--clean admin__config-editor-release-button" data-toggle="tooltip"
-											data-placement="top" data-trigger="hover"
-											data-require-confirmation="true"
-											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__config_editor__release_confirm, ipRange.name)}"
-											title="#{msg.admin__config_editor__release_button_tooltip}"
-											jsf:action="#{adminConfigEditorBean.closeCurrentFileAction}">
-											</a>
-											</div>
-									</h:form>
-								</ui:fragment>
 							</div>
 						<div>
 
@@ -87,13 +71,21 @@
 										class="admin__config-editor-textarea" cols="80" rows="10"
 										value="#{adminConfigEditorBean.fileContent}" />
 
+									<!-- TOOLTIPS FOR NOT READABLE FILES -->
+									<script>
+										$(document).ready(function(){
+											  $('.-isNotReadable').tooltip({title: "#{msg.admin__config_editor__not_readable}", placement: "top"});
+										});
+									</script>
 
+									<!-- VARIABLES IF READ OR WRITABLE -->
 									<script>			
 																														
 										$( document ).ready(function() {
 											adminJS.codemirror.init({
 											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
-											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable}
+											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable},
+												currentFilePath: "#{adminConfigEditorBean.currentFilePath}",
 											});
 										});
 									</script>
@@ -153,7 +145,7 @@
 											value="#{adminConfigEditorBean.fileRecordsModel}">
 
 											<div
-												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
+												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
@@ -170,16 +162,12 @@
 
 													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
 
-													<ui:fragment rendered="#{!record.readable}">
-														<div
-															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__not_readable}"
-															data-toggle="tooltip" data-placement="top"
-															data-trigger="hover">
-															<i class="fa fa-eye" aria-hidden="true"></i> <i
-																class="fa fa-ban" aria-hidden="true"></i>
-														</div>
-													</ui:fragment>
+
+
+
+
+
+
 													<ui:fragment rendered="#{!record.writable and record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
@@ -235,7 +223,7 @@
 														action="#{adminConfigEditorBean.downloadFile(record)}"
 														pt:data-toggle="tooltip"
 														pt:data-trigger="hover"
-														pt:data-placement="left"
+														pt:data-placement="top"
 														pt:title="#{msg.downloadButton}">
 														<span class="admin__config-editor-backup-single-entry-text">
 															<h:outputText value="#{record.date}">
