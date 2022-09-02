@@ -418,24 +418,24 @@ public class AdminConfigEditorBean implements Serializable {
         return "";
     }
     //
-        private List<XMLError> checkXMLWellformed(String xml) throws ParserConfigurationException, SAXException, IOException {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setValidating(false);
-            factory.setNamespaceAware(true);
-    
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            ReportErrorsErrorHandler eh = new ReportErrorsErrorHandler();
-            builder.setErrorHandler(eh);
-    
-            ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
-            try {
-                builder.parse(bais);
-            } catch (SAXParseException e) {
-                //ignore this, because we collect the errors in the errorhandler and give them to the user.
-            }
-    
-            return eh.getErrors();
-        }
+//        private List<XMLError> checkXMLWellformed(String xml) throws ParserConfigurationException, SAXException, IOException {
+//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//            factory.setValidating(false);
+//            factory.setNamespaceAware(true);
+//    
+//            DocumentBuilder builder = factory.newDocumentBuilder();
+//            ReportErrorsErrorHandler eh = new ReportErrorsErrorHandler();
+//            builder.setErrorHandler(eh);
+//    
+//            ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
+//            try {
+//                builder.parse(bais);
+//            } catch (SAXParseException e) {
+//                //ignore this, because we collect the errors in the errorhandler and give them to the user.
+//            }
+//    
+//            return eh.getErrors();
+//        }
 
     /**
      * Creates a timestamped backup of the given file name and content.
