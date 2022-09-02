@@ -378,9 +378,9 @@ public class AdminConfigEditorBean implements Serializable {
                         boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
                         configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
                     }
-                    if (configEditor.getAttributes().getNamedItem("maximum") != null) {
+                    if (configEditor.getAttributes().getNamedItem("backupFiles") != null) {
                         int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
-                        configEditor.getAttributes().getNamedItem("maximum").setNodeValue(String.valueOf(origConfigEditorMax));
+                        configEditor.getAttributes().getNamedItem("backupFiles").setNodeValue(String.valueOf(origConfigEditorMax));
                     }
 
                     // get the list of all <directory> elements
