@@ -305,7 +305,6 @@ public class AdminConfigEditorBean implements Serializable {
      */
     public static void unlockFile(Path file, String sessionId) {
         if(file != null) {            
-            System.out.println("Unlocking file " + file + " for session " + sessionId);
             fileLocks.unlockFile(file, sessionId);
         }
     }
