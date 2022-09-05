@@ -117,7 +117,9 @@ public class StatisticsSummaryBuilder {
     private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
         List<String> fields = getFieldListForRecords(identifiersToInclude);
-        fields.add(StatisticsLuceneFields.DATE);
+        if(!fields.isEmpty()) {            
+            fields.add(StatisticsLuceneFields.DATE);
+        }
         SolrDocumentList docs = this.searchIndex.search(getSolrQuery(filter), fields);
         return docs.stream().reduce(StatisticsSummary.empty(), this::add , StatisticsSummary::add);
     }
