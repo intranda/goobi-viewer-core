@@ -2131,6 +2131,12 @@ public final class SearchHelper {
         return ret;
     }
 
+    /**
+     * 
+     * @param query
+     * @return
+     * 
+     */
     public static List<SearchQueryItem> parseSearchQueryItemsFromQuery(String query) {
         if (StringUtils.isEmpty(query)) {
             return Collections.emptyList();
@@ -2138,18 +2144,41 @@ public final class SearchHelper {
 
         // 1) Remove outer ()
 
-        //        regex: (\([A-Za-z() ]+\))
+        //        regex: (\([\w() ]+\))
 
         // Extract individual fields
-        // regex: ([[A-Z]+:\([()A-Za-z ]+\)+)
+        // normal regex: ([A-Z_]+:\([\w() ]+\)( AND )*( OR )*)
+        String regexRegularPairs = "([A-Z_]+:\"[\\w ]+\"( AND )*( OR )*)";
+        // phrase regex: ([A-Z_]+:"[\w ]+"( AND )*( OR )*)
+        String patternPhrasePairs = "([A-Z_]+:\"[\\w ]+\"( AND )*( OR )*)";
 
         // Regular query
         // ((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
-        
+
         // Phrase query
         // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
 
-        return null;
+        List<SearchQueryItem> ret = new ArrayList<>();
+
+        Pattern p = Pattern.compile(patternPhrasePairs);
+        Matcher m = p.matcher(query);
+        if (m.matches()) {
+            List<StringPair> pairs = new ArrayList<>();
+            for (int i = 0; i < m.groupCount(); ++i) {
+                String pair = m.group(i + 1);
+                if (pair.endsWith(" AND ")) {
+                    pair = pair.substring(pair.length() - 5);
+                } else if (pair.endsWith(" OR ")) {
+                    pair = pair.substring(pair.length() - 4);
+                }
+                String[] pairSplit = pair.split(":");
+                if (pairSplit.length == 2) {
+                    pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
+                }
+            }
+        }
+
+        return ret;
     }
 
     /**
