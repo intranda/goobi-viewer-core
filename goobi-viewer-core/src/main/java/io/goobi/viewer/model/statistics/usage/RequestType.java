@@ -105,4 +105,12 @@ public enum RequestType {
         RequestType[] types = RequestType.values();
         return Arrays.stream(types).filter(t -> t.getUniqueCountIndex() == index).findAny().orElse(null);
     }
+    
+    /**
+     * Get the values for which request are recorded 
+     * @return  An array
+     */
+    public static RequestType[] getUsedValues() {
+        return new RequestType[] {RequestType.RECORD_VIEW, RequestType.FILE_DOWNLOAD};
+    }
 }

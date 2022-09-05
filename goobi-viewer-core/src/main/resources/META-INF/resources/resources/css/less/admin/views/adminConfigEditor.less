@@ -88,8 +88,8 @@
 
 	
 	.admin__config-editor-backup-single-entry {
-		animation: fadeInDown 0.15s ease-in 0s 1 forwards;
-		.delay-animation(@numitems, @delay);
+		// animation: fadeInDown 0.15s ease-in 0s 1 forwards;
+		// .delay-animation(@numitems, @delay);
 	}
 	
 	/* Animation */
@@ -183,9 +183,15 @@
 					color: white;
 				}
 			}
-			&.-isReadOnly {
-				.admin__config-editor-file-selection-single-entry-button {
+			&.-isNotReadable & {
+				&-button {
+					color: #bebebe;
 					pointer-events: none;
+				}
+			}
+			&.-isNotReadable {
+				&:hover {
+					background: transparent; 
 				}
 			}
 		}
@@ -201,7 +207,7 @@
 		}
 		&-file-selection-single-entry-button-wrapper-info {
 			position: relative;
-			.fa-pencil, .fa-eye, .fa-lock {
+			.fa-eye, .fa-lock {
 				position: relative;
 				width: 24px;
 				height: 24px;
@@ -209,20 +215,6 @@
 				justify-content: center;
 				align-items: center;
 				font-size: 14px;
-			}
-			.fa-ban {
-				position: absolute;
-				top: 0;
-				left: 0;
-				display: flex;
-				justify-content: center;
-				width: 24px;
-				height: 24px;
-				align-items: center;
-				color: red;
-				font-size: 24px;
-				opacity: 0.4;
-				transform: rotate(90deg);
 			}
 		}
 		&-file-selection-single-entry-button {
@@ -241,7 +233,7 @@
 		&-backup-single-entry {
 			display: flex;
 			align-items: center;
-			opacity: 0;
+			opacity: 1;
 			padding: .5rem 1rem;
 			padding-right: 2rem;
 			border-bottom: 1px solid #ccc;
@@ -250,6 +242,9 @@
 			}
 			&:hover {
 				background: #f1f2f3;
+				.admin__config-editor-backup-single-entry-icon {
+					opacity: 1;
+				}
 			}
 			&.-noHover {
 				&:hover {
@@ -265,6 +260,8 @@
 		}
 		&-backup-single-entry-icon {
 			margin-left: auto;
+			opacity: 0;
+			transition: 0.2s ease all;
 		}
 		&-backup-wrapper {
 			border: 1px solid #ccc;
@@ -313,6 +310,12 @@
 		}
 		
 	}
+}
+
+// CUSTOM OVERRIDES FOR FULLSCREEN
+.CodeMirror-fullscreen {
+  left: 270px;
+  top: 35px;
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

@@ -24,32 +24,75 @@
 var adminJS = ( function( admin ) {
     'use strict';
     
-    var _debug = false;
+    const _debug = false;
+    const _default = {
+    	currentFileIsReadable: false,
+    	currentFileIsWritable: false,
+    	currentFilePath: undefined,
+    }
 
     admin.codemirror = {
+    	cmEditor: undefined,
+    	dirty: false,
         /**
          * @description Method which initializes the codemirror editor in the backend.
          * @method init
          */
-        init: function() {
+        init: function(config) {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'adminJS.codemirror.init' );
                 console.log( '##############################' );
             }
-           
-			var configFileTextArea;
-			var type;
-			var configFileEditor;
-			var readOnly;
-			var selected_row;
-			var activeLineToggler;
-			var cmEditor;
-			//var nightMode;
-			var theme;
+            
+            this.config = $.extend(true, {}, _default, config);
+            if(_debug) {console.log("codemirror config", this.config)};
+
+			this.initTextArea();
+			this.initOnBeforeUnload();
+			this.initWebsocket();
+			this.initTooltipHelpers();
+        },
+        initWebsocket: function() {
+        	this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET);
+			this.socket.onOpen.subscribe(() => {
+				let messageObject = {
+					fileToLock: this.config.currentFilePath
+				}
+				let message = JSON.stringify(messageObject);
+				if(_debug)console.log("sending message", message);
+				this.socket.sendMessage(message);
+			});
+        },
+        initOnBeforeUnload: function() {
+	        window.addEventListener('beforeunload',(event) => {
+	        	if(this.dirty) {
+	        		event.returnValue = false;
+	        	} 
+	        });
+        },
+        isReadOnly: function() {
+        	return this.config.currentFileIsReadable && !this.config.currentFileIsWritable;
+
+        },
+		initTooltipHelpers: function () {
+			var _this = this;
+			$(document).ready( () => {
+				  $('.-isNotReadable').tooltip({title: _this.config.fileNotReadableMsgKey, placement: "top"});
+			});
 			
-			
-			function initTextArea() {
+			$( ".admin__config-editor-backup-single-entry" ).hover(
+					  function() {
+					    $(this).find('.admin__config-editor-backup-single-entry-icon .fa-download').tooltip('show');
+					  }, function() {
+					    $(this).find('.admin__config-editor-backup-single-entry-icon .fa-download').tooltip('hide');
+					  }
+			);
+		},
+        initTextArea: function() {
+				var activeLineToggler;
+				var type;
+				var theme;
 				
 				// GET THE CURRENT FILE TYPE OF CHOSEN FILE
 				let fileTypeElement = document.getElementById("currentConfigFileType");
@@ -80,11 +123,10 @@ var adminJS = ( function( admin ) {
 				}
 			
 				// INIT EDITOR MAIN
-				cmEditor = CodeMirror.fromTextArea(targetTextArea, {
+				this.cmEditor = CodeMirror.fromTextArea(targetTextArea, {
 						lineNumbers: true,
 						mode: type,
 						theme: theme,
-						readOnly: readOnly,
 						autofocus: false,
 						indentUnit: 2,
 						tabSize: 2,
@@ -102,11 +144,11 @@ var adminJS = ( function( admin ) {
 							"Ctrl-D": function(cm) {
 								cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
 							},
-							"Ctrl-S": function(cm) {
-								if ( _debug ) {
+							"Ctrl-S": (cm) => {
+								// if ( _debug ) {
 									console.log('manually saved with key combo');
-								}
-								if (readOnlyMode == false) {
+								// }
+								if (this.isReadOnly() == false) {
 									document.querySelector('[data-cm="save"]').click();
 								}
 							},
@@ -115,8 +157,8 @@ var adminJS = ( function( admin ) {
 				});
 				
 				// check if readOnly mode for current file should be active
-				if (readOnlyMode == true) {
-					cmEditor.setOption("readOnly", true);
+				if (this.isReadOnly() == true) {
+					this.cmEditor.setOption("readOnly", true);
 				}
 				
 				if ( _debug ) {
@@ -125,28 +167,28 @@ var adminJS = ( function( admin ) {
 			
 				// CLEAR EDITOR AND SHOW AN OVERLAY IF NO FILE SELECT
 				if (fileTypeElement.innerHTML.trim() == '') {
-					cmEditor.setValue("");
-					cmEditor.clearHistory();
+					this.cmEditor.setValue("");
+					this.cmEditor.clearHistory();
 					$('[data-cm="overlay"]').show();
 				}
 				else {
-					cmEditor.focus();
+					this.cmEditor.focus();
 					$('[data-cm="overlay"]').hide();
 				}
 				// listen for CodeMirror changes
-				var startEditorValue = cmEditor.getValue();
+				var startEditorValue = this.cmEditor.getValue();
 				var debounce = null;
 				
-				cmEditor.on('change', function(){
-					
+				this.cmEditor.on('change', () => {
 					// debounce for good performance
 				   	clearTimeout(debounce);
-					   debounce = setTimeout(function(){
-						var newEditorValue = cmEditor.getValue();                  
-						if ((cmEditor.doc.changeGeneration() == 1) || (startEditorValue == newEditorValue)) {
+					   debounce = setTimeout(() => {
+						var newEditorValue = this.cmEditor.getValue();                  
+						if ((this.cmEditor.doc.changeGeneration() == 1) || (startEditorValue == newEditorValue)) {
 							if ( _debug ) {
 								console.log('editor is clean');
 							}
+							this.dirty = false;
 							 $('.admin__overlay-bar').removeClass('-slideIn');
 							 $('.admin__overlay-bar').addClass('-slideOut');
 							 $('.admin__overlay-bar').on('animationend webkitAnimationEnd', function() { 
@@ -156,6 +198,7 @@ var adminJS = ( function( admin ) {
 							if ( _debug ) {
 							console.log('editor not clean');
 							}
+							this.dirty = true;
 							 $('.admin__overlay-bar').addClass('-slideIn');
 						}
 						if ( _debug ) {
@@ -165,8 +208,9 @@ var adminJS = ( function( admin ) {
 				}); 
 			
 				// SAVE BUTTON FUNCTIONAL
-					$('[data-cm="save"]').on('click', function() {
-						cmEditor.save();
+					$('[data-cm="save"]').on('click', () => {
+						this.cmEditor.save();
+						this.dirty = false;
 						if ( _debug ) {
 							console.log('editor is saved by clicked button');
 						}
@@ -174,26 +218,13 @@ var adminJS = ( function( admin ) {
 					
 				// CANCEL BUTTON FUNCTION
 				// RESETS ALL EDITS
-				$('[data-cm="cancel"]').on('click', function() {
-					var startContent = cmEditor.getTextArea().value;
-					cmEditor.setValue(startContent);
-					cmEditor.clearHistory();
+				$('[data-cm="cancel"]').on('click', () => {
+					var startContent = this.cmEditor.getTextArea().value;
+					this.cmEditor.setValue(startContent);
+					this.cmEditor.clearHistory();
 				});
 			
-			}; 
-			
-			function setEditable(editable, number, isButton) {
-				selected_row = document.getElementById('row'+number);
-				
-				readOnly = !editable;
-				if (readOnly && isButton) {
-					alert("Die Rechte im Dateisystem müssen korrigiert werden um diese Datei zu bearbeiten.");
-				}
-			}
-			
-			initTextArea();
-
-        }
+			},
 	}
 	
 	return admin;
