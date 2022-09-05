@@ -24,10 +24,10 @@
         <!-- SEARCH LIST SORTING -->
         <h:panelGroup rendered="#{showSortingOptions and search.hitsCount > 1}">
         	<h2 class="-sr-only">#{msg.searchHitNavigation}:</h2>
-            <div class="search-list__sorting">
+            <div class="search-list__nav-helper-wrapper">
             	<ui:fragment rendered="#{displayHitsPerPage}">
-                    <div class="search-list__sorting__item">
-                        <div class="search-list__sorting__label">
+                    <div class="search-list__nav-helper-item">
+                        <div class="search-list__nav-helper-label">
                             <label for="hitsPerPageSelect" id="searchListSortingLabel">#{msg.search__hits_per_page}:</label>
                         </div>
                         <div class="custom-control custom-control--select">
@@ -47,8 +47,8 @@
                     </div>
                  </ui:fragment>
 
-                    <div class="search-list__sorting__item" >
-                        <div class="search-list__sorting__label">
+                    <div class="search-list__nav-helper-item" >
+                        <div class="search-list__nav-helper-label">
                             <label for="sortSelect">#{msg.sortBy}:</label>
                         </div>
                         <div class="custom-control custom-control--select">
@@ -143,13 +143,12 @@
         </h:form>
 
         <!-- PAGINATOR -->
-        <viewerComponent:inputFieldPaginator 
-        	classSuffix="-bottom"
+        <viewerComponent:simplePaginator 
+        	classSuffix="-top"
             itemCount="#{search.lastPage}" 
             itemActive="#{search.currentPage}" 
             urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
-            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" 
-            positionBottom="true" />
+            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
         <div class="clearfix"></div>
 
     </div>

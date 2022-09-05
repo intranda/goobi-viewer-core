@@ -1165,6 +1165,15 @@
         </group>
     </translations>
     
+    <!-- condigEditor/@enabled: If true, the admin backend file editor will be enabled. Default is true. -->
+    <!-- condigEditor/@backupFiles: Maximum number of backup files to keep for each file. Oldest files will be deleted once the maximum is reached.
+        Value 0 means no limit. Default is 0. -->
+    <configEditor enabled="true" backupFiles="10">
+        <!-- directory: Absolute paths that will be scanned for files. Do not enter sensitive locations! -->
+        <directory>/opt/digiverso/viewer/config/</directory>
+        <directory>/opt/digiverso/indexer/</directory>
+    </configEditor>
+    
     <!-- upload/@enabled: If true, users are allowed to upload content for processing in Goobi workflow -->
     <upload enabled="true">
         <!-- token: Goobi workflow API authorization token. -->
@@ -1379,6 +1388,9 @@
             <node name="other"  icon="fa fa-file-o" />
         </nodeTypes>
     </archives>
+    
+    <!-- Configuration for collecting usage statistics -->
+    <statistics enabled="true"></statistics>
 
 </config>
 

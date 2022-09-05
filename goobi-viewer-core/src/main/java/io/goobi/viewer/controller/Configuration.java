@@ -126,6 +126,8 @@ public class Configuration extends AbstractConfiguration {
 
     private static final String VALUE_DEFAULT = "_DEFAULT";
 
+    public static final String CONFIG_FILE_NAME = "config_viewer.xml";
+
     private Set<String> stopwords;
 
     /**
@@ -168,7 +170,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         // Load local config file
-        File fileLocal = new File(getConfigLocalPath() + "config_viewer.xml");
+        File fileLocal = new File(getConfigLocalPath() + CONFIG_FILE_NAME);
         builderLocal =
                 new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
@@ -528,7 +530,6 @@ public class Configuration extends AbstractConfiguration {
         if (usingTemplate == null) {
             return Collections.emptyList();
         }
-        //                logger.debug("template requested: " + template + ", using: " + usingTemplate.getString(XML_PATH_ATTRIBUTE_NAME));
         List<HierarchicalConfiguration<ImmutableNode>> elements = usingTemplate.configurationsAt("metadata");
         if (elements == null) {
             logger.warn("Template '{}' contains no metadata elements.", usingTemplate.getRootElementName());
@@ -608,7 +609,6 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-
 
     /**
      * <p>
@@ -1063,9 +1063,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns collection names to be omitted from search results, listings etc.
      *
-     * @param field a {@link java.lang.String} object.
-     * @should return all configured elements
+     * @param field a {@link java.lang.String} object
      * @return a {@link java.util.List} object.
+     * @should return all configured elements
      */
     public List<String> getCollectionBlacklist(String field) {
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
@@ -3898,7 +3898,7 @@ public class Configuration extends AbstractConfiguration {
     public String getSubthemeMainTheme() {
         String theme = getLocalString("viewer.theme[@mainTheme]");
         if (StringUtils.isEmpty(theme)) {
-            logger.error("Theme name could not be read - config_viewer.xml may not be well-formed.");
+            logger.error("Theme name could not be read - {} may not be well-formed.", CONFIG_FILE_NAME);
         }
         return getLocalString("viewer.theme[@mainTheme]");
     }
@@ -4903,7 +4903,7 @@ public class Configuration extends AbstractConfiguration {
     public String getLabelIIIFSeeAlsoLido() {
         return getLocalString("webapi.iiif.seeAlso.lido.label", "LIDO");
     }
-    
+
     public List<ManifestLinkConfiguration> getIIIFSeeAlsoMetadataConfigurations() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.seeAlso.metadata");
         List<ManifestLinkConfiguration> links = new ArrayList<>(configs.size());
@@ -4917,9 +4917,6 @@ public class Configuration extends AbstractConfiguration {
         return links;
     }
 
-    
-    
-    
     /**
      * <p>
      * getSitelinksField.
@@ -5531,5 +5528,41 @@ public class Configuration extends AbstractConfiguration {
     public String getCrowdsourcingCampaignGeomapTilesource() {
         return getLocalString("campaigns.geoMap.tilesource", "mapbox");
 
+    }
+
+    public boolean isStatisticsEnabled() {
+        return getLocalBoolean("statistics[@enabled]", false);
+    }
+
+    public String getCrawlerDetectionRegex() {
+        return getLocalString("statistics.crawlerDetection[@regex]",
+                ".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isConfigEditorEnabled() {
+        return getLocalBoolean("configEditor[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public int getConfigEditorBackupFiles() {
+        return getLocalInt("configEditor[@backupFiles]", 0);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<String> getConfigEditorDirectories() {
+        return getLocalList("configEditor.directory", Collections.emptyList());
     }
 }

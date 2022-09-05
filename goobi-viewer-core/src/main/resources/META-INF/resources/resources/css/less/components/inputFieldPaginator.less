@@ -1,0 +1,74 @@
+/* ==============================================================
+   Input field paginator
+   style declarations for component inputFieldPaginator.xhtml
+   ==============================================================*/
+/* BLOCK */
+
+.inputfield-paginator {
+	ul {
+		display: flex;
+		gap: 4px;
+	}
+	&__navigate {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 35px;
+		height: 35px;
+		a {
+			display: flex;
+			height: 100%;
+			width: 100%;
+			align-items: center;
+			justify-content: center;
+		}
+		&.inactive {
+			a {
+				cursor: default;
+			}
+			svg {
+				opacity: 0.4;
+			}
+		}
+		svg {
+			width: 22px;
+			height: 22px;
+		}
+	}
+	&__navigate-text {
+		width: unset;
+		padding: 0 6px;
+		span {
+		}
+		gap: 4px;
+	}
+	&__page-number-label {
+		user-select: none;
+		cursor: pointer;
+		white-space: nowrap;
+		display: flex;
+		gap: 4px;
+		height: 100%;
+		align-items: center;
+	}
+	&__page-number-input {
+		display: none;
+		input {
+			padding: 0;
+			min-width: 0;
+			max-width: 100%;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -88,8 +88,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * The IP under which the client first requested registration
      */
-    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13",
-            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13", //NOSONAR, the ip address here is an example for the documentation
+            accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "client_ip")
     private String clientIp;
 
@@ -128,8 +128,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * An IP Subnet mask. If present, the client may only log in if its current IP matches the mask
      */
-    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16",
-            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16", //NOSONAR, the ip address here is an example for the documentation
+            accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "subnet_mask")
     private String subnetMask;
 
@@ -583,7 +583,7 @@ public class ClientApplication implements ILicensee, Serializable {
     public boolean mayLogIn(String remoteAddress) {
         return isAccessGranted() && matchIp(remoteAddress);
     }
-    
+
     @JsonIgnore
     public boolean isAllClients() throws DAOException {
         return DataManager.getInstance().getClientManager().isAllClients(this);

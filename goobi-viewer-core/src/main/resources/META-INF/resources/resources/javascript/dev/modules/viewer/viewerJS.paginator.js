@@ -40,6 +40,7 @@ var viewerJS = (function(viewer) {
 	}
 
 	viewer.paginator = {
+
 		/**
 		 * Initializes keyboard bindings for paginator
 		 * 
@@ -69,13 +70,15 @@ var viewerJS = (function(viewer) {
 			$( document ).ready(function() {
 			
 			// Make the input field the same size as the text/numbers element
-			var $numericPaginatorLabelWidth = $('.numeric-paginator__page-number-label').width();
+			var $numericPaginatorLabelWidth = $('[data-paginator="label"]').outerWidth();
 			var $numericPaginatorLabelWidthPX = $numericPaginatorLabelWidth + 'px';
 			var $numericPaginatorInputWrapper = $("[data-paginator='input']");
 			
-			console.log($numericPaginatorLabelWidthPX);
-
-  				$($numericPaginatorInputWrapper).css('width', $numericPaginatorLabelWidthPX);
+			if (_debug) {
+				console.log($numericPaginatorLabelWidthPX);
+			}	
+			
+			$($numericPaginatorInputWrapper).css('width', $numericPaginatorLabelWidthPX);
 			
 			});
 
@@ -140,13 +143,21 @@ var viewerJS = (function(viewer) {
 			$(document.body).off("keyup", viewer.paginator.keypressHandler);
 		},
 		showPageNumberInput: function(e) {
-			let $paginator = $(e.target).parents(".numeric-paginator");
+			let $paginator = $(e.target).parents(".inputfield-paginator");
 		    $paginator.find("[data-paginator='label']").hide();
 		    $paginator.find("[data-paginator='input']").css('display', 'flex');
 		    $paginator.find("[data-paginator='input-field']").trigger('focus');
+
+			// Fill the actual page number on click
+			var $actualPageNumber = $('#paginatorActualPageNumber').html();
+			$paginator.find("[data-paginator='input-field']").val($actualPageNumber);
+			
+			// Automatically select the actual input value (user friendly behaviour)
+			$paginator.find("[data-paginator='input-field']").select();
+
 		},
 		showPageNumberLabel: function(e) {
-			let $paginator = $(e.target).parents(".numeric-paginator");
+			let $paginator = $(e.target).parents(".inputfield-paginator");
 		    $paginator.find("[data-paginator='input']").hide();
 		    $paginator.find("[data-paginator='label']").show();
 		},
@@ -154,10 +165,10 @@ var viewerJS = (function(viewer) {
 			if (_debug) {
 				console.log("changePageNumber",e);
 			}
-			let $paginator = $(e.target).parents(".numeric-paginator");
+			let $paginator = $(e.target).parents(".inputfield-paginator");
 			let $inputField = $paginator.find("[data-paginator='input-field']");
-			let $lastPageNumber = $('#paginatorLastPageNumber').html();
 		    var targetPageNumber = parseInt($inputField.val());
+			var $lastPageNumber = $('#paginatorLastPageNumber').html();
 
 			if (targetPageNumber > $lastPageNumber) targetPageNumber = $lastPageNumber;
 

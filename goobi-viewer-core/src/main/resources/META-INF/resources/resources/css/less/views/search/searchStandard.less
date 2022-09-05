@@ -5,18 +5,10 @@
 /* SEARCH STANDARD */
 /* BLOCK */
 .search-standard {
-    margin-bottom: 21px;
+    margin-bottom: 20px;
 //    padding: 10px;
 //    border: 1px solid @middlegray;
     /* ELEMENT */
-    &__help {
-        font-size: @fontLarge;
-        button {
-            padding: 0;
-            border: none;
-            background: none;
-        }
-    }
     &__title {
 		display: flex;
 		justify-content: space-between;
@@ -45,7 +37,7 @@
 		    .ui-autocomplete-input {
 		        width: 100%;
 				height: 100%;
-		        font-size: @fontNormal;
+		        font-size: 1.4rem;
 		        border: 1px solid @middlegray;
 		        background-image: none;
 				border-radius: 0;
@@ -67,6 +59,13 @@
 	&__filter-select {
 		min-width: 130px;
 		max-width: 130px;
+		.custom-control--select {
+			border: none;
+			background: #f7f7f7;
+			& select {
+				border-radius: 0;
+			}
+		}
 	}
 	&__filter-select select {
 		width: 100%;
@@ -154,7 +153,6 @@
 
 @{RTL} .search-standard {
 	&__title {}
-	&__help {}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -172,11 +170,14 @@
 		&__input-slim {
 			flex-wrap: wrap;
 			.search-standard__filter-select,
-			.search-standard__input-autocomplete, 
+			.search-standard__input-autocomplete,
 			#submitSearch {
 				flex: 0 0 100%;
 				max-width: 100%;
 			}
+		}
+		&__filter-select select {
+			border-right: 1px solid #ccc;
 		}
 	}
 }
