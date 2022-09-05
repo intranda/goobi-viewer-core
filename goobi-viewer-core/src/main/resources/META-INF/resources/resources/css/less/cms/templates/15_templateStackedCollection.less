@@ -100,22 +100,25 @@
     }
     .card-collapse {}
     .card-body {
-    	padding-left: 79px;
+    	padding-left: 59px;
     	border-top-color: @middlegray !important;
     	background-color: @white;
+		&__links {
+			display: flex;
+			justify-content: space-between;
+		}
+		&__list {
+			margin-left: 20px;
+		}
     	ul {}
     	li {}
     	a {}
     	&__collection,
     	&__rss {
-    		display: inline-block;
-    		float: left;
     	}
     	&__collection {
-    		width: 90%;
     	}
     	&__rss {
-    		width: 10%;
     		.fa {
 	    		width: 16px;
 	    		height: 16px;

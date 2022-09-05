@@ -118,7 +118,7 @@ public class AdminBean implements Serializable {
     private String passwordTwo = "";
     private String emailConfirmation = "";
     private boolean deleteUserContributions =
-            EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress()) ? false : true;
+            !EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
 
     private Role memberRole;
 
@@ -174,7 +174,7 @@ public class AdminBean implements Serializable {
 
                 @Override
                 public void resetTotalNumberOfRecords() {
-                  // 
+                    // 
                 }
             });
             lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -719,7 +719,6 @@ public class AdminBean implements Serializable {
         currentIpRange = new IpRange();
     }
 
-
     /*********************************** Getter and Setter ***************************************/
 
     /**
@@ -1173,6 +1172,20 @@ public class AdminBean implements Serializable {
         }
 
         return false;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public long getConfiguredTranslationGroupsCount() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getTranslationGroups()
+                .stream()
+                .filter(g -> !g.isLoadError())
+                .filter(g -> g.getEntryCount() - g.getFullyTranslatedEntryCount() > 0)
+                .count();
     }
 
     /**

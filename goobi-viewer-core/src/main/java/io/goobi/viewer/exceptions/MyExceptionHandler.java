@@ -23,6 +23,7 @@ package io.goobi.viewer.exceptions;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,7 +43,6 @@ import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.omnifaces.util.Faces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +50,9 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.PrettyException;
 
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /*
@@ -109,8 +109,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     FacesContext facesContext = FacesContext.getCurrentInstance();
                     ExternalContext externalContext = facesContext.getExternalContext();
                     externalContext.setResponseStatus(500);
-                    externalContext.setResponseContentType("text/plain");
-                    externalContext.setResponseCharacterEncoding("UTF-8");
+                    externalContext.setResponseContentType(StringConstants.MIMETYPE_TEXT_PLAIN);
+                    externalContext.setResponseCharacterEncoding(StandardCharsets.UTF_8.name());
                     try {
                         externalContext.getResponseOutputWriter().write(cause.getMessage());
                     } catch (IOException e) {
@@ -251,7 +251,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 .replace("RecordLimitExceededException: ", "");
         String pi;
         String limit;
-        String dataSplit[] = data.split(":");
+        String[] dataSplit = data.split(":");
         if (dataSplit.length == 2) {
             pi = dataSplit[0];
             limit = dataSplit[1];
@@ -259,10 +259,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             pi = data;
             limit = "???";
         }
-        String msg = ViewerResourceBundle.getTranslation("errRecordLimitExceededMsg", null)
+
+        return ViewerResourceBundle.getTranslation("errRecordLimitExceededMsg", null)
                 .replace("{0}", pi)
                 .replace("{1}", limit);
-        return msg;
     }
 
     /**

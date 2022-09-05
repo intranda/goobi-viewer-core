@@ -21,12 +21,16 @@
  */
 package io.goobi.viewer.model.transkribus;
 
+import java.io.Serializable;
+
 /**
  * <p>
  * TranskribusSession class.
  * </p>
  */
-public class TranskribusSession {
+public class TranskribusSession implements Serializable {
+
+    private static final long serialVersionUID = 3624185152470088153L;
 
     /** Internal system ID for the user account at Transkribus. */
     private final String userId;

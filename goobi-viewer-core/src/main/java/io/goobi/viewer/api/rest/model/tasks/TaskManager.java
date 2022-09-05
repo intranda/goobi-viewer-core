@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,6 +58,8 @@ import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
+import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
+import io.goobi.viewer.model.statistics.usage.StatisticsIndexer;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -149,6 +152,7 @@ public class TaskManager {
                     try {
                         new SearchHitsNotifier().sendNewHitsNotifications();
                     } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.toString());
                     }
                 };
@@ -157,6 +161,7 @@ public class TaskManager {
                     try {
                         deleteExpiredDownloadTickets();
                     } catch (DAOException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -176,6 +181,7 @@ public class TaskManager {
                     try {
                         new SitemapBuilder(request).updateSitemap(outputPath, viewerRootUrl);
                     } catch (IllegalRequestException | AccessDeniedException | JSONException | PresentationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -194,6 +200,16 @@ public class TaskManager {
                     try {
                         updateDownloadJobs();
                     } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
+                        job.setError(e.getMessage());
+                    }
+                };
+            case INDEX_USAGE_STATISTICS:
+                return (request, job) -> {
+                    try {
+                        new StatisticsIndexTask().startTask();
+                    } catch (DAOException | IOException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };

@@ -1590,4 +1590,13 @@ public class ConfigurationBean implements Serializable {
     public String getCampaignGeomapTilesource() {
         return DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapTilesource();
     }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isConfigEditorEnabled() {
+        return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
+    }
+
 }

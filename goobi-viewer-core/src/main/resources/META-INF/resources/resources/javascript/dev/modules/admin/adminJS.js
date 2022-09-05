@@ -40,7 +40,7 @@ var adminJS = ( function() {
         //Initialize sticky elements for admin pages
         viewerJS.stickyElements.init({initAdmin:true});
     };
-    
+
     return admin;
     
 } )( jQuery );
@@ -142,6 +142,7 @@ $( document ).ready(function() {
 		});
 	});
 
-
 // END DOCUMENT READY
 });
+
+

@@ -286,6 +286,10 @@ public class AdminLicenseBean implements Serializable {
             logger.trace("Saving changes to privileges");
             currentLicenseType.setPrivileges(new HashSet<>(currentLicenseType.getPrivilegesCopy()));
         }
+        
+        if(!currentLicenseType.isRedirect()) {
+            currentLicenseType.setRedirectUrl(null);
+        }
 
         if (currentLicenseType.getId() != null) {
             if (DataManager.getInstance().getDao().updateLicenseType(currentLicenseType)) {

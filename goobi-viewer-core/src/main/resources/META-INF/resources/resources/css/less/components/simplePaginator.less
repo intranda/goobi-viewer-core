@@ -19,7 +19,7 @@
 	li {
 		min-width: 32px;
 		height: 32px;
-		margin: 15px 3px 5px 0;
+		margin: 0px 3px 5px 0;
 		border: 1px solid @middlegray;
 	}
 	a, span {
@@ -45,7 +45,49 @@
 	&__dots {
 		a, span {}
 	}
-	&__navigate {}
+	&__navigate {
+		&.inactive {
+			a {
+				pointer-events: none;
+				i {				
+					color: black;
+				}
+
+			}
+		}
+	}
+	&__navigate-text {
+		border: none;
+		display: flex;
+	}
+	&__page-number {
+		&-label {
+			display: flex;
+			align-items: center;
+			span {						
+				display: inline;
+				background: transparent;
+			}
+		}
+		&-input {
+			display: none;
+			input {
+				min-width: 0;
+				max-width: 100%;
+				padding-top: 3px;
+				padding-left: 3px;
+			}
+		}
+	}
+	&__navigate-first-svg,
+	&__navigate-last-svg,
+	&__navigate-next-svg,
+	&__navigate-prev-svg {
+		svg {
+			width: 22px;
+			height: 22p;
+		}
+	}
 	/* MODIFICATION */
 	li.numeric-paginator__dots {
 		min-width: 0;

@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.model.ner;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,12 +39,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class NERTag {
 
-    public static enum Type {
-        person("person"),
-        location("location", "place"),
-        corporation("corporation", "corporate", "institution", "organization"),
-        event("event"),
-        misc("miscellaneous");
+    public enum Type {
+        PERSON("person"),
+        LOCATION("location", "place"),
+        CORPORATION("corporation", "corporate", "institution", "organization"),
+        EVENT("event"),
+        MISC("miscellaneous");
 
         private List<String> labels;
 
@@ -174,16 +175,12 @@ public class NERTag {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(NERTag.class)) {
             NERTag other = (NERTag) obj;
-            if ((this.getId() == null && other.getId() == null) || this.getId() != null && this.getId().equals(other.getId())) {
-                if ((this.getType() == null && other.getType() == null) || this.getType() != null && this.getType().equals(other.getType())) {
-                    if ((this.getValue() == null && other.getValue() == null)
-                            || this.getValue() != null && this.getValue().equals(other.getValue())) {
+            if (Objects.equals(this.getId(), other.getId()) && Objects.equals(this.getType(), other.getType()) && Objects.equals(this.getValue(), other.getValue())) {
                         return true;
-                    }
-                }
             }
         }
         return false;
+
     }
 
     /* (non-Javadoc)

@@ -15,6 +15,10 @@
 
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
+    	<ui:fragment rendered="#{navigationHelper.currentPage == 'search'}">
+    		<h1 class="search-list__options-container-heading">#{msg.search}</h1>
+    	</ui:fragment>
+    
 	    <div class="search-list__options">
 	        <!-- HITCOUNT -->
 	        <div class="search-list__hitcount">
@@ -77,6 +81,13 @@
 	                <i class="fa fa-bars" aria-hidden="true"></i>
 	            </button>
 	        </div>
+	        
+	        <div class="search-list__help">
+	            <button type="button" class="btn btn--clean" data-toggle="modal" data-target="#searchHelpModal" data-backdrop="false" aria-label="#{msg.search_helpModalTitle}">
+	                <span data-toggle="tooltip" data-trigger="hover" title="#{msg.search_options__tooltip_help}"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+	            </button>
+	        </div>
+	        
 	    </div>
     </div>
 

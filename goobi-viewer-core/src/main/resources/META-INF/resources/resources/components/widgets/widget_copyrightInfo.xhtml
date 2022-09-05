@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/zlb/components">
+
+	<!-- interface options -->
+	<composite:interface />
+
+	<!-- component content -->
+	<composite:implementation>
+
+<!-- 			pt:data-popover-element="#copyrightInformation" -->
+<!-- 			pt:data-popover-dismiss="click-outside" pt:data-trigger="focus" -->
+<!-- 			pt:data-placement="top" pt:data-boundary="window" -->
+
+
+		<h:panelGroup rendered="#{configurationBean.copyrightIndicatorEnabled}"
+			layout="block" id="copyrightIndicator"
+			styleClass="widget-copyright-info widget"
+			pt:data-target="triggerCopyrightInfo"
+			pt:aria-label="#{msg.copyright__information}" pt:tabindex="0"
+			pt:role="button"
+			pt:data-toggle="tooltip"
+			pt:data-placement="top"
+			pt:title="#{msg.copyright__toggle_tooltip}">
+
+			<div class="widget-copyright-info__inner widget__body">
+
+				<div class="widget-copyright-info__container
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'OPEN' ? '-green' : ''}
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'PARTIAL' ? '-yellow' : ''}
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'LOCKED' ? '-red' : ''}">
+	
+	
+					<div class="widget-copyright-info__lock">
+						<div class="widget-copyright-info__dot">
+							<!-- PSEUDO FA ELEMENT GETS REPLACED DEPENDING ON GREEN/YELLOW/RED STATE -->
+							<i class="fa widget-copyright-info__status-icon" aria-hidden="true"></i>
+						</div>
+					</div>
+	
+					<div class="widget-copyright-info__icons">
+						<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
+	
+						<ui:fragment
+							rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
+							<ui:include
+								src="#{navigationHelper.getResource('images/licence/unclear.svg')}" />
+						</ui:fragment>
+	
+						<c:forEach var="icon"
+							items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
+							<ui:include
+								src="#{navigationHelper.getResource('images/licence/'.concat(icon))}" />
+						</c:forEach>
+
+					</div>
+				</div>
+				
+				<!-- ADDITIONAL CONTENT TO SHOW -->
+				<div id="widgetCopyrightInfo" class="widget-copyright-info__additional-information">
+	
+					<!-- LICENCE STATUS UNCLEAR -->
+					<ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
+						<div class="widget-copyright-info__hidden-information">
+							<div id="copyrightInformation">
+	
+								<div class="widget-copyright-info__access-licence-info">
+									<h3>#{msg.access_licence}</h3>
+									<h:outputText escape="false"
+										value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" />
+								</div>
+								
+								<div class="widget-copyright-info__copyright-info">
+									<h3>#{msg.copyright__licence}</h3>
+									<h:outputText escape="false"
+										value="#{msg.copyright__information_unclear}" />
+								</div>
+								
+	
+							</div>
+						</div>
+					</ui:fragment>
+		
+					<!-- LICENCE STATUS SET -->
+					<ui:fragment rendered="#{not empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
+						<div class="widget-copyright-info__hidden-information">
+							<div id="copyrightInformation">
+								
+								<div class="widget-copyright-info__access-licence-info">
+									<h3>#{msg.access_licence}</h3>
+									<h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" />
+								</div>
+								
+								<div class="widget-copyright-info__copyright-info">
+									<h3>#{msg.copyright__licence}</h3>
+									<h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" />
+								</div>
+
+
+							</div>
+						</div>
+					</ui:fragment>
+				</div>
+			</div>
+				<!-- SCRIPT TO ENABLE TOGGLE/SHOW DETAIL INFORMATION -->
+				<script>
+					$(document).ready(function() {
+
+						$('[data-target="triggerCopyrightInfo"]').click(function() {
+							if ($(this).hasClass('-open')) {
+								$('#widgetCopyrightInfo').slideUp('fast');
+								$('.widget-copyright-info').removeClass('-open');
+								$('.widget-copyright-info').tooltip('enable');
+							}
+
+							else {
+								$('#widgetCopyrightInfo').slideDown('fast');
+								$('.widget-copyright-info').addClass('-open');
+								$('.widget-copyright-info').tooltip('disable');
+								$('.widget-copyright-info').tooltip('hide');
+							}
+						});
+
+					});
+				</script>
+
+		</h:panelGroup>
+
+
+	</composite:implementation>
+</ui:composition>

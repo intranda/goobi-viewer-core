@@ -89,7 +89,9 @@ public class Task {
         /** Update data repository names of a record */
         UPDATE_DATA_REPOSITORY_NAMES,
         /** Update uploaded processes status. */
-        UPDATE_UPLOAD_JOBS;
+        UPDATE_UPLOAD_JOBS,
+        /** Move daily usage statistics to SOLR */
+        INDEX_USAGE_STATISTICS;
     }
 
     public enum TaskStatus {
@@ -151,6 +153,7 @@ public class Task {
             case UPDATE_SITEMAP:
             case UPDATE_DATA_REPOSITORY_NAMES:
             case UPDATE_UPLOAD_JOBS:
+            case INDEX_USAGE_STATISTICS:
                 return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;

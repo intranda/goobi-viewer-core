@@ -92,7 +92,9 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.statistics.usage.RequestType;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.toc.export.pdf.TocWriter;
@@ -353,7 +355,6 @@ public class ActiveDocumentBean implements Serializable {
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();
-
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
             if (viewManager == null || viewManager.getTopStructElement() == null || viewManager.getTopStructElementIddoc() != topDocumentIddoc) {
@@ -368,7 +369,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 StructElement topStructElement = new StructElement(topDocumentIddoc);
-
+   
                 // Exit here if record is not found or has been deleted
                 if (!topStructElement.isExists()) {
                     logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
@@ -393,15 +394,27 @@ public class ActiveDocumentBean implements Serializable {
                 // Do not open records who may not be listed for the current user
                 List<String> requiredAccessConditions = topStructElement.getMetadataValues(SolrConstants.ACCESSCONDITION);
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
-                    boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
-                            new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
-                            (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted();
-                    if (!access) {
+                    AccessPermission access =
+                            AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
+                                    new StringBuilder().append('+').append(SolrConstants.PI).append(':').append(topStructElement.getPi()).toString(),
+                                    (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                    if (!access.isGranted()) {
                         logger.debug("User may not open {}", topStructElement.getPi());
                         try {
                             throw new RecordNotFoundException(lastReceivedIdentifier);
                         } finally {
                             lastReceivedIdentifier = null;
+                        }
+                    }
+                    // If license type is configured to redirect to a URL, redirect here
+                    if (access.isRedirect() && StringUtils.isNotEmpty(access.getRedirectUrl())) {
+                        logger.debug("Redirecting to {}", access.getRedirectUrl());
+                        try {
+                            FacesContext.getCurrentInstance().getExternalContext().redirect(access.getRedirectUrl());
+                            return;
+                        } catch (IOException e) {
+                            logger.error(e.getMessage());
+                            return;
                         }
                     }
 
@@ -436,6 +449,9 @@ public class ActiveDocumentBean implements Serializable {
                     }
                 }
             }
+            
+            //update usage statistics
+            DataManager.getInstance().getUsageStatisticsRecorder().recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
 
             // If LOGID is set, update the current element
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {

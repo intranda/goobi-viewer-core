@@ -56,49 +56,100 @@
                             <!-- FUNCTIONS -->
                             <h2>#{msg.admin__license_functions}</h2>
                             <div class="admin__default-block pb-0">
-                                <div class="form-group form-row mb-3">
-                                    <div class="col-2 control-label admin__form-label">
-                                        <span>#{msg.openAccess}:</span>
-                                    </div>
-                                    <div class="col-9 admin__form-input">
-                                    
-                                	<viewerComponent:toggleSwitch
-									name="openAccessToggle"
-									value="#{adminLicenseBean.currentLicenseType.openAccess}"
-									toggleTarget=".admin__license-functions"
-									toggleActionLeft="show"
-									toggleActionRight="hide"/>    
-                                    
+                            	<div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="exclusive">
+	                                <div class="form-group form-row mb-3">
+	                                    <div class="col-2 control-label admin__form-label">
+	                                        <span>#{msg.openAccess}:</span>
+	                                    </div>
+	                                    <div class="col-9 admin__form-input">
+	                                    
+	                                	<viewerComponent:toggleSwitch
+										   name="openAccessToggle"
+										   value="#{adminLicenseBean.currentLicenseType.openAccess}" />    
+	                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
+	                                    </div>
+	                                </div>
+								</div>
 
-                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_open_access_desc}</span>
-                                        
-                                        
-                                        
-                                        
-                                    </div>
+                                <!-- MOVING WALL -->
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.openAccess or adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-watched-element="keepFunctions">
+	                                <div class="form-group form-row">
+	                                    <div class="col-2 control-label admin__form-label">
+	                                        <span>#{msg.movingWall}:</span>
+	                                    </div>
+	                                    <div class="col-9 admin__form-input mb-3">
+	                                        <div class="admin__radio-switch movingWallToggle">
+	                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                            </h:selectOneRadio>
+	                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                            </h:selectOneRadio>
+	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                        </div>
+	                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
+	                                    </div>
+	                                </div>
                                 </div>
-
-                                <div class="form-group form-row admin__license-functions mb-0">
-                                    <div class="col-2 control-label admin__form-label">
-                                        <span>#{msg.movingWall}:</span>
-                                    </div>
-                                    <div class="col-9 admin__form-input">
-                                        <div class="admin__radio-switch movingWallToggle">
-                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
-                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                                            </h:selectOneRadio>
-                                            <h:selectOneRadio group="movingWallToggle" value="#{adminLicenseBean.currentLicenseType.movingWall}"
-                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                                            </h:selectOneRadio>
-                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                                        </div>
-                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_moving_wall_desc}</span>
-                                    </div>
+                                
+                                <!-- REDIRECT TO PAGE -->
+                                <h:panelGroup layout="block" id="urlInputGroup">
+                                <div class="#{adminLicenseBean.currentLicenseType.movingWall or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-watched-element="exclusiveAndInput">
+	                                <div class="form-group form-row admin__license-functions mb-0">
+	                                    <div class="col-2 control-label admin__form-label">
+	                                        <span>#{msg.admin__license_functions_redirect}:</span>
+	                                    </div>
+	                                    <div class="col-9 admin__form-input">
+	                                        <div class="admin__radio-switch redirectToggle">
+	                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+	                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+	                                                <f:ajax render="redirectUrl" />
+	                                            </h:selectOneRadio>
+	                                            <h:selectOneRadio group="redirectToggle" value="#{adminLicenseBean.currentLicenseType.redirect}"
+	                                                immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+	                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+	                                                <f:ajax render="redirectUrl" />
+	                                            </h:selectOneRadio>
+	                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
+	                                        </div>
+	                                        <span class="admin__form-help-text in">#{msg.admin__license_functions_redirect_desc}</span>
+	                                    </div>
+	                                </div>
                                 </div>
+                                
+                                <div class="#{!adminLicenseBean.currentLicenseType.redirect ? '-licenceHidden' : ''}" data-target-redirect="input">
+	                                <div class="form-group form-row admin__license-selectable-block">
+	                                
+	                                	<div class="col-2"></div>
+		                                <div class="col-9 admin__form-input cms-module__option-control mt-2 mb-3">
+		                                	<!-- VALIDATOR HAS TO BE REWORKED/EXTENDED TO CHECK FOR VALID URL PATTERNS -->
+		                                    
+		                    				<h:message for="redirectUrl" errorClass="-validation-message -danger"></h:message>
+	                                            <div class="-validation-mark">
+	                                                <i class="fa fa-check" aria-hidden="true"></i>
+	                                                <i class="fa fa-exclamation" aria-hidden="true"></i>
+	                                            </div>
+		                                    <h:inputText value="#{adminLicenseBean.currentLicenseType.redirectUrl}"
+		                                        id="redirectUrl" required="#{adminLicenseBean.currentLicenseType.redirect}" styleClass="form-control -validation-input" requiredMessage="#{msg.info__input_required}"
+		                                        validator="URISyntaxValidator" validator_requireAbsoluteURI="true" validator_active="#{adminLicenseBean.currentLicenseType.redirect}">
+<!-- 												<f:ajax event="valueChange" render="urlInputGroup"/> -->
+													<!-- required="#{adminLicenseBean.currentLicenseType.redirect}" -->
+		                                    </h:inputText>
+		                                    
 
-                                <div class="admin__license-functions">
+		                                    
+		                                        
+		                                </div>
+	
+	                                </div>
+                                </div>
+                                
+                                </h:panelGroup>
+
+                                <div class="admin__license-functions #{adminLicenseBean.currentLicenseType.redirect or adminLicenseBean.currentLicenseType.openAccess ? '-licenceHidden' : ''}" data-target-visibility="keepVisible">
                                     <hr />
                                     <div class="form-group form-row pb-3">
                                         <div class="col-2">#{msg.admin__license_functions}:</div>
@@ -273,9 +324,15 @@
                                 </button>
                             </div>
                         </div>
+                        
+		            <script>
+		           	adminJS.licenceToggle.init();
+		            </script>
+                        
                     </h:form>
                 </h:panelGroup>
             </div>
+            
         </f:view>
     </ui:define>
 

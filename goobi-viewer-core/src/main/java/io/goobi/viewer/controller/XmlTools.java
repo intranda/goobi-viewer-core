@@ -29,10 +29,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
@@ -49,6 +54,11 @@ import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import io.goobi.viewer.model.xml.ReportErrorsErrorHandler;
+import io.goobi.viewer.model.xml.XMLError;
 
 /**
  * XML utilities.
@@ -293,5 +303,34 @@ public class XmlTools {
         }
 
         return null;
+    }
+
+    /**
+     * 
+     * @param xml
+     * @return
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
+    public static List<XMLError> checkXMLWellformed(String xml) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
+        factory.setValidating(false);
+        factory.setNamespaceAware(true);
+
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        ReportErrorsErrorHandler eh = new ReportErrorsErrorHandler();
+        builder.setErrorHandler(eh);
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
+        try {
+            builder.parse(bais);
+        } catch (SAXParseException e) {
+            //ignore this, because we collect the errors in the error handler and give them to the user.
+        }
+
+        return eh.getErrors();
     }
 }

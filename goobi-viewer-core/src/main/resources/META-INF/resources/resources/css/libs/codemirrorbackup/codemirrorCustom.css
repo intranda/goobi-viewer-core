@@ -1,0 +1,254 @@
+/* @charset "UTF-8"; */
+
+/* * { */
+/* 	padding: 1px; */
+/* } */
+
+/* body { */
+/* 	background-color: #efefef; */
+/* } */
+
+/* h1 { */
+/* 	font-weight: bold; */
+/* 	font-size: 2.3rem; */
+/* } */
+
+/* textarea { */
+/* 	background-color: white; */
+/* 	width: 100%; */
+/* } */
+
+/* table { */
+/* 	background-color: white; */
+/* 	font-size: 1.1em; */
+/* 	width: 100%; */
+/* 	border-collapse: collapse; */
+/* 	table-layout: auto; */
+	
+/* } */
+
+/* table tr { */
+/* 	line-height: 2em; */
+/* 	text-align: left; */
+/* 	border: 1px solid #bcbcbc; */
+/* } */
+
+/* table td { */
+/* 	border: none !important; */
+/* 	padding-left: 17px; */
+/* 	padding-right: 0; */
+/* } */
+
+/* table td:nth-of-type(2) { */
+/* 	padding-left: 0; */
+/* } */
+
+/* table tr:hover { */
+/* 	background-color: #00ffff; */
+/* } */
+
+/* .selected-row { */
+/* 	background-color: yellow; */
+/* } */
+
+/* a:hover { */
+/* 	background-color: #00ffff; */
+/* 	color: #ff0000; */
+/* 	font-style: italic; */
+/* 	font-weight: bold; */
+/* } */
+
+/* div { */
+/* 	border: 0; */
+	 
+/* } */
+
+/* a { */
+/* 	text-decoration: none; */
+/* } */
+
+/* #header { */
+/* 	padding: 0px 20px; */
+/* } */
+
+/* #header-text { */
+/* 	font-size: 19px; */
+/* 	line-height: 127%; */
+/* } */
+
+/* #main { */
+/* 	display: flex; */
+/* 	flex-direction: row; */
+/* 	align-items: stretch; */
+/* 	width: 100%; */
+/* 	padding: 17px; */
+/* } */
+
+/* #left { */
+/* 	width: 63%; */
+/* 	padding-left: 0; */
+/* 	padding-right: 17px; */
+/* 	padding-top: 0; */
+/* 	padding-bottom: 17px; */
+/* 	background-color: #efefef; */
+/* 	flex: 1 1 auto; */
+/* } */
+
+/* #left > p { */
+/* 	font-size: 1.3em; */
+/* 	/* font-style: oblique; */ 
+/* 	font-weight: bold; */
+/* 	margin-bottom: 0.5em; */
+/* } */
+
+/* #right { */
+/* 	display: flex; */
+/* 	flex-direction: column; */
+/* 	width: 37%; */
+/* 	flex: 1 1 auto; */
+/* 	padding: 17px; */
+/* } */
+
+/* #right-up { */
+/* 	flex: 1 1 auto; */
+/* 	background-color: white; */
+/* 	padding: 7px 23px 23px 23px; */
+/* 	border: 1px solid #cccccc; */
+/* 	margin-bottom: 37px; */
+/* 	width: max-content; */
+/* } */
+
+/* #right-down { */
+/* 	flex: 1 1 auto; */
+/* 	background-color: white; */
+/* 	border: 1px solid #cccccc; */
+/* 	padding: 7px 23px 23px 23px; */
+
+/* } */
+
+/* .buttons { */
+/* 	width: 67px; */
+/* } */
+
+/* .buttons:hover { */
+/* 	cursor: pointer; */
+/* 	background-color: yellow; */
+/* } */
+
+/* .general-buttons { */
+/* 	height: 37px; */
+/* 	border-radius: 17%; */
+/* 	border-style: solid; */
+/* } */
+
+/* .general-buttons:hover { */
+/* 	border-style: outset; */
+/* } */
+
+/* .general-buttons:active { */
+/* 	border-style: inset; */
+/* } */
+
+/* .save-cancel-buttons { */
+/* 	display: flex; */
+/* 	flex-direction: row; */
+/* 	align-items: flex-start; */
+/* 	gap: 17px; */
+/* } */
+
+/* .label { */
+/* 	font-size: 1.3em; */
+/* 	font-weight: bold; */
+/* } */
+
+/* .description { */
+/* 	font-size: 0.9em; */
+/* 	font-style: italic; */
+/* } */
+
+/* .download-buttons { */
+/* 	float: right; */
+/* 	width: 37px; */
+/* 	background-color: transparent; */
+/* 	border-radius: 37%; */
+/* } */
+
+/* .download-buttons:hover { */
+/* 	background-color: yellow; */
+/* } */
+
+/* .edit-buttons { */
+/* 	width: 37px; */
+/* 	background-color: transparent; */
+/* 	border-radius: 37%; */
+/* 	border: none; */
+/* } */
+
+/* .edit-buttons:hover { */
+/* 	border-style: outset; */
+/* } */
+
+/* .edit-buttons:active { */
+/* 	border-style: inset; */
+/* } */
+
+/* .CodeMirror { */
+/* 	font-size: 13px; */
+/* 	line-height: 1.3em; */
+/* 	height: 1300px; */
+	
+/* 	resize: none; */
+/* 	width: auto; */
+	
+/* 	border: 1px solid #cccccc; */
+/* } */
+
+/* .CodeMirror-lines{ */
+/* 	padding-left: 0; */
+/* 	padding-top: 0; */
+/* } */
+/* /* */
+/* #editor-form:nth-child(3) { */
+/* 	display: none; */
+/* 	visibility: hidden; */
+/* } */
+/* */
+/* #editor-form > div:nth-of-type(2) { */
+/* 	display: none; */
+/* 	visibility: hidden; */
+/* } */
+
+/* SEARCH DIALOG STYLING */
+.CodeMirror-dialog {
+  position: absolute;
+  left: 0; right: 0;
+  background: inherit;
+  z-index: 15;
+  padding: .1em .8em;
+  overflow: hidden;
+  color: inherit;
+}
+
+.CodeMirror-dialog-top {
+  border-bottom: 1px solid #eee;
+  top: 0;
+}
+
+.CodeMirror-dialog-bottom {
+  border-top: 1px solid #eee;
+  bottom: 0;
+}
+
+.CodeMirror-dialog input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 20em;
+  color: inherit;
+  font-family: monospace;
+}
+
+.CodeMirror-dialog button {
+  font-size: 70%;
+}
+

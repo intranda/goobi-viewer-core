@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,6 +106,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
@@ -6855,6 +6857,108 @@ public class JPADAO implements IDAO {
         try {
             startTransaction(em);
             ClientApplication o = em.getReference(ClientApplication.class, id);
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<DailySessionUsageStatistics> getAllUsageStatistics() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s");
+            return q.getResultList();
+        } catch(NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public DailySessionUsageStatistics getUsageStatistics(LocalDate date) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s WHERE s.date = :date");
+            q.setParameter("date", date);
+            return (DailySessionUsageStatistics) q.getSingleResult();
+        } catch(NoResultException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+    
+    @Override
+    public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s WHERE s.date BETWEEN :start AND :end");
+            q.setParameter("start", start);
+            q.setParameter("end", end);
+            return q.getResultList();
+        } catch(NoResultException e) {
+            return Collections.emptyList();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(statistics);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error saving disclaimer", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+    @Override
+    public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(statistics);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error saving disclaimer", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+
+    @Override
+    public boolean deleteUsageStatistics(long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            DailySessionUsageStatistics o = em.getReference(DailySessionUsageStatistics.class, id);
             em.remove(o);
             commitTransaction(em);
             return true;
