@@ -29,6 +29,7 @@ io.goobi.viewer.api.rest.v1.records
 io.goobi.viewer.api.rest.v1.records.media
 io.goobi.viewer.api.rest.v1.search
 io.goobi.viewer.api.rest.v1.services
+io.goobi.viewer.api.rest.v1.statistics.usage
 io.goobi.viewer.api.rest.v1.tasks
 io.goobi.viewer.api.rest.v2
 io.goobi.viewer.api.rest.v2.annotations
@@ -53,6 +54,7 @@ io.goobi.viewer.managedbeans
 io.goobi.viewer.managedbeans.tabledata
 io.goobi.viewer.managedbeans.utils
 io.goobi.viewer.messages
+io.goobi.viewer.model.administration.configeditor
 io.goobi.viewer.model.administration.legal
 io.goobi.viewer.model.annotation
 io.goobi.viewer.model.annotation.comments
@@ -98,6 +100,7 @@ io.goobi.viewer.model.security.recordlock
 io.goobi.viewer.model.security.user
 io.goobi.viewer.model.security.user.icon
 io.goobi.viewer.model.sitemap
+io.goobi.viewer.model.statistics.usage
 io.goobi.viewer.model.termbrowsing
 io.goobi.viewer.model.toc
 io.goobi.viewer.model.toc.export.pdf
@@ -111,6 +114,7 @@ io.goobi.viewer.model.viewer.collections
 io.goobi.viewer.model.viewer.object
 io.goobi.viewer.model.viewer.pageloader
 io.goobi.viewer.model.viewer.themes
+io.goobi.viewer.model.xml
 io.goobi.viewer.modules
 io.goobi.viewer.modules.interfaces
 io.goobi.viewer.servlets
