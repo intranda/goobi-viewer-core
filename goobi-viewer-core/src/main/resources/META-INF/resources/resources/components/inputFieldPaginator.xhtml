@@ -47,12 +47,13 @@
                             </ui:fragment>
                         </a>
                     </li>
-	
+			
+					<!-- INPUT FIELD TO ENTER PAGE NUMBER -->
 					<li class="inputfield-paginator__navigate inputfield-paginator__navigate-text">
 						<div class="inputfield-paginator__page-number-input" data-paginator="input">
 							<input data-input="number" onfocusout="viewerJS.paginator.showPageNumberLabel(event)" onchange="viewerJS.paginator.changePageNumber(event)" data-paginator="input-field"></input>
 						</div>
-						<div class="inputfield-paginator__page-number-label" onclick="viewerJS.paginator.showPageNumberInput(event)" data-paginator="label">
+						<div role="button" tabindex="0" class="inputfield-paginator__page-number-label" onclick="viewerJS.paginator.showPageNumberInput(event)" data-paginator="label">
 							<span data-paginator="actualPage" id="paginatorActualPageNumber">#{cc.attrs.itemActive}</span><span> #{msg.of} </span><span id="paginatorLastPageNumber">#{cc.attrs.lastItem}</span>
 						</div>
 					</li>

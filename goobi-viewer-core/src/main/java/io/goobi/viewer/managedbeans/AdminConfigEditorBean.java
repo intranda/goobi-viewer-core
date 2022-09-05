@@ -47,23 +47,14 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
-import javax.servlet.http.HttpSession;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
+import org.jdom2.Attribute;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
@@ -71,13 +62,14 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.Procedure;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
+import io.goobi.viewer.model.xml.XMLError;
 
 @Named
 @SessionScoped
@@ -103,7 +95,7 @@ public class AdminConfigEditorBean implements Serializable {
     private boolean editable = false;
 
     // Fields for Backups
-    private List<BackupRecord> backupRecords;
+    private List<BackupRecord> backupRecords = new ArrayList<>();
     private transient DataModel<BackupRecord> backupRecordsModel;
     private File[] backupFiles;
     private String[] backupNames;
@@ -113,9 +105,6 @@ public class AdminConfigEditorBean implements Serializable {
     //    private transient FileOutputStream fileOutputStream = null;
     private transient FileLock inputLock = null;
     //    private transient FileLock outputLock = null;
-
-    // Whether the opened config file is "config_viewer.xml"
-    private boolean isConfigViewer;
 
     // Used to render the CodeMirror editor properly, values can be "properties" or "xml"
     private String fullCurrentConfigFileType; // "." + currentConfigFileType
@@ -297,9 +286,10 @@ public class AdminConfigEditorBean implements Serializable {
 
         return "pretty:adminConfigEditor";
     }
-    
+
     /**
      * Unlock the given file for the given session id in the static (global) fileLocks object
+     * 
      * @param file
      * @param sessionId
      */
@@ -346,69 +336,73 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         try {
+            // Check XML validity
+            if ("xml".equals(currentFileRecord.getFileType())) {
+                List<XMLError> errors = XmlTools.checkXMLWellformed(fileContent);
+                if (!errors.isEmpty()) {
+                    boolean abort = false;
+                    for (XMLError error : errors) {
+                        Messages.error(String.format("%s: Line %d column %d: %s", error.getSeverity(), error.getLine(), error.getColumn(),
+                                error.getMessage()));
+                        if (error.getSeverity().equals("ERROR") || error.getSeverity().equals("FATAL")) {
+                            abort = true;
+                        }
+                    }
+                    if (abort) {
+                        Messages.error("admin__config_editor__error_save_xml_invalid");
+                        return "";
+                    }
+                }
+            }
+
+            // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
+            if (isConfigViewer()) {
+                logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
+                org.jdom2.Document doc = XmlTools.getDocumentFromString(fileContent, StandardCharsets.UTF_8.name());
+                if (doc != null && doc.getRootElement() != null) {
+                    boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
+                    int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
+                    List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
+                    Element eleConfigEditor = doc.getRootElement().getChild("configEditor");
+                    // Re-add configEditor element, if removed
+                    if (eleConfigEditor == null) {
+                        eleConfigEditor = new Element("configEditor");
+                        doc.getRootElement().addContent(eleConfigEditor);
+                    }
+                    // Restore previous enabled value
+                    Attribute attEnabled = eleConfigEditor.getAttribute("enabled");
+                    if (attEnabled != null) {
+                        attEnabled.setValue(String.valueOf(origConfigEditorEnabled));
+                    } else {
+                        eleConfigEditor.setAttribute("enabled", String.valueOf(origConfigEditorEnabled));
+                    }
+                    // Restore previous backupFiles value
+                    Attribute attBackupFiles = eleConfigEditor.getAttribute("backupFiles");
+                    if (attBackupFiles != null) {
+                        attBackupFiles.setValue(String.valueOf(origConfigEditorMax));
+                    } else {
+                        eleConfigEditor.setAttribute("backupFiles", String.valueOf(origConfigEditorMax));
+                    }
+                    // Replace directory list
+                    eleConfigEditor.removeChildren("directory");
+                    if (!origConfigEditorDirectories.isEmpty()) {
+                        for (String dir : origConfigEditorDirectories) {
+                            eleConfigEditor.addContent(new Element("directory").setText(dir));
+                        }
+                    }
+                    logger.trace("configEditor settings restored");
+
+                    fileContent = new XMLOutputter().outputString(doc);
+                }
+            }
+
+            if (unmodifiledFileContent.equals(fileContent)) {
+                return "";
+            }
+
             Files.writeString(originalPath, fileContent, StandardCharsets.UTF_8);
             // In Windows, the exact same stream/channel that holds the outputLock must be used to write to avoid IOException
             //            IOUtils.write(fileContent, fileOutputStream, StandardCharsets.UTF_8);
-            // if the "config_viewer.xml" is being edited, then the original content of the block <configEditor> should be written back
-            if (isConfigViewer) {
-                logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
-
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-
-                DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-                Document document = documentBuilder.parse(originalPath.toFile());
-                document.getDocumentElement().normalize();
-
-                // get the parent node <configEditor>
-                NodeList configEditorList = document.getElementsByTagName("configEditor");
-                if (configEditorList != null) {
-                    Node configEditor = document.getElementsByTagName("configEditor").item(0);
-
-                    // set the values of the attributes "enabled" and "maximum" back
-                    if (configEditor.getAttributes().getNamedItem("enabled") != null) {
-                        boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
-                        configEditor.getAttributes().getNamedItem("enabled").setNodeValue(String.valueOf(origConfigEditorEnabled));
-                    }
-                    if (configEditor.getAttributes().getNamedItem("backupFiles") != null) {
-                        int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
-                        configEditor.getAttributes().getNamedItem("backupFiles").setNodeValue(String.valueOf(origConfigEditorMax));
-                    }
-
-                    // get the list of all <directory> elements
-                    NodeList directoryList = configEditor.getChildNodes();
-
-                    // remove these modified elements
-                    while (directoryList.getLength() > 0) {
-                        Node node = directoryList.item(0);
-                        configEditor.removeChild(node);
-                    }
-                    // rewrite the backed-up values "configPaths" into this block
-                    List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
-                    for (String configPath : origConfigEditorDirectories) {
-                        Node newNode = document.createElement("directory");
-                        newNode.setTextContent(configPath);
-                        configEditor.appendChild(document.createTextNode("\n\t"));
-                        configEditor.appendChild(newNode);
-                    }
-                    configEditor.appendChild(document.createTextNode("\n    "));
-                }
-
-                TransformerFactory tf = TransformerFactory.newInstance();
-                tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-                Transformer transformer = tf.newTransformer();
-                DOMSource src = new DOMSource(document);
-                StreamResult result = new StreamResult(originalPath.toFile());
-                transformer.transform(src, result);
-
-                // save the modified content again
-                fileContent = Files.readString(originalPath);
-
-                if (unmodifiledFileContent.equals(fileContent)) {
-                    return "";
-                }
-            }
 
             // Use the filename without extension to create a folder for its backup_copies.
             String newBackupFolderPath = backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", "");
@@ -418,16 +412,8 @@ public class AdminConfigEditorBean implements Serializable {
             }
             createBackup(newBackupFolderPath, currentFileRecord.getFileName(), unmodifiledFileContent);
             refreshBackups(newBackupFolder);
-        } catch (IOException e) {
-            logger.trace("IOException caught in the method saveFile()", e);
-        } catch (SAXException e) {
-            logger.trace("SAXException caught in the method saveFile()", e);
-        } catch (ParserConfigurationException e) {
-            logger.trace("ParserConfigurationException caught in the method saveFile()", e);
-        } catch (TransformerConfigurationException e) {
-            logger.trace("TransformerConfigurationException caught in the method saveFile()", e);
-        } catch (TransformerException e) {
-            logger.trace("TransformerException caught in the method saveFile()", e);
+        } catch (IOException | JDOMException | ParserConfigurationException | SAXException e) {
+            logger.error(e.getMessage(), e);
         }
 
         unmodifiledFileContent = fileContent;
@@ -511,12 +497,18 @@ public class AdminConfigEditorBean implements Serializable {
 
     /**
      * 
+     * @return
+     */
+    public boolean isConfigViewer() {
+        return currentFileRecord != null && currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME);
+    }
+
+    /**
+     * 
      * @param writable
      */
     public void selectFileAndShowBackups(boolean writable) {
-
         currentFileRecord = filesListing.getFileRecordsModel().getRowData();
-        isConfigViewer = currentFileRecord.getFileName().equals(Configuration.CONFIG_FILE_NAME); // Modifications of "config_viewer.xml" should be limited
         fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
 
         fileInEditionNumber = currentFileRecord.getNumber();

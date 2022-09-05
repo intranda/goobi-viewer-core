@@ -143,13 +143,12 @@
         </h:form>
 
         <!-- PAGINATOR -->
-        <viewerComponent:inputFieldPaginator 
-        	classSuffix="-bottom"
+        <viewerComponent:simplePaginator 
+        	classSuffix="-top"
             itemCount="#{search.lastPage}" 
             itemActive="#{search.currentPage}" 
             urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
-            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" 
-            positionBottom="true" />
+            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
         <div class="clearfix"></div>
 
     </div>

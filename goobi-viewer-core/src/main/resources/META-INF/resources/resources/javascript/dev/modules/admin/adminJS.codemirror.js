@@ -24,7 +24,7 @@
 var adminJS = ( function( admin ) {
     'use strict';
     
-    const _debug = true;
+    const _debug = false;
     const _default = {
     	currentFileIsReadable: false,
     	currentFileIsWritable: false,
@@ -51,6 +51,7 @@ var adminJS = ( function( admin ) {
 			this.initTextArea();
 			this.initOnBeforeUnload();
 			this.initWebsocket();
+			this.initTooltipHelpers();
         },
         initWebsocket: function() {
         	this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET);
@@ -72,9 +73,23 @@ var adminJS = ( function( admin ) {
         },
         isReadOnly: function() {
         	return this.config.currentFileIsReadable && !this.config.currentFileIsWritable;
+
         },
+		initTooltipHelpers: function () {
+			var _this = this;
+			$(document).ready( () => {
+				  $('.-isNotReadable').tooltip({title: _this.config.fileNotReadableMsgKey, placement: "top"});
+			});
+			
+			$( ".admin__config-editor-backup-single-entry" ).hover(
+					  function() {
+					    $(this).find('.admin__config-editor-backup-single-entry-icon .fa-download').tooltip('show');
+					  }, function() {
+					    $(this).find('.admin__config-editor-backup-single-entry-icon .fa-download').tooltip('hide');
+					  }
+			);
+		},
         initTextArea: function() {
-      
 				var activeLineToggler;
 				var type;
 				var theme;
@@ -129,10 +144,10 @@ var adminJS = ( function( admin ) {
 							"Ctrl-D": function(cm) {
 								cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
 							},
-							"Ctrl-S": function(cm) {
-								if ( _debug ) {
+							"Ctrl-S": (cm) => {
+								// if ( _debug ) {
 									console.log('manually saved with key combo');
-								}
+								// }
 								if (this.isReadOnly() == false) {
 									document.querySelector('[data-cm="save"]').click();
 								}

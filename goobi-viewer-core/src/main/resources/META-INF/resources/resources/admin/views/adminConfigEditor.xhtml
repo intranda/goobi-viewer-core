@@ -72,10 +72,12 @@
 										value="#{adminConfigEditorBean.fileContent}" />
 
 
+									<!-- VARIABLES IF READ OR WRITABLE -->
 									<script>			
 																														
 										$( document ).ready(function() {
 											adminJS.codemirror.init({
+												fileNotReadableMsgKey: '#{msg.admin__config_editor__not_readable}',
 											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
 											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable},
 												currentFilePath: "#{adminConfigEditorBean.currentFilePath}",
@@ -138,7 +140,7 @@
 											value="#{adminConfigEditorBean.fileRecordsModel}">
 
 											<div
-												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isEditable' : '-isReadOnly'}">
+												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
@@ -155,16 +157,12 @@
 
 													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
 
-													<ui:fragment rendered="#{!record.readable}">
-														<div
-															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__not_readable}"
-															data-toggle="tooltip" data-placement="top"
-															data-trigger="hover">
-															<i class="fa fa-eye" aria-hidden="true"></i> <i
-																class="fa fa-ban" aria-hidden="true"></i>
-														</div>
-													</ui:fragment>
+
+
+
+
+
+
 													<ui:fragment rendered="#{!record.writable and record.readable}">
 														<div
 															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
@@ -217,11 +215,7 @@
 												<ui:repeat var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
 													<h:commandLink
 														styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-														action="#{adminConfigEditorBean.downloadFile(record)}"
-														pt:data-toggle="tooltip"
-														pt:data-trigger="hover"
-														pt:data-placement="left"
-														pt:title="#{msg.downloadButton}">
+														action="#{adminConfigEditorBean.downloadFile(record)}">
 														<span class="admin__config-editor-backup-single-entry-text">
 															<h:outputText value="#{record.date}">
 																<f:converter converterId="localDateTimeConverter" />
@@ -229,7 +223,7 @@
 															</h:outputText>
 														</span>
 														<span class="admin__config-editor-backup-single-entry-icon">
-															<i class="fa fa-download"></i>
+															<i class="fa fa-download" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadButton}"></i>
 														</span>
 													</h:commandLink>
 												</ui:repeat>
