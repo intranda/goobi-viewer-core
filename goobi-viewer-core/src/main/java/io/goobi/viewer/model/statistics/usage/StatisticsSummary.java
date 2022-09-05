@@ -66,7 +66,7 @@ public class StatisticsSummary {
      */
     public StatisticsSummary(DailySessionUsageStatistics dailyStats, List<String> includedIdentifiers) {
         Map<RequestType, RequestTypeSummary> tempTypes = new HashMap<>();
-        for (RequestType type : RequestType.values()) {
+        for (RequestType type : RequestType.getUsedValues()) {
             long total = dailyStats.getTotalRequestCount(type, includedIdentifiers);
             long unique = dailyStats.getUniqueRequestCount(type, includedIdentifiers);
             tempTypes.put(type, new RequestTypeSummary(total, unique, dailyStats.getDate(), dailyStats.getDate()));
@@ -80,7 +80,7 @@ public class StatisticsSummary {
      */
     public static StatisticsSummary empty() {
         Map<RequestType, RequestTypeSummary> types = new HashMap<>();
-        for (RequestType type : RequestType.values()) {
+        for (RequestType type : RequestType.getUsedValues()) {
             types.put(type, new RequestTypeSummary(0,0));
         }
         return new StatisticsSummary(types);
@@ -104,7 +104,7 @@ public class StatisticsSummary {
         if(other.getTotalRequests() == 0) {
             return new StatisticsSummary(this.getTypes());
         }
-        for (RequestType type : RequestType.values()) {
+        for (RequestType type : RequestType.getUsedValues()) {
             RequestTypeSummary mine = this.types.get(type);
             RequestTypeSummary others = other.types.get(type);
             long total = mine.getTotalRequests() + others.getTotalRequests();
