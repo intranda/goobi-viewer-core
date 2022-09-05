@@ -98,7 +98,7 @@ public class StatisticsIndexer {
             records.put(recordObject);
             recordObject.put("pi", pi);
             JSONArray counts = new JSONArray(6);
-            for (RequestType type : RequestType.values()) {
+            for (RequestType type : RequestType.getUsedValues()) {
                 counts.put(type.getTotalCountIndex(), stats.getTotalRequestCount(type, pi));
                 counts.put(type.getUniqueCountIndex(), stats.getUniqueRequestCount(type, pi));
             }
