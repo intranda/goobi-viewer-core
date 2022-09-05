@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,7 +56,10 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
+import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
+import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
+import io.goobi.viewer.model.statistics.usage.StatisticsIndexer;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -148,7 +152,17 @@ public class TaskManager {
                     try {
                         new SearchHitsNotifier().sendNewHitsNotifications();
                     } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.toString());
+                    }
+                };
+            case PURGE_EXPIRED_DOWNLOAD_TICKETS:
+                return (request, job) -> {
+                    try {
+                        deleteExpiredDownloadTickets();
+                    } catch (DAOException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
+                        job.setError(e.getMessage());
                     }
                 };
             case UPDATE_SITEMAP:
@@ -167,6 +181,7 @@ public class TaskManager {
                     try {
                         new SitemapBuilder(request).updateSitemap(outputPath, viewerRootUrl);
                     } catch (IllegalRequestException | AccessDeniedException | JSONException | PresentationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -183,21 +198,18 @@ public class TaskManager {
             case UPDATE_UPLOAD_JOBS:
                 return (request, job) -> {
                     try {
-                        int countChecked = 0;
-                        int countUpdated = 0;
-                        for (UploadJob uj : DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING)) {
-                            if (uj.updateStatus()) {
-                                DataManager.getInstance().getDao().updateUploadJob(uj);
-                                countUpdated++;
-                            }
-                            countChecked++;
-                        }
-                        logger.debug("{} upload jobs checked, {} updated.", countChecked, countUpdated);
-                    } catch (DAOException e) {
+                        updateDownloadJobs();
+                    } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
-                    } catch (IndexUnreachableException e) {
-                        job.setError(e.getMessage());
-                    } catch (PresentationException e) {
+                    }
+                };
+            case INDEX_USAGE_STATISTICS:
+                return (request, job) -> {
+                    try {
+                        new StatisticsIndexTask().startTask();
+                    } catch (DAOException | IOException e) {
+                        logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }
                 };
@@ -205,5 +217,43 @@ public class TaskManager {
                 return (request, job) -> {
                 };
         }
+    }
+
+    /**
+     * @return count Number of deleted rows
+     * @throws DAOException
+     * @should delete all expired tickets
+     */
+    static int deleteExpiredDownloadTickets() throws DAOException {
+        int count = 0;
+        for (DownloadTicket ticket : DataManager.getInstance()
+                .getDao()
+                .getActiveDownloadTickets(0, Integer.MAX_VALUE, null, false, null)) {
+            if (ticket.isExpired() && DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+                count++;
+            }
+        }
+        logger.info("{} expired download tickets removed.", count);
+
+        return count;
+    }
+
+    /**
+     * 
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    static void updateDownloadJobs() throws DAOException, IndexUnreachableException, PresentationException {
+        int countChecked = 0;
+        int countUpdated = 0;
+        for (UploadJob uj : DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING)) {
+            if (uj.updateStatus()) {
+                DataManager.getInstance().getDao().updateUploadJob(uj);
+                countUpdated++;
+            }
+            countChecked++;
+        }
+        logger.debug("{} upload jobs checked, {} updated.", countChecked, countUpdated);
     }
 }

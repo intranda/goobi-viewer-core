@@ -127,13 +127,13 @@ public abstract class AbstractBuilder {
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    public AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
+    protected AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
         if (apiUrlManager == null) {
             apiUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).orElse(null);
         }
         this.urls = apiUrlManager;
         AbstractApiUrlManager contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(this.urls);
-        this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(contentUrls), DataManager.getInstance().getConfiguration(),
+        this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(contentUrls),
                 ImageDeliveryBean.getStaticImagesPath(this.urls != null ? this.urls.getApplicationUrl() : "",
                         DataManager.getInstance().getConfiguration().getTheme()));
 
@@ -335,8 +335,7 @@ public abstract class AbstractBuilder {
      */
     private static List<String> getMetadataFields(StructElement ele) {
         Set<String> fields = ele.getMetadataFields().keySet();
-        List<String> baseFields = fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct().collect(Collectors.toList());
-        return baseFields;
+        return fields.stream().map(field -> field.replaceAll("_LANG_\\w{2,3}$", "")).distinct().collect(Collectors.toList());
     }
 
     /**
@@ -346,14 +345,12 @@ public abstract class AbstractBuilder {
      * @return the configured attribution
      */
     protected List<IMetadataValue> getAttributions() {
-        List<IMetadataValue> messages = DataManager.getInstance()
+        return DataManager.getInstance()
                 .getConfiguration()
                 .getIIIFAttribution()
                 .stream()
                 .map(this::getLabel)
                 .collect(Collectors.toList());
-
-        return messages;
     }
 
     /**
@@ -377,7 +374,7 @@ public abstract class AbstractBuilder {
         }
         return Optional.empty();
     }
-    
+
     /**
      * <p>
      * getDescription.
@@ -664,24 +661,24 @@ public abstract class AbstractBuilder {
         return URI.create(uri);
     }
 
-    protected Manifest3 createRecordLink(String collectionField, String collectionName, StructElement record) {
+    protected Manifest3 createRecordLink(String collectionField, String collectionName, StructElement rec) {
         URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
         Manifest3 manifest = new Manifest3(id);
         try {
-            manifest.addThumbnail(getThumbnail(record.getPi()));
+            manifest.addThumbnail(getThumbnail(rec.getPi()));
         } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
-            logger.error("Error creating thumbnail for record " + record.getPi());
+            logger.error("Error creating thumbnail for record {}", rec.getPi());
         }
-        manifest.setLabel(record.getMultiLanguageDisplayLabel());
+        manifest.setLabel(rec.getMultiLanguageDisplayLabel());
         return manifest;
     }
 
-    protected Collection3 createAnchorLink(String collectionField, String collectionName, StructElement record) {
+    protected Collection3 createAnchorLink(String collectionField, String collectionName, StructElement rec) {
         URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
         Collection3 manifest = new Collection3(id, null);
         manifest.addBehavior(ViewingHint.multipart);
-        manifest.addThumbnail(getThumbnail(record));
-        manifest.setLabel(record.getMultiLanguageDisplayLabel());
+        manifest.addThumbnail(getThumbnail(rec));
+        manifest.setLabel(rec.getMultiLanguageDisplayLabel());
         return manifest;
     }
 

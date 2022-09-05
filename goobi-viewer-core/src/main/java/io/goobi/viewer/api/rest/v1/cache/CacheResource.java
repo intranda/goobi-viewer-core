@@ -130,7 +130,7 @@ public class CacheResource {
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
             @Parameter(description = "If true, thumbnail cache will be cleared for all records") @QueryParam("thumbs") boolean thumbs,
             @Parameter(description = "If true, PDF cache will be cleared for all records") @QueryParam("pdf") boolean pdf) throws IOException {
-        logger.trace("clearCacheForRecord: {} {}/{}/{}", pi, content, thumbs, pdf);
+        logger.trace("clearCacheForRecord: {} {}/{}/{}", pi.replaceAll("[\n\r\t]", "_"), content, thumbs, pdf);
         if (StringUtils.isEmpty(pi)) {
             servletResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "pi is required");
             return null;

@@ -47,15 +47,7 @@
 
 		<div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
 			<div class="card-body">
-				<ul if="{collection.members && collection.members.length > 0}" class="list">
-					<li each="{child in getChildren(collection)}">
-						<a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a>
-						<a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, 'Rss feed')['@id']}" target="_blank">
-							<i class="fa fa-rss" aria-hidden="true"/>
-						</a>
-					</li>
-					
-				</ul>
+				<subCollection if="{collection.members && collection.members.length > 0}" collection="{collection}"/>
 			</div>
 		</div>
 	
@@ -69,37 +61,41 @@ riot.tag('raw', '', function(opts) {
     this.root.innerHTML = opts.html;
 });
 
-
-
-
-
-
-
-
-
 this.collections = this.opts.collections;
 
 this.on("mount", () => {
     // console.log("mounting collectionList", this.opts);
+    if(opts.depth == undefined) {
+        opts.depth = 1;
+    } else {
+        opts.depth = parseInt(opts.depth);
+    }
     this.loadSubCollections();
 })
 
 loadSubCollections() {
-    rxjs.from(this.collections)
-    .pipe(
-    	rxjs.operators.filter( child => this.hasChildren(child) ),
-    	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
+ 
+    let observable = rxjs.from(this.collections);
+    
+    for (let level = 0; level < opts.depth; level++) { 
+        observable = observable.pipe(
+         	rxjs.operators.filter( child => this.hasChildren(child) ),
+         	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
+         	rxjs.operators.mergeMap( child => child ),
+        );
+    }
+    observable.pipe(
     	rxjs.operators.debounceTime(100)
-
     )
     .subscribe( () => {this.update();});
 
 }
 
+
 fetchMembers(collection) {
     return fetch(collection['@id'])
     .then( result => result.json())
-    .then(json => {collection.members = json.members;})
+    .then(json => {collection.members = json.members; return collection.members;})
 }
 
 getValue(element) {
@@ -112,7 +108,11 @@ hasChildren(element) {
 }
 
 getChildren(collection) {
-    return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+    if(collection.members) {        
+    	return collection.members.filter( child => viewerJS.iiif.isCollection(child));
+    } else {
+        return [];
+    }
 }
 
 hasDescription(element) {

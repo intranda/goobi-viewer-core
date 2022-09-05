@@ -1,0 +1,348 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminConfigEditor')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="adminConfigEditor">
+                <ui:fragment rendered="#{userBean.admin and configurationBean.configEditorEnabled}">
+				<div class="admin__title-bar">
+					<!-- TITLE -->
+					<h1 class="admin__title">#{msg.admin__config_editor__title}</h1>
+
+				</div>
+
+				<div class="admin__content-inner-content">
+
+					<div class="admin__content-wrapper">
+						<div class="admin__content-main -sticky -refreshHCsticky">
+
+							<!-- INFO TEXT -->
+							<div class="admin__info-text">
+								<h:outputText value="#{msg.admin__config_editor__description}"
+									escape="false" />
+							</div>
+
+
+
+							<!-- CURRENT FILE NAME -->
+							<div class="admin__config-editor-current-file-wrapper">
+								<h:form id="configEditorActualFile">
+									<h2>#{msg.admin__config_editor__actual_file}:
+										#{adminConfigEditorBean.currentFileName}</h2>
+								</h:form>
+							</div>
+						<div>
+
+					</div>
+
+							<div class="admin__config-editor-form-wrapper">
+
+								<!-- GENERIC OVERLAY -->
+								<div class="admin__config-editor-form-wrapper-overlay"
+									data-cm="overlay"></div>
+
+								<!-- AJAX LOADING OVERLAY -->
+								<span class="ajax_loader">
+									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive" alt="Waiting..." />
+								</span>
+
+								<!-- CODEMIRROR EDITOR FORM -->
+								<h:form id="editor-form">
+
+									<!-- TEXTAREA -->
+									<h:inputTextarea id="editor"
+										class="admin__config-editor-textarea" cols="80" rows="10"
+										value="#{adminConfigEditorBean.fileContent}" />
+
+
+									<!-- VARIABLES IF READ OR WRITABLE -->
+									<script>			
+																														
+										$( document ).ready(function() {
+											adminJS.codemirror.init({
+												fileNotReadableMsgKey: '#{msg.admin__config_editor__not_readable}',
+											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
+											    currentFileIsWritable: #{adminConfigEditorBean.currentFileRecord.writable},
+												currentFilePath: "#{adminConfigEditorBean.currentFilePath}",
+											});
+										});
+									</script>
+
+									<div class="admin__overlay-bar">
+
+										<div class="admin__config-editor-overlay-bar-buttons-wrapper">
+											<!-- CANCEL -->
+											<h:commandButton value="#{msg.reset}"
+												disabled="#{not(adminConfigEditorBean.editable)}"
+												styleClass="btn btn--default admin__overlay-bar-action"
+												pt:data-cm="cancel">
+												<f:ajax execute="@form" render="nothing" />
+											</h:commandButton>
+
+											<!-- SAVE -->
+											<h:commandButton value="#{msg.save}" type="submit"
+												styleClass="btn btn--success admin__overlay-bar-action"
+												pt:data-cm="save" onclick="viewerJS.showLoader();"
+												action="#{adminConfigEditorBean.saveCurrentFileAction}">
+											</h:commandButton>
+
+										</div>
+
+									</div>
+
+									<!-- CHECK THIS + ADAPT STYLING -->
+									<div id="currentConfigFileType"
+										style="position: absolute; visibility: hidden">
+										#{adminConfigEditorBean.currentConfigFileType}</div>
+
+								</h:form>
+
+							</div>
+
+
+
+						</div>
+						<!-- SIDEBAR -->
+						<div class="admin__content-side">
+
+							<!-- AVAILABLE CONFIG AND PROPERTIES FILES BLOCK -->
+							<div class="admin__default-block">
+
+								<h2>#{msg.admin__config_editor__files}</h2>
+
+								<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__files_help}:</div>
+
+								<h:form id="file-form">
+
+									<div class="admin__config-editor-file-selection-inner"
+										id="file-table">
+
+
+
+										<ui:repeat var="record" varStatus="status"
+											value="#{adminConfigEditorBean.fileRecordsModel}">
+
+											<div
+												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
+												<div
+													class="admin__config-editor-file-selection-single-entry-button-wrapper">
+
+													<h:commandButton value="#{record.fileName}"
+														styleClass="admin__config-editor-file-selection-single-entry-button"
+														action="#{adminConfigEditorBean.editFile(record.writable)}"
+														name="#{record.number}" disabled="#{!record.readable}"
+														onclick="viewerJS.showLoader();">
+														<f:ajax execute="@this"
+															render="editor-form file-form backup-form configEditorActualFile"
+															immediate="true" />
+													</h:commandButton>
+
+
+													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
+
+
+
+
+
+
+
+													<ui:fragment rendered="#{!record.writable and record.readable}">
+														<div
+															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
+															title="#{msg.admin__config_editor__not_writable}"
+															data-toggle="tooltip" data-placement="top"
+															data-trigger="hover">
+															<i class="fa fa-eye" aria-hidden="true"></i>
+														</div>
+													</ui:fragment>
+													<ui:fragment
+														rendered="#{adminConfigEditorBean.isFileLocked(record)}">
+														<div
+															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
+															title="#{msg.admin__config_editor__locked}"
+															data-toggle="tooltip" data-placement="top"
+															data-trigger="hover">
+															<i class="fa fa-lock" aria-hidden="true"></i> 
+<!-- 															<i class="fa fa-ban" aria-hidden="true"></i> -->
+														</div>
+													</ui:fragment>
+													<!-- 												</h:panelGroup>	 -->
+
+
+
+
+												</div>
+
+
+
+											</div>
+
+										</ui:repeat>
+
+									</div>
+
+								</h:form>
+							</div>
+
+							<!-- BACKUP FILES BLOCK -->
+							<ui:fragment rendered="#{adminConfigEditorBean.currentFileName != '-'}">
+								<div class="admin__default-block">
+
+									<h2>#{msg.admin__config_editor__backups}</h2>
+
+									<ui:fragment rendered="#{adminConfigEditorBean.backupsAvailable}">
+										<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__backups_help}:</div>
+
+										<h:form id="backup-form">
+											<div class="admin__config-editor-backup-wrapper">
+												<ui:repeat var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
+													<h:commandLink
+														styleClass="btn btn--clean admin__config-editor-backup-single-entry"
+														action="#{adminConfigEditorBean.downloadFile(record)}">
+														<span class="admin__config-editor-backup-single-entry-text">
+															<h:outputText value="#{record.date}">
+																<f:converter converterId="localDateTimeConverter" />
+																<f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+															</h:outputText>
+														</span>
+														<span class="admin__config-editor-backup-single-entry-icon">
+															<i class="fa fa-download" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadButton}"></i>
+														</span>
+													</h:commandLink>
+												</ui:repeat>
+											</div>
+										</h:form>
+									</ui:fragment>
+									<ui:fragment rendered="#{!adminConfigEditorBean.backupsAvailable}">
+										<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__no_backups}</div>
+									</ui:fragment>
+								</div>
+							</ui:fragment>
+
+
+							<div class="admin__default-block">
+
+								<h2>#{msg.title__did_you_know}</h2>
+
+								<div class="admin__form-help-text in mb-2">
+									#{msg.admin__config_editor__shortcuts_help}</div>
+
+								<div class="admin__config-editor-shortcuts-wrapper">
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_search}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">F</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_next}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">G</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_prev}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">SHIFT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">G</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_replace}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">SHIFT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">F</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_indent}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">SHIFT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">TAB</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_save}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">S</div>
+										</div>
+									</div>
+									<!-- 								<div class="admin__config-editor-shortcuts-entry"> -->
+									<!-- 									<div class="admin__config-editor-shortcuts-text">Keep search open</div> -->
+									<!-- 									<div class="admin__config-editor-shortcuts-key-wrapper"> -->
+									<!-- 										<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div> -->
+									<!-- 										<div class="admin__config-editor-shortcuts-key-spacer">+</div> -->
+									<!-- 										<div class="admin__config-editor-shortcuts-key">E</div> -->
+									<!-- 									</div> -->
+									<!-- 								</div> -->
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_fullscreen}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">F11</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_dark}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">#{msg.admin__config_editor__shortcuts_ctrl}</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">D</div>
+										</div>
+									</div>
+									<div class="admin__config-editor-shortcuts-entry">
+										<div class="admin__config-editor-shortcuts-text">#{msg.admin__config_editor__shortcuts_linejump}</div>
+										<div class="admin__config-editor-shortcuts-key-wrapper">
+											<div class="admin__config-editor-shortcuts-key">ALT</div>
+											<div class="admin__config-editor-shortcuts-key-spacer">+</div>
+											<div class="admin__config-editor-shortcuts-key">G</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+				</div>
+                </ui:fragment>
+                
+                <ui:fragment rendered="#{!configurationBean.configEditorEnabled}">
+                    <div class="alert alert-danger" role="alert">
+                        <h:outputText rendered="#{errMsg == null}" value="#{msg.errFunctionalityDisabled}" />
+                    </div>
+                </ui:fragment>
+			</div>
+		</f:view>
+	</ui:define>
+
+</ui:composition>

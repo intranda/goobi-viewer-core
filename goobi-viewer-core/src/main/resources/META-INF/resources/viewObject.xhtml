@@ -40,12 +40,31 @@
 
             <!-- VIEW OBJECT -->
             <div id="viewObject" class="view-object">
-                <!-- TITLE -->
-                <ui:include src="/resources/includes/title.xhtml">
-                    <ui:param name="structure" value="false" />
-                    <ui:param name="purl" value="true" />
-                    <ui:param name="displayCollectionAndPartnerID" value="false" />
-                </ui:include>
+            
+		    	<div id="title" class="title">
+		    		<!-- TITLE HEADER -->
+					<div class="title__header">
+						<h1 class="h2">
+		
+							<!-- FA* is this still needed? What is the purpose? -->
+							<!-- PAGE TYPE -->
+							<span class="title__header-page-type">
+								<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
+							</span>
+		
+							<!-- NAME OF THE RECORD -->
+							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+		
+		                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+								<viewerComponent:copyrightIndicator />
+							</ui:fragment>
+		
+						</h1>
+					</div>
+				</div>
+
+
+
 
                 <!-- IMAGE CONTROLS -->
                 <h:panelGroup
@@ -159,8 +178,14 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="image" />
+        
+        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+        	<widgetComponent:widget_copyrightInfo />
+        </ui:fragment>
 
         <widgetComponent:widget_searchInCurrentItem />
+
+        <widgetComponent:widget_statistics_usage />
 
         <widgetComponent:widget_archives />
 

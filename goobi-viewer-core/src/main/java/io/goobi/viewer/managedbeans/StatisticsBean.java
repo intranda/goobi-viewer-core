@@ -23,10 +23,14 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -37,24 +41,31 @@ import javax.inject.Named;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.goobi.viewer.Version;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ApplicationInfo;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ApplicationResource;
+import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.statistics.usage.StatisticsLuceneFields;
+import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
+import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
+import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -328,4 +339,29 @@ public class StatisticsBean implements Serializable {
     public String getIndexerVersion() {
         return JsonTools.shortFormatVersionString(DataManager.getInstance().getIndexerVersion());
     }
+    
+    public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
+        StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
+        StatisticsSummary summary = new StatisticsSummaryBuilder().loadSummary(filter);
+        return summary;
+    }
+
+    public LocalDate getLastUsageStatisticsCheck() throws PresentationException, IndexUnreachableException {
+        SolrDocumentList docs =  DataManager.getInstance().getSearchIndex().search(
+                "DOCTYPE:" + io.goobi.viewer.model.statistics.usage.StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
+                1, Arrays.asList(new StringPair(StatisticsLuceneFields.DATE, "desc")), 
+                Arrays.asList(StatisticsLuceneFields.DATE));
+        if(docs.size() == 1) {
+            Date date = (Date)docs.get(0).getFieldValue(StatisticsLuceneFields.DATE);
+            return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        } else {
+            return LocalDate.MIN;
+        }
+
+    }
+
+    public boolean isUsageStatisticsActive() {
+        return DataManager.getInstance().getConfiguration().isStatisticsEnabled();
+    }
+    
 }

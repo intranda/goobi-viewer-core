@@ -22,6 +22,7 @@
 package io.goobi.viewer.dao;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,7 @@ import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
+import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
@@ -72,6 +74,7 @@ import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
+import io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
@@ -780,6 +783,90 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
+    
+    // DownloadTicket
+    
+    /**
+     * 
+     * @param id
+     * @return
+     * @throws DAOException
+     */
+    public DownloadTicket getDownloadTicket(Long id) throws DAOException;
+    
+    /**
+     * 
+     * @param passwordHash
+     * @return
+     * @throws DAOException
+     */
+    public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException;
+    
+    /**
+     * <p>
+     * getActiveDownloadTicketCount.
+     * </p>
+     *
+     * @param filters Selected filters
+     * @return Number of found rows
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException;
+    
+    /**
+     * <p>
+     * getActiveDownloadTickets.
+     * </p>
+     *
+     * @param first First row index
+     * @param pageSize Number of rows
+     * @param sortField a {@link java.lang.String} object.
+     * @param descending true if descending order requested; false otherwise
+     * @param filters Selected filters
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+    
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<DownloadTicket> getDownloadTicketRequests() throws DAOException;
+    
+    /**
+     * <p>
+     * addDownloadTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
+
+    /**
+     * <p>
+     * updateDownloadTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
+
+    /**
+     * <p>
+     * deleteDownloadTicket.
+     * </p>
+     *
+     * @param downloadTicket a {@link io.goobi.viewer.model.security.DownloadTicket} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteDownloadTicket(DownloadTicket downloadTicket) throws DAOException;
 
     // IpRange
 
@@ -2492,6 +2579,18 @@ public interface IDAO {
 
     public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException;
     
+    public List<DailySessionUsageStatistics> getAllUsageStatistics() throws DAOException;
+    
+    public DailySessionUsageStatistics getUsageStatistics(LocalDate date)  throws DAOException; 
+    
+    public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException;
+    
+    public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
+    
+    public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
+    
+    public boolean deleteUsageStatistics(long id) throws DAOException;
+    
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *
@@ -2556,6 +2655,7 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
 
 
 

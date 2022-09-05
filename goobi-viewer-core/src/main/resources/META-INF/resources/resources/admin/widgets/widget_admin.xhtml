@@ -54,8 +54,8 @@
                              <h:outputLink value="#{navigationHelper.getPageUrl('adminLicenseTypes')}/">
                                 <i class="fa fa-key" aria-hidden="true"></i>
                                 <span>#{msg.admin__licenses}</span>
-                                <ui:fragment rendered="#{fn:length(adminBean.notConfiguredAccessConditions) gt 0}">
-                            	   <span class="admin-widget__counter">#{fn:length(adminBean.notConfiguredAccessConditions)}</span>
+                                <ui:fragment rendered="#{fn:length(adminLicenseBean.notConfiguredAccessConditions) gt 0}">
+                            	   <span class="admin-widget__counter">#{fn:length(adminLicenseBean.notConfiguredAccessConditions)}</span>
                             	</ui:fragment>
                             </h:outputLink>
                             <div >
@@ -66,6 +66,12 @@
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRights')}/">
                                 <i class="fa fa-lock" aria-hidden="true"></i>
                                 <span>#{msg.admin__rights}</span>
+                                <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 0 and adminLicenseBean.downloadTicketRequests.size() le 99}">
+									<span class="admin-widget__counter">#{adminLicenseBean.downloadTicketRequests.size()}</span>
+								</ui:fragment>
+                                <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 99}">
+									<span class="admin-widget__counter -small">99+</span>
+								</ui:fragment>
                             </h:outputLink>
                         </li>
                     </ui:fragment> 
@@ -85,21 +91,34 @@
                                 <span>#{msg.admin__create_record__link}</span>
                             </h:outputLink>
                         </li>
-                        <li class="admin-widget__translations-link #{navigationHelper.currentPage == 'adminTranslations' ? 'active' : ''}">
-                             <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
-                                <i class="fa fa-exchange" aria-hidden="true"></i>
-                                <span>#{msg.admin__translations__link}</span>
-                                <ui:fragment rendered="#{adminBean.configuredTranslationGroups.stream().filter(group -> !group.loadError).filter(group -> group.entryCount - group.fullyTranslatedEntryCount > 0).count() gt 0}">
-                                    <span class="admin-widget__counter">#{adminBean.configuredTranslationGroups.stream().filter(group -> !group.loadError).filter(group -> group.entryCount - group.fullyTranslatedEntryCount > 0).count()}</span>
-                                </ui:fragment>
-                            </h:outputLink>
-                        </li>
+                        <ui:fragment rendered="#{adminBean.hasAccessPermissingForTranslationFiles}">
+                            <li class="admin-widget__translations-link #{navigationHelper.currentPage == 'adminTranslations' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
+                                    <i class="fa fa-exchange" aria-hidden="true"></i>
+                                    <span>#{msg.admin__translations__link}</span>
+                                    <c:if test="#{adminBean.configuredTranslationGroupsCount gt 0}">
+                                	    <span class="admin-widget__counter">#{adminBean.configuredTranslationGroupsCount}</span>
+								    </c:if>
+                                    <c:if test="#{!adminBean.hasAccessPermissingForTranslationFiles}">
+                                        <span class="admin-widget__counter -redMark"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
+								    </c:if>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                         <li class="#{navigationHelper.currentPage == 'adminThemes' ? 'active' : ''}">
                              <h:outputLink value="#{request.contextPath}/admin/themes/">
                                 <i class="fa fa-paint-brush" aria-hidden="true"></i>
                                 <span>#{msg.admin__themes__title}</span>
                             </h:outputLink>
                         </li>
+                        <ui:fragment rendered="#{configurationBean.configEditorEnabled}">
+                            <li class="#{navigationHelper.currentPage == 'adminConfigEditor' ? 'active' : ''}">
+                                <h:outputLink value="#{request.contextPath}/admin/config/">
+                                    <i class="fa fa-code" aria-hidden="true"></i>
+                                    <span>#{msg.admin__config_editor__title}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                     </ui:fragment>
 
 				</ul>

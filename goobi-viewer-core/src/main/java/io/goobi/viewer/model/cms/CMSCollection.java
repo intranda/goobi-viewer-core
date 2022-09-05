@@ -320,7 +320,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @return The string value of the description of the current locale, or an empty string
      */
     public String getDescription() {
-        return getDescription(selectedLocale);
+        return getDescription(BeanUtils.getLocale());
     }
 
     /**

@@ -366,7 +366,7 @@ public class IIIFPresentation2ResourceBuilder {
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
         SolrDocumentList queryResults = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, first, rows, sortFieldList, null, Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS))
+                .search(finalQuery, first, rows, sortFieldList, null, getContainedRecordsFieldList())
                 .getResults();
 
         List<IPresentationModelElement> manifests = new ArrayList<>(queryResults.size());
@@ -391,6 +391,12 @@ public class IIIFPresentation2ResourceBuilder {
 
         return manifests;
 
+    }
+
+    private List<String> getContainedRecordsFieldList() {
+        List<String> list = new ArrayList<>(Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS));
+        list.add(SolrConstants.BOOL_IMAGEAVAILABLE);
+        return list;
     }
 
     /**

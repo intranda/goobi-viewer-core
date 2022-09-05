@@ -97,6 +97,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -154,9 +155,8 @@ public class RecordResource {
 
         StructElement se = getStructElement(pi);
         String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
-        servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-        String ris = new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
-        return ris;
+        servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
     /**
@@ -285,9 +285,9 @@ public class RecordResource {
                     description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException {
-        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
+        IIIFPresentation2ResourceBuilder b = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
-        return builder.getManifest(pi, buildMode);
+        return b.getManifest(pi, buildMode);
     }
 
     @GET
@@ -301,9 +301,9 @@ public class RecordResource {
                     description = "Build mode for manifes to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalRequestException, IOException {
-        IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
+        IIIFPresentation2ResourceBuilder b = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
-        return builder.getLayer(pi, layerName, buildMode);
+        return b.getLayer(pi, layerName, buildMode);
     }
 
     @GET
@@ -315,9 +315,9 @@ public class RecordResource {
             @Parameter(description = "Last page to get tags for") @QueryParam("end") Integer end,
             @Parameter(description = "Number of pages to combine into each group") @QueryParam("step") Integer stepSize,
             @Parameter(description = "Tag type to consider (person, coorporation, event or location)") @QueryParam("type") String type)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        NERBuilder builder = new NERBuilder(urls);
-        return builder.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
+            throws PresentationException, IndexUnreachableException {
+        NERBuilder b = new NERBuilder();
+        return b.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
 
     @GET
@@ -330,8 +330,8 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
-        TextResourceBuilder builder = new TextResourceBuilder();
-        return builder.getFulltext(pi);
+        TextResourceBuilder b = new TextResourceBuilder();
+        return b.getFulltext(pi);
     }
 
     @GET
@@ -344,7 +344,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
             String filename = pi + "_plaintext.zip";
-            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
         }
 
         return builder.getFulltextAsZip(pi);
@@ -371,7 +371,7 @@ public class RecordResource {
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
             String filename = pi + "_alto.zip";
-            servletResponse.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
         }
 
         return builder.getAltoAsZip(pi);
@@ -382,10 +382,10 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get CMDI record file in the requested language.",
             description = "If possible, directly read a CMDI file associated with the record")
-    public String getCmdiLangauge(
+    public String getCmdiLanguage(
             @Parameter(description = "perferred language for the TEI file, in ISO-639 format") @PathParam("lang") String language)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
-        logger.trace("getCmdi({}, {})", pi, language);
+        language = StringTools.stripPatternBreakingChars(language);
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
@@ -612,8 +612,7 @@ public class RecordResource {
      */
     private static StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
-        StructElement struct = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-        return struct;
+        return new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
     }
 
     /**
@@ -624,11 +623,12 @@ public class RecordResource {
     private void checkFulltextAccessConditions(String pi) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)
+                    .isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s: %s", pi, e.toString()));
         } catch (RecordNotFoundException e) {
-            access = false;
+            //
         }
         if (!access) {
             throw new ServiceNotAllowedException("Access to fulltext of " + pi + " not allowed");

@@ -232,7 +232,7 @@ public final class SearchHelper {
             return Collections.emptyList();
         }
         if (params != null) {
-            logger.trace("params: {}", params.toString());
+            logger.trace("params: {}", params);
         }
         Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
         Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
@@ -263,14 +263,14 @@ public final class SearchHelper {
                     String plaintextFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
                     if (StringUtils.isNotBlank(plaintextFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false);
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false).isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
                     } else if (StringUtils.isNotBlank(altoFilename)) {
-                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false);
+                        boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false).isGranted();
                         if (access) {
                             fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
                         } else {
@@ -391,15 +391,12 @@ public final class SearchHelper {
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
-                    //                    String ownerId = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
-                    //                    String topStructId = (String) doc.getFieldValue(SolrConstants.IDDOC);
                     if (DocType.METADATA.name().equals(docType)) {
                         // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
                         docType = DocType.DOCSTRCT.name();
                     }
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
-                    //                    if (!(DocType.DOCSTRCT.name().equals(docType) && ownerId != null && ownerId.equals(topStructId))) {
                     HitType hitType = HitType.getByName(docType);
                     if (DocType.UGC.name().equals(docType)) {
                         // For user-generated content hits use the metadata type for the hit type
@@ -412,7 +409,6 @@ public final class SearchHelper {
                     }
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
-                    //                    }
                 }
             }
         }
@@ -432,10 +428,8 @@ public final class SearchHelper {
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
      * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix)
-            throws IndexUnreachableException {
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
         return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, null);
     }
 
@@ -452,10 +446,9 @@ public final class SearchHelper {
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
      * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
-            String privilege) throws IndexUnreachableException {
+            String privilege) {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
@@ -481,9 +474,8 @@ public final class SearchHelper {
      *
      * @param addDiscriminatorValueSuffix a boolean.
      * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixes() throws IndexUnreachableException {
+    public static String getAllSuffixes() {
         return getAllSuffixes(BeanUtils.getRequest(), true, true);
     }
 
@@ -492,10 +484,8 @@ public final class SearchHelper {
      *
      * @param addDiscriminatorValueSuffix a boolean.
      * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getAllSuffixesExceptCollectionBlacklist()
-            throws IndexUnreachableException {
+    public static String getAllSuffixesExceptCollectionBlacklist() {
         return getAllSuffixes(BeanUtils.getRequest(), true, false);
     }
 
@@ -511,6 +501,7 @@ public final class SearchHelper {
      * @param locale a {@link java.util.Locale} object.
      * @param aggregateHits a boolean.
      * @param boostTopLevelDocstructs
+     * @param proximitySearchDistance
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      * @param filterQueries a {@link java.util.List} object.
@@ -523,8 +514,7 @@ public final class SearchHelper {
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, boolean boostTopLevelDocstructs,
-            int proximitySearchDistance, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            int proximitySearchDistance) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query);
         String termQuery = null;
         if (boostTopLevelDocstructs) {
@@ -553,14 +543,12 @@ public final class SearchHelper {
      * @param filterForWhitelist a boolean.
      * @param filterForBlacklist a boolean.
      * @param splittingChar a {@link java.lang.String} object.
-     * @param locale a {@link java.util.Locale} object.
      * @return StringPair containing the PI and the target page type of the first record.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static StringPair getFirstRecordPiAndPageType(String luceneField, String value, boolean filterForWhitelist,
-            boolean filterForBlacklist, String splittingChar, Locale locale)
-            throws IndexUnreachableException, PresentationException {
+            boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException, PresentationException {
         if (luceneField == null || value == null) {
             return null;
         }
@@ -572,7 +560,7 @@ public final class SearchHelper {
         StringBuilder sbQuery = new StringBuilder(SolrConstants.PI).append(":*");
         if (filterForWhitelist) {
             if (sbQuery.length() > 0) {
-                sbQuery.append(" AND ");
+                sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             sbQuery.append('(').append(getDocstrctWhitelistFilterQuery()).append(')');
         }
@@ -581,7 +569,7 @@ public final class SearchHelper {
                 .append(luceneField)
                 .append(":")
                 .append(value)
-                .append(" OR ")
+                .append(SolrConstants.SOLR_QUERY_OR)
                 .append(luceneField)
                 .append(":")
                 .append(value + splittingChar + "*)");
@@ -594,9 +582,8 @@ public final class SearchHelper {
                         SolrConstants.ISWORK, SolrConstants.LOGID);
         //        logger.trace("first record query: {}", sbQuery.toString());
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 1, null, null, fields);
-        // logger.trace("query done");
 
-        if (resp.getResults().size() == 0) {
+        if (resp.getResults().isEmpty()) {
             return null;
         }
 
@@ -604,9 +591,8 @@ public final class SearchHelper {
             SolrDocument doc = resp.getResults().get(0);
             IdentifierResolver.constructUrl(doc, false);
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
-            //            Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST,
-                    BeanUtils.getRequest())) {
+                    BeanUtils.getRequest()).isGranted()) {
                 // TODO check whether users with permissions still skip over such records
                 logger.trace("Record '{}' does not allow listing, skipping...", pi);
                 throw new RecordNotFoundException(pi);
@@ -617,7 +603,7 @@ public final class SearchHelper {
                     PageType.determinePageType((String) doc.get(SolrConstants.DOCSTRCT), (String) doc.get(SolrConstants.MIMETYPE), anchorOrGroup,
                             doc.containsKey(SolrConstants.THUMBNAIL), false);
             return new StringPair(pi, pageType.name());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             if (e instanceof RecordNotFoundException) {
                 //
             } else {
@@ -656,7 +642,7 @@ public final class SearchHelper {
             }
             if (filterForWhitelist) {
                 if (sbQuery.length() > 0) {
-                    sbQuery.append(" AND ");
+                    sbQuery.append(SolrConstants.SOLR_QUERY_AND);
                 }
                 sbQuery.append("+(").append(getDocstrctWhitelistFilterQuery()).append(')');
             }
@@ -666,7 +652,6 @@ public final class SearchHelper {
             }
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
-            logger.trace("collections query: {}", sbQuery.toString());
 
             FacetField facetResults = null;
             FacetField groupResults = null;
@@ -689,7 +674,7 @@ public final class SearchHelper {
             return ret;
 
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(e.getMessage());
         }
 
         return Collections.emptyMap();
@@ -731,12 +716,18 @@ public final class SearchHelper {
                     parentCollection.incrementCount(count.getCount());
                 }
             }
-            //            counted.add(dc);
         }
 
         return ret;
     }
 
+    /**
+     * 
+     * @param ret
+     * @param luceneField
+     * @param groupResults
+     * @param filterQuery
+     */
     private static void addGrouping(Map<String, CollectionResult> ret, String luceneField, FacetField groupResults, String filterQuery) {
         if (groupResults != null) {
             String groupField = groupResults.getName();
@@ -815,8 +806,7 @@ public final class SearchHelper {
         }
 
         String collectionSplitRegex = new StringBuilder("[").append(splittingChar).append(']').toString();
-        String dcSplit[] = dc.split(collectionSplitRegex);
-        // boolean blacklisted = false;
+        String[] dcSplit = dc.split(collectionSplitRegex);
         StringBuilder sbDc = new StringBuilder();
         for (String element : dcSplit) {
             if (sbDc.length() > 0) {
@@ -921,14 +911,14 @@ public final class SearchHelper {
             if (currentFacets != null && !currentFacets.isEmpty()) {
                 for (IFacetItem facetItem : currentFacets) {
                     if (sbQuery.length() > 0) {
-                        sbQuery.append(" AND ");
+                        sbQuery.append(SolrConstants.SOLR_QUERY_AND);
                     }
                     sbQuery.append(facetItem.getQueryEscapedLink());
                     logger.trace("Added  facet: {}", facetItem.getQueryEscapedLink());
                 }
             }
             sbQuery.append(getAllSuffixes());
-            logger.debug("Autocomplete query: {}", sbQuery.toString());
+            logger.debug("Autocomplete query: {}", sbQuery);
 
             QueryResponse response = DataManager.getInstance()
                     .getSearchIndex()
@@ -981,14 +971,11 @@ public final class SearchHelper {
         StringBuilder sbQuery = new StringBuilder();
         List<String> list = DataManager.getInstance().getConfiguration().getCollectionBlacklist(field);
         if (list != null && !list.isEmpty()) {
-            // sbQuery.append(" AND NOT (");
             for (String s : list) {
                 if (StringUtils.isNotBlank(s)) {
                     sbQuery.append(" -").append(field).append(':').append(s.trim());
                 }
             }
-            // sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-            // sbQuery.append(')');
         }
 
         return sbQuery.toString();
@@ -1015,7 +1002,7 @@ public final class SearchHelper {
             if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
                 StringBuilder sbSuffix = new StringBuilder();
                 sbSuffix.append(" +").append(discriminatorField).append(':').append(discriminatorValue);
-                logger.trace("Discriminator field suffix: {}", sbSuffix.toString());
+                logger.trace("Discriminator field suffix: {}", sbSuffix);
                 return sbSuffix.toString();
             }
         }
@@ -1100,7 +1087,7 @@ public final class SearchHelper {
             }
 
             if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null)) {
+                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null).isGranted()) {
                 // If the user has an explicit permission to list a certain license type, ignore all other license types
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart());
@@ -1108,12 +1095,10 @@ public final class SearchHelper {
             } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
                 // If there are overriding license types for which the user has listing permission, ignore the current license type
                 for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
-                    if (usedLicenseTypes.contains(overridingLicenseType.getName())) {
-                        continue;
-                    }
-                    if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                            new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
-                            null)) {
+                    if (!usedLicenseTypes.contains(overridingLicenseType.getName())
+                            && AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
+                                    new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
+                                    null).isGranted()) {
                         query.append(overridingLicenseType.getFilterQueryPart());
                         usedLicenseTypes.add(overridingLicenseType.getName());
                         logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
@@ -1146,6 +1131,7 @@ public final class SearchHelper {
      * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @param addFragmentIfNoMatches If true, a fragment will be added even if no term was matched
      * @param proximitySearchDistance
+     * @return a {@link java.util.List} object.
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
@@ -1155,7 +1141,6 @@ public final class SearchHelper {
      * @should replace line breaks with spaces
      * @should add fragment if no term was matched only if so requested
      * @should highlight multi word terms while removing stopwords
-     * @return a {@link java.util.List} object.
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
             boolean addFragmentIfNoMatches, int proximitySearchDistance) {
@@ -1167,7 +1152,6 @@ public final class SearchHelper {
         // Remove HTML breaks
         fulltext = Jsoup.parse(fulltext).text();
         List<String> ret = new ArrayList<>();
-        String fulltextFragment = "";
         if (searchTerms != null && !searchTerms.isEmpty()) {
             for (String searchTerm : searchTerms) {
                 if (searchTerm.length() == 0) {
@@ -1191,7 +1175,6 @@ public final class SearchHelper {
                     searchTerm = searchTerm.substring(1);
                 }
                 if (searchTerm.contains("*") || searchTerm.contains("?")) {
-                    fulltextFragment += " ";
                     break;
                 }
                 if (FuzzySearchTerm.isFuzzyTerm(searchTerm)) {
@@ -1249,16 +1232,17 @@ public final class SearchHelper {
 
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
             if (addFragmentIfNoMatches && ret.isEmpty()) {
+                String fulltextFragment;
                 if (fulltext.length() > 200) {
                     fulltextFragment = fulltext.substring(0, 200);
                 } else {
                     fulltextFragment = fulltext;
                 }
-                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
                 fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
         } else {
+            String fulltextFragment;
             if (fulltext.length() > 200) {
                 fulltextFragment = fulltext.substring(0, 200);
             } else {
@@ -1271,7 +1255,6 @@ public final class SearchHelper {
                 if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                     fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                 }
-                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
                 fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
@@ -1733,10 +1716,8 @@ public final class SearchHelper {
         int ret = 0;
         String facetField = SearchHelper.facetifyField(bmfc.getField());
         for (Count count : resp.getFacetField(facetField).getValues()) {
-            if (count.getCount() == 0) {
-                continue;
-            }
-            if (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase())) {
+            if (count.getCount() == 0
+                    || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
                 continue;
             }
             ret++;
@@ -1869,8 +1850,7 @@ public final class SearchHelper {
      * @should contain facets for the main field
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
-            int start, int rows)
-            throws PresentationException, IndexUnreachableException {
+            int start, int rows) throws PresentationException, IndexUnreachableException {
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
         fields.add(bmfc.getField());
@@ -1913,12 +1893,6 @@ public final class SearchHelper {
         facetFields.add(facetField);
 
         Map<String, String> params = new HashMap<>();
-        //        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
-        //            params.put(GroupParams.GROUP, "true");
-        //            params.put(GroupParams.GROUP_MAIN, "true");
-        //            params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
-        //        }
-
         if (logger.isTraceEnabled()) {
             logger.trace("row count: {}", DataManager.getInstance().getSearchIndex().getHitCount(query, filterQueries));
         }
@@ -2046,7 +2020,7 @@ public final class SearchHelper {
         }
 
         // Remove parentheses, ANDs and ORs
-        query = query.replace("(", "").replace(")", "").replace(" AND ", " ").replace(" OR ", " ");
+        query = query.replace("(", "").replace(")", "").replace(SolrConstants.SOLR_QUERY_AND, " ").replace(SolrConstants.SOLR_QUERY_OR, " ");
 
         Map<String, Set<String>> ret = new HashMap<>();
         ret.put(_TITLE_TERMS, new HashSet<>());
@@ -2078,7 +2052,7 @@ public final class SearchHelper {
                 String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
                 if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
                     if (ret.get(field) == null) {
-                        ret.put(field, new HashSet<String>());
+                        ret.put(field, new HashSet<>());
                     }
                     // logger.trace("term: {}:{}", field, phraseWithoutQuotation);
                     ret.get(field).add(phraseWithoutQuotation);
@@ -2089,7 +2063,6 @@ public final class SearchHelper {
         }
 
         // Split into FIELD:value pairs
-        // query = query.replace("-", " ");
         String[] querySplit = query.split(SEARCH_TERM_SPLIT_REGEX);
         String currentField = null;
         for (String s : querySplit) {
@@ -2135,14 +2108,9 @@ public final class SearchHelper {
                             case SolrConstants.IDDOC:
                                 break;
                             default:
-                                switch (value.trim()) {
-                                    case "true":
-                                        break;
-                                    default:
-                                        ret.get(_TITLE_TERMS).add("(" + value + ")");
-                                        break;
+                                if (!"true".equals(value.trim())) {
+                                    ret.get(_TITLE_TERMS).add("(" + value + ")");
                                 }
-
                                 break;
                         }
                     }
@@ -2158,7 +2126,7 @@ public final class SearchHelper {
                     currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
                 }
                 if (ret.get(currentField) == null) {
-                    ret.put(currentField, new HashSet<String>());
+                    ret.put(currentField, new HashSet<>());
                 }
                 ret.get(currentField).add(s);
                 ret.get(_TITLE_TERMS).add("(" + s + ")");
@@ -2220,12 +2188,11 @@ public final class SearchHelper {
      * </p>
      *
      * @param sourceList a {@link java.util.List} object.
-     * @should facetify correctly
-     * @return a {@link java.util.List} object.
+     * @return a {@link java.util.List} object. * @should facetify correctly
      */
     public static List<String> facetifyList(List<String> sourceList) {
         if (sourceList == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<String> ret = new ArrayList<>(sourceList.size());
@@ -2235,6 +2202,7 @@ public final class SearchHelper {
                 ret.add(fieldName);
             }
         }
+
         return ret;
     }
 
@@ -2254,7 +2222,7 @@ public final class SearchHelper {
                 || fieldName.equals(SolrConstants._CALENDAR_MONTH) || fieldName.equals(SolrConstants._CALENDAR_DAY))) {
             return fieldName;
         }
-        return adaptField(fieldName, "FACET_");
+        return adaptField(fieldName, SolrConstants.PREFIX_FACET);
     }
 
     /**
@@ -2350,11 +2318,11 @@ public final class SearchHelper {
             fieldName = fieldName.replace("MD_", prefix);
         } else if (fieldName.startsWith("MD2_")) {
             fieldName = fieldName.replace("MD2_", prefix);
-        } else if (fieldName.startsWith("MDNUM_")) {
+        } else if (fieldName.startsWith(SolrConstants.PREFIX_MDNUM)) {
             if ("SORT_".equals(prefix)) {
-                fieldName = fieldName.replace("MDNUM_", "SORTNUM_");
+                fieldName = fieldName.replace(SolrConstants.PREFIX_MDNUM, "SORTNUM_");
             } else {
-                fieldName = fieldName.replace("MDNUM_", prefix);
+                fieldName = fieldName.replace(SolrConstants.PREFIX_MDNUM, prefix);
             }
         } else if (fieldName.startsWith("NE_")) {
             fieldName = fieldName.replace("NE_", prefix);
@@ -2393,16 +2361,16 @@ public final class SearchHelper {
 
         switch (fieldName) {
             case SolrConstants.FACET_DC:
-            case "FACET_" + SolrConstants.DOCSTRCT:
-            case "FACET_" + SolrConstants.DOCSTRCT_SUB:
-            case "FACET_" + SolrConstants.DOCSTRCT_TOP:
-            case "FACET_" + SolrConstants._CALENDAR_YEAR:
-            case "FACET_" + SolrConstants._CALENDAR_MONTH:
-            case "FACET_" + SolrConstants._CALENDAR_DAY:
+            case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT:
+            case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT_SUB:
+            case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT_TOP:
+            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_YEAR:
+            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_MONTH:
+            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_DAY:
                 return fieldName.substring(6);
             default:
-                if (fieldName.startsWith("FACET_")) {
-                    return fieldName.replace("FACET_", "MD_");
+                if (fieldName.startsWith(SolrConstants.PREFIX_FACET)) {
+                    return fieldName.replace(SolrConstants.PREFIX_FACET, "MD_");
                 }
                 return fieldName;
         }
@@ -2433,8 +2401,8 @@ public final class SearchHelper {
         }
 
         StringBuilder sbOuter = new StringBuilder();
-        logger.trace("fields: {}", fields.toString());
-        logger.trace("searchTerms: {}", searchTerms.toString());
+        logger.trace("fields: {}", fields);
+        logger.trace("searchTerms: {}", searchTerms);
         boolean moreThanOne = false;
         for (String field : fields) {
             // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
@@ -2457,13 +2425,13 @@ public final class SearchHelper {
                 sbOuter.append(" +(");
             }
             if (moreThanOne) {
-                sbOuter.append(" OR ");
+                sbOuter.append(SolrConstants.SOLR_QUERY_OR);
             }
             StringBuilder sbInner = new StringBuilder();
             boolean multipleTerms = false;
             for (String term : terms) {
                 if (sbInner.length() > 0) {
-                    sbInner.append(" OR ");
+                    sbInner.append(SolrConstants.SOLR_QUERY_OR);
                     multipleTerms = true;
                 }
                 if (!"*".equals(term)) {
@@ -2501,7 +2469,7 @@ public final class SearchHelper {
             sbOuter.append(')');
         }
 
-        logger.trace("expand query generated: {}", sbOuter.toString());
+        logger.trace("expand query generated: {}", sbOuter);
         return sbOuter.toString();
     }
 
@@ -2537,6 +2505,8 @@ public final class SearchHelper {
                     case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
                         orMode = true;
                         break;
+                    default:
+                        break;
                 }
             }
 
@@ -2559,12 +2529,12 @@ public final class SearchHelper {
                             continue;
                         }
                 }
-                String itemQuery = item.generateQuery(new HashSet<String>(), false, allowFuzzySearch);
+                String itemQuery = item.generateQuery(new HashSet<>(), false, allowFuzzySearch);
                 if (StringUtils.isNotEmpty(itemQuery)) {
                     if (sbGroup.length() > 0) {
                         if (orMode) {
                             // When also searching in page document fields, the operator must be 'OR'
-                            sbGroup.append(" OR ");
+                            sbGroup.append(SolrConstants.SOLR_QUERY_OR);
                         } else {
                             sbGroup.append(' ').append(group.getOperator().name()).append(' ');
                         }
@@ -2576,13 +2546,13 @@ public final class SearchHelper {
                 if (sbOuter.length() > 0) {
                     switch (advancedSearchGroupOperator) {
                         case 0:
-                            sbOuter.append(" AND ");
+                            sbOuter.append(SolrConstants.SOLR_QUERY_AND);
                             break;
                         case 1:
-                            sbOuter.append(" OR ");
+                            sbOuter.append(SolrConstants.SOLR_QUERY_OR);
                             break;
                         default:
-                            sbOuter.append(" OR ");
+                            sbOuter.append(SolrConstants.SOLR_QUERY_OR);
                             break;
                     }
                 }
@@ -2655,7 +2625,6 @@ public final class SearchHelper {
                 // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                // ret.add(SolrConstants.DEFAULT);
                 ret.add(SolrConstants._CALENDAR_DAY);
                 ret.add(SolrConstants._CALENDAR_MONTH);
                 ret.add(SolrConstants._CALENDAR_YEAR);
@@ -2759,12 +2728,12 @@ public final class SearchHelper {
         for (String term : searchTerms) {
             if (sbInner.length() > 0) {
                 if (addOperators) {
-                    sbInner.append(" AND ");
+                    sbInner.append(SolrConstants.SOLR_QUERY_AND);
                 } else {
                     sbInner.append(' ');
                 }
             }
-            if (!term.contains(" OR ")) {
+            if (!term.contains(SolrConstants.SOLR_QUERY_OR)) {
                 sbInner.append(term);
             } else {
                 sbInner.append('(').append(term).append(')');
@@ -2798,7 +2767,6 @@ public final class SearchHelper {
      * @param boostTopLevelDocstructs If true, query elements for boosting will be added
      * @param request
      * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should add embedded query template if boostTopLevelDocstructs true
      * @should add query prefix if boostTopLevelDocstructs true and termQuery not empty
      * @should escape quotation marks in embedded query
@@ -2807,12 +2775,12 @@ public final class SearchHelper {
      * @should remove existing join statement
      */
     public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs,
-            HttpServletRequest request, SearchAggregationType aggregationType) throws IndexUnreachableException {
+            HttpServletRequest request, SearchAggregationType aggregationType) {
         if (rawQuery == null) {
             throw new IllegalArgumentException("rawQuery may not be null");
         }
 
-        logger.trace("rawQuery: {}", rawQuery);
+        // logger.trace("rawQuery: {}", rawQuery);
         // logger.trace("termQuery: {}", termQuery);
         StringBuilder sbQuery = new StringBuilder();
         if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
@@ -2829,8 +2797,6 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-            //            String prefix = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) + " "
-            //                    : "";
             String prefix = "";
             String template =
                     "+(" + prefix + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
@@ -2869,12 +2835,10 @@ public final class SearchHelper {
             try {
                 updateFilterQuerySuffix(request, privilege);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
-            } catch (IndexUnreachableException e) {
+            } catch (IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
-            } catch (DAOException e) {
-                logger.error(e.getMessage(), e);
             }
         }
 
@@ -2926,7 +2890,7 @@ public final class SearchHelper {
             SXSSFCell cell = row.createCell(currentCellIndex++);
             cell.setCellStyle(styleBold);
             cell.setCellValue(new XSSFRichTextString("Query:"));
-            cell = row.createCell(currentCellIndex++);
+            cell = row.createCell(currentCellIndex);
             cell.setCellValue(new XSSFRichTextString(exportQuery));
             currentCellIndex = 0;
         }
@@ -3270,22 +3234,39 @@ public final class SearchHelper {
      * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
      * 
      * @param facetQueries List of individual facet queries
+     * @param allFacetQueries
+     * @param allowedFacetQueryRegexes Optional list containing regexes for allowed facet queries
      * @return Expand query
      * @should return empty string if list null or empty
      * @should construct query correctly
+     * @should only use queries that match allowed regex
+     * @should return empty string of no query allowed
      */
-    public static String buildExpandQueryFromFacets(List<String> facetQueries) {
-        if (facetQueries == null || facetQueries.isEmpty()) {
+    public static String buildExpandQueryFromFacets(List<String> allFacetQueries, List<String> allowedFacetQueryRegexes) {
+        if (allFacetQueries == null || allFacetQueries.isEmpty()) {
             return "";
         }
 
         StringBuilder sb = new StringBuilder();
-        for (String q : facetQueries) {
-            if (q != null && q.length() > 0) {
+        for (String q : allFacetQueries) {
+            if (StringUtils.isBlank(q)) {
+                continue;
+            }
+            if (allowedFacetQueryRegexes == null || allowedFacetQueryRegexes.isEmpty()) {
                 sb.append(" +").append(q);
+            } else {
+                for (String allowedFacetQuery : allowedFacetQueryRegexes) {
+                    Pattern p = Pattern.compile(allowedFacetQuery);
+                    Matcher m = p.matcher(q);
+                    if (m.matches()) {
+                        sb.append(" +").append(q);
+                    }
+                }
             }
         }
-        sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+        if (sb.length() > 0) {
+            sb.append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
+        }
 
         return sb.toString().trim();
     }

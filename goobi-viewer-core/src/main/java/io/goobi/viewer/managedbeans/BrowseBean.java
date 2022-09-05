@@ -876,7 +876,7 @@ public class BrowseBean implements Serializable {
 
         StringPair result =
                 SearchHelper.getFirstRecordPiAndPageType(getCollectionField(), getTargetCollection(), true, true,
-                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()), BeanUtils.getLocale());
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()));
         if (result == null) {
             return null;
         }

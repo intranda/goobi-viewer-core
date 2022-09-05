@@ -235,12 +235,12 @@ public class ViewerPath implements Serializable {
                         .getStaticPageForCMSPage(getCmsPage())
                         .stream()
                         .findFirst()
-                        .map(staticPage -> staticPage.getPageName().replaceAll("^\\/|\\/$", ""))
+                        .map(staticPage -> staticPage.getPageName().replaceAll("(^\\/)|(\\/$)", ""))
                         .map(pageName -> URI.create(pageName));
             } catch (DAOException e) {
             }
             if (!path.isPresent() && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
-                path = Optional.of(URI.create(getCmsPage().getPersistentUrl().replaceAll("^\\/|\\/$", "")));
+                path = Optional.of(URI.create(getCmsPage().getPersistentUrl().replaceAll("(^\\/)|(\\/$)", "")));
             }
         }
         return path.orElse(getPagePath());

@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.sitemap;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,6 +100,7 @@ public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
             long end = System.nanoTime();
             logger.info("Generating sitemap took {}s", toSeconds(end - start));
             logger.info("Written sitemap files to {}", path.toAbsolutePath());
+            assertTrue(Files.list(path).count() > 0);
         } finally {
             if (Files.isDirectory(path)) {
                 FileUtils.deleteDirectory(path.toFile());

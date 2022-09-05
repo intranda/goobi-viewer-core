@@ -22,6 +22,45 @@
 	display: none;
 }
 
+.small-button-loader {
+	&__wrapper {
+		position: relative;
+	}
+	&__icon {
+		display: none;
+		position: absolute;
+		border: 2px solid #e0e0e0; 
+		width: 16px;
+		height: 16px;
+		position: absolute;
+		top: 45%;
+		border-radius: 50%;
+		border-right: 2px solid @blue;
+		text-align:center;
+		animation-name: smallButtonLoaderSpin;
+		animation-duration: 900ms;
+		animation-iteration-count: infinite;
+		animation-timing-function: cubic-bezier(0.53, 0.21, 0.29, 0.67);
+		&.-top-right {
+			top: -8px;
+			right: -8px;
+		}
+	}
+}
+
+.spinner-container {
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  text-align: center;
+}
+
+@keyframes smallButtonLoaderSpin {
+  0% { -webkit-transform: rotate(0deg);}
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+
 .ajax-loader__overlay-wrapper {
 	z-index: 50000;
 	position: fixed;

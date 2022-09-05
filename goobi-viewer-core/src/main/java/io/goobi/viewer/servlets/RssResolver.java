@@ -23,6 +23,7 @@ package io.goobi.viewer.servlets;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import javax.servlet.ServletException;
@@ -52,13 +53,16 @@ import io.goobi.viewer.solr.SolrConstants;
 /**
  * Servlet implementation class RssResolver
  *
- * TODO: Removed deprecation marker because this servlet is still required for delivering RSS feeds for sidebar widget. The alternative, the rss REST-resource
- * delivers a json which need to be parsed and turned into html
+ * TODO: Removed deprecation marker because this servlet is still required for delivering RSS feeds for sidebar widget. The alternative, the rss
+ * REST-resource delivers a json which need to be parsed and turned into html
  */
 public class RssResolver extends HttpServlet {
     private static final long serialVersionUID = -8188360280492927624L;
 
     private static final Logger logger = LoggerFactory.getLogger(RssResolver.class);
+
+    private static final String PARAM_FILTERQUERY = "filterQuery";
+    private static final String PARAM_LANGUAGE = "language";
 
     /** {@inheritDoc} */
     @Override
@@ -71,22 +75,30 @@ public class RssResolver extends HttpServlet {
         if (request.getParameterMap().get("lang") != null && request.getParameterMap().get("lang").length > 0) {
             language = request.getParameterMap().get("lang")[0];
         }
-        if (request.getParameterMap().get("language") != null && request.getParameterMap().get("language").length > 0) {
-            language = request.getParameterMap().get("language")[0];
+        if (request.getParameterMap().get(PARAM_LANGUAGE) != null && request.getParameterMap().get(PARAM_LANGUAGE).length > 0) {
+            language = request.getParameterMap().get(PARAM_LANGUAGE)[0];
         }
         int maxHits;
         if (request.getParameterMap().get("max") != null && request.getParameterMap().get("max").length > 0) {
-            maxHits = Integer.parseInt(request.getParameterMap().get("max")[0]);
+            try {
+                maxHits = Integer.parseInt(request.getParameterMap().get("max")[0]);
+            } catch (NumberFormatException e) {
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+                return;
+            }
         } else {
             maxHits = DataManager.getInstance().getConfiguration().getRssFeedItems();
         }
-        logger.trace("RSS request language: {}", language);
 
         String filterQuery = "";
-        if (request.getParameterMap().get("filterQuery") != null && request.getParameterMap().get("filterQuery").length > 0) {
-            filterQuery = request.getParameterMap().get("filterQuery")[0];
+        if (request.getParameterMap().get(PARAM_FILTERQUERY) != null && request.getParameterMap().get(PARAM_FILTERQUERY).length > 0) {
+            filterQuery = request.getParameterMap().get(PARAM_FILTERQUERY)[0];
         }
-        logger.trace("RSS request filter query: {}", filterQuery);
+        // logger.trace("RSS request filter query: {}", filterQuery);
 
         Long bookshelfId = null;
         if (request.getParameterMap().get("bookshelfId") != null) {
@@ -122,53 +134,60 @@ public class RssResolver extends HttpServlet {
                 }
             }
 
-            logger.trace("RSS query: {}", query);
+            // logger.trace("RSS query: {}", query);
             if (StringUtils.isNotEmpty(query)) {
                 SyndFeedOutput output = new SyndFeedOutput();
                 output.output(
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
                                 query + SearchHelper.getAllSuffixes(request, true, true),
                                 Collections.singletonList(filterQuery), language, maxHits, null, true),
-                        new OutputStreamWriter(response.getOutputStream(), "utf-8"));
+                        new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8.name()));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");
-                return;
             }
         } catch (IOException e) {
-            if(GetAction.isClientAbort(e)) {
+            if (GetAction.isClientAbort(e)) {
                 //let them
             } else {
                 logger.error(e.getMessage(), e);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                return;
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
         } catch (FeedException e) {
             logger.error(e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
             //            response.isCommitted()
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         } catch (ViewerConfigurationException e) {
             logger.error(e.getMessage());
-            return;
         }
 
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
     }
 }

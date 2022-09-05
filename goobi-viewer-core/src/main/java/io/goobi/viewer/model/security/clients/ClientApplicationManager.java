@@ -89,7 +89,7 @@ public class ClientApplicationManager {
             client.setAccessStatus(AccessStatus.NON_APPLICABLE);
             dao.saveClientApplication(client);
             this.allClients = client;
-        }
+        } 
 
     }
 
@@ -214,7 +214,17 @@ public class ClientApplicationManager {
      * @return true if the client does not represent all clients
      */
     public boolean isNotAllClients(ClientApplication client) {
-        return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> id != getAllClients().getId()).orElse(true);
+        return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> !getAllClients().getId().equals(id)).orElse(true);
+    }
+    
+    /**
+     * check if the given client is the client instance representing all clients
+     * 
+     * @param client
+     * @return true if the client represents all clients
+     */
+    public boolean isAllClients(ClientApplication client) {
+        return !isNotAllClients(client);
     }
 
     /**

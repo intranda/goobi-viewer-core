@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -74,7 +75,9 @@ import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
  */
 @Entity
 @Table(name = "cms_media_items")
-public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem> {
+public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>, Serializable {
+
+    private static final long serialVersionUID = 31745843830948125L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
@@ -125,7 +128,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private int displayOrder = 0;
 
     @Transient
-    private FileTime lastModifiedTime = null;
+    private transient FileTime lastModifiedTime = null;
 
     /**
      * default constructor
@@ -231,7 +234,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
             case "avi":
             case "mov":
             case "wmv":
-               return CONTENT_TYPE_VIDEO;
+                return CONTENT_TYPE_VIDEO;
             case "mp3":
             case "mpeg":
             case "wav":

@@ -21,7 +21,8 @@
  */
 package io.goobi.viewer.api.rest.model.jobs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -30,15 +31,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.api.rest.model.tasks.Task;
-import io.goobi.viewer.api.rest.model.tasks.TaskManager;
-import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskStatus;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
+import io.goobi.viewer.api.rest.model.tasks.TaskManager;
+import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 
 /**
  * @author florian
@@ -56,25 +56,18 @@ public class JobManagerTest {
         manager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void testAddJob() throws InterruptedException {
         Task job = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {});
         manager.addTask(job);
-        assertEquals(TaskStatus.CREATED, manager.getTask(job.id).status);
+        assertEquals(TaskStatus.CREATED, manager.getTask(job.id).getStatus());
         Future future = manager.triggerTaskInThread(job.id, null);
         try {
             future.get(1, TimeUnit.SECONDS);
         } catch (ExecutionException | TimeoutException e) {
             fail(e.toString());
         }
-        assertEquals(TaskStatus.COMPLETE, manager.getTask(job.id).status);
+        assertEquals(TaskStatus.COMPLETE, manager.getTask(job.id).getStatus());
     }
 
     @Test

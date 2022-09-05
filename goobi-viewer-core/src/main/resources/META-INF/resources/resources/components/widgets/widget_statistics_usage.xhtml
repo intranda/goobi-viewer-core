@@ -1,0 +1,68 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
+
+    <composite:interface>
+        	<composite:attribute name="collapse" type="java.lang.Boolean" required="false" default="false"/>
+    </composite:interface>
+
+    <composite:implementation>
+		<ui:fragment rendered="#{statisticsBean.usageStatisticsActive}">
+			<c:set scope="request" var="stats" value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}"/>
+			
+	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
+		        <div id="widgetUsageStatistics" class="widget widget-statistics-usage">
+		        	<h2 class="widget__title">#{msg.widget_usage_statistics__title}</h2>
+		        	<div class="widget__body">
+
+						<div class="widget-usage-statistics__info-wrapper">
+							<div class="widget-usage-statistics__key">#{msg.widget_usage_statistics__total_views}:</div>
+							<div class="mb-2"><span class="widget-usage-statistics__value">#{stats.getTotalRequests('RECORD_VIEW')}</span><span class="widget-usage-statistics__updated">(#{msg.widget_usage_statistics__updated_on} <span class="updatedStatistics"><h:outputText 
+    value="#{statisticsBean.getLastUsageStatisticsCheck()}"
+	converter="localDateConverter" 
+    data-format="#{navigationHelper.datePattern}"/></span>)</span></div>
+							 
+							<div class="widget-usage-statistics__key">#{msg.widget_usage_statistics__total_downloads}:</div>
+							<div><span class="widget-usage-statistics__value">#{stats.getTotalRequests('FILE_DOWNLOAD')}</span><span class="widget-usage-statistics__updated">(#{msg.widget_usage_statistics__updated_on} <span class="updatedStatistics"><h:outputText 
+    value="#{statisticsBean.getLastUsageStatisticsCheck()}"
+	converter="localDateConverter" 
+    data-format="#{navigationHelper.datePattern}"/></span>)</span></div>
+			        		
+			        	</div>
+		        		
+					</div>
+
+						 
+<!-- 		        		<div>Unique views: #{stats.getUniqueRequests('RECORD_VIEW')}</div> -->
+<!-- 		        		<div>Unique downloads: #{stats.getUniqueRequests('FILE_DOWNLOAD')}</div> -->
+
+<!-- 		        		<div>last requested date: #{stats.getLastRecordedDate()}</div> -->
+
+
+		        </div>
+	        </h:panelGroup>
+	        
+	        <!-- WIDGET WORK COUNT FOLDOUT -->
+	        <h:panelGroup rendered="#{cc.attrs.collapse == true}">
+	        	<div id="widget-usage-statistics" class="widget widget-usage-statistics">
+					<h2 >
+						<a href="#usageStatisticsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="usageStatisticsCollapse">
+						</a>
+					</h2>
+					
+					<div id="usageStatisticsCollapse" class="collapse">
+						<div id="usageStatistics"/>
+					</div>
+		        </div>
+	        </h:panelGroup>
+    </ui:fragment>
+    </composite:implementation>
+</ui:composition>

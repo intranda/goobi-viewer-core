@@ -327,7 +327,7 @@ public class SearchHit implements Comparable<SearchHit> {
             Set<String> newTerms = new HashSet<String>();
             Set<String> terms = origTerms.get(solrField);
             for (String term : terms) {
-                term = term.replaceAll("^\\(|\\)$", "");
+                term = term.replaceAll("(^\\()|(\\)$)", "");
                 term = StringTools.removeDiacriticalMarks(term);
                 if (FuzzySearchTerm.isFuzzyTerm(term)) {
                     FuzzySearchTerm fuzzy = new FuzzySearchTerm(term);
@@ -518,7 +518,7 @@ public class SearchHit implements Comparable<SearchHit> {
         try {
             String fulltext = null;
             if (BeanUtils.getRequest() != null
-                    && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false)) {
+                    && AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", browseElement.getPi(), teiFilename, false).isGranted()) {
                 fulltext = DataFileTools.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
             }
             if (fulltext != null) {
@@ -600,19 +600,19 @@ public class SearchHit implements Comparable<SearchHit> {
             // logger.trace("Found child doc: {}", docType);
             boolean acccessDeniedType = false;
             switch (docType) {
-                case PAGE:
+                case PAGE: //NOSONAR, no break on purpose to run through all cases
                     String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
                     String plaintextFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT);
                     try {
                         if (StringUtils.isNotBlank(plaintextFilename)) {
-                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false);
+                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false).isGranted();
                             if (access) {
                                 fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
                             } else {
                                 acccessDeniedType = true;
                             }
                         } else if (StringUtils.isNotBlank(altoFilename)) {
-                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false);
+                            boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false).isGranted();
                             if (access) {
                                 fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
                             } else {

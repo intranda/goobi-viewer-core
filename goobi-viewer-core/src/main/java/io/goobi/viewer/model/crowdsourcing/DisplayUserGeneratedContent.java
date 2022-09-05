@@ -46,6 +46,7 @@ import de.intranda.api.annotation.wa.TextualResource;
 import de.intranda.api.annotation.wa.TypedResource;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.HtmlParser;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -572,13 +573,12 @@ public class DisplayUserGeneratedContent {
                 if (resource == null) {
                     throw new IllegalArgumentException("no content generated");
                 }
-            } catch (JsonProcessingException | IllegalArgumentException e) {
+            } catch (JsonProcessingException | IllegalArgumentException | ClassCastException e) {
                 try {
                     resource = mapper.readValue(json, de.intranda.api.annotation.oa.TypedResource.class);
-                } catch (JsonProcessingException e1) {
-                    resource = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : "text/plain");
+                } catch (JsonProcessingException | ClassCastException e1) {
+                    resource = new TextualResource(json, HtmlParser.isHtml(json) ? "text/html" : StringConstants.MIMETYPE_TEXT_PLAIN);
                 }
-
             }
         }
         return resource;
@@ -657,6 +657,9 @@ public class DisplayUserGeneratedContent {
      * @return
      */
     private static String createLabelFromBody(ContentType type, ITypedResource body) {
+        if(type == null || body == null) {
+            return "";
+        }
         switch (type) {
             case GEOLOCATION:
                 return "admin__crowdsourcing_question_type_GEOLOCATION_POINT";

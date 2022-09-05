@@ -71,20 +71,27 @@ public class ALTOTools {
 
     private static final Logger logger = LoggerFactory.getLogger(ALTOTools.class);
 
-    private final static String STRING = "String";
-    private final static String CONTENT = "CONTENT";
-    private final static String SUBS_CONTENT = "SUBS_CONTENT";
-    private final static String ID = "ID";
-    private final static String TEXTLINE = "TextLine";
-    private final static String TAGREFS = "TAGREFS";
-    private final static String NETAG = "NamedEntityTag";
-    private final static String TYPE = "TYPE";
-    private final static String URI = "URI";
-    private final static String LABEL = "LABEL";
+    private static final String STRING = "String";
+    private static final String CONTENT = "CONTENT";
+    private static final String SUBS_CONTENT = "SUBS_CONTENT";
+    private static final String ID = "ID";
+    private static final String TEXTLINE = "TextLine";
+    private static final String TAGREFS = "TAGREFS";
+    private static final String NETAG = "NamedEntityTag";
+    private static final String TYPE = "TYPE";
+    private static final String URI = "URI";
+    private static final String LABEL = "LABEL";
 
     /** Constant <code>TAG_LABEL_IGNORE_REGEX</code> */
-    // public static final String TAG_LABEL_IGNORE_REGEX = "(^\\W+)|(\\W+$)";
-    public static final String TAG_LABEL_IGNORE_REGEX= "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
+    public static final String TAG_LABEL_IGNORE_REGEX =
+            "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
+
+    /**
+     * 
+     */
+    private ALTOTools() {
+        //
+    }
 
     /**
      * Read the plain fulltext from an alto file. Don't merge linebreaks
@@ -137,15 +144,13 @@ public class ALTOTools {
         try {
             AltoDocument doc = AltoDocument.getDocumentFromString(alto, charset);
             for (Tag tag : doc.getTags().getTagsAsList()) {
-                if (type == null) {
-                    addTags(createNERTag(tag), ret);
-                } else if (type.matches(tag.getType())) {
+                if (type == null || type.matches(tag.getType())) {
                     addTags(createNERTag(tag), ret);
                 }
             }
         } catch (UnsupportedEncodingException e) {
             logger.error("{}: {}", e.getMessage(), charset);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             // logger.trace("Error loading ALTO from XML:\n{}", alto);
         }
@@ -158,7 +163,6 @@ public class ALTOTools {
      * @param tags
      */
     private static void addTags(List<TagCount> tags, List<TagCount> list) {
-
         for (TagCount tag : tags) {
             int index = list.indexOf(tag);
             if (index > -1) {
@@ -177,11 +181,11 @@ public class ALTOTools {
     @SuppressWarnings("rawtypes")
     private static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
-        value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, "");
+        value = value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR   TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions which would cause catastrophic backtracking
         Type type = Type.getByLabel(tag.getType());
         if (type == null) {
-            logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.misc.name());
-            type = Type.misc;
+            logger.trace("Unknown tag type: {}, using {}", tag.getType(), Type.MISC.name());
+            type = Type.MISC;
         }
         ElementReference element = null;
 
@@ -428,8 +432,6 @@ public class ALTOTools {
             try {
                 Rectangle wordRect = getRectangle(coords);
                 wordRect = rotate(wordRect, rotation, pageSize);
-                // wordRect = addImageFooter(wordRect, rotation,
-                // imageFooterHeight);
                 coords = getString(wordRect);
             } catch (NumberFormatException e) {
                 logger.error("Cannot rotate coords {}: {}", coords, e.getMessage());
@@ -439,7 +441,6 @@ public class ALTOTools {
     }
 
     /**
-     * TODO Re-implement using stream
      *
      * @param altoString String containing the ALTO XML document
      * @param charset
@@ -471,9 +472,7 @@ public class ALTOTools {
             logger.error("Could not parse ALTO: No width or height specified in 'page' element.");
         } catch (NumberFormatException e) {
             logger.error("Could not parse ALTO: Could not parse page width or height.");
-        } catch (IOException e) {
-            logger.error("Could not parse ALTO: ", e);
-        } catch (JDOMException e) {
+        } catch (IOException | JDOMException e) {
             logger.error("Could not parse ALTO: ", e);
         }
         logger.trace("{} ALTO words found for this page.", words.size());
@@ -519,7 +518,7 @@ public class ALTOTools {
             }
         }
 
-        return coordList;// new ArrayList<>();
+        return coordList;
     }
 
     private static String addWordCoords(int rotation, Dimension pageSize, Word eleWord, List<String> tempList) {
@@ -528,8 +527,6 @@ public class ALTOTools {
             try {
                 Rectangle wordRect = getRectangle(coords);
                 wordRect = rotate(wordRect, rotation, pageSize);
-                // wordRect = addImageFooter(wordRect, rotation,
-                // imageFooterHeight);
                 coords = getString(wordRect);
             } catch (NumberFormatException e) {
                 logger.error("Cannot rotate coords {}: {}", coords, e.getMessage());
@@ -537,7 +534,7 @@ public class ALTOTools {
         }
         if (coords != null) {
             tempList.add(coords);
-            logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue("CONTENT"), coords);
+            logger.trace("ALTO word found: {} ({})", eleWord.getAttributeValue(CONTENT), coords);
         }
 
         return coords;
@@ -647,8 +644,7 @@ public class ALTOTools {
         int right = (int) Double.parseDouble(parts[2]);
         int bottom = (int) Double.parseDouble(parts[3]);
 
-        Rectangle rect = new Rectangle(left, top, right - left, bottom - top);
-        return rect;
+        return new Rectangle(left, top, right - left, bottom - top);
     }
 
     /**
@@ -696,40 +692,6 @@ public class ALTOTools {
         }
         return hits;
 
-        //        if (content.trim().contains(" ")) {
-        //            // not a word, but a line
-        //            content = content.trim().replaceAll("\\s+", " ").toLowerCase();
-        //            int hitCount = words.length;
-        //            StringBuilder sbMatchString = new StringBuilder();
-        //            for (String string : words) {
-        //                if (sbMatchString.length() > 0) {
-        //                    sbMatchString.append(' ');
-        //                }
-        //                sbMatchString.append(string.toLowerCase());
-        //            }
-        //            String matchString = sbMatchString.toString();
-        //            for (; hitCount > 0; hitCount--) {
-        //                if (content.contains(matchString)) {
-        //                    break;
-        //                } else if (!matchString.contains(" ")) {
-        //                    // last word didn't match, so no match
-        //                    return 0;
-        //                } else {
-        //                    matchString = matchString.substring(0, matchString.lastIndexOf(' '));
-        //                }
-        //            }
-        //            return hitCount;
-        //        }
-        //for both the search term and the alto string, make lower case, normalize characters, remove diacriticals and remove all non-word characters
-        //        FuzzySearchTerm fuzzy = new FuzzySearchTerm(words[0]);
-        //        return fuzzy.matches(content) ? 1 : 0;
-        //        String word = StringTools.removeDiacriticalMarks(words[0].toLowerCase()).replaceAll("[^\\w-]", "");
-        //        String contentString = StringTools.removeDiacriticalMarks(content.trim().toLowerCase()).replaceAll("[^\\w-]", "");
-        //        if (StringUtils.isNoneBlank(word, contentString) && word.equals(contentString)) {
-        //            return 1;
-        //        }
-        //
-        //        return 0;
     }
 
     /**

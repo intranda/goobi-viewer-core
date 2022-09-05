@@ -140,7 +140,7 @@ public class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
                 .findFirst()
                 .orElse(null);
         assertNotNull(viewerRendering);
-        assertEquals("https://viewer.goobi.io/object/" + PI + "/1/LOG_0003/", viewerRendering.getId().toString());
+        assertEquals("https://viewer.goobi.io/metadata/" + PI + "/1/LOG_0003/", viewerRendering.getId().toString());
     }
 
 }

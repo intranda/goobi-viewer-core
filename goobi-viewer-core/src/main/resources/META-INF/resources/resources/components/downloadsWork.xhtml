@@ -318,6 +318,24 @@
                                 #{msg.opacLink} 
                             </a>
                         </ui:fragment>
+                        
+                        <!-- TOC -->
+						<ui:fragment rendered="#{activeDocumentBean.accessPermissionPdf or activeDocumentBean.accessPermissionEpub or configurationBean.docHierarchyPdfEnabled}">
+								<ui:fragment rendered="#{configurationBean.docHierarchyPdfEnabled}">
+									<h:form class="d-inline-flex" id="titleBodyForm" prependId="false">
+									<h:commandLink
+										id="tocDownload"
+										action="#{activeDocumentBean.downloadTOCAction()}"
+										title="#{msg.tocDownload}"
+										styleClass="badge badge-dark widget-usage__work-download-toc"
+										value="#{msg.tocDownloadBadge}">
+										<f:passThroughAttribute name="data-toggle" value="tooltip" />
+										<f:passThroughAttribute name="data-placement" value="top" />
+										<f:passThroughAttribute name="aria-label" value="#{msg.tocDownload}" />
+									</h:commandLink>
+									</h:form>
+								</ui:fragment>
+						</ui:fragment>
                       
                     </div>
                     

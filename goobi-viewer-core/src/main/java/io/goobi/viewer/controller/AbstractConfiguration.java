@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractConfiguration.class);
 
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builderLocal;
@@ -67,7 +67,7 @@ public abstract class AbstractConfiguration {
             try {
                 return builderLocal.getConfiguration();
             } catch (ConfigurationException e) {
-                // logger.error(e.getMessage());
+                 logger.trace(e.getMessage());
             }
         }
 

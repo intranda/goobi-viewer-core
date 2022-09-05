@@ -25,7 +25,6 @@
 
       ['bootstrap', [], 'resources/css/libs/bs/bootstrap.custom.css'],
       ['jqueryUI', [], 'resources/css/libs/jQueryUi/jquery-ui.min.css'],
-      ['jqueryUI.structure', [], 'resources/css/libs/jQueryUi/jquery-ui.structure.min.css'],
       ['jqueryUI.slider-rtl', ['templateAdmin', 'templateBlank', 'templateArchives', 'templateFullscreen', 'templateCrowdsourcing'], 'resources/css/libs/jQueryUi/jquery.ui.slider-rtl.css'],
       ['font-awesome', [], 'resources/css/libs/font-awesome/css/font-awesome.min.css'],
       ['swiper', ['templateBlank', 'templateArchives', 'templateFullscreen', 'templateCrowdsourcing'], 'resources/css/libs/swiper/swiper-bundle.min.css'],
@@ -36,8 +35,14 @@
       ['leaflet.draw', ['templateAdmin', 'templateBlank', 'templateCrowdsourcing', 'templateArchives'], 'resources/css/libs/leaflet/draw/leaflet.draw.css'],
       ['mapbox.gl-geocoder', ['templateAdmin', 'templateBlank', 'templateArchives'], 'resources/css/libs/mapbox/geocoder/mapbox-gl-geocoder.css'],
       ['mapbox.gl', ['templateAdmin', 'templateBlank', 'templateArchives'], 'resources/css/libs/mapbox/mapbox-gl.css'],
+	  ['codemirror', ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing' , 'templateFullscreen', 'templateMirador'], 'resources/css/libs/codemirror/codemirror.css'],
+	  ['codemirrorFullscreen', ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'], 'resources/css/libs/codemirror/fullscreen.css'],
+	  ['codemirrorDialog', ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'], 'resources/css/libs/codemirror/dialog.css'],
+	  ['codemirrorThemeDracula', ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'], 'resources/css/libs/codemirror/dracula.css'],
       ['coreCSS', [], 'resources/css/dist/viewer.min.css']
-
+	  
+	  
+	
     ]}" />
 
     <!-- INCLUDE CSS IF CONDITIONS ARE MET -->
@@ -45,7 +50,7 @@
       <!-- include file, if it is not explicitly excluded -->
       <!-- (either above, or in the excludeCSS variable, which can be set in template files) -->
       <c:if test="#{!path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
-        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}" />
+        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
       </c:if>
     </c:forEach>
 
@@ -53,7 +58,7 @@
       THEME CSS
     ==================== -->
     <c:if test="#{!excludeCSS.contains('themeCSS')}">
- 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}" />
+ 	    <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.theme}.min.css?${navigationHelper.buildVersion}&amp;#{cacheBuster}" />
     </c:if>
 
     <!-- SHOW CSS NAMES IN CONSOLE -->

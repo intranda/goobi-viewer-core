@@ -93,60 +93,75 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                         case "maxWidth":
                             try {
                                 maxWidth = Integer.parseInt(values[0]);
-                            } catch(NumberFormatException e) {
-                                logger.warn("'maxWidth' paraneter is not an integer: " + values[0]);
+                            } catch (NumberFormatException e) {
+                                logger.warn("'maxWidth' paraneter is not an integer: {}", values[0]);
                             }
                             break;
                         case "maxHeight":
                             try {
                                 maxHeight = Integer.parseInt(values[0]);
-                            } catch(NumberFormatException e) {
-                                logger.warn("'maxHeight' paraneter is not an integer: " + values[0]);
+                            } catch (NumberFormatException e) {
+                                logger.warn("'maxHeight' paraneter is not an integer: {}", values[0]);
                             }
                             break;
                         case "format":
                             format = values[0];
+                            break;
+                        default:
                             break;
                     }
                 }
             }
         }
         if (url == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: url");
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: url");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
 
-        OEmbedRecord record = null;
+        OEmbedRecord rec = null;
         try {
-            record = parseUrl(url);
+            rec = parseUrl(url);
         } catch (URISyntaxException e) {
             logger.error(e.getMessage());
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not parse URL");
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Could not parse URL");
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
             return;
-        } catch (PresentationException e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse URL");
-            return;
-        } catch (IndexUnreachableException e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse URL");
+        } catch (PresentationException | IndexUnreachableException e) {
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse URL");
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
             return;
         }
-        if (record == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not load record described by the URL");
+        if (rec == null) {
+            try {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Could not load record described by the URL");
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
             return;
         }
 
         // Check access conditions, if an actual document with a PI is involved
         boolean access = true;
-        //        try {
-        //            access = !AccessConditionUtils.checkContentFileAccessPermission(pi, request, Collections.singletonList(path))
-        //                    .containsValue(Boolean.FALSE);
         if (!access) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+            try {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
             return;
         }
 
         try {
-            String ret = "TODO";
             switch (format) {
                 case "json":
                     response.setContentType("application/json");
@@ -154,35 +169,51 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
                 case "xml":
                     response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, "XML is not yet supported");
                     return;
+                default:
+                    return;
             }
 
             OEmbedResponse oembedResponse;
-            if(record.isRichResponse()) {
-                oembedResponse = new RichOEmbedResponse(record, maxWidth, maxHeight);
+            if (rec.isRichResponse()) {
+                oembedResponse = new RichOEmbedResponse(rec, maxWidth, maxHeight);
             } else {
-                // OEmbedResponse oembedResponse = new RichOEmbedResponse(record);
-                oembedResponse = new PhotoOEmbedResponse(record);
+                oembedResponse = new PhotoOEmbedResponse(rec);
             }
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(Include.NON_NULL);
-            ret = mapper.writeValueAsString(oembedResponse);
+            String ret = mapper.writeValueAsString(oembedResponse);
             response.getWriter().write(ret);
-
         } catch (SocketException e) {
             logger.trace("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
         } catch (IOException e) {
-            if(GetAction.isClientAbort(e)) {
+            if (GetAction.isClientAbort(e)) {
                 logger.trace("Client {} has abborted the connection: {}", request.getRemoteAddr(), e.getMessage());
             } else {
                 logger.error(e.getMessage(), e);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
         } catch (ViewerConfigurationException e) {
             logger.error(e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         }
     }
 
+    /**
+     * 
+     * @param origUrl
+     * @return
+     * @throws URISyntaxException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     static OEmbedRecord parseUrl(String origUrl) throws URISyntaxException, PresentationException, IndexUnreachableException {
         if (origUrl == null) {
             return null;
@@ -196,25 +227,22 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         String[] urlSplit = url.split("/");
         logger.trace(Arrays.toString(urlSplit));
 
-        if(urlSplit.length > 0 && "embed".equals(urlSplit[0])) {
-
+        if (urlSplit.length > 0 && "embed".equals(urlSplit[0])) {
             return new OEmbedRecord(origUrl);
-
-        } else {
-            String pi = urlSplit[1];
-            int page = Integer.valueOf(urlSplit[2]);
-            long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
-            if (iddoc == 0) {
-                return null;
-            }
-
-            OEmbedRecord ret = new OEmbedRecord();
-            StructElement se = new StructElement(iddoc);
-            ret.setStructElement(se);
-            PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
-            ret.setPhysicalElement(pe);
-
-            return ret;
         }
+        String pi = urlSplit[1];
+        int page = Integer.parseInt(urlSplit[2]);
+        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
+        if (iddoc == 0) {
+            return null;
+        }
+
+        OEmbedRecord ret = new OEmbedRecord();
+        StructElement se = new StructElement(iddoc);
+        ret.setStructElement(se);
+        PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
+        ret.setPhysicalElement(pe);
+
+        return ret;
     }
 }

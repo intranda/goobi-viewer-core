@@ -85,7 +85,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class RecordFilesResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecordFilesResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -158,7 +158,7 @@ public class RecordFilesResource {
             throw new ContentNotFoundException("Source file " + filename + " not found");
         }
 
-        boolean access = AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest);
+        boolean access = AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest).isGranted();
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
@@ -199,18 +199,14 @@ public class RecordFilesResource {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
-        if (filePath != null) {
-            if (Files.isRegularFile(filePath)) {
-                try {
-                    Document doc = XmlTools.readXmlFile(filePath);
-                    return new XMLOutputter().outputString(doc);
-                } catch (FileNotFoundException e) {
-                    logger.debug(e.getMessage());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (JDOMException e) {
-                    logger.error(e.getMessage(), e);
-                }
+        if (filePath != null && Files.isRegularFile(filePath)) {
+            try {
+                Document doc = XmlTools.readXmlFile(filePath);
+                return new XMLOutputter().outputString(doc);
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+            } catch (IOException | JDOMException e) {
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -225,7 +221,7 @@ public class RecordFilesResource {
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
         boolean access = false;
         try {
-            access = AccessConditionUtils.checkAccess(servletRequest, "text", pi, filename, false);
+            access = AccessConditionUtils.checkAccess(servletRequest, "text", pi, filename, false).isGranted();
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
         }

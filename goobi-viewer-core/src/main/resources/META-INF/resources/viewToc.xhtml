@@ -35,12 +35,27 @@
             </h:panelGroup>
 
 			<div id="viewToc" class="view-toc">
-				<!-- TITLE -->
-				<ui:include src="/resources/includes/title.xhtml">
-					<ui:param name="structure" value="false" />
-					<ui:param name="pdf" value="true" />
-					<ui:param name="purl" value="true" />
-				</ui:include>
+		    	<div id="title" class="title">
+		    		<!-- TITLE HEADER -->
+					<div class="title__header">
+						<h1 class="h2">
+		
+							<!-- FA* is this still needed? What is the purpose? -->
+							<!-- PAGE TYPE -->
+							<span class="title__header-page-type">
+								<h:outputText value="#{msg[navigationHelper.currentView]}" escape="false" />:
+							</span>
+		
+							<!-- NAME OF THE RECORD -->
+							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
+		
+		                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+								<viewerComponent:copyrightIndicator />
+							</ui:fragment>
+		
+						</h1>
+					</div>
+				</div>
 
 				<div class="toc">
 					<h:form id="tocForm" prependId="false">
@@ -424,8 +439,14 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="toc" />
+        
+        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+        	<widgetComponent:widget_copyrightInfo />
+        </ui:fragment>
 
         <widgetComponent:widget_searchInCurrentItem />
+        
+        <widgetComponent:widget_statistics_usage />
 
         <widgetComponent:widget_archives />
 

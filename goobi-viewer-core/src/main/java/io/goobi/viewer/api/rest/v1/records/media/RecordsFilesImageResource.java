@@ -63,6 +63,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBind
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -97,6 +98,7 @@ public class RecordsFilesImageResource extends ImageResource {
         super(context, request, response, pi, filename);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
+        // TODO Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, otherwise the check in AccessConditionRequestFilter will fail!
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
@@ -105,7 +107,7 @@ public class RecordsFilesImageResource extends ImageResource {
         String imageRequestPath = requestUrl.substring(baseEndIndex);
 
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
+        if (parts.size() == 4) {
             //image request
             String region = parts.get(0);
             String size = parts.get(1);
@@ -116,10 +118,11 @@ public class RecordsFilesImageResource extends ImageResource {
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
             int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
-            if(maxUnzoomedImageWidth > 0 &&
+            if (maxUnzoomedImageWidth > 0 &&
                     (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) ||
-                    scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
-                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, new String[] {IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES});
+                            scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
+                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE,
+                        new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES });
             }
         } else {
             //image info request
@@ -127,12 +130,13 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
-
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
+    @RecordFileDownloadBinding
     @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
+    @Override
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
@@ -141,13 +145,13 @@ public class RecordsFilesImageResource extends ImageResource {
         filename = pi + "_" + filename + ".pdf";
         response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-        if(context.getProperty("param:metsSource") != null) {
+        if (context.getProperty("param:metsSource") != null) {
             try {
                 String metsSource = context.getProperty("param:metsSource").toString();
                 String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
                 context.setProperty("param:metsFile", metsPath);
             } catch (URISyntaxException e) {
-                logger.error("Failed to convert metsSource " + context.getProperty("metsSource") + " to mets URI");
+                logger.error("Failed to convert metsSource {} to METS URI", context.getProperty("metsSource"));
             }
 
         }
@@ -161,7 +165,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
-       return super.redirectToCanonicalImageInfo();
+        return super.redirectToCanonicalImageInfo();
     }
 
     @Override
@@ -173,8 +177,5 @@ public class RecordsFilesImageResource extends ImageResource {
         } catch (UnsupportedEncodingException e) {
         }
     }
-
-
-
 
 }

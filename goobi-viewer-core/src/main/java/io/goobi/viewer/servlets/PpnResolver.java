@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -88,11 +89,19 @@ public class PpnResolver extends HttpServlet implements Serializable {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String identifier = request.getParameter(REQUEST_PARAM_NAME);
         if (identifier == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_NO_ARGUMENT + REQUEST_PARAM_NAME);
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_NO_ARGUMENT + REQUEST_PARAM_NAME);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
         if (!PIValidator.validatePi(identifier)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + identifier);
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + identifier);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
         Integer page = null;
@@ -101,7 +110,11 @@ public class PpnResolver extends HttpServlet implements Serializable {
             try {
                 page = Integer.parseInt(pageString);
             } catch (NumberFormatException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_PAGE_NUMBER + ": " + identifier);
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_PAGE_NUMBER + ": " + identifier);
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
         }
 
@@ -111,22 +124,57 @@ public class PpnResolver extends HttpServlet implements Serializable {
             SolrDocumentList hits = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query);
-            logger.trace("Resolver query: {}", query);
+            // logger.trace("Resolver query: {}", query);
             if (hits.getNumFound() == 0) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
+                try {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             } else if (hits.getNumFound() > 1) {
                 // 3.2 show multiple match, that indicates corrupted index
-                response.sendError(HttpServletResponse.SC_CONFLICT, ERRTXT_MULTIMATCH);
+                try {
+                    response.sendError(HttpServletResponse.SC_CONFLICT, ERRTXT_MULTIMATCH);
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST,
-                    request);
+            boolean access = false;
+            try {
+                access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST,
+                        request).isGranted();
+            } catch (DAOException e) {
+                logger.debug("DAOException thrown here: {}", e.getMessage());
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+            } catch (IndexUnreachableException e) {
+                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+            } catch (RecordNotFoundException e) {
+                try {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+            }
             if (!access) {
-                logger.debug("User may not list {}", identifier);
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
+                logger.debug("User may not list record");
+                try {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             }
 
@@ -141,25 +189,32 @@ public class PpnResolver extends HttpServlet implements Serializable {
             }
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
                 String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
-                response.sendRedirect(absoluteUrl);
+                try {
+                    response.sendRedirect(absoluteUrl);
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
             } else {
-                getServletContext().getRequestDispatcher(result).forward(request, response);
+                try {
+                    getServletContext().getRequestDispatcher(result).forward(request, response);
+                } catch (IOException | ServletException e) {
+                    logger.error(e.getMessage());
+                }
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
-        } catch (DAOException e) {
-            logger.debug("DAOException thrown here: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            return;
-        } catch (RecordNotFoundException e) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
-            return;
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
         }
     }
 }

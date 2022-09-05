@@ -1724,6 +1724,7 @@ public class CmsBean implements Serializable {
             search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, true,
                     DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(search);
+            searchBean.setHitsPerPageSetterCalled(false);
             return null;
         } else if (item == null) {
             logger.error("Cannot search: item is null");

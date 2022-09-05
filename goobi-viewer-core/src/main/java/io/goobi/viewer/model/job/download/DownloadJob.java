@@ -33,7 +33,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -151,7 +150,7 @@ public abstract class DownloadJob implements Serializable {
     @CollectionTable(name = "download_job_observers", joinColumns = @JoinColumn(name = "download_job_id"))
     @Column(name = "observer")
     @JsonIgnore
-    protected List<String> observers = new ArrayList<>();
+    private List<String> observers = new ArrayList<>();
 
     /**
      * <p>
@@ -213,7 +212,7 @@ public abstract class DownloadJob implements Serializable {
             throw new IllegalArgumentException("wrong downloadIdentifier");
         }
 
-        logger.debug("Checking download of job " + controlIdentifier);
+        logger.debug("Checking download of job {}", controlIdentifier);
 
         try {
             /*Get or create job*/
@@ -238,7 +237,6 @@ public abstract class DownloadJob implements Serializable {
                 downloadJob.setLastRequested(LocalDateTime.now());
                 downloadJob.updateStatus();
             }
-            logger.debug("Requested download job " + downloadJob);
 
             /*set observer email*/
             String useEmail = null;
@@ -255,7 +253,7 @@ public abstract class DownloadJob implements Serializable {
                 downloadJob.setStatus(JobStatus.READY);
             } else {
                 //not waiting but file doesn't exist -> trigger creation
-                logger.debug("Triggering " + downloadJob.getType() + " creation");
+                logger.debug("Triggering {} creation", downloadJob.getType());
                 try {
                     downloadJob.triggerCreation();
                     downloadJob.setStatus(JobStatus.WAITING);
@@ -268,7 +266,7 @@ public abstract class DownloadJob implements Serializable {
             /*Add or update job in database*/
             boolean updated = false;
             if (newJob) {
-                updated = DataManager.getInstance().getDao().addDownloadJob(downloadJob);
+                DataManager.getInstance().getDao().addDownloadJob(downloadJob);
             }
             updated = DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
             if (updated) {
@@ -288,9 +286,8 @@ public abstract class DownloadJob implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
-    protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException, DownloadException;
+    protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException;
 
     /**
      * <p>
@@ -391,7 +388,7 @@ public abstract class DownloadJob implements Serializable {
      */
     @JsonIgnore
     public Path getFile() {
-        Path path = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension()).toPath();//Paths.get(sb.toString());
+        Path path = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension()).toPath();
         logger.trace(path.toString());
         if (Files.isRegularFile(path)) {
             return path;
@@ -409,11 +406,9 @@ public abstract class DownloadJob implements Serializable {
      * @param message a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
-     * @throws javax.mail.AuthenticationFailedException if any.
      * @throws javax.mail.MessagingException if any.
      */
-    public boolean notifyObservers(JobStatus status, String message)
-            throws UnsupportedEncodingException, AuthenticationFailedException, MessagingException {
+    public boolean notifyObservers(JobStatus status, String message) throws UnsupportedEncodingException, MessagingException {
         if (observers == null || observers.isEmpty()) {
             return false;
         }
@@ -425,7 +420,7 @@ public abstract class DownloadJob implements Serializable {
                 body = ViewerResourceBundle.getTranslation("downloadReadyBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
-                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/"); // TODO
+                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/");
                     body = body.replace("{4}", getType().toUpperCase());
                     LocalDateTime exirationDate = lastRequested;
                     exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);
@@ -740,7 +735,7 @@ public abstract class DownloadJob implements Serializable {
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)
                     .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new IOException("Error connecting to " + url, e);
         }
     }
@@ -765,7 +760,7 @@ public abstract class DownloadJob implements Serializable {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return ret;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Error getting response from TaskManager", e);
             return "";
         }
@@ -786,9 +781,9 @@ public abstract class DownloadJob implements Serializable {
         try {
             JSONObject object = new JSONObject(ret);
             String statusString = object.getString("status");
-            JobStatus status = JobStatus.getByName(statusString);
-            setStatus(status);
-            if (JobStatus.ERROR.equals(status)) {
+            JobStatus s = JobStatus.getByName(statusString);
+            setStatus(s);
+            if (JobStatus.ERROR.equals(s)) {
                 String errorMessage = object.getString("errorMessage");
                 setMessage(errorMessage);
             }

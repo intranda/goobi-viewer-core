@@ -409,7 +409,7 @@ public abstract class AbstractBuilder {
             displayFields.add(SolrConstants.EVENTTYPE);
         }
 
-        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, displayFields);
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, null);
         List<StructElement> eles = new ArrayList<>();
         List<SolrDocument> events = new ArrayList<>();
         if (docs != null) {
@@ -503,7 +503,7 @@ public abstract class AbstractBuilder {
     public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
         String query = "PI:" + pi;
         List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, displayFields);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
         if (doc != null) {
             StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
             ele.setImageNumber(1);
@@ -531,7 +531,6 @@ public abstract class AbstractBuilder {
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
         fields.addAll(DataManager.getInstance().getConfiguration().getIIIFLabelFields());
-
         return new ArrayList<>(fields);
     }
 

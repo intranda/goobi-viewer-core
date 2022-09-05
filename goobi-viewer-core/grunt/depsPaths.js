@@ -45,6 +45,34 @@ const depsPathsJS = [
     dest:`${jsLibsDir}clipboard/`
   },
 
+  { // Codemirror
+    expand: true,
+    cwd: nodeModules,
+    src: [
+	  // BASIC FUNCTIONALITY
+      'codemirror/lib/codemirror.js', 
+	  // SEARCH ADDON
+      'codemirror/addon/search/search.js', 
+      'codemirror/addon/search/match-highlighter.js',
+	  'codemirror/addon/search/searchcursor.js',
+	  'codemirror/addon/search/jump-to-line.js',
+	  // FULLSCREEN ADDON
+	  'codemirror/addon/display/fullscreen.js',
+	  // DIALOG NEEDED FOR SEARCH ADDON
+	  'codemirror/addon/dialog/dialog.js', //  - RELIES ON dialog.css
+	  // HIGHLIGHT ACTIVE LINE ADDON
+	  'codemirror/addon/selection/active-line.js',
+	  // XML SYNTAX FILE 
+	  'codemirror/mode/xml/xml.js',
+	  // PROPERTIES SYNTAX FILE 
+	  'codemirror/mode/properties/properties.js',
+	  // LICENSE FILE 
+      'codemirror/LICENSE',
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}codemirror/`
+  },
+
   { // HC-STICKY 
     expand: true,
     cwd: nodeModules,
@@ -69,8 +97,11 @@ const depsPathsJS = [
 
   { // jQuery UI
     expand:true,
-    cwd: 'node_modules/jquery-ui-dist/',
-    src: ['LICENSE.txt', 'jquery-ui.min.js'], 
+    cwd: nodeModules,
+	src: [
+		'jquery-ui/dist/jquery-ui.min.js',
+		'jquery-ui/LICENCE.txt'
+    ],
     flatten: true,
     dest:`${jsLibsDir}jqueryUi/`
   },
@@ -284,6 +315,19 @@ const depsPathsJS = [
 
 const depsPathsCSS = [
 
+  { // CODEMIRROR
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'codemirror/lib/codemirror.css',
+      'codemirror/addon/display/fullscreen.css',
+      'codemirror/addon/dialog/dialog.css',
+      'codemirror/theme/dracula.css'
+    ], 
+    flatten: true,
+    dest:`${cssLibsDir}codemirror/`
+  },
+
   { // FONT-AWESOME
     expand: true,
     cwd: nodeModules,
@@ -298,11 +342,10 @@ const depsPathsCSS = [
 
    { // JQUERY UI
     expand: true,
-    cwd: 'node_modules/jquery-ui-dist/',
+    cwd: `${nodeModules}/jquery-ui/dist/themes/base/`,
     src: [
       'jquery-ui.min.css',
-      'jquery-ui.structure.min.css'
-    ], 
+    ],
     flatten: false,
     dest:`${cssLibsDir}jQueryUi/`
   },

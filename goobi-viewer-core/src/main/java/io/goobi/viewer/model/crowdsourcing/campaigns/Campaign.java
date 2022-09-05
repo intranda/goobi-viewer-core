@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.crowdsourcing.campaigns;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -105,7 +106,9 @@ import io.goobi.viewer.solr.SolrConstants;
 @Entity
 @Table(name = "cs_campaigns")
 @JsonInclude(Include.NON_EMPTY)
-public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
+public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Serializable {
+
+    private static final long serialVersionUID = 3169479611322444516L;
 
     /**
      * The visibility of the campaign to other users
@@ -954,7 +957,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott {
      */
     public static Long getId(URI idAsURI) {
 
-        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString());
+        Matcher matcher = Pattern.compile(URI_ID_REGEX).matcher(idAsURI.toString()); //NOSONAR  no catastrophic backtracking detected
         if (matcher.find()) {
             String idString = matcher.group(1);
             return Long.parseLong(idString);

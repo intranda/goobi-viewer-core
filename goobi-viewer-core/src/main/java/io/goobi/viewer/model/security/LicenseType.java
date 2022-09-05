@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,7 +64,9 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 @Entity
 @Table(name = "license_types")
-public class LicenseType implements IPrivilegeHolder, ILicenseType {
+public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType, Serializable {
+
+    private static final long serialVersionUID = 9206827867178660886L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(LicenseType.class);
@@ -102,6 +105,10 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     private boolean pdfDownloadQuota = true;
     @Column(name = "concurrent_views_limit")
     private boolean concurrentViewsLimit = true;
+    @Column(name = "redirect")
+    private boolean redirect = false;
+    @Column(name = "redirect_url")
+    private String redirectUrl;
 
     /** Privileges that everyone else has (users without this license, users that are not logged in). */
     @ElementCollection(fetch = FetchType.EAGER)
@@ -283,12 +290,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
             return false;
         }
 
-        switch (name) {
-            case LICENSE_TYPE_CMS:
-                return true;
-            default:
-                return false;
-        }
+        return LICENSE_TYPE_CMS.equals(name);
     }
 
     /**
@@ -303,12 +305,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
             return false;
         }
 
-        switch (name) {
-            case LICENSE_TYPE_LEGAL_DISCLAIMER:
-                return true;
-            default:
-                return false;
-        }
+        return LICENSE_TYPE_LEGAL_DISCLAIMER.equals(name);
     }
 
     /**
@@ -439,6 +436,41 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
     }
 
     /**
+     * @return the redirect
+     */
+    public boolean isRedirect() {
+        return redirect;
+    }
+
+    /**
+     * @param redirect the redirect to set
+     */
+    public void setRedirect(boolean redirect) {
+        this.redirect = redirect;
+        // Automatically remove any privileges except listing, if redirect mode is on
+        if (redirect) {
+            privilegesCopy.clear();
+            privilegesCopy.add(PRIV_LIST);
+        } else {
+            privilegesCopy.remove(PRIV_LIST);
+        }
+    }
+
+    /**
+     * @return the redirectUrl
+     */
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    /**
+     * @param redirectUrl the redirectUrl to set
+     */
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>privileges</code>.
      * </p>
@@ -472,7 +504,7 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
         if (isUgcType()) {
             ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIV_VIEW_UGC));
         } else {
-            ret = new ArrayList<>(Arrays.asList(IPrivilegeHolder.PRIVS_RECORD));
+            ret = new ArrayList<>(Arrays.asList(PRIVS_RECORD));
         }
         if (privileges != null) {
             ret.removeAll(privileges);
@@ -487,8 +519,8 @@ public class LicenseType implements IPrivilegeHolder, ILicenseType {
      */
     @Override
     public List<String> getSortedPrivileges(Set<String> privileges) {
-        List<String> ret = new ArrayList<>(IPrivilegeHolder.PRIVS_RECORD.length);
-        for (String priv : Arrays.asList(IPrivilegeHolder.PRIVS_RECORD)) {
+        List<String> ret = new ArrayList<>(PRIVS_RECORD.length);
+        for (String priv : Arrays.asList(PRIVS_RECORD)) {
             if (privileges.contains(priv)) {
                 ret.add(priv);
                 // logger.trace("has priv: {}", priv);

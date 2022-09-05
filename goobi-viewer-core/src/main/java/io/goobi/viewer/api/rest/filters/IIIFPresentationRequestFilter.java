@@ -22,7 +22,6 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +35,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +51,8 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
- * Filter for all IIIF Presentation resources. Checks the {@link IPrivilegeHolder#IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST}
- * privilege for the request
+ * Filter for all IIIF Presentation resources. Checks the {@link IPrivilegeHolder#IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST} privilege for the
+ * request
  * </p>
  */
 @Provider
@@ -74,8 +72,8 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
         try {
             String requestPI = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
             String requestLogId = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
-            if(StringUtils.isNotBlank(requestPI)) {
-                filterForAccessConditions(request, requestPI, requestLogId);
+            if (StringUtils.isNotBlank(requestPI)) {
+                filterForAccessConditions(requestPI, requestLogId);
             }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
@@ -118,21 +116,18 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param requestPath
-     * @param pathSegments
+     * @param pi
+     * @param logId
      * @throws ServiceNotAllowedException
-     * @throws IndexUnreachableException
      */
-    private void filterForAccessConditions(ContainerRequestContext request, String pi, String logId) throws ServiceNotAllowedException {
-        logger.trace("filterForAccessConditions: " + servletRequest.getSession().getId());
+    private void filterForAccessConditions(String pi, String logId) throws ServiceNotAllowedException {
+        logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
 
         boolean access = false;
         try {
             access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logId, IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST,
-                    servletRequest);
-        } catch (IndexUnreachableException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
-        } catch (DAOException e) {
+                    servletRequest).isGranted();
+        } catch (IndexUnreachableException | DAOException e) {
             throw new ServiceNotAllowedException("Serving this image is currently impossibe due to ");
         } catch (RecordNotFoundException e) {
             throw new ServiceNotAllowedException("Record not found in index: " + pi);

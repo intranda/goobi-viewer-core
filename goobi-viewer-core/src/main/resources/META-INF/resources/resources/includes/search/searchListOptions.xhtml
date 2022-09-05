@@ -15,6 +15,10 @@
 
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
+    	<ui:fragment rendered="#{navigationHelper.currentPage == 'search'}">
+    		<h1 class="search-list__options-container-heading">#{msg.search}</h1>
+    	</ui:fragment>
+    
 	    <div class="search-list__options">
 	        <!-- HITCOUNT -->
 	        <div class="search-list__hitcount">

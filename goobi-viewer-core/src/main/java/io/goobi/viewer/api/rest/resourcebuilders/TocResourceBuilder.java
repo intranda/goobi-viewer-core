@@ -53,7 +53,8 @@ public class TocResourceBuilder {
     public String getToc(String pi)
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         try {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request)) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request)
+                    .isGranted()) {
                 throw new ContentNotFoundException("Resource not found");
             }
         } catch (RecordNotFoundException e1) {
@@ -67,7 +68,7 @@ public class TocResourceBuilder {
             throw new ContentNotFoundException("Resource not found: " + pi);
         }
         TOC toc = new TOC();
-        toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), 1);
+        toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(), 1);
         TocWriter writer = new TocWriter("", viewManager.getTopStructElement().getLabel().toUpperCase());
         writer.setLevelIndent(5);
 

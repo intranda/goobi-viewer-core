@@ -96,6 +96,14 @@
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
                     <h1 >#{activeDocumentBean.titleBarLabel}</h1>
+                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+						<viewerComponent:copyrightIndicator />
+					</ui:fragment>
+					
+			        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+			        	<widgetComponent:widget_copyrightInfo />
+			        </ui:fragment>
+					
                 </div>
 
                <!-- SEARCH IN CURRENT ITEM -->
@@ -253,6 +261,17 @@
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <widgetComponent:widget_usage />
+                        </div>
+                    </div>
+                    
+                    <!-- STATISTICS -->
+                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                            <span>#{msg.widget_usage_statistics__title}</span>
+                        </h3>
+
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                            <widgetComponent:widget_statistics_usage />
                         </div>
                     </div>
 

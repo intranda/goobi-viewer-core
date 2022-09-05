@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,8 +88,13 @@ public class TextResourceBuilder {
     private static final Logger logger = LoggerFactory.getLogger(TextResourceBuilder.class);
 
     private static final String RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String EXCEPTION_NO_DOCUMENT_FOUND = "No document found with pi ";
 
+    /**
+     * Zero-arg constructor.
+     */
     public TextResourceBuilder() {
+        //
     }
 
     public String getFulltext(String pi)
@@ -104,28 +107,36 @@ public class TextResourceBuilder {
         return sb.toString().trim();
     }
 
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws IOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ContentLibException
+     */
     public StreamingOutput getFulltextAsZip(String pi)
             throws IOException, PresentationException, IndexUnreachableException, ContentLibException {
         String filename = pi + "_plaintext.zip";
         String foldername = DataManager.getInstance().getConfiguration().getFulltextFolder();
         String crowdsourcingFolderName = DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder();
         List<Path> files = getFiles(pi, foldername, crowdsourcingFolderName, null);
-        if(files.isEmpty()) {
+        if (files.isEmpty()) {
             File tempFolder = new File(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_fulltext_" + System.currentTimeMillis());
             tempFolder.mkdir();
             Map<Path, String> map = this.getFulltextMap(pi);
             List<Path> tempFiles = new ArrayList<>();
-            for (Path pagePath : map.keySet()) {
-                String text = map.get(pagePath);
-                File tempFile = new File(tempFolder, FilenameUtils.getBaseName(pagePath.getFileName().toString()) + ".txt");
-                FileUtils.write(tempFile, text, "utf-8");
+            for (Entry<Path, String> entry : map.entrySet()) {
+                String text = entry.getValue();
+                File tempFile = new File(tempFolder, FilenameUtils.getBaseName(entry.getKey().getFileName().toString()) + ".txt");
+                FileUtils.write(tempFile, text, StandardCharsets.UTF_8.name());
                 tempFiles.add(tempFile.toPath());
             }
-            tempFiles.sort((f1,f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
+            tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
             return writeZipFile(tempFiles, filename);
-        } else {
-            return writeZipFile(files, filename);
         }
+        return writeZipFile(files, filename);
 
     }
 
@@ -175,7 +186,7 @@ public class TextResourceBuilder {
         try {
             String charset = FileTools.getCharset(file);
             // logger.trace(file.toAbsolutePath().toString());
-            String alto= FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
+            String alto = FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
             return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
@@ -186,6 +197,15 @@ public class TextResourceBuilder {
         }
     }
 
+    /**
+     * 
+     * @param pi
+     * @param filename
+     * @return
+     * @throws PresentationException
+     * @throws ContentLibException
+     * @throws IndexUnreachableException
+     */
     public String getFulltextAsTEI(String pi, String filename)
             throws PresentationException, ContentLibException, IndexUnreachableException {
 
@@ -210,9 +230,19 @@ public class TextResourceBuilder {
 
         }
 
-        throw new ContentNotFoundException("No document found with pi " + pi);
+        throw new ContentNotFoundException(EXCEPTION_NO_DOCUMENT_FOUND + pi);
     }
 
+    /**
+     * 
+     * @param pi
+     * @param langCode
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws IOException
+     * @throws ContentLibException
+     */
     public String getTeiDocument(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
 
@@ -227,16 +257,14 @@ public class TextResourceBuilder {
                 return new XMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            } catch (JDOMException e) {
+            } catch (IOException | JDOMException e) {
                 logger.error(e.getMessage(), e);
             }
         } else {
             // All full-text pages as TEI
             SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             if (solrDoc == null) {
-                throw new ContentNotFoundException("No document found with pi " + pi);
+                throw new ContentNotFoundException(EXCEPTION_NO_DOCUMENT_FOUND + pi);
             }
 
             Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
@@ -267,6 +295,16 @@ public class TextResourceBuilder {
         throw new ContentNotFoundException(RESOURCE_NOT_FOUND);
     }
 
+    /**
+     * 
+     * @param pi
+     * @param langCode
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws IOException
+     * @throws ContentLibException
+     */
     public StreamingOutput getTeiAsZip(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
 
@@ -284,7 +322,7 @@ public class TextResourceBuilder {
         // All full-text pages as TEI
         SolrDocument solrDoc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (solrDoc == null) {
-            throw new ContentNotFoundException("No document found with pi " + pi);
+            throw new ContentNotFoundException(EXCEPTION_NO_DOCUMENT_FOUND + pi);
         }
 
         Map<java.nio.file.Path, String> fulltexts = getFulltextMap(pi);
@@ -330,22 +368,17 @@ public class TextResourceBuilder {
      */
     public String getCmdiDocument(String pi, String langCode)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, IOException {
-        logger.trace("getCmdiDocument({}, {})", StringTools.stripPatternBreakingChars(pi), StringTools.stripPatternBreakingChars(langCode));
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         java.nio.file.Path filePath = getDocumentLanguageVersion(cmdiPath, language);
-        if (filePath != null) {
-            if (Files.isRegularFile(filePath)) {
-                try {
-                    Document doc = XmlTools.readXmlFile(filePath);
-                    return new XMLOutputter().outputString(doc);
-                } catch (FileNotFoundException e) {
-                    logger.debug(e.getMessage());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (JDOMException e) {
-                    logger.error(e.getMessage(), e);
-                }
+        if (filePath != null && Files.isRegularFile(filePath)) {
+            try {
+                Document doc = XmlTools.readXmlFile(filePath);
+                return new XMLOutputter().outputString(doc);
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+            } catch (IOException | JDOMException e) {
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -358,8 +391,7 @@ public class TextResourceBuilder {
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, contentFolder, null, fileName);
         if (file != null && Files.isRegularFile(file)) {
             try {
-                String content = FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
-                return content;
+                return FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
@@ -712,22 +744,13 @@ public class TextResourceBuilder {
         return Collections.emptyList();
     }
 
-    private static StreamingOutput writeFile(Path file) throws ContentLibException {
-        if (!Files.exists(file)) {
-            throw new ContentNotFoundException("No file found at " + file);
-        }
-
-        return (out) -> {
-            try (InputStream in = Files.newInputStream(file)) {
-                FileTools.copyStream(out, in);
-                out.flush();
-                out.close();
-            } catch (IOException e) {
-                logger.trace(e.getMessage(), e);
-            }
-        };
-    }
-
+    /**
+     * 
+     * @param contentMap
+     * @param filename
+     * @return
+     * @throws ContentLibException
+     */
     private static StreamingOutput writeZipFile(Map<Path, String> contentMap, String filename) throws ContentLibException {
         File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), filename);
         try {
@@ -736,7 +759,7 @@ public class TextResourceBuilder {
             }
 
             FileTools.compressZipFile(contentMap, tempFile, 9);
-            return (out) -> {
+            return out -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
                     out.flush();
@@ -757,6 +780,13 @@ public class TextResourceBuilder {
         }
     }
 
+    /**
+     * 
+     * @param files
+     * @param filename
+     * @return
+     * @throws ContentLibException
+     */
     private static StreamingOutput writeZipFile(List<Path> files, String filename) throws ContentLibException {
         File tempFile = new File(DataManager.getInstance().getConfiguration().getTempFolder(), filename);
         try {
@@ -765,7 +795,7 @@ public class TextResourceBuilder {
             }
 
             FileTools.compressZipFile(files.stream().map(Path::toFile).collect(Collectors.toList()), tempFile, 9);
-            return (out) -> {
+            return out -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
                     out.flush();
@@ -786,39 +816,19 @@ public class TextResourceBuilder {
         }
     }
 
+    /**
+     * 
+     * @param converter
+     * @param input
+     * @param identifier
+     * @return
+     * @throws UncheckedPresentationException
+     */
     private static String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
         try {
             return converter.convert(input);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new UncheckedPresentationException("Error converting the input from " + identifier, e);
         }
     }
-
-    /**
-     * <p>
-     * getLanguage.
-     * </p>
-     *
-     * @param filename a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
-     */
-    private static Optional<String> getLanguage(String filename) {
-        String regex = "([a-z]{1,3})\\.[a-z]+";
-        Matcher matcher = Pattern.compile(regex).matcher(filename);
-        if (matcher.find()) {
-            return Optional.of(matcher.group(1));
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * @param id
-     * @param lang
-     * @return
-     */
-    public Object getCMDIURI(String id, String lang) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

@@ -69,9 +69,10 @@ public class SAMLProvider implements IAuthenticationProvider, Serializable {
     private final String privateKeyPath;
     protected final long timeoutMillis;
 
-    private volatile SamlClient client;
-    private volatile LoginResult loginResult = null;
-    private Object responseLock = new Object();
+    private transient Object clientLock = new Object();
+    private transient SamlClient client;
+    private volatile LoginResult loginResult = null;    //NOSONAR   LoginResult is immutable
+    private transient Object responseLock = new Object();
 
     public SAMLProvider(String name, String idpMetadataUrl, String relyingPartyIdentifier,
             String publicKeyPath, String privateKeyPath, long timeoutMillis) {
@@ -103,7 +104,7 @@ public class SAMLProvider implements IAuthenticationProvider, Serializable {
             if (!StringUtils.isBlank(this.publicKeyPath) && !StringUtils.isBlank(this.privateKeyPath)) {
                 client.setSPKeys(publicKeyPath, privateKeyPath);
             }
-            this.client = client;
+            setClient(client);
             // this needs to be done, so the SAMLServlet is able to find this instance when the IdP redirects back to the viewer
             BeanUtils.getRequest().getSession().setAttribute("SAMLProvider", this);
             client.redirectToIdentityProvider(BeanUtils.getResponse(), null);
@@ -114,6 +115,7 @@ public class SAMLProvider implements IAuthenticationProvider, Serializable {
                         responseLock.wait(this.timeoutMillis);
                         return this.loginResult;
                     } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
                     }
                 }
@@ -133,7 +135,7 @@ public class SAMLProvider implements IAuthenticationProvider, Serializable {
      */
     public Future<Boolean> completeLogin(String encodedResponse, HttpServletRequest request, HttpServletResponse response) {
         try {
-            SamlResponse samlResponse = client.decodeAndValidateSamlResponse(encodedResponse, "POST");
+            SamlResponse samlResponse = getClient().decodeAndValidateSamlResponse(encodedResponse, "POST");
             String id = samlResponse.getNameID();
 
             User user = null;
@@ -235,4 +237,15 @@ public class SAMLProvider implements IAuthenticationProvider, Serializable {
 
     }
 
+    private SamlClient getClient() {
+        synchronized (clientLock) {            
+            return this.client;
+        }
+    }
+    
+    private void setClient(SamlClient client) {
+        synchronized (clientLock) {            
+            this.client = client;
+        }
+    }
 }

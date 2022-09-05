@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -61,13 +62,18 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
+import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -274,6 +280,26 @@ public class ManifestBuilder extends AbstractBuilder {
                 logger.error("Unable to retrieve mets resolver url for {}", ele);
             }
         }
+        
+        List<ManifestLinkConfiguration> linkConfigurations = DataManager.getInstance().getConfiguration().getIIIFSeeAlsoMetadataConfigurations();
+        for (ManifestLinkConfiguration config : linkConfigurations) {
+            try {
+                Metadata md = config.getMetadata();
+                md.populate(ele, "", null, null);
+                String label = config.getLabel();
+                String format = config.getFormat();
+                String value = md.getCombinedValue(", ");
+                if(StringUtils.isNotBlank(value)) {                    
+                    LinkingContent seeAlso = new LinkingContent(new URI(value));
+                    seeAlso.setFormat(Format.fromMimeType(format));
+                    seeAlso.setLabel(ViewerResourceBundle.getTranslations(label, true));
+                    manifest.addSeeAlso(seeAlso);
+                }
+            } catch (IndexUnreachableException | PresentationException | URISyntaxException e) {
+                logger.error("Unable to create seeAlso link for " + config.getLabel(), e);
+            }
+            
+        }
     }
 
     /**
@@ -307,7 +333,7 @@ public class ManifestBuilder extends AbstractBuilder {
         URI uri = null;
         switch(target) {
             case VIEWER:
-                String pageUrl = ele.getUrl();
+                String pageUrl = ele.getUrl(getMatchingPageType(ele));
                 uri = URI.create(pageUrl);
                 if(!uri.isAbsolute()) {
                     uri = URI.create(this.urls.getApplicationUrl() + pageUrl);
@@ -331,6 +357,17 @@ public class ManifestBuilder extends AbstractBuilder {
                 break;
         }
         return uri;
+    }
+
+
+    private PageType getMatchingPageType(StructElement ele) {
+        PageType pageType = PageType.viewMetadata;
+        if(ele.isHasImages()) {
+            pageType = PageType.viewImage;
+        } else if(ele.isAnchor()) {
+            pageType = PageType.viewToc;
+        }
+        return pageType;
     }
 
     /**

@@ -124,6 +124,53 @@
         [],
         'resources/javascript/dist/browsersupport.min.js'
       ],
+      ['codemirror',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/codemirror.js'
+      ],
+      
+      ['codemirrorFullscreen',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/fullscreen.js'
+      ],
+      ['codemirrorProperties',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/properties.js'
+      ],
+      ['codemirrorXML',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/xml.js'
+      ],
+      
+      ['codemirrorSearch',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/search.js'
+      ],
+      
+      ['codemirrorSearchCursor',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/searchcursor.js'
+      ],
+      
+      ['codemirrorMatchHighlighter',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/match-highlighter.js'
+      ],
+      
+      ['codemirrorDialog',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/dialog.js'
+      ],
+      
+      ['codemirrorJumpToLine',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/jump-to-line.js'
+      ],
+      
+      ['codemirrorActiveLine',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/active-line.js'
+      ],
       ['viewerJS',
         [],
         'resources/javascript/dist/viewer.min.js'
@@ -136,13 +183,15 @@
         ['templateMirador'],
         'resources/javascript/dist/riot-tags.js'
       ]
+
     ]}" />
+
     <!-- INCLUDE FILES IF CONDITIONS ARE MET -->
     <c:forEach var="path" items="#{jsPaths}">
       <!-- include file, if it is not explicitly excluded -->
       <!-- (either above, or in the excludeJS variable, which can be set in template files) -->
       <c:if test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0])}">
-        <script type="text/javascript" src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}"></script>
+        <script type="text/javascript" src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}"></script>
       </c:if>
     </c:forEach>
 

@@ -83,31 +83,4 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
         return categories.stream().filter(Selectable::isSelected).map(Selectable::getValue).collect(Collectors.toList());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public int compareTo(Selectable<T> other) {
-        return super.compareTo(other);
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (obj == this) {
-            return true;
-        } else if (obj.getClass() == this.getClass()) {
-            CategorizableTranslatedSelectable other = (CategorizableTranslatedSelectable) obj;
-            return this.getValue().equals(other.getValue());
-        } else {
-            return false;
-        }
-    }
-
 }

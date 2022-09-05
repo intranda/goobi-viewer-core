@@ -434,12 +434,12 @@ public class GeoMap {
         List<String> points = SolrTools.getMetadataValues(doc, metadataField);
         for (String point : points) {
             try {
-            if(point.matches(POINT_LAT_LNG_PATTERN)) {
+            if(point.matches(POINT_LAT_LNG_PATTERN)) {  //NOSONAR  no catastrophic backtracking detected
                 GeoMapFeature feature = new GeoMapFeature();
                 feature.setTitle(title);
                 feature.setDescription(desc);
 
-                Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point);
+                Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
                 matcher.find();
                 Double lat = Double.valueOf(matcher.group(1));
                 Double lng = Double.valueOf(matcher.group(2));
