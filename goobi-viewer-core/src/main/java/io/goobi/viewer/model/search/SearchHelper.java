@@ -2137,11 +2137,13 @@ public final class SearchHelper {
      * @param query
      * @param locale
      * @return
-     * 
+     * @should parse phrase search query correctly
+     * @should parse regular search query correctly
      */
-    public static List<SearchQueryItem> parseSearchQueryItemsFromQuery(String query, Locale locale) {
+    public static SearchQueryGroup parseSearchQueryItemsFromQuery(String query, Locale locale) {
+        SearchQueryGroup ret = new SearchQueryGroup(locale, 1);
         if (StringUtils.isEmpty(query)) {
-            return Collections.emptyList();
+            return ret;
         }
 
         // 1) Remove outer ()
@@ -2160,13 +2162,14 @@ public final class SearchHelper {
         // Phrase query
         // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
 
-        List<SearchQueryItem> ret = new ArrayList<>();
+        Set<String> fieldNames = new HashSet<>();
+        List<StringPair> pairs = new ArrayList<>();
+        SearchItemOperator operator = SearchItemOperator.AND;
 
         Pattern p = Pattern.compile(patternPhrasePairs);
         Matcher m = p.matcher(query);
         if (m.matches()) {
-            List<StringPair> pairs = new ArrayList<>();
-            SearchItemOperator operator = SearchItemOperator.AND;
+            // Phrase search
             for (int i = 0; i < m.groupCount(); ++i) {
                 String pair = m.group(i + 1);
                 if (pair.endsWith(" AND ")) {
@@ -2178,26 +2181,69 @@ public final class SearchHelper {
                 String[] pairSplit = pair.split(":");
                 if (pairSplit.length == 2) {
                     pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
+                    fieldNames.add(pairSplit[0]);
                 }
             }
-//            if (ADVANCED_SEARCH_ALL_FIELDS.equals(field)) {
-//                // Search everywhere
-//                if (aggregateHits) {
-//                    // When doing an aggregated search, make sure to include both SUPER and regular fields (because sub-elements don't have the SUPER)
-//                    fields.add(SolrConstants.SUPERDEFAULT);
-//                    fields.add(SolrConstants.SUPERFULLTEXT);
-//                    fields.add(SolrConstants.SUPERUGCTERMS);
-//                }
-//                fields.add(SolrConstants.DEFAULT);
-//                fields.add(SolrConstants.FULLTEXT);
-//                fields.add(SolrConstants.NORMDATATERMS);
-//                fields.add(SolrConstants.UGCTERMS);
-//                fields.add(SolrConstants.CMS_TEXT_ALL);
-//            }
-            
-            SearchQueryItem item = new SearchQueryItem(locale);
-            item.setOperator(operator);
-            
+        } else {
+            // Regular search
+            p = Pattern.compile(regexRegularPairs);
+            m = p.matcher(query);
+            if (m.matches()) {
+                for (int i = 0; i < m.groupCount(); ++i) {
+                    String pair = m.group(i + 1);
+                    if (pair.endsWith(" AND ")) {
+                        pair = pair.substring(pair.length() - 5);
+                    } else if (pair.endsWith(" OR ")) {
+                        pair = pair.substring(pair.length() - 4);
+                        operator = SearchItemOperator.OR;
+                    }
+                    String[] pairSplit = pair.split(":");
+                    if (pairSplit.length == 2) {
+                        pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
+                        fieldNames.add(pairSplit[0]);
+                    }
+                }
+            }
+        }
+
+        boolean allFields = fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
+                && fieldNames.contains(SolrConstants.NORMDATATERMS)
+                && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL);
+        boolean allFieldsAdded = false;
+        for (StringPair pair : pairs) {
+            switch (pair.getOne()) {
+                case SolrConstants.SUPERDEFAULT:
+                case SolrConstants.SUPERFULLTEXT:
+                case SolrConstants.SUPERUGCTERMS:
+                case SolrConstants.DEFAULT:
+                case SolrConstants.FULLTEXT:
+                case SolrConstants.NORMDATATERMS:
+                case SolrConstants.UGCTERMS:
+                case SolrConstants.CMS_TEXT_ALL:
+                    if (allFields) {
+                        if (!allFieldsAdded) {
+                            SearchQueryItem item = new SearchQueryItem(locale);
+                            item.setOperator(operator);
+                            item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+                            allFieldsAdded = false;
+                            ret.getQueryItems().add(item);
+                        }
+                    } else {
+                        SearchQueryItem item = new SearchQueryItem(locale);
+                        item.setOperator(operator);
+                        item.setField(pair.getOne());
+                        item.setValue(pair.getTwo());
+                        ret.getQueryItems().add(item);
+                    }
+                    break;
+                default:
+                    SearchQueryItem item = new SearchQueryItem(locale);
+                    item.setOperator(operator);
+                    item.setField(pair.getOne());
+                    item.setValue(pair.getTwo());
+                    ret.getQueryItems().add(item);
+            }
+
         }
 
         return ret;
