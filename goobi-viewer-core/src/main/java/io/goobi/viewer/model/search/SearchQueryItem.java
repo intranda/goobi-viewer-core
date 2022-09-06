@@ -506,15 +506,15 @@ public class SearchQueryItem implements Serializable {
                 int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
                 logger.trace("proximity distance: {}", proximitySearchDistance);
                 boolean additionalField = false;
-                for (String field : fields) {
+                for (String f : fields) {
                     if (additionalField) {
                         sbItem.append(" OR ");
                     }
                     // Use _UNTOKENIZED field for phrase searches if the field is configured for that. In that case, only complete field value
                     // matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
-                    String useField = field;
-                    if (isUntokenizeForPhraseSearch() && !field.endsWith(SolrConstants._UNTOKENIZED)) {
-                        useField = field += SolrConstants._UNTOKENIZED;
+                    String useField = f;
+                    if (isUntokenizeForPhraseSearch() && !f.endsWith(SolrConstants._UNTOKENIZED)) {
+                        useField = f += SolrConstants._UNTOKENIZED;
                     }
                     sbItem.append(useField).append(':');
                     if (useValue.charAt(0) != '"') {
@@ -524,11 +524,7 @@ public class SearchQueryItem implements Serializable {
                     if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
                         sbItem.append('"');
                     }
-                    if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
-                        // Add proximity search token
-                        if (proximitySearchDistance > 0) {
-                            //                            sbItem.append('~').append(proximitySearchDistance);
-                        }
+                    if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
                         // Remove quotation marks to add to search terms
                         String val = useValue.replace("\"", "");
                         if (val.length() > 0) {

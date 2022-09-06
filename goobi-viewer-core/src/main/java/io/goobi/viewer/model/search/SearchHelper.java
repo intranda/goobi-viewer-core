@@ -84,6 +84,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.search.SearchHit.HitType;
+import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
@@ -2134,10 +2135,11 @@ public final class SearchHelper {
     /**
      * 
      * @param query
+     * @param locale
      * @return
      * 
      */
-    public static List<SearchQueryItem> parseSearchQueryItemsFromQuery(String query) {
+    public static List<SearchQueryItem> parseSearchQueryItemsFromQuery(String query, Locale locale) {
         if (StringUtils.isEmpty(query)) {
             return Collections.emptyList();
         }
@@ -2164,18 +2166,38 @@ public final class SearchHelper {
         Matcher m = p.matcher(query);
         if (m.matches()) {
             List<StringPair> pairs = new ArrayList<>();
+            SearchItemOperator operator = SearchItemOperator.AND;
             for (int i = 0; i < m.groupCount(); ++i) {
                 String pair = m.group(i + 1);
                 if (pair.endsWith(" AND ")) {
                     pair = pair.substring(pair.length() - 5);
                 } else if (pair.endsWith(" OR ")) {
                     pair = pair.substring(pair.length() - 4);
+                    operator = SearchItemOperator.OR;
                 }
                 String[] pairSplit = pair.split(":");
                 if (pairSplit.length == 2) {
                     pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
                 }
             }
+//            if (ADVANCED_SEARCH_ALL_FIELDS.equals(field)) {
+//                // Search everywhere
+//                if (aggregateHits) {
+//                    // When doing an aggregated search, make sure to include both SUPER and regular fields (because sub-elements don't have the SUPER)
+//                    fields.add(SolrConstants.SUPERDEFAULT);
+//                    fields.add(SolrConstants.SUPERFULLTEXT);
+//                    fields.add(SolrConstants.SUPERUGCTERMS);
+//                }
+//                fields.add(SolrConstants.DEFAULT);
+//                fields.add(SolrConstants.FULLTEXT);
+//                fields.add(SolrConstants.NORMDATATERMS);
+//                fields.add(SolrConstants.UGCTERMS);
+//                fields.add(SolrConstants.CMS_TEXT_ALL);
+//            }
+            
+            SearchQueryItem item = new SearchQueryItem(locale);
+            item.setOperator(operator);
+            
         }
 
         return ret;
