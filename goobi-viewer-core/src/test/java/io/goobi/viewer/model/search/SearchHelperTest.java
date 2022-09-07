@@ -1777,7 +1777,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
         Assert.assertEquals("+FOO:bar +DOCTYPE:DOCSTRCT",
                 SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("FOO:bar")));
-        
+
         // Via regex
         String regex = "\\(FACET_DC:\"a.b[\\.\\w]*\" OR FACET_DC:a.b[\\.\\w]*\\.\\*\\)";
 
@@ -1805,5 +1805,41 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
         Assert.assertTrue("+FOO:bar +DOCTYPE:DOCSTRCT",
                 SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("YARGLE:bargle")).isEmpty());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
+     * @verifies parse phrase search query correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
+                "(((SUPERDEFAULT:\"foo bar\" OR SUPERFULLTEXT:\"foo bar\" OR SUPERUGCTERMS:\"foo bar\" OR DEFAULT:\"foo bar\" OR FULLTEXT:\"foo bar\" OR NORMDATATERMS:\"foo bar\" OR UGCTERMS:\"foo bar\" OR CMS_TEXT_ALL:\"foo bar\")) AND ((SUPERFULLTEXT:\"bla\" OR FULLTEXT:\"bla\")))",
+                null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(2, group.getQueryItems().size());
+        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bla", group.getQueryItems().get(1).getValue());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
+     * @verifies parse regular search query correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
+                "((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))",
+                null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(2, group.getQueryItems().size());
+        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bla", group.getQueryItems().get(1).getValue());
     }
 }

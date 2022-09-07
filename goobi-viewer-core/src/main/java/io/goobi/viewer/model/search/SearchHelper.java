@@ -84,6 +84,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.search.SearchHit.HitType;
+import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -2140,8 +2141,8 @@ public final class SearchHelper {
      * @should parse phrase search query correctly
      * @should parse regular search query correctly
      */
-    public static SearchQueryGroup parseSearchQueryItemsFromQuery(String query, Locale locale) {
-        SearchQueryGroup ret = new SearchQueryGroup(locale, 1);
+    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, Locale locale) {
+        SearchQueryGroup ret = new SearchQueryGroup(locale, 0);
         if (StringUtils.isEmpty(query)) {
             return ret;
         }
@@ -2151,10 +2152,12 @@ public final class SearchHelper {
         //        regex: (\([\w() ]+\))
 
         // Extract individual fields
-        // normal regex: ([A-Z_]+:\([\w() ]+\)( AND )*( OR )*)
-        String regexRegularPairs = "([A-Z_]+:\"[\\w ]+\"( AND )*( OR )*)";
-        // phrase regex: ([A-Z_]+:"[\w ]+"( AND )*( OR )*)
-        String patternPhrasePairs = "([A-Z_]+:\"[\\w ]+\"( AND )*( OR )*)";
+        String patternRegularItems = "\\((\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)";
+        String patternRegularPairs = "(\\w+:\\([\\w ()]+\\))( AND | OR )*";
+
+        String patternPhraseItems = "\\((\\w+:\"[\\w ]+\"( AND | OR )*)+\\)";
+        String patternPhrasePairs = "(\\w+:\"[\\w ]+\")( AND | OR )*";
+        String patternGroupOperator = "\\)( AND | OR )\\(";
 
         // Regular query
         // ((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
@@ -2162,88 +2165,111 @@ public final class SearchHelper {
         // Phrase query
         // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
 
-        Set<String> fieldNames = new HashSet<>();
-        List<StringPair> pairs = new ArrayList<>();
+        List<List<StringPair>> allPairs = new ArrayList<>();
+        List<Set<String>> allFieldNames = new ArrayList<>();
         SearchItemOperator operator = SearchItemOperator.AND;
 
-        Pattern p = Pattern.compile(patternPhrasePairs);
-        Matcher m = p.matcher(query);
-        if (m.matches()) {
+        String queryRemainder = query;
+        Pattern pItems = Pattern.compile(patternPhraseItems);
+        Matcher mItems = pItems.matcher(query);
+        boolean phrase = false;
+        while (mItems.find()) {
             // Phrase search
-            for (int i = 0; i < m.groupCount(); ++i) {
-                String pair = m.group(i + 1);
-                if (pair.endsWith(" AND ")) {
-                    pair = pair.substring(pair.length() - 5);
-                } else if (pair.endsWith(" OR ")) {
-                    pair = pair.substring(pair.length() - 4);
-                    operator = SearchItemOperator.OR;
-                }
+            phrase = true;
+            String itemQuery = mItems.group();
+            queryRemainder = queryRemainder.replace(itemQuery, "");
+            Pattern pPairs = Pattern.compile(patternPhrasePairs);
+            Matcher mPairs = pPairs.matcher(itemQuery);
+
+            Set<String> fieldNames = new HashSet<>();
+            List<StringPair> pairs = new ArrayList<>();
+            while (mPairs.find()) {
+                String pair = mPairs.group(1);
+                logger.error(pair);
                 String[] pairSplit = pair.split(":");
                 if (pairSplit.length == 2) {
                     pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
                     fieldNames.add(pairSplit[0]);
                 }
-            }
-        } else {
-            // Regular search
-            p = Pattern.compile(regexRegularPairs);
-            m = p.matcher(query);
-            if (m.matches()) {
-                for (int i = 0; i < m.groupCount(); ++i) {
-                    String pair = m.group(i + 1);
-                    if (pair.endsWith(" AND ")) {
-                        pair = pair.substring(pair.length() - 5);
-                    } else if (pair.endsWith(" OR ")) {
-                        pair = pair.substring(pair.length() - 4);
-                        operator = SearchItemOperator.OR;
-                    }
-                    String[] pairSplit = pair.split(":");
-                    if (pairSplit.length == 2) {
-                        pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
-                        fieldNames.add(pairSplit[0]);
-                    }
+                String op = mPairs.group(2);
+                if (op != null && op.trim().equals("OR")) {
+                    operator = SearchItemOperator.OR;
                 }
+            }
+            if (!pairs.isEmpty()) {
+                allPairs.add(pairs);
+                allFieldNames.add(fieldNames);
             }
         }
 
-        boolean allFields = fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
-                && fieldNames.contains(SolrConstants.NORMDATATERMS)
-                && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL);
-        boolean allFieldsAdded = false;
-        for (StringPair pair : pairs) {
-            switch (pair.getOne()) {
-                case SolrConstants.SUPERDEFAULT:
-                case SolrConstants.SUPERFULLTEXT:
-                case SolrConstants.SUPERUGCTERMS:
-                case SolrConstants.DEFAULT:
-                case SolrConstants.FULLTEXT:
-                case SolrConstants.NORMDATATERMS:
-                case SolrConstants.UGCTERMS:
-                case SolrConstants.CMS_TEXT_ALL:
-                    if (allFields) {
-                        if (!allFieldsAdded) {
+        if (!phrase) {
+            // Regular search
+            pItems = Pattern.compile(patternRegularItems);
+            mItems = pItems.matcher(query);
+            while (mItems.find()) {
+                String itemQuery = mItems.group();
+                queryRemainder = queryRemainder.replace(itemQuery, "");
+                Pattern pPairs = Pattern.compile(patternRegularPairs);
+                Matcher mPairs = pPairs.matcher(itemQuery);
+
+                Set<String> fieldNames = new HashSet<>();
+                List<StringPair> pairs = new ArrayList<>();
+                while (mPairs.find()) {
+                    String pair = mPairs.group(1);
+                    String[] pairSplit = pair.split(":");
+                    if (pairSplit.length == 2) {
+                        pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
+                        fieldNames.add(pairSplit[0]);
+                    }
+                    String op = mPairs.group(2);
+                    if (op != null && op.trim().equals("OR")) {
+                        operator = SearchItemOperator.OR;
+                    }
+                }
+                if (!pairs.isEmpty()) {
+                    allPairs.add(pairs);
+                    allFieldNames.add(fieldNames);
+                }
+            }
+        }
+        
+        // Parse query group operator
+        Pattern pOperator = Pattern.compile(patternGroupOperator);
+        Matcher mOperator = pOperator.matcher(queryRemainder);
+        if (mOperator.find()) {
+            String groupOperator = mOperator.group(1);
+            ret.setOperator("OR".equals(groupOperator.trim()) ? SearchQueryGroupOperator.OR : SearchQueryGroupOperator.AND);
+        }
+
+        // Build query items out of collected fields
+        for (int i = 0; i < allPairs.size(); ++i) {
+            List<StringPair> pairs = allPairs.get(i);
+            Set<String> fieldNames = allFieldNames.get(i);
+            if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
+                    && fieldNames.contains(SolrConstants.NORMDATATERMS)
+                    && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
+                // All fields
+                SearchQueryItem item = new SearchQueryItem(locale);
+                item.setOperator(operator);
+                item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+                item.setValue(pairs.get(0).getTwo());
+                ret.getQueryItems().add(item);
+            } else {
+                for (StringPair pair : pairs) {
+                    switch (pair.getOne()) {
+                        case SolrConstants.SUPERDEFAULT:
+                        case SolrConstants.SUPERFULLTEXT:
+                        case SolrConstants.SUPERUGCTERMS:
+                            break;
+                        default:
                             SearchQueryItem item = new SearchQueryItem(locale);
                             item.setOperator(operator);
-                            item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-                            allFieldsAdded = false;
+                            item.setField(pair.getOne());
+                            item.setValue(pair.getTwo());
                             ret.getQueryItems().add(item);
-                        }
-                    } else {
-                        SearchQueryItem item = new SearchQueryItem(locale);
-                        item.setOperator(operator);
-                        item.setField(pair.getOne());
-                        item.setValue(pair.getTwo());
-                        ret.getQueryItems().add(item);
                     }
-                    break;
-                default:
-                    SearchQueryItem item = new SearchQueryItem(locale);
-                    item.setOperator(operator);
-                    item.setField(pair.getOne());
-                    item.setValue(pair.getTwo());
-                    ret.getQueryItems().add(item);
+                }
             }
-
         }
 
         return ret;
