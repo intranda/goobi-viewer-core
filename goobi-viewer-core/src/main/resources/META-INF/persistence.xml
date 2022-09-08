@@ -78,6 +78,8 @@
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.cms.content.CMSHtmlText</class>
+		<class>io.goobi.viewer.model.cms.content.CMSText</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->

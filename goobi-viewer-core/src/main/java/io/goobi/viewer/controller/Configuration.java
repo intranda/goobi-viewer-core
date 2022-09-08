@@ -5282,7 +5282,7 @@ public class Configuration extends AbstractConfiguration {
             marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
             marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
         }
-        return marker;
+        return new GeoMapMarker("");
     }
 
     /**
