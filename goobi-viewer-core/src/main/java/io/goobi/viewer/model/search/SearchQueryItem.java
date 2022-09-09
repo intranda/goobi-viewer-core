@@ -153,7 +153,7 @@ public class SearchQueryItem implements Serializable {
             return Collections.singletonList(SearchItemOperator.IS);
         }
 
-        return Arrays.asList(new SearchItemOperator[] { SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.PHRASE });
+        return Arrays.asList(SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.PHRASE);
     }
 
     /**
@@ -547,15 +547,13 @@ public class SearchQueryItem implements Serializable {
                 }
                 String[] valueSplit = value.trim().split(" ");
                 boolean moreThanOneField = false;
-                for (String field : fields) {
+                for (String f : fields) {
                     if (moreThanOneField) {
                         sbItem.append(" OR ");
                     }
-                    String useField = field;
+                    String useField = f;
                     sbItem.append(useField).append(':');
-                    if (valueSplit.length > 1) {
-                        sbItem.append('(');
-                    }
+                    sbItem.append('(');
                     boolean moreThanOneValue = false;
                     for (String value : valueSplit) {
                         value = value.trim();
@@ -616,7 +614,7 @@ public class SearchQueryItem implements Serializable {
                             if (allowFuzzySearch) {
                                 //remove wildcards; they don't work with search containing hyphen
                                 String tempValue = SearchHelper.getWildcardsTokens(value)[1];
-                                tempValue = ClientUtils.escapeQueryChars(value);
+                                tempValue = ClientUtils.escapeQueryChars(tempValue);
                                 tempValue = SearchHelper.addFuzzySearchToken(tempValue, "", "");
                                 sbItem.append("(").append(tempValue).append(")");
                             } else {
@@ -654,7 +652,7 @@ public class SearchQueryItem implements Serializable {
                                 }
                             }
                         }
-                        if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
+                        if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
                             String val = value.replace("\"", "");
                             if (val.length() > 0) {
                                 searchTerms.add(val);
@@ -665,9 +663,7 @@ public class SearchQueryItem implements Serializable {
                             moreThanOneValue = true;
                         }
                     }
-                    if (valueSplit.length > 1) {
-                        sbItem.append(')');
-                    }
+                    sbItem.append(')');
                     moreThanOneField = true;
                 }
             }
