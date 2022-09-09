@@ -4969,7 +4969,7 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             Connection connection = em.unwrap(Connection.class);
             DatabaseMetaData metaData = connection.getMetaData();
-            try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
+            try (ResultSet tables = metaData.getTables(connection.getCatalog(), connection.getSchema(), tableName, null)) {
                 return tables.next();
             } finally {
                 commitTransaction(em);
