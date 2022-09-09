@@ -28,8 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +65,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
     }
 
     /* (non-Javadoc)
-     * @see javax.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
+     * @see jakarta.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
      */
     @Override
     public String convertToDatabaseColumn(TranslatedText attribute) {
@@ -91,7 +91,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
     }
 
     /* (non-Javadoc)
-     * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
+     * @see jakarta.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
      */
     @Override
     public TranslatedText convertToEntityAttribute(String dbData) {
