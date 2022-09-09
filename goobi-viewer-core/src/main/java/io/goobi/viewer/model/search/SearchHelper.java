@@ -2164,7 +2164,7 @@ public final class SearchHelper {
 
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
-        SearchItemOperator operator = SearchItemOperator.AND;
+        List<SearchItemOperator> operators = new ArrayList<>();
 
         String queryRemainder = query;
         Pattern pItems = Pattern.compile(patternPhraseItems);
@@ -2173,6 +2173,8 @@ public final class SearchHelper {
         while (mItems.find()) {
             // Phrase search
             phrase = true;
+            operators.add(SearchItemOperator.PHRASE);
+            SearchItemOperator operator = SearchItemOperator.PHRASE;
             String itemQuery = mItems.group();
             queryRemainder = queryRemainder.replace(itemQuery, "");
             Pattern pPairs = Pattern.compile(patternPhrasePairs);
@@ -2190,7 +2192,7 @@ public final class SearchHelper {
                 }
                 String op = mPairs.group(2);
                 if (op != null && op.trim().equals("OR")) {
-                    operator = SearchItemOperator.OR;
+                    // TODO
                 }
             }
             if (!pairs.isEmpty()) {
@@ -2223,8 +2225,11 @@ public final class SearchHelper {
                     }
                     String op = mPairs.group(2);
                     if (op != null && op.trim().equals("OR")) {
-                        operator = SearchItemOperator.OR;
+                        operators.add(SearchItemOperator.OR);
+                    } else {
+                        operators.add(SearchItemOperator.AND);
                     }
+
                 }
                 if (!pairs.isEmpty()) {
                     allPairs.add(pairs);
@@ -2245,6 +2250,7 @@ public final class SearchHelper {
         for (int i = 0; i < allPairs.size(); ++i) {
             List<StringPair> pairs = allPairs.get(i);
             Set<String> fieldNames = allFieldNames.get(i);
+            SearchItemOperator operator = operators.get(i);
             if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
                     && fieldNames.contains(SolrConstants.NORMDATATERMS)
                     && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {

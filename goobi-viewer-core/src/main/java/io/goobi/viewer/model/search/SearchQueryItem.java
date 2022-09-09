@@ -555,29 +555,29 @@ public class SearchQueryItem implements Serializable {
                     sbItem.append(useField).append(':');
                     sbItem.append('(');
                     boolean moreThanOneValue = false;
-                    for (String value : valueSplit) {
-                        value = value.trim();
-                        if (value.length() == 0) {
+                    for (String val : valueSplit) {
+                        val = val.trim();
+                        if (val.length() == 0) {
                             continue;
                         }
-                        if (value.charAt(0) == '"') {
-                            if (value.charAt(value.length() - 1) != '"') {
+                        if (val.charAt(0) == '"') {
+                            if (val.charAt(val.length() - 1) != '"') {
                                 // Do not allow " being only on the left
-                                value = value.substring(1);
+                                val = val.substring(1);
                             }
-                        } else if (value.charAt(value.length() - 1) == '"' && value.charAt(0) != '"') {
+                        } else if (val.charAt(val.length() - 1) == '"' && val.charAt(0) != '"') {
                             // Do not allow " being only on the right
-                            value = value.substring(0, value.length() - 1);
+                            val = val.substring(0, val.length() - 1);
                         }
 
-                        if (value.charAt(0) == '-' && value.length() > 1) {
+                        if (val.charAt(0) == '-' && val.length() > 1) {
                             // negation
                             //                            if (!"*".equals(value)) {
                             //                                // Unless user searches for "contains not *", make sure only documents that actually have the field are found
                             //                                sbItem.append(useField).append(":* ");
                             //                            }
                             sbItem.append(" -");
-                            value = value.substring(1);
+                            val = val.substring(1);
                         } else if (moreThanOneValue) {
                             switch (this.field) {
                                 // TODO: allow OR for FULLTEXT?
@@ -601,30 +601,30 @@ public class SearchQueryItem implements Serializable {
                             case SolrConstants.SUPERUGCTERMS:
                             case SolrConstants.UGCTERMS:
                             case SolrConstants.CMS_TEXT_ALL:
-                                value = value.toLowerCase();
+                                val = val.toLowerCase();
                                 break;
                             default:
                                 if (field.startsWith("MD_")) {
-                                    value = value.toLowerCase();
+                                    val = val.toLowerCase();
                                 }
                                 break;
                         }
 
-                        if (value.contains("-")) {
+                        if (val.contains("-")) {
                             if (allowFuzzySearch) {
                                 //remove wildcards; they don't work with search containing hyphen
-                                String tempValue = SearchHelper.getWildcardsTokens(value)[1];
+                                String tempValue = SearchHelper.getWildcardsTokens(val)[1];
                                 tempValue = ClientUtils.escapeQueryChars(tempValue);
                                 tempValue = SearchHelper.addFuzzySearchToken(tempValue, "", "");
                                 sbItem.append("(").append(tempValue).append(")");
                             } else {
                                 // Hack to enable fuzzy searching for terms that contain hyphens
-                                sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
+                                sbItem.append('"').append(ClientUtils.escapeQueryChars(val)).append('"');
                             }
                         } else {
                             // Preserve truncation before escaping
                             String prefix = "";
-                            String useValue = value;
+                            String useValue = val;
                             String suffix = "";
                             if (useValue.startsWith("*")) {
                                 prefix = "*";
@@ -653,9 +653,9 @@ public class SearchQueryItem implements Serializable {
                             }
                         }
                         if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
-                            String val = value.replace("\"", "");
-                            if (val.length() > 0) {
-                                searchTerms.add(val);
+                            String v = val.replace("\"", "");
+                            if (v.length() > 0) {
+                                searchTerms.add(v);
                                 // TODO do not add negated terms
                             }
                         }
