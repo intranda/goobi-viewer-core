@@ -151,7 +151,7 @@ public class JPADAO implements IDAO {
      * @param inPersistenceUnitName a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public JPADAO(String inPersistenceUnitName) throws DAOException {
+     public JPADAO(String inPersistenceUnitName) throws DAOException {
         logger.trace("JPADAO({})", inPersistenceUnitName);
         //        logger.debug(System.getProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML));
         //        System.setProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, DataManager.getInstance().getConfiguration().getConfigLocalPath() + "persistence.xml");
@@ -4995,7 +4995,7 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             Connection connection = em.unwrap(Connection.class);
             DatabaseMetaData metaData = connection.getMetaData();
-            try (ResultSet columns = metaData.getColumns(null, null, tableName, columnName)) {
+            try (ResultSet columns = metaData.getColumns(connection.getCatalog(), connection.getSchema(), tableName, columnName)) {
                 return columns.next();
             } finally {
                 commitTransaction(em);

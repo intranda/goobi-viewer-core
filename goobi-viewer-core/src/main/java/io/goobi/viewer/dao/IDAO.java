@@ -108,7 +108,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
+    boolean columnsExists( String tableName, String columnName) throws DAOException, SQLException;
 
     // User
 
