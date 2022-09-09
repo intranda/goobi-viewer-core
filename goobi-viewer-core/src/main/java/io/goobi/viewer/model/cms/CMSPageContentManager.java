@@ -21,13 +21,21 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.model.cms.content.CMSComponent;
-import io.goobi.viewer.model.cms.content.CMSHtmlText;
-import io.goobi.viewer.model.cms.content.CMSImage;
-import io.goobi.viewer.model.cms.content.CMSText;
 
 /**
  * Loads {@link CMSComponent components} to include in a {@link CMSPage}
@@ -37,20 +45,33 @@ import io.goobi.viewer.model.cms.content.CMSText;
  */
 public class CMSPageContentManager {
     
-    private final List<CMSComponent> components;
+    private static final Logger logger = LoggerFactory.getLogger(CMSPageContentManager.class);
+    
+    private final List<CMSComponent> components = new ArrayList<>();
 
-    public CMSPageContentManager() {
-        this.components = loadDefaultComponents();
+    public CMSPageContentManager(Path... configFolders) throws IOException {
+        for (Path path : configFolders) {
+            this.components.addAll(loadComponents(path));
+        }
     }
 
-    private List<CMSComponent> loadDefaultComponents() {
-        List<CMSComponent> list = new ArrayList<>();
-        
-        list.add(new CMSComponent("htmltext", new CMSHtmlText()));
-        list.add(new CMSComponent("text", new CMSText()));
-        list.add(new CMSComponent("image", new CMSImage()));
-        
-        return list;
+    private List<CMSComponent> loadComponents(Path folder) throws IOException {
+        if(folder == null || !Files.isDirectory(folder)) {
+            throw new FileNotFoundException(folder + " doesn't exist or is not a directory");
+        }
+        CMSComponentReader reader = new CMSComponentReader();
+        try(Stream<Path> xmlFiles = Files.list(folder).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".xml"))) {
+            return xmlFiles.map(file -> {
+                try {
+                    return reader.read(file);
+                } catch (IOException | JDOMException e) {
+                    logger.error("Error reading CMSContent from file {}", file, e);
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+        }
     }
     
     public List<CMSComponent> getComponents() {

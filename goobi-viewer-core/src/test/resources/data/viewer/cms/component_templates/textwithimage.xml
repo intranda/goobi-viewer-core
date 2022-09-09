@@ -2,11 +2,11 @@
 <component>
 	<jsfComponent>
 		<library>/cms/components/frontend/component</library>
-		<name>htmltext</name>
+		<name>textwithimage</name>
 	</jsfComponent>
-	<label>cms_component__htmltext__label</label>
-	<description>cms_component__htmltext__desc</description>
-	<icon>/cms/components/frontend/component/icon/thmltext.png</icon>
+	<label>cms_component__textwithimage__label</label>
+	<description>cms_component__textwithimage__desc</description>
+	<icon>/cms/components/frontend/component/icon/textwithimage.png</icon>
 	<content>
 		<item id="text">
 			<label>cms_content__htmltext__label</label>
@@ -19,6 +19,15 @@
 			<attributes>
 				<attribute name="foo" value="bar"/>
 			</attributes>
+		</item>
+		<item id="image">
+			<label>cms_content__image__label</label>
+			<description>cms_content__image__desc</description>
+			<className>io.goobi.viewer.model.cms.content.CMSImage</className>
+			<jsfComponent>
+				<library>/cms/components/backend/content</library>
+				<name>image</name>
+			</jsfComponent>
 		</item>
 	</content>
 </component>

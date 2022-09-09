@@ -33,17 +33,23 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
+import org.jdom2.Text;
 import org.jdom2.filter.Filter;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
@@ -223,7 +229,7 @@ public class XmlTools {
 
         List<Object> list = evaluate(expr, element, Filters.element(), namespaces);
         if (list == null) {
-            return null;
+            return Collections.emptyList();
         }
         for (Object object : list) {
             if (object instanceof Element) {
@@ -231,6 +237,10 @@ public class XmlTools {
             }
         }
         return retList;
+    }
+    
+    public static Optional<Element> evaluateToFirstElement(String expr, Element element, List<Namespace> namespaces) {
+        return evaluateToElements(expr, element, namespaces).stream().findFirst();
     }
 
     /**
@@ -255,6 +265,32 @@ public class XmlTools {
 
     }
 
+    public static List<String> evaluateString(String expr, Object parent, List<Namespace> namespaces) {
+        XPathBuilder<Object> builder = new XPathBuilder(expr.trim().replace("\n", ""), Filters.element().or(Filters.attribute()));
+
+        if (namespaces != null && !namespaces.isEmpty()) {
+            builder.setNamespaces(namespaces);
+        }
+
+        XPathExpression<Object> xpath = builder.compileWith(XPathFactory.instance());
+        return xpath.evaluate(parent).stream().map(object -> {
+            if(object instanceof Element) {
+                return ((Element) object).getText();
+            } else if(object instanceof Attribute) {
+                return ((Attribute) object).getValue();
+            } else {
+                return null;
+            }
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    
+    public static Optional<String> evaluateToFirstElement(String expr, Object parent, List<Namespace> namespaces) {
+        return evaluateString(expr, parent, namespaces).stream().findFirst();
+    }
+    
+    
     /**
      * <p>
      * determineFileFormat.

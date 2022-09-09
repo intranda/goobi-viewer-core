@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -54,14 +53,20 @@ import io.goobi.viewer.model.maps.GeoMap;
  */
 public class DynamicContentBuilder {
 
-    private final static Logger logger = LoggerFactory.getLogger(DynamicContentBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(DynamicContentBuilder.class);
 
     private FacesContext context = FacesContext.getCurrentInstance();
     private Application application = context.getApplication();
     private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
-
-    public DynamicContentBuilder() {
-
+    
+    public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) {
+        UIComponent composite = loadCompositeComponent(parent, jsfComponent.getLibrary(), jsfComponent.getName());
+        if(composite != null && attributes != null) {
+            for(Entry<String, Object> entry : attributes.entrySet()) {
+                composite.getAttributes().put(entry.getKey(), entry.getValue());
+            }
+        }
+        return composite;
     }
 
     public UIComponent build(DynamicContent content, UIComponent parent) {

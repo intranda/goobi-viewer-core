@@ -24,6 +24,12 @@ package io.goobi.viewer.model.cms.content;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.weld.exceptions.IllegalArgumentException;
+
+import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.jsf.JsfComponent;
+
 /**
  * Wraps a {@link CMSContent} within a {@link CMSPage}
  * @author florian
@@ -42,15 +48,32 @@ public class CMSContentItem {
     private final CMSContent content;
     
     private final Map<String, Object> attributes = new HashMap<>(); 
+    
+    private final String label;
+    
+    private final String description;
+    
+    private final JsfComponent jsfComponent;
 
     /**
      * @param componentId
      * @param content
      */
-    public CMSContentItem(String componentId, CMSContent content) {
+    public CMSContentItem(String componentId, CMSContent content, String label, String description, JsfComponent jsfComponent) {
         super();
-        this.componentId = componentId;
-        this.content = content;
+        if(StringUtils.isNotBlank(componentId)) {
+            this.componentId = componentId;            
+        } else {
+            throw new IllegalArgumentException("ComponentId of CMSContentItem may not be blank");
+        }
+        if(content != null) {            
+            this.content = content;
+        } else {
+            throw new IllegalArgumentException("CMSContent of COMSContentItem may not be null");
+        }
+        this.label = label;
+        this.description = description;
+        this.jsfComponent = jsfComponent;
     }
     
     public void setAttribute(String name, Object value) {
@@ -67,6 +90,35 @@ public class CMSContentItem {
     
     public CMSContent getContent() {
         return content;
+    }
+    
+    public String getLabel() {
+        return label;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public JsfComponent getJsfComponent() {
+        return jsfComponent;
+    }
+    
+    @Override
+    public int hashCode() {
+        return componentId.hashCode();
+    }
+    
+    /**
+     * Two CMSContentItems are equal if their {@link #componentId}s are equal
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            return ((CMSContentItem)obj).componentId.equals(this.componentId);
+        } else {
+            return false;
+        }
     }
 
 }

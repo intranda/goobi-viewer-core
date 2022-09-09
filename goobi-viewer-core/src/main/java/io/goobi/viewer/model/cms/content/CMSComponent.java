@@ -22,27 +22,120 @@
 package io.goobi.viewer.model.cms.content;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import io.goobi.viewer.controller.AlphabetIterator;
+import io.goobi.viewer.model.jsf.JsfComponent;
 
 public class CMSComponent {
 
+    private final JsfComponent jsfComponent;
+    
+    private final List<String> cssClasses = new ArrayList<>();
+    
+    private final List<CMSContentItem> contentItems = new ArrayList<>();
+    
+    private final String label;
+    
+    private final String description;
+    
+    private final String iconPath;
+    
     private ContentItemPublicationState publicationState = ContentItemPublicationState.ADMINISTRATOR;
     
     private int order = 0;
     
-    private List<String> cssClasses = new ArrayList<>();
+    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath) {
+        this.jsfComponent = jsfComponent;
+        this.label = label;
+        this.description = description;
+        this.iconPath = iconPath;
+    }
     
+    public void setPublicationState(ContentItemPublicationState publicationState) {
+        this.publicationState = publicationState;
+    }
     
+    public ContentItemPublicationState getPublicationState() {
+        return publicationState;
+    }
     
-    private List<CMSContentItem> contentItems;
+    public void setOrder(int order) {
+        this.order = order;
+    }
     
-    public CMSComponent(String componentName, CMSContent... contents) {
-        Iterator<String> idIterator = new AlphabetIterator();
-        for (CMSContent content : contents) {
-            CMSContentItem item = new CMSContentItem(idIterator.next(), content);
+    public int getOrder() {
+        return order;
+    }
+    
+    public boolean addCssClass(String className) {
+        if(!this.cssClasses.contains(className)) {
+            return this.cssClasses.add(className);
+        } else {
+            return false;
         }
+    }
+    
+    public boolean removeClass(String className) {
+        if(this.cssClasses.contains(className)) {
+            return this.cssClasses.remove(className);
+        } else {
+            return false;
+        }
+    }
+    
+    public List<String> getCssClasses() {
+        return cssClasses;
+    }
+    
+    public boolean addContentItem(CMSContentItem item) {
+        if(!this.contentItems.contains(item)) {
+            return this.contentItems.add(item);
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean removeContentItem(CMSContentItem item) {
+        if(this.contentItems.contains(item)) {
+            return this.contentItems.remove(item);
+        } else {
+            return false;
+        }
+    }
+    
+    public List<CMSContentItem> getContentItems() {
+        return contentItems;
+    }
+    
+    public CMSContentItem getFirstContentItem() {
+        return this.contentItems.stream().findFirst().orElse(null);
+    }
+    
+    public CMSContentItem getFirstContentItem(String className) {
+        return this.contentItems.stream()
+                .filter(item -> item.getClass().getSimpleName().equals(className))
+                .findFirst().orElse(null);
+    }
+    
+    public CMSContentItem getContentItem(String componentId) {
+        return this.contentItems.stream()
+                .filter(item -> item.getComponentId().equals(componentId))
+                .findAny().orElse(null);
+    }
+    
+    public JsfComponent getJsfComponent() {
+        return jsfComponent;
+    }
+    
+    public String getLabel() {
+        return label;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public String getIconPath() {
+        return iconPath;
     }
 }
