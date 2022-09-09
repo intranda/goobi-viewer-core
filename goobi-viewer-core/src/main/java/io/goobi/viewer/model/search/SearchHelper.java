@@ -2142,21 +2142,18 @@ public final class SearchHelper {
      * @should parse regular search query correctly
      */
     public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, Locale locale) {
+        logger.trace("parseSearchQueryGroupFromQuery: {}", query);
         SearchQueryGroup ret = new SearchQueryGroup(locale, 0);
         if (StringUtils.isEmpty(query)) {
             return ret;
         }
 
-        // 1) Remove outer ()
-
-        //        regex: (\([\w() ]+\))
-
-        // Extract individual fields
         String patternRegularItems = "\\((\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)";
         String patternRegularPairs = "(\\w+:\\([\\w ()]+\\))( AND | OR )*";
 
         String patternPhraseItems = "\\((\\w+:\"[\\w ]+\"( AND | OR )*)+\\)";
         String patternPhrasePairs = "(\\w+:\"[\\w ]+\")( AND | OR )*";
+
         String patternGroupOperator = "\\)( AND | OR )\\(";
 
         // Regular query
@@ -2208,6 +2205,7 @@ public final class SearchHelper {
             mItems = pItems.matcher(query);
             while (mItems.find()) {
                 String itemQuery = mItems.group();
+                logger.trace("itemQuery: {}", itemQuery);
                 queryRemainder = queryRemainder.replace(itemQuery, "");
                 Pattern pPairs = Pattern.compile(patternRegularPairs);
                 Matcher mPairs = pPairs.matcher(itemQuery);
@@ -2216,9 +2214,11 @@ public final class SearchHelper {
                 List<StringPair> pairs = new ArrayList<>();
                 while (mPairs.find()) {
                     String pair = mPairs.group(1);
+                    logger.trace("pair: {}", pair);
                     String[] pairSplit = pair.split(":");
                     if (pairSplit.length == 2) {
-                        pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
+                        pairs.add(new StringPair(pairSplit[0],
+                                pairSplit[1].replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
                         fieldNames.add(pairSplit[0]);
                     }
                     String op = mPairs.group(2);
@@ -2232,7 +2232,7 @@ public final class SearchHelper {
                 }
             }
         }
-        
+
         // Parse query group operator
         Pattern pOperator = Pattern.compile(patternGroupOperator);
         Matcher mOperator = pOperator.matcher(queryRemainder);
@@ -2267,6 +2267,7 @@ public final class SearchHelper {
                             item.setField(pair.getOne());
                             item.setValue(pair.getTwo());
                             ret.getQueryItems().add(item);
+                            logger.trace(pair.getOne() + ":" + pair.getTwo());
                     }
                 }
             }
