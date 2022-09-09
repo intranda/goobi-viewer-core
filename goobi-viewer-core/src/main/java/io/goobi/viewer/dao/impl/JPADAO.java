@@ -39,20 +39,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.EntityTransaction;
-import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -183,7 +183,7 @@ public class JPADAO implements IDAO {
      * Getter for the field <code>factory</code>.
      * </p>
      *
-     * @return a {@link javax.persistence.EntityManagerFactory} object.
+     * @return a {@link jakarta.persistence.EntityManagerFactory} object.
      */
     @Override
     public EntityManagerFactory getFactory() {
@@ -196,7 +196,7 @@ public class JPADAO implements IDAO {
      *
      * </p>
      *
-     * @return {@link javax.persistence.EntityManager} for the current thread
+     * @return {@link jakarta.persistence.EntityManager} for the current thread
      */
     @Override
     public EntityManager getEntityManager() {
@@ -338,7 +338,7 @@ public class JPADAO implements IDAO {
 
             q.setFirstResult(first);
             q.setMaxResults(pageSize);
-            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             return q.getResultList();
         } finally {
@@ -439,7 +439,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT u FROM User u WHERE :claimed_identifier MEMBER OF u.openIdAccounts");
             q.setParameter("claimed_identifier", identifier);
-            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             User o = (User) q.getSingleResult();
             return o;
         } catch (NoResultException e) {
@@ -561,7 +561,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT ug FROM UserGroup ug");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -762,7 +762,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT o FROM BookmarkList o");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -780,7 +780,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.isPublic=true");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -801,7 +801,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT o FROM BookmarkList o WHERE o.owner = :user ORDER BY o.dateUpdated DESC");
             q.setParameter("user", user);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -1350,7 +1350,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT lt FROM LicenseType lt");
             q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -1445,7 +1445,7 @@ public class JPADAO implements IDAO {
             q.setFirstResult(first);
             q.setMaxResults(pageSize);
             q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             return q.getResultList();
         } finally {
@@ -1599,7 +1599,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT o FROM License o");
             q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -2044,7 +2044,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT o FROM CommentGroup o");
             q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -2215,7 +2215,7 @@ public class JPADAO implements IDAO {
             if (targetPIs != null && !targetPIs.isEmpty()) {
                 q.setParameter("targetPIs", targetPIs);
             }
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.setFirstResult(first).setMaxResults(pageSize).setFlushMode(FlushModeType.COMMIT).getResultList();
         } finally {
             close(em);
@@ -2462,7 +2462,7 @@ public class JPADAO implements IDAO {
             Query q = em.createQuery(sbQuery.toString());
             q.setParameter("pi", pi);
             q.setFlushMode(FlushModeType.COMMIT);
-            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             List<Integer> results = q.getResultList();
             return results.stream().distinct().sorted().collect(Collectors.toList());
         } finally {
@@ -2482,7 +2482,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT o FROM Search o");
             q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -2527,7 +2527,7 @@ public class JPADAO implements IDAO {
                     q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
                 }
             }
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             Object o = q.getResultList().get(0);
             // MySQL
@@ -2589,7 +2589,7 @@ public class JPADAO implements IDAO {
             }
             q.setFirstResult(first);
             q.setMaxResults(pageSize);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             return q.getResultList();
         } finally {
@@ -2610,7 +2610,7 @@ public class JPADAO implements IDAO {
             String query = "SELECT o FROM Search o WHERE o.owner = :owner";
             Query q = em.createQuery(query);
             q.setParameter("owner", owner);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -2713,7 +2713,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT o FROM DownloadJob o");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -3106,7 +3106,7 @@ public class JPADAO implements IDAO {
             try {
                 Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
                 q.setParameter("pageName", pageName);
-                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
                 if (!q.getResultList().isEmpty()) {
                     return (CMSPage) q.getSingleResult();
                 }
@@ -3209,7 +3209,7 @@ public class JPADAO implements IDAO {
             }
             q.setFirstResult(first);
             q.setMaxResults(pageSize);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             return q.getResultList();
         } finally {
@@ -3243,7 +3243,7 @@ public class JPADAO implements IDAO {
                 q.setParameter("toDate", toDate);
             }
             q.setMaxResults(1);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             return (long) q.getSingleResult() != 0;
         } finally {
@@ -3438,7 +3438,7 @@ public class JPADAO implements IDAO {
             try {
                 Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
                 q.setFlushMode(FlushModeType.COMMIT);
-                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
@@ -3477,7 +3477,7 @@ public class JPADAO implements IDAO {
             try {
                 Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
                 q.setParameter("fileName", filename);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
                 return (CMSMediaItem) q.getSingleResult();
             } catch (NoResultException e) {
                 //nothing found; no biggie
@@ -3585,7 +3585,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
                 q.setParameter("media", item);
                 q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
                 for (Object o : q.getResultList()) {
                     if (o instanceof CMSContentItem) {
                         try {
@@ -3637,7 +3637,7 @@ public class JPADAO implements IDAO {
             EntityManager em = getEntityManager();
             try {
                 Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
-                q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
                 q.setFlushMode(FlushModeType.COMMIT);
                 List<CMSNavigationItem> list = q.getResultList();
                 Collections.sort(list);
@@ -3742,7 +3742,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT o FROM TranskribusJob o");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -3921,7 +3921,7 @@ public class JPADAO implements IDAO {
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
                 return q.getResultList();
             } catch (PersistenceException e) {
@@ -3985,7 +3985,7 @@ public class JPADAO implements IDAO {
                 if (status != null) {
                     q.setParameter("status", status);
                 }
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
                 List<CampaignRecordStatistic> list = q.getResultList();
                 return list;
@@ -4015,7 +4015,7 @@ public class JPADAO implements IDAO {
                 if (status != null) {
                     q.setParameter("status", status);
                 }
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
                 List<CampaignRecordPageStatistic> list = q.getResultList();
                 return list;
@@ -4412,7 +4412,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT o FROM CMSStaticPage o");
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -4516,7 +4516,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
             q.setParameter("name", pageType.getName());
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return getSingleResult(q);
         } finally {
             close(em);
@@ -4524,7 +4524,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Helper method to get the only result of a query. In contrast to {@link javax.persistence.Query#getSingleResult()} this does not throw an
+     * Helper method to get the only result of a query. In contrast to {@link jakarta.persistence.Query#getSingleResult()} this does not throw an
      * exception if no results are found. Instead, it returns an empty Optional
      *
      * @throws ClassCastException if the first result cannot be cast to the expected type
@@ -4927,7 +4927,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT c FROM CMSCategory c WHERE c.name = :name");
             q.setParameter("name", name);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             CMSCategory category = (CMSCategory) getSingleResult(q).orElse(null);
             return category;
         } finally {
@@ -5053,7 +5053,7 @@ public class JPADAO implements IDAO {
                 q.setParameter("questionId_" + count, question.getId());
                 count++;
             }
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -5077,7 +5077,7 @@ public class JPADAO implements IDAO {
             Query q = em.createQuery(query);
             q.setParameter("pi", pi);
 
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -5208,7 +5208,7 @@ public class JPADAO implements IDAO {
                 q.setParameter("motivation", motivation);
             }
 
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -5325,7 +5325,7 @@ public class JPADAO implements IDAO {
                 q.setParameter("page", page);
             }
 
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } finally {
             close(em);
@@ -5416,7 +5416,7 @@ public class JPADAO implements IDAO {
                 q.setFirstResult(first);
                 q.setMaxResults(pageSize);
                 q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+                // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
                 return q.getResultList();
             } catch (PersistenceException e) {
                 logger.error("Exception \"" + e.toString() + "\" when trying to get CS campaigns. Returning empty list");
@@ -5712,7 +5712,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT u FROM TermsOfUse u");
-            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            //         q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             @SuppressWarnings("unchecked")
             List<TermsOfUse> results = q.getResultList();
@@ -5786,7 +5786,7 @@ public class JPADAO implements IDAO {
             logger.trace(sbQuery.toString());
             Query q = em.createQuery(sbQuery.toString());
             q.setFlushMode(FlushModeType.COMMIT);
-            // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
             return q.getResultList();
         } catch (PersistenceException e) {
             logger.error("Exception \"" + e.toString() + "\" when trying to get CMSRecordNotes. Returning empty list");
@@ -6300,7 +6300,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT u FROM CookieBanner u");
-            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            //         q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             @SuppressWarnings("unchecked")
             List<CookieBanner> results = q.getResultList();
@@ -6365,7 +6365,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em.createQuery("SELECT u FROM Disclaimer u");
-            //         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+            //         q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
 
             @SuppressWarnings("unchecked")
             List<Disclaimer> results = q.getResultList();

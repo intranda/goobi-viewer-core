@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,7 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 public class NumberListConverter implements AttributeConverter<List<Long>, String> {
 
     /* (non-Javadoc)
-     * @see javax.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
+     * @see jakarta.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
      */
     @Override
     public String convertToDatabaseColumn(List<Long> attribute) {
@@ -53,7 +53,7 @@ public class NumberListConverter implements AttributeConverter<List<Long>, Strin
     }
 
     /* (non-Javadoc)
-     * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
+     * @see jakarta.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
      */
     @Override
     public List<Long> convertToEntityAttribute(String dbData) {
