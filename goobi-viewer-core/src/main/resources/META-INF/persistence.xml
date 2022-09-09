@@ -105,6 +105,7 @@
 	</persistence-unit>
 
 	<persistence-unit name="intranda_viewer_test" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
         <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
         <class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
