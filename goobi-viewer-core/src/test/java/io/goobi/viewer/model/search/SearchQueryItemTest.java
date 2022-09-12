@@ -167,7 +167,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setValue("*foo*");
         Set<String> searchTerms = new HashSet<>(2);
         Assert.assertEquals(
-                "SUPERDEFAULT:*foo* OR SUPERFULLTEXT:*foo* OR SUPERUGCTERMS:*foo* OR DEFAULT:*foo* OR FULLTEXT:*foo* OR NORMDATATERMS:*foo* OR UGCTERMS:*foo* OR CMS_TEXT_ALL:*foo*",
+                "SUPERDEFAULT:(*foo*) OR SUPERFULLTEXT:(*foo*) OR SUPERUGCTERMS:(*foo*) OR DEFAULT:(*foo*) OR FULLTEXT:(*foo*) OR NORMDATATERMS:(*foo*) OR UGCTERMS:(*foo*) OR CMS_TEXT_ALL:(*foo*)",
                 item.generateQuery(searchTerms, true, false));
     }
 
@@ -202,7 +202,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setField("MD_TITLE");
         item.setValue("foo-bar");
         Set<String> searchTerms = new HashSet<>(2);
-        Assert.assertEquals("MD_TITLE:(foo\\-bar foo\\-bar~1)", item.generateQuery(searchTerms, true, true));
+        Assert.assertEquals("MD_TITLE:((foo\\-bar foo\\-bar~1))", item.generateQuery(searchTerms, true, true));
     }
 
     /**
@@ -215,7 +215,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setField(SolrConstants.YEAR);
         item.setValue(" 1900 ");
         item.setValue2(" 2020 ");
-        Assert.assertEquals("YEAR:[1900 TO 2020]", item.generateQuery(new HashSet<>(), true, false));
+        Assert.assertEquals("YEAR:([1900 TO 2020])", item.generateQuery(new HashSet<>(), true, false));
     }
 
     /**

@@ -1056,7 +1056,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
 
         String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
-        Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
+        Assert.assertEquals(" +((MD_FIELD:(val1) AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:(val2) OR MD_SHELFMARK:(bla OR blup)))", result);
     }
 
     @Test
@@ -1086,7 +1086,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
         Assert.assertEquals(
-                " +((MD_FIELD:(val1 val1~1) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:(val2 val2~1) OR MD_SHELFMARK:((bla) OR (blup blup~1))))",
+                " +((MD_FIELD:((val1 val1~1)) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:((val2 val2~1)) OR MD_SHELFMARK:((bla) OR (blup blup~1))))",
                 result);
     }
 
@@ -1121,7 +1121,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         groups.add(group);
 
         String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
-        Assert.assertEquals(" +((MD_FIELD:val))", result);
+        Assert.assertEquals(" +((MD_FIELD:(val)))", result);
     }
 
     /**
