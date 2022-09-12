@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -137,11 +138,13 @@ public class IdentifierResolver extends HttpServlet {
             customMode = true;
         }
 
-        String fieldName = SolrConstants.URN;
+        String fieldName;
         String fieldValue = request.getParameter("urn");
         if (customMode) {
             fieldName = request.getParameter(CUSTOM_FIELD_PARAMETER);
             fieldValue = request.getParameter(CUSTOM_IDENTIFIER_PARAMETER);
+        } else {
+            fieldName = DataManager.getInstance().getConfiguration().getUrnResolverFields().get(0);
         }
         if (StringUtils.isEmpty(fieldValue)) {
             try {
@@ -175,39 +178,33 @@ public class IdentifierResolver extends HttpServlet {
         parseFieldValueParameters(request.getParameterMap(), moreFields, moreValues);
 
         try {
-            StringBuilder sbQuery = new StringBuilder()
-                    .append('+')
-                    .append(fieldName.toUpperCase())
-                    .append(':')
-                    .append('"')
-                    .append(ClientUtils.escapeQueryChars(fieldValue))
-                    .append('"');
-
-            // Add additional field/value pairs to the query
-            if (!moreFields.isEmpty()) {
-                for (Entry<Integer, String> entry : moreFields.entrySet()) {
-                    if (moreValues.get(entry.getKey()) != null) {
-                        sbQuery.append(" +")
-                                .append(entry.getValue())
-                                .append(':')
-                                .append(moreValues.get(entry.getKey()));
-                    }
-                }
-            }
-
-            sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
-            String query = sbQuery.toString();
-            // logger.trace("query: {}", StringTools.stripPatternBreakingChars(query));
-
             // 3. evaluate the search
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
+            SolrDocumentList hits = query(fieldName, fieldValue, moreFields, moreValues, request);
+
             if (hits.getNumFound() == 0) {
                 // 3.1 start the alternative page field search
                 if (!customMode) {
-                    try {
-                        doPageSearch(fieldValue, request, response);
-                    } catch (IOException | ServletException e) {
-                        logger.error(e.getMessage());
+                    boolean found = false;
+                    // Try additional configured URN fields first
+                    if (DataManager.getInstance().getConfiguration().getUrnResolverFields().size() > 1) {
+                        for (String f : DataManager.getInstance().getConfiguration().getUrnResolverFields()) {
+                            if (!fieldName.equals(f)) {
+                                logger.trace("Querying field: {}", f);
+                                hits = query(f, fieldValue, moreFields, moreValues, request);
+                                if (hits.getNumFound() > 0) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // Page search if no hit
+                    if (!found) {
+                        try {
+                            doPageSearch(fieldValue, request, response);
+                        } catch (IOException | ServletException e) {
+                            logger.error(e.getMessage());
+                        }
                     }
                 } else {
                     // logger.trace("not found: {}:{}", fieldName, fieldValue);
@@ -353,17 +350,7 @@ public class IdentifierResolver extends HttpServlet {
         // A.2 Evaluate the search
         SolrDocumentList hits;
         try {
-            String query2 = new StringBuilder()
-                    .append('+')
-                    .append(SolrConstants.IMAGEURN)
-                    .append(':')
-                    .append('"')
-                    .append(ClientUtils.escapeQueryChars(fieldValue))
-                    .append('"')
-                    .append(SearchHelper.getAllSuffixes(request, false, false))
-                    .toString();
-            logger.trace("query: {}", query2);
-            hits = DataManager.getInstance().getSearchIndex().search(query2);
+            hits = query(SolrConstants.IMAGEURN, fieldValue, null, null, request);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             try {
@@ -459,6 +446,47 @@ public class IdentifierResolver extends HttpServlet {
                 logger.error(e.getMessage(), e);
             }
         }
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @param fieldValue
+     * @param moreFields
+     * @param moreValues
+     * @param request
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static SolrDocumentList query(String fieldName, String fieldValue, Map<Integer, String> moreFields, Map<Integer, String> moreValues,
+            HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+        StringBuilder sbQuery = new StringBuilder()
+                .append('+')
+                .append(fieldName.toUpperCase())
+                .append(':')
+                .append('"')
+                .append(ClientUtils.escapeQueryChars(fieldValue))
+                .append('"');
+
+        // Add additional field/value pairs to the query
+        if (moreFields != null && moreValues != null) {
+            for (Entry<Integer, String> entry : moreFields.entrySet()) {
+                if (moreValues.get(entry.getKey()) != null) {
+                    sbQuery.append(" +")
+                            .append(entry.getValue())
+                            .append(':')
+                            .append(moreValues.get(entry.getKey()));
+                }
+            }
+        }
+
+        sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
+        String query = sbQuery.toString();
+        // logger.trace("query: {}", StringTools.stripPatternBreakingChars(query));
+
+        // 3. evaluate the search
+        return DataManager.getInstance().getSearchIndex().search(query);
     }
 
     /**
