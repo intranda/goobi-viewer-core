@@ -2147,6 +2147,8 @@ public final class SearchHelper {
         if (StringUtils.isEmpty(query)) {
             return ret;
         }
+        
+        String patternAllitems = "\\((\\w+:\\\"[\\w ]+\\\"( AND | OR )*)+\\)|\\(+(\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)";
 
         String patternRegularItems = "\\((\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)";
         String patternRegularPairs = "(\\w+:\\([\\w ()]+\\))( AND | OR )*";
@@ -2154,7 +2156,7 @@ public final class SearchHelper {
         String patternPhraseItems = "\\((\\w+:\"[\\w ]+\"( AND | OR )*)+\\)";
         String patternPhrasePairs = "(\\w+:\"[\\w ]+\")( AND | OR )*";
 
-        String patternGroupOperator = "\\)( AND | OR )\\(";
+        String patternGroupOperator = "( AND | OR )";
 
         // Regular query
         // ((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
@@ -2162,87 +2164,99 @@ public final class SearchHelper {
         // Phrase query
         // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
 
+        // Mixed query
+        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
+        
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
         List<SearchItemOperator> operators = new ArrayList<>();
 
-        String queryRemainder = query;
-        Pattern pItems = Pattern.compile(patternPhraseItems);
-        Matcher mItems = pItems.matcher(query);
-        boolean phrase = false;
-        while (mItems.find()) {
-            // Phrase search
-            phrase = true;
-            operators.add(SearchItemOperator.PHRASE);
-            SearchItemOperator operator = SearchItemOperator.PHRASE;
-            String itemQuery = mItems.group();
-            queryRemainder = queryRemainder.replace(itemQuery, "");
-            Pattern pPairs = Pattern.compile(patternPhrasePairs);
-            Matcher mPairs = pPairs.matcher(itemQuery);
-
-            Set<String> fieldNames = new HashSet<>();
-            List<StringPair> pairs = new ArrayList<>();
-            while (mPairs.find()) {
-                String pair = mPairs.group(1);
-                logger.error(pair);
-                String[] pairSplit = pair.split(":");
-                if (pairSplit.length == 2) {
-                    pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
-                    fieldNames.add(pairSplit[0]);
-                }
-                String op = mPairs.group(2);
-                if (op != null && op.trim().equals("OR")) {
-                    // TODO
-                }
-            }
-            if (!pairs.isEmpty()) {
-                allPairs.add(pairs);
-                allFieldNames.add(fieldNames);
-            }
+        // Remove outer parentheses
+        if (query.startsWith("((") && query.endsWith("))")) {
+            query = query.substring(1, query.length() - 1);
         }
 
-        if (!phrase) {
-            // Regular search
-            pItems = Pattern.compile(patternRegularItems);
-            mItems = pItems.matcher(query);
-            while (mItems.find()) {
-                String itemQuery = mItems.group();
-                logger.trace("itemQuery: {}", itemQuery);
-                queryRemainder = queryRemainder.replace(itemQuery, "");
-                Pattern pPairs = Pattern.compile(patternRegularPairs);
+        String queryRemainder = query;
+        Pattern pItems = Pattern.compile(patternAllitems);
+        Matcher mItems = pItems.matcher(query);
+        while (mItems.find()) {
+            String itemQuery = mItems.group();
+            logger.error("item query: {}", itemQuery);
+            queryRemainder = queryRemainder.replace(itemQuery, "");
+            
+            Pattern pPhraseItem = Pattern.compile(patternPhraseItems);
+            Matcher mPhraseItem = pPhraseItem.matcher(itemQuery);
+            if (mPhraseItem.find()) {
+                // Phrase search
+                logger.error("phrase item: {}", itemQuery);
+                operators.add(SearchItemOperator.PHRASE);
+                Pattern pPairs = Pattern.compile(patternPhrasePairs);
                 Matcher mPairs = pPairs.matcher(itemQuery);
 
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
                 while (mPairs.find()) {
                     String pair = mPairs.group(1);
-                    logger.trace("pair: {}", pair);
+                    logger.error(pair);
                     String[] pairSplit = pair.split(":");
                     if (pairSplit.length == 2) {
-                        pairs.add(new StringPair(pairSplit[0],
-                                pairSplit[1].replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
+                        pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
                         fieldNames.add(pairSplit[0]);
                     }
-                    String op = mPairs.group(2);
-                    if (op != null && op.trim().equals("OR")) {
-                        operators.add(SearchItemOperator.OR);
-                    } else {
-                        operators.add(SearchItemOperator.AND);
-                    }
-
                 }
                 if (!pairs.isEmpty()) {
                     allPairs.add(pairs);
                     allFieldNames.add(fieldNames);
                 }
+            } else {
+                Pattern pRegularItem = Pattern.compile(patternRegularItems);
+                Matcher mRegularItem = pRegularItem.matcher(itemQuery);
+                if (mRegularItem.find()) {
+                    // Regular search
+                    logger.error("regular item: {}", itemQuery);
+                    pItems = Pattern.compile(patternRegularItems);
+                    mItems = pItems.matcher(query);
+                    while (mItems.find()) {
+                        Pattern pPairs = Pattern.compile(patternRegularPairs);
+                        Matcher mPairs = pPairs.matcher(itemQuery);
+
+                        Set<String> fieldNames = new HashSet<>();
+                        List<StringPair> pairs = new ArrayList<>();
+                        while (mPairs.find()) {
+                            String pair = mPairs.group(1);
+                            logger.trace("pair: {}", pair);
+                            String[] pairSplit = pair.split(":");
+                            if (pairSplit.length == 2) {
+                                pairs.add(new StringPair(pairSplit[0],
+                                        pairSplit[1].replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
+                                fieldNames.add(pairSplit[0]);
+                            }
+                            String op = mPairs.group(2);
+                            if (op != null && op.trim().equals("OR")) {
+                                operators.add(SearchItemOperator.OR);
+                            } else {
+                                operators.add(SearchItemOperator.AND);
+                            }
+
+                        }
+                        if (!pairs.isEmpty()) {
+                            allPairs.add(pairs);
+                            allFieldNames.add(fieldNames);
+                        }
+                    }
+                }
             }
+            
+
         }
 
         // Parse query group operator
+        logger.error("query remainder: {}", queryRemainder);
         Pattern pOperator = Pattern.compile(patternGroupOperator);
         Matcher mOperator = pOperator.matcher(queryRemainder);
         if (mOperator.find()) {
             String groupOperator = mOperator.group(1);
+            logger.error("group op: {}", groupOperator);
             ret.setOperator("OR".equals(groupOperator.trim()) ? SearchQueryGroupOperator.OR : SearchQueryGroupOperator.AND);
         }
 
