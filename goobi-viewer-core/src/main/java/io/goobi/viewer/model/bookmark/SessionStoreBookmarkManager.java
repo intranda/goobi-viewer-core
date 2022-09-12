@@ -24,7 +24,7 @@ package io.goobi.viewer.model.bookmark;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 

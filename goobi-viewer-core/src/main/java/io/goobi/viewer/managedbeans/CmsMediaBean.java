@@ -39,7 +39,7 @@ import java.util.stream.Stream;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.RollbackException;
+import jakarta.persistence.RollbackException;
 import javax.servlet.http.Part;
 
 import org.apache.commons.collections4.ListUtils;
