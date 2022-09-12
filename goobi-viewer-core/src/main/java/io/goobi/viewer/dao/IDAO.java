@@ -29,10 +29,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
@@ -108,7 +108,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
+    boolean columnsExists( String tableName, String columnName) throws DAOException, SQLException;
 
     // User
 

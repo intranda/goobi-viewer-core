@@ -5,6 +5,7 @@
     version="2.1"
     xmlns="http://xmlns.jcp.org/xml/ns/persistence">
 	<persistence-unit name="intranda_viewer_tomcat" transaction-type="JTA">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>java:comp/env/viewer</jta-data-source>
 
         <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
@@ -104,6 +105,7 @@
 	</persistence-unit>
 
 	<persistence-unit name="intranda_viewer_test" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
         <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
         <class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
@@ -207,10 +209,10 @@
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
         		
 		<properties>
-			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
-			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />
-			<property name="javax.persistence.jdbc.user" value="user" />
-			<property name="javax.persistence.jdbc.password" value="password" />
+			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />
+			<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test" />
+			<property name="jakarta.persistence.jdbc.user" value="user" />
+			<property name="jakarta.persistence.jdbc.password" value="password" />
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<property name="eclipselink.ddl-generation.output-mode" value="database" />
