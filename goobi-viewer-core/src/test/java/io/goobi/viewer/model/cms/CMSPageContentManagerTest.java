@@ -51,7 +51,6 @@ public class CMSPageContentManagerTest {
         assertEquals("/cms/components/frontend/component/icon/thmltext.png", htmlComponent.getIconPath());
         CMSContentItem item = htmlComponent.getContentItem("text");
         assertNotNull(item);
-        assertEquals()
         
     }
 

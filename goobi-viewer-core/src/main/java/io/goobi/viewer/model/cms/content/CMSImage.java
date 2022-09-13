@@ -27,6 +27,14 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Optional;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -37,10 +45,18 @@ import io.goobi.viewer.model.cms.CMSMediaHolder;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 
+@Entity
+@Table(name = "cms_content_image")
 public class CMSImage implements CMSContent, CMSMediaHolder {
 
     private static final String BACKEND_COMPONENT_NAME = "image";
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
+    
+    @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
     @Override
@@ -121,6 +137,14 @@ public class CMSImage implements CMSContent, CMSMediaHolder {
                 contentString = CmsMediaBean.getMediaUrl(getMediaItem(), width, height);
         }
         return contentString;
+    }
+    
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

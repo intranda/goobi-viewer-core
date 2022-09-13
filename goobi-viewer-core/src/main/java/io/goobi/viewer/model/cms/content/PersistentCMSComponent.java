@@ -22,37 +22,23 @@
 package io.goobi.viewer.model.cms.content;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.translations.TranslatedText;
-
 @Entity
-@Table(name = "cms_content_text")
-public class CMSText implements CMSContent {
+@Table(name = "cms_components")
+public class PersistentCMSComponent {
 
-    private static final String BACKEND_COMPONENT_NAME = "text";
-
-    
+    /** Unique database ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
+    @Column(name = "category_id")
     private Long id;
     
-    @Column(name = "text", nullable = true, columnDefinition = "SHORTTEXT")
-    @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText text = new TranslatedText();
-
-    @Override
-    public String getBackendComponentName() {
-        return BACKEND_COMPONENT_NAME;
-    }
-
+    
     public Long getId() {
         return id;
     }
@@ -60,5 +46,4 @@ public class CMSText implements CMSContent {
     public void setId(Long id) {
         this.id = id;
     }
-    
 }

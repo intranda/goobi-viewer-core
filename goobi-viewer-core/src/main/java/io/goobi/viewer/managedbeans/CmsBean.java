@@ -95,6 +95,7 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.PageValidityStatus;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
+import io.goobi.viewer.model.cms.content.CMSComponent;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
@@ -379,7 +380,11 @@ public class CmsBean implements Serializable {
         CMSTemplateManager.getInstance()
                 .updateTemplates(CMSTemplateManager.getInstance().getCoreFolderPath(), CMSTemplateManager.getInstance().getThemeFolderPath());
     }
-
+    
+    public List<CMSComponent> getConfiguredCMSComponents() {
+        return CMSTemplateManager.getInstance().getContentManager().getComponents();
+    }
+    
     /**
      * <p>
      * getTemplates.
