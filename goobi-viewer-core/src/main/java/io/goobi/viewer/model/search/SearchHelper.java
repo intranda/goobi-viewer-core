@@ -2171,6 +2171,7 @@ public final class SearchHelper {
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
         List<SearchItemOperator> operators = new ArrayList<>();
+        List<SearchQueryItem> items = new ArrayList<>();
 
         // Remove outer parentheses
         if (query.startsWith("((") && query.endsWith("))")) {
@@ -2234,10 +2235,10 @@ public final class SearchHelper {
                         } else {
                             operators.add(SearchItemOperator.AND);
                         }
-                        if (!pairs.isEmpty()) {
-                            allPairs.add(pairs);
-                            allFieldNames.add(fieldNames);
-                        }
+                    }
+                    if (!pairs.isEmpty()) {
+                        allPairs.add(pairs);
+                        allFieldNames.add(fieldNames);
                     }
                 }
             }
@@ -2267,6 +2268,7 @@ public final class SearchHelper {
                 item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
                 item.setValue(pairs.get(0).getTwo());
                 ret.getQueryItems().add(item);
+                logger.trace("added item: {}:{}", pairs.get(0).getOne(), pairs.get(0).getTwo());
             } else {
                 for (StringPair pair : pairs) {
                     switch (pair.getOne()) {
@@ -2277,9 +2279,10 @@ public final class SearchHelper {
                         default:
                             SearchQueryItem item = new SearchQueryItem(locale);
                             item.setOperator(operator);
-                            item.setField(pair.getOne());
+                            item.setField(pair.getOne()); // expensive
                             item.setValue(pair.getTwo());
                             ret.getQueryItems().add(item);
+                            logger.trace("added item: {}:{}", pair.getOne(), pair.getTwo());
                     }
                 }
             }
