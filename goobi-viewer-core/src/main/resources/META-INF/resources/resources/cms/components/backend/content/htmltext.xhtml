@@ -5,6 +5,7 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
@@ -12,10 +13,13 @@
 		<composite:attribute name="contentItem" required="true" type="io.goobi.viewer.model.cms.content.CMSContentItem" />
     </composite:interface>
 
+
     <composite:implementation>
-       <viewerForms:htmlInputField 
-       label="#{msg[contentItem.content.name]}" 
-       value="#{contentItem.content.text}"
-       helpText="#{msg[contentItem.content.description]"/>
+		<c:set scope="request" var="content"
+			val="cc.attrs.contentItem.content" />
+		<viewerForms:htmlInputField 
+       label="#{msg[content.name]}" 
+       value="#{content.text}"
+       helpText="#{msg[content.description]"/>
     </composite:implementation>
 </ui:composition>

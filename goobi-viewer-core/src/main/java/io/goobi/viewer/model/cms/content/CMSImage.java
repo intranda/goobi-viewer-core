@@ -21,8 +21,16 @@
  */
 package io.goobi.viewer.model.cms.content;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Optional;
 
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSMediaHolder;
@@ -32,7 +40,7 @@ import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 public class CMSImage implements CMSContent, CMSMediaHolder {
 
     private static final String BACKEND_COMPONENT_NAME = "image";
-    
+
     private CMSMediaItem mediaItem;
 
     @Override
@@ -64,10 +72,55 @@ public class CMSImage implements CMSContent, CMSMediaHolder {
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
         if (hasMediaItem()) {
             return new CategorizableTranslatedSelectable<>(mediaItem, true,
-                    mediaItem.getFinishedLocales().stream().findFirst()
-                    .orElse(BeanUtils.getLocale()), Collections.emptyList());
+                    mediaItem.getFinishedLocales()
+                            .stream()
+                            .findFirst()
+                            .orElse(BeanUtils.getLocale()),
+                    Collections.emptyList());
         }
         return null;
+    }
+
+    public String getUrl() throws UnsupportedEncodingException, ViewerConfigurationException {
+        return getUrl(null, null);
+    }
+
+    public String getUrl(String width, String height) throws ViewerConfigurationException, UnsupportedEncodingException {
+
+        String contentString = "";
+        String type = getMediaItem() != null ? getMediaItem().getContentType() : "";
+        switch (type) {
+            case CMSMediaItem.CONTENT_TYPE_XML:
+                contentString = CmsMediaBean.getMediaFileAsString(getMediaItem());
+                break;
+            case CMSMediaItem.CONTENT_TYPE_PDF:
+            case CMSMediaItem.CONTENT_TYPE_VIDEO:
+            case CMSMediaItem.CONTENT_TYPE_AUDIO:
+                boolean useContentApi = DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls();
+                Optional<AbstractApiUrlManager> urls;
+                if (useContentApi) {
+                    urls = DataManager.getInstance().getRestApiManager().getContentApiManager();
+                } else {
+                    urls = DataManager.getInstance().getRestApiManager().getDataApiManager();
+                }
+
+                boolean legacyApi = !urls.isPresent();
+                if (legacyApi) {
+                    String baseUrl = useContentApi ? DataManager.getInstance().getRestApiManager().getContentApiUrl()
+                            : DataManager.getInstance().getRestApiManager().getDataApiUrl();
+                    URI uri = URI.create(baseUrl + "cms/media/get/"
+                            + getMediaItem().getId() + ".pdf");
+                    return uri.toString();
+                }
+                String filename = getMediaItem().getFileName();
+                filename = URLEncoder.encode(filename, "utf-8");
+                return urls.get().path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
+
+            default:
+                // Images
+                contentString = CmsMediaBean.getMediaUrl(getMediaItem(), width, height);
+        }
+        return contentString;
     }
 
 }

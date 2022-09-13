@@ -5,6 +5,7 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
@@ -12,30 +13,35 @@
 		<composite:attribute name="contentItem" required="true" type="io.goobi.viewer.model.cms.content.CMSContentItem" />
     </composite:interface>
 
+	
     <composite:implementation>
-       <viewerForms:inputFormField 
-       label="#{msg[contentItem.content.name]}" 
-       helpText="#{msg[contentItem.content.description]">
+		<c:set scope="request" var="content"
+			val="cc.attrs.contentItem.content" />
+		<c:set scope="request" var="image"
+			val="cc.attrs.contentItem.content.mediaItem" />
+		<viewerForms:inputFormField 
+       label="#{msg[content.name]}" 
+       helpText="#{msg[content.description]">
        
         <!-- MEDIA FILE -->
-        <ui:fragment rendered="#{contentItem.mediaItem != null}">
+        <ui:fragment rendered="#{image != null}">
             <ui:include src="/resources/cms/includes/mediaFile.xhtml">
-                <ui:param name="item" value="#{contentItem.mediaItemWrapper}" />
+                <ui:param name="item" value="#{content.mediaItemWrapper}" />
             </ui:include>
         </ui:fragment>
 
         <!-- ACTIONS -->
         <div class="cms-module__actions">
             <h:commandLink 
-                action="#{cmsBean.setSelectedMediaHolder(contentItem)}" 
-                value="#{contentItem.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-                class="btn #{contentItem.getMediaItem() == null ? 'btn--default' : 'btn--clean'}" 
+                action="#{cmsBean.setSelectedMediaHolder(content)}" 
+                value="#{image == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                class="btn #{image == null ? 'btn--default' : 'btn--clean'}" 
                 role="button">
                 <f:ajax execute="@form" render="mediaSelectPanel" />
             </h:commandLink>
             <h:commandLink 
-                rendered="#{contentItem.getMediaItem() != null}" 
-                action="#{contentItem.setMediaItem(null)}" 
+                rendered="#{image != null}" 
+                action="#{content.setMediaItem(null)}" 
                 value="#{msg.cms_selectMediaItem_deselect}"
                 class="btn btn--clean delete" 
                 role="button">
