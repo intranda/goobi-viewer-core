@@ -1382,12 +1382,12 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Create SearchQueryGroup from query
-        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
-            advancedQueryGroups.clear();
-            advancedQueryGroups
-                    .add(SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""),
-                            navigationHelper != null ? navigationHelper.getLocale() : null));
-        }
+//        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
+//            advancedQueryGroups.clear();
+//            advancedQueryGroups
+//                    .add(SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""),
+//                            navigationHelper != null ? navigationHelper.getLocale() : null));
+//        }
 
         searchTerms = SearchHelper.extractSearchTermsFromQuery(searchStringInternal.replace("\\", ""), discriminatorValue);
         logger.trace("searchTerms: {}", searchTerms);

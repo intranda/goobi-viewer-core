@@ -2136,13 +2136,17 @@ public final class SearchHelper {
     /**
      * 
      * @param query
+     * @param facetQuery
      * @param locale
      * @return
      * @should parse phrase search query correctly
      * @should parse regular search query correctly
+     * @should parse drop down items correctly
+     * @should parse range items correctly
+     * @should parse facet query items correctly
      * @should parse mixed search query correctly
      */
-    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, Locale locale) {
+    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetQuery, Locale locale) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
         SearchQueryGroup ret = new SearchQueryGroup(locale, 0);
         if (StringUtils.isEmpty(query)) {
@@ -2166,12 +2170,11 @@ public final class SearchHelper {
         // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
 
         // Mixed query
-        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
+        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)) AND (DOCSTRCT_TOP:"monograph"))
 
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
         List<SearchItemOperator> operators = new ArrayList<>();
-        List<SearchQueryItem> items = new ArrayList<>();
 
         // Remove outer parentheses
         if (query.startsWith("((") && query.endsWith("))")) {
@@ -2268,7 +2271,7 @@ public final class SearchHelper {
                 item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
                 item.setValue(pairs.get(0).getTwo());
                 ret.getQueryItems().add(item);
-                logger.trace("added item: {}:{}", pairs.get(0).getOne(), pairs.get(0).getTwo());
+                logger.trace("added item: {}:{}", SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, pairs.get(0).getTwo());
             } else {
                 for (StringPair pair : pairs) {
                     switch (pair.getOne()) {
