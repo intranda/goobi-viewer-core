@@ -382,6 +382,7 @@ public class SearchQueryItem implements Serializable {
      * </p>
      * 
      * @should set displaySelectItems false if searching in all fields
+     * @should set displaySelectItems false if searching in fulltext
      * @should set displaySelectItems true if value count below threshold
      * @should set displaySelectItems false if value count above threshold
      */
@@ -402,6 +403,7 @@ public class SearchQueryItem implements Serializable {
                 displaySelectItems = true;
                 break;
             case ADVANCED_SEARCH_ALL_FIELDS:
+            case SolrConstants.FULLTEXT:
                 displaySelectItems = false;
                 break;
             default:
@@ -409,17 +411,12 @@ public class SearchQueryItem implements Serializable {
                     // Fields containing less values than the threshold for this field should be displayed as a drop-down
                     String facetField = SearchHelper.facetifyField(field); // use FACET_ to exclude reversed values from the count
                     String suffix = SearchHelper.getAllSuffixes();
-
+                    
                     // Via unique()
                     Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + facetField + ")\"}");
                     List<String> values = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, "json:uniqueCount", null, 1, params);
                     int size = !values.isEmpty() ? Integer.valueOf(values.get(0)) : 0;
-                    // logger.trace("facets for {}: {}", "json:uniqueCount", size);
-
-                    // Via regular facet values
-                    //                    values = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, field, null, 1, null);
-                    //                    logger.trace("facets for {}: {}", field, values.size());
-
+                    
                     if (size < getDisplaySelectItemsThreshold()) {
                         displaySelectItems = true;
                     } else {

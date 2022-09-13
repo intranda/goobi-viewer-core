@@ -279,6 +279,20 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.toggleDisplaySelectItems();
         Assert.assertFalse(item.isDisplaySelectItems());
     }
+    
+
+    /**
+     * @see SearchQueryItem#toggleDisplaySelectItems()
+     * @verifies set displaySelectItems false if searching in fulltext
+     */
+    @Test
+    public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInFulltext() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setField(SolrConstants.FULLTEXT);
+        item.displaySelectItems = true;
+        item.toggleDisplaySelectItems();
+        Assert.assertFalse(item.isDisplaySelectItems());
+    }
 
     /**
      * @see SearchQueryItem#toggleDisplaySelectItems()
