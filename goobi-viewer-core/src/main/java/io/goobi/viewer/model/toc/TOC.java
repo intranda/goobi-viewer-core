@@ -108,9 +108,7 @@ public class TOC implements Serializable {
      */
     public List<String> getGroupNames() {
         if (tocElementMap != null) {
-            List<String> groups = new ArrayList<>(tocElementMap.keySet());
-            //            groups.remove(DEFAULT_GROUP);
-            return groups;
+            return new ArrayList<>(tocElementMap.keySet());
         }
 
         return Collections.emptyList();
@@ -666,11 +664,9 @@ public class TOC implements Serializable {
     public boolean isHasChildren() {
         if (tocElementMap == null || tocElementMap.get(DEFAULT_GROUP) == null || tocElementMap.get(DEFAULT_GROUP).isEmpty()) {
             return false;
-        } else if (tocElementMap.get(DEFAULT_GROUP).size() == 1 && !tocElementMap.get(DEFAULT_GROUP).get(0).isHasChild()) {
-            return false;
-        } else {
-            return true;
         }
+
+        return !(tocElementMap.get(DEFAULT_GROUP).size() == 1 && !tocElementMap.get(DEFAULT_GROUP).get(0).isHasChild());
     }
 
     /**
