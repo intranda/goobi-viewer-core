@@ -1852,17 +1852,64 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
+     * @verifies parse drop down items correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseDropDownItemsCorrectly() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
+     * @verifies parse items from facet string correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseItemsFromFacetStringCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("", "DC:varia;;MD_CREATOR:bar;;", null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(2, group.getQueryItems().size());
+
+        Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("varia", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SearchItemOperator.IS, group.getQueryItems().get(0).getOperator());
+
+        Assert.assertEquals("MD_CREATOR", group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bar", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals(SearchItemOperator.IS, group.getQueryItems().get(1).getOperator());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
+     * @verifies parse range items correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseRangeItemsCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("(MD_YEARPUBLISH:([1900 TO 2000]))", null, null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(1, group.getQueryItems().size());
+
+        Assert.assertEquals("MD_YEARPUBLISH", group.getQueryItems().get(0).getField());
+        Assert.assertEquals("1900", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals("2000", group.getQueryItems().get(0).getValue2());
+        // Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
+    }
+
+    /**
      * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
      * @verifies parse mixed search query correctly
      */
     @Test
     public void parseSearchQueryGroupFromQuery_shouldParseMixedSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(((SUPERDEFAULT:\"foo bar\" OR SUPERFULLTEXT:\"foo bar\" OR SUPERUGCTERMS:\"foo bar\" OR DEFAULT:\"foo bar\" OR FULLTEXT:\"foo bar\" OR NORMDATATERMS:\"foo bar\" OR UGCTERMS:\"foo bar\" OR CMS_TEXT_ALL:\"foo bar\")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)) AND (DOCSTRCT_TOP:\"monograph\"))",
-                null, null);
+                "(((SUPERDEFAULT:\"foo bar\" OR SUPERFULLTEXT:\"foo bar\" OR SUPERUGCTERMS:\"foo bar\" OR DEFAULT:\"foo bar\" OR FULLTEXT:\"foo bar\" OR NORMDATATERMS:\"foo bar\" OR UGCTERMS:\"foo bar\" OR CMS_TEXT_ALL:\"foo bar\")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)) AND (DOCSTRCT_TOP:\"monograph\") AND (MD_YEARPUBLISH:([1900 TO 2000])))",
+                "DC:varia;;MD_CREATOR:bar;;", null);
         Assert.assertNotNull(group);
         Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
-        Assert.assertEquals(3, group.getQueryItems().size());
+        Assert.assertEquals(6, group.getQueryItems().size());
 
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
@@ -1875,5 +1922,17 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SolrConstants.DOCSTRCT_TOP, group.getQueryItems().get(2).getField());
         Assert.assertEquals("monograph", group.getQueryItems().get(2).getValue());
         //Assert.assertEquals(SearchItemOperator.PHRASE, group.getQueryItems().get(1).getOperator());
+        
+        Assert.assertEquals("MD_YEARPUBLISH", group.getQueryItems().get(3).getField());
+        Assert.assertEquals("1900", group.getQueryItems().get(3).getValue());
+        Assert.assertEquals("2000", group.getQueryItems().get(3).getValue2());
+        
+        Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(4).getField());
+        Assert.assertEquals("varia", group.getQueryItems().get(4).getValue());
+        // Assert.assertEquals(SearchItemOperator.IS, group.getQueryItems().get(4).getOperator());
+
+        Assert.assertEquals("MD_CREATOR", group.getQueryItems().get(5).getField());
+        Assert.assertEquals("bar", group.getQueryItems().get(5).getValue());
+        // Assert.assertEquals(SearchItemOperator.IS, group.getQueryItems().get(5).getOperator());
     }
 }

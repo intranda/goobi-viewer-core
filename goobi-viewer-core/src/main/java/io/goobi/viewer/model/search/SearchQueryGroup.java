@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -65,6 +67,19 @@ public class SearchQueryGroup implements Serializable {
         for (int i = 0; i < initSize; ++i) {
             queryItems.add(new SearchQueryItem(locale));
         }
+    }
+
+    /**
+     * 
+     * @return true if none of the items has any value input; false otherwise
+     */
+    public boolean isBlank() {
+        for (SearchQueryItem item : queryItems) {
+            if (StringUtils.isNotBlank(item.getValue()) || StringUtils.isNotBlank(item.getValue2())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

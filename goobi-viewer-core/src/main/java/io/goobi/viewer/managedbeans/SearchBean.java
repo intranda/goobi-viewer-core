@@ -581,7 +581,6 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbInfo = new StringBuilder();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
-        //        String currentFacetString = facets.getCurrentFacetStringPrefix(false);
 
         //Add fuzzy search terms
         List<SearchQueryGroup> tempQueryGroups = new ArrayList<>();
@@ -590,8 +589,7 @@ public class SearchBean implements SearchInterface, Serializable {
             tGroup.setOperator(group.getOperator());
             tempQueryGroups.add(tGroup);
             for (SearchQueryItem item : group.getQueryItems()) {
-                if (StringUtils.isNotBlank(item.getValue())) {
-                } else {
+                if (StringUtils.isBlank(item.getValue())) {
                     tGroup.getQueryItems().add(item);
                 }
             }
@@ -635,7 +633,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     // logger.trace("{} is hierarchical", queryItem.getField());
                     // Skip identical hierarchical items
 
-                    // Find existing facet items that can be repurposed for the existing facets
+                    // Find existing facet items that can be re-purposed for the existing facets
                     boolean skipQueryItem = false;
                     for (IFacetItem facetItem : facets.getCurrentFacets()) {
                         // logger.trace("checking facet item: {}", facetItem.getLink());
@@ -799,13 +797,13 @@ public class SearchBean implements SearchInterface, Serializable {
                     // If this is not the first group, add the inter-group operator
                     switch (advancedSearchGroupOperator) {
                         case 0:
-                            sb.append(" AND ");
+                            sb.append(SolrConstants.SOLR_QUERY_AND);
                             break;
                         case 1:
-                            sb.append(" OR ");
+                            sb.append(SolrConstants.SOLR_QUERY_OR);
                             break;
                         default:
-                            sb.append(" AND ");
+                            sb.append(SolrConstants.SOLR_QUERY_AND);
                             break;
                     }
                 }
@@ -813,7 +811,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
         if (sbCurrentCollection.length() > 0) {
-            logger.trace(facets.getCurrentFacetStringPrefix() + " + " + sbCurrentCollection.toString());
+            logger.trace("{} + {}", facets.getCurrentFacetStringPrefix(), sbCurrentCollection);
             facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
             logger.trace(facets.getCurrentFacetString());
@@ -827,7 +825,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         logger.trace("query info: {}", advancedSearchQueryInfo);
 
-        logger.debug("advanced query: {}", sb.toString());
+        logger.debug("advanced query: {}", sb);
         return sb.toString();
     }
 
@@ -1140,8 +1138,8 @@ public class SearchBean implements SearchInterface, Serializable {
             return;
         }
 
-        inSearchString = inSearchString.replace(" OR ", " || ");
-        inSearchString = inSearchString.replace(" AND ", " && ");
+        inSearchString = inSearchString.replace(SolrConstants.SOLR_QUERY_OR, " || ");
+        inSearchString = inSearchString.replace(SolrConstants.SOLR_QUERY_AND, " && ");
         inSearchString = inSearchString.toLowerCase(); // Regular tokens are lowercase
 
         if (inSearchString.contains("\"")) {
@@ -1218,7 +1216,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
                         //                        searchTerms.get(currentSearchFilter.getField()).add(phrase);
                     }
-                    sb.append(" AND ");
+                    sb.append(SolrConstants.SOLR_QUERY_AND);
                 }
             }
             searchStringInternal = sb.toString();
@@ -1306,9 +1304,9 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
         }
-        if (searchStringInternal.endsWith(" OR ")) {
+        if (searchStringInternal.endsWith(SolrConstants.SOLR_QUERY_OR)) {
             searchStringInternal = searchStringInternal.substring(0, searchStringInternal.length() - 4);
-        } else if (searchStringInternal.endsWith(" AND ")) {
+        } else if (searchStringInternal.endsWith(SolrConstants.SOLR_QUERY_AND)) {
             searchStringInternal = searchStringInternal.substring(0, searchStringInternal.length() - 5);
         }
 
@@ -1382,12 +1380,20 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Create SearchQueryGroup from query
-//        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
-//            advancedQueryGroups.clear();
-//            advancedQueryGroups
-//                    .add(SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""),
-//                            navigationHelper != null ? navigationHelper.getLocale() : null));
-//        }
+        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
+            boolean parseGroupFromQuery = true;
+            for (SearchQueryGroup group : advancedQueryGroups) {
+                if (!group.isBlank()) {
+                    parseGroupFromQuery = false;
+                }
+            }
+            if (parseGroupFromQuery) {
+                advancedQueryGroups.clear();
+                advancedQueryGroups
+                        .add(SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getCurrentFacetString(),
+                                navigationHelper != null ? navigationHelper.getLocale() : null));
+            }
+        }
 
         searchTerms = SearchHelper.extractSearchTermsFromQuery(searchStringInternal.replace("\\", ""), discriminatorValue);
         logger.trace("searchTerms: {}", searchTerms);
@@ -2729,7 +2735,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 .append(SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true));
 
         if (StringUtils.isNotEmpty(subQuery)) {
-            if (subQuery.startsWith(" AND ")) {
+            if (subQuery.startsWith(SolrConstants.SOLR_QUERY_AND)) {
                 subQuery = subQuery.substring(5);
             }
             sbQuery.append(" AND (").append(subQuery).append(')');
@@ -2973,7 +2979,7 @@ public class SearchBean implements SearchInterface, Serializable {
         return SearchHelper.facetifyField(fieldName);
     }
 
-    public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException, PresentationException {
+    public List<FacetItem> getFieldFacetValues(String field, int num) throws IndexUnreachableException {
         return getFieldFacetValues(field, num, "");
     }
 
@@ -3054,7 +3060,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (getActiveSearchType() == 1) {
             return PrettyUrlTools.getAbsolutePageUrl(
                     "pretty:searchAdvanced5",
-                    facets.getCurrentHierarchicalFacetString(),
+                    "-",
                     getExactSearchString(),
                     getCurrentPage(),
                     getSortString(),
@@ -3063,7 +3069,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         return PrettyUrlTools.getAbsolutePageUrl(
                 "pretty:newSearch5",
-                facets.getCurrentHierarchicalFacetString(),
+                "-",
                 getExactSearchString(),
                 getCurrentPage(),
                 getSortString(),
