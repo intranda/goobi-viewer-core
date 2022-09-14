@@ -521,7 +521,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if(fullMimetype.matches("(?i)image/png")) {
             return fullMimetype;
         } else {
-            return "image/jpg";
+            return "image/jpeg";
         }
     }
 
