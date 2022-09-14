@@ -34,8 +34,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.controller.DataManager;
@@ -55,7 +55,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public class StatisticsIndexTask {
 
-    private static final Logger logger = LoggerFactory.getLogger(StatisticsIndexTask.class);
+    private static final Logger logger = LogManager.getLogger(StatisticsIndexTask.class);
 
     
     private static final long DELAY_BETWEEN_INDEX_CHECKS_SECONDS = 2 * 60l;

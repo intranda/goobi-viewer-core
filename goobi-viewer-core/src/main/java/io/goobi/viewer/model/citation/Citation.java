@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -35,7 +35,7 @@ import de.undercouch.citeproc.output.Bibliography;
 
 public class Citation {
 
-    private static final Logger logger = LoggerFactory.getLogger(Citation.class);
+    private static final Logger logger = LogManager.getLogger(Citation.class);
 
     private String id;
     private final CSLType type;

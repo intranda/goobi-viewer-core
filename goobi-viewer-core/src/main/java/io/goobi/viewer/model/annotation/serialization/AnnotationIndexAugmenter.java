@@ -31,8 +31,8 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -60,7 +60,7 @@ import io.goobi.viewer.modules.interfaces.IndexAugmenter;
  */
 public class AnnotationIndexAugmenter implements IndexAugmenter {
 
-    private final Logger logger = LoggerFactory.getLogger(AnnotationIndexAugmenter.class);
+    private final Logger logger = LogManager.getLogger(AnnotationIndexAugmenter.class);
 
     /** Constant <code>SUFFIX_ANNOTATIONS="_annotations"</code> */
     public static final String SUFFIX_ANNOTATIONS = "_ugc";

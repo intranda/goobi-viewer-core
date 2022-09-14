@@ -30,8 +30,8 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
@@ -73,7 +73,7 @@ public class MetadataParameter implements Serializable {
         NORMDATASEARCH("normdatasearch"),
         CITEPROC("citeproc");
 
-        private static final Logger logger = LoggerFactory.getLogger(MetadataParameterType.class);
+        private static final Logger logger = LogManager.getLogger(MetadataParameterType.class);
 
         private final String key;
 

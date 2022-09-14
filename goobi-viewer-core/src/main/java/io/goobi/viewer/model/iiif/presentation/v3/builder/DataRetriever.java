@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -57,7 +57,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class DataRetriever {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataRetriever.class);
+    private static final Logger logger = LogManager.getLogger(DataRetriever.class);
 
     /**
      * Required field to create manifest stubs for works in collection

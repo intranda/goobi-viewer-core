@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.undercouch.citeproc.CSL;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -49,7 +49,7 @@ public class MetadataValue implements Serializable {
 
     private static final long serialVersionUID = -3162322038017977356L;
 
-    private static final Logger logger = LoggerFactory.getLogger(MetadataValue.class);
+    private static final Logger logger = LogManager.getLogger(MetadataValue.class);
 
     static final String MASTERVALUE_NULL = "MASTERVALUE_NULL";
 

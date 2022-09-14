@@ -41,8 +41,8 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.Dataset;
@@ -57,7 +57,7 @@ import io.goobi.viewer.model.security.user.User;
 
 public class ExcelRenderer {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExcelRenderer.class);
+    private static final Logger logger = LogManager.getLogger(ExcelRenderer.class);
 
     private final AnnotationConverter annotationConverter;
 

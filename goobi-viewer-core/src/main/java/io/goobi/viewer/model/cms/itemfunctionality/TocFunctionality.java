@@ -24,8 +24,8 @@ package io.goobi.viewer.model.cms.itemfunctionality;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -45,7 +45,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class TocFunctionality implements Functionality {
 
-    private static Logger logger = LoggerFactory.getLogger(TocFunctionality.class);
+    private static Logger logger = LogManager.getLogger(TocFunctionality.class);
 
     private TOC toc = null;
 

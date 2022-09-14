@@ -60,8 +60,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -166,7 +166,7 @@ public class CMSContentItem implements Comparable<CMSContentItem>, CMSMediaHolde
     }
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSContentItem.class);
+    private static final Logger logger = LogManager.getLogger(CMSContentItem.class);
 
     /** Unique database ID. */
     @Id

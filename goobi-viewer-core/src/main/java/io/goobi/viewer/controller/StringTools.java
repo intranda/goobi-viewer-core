@@ -49,8 +49,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
@@ -64,7 +64,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public class StringTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(StringTools.class);
+    private static final Logger logger = LogManager.getLogger(StringTools.class);
 
     /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code> */
     public static final String REGEX_QUOTATION_MARKS = "\"[^()]*?\"";

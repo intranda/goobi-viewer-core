@@ -31,8 +31,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
@@ -69,7 +69,7 @@ public class TranslationGroup {
     }
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(TranslationGroup.class);
+    private static final Logger logger = LogManager.getLogger(TranslationGroup.class);
 
     private final int id;
     private final TranslationGroupType type;

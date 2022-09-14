@@ -36,8 +36,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -72,7 +72,7 @@ public class BreadcrumbBean implements Serializable {
     private static final long serialVersionUID = -7671680493703878185L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(BreadcrumbBean.class);
+    private static final Logger logger = LogManager.getLogger(BreadcrumbBean.class);
 
     /** Constant <code>WEIGHT_TAG_MAIN_MENU=1</code> */
     public static final int WEIGHT_TAG_MAIN_MENU = 1;

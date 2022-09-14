@@ -34,8 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ibm.icu.text.SimpleDateFormat;
 import com.rometools.rome.feed.synd.SyndContent;
@@ -77,7 +77,7 @@ public class RSSFeed {
      */
     private static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
-    private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
+    private static final Logger logger = LogManager.getLogger(RSSFeed.class);
 
     /** Constant <code>FIELDS</code> */
     private static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,

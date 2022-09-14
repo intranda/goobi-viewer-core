@@ -35,8 +35,8 @@ import java.util.Set;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -49,7 +49,7 @@ import io.goobi.viewer.exceptions.DAOException;
 public class JPAClassLoader extends ClassLoader {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(JPAClassLoader.class);
+    private static final Logger logger = LogManager.getLogger(JPAClassLoader.class);
 
     /** Constant <code>PERSISTENCE_XML="META-INF/persistence.xml"</code> */
     public static final String PERSISTENCE_XML = "META-INF/persistence.xml";

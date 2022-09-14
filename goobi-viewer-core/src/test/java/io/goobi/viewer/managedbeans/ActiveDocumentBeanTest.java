@@ -28,8 +28,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -42,7 +42,7 @@ import io.goobi.viewer.model.viewer.ViewManager;
 public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBeanTest.class);
+    private static final Logger logger = LogManager.getLogger(ActiveDocumentBeanTest.class);
 
     private NavigationHelper navigationHelper;
 

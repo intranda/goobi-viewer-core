@@ -33,8 +33,8 @@ import org.jdom2.JDOMException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -51,7 +51,7 @@ import io.goobi.viewer.model.job.JobStatus;
  */
 public class TranskribusUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(TranskribusUtils.class);
+    private static final Logger logger = LogManager.getLogger(TranskribusUtils.class);
 
     /** Constant <code>TRANSRIBUS_REST_URL="https://transkribus.eu/TrpServer/rest/"</code> */
     public static final String TRANSRIBUS_REST_URL = "https://transkribus.eu/TrpServer/rest/";

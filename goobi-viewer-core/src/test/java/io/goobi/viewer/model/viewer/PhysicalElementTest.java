@@ -29,8 +29,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.ContextMocker;
@@ -38,7 +38,7 @@ import io.goobi.viewer.managedbeans.ContextMocker;
 public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(PhysicalElementTest.class);
+    private static final Logger logger = LogManager.getLogger(PhysicalElementTest.class);
 
     @Override
     @Before

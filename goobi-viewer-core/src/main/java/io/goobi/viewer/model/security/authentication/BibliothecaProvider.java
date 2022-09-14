@@ -27,8 +27,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.security.user.User;
  */
 public class BibliothecaProvider extends HttpAuthenticationProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(BibliothecaProvider.class);
+    private static final Logger logger = LogManager.getLogger(BibliothecaProvider.class);
 
     /**
      * <p>

@@ -30,8 +30,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -44,7 +44,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 public class StructElementTest extends AbstractSolrEnabledTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(StructElementTest.class);
+    private static final Logger logger = LogManager.getLogger(StructElementTest.class);
 
     @Override
     @Before

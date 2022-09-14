@@ -36,8 +36,8 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -60,7 +60,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPageLoader.class);
+    private static final Logger logger = LogManager.getLogger(AbstractPageLoader.class);
 
     /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */
     protected static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,

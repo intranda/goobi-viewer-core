@@ -56,8 +56,8 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.dao.IDAO;
@@ -119,7 +119,7 @@ import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 public class JPADAO implements IDAO {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(JPADAO.class);
+    private static final Logger logger = LogManager.getLogger(JPADAO.class);
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";

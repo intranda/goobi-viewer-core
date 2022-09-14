@@ -37,8 +37,8 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
@@ -63,7 +63,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @DiscriminatorValue("CustomSidebarWidget")
 public class CustomSidebarWidget implements IPolyglott {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomSidebarWidget.class);
+    private static final Logger logger = LogManager.getLogger(CustomSidebarWidget.class);
 
     /** Unique database ID. */
     @Id

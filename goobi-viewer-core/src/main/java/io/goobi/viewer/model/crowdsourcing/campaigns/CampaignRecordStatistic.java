@@ -47,8 +47,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -68,7 +68,7 @@ import io.goobi.viewer.solr.SolrConstants;
 @JsonInclude(Include.NON_EMPTY)
 public class CampaignRecordStatistic implements Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(CampaignRecordStatistic.class);
+    private static final Logger logger = LogManager.getLogger(CampaignRecordStatistic.class);
 
     private static final long serialVersionUID = 8902904205183851565L;
 

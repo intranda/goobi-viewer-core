@@ -34,8 +34,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +60,7 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = 1507603814345643281L;
 
-    private static final Logger logger = LoggerFactory.getLogger(OEmbedServlet.class);
+    private static final Logger logger = LogManager.getLogger(OEmbedServlet.class);
 
     /**
      * <p>

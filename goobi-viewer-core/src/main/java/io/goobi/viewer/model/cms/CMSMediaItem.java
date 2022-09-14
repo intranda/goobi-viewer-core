@@ -54,8 +54,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -80,7 +80,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private static final long serialVersionUID = 31745843830948125L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
+    private static final Logger logger = LogManager.getLogger(CMSMediaItem.class);
 
     /** Constant <code>CONTENT_TYPE_XML="text/xml"</code> */
     public static final String CONTENT_TYPE_XML = "text/xml";

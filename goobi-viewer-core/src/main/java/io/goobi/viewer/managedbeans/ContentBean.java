@@ -36,8 +36,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.ITypedResource;
 import io.goobi.viewer.controller.DataManager;
@@ -65,7 +65,7 @@ public class ContentBean implements Serializable {
 
     private static final long serialVersionUID = 3811544515374503924L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ContentBean.class);
+    private static final Logger logger = LogManager.getLogger(ContentBean.class);
 
     /**
      * PI for which {@link #userGeneratedContentsForDisplay} is loaded

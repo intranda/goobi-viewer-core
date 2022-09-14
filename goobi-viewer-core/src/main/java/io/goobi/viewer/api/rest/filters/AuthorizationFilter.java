@@ -31,8 +31,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.controller.DataManager;
@@ -47,7 +47,7 @@ import io.goobi.viewer.controller.NetTools;
 @AuthorizationBinding
 public class AuthorizationFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
+    private static final Logger logger = LogManager.getLogger(AuthorizationFilter.class);
 
     @Context
     private HttpServletRequest req;

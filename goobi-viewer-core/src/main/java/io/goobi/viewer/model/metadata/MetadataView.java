@@ -24,8 +24,8 @@ package io.goobi.viewer.model.metadata;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -36,7 +36,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 public class MetadataView {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(MetadataView.class);
+    private static final Logger logger = LogManager.getLogger(MetadataView.class);
 
     /** Metadata view index. The first entry implies the value 0, all subsequent entries must provide an index value. */
     public int index = 0;

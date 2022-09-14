@@ -24,8 +24,8 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.controller.DataManager;
@@ -40,7 +40,7 @@ import io.goobi.viewer.model.statistics.usage.RequestType;
 @RecordFileDownloadBinding
 public class RecordFileDownloadFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecordFileDownloadFilter.class);
+    private static final Logger logger = LogManager.getLogger(RecordFileDownloadFilter.class);
     
     @Context
     private HttpServletRequest servletRequest;

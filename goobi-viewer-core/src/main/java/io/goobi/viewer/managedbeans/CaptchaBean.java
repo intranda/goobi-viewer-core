@@ -29,8 +29,8 @@ import java.util.Random;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.security.SecurityQuestion;
@@ -44,7 +44,7 @@ public class CaptchaBean implements Serializable {
 
     private static final long serialVersionUID = -8342047587240066920L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CaptchaBean.class);
+    private static final Logger logger = LogManager.getLogger(CaptchaBean.class);
 
     private transient SecurityQuestion securityQuestion = null;
     private transient String securityAnswer;

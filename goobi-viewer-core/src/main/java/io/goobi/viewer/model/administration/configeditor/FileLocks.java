@@ -28,12 +28,12 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class FileLocks {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileLocks.class);
+    private static final Logger logger = LogManager.getLogger(FileLocks.class);
 
     private final Map<Path, String> locks = new ConcurrentHashMap<>();
 

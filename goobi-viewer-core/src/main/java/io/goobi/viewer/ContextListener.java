@@ -37,8 +37,8 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 //import org.apache.logging.log4j.LogManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
@@ -58,7 +58,7 @@ public class ContextListener implements ServletContextListener {
 
     private static final int PRETTY_CONFIG_FILES_STRING_THRESHOLD = 1_000_000;
 
-    private static final Logger logger = LoggerFactory.getLogger(ContextListener.class);
+    private static final Logger logger = LogManager.getLogger(ContextListener.class);
 
     /** Constant <code>PRETTY_FACES_CONFIG_PARAM_NAME="com.ocpsoft.pretty.CONFIG_FILES"</code> */
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";

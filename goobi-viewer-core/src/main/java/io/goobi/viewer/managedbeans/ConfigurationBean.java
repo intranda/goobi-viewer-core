@@ -35,8 +35,8 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -68,7 +68,7 @@ public class ConfigurationBean implements Serializable {
 
     private static final long serialVersionUID = -1371688138567741188L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationBean.class);
+    private static final Logger logger = LogManager.getLogger(ConfigurationBean.class);
 
     /**
      * Empty constructor.
