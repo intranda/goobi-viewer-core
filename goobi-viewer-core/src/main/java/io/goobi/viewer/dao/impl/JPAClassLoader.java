@@ -166,7 +166,7 @@ public class JPAClassLoader extends ClassLoader {
             // For each persistence unit in the master file check for any new classes in the module file
             for (Element eleModulePU : docModule.getRootElement().getChildren("persistence-unit", null)) {
                 String puName = eleModulePU.getAttributeValue("name");
-                if (masterPuMap.containsKey(puName)) {
+                if (masterPuMap.containsKey(puName) && masterExistingClasses.containsKey(puName)) {
                     Element eleMasterPU = masterPuMap.get(puName);
                     for (Element eleModuleClass : eleModulePU.getChildren("class", null)) {
                         String className = eleModuleClass.getText().trim();
