@@ -1427,6 +1427,16 @@ public class ConfigurationTest extends AbstractTest {
     public void getDefaultSortField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(SolrConstants.SORT_RANDOM, DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
+    
+
+    /**
+     * @see Configuration#getUrnResolverFields()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getUrnResolverFields_shouldReturnAllConfiguredElements() throws Exception {
+        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getUrnResolverFields().size());
+    }
 
     /**
      * @see Configuration#isUrnDoRedirect()

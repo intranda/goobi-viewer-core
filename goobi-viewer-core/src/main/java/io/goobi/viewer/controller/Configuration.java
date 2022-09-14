@@ -1950,6 +1950,15 @@ public class Configuration extends AbstractConfiguration {
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
     }
+    
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<String> getUrnResolverFields() {
+        return getLocalList("urnresolver.field", Collections.singletonList(SolrConstants.URN));
+    }
 
     /**
      * <p>

@@ -6,6 +6,7 @@
     xmlns:t="http://myfaces.apache.org/tomahawk"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface />
@@ -50,14 +51,14 @@
 				<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
 		
 		         <div class="admin__radio-switch mb-3">
-		             <h:selectOneRadio group="cmsPageStatusVisibility" value="#{cmsBean.selectedPage.published}"
-		                 immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
-		                 <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-		             </h:selectOneRadio>
-		             <h:selectOneRadio group="cmsPageStatusVisibility" value="#{cmsBean.selectedPage.published}"
-		                 immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
-		                 <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-		             </h:selectOneRadio>
+		            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+		            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.published ? null : 'false'}"/>
+					<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
+		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.published ? 'false' : null}"/>
+		         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
+					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsBean.selectedPage.published}"
+        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 		             <span class="toggle-outside"><span class="toggle-inside"></span></span>
 		         </div>
 
@@ -70,11 +71,6 @@
                             <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
                             #{msg.cms_pagePreview_info}
                         </div>
-
-                        <!-- preview page -->
-<!--                         <button type="button" id="preview-button" class="btn btndefault" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}"> -->
-<!--                             #{msg.cms_pagePreview} -->
-<!--                         </button> -->
 
                         <a id="showPageButton" class="btn btn--default" target="_blank" href="#{cmsBean.getUrl(cmsBean.selectedPage)}">
                             #{msg.cms_pagePreview}
@@ -326,14 +322,16 @@
 				            <h:panelGroup id="useAsDefaultRecordViewGroup" layout="block" styleClass="cms-module__option-checkbox">
 	
 	                            <div class="admin__radio-switch">
-	                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
-	                                    immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
-	                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                </h:selectOneRadio>
-	                                <h:selectOneRadio disabled="#{empty cmsBean.selectedPage.relatedPI}" group="cmsPageDefaultRecordView" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
-	                                    immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
-	                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-	                                </h:selectOneRadio>
+	                                <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+						            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+						            <input type="radio" jsf:id="cmsPageDefaultRecordView_no"
+						            pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.useAsDefaultRecordView ? null : 'false'}"/>
+									<h:outputLabel for="cmsPageDefaultRecordView_no" value="#{msg.no}" />
+						         	<input type="radio" jsf:id="cmsPageDefaultRecordView_yes"
+						         	pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.useAsDefaultRecordView ? 'false' : null}"/>
+						         	<h:outputLabel for="cmsPageDefaultRecordView_yes" value="#{msg.yes}" />
+									<h:inputHidden id="cmsPageDefaultRecordView_input" binding="#{cmsPageDefaultRecordView}" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
+				        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 	                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                            </div>
 				            </h:panelGroup>
@@ -440,14 +438,16 @@
                 
                 <!-- ALLOW URL PARAMS TOGGLE -->
                  <div class="admin__radio-switch">
-                     <h:selectOneRadio onclick="cmsJS.createPage.disablePreview();" group="cmsPageAllowUrlParams" value="#{cmsBean.selectedPage.mayContainUrlParameters}"
-                         immediate="true" checked="#{cmsBean.selectedPage.published ? null : 'false'}">
-                         <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-                     </h:selectOneRadio>
-                     <h:selectOneRadio onclick="cmsJS.createPage.disablePreview();" group="cmsPageAllowUrlParams" value="#{cmsBean.selectedPage.mayContainUrlParameters}"
-                         immediate="true" checked="#{cmsBean.selectedPage.published ? 'true' : null}">
-                         <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-                     </h:selectOneRadio>
+                 <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+	            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+	            <input type="radio" jsf:id="cmsPageAllowUrlParams_no"
+	            pt:name="#{cmsPageAllowUrlParams.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.mayContainUrlParameters ? null : 'false'}"/>
+				<h:outputLabel for="cmsPageAllowUrlParams_no" value="#{msg.no}" />
+	         	<input type="radio" jsf:id="cmsPageAllowUrlParams_yes"
+	         	pt:name="#{cmsPageAllowUrlParams.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.mayContainUrlParameters ? 'false' : null}"/>
+	         	<h:outputLabel for="cmsPageAllowUrlParams_yes" value="#{msg.yes}" />
+				<h:inputHidden id="cmsPageAllowUrlParams_input" binding="#{cmsPageAllowUrlParams}" value="#{cmsBean.selectedPage.mayContainUrlParameters}"
+       				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
                      <span class="toggle-outside"><span class="toggle-inside"></span></span>
                  </div>
                     

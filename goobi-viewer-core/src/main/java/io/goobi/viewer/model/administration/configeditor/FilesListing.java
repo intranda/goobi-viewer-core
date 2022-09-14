@@ -69,8 +69,13 @@ public class FilesListing implements Serializable {
 
         File[] files = new File[0];
         for (String configPath : DataManager.getInstance().getConfiguration().getConfigEditorDirectories()) {
-            File f = new File(FileTools.adaptPathForWindows(configPath));
-            files = Stream.concat(Arrays.stream(files), Arrays.stream(f.listFiles(filter))).toArray(File[]::new);
+            File directory = new File(FileTools.adaptPathForWindows(configPath));
+            if (directory.isDirectory()) {
+                File[] dirFiles = directory.listFiles(filter);
+                if (dirFiles != null) {
+                    files = Stream.concat(Arrays.stream(files), Arrays.stream(dirFiles)).toArray(File[]::new);
+                }
+            }
 
         }
 

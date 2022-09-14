@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import javax.persistence.RollbackException;
+import jakarta.persistence.RollbackException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

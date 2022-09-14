@@ -360,7 +360,6 @@ public class AdminConfigEditorBean implements Serializable {
                 logger.debug("Saving {}, changes to config editor settings will be reverted...", Configuration.CONFIG_FILE_NAME);
                 org.jdom2.Document doc = XmlTools.getDocumentFromString(fileContent, StandardCharsets.UTF_8.name());
                 if (doc != null && doc.getRootElement() != null) {
-                    boolean origConfigEditorEnabled = DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
                     int origConfigEditorMax = DataManager.getInstance().getConfiguration().getConfigEditorBackupFiles();
                     List<String> origConfigEditorDirectories = DataManager.getInstance().getConfiguration().getConfigEditorDirectories();
                     Element eleConfigEditor = doc.getRootElement().getChild("configEditor");
@@ -372,9 +371,9 @@ public class AdminConfigEditorBean implements Serializable {
                     // Restore previous enabled value
                     Attribute attEnabled = eleConfigEditor.getAttribute("enabled");
                     if (attEnabled != null) {
-                        attEnabled.setValue(String.valueOf(origConfigEditorEnabled));
+                        attEnabled.setValue("true");
                     } else {
-                        eleConfigEditor.setAttribute("enabled", String.valueOf(origConfigEditorEnabled));
+                        eleConfigEditor.setAttribute("enabled", "true");
                     }
                     // Restore previous backupFiles value
                     Attribute attBackupFiles = eleConfigEditor.getAttribute("backupFiles");

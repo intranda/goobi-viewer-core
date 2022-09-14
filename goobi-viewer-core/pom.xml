@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>22.08-SNAPSHOT</version>
+	<version>22.09-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -109,7 +109,7 @@
 		<commons-net.version>3.8.0</commons-net.version>
 		<commons-text.version>1.9</commons-text.version>
 		<dbunit.version>2.7.3</dbunit.version>
-		<eclipselink.version>2.7.11</eclipselink.version>
+		<eclipselink.version>4.0.0-RC1</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.13</httpclient.version>
 		<httpcore.version>4.4.15</httpcore.version>
@@ -124,7 +124,7 @@
 		<javax.el.version>3.0.1-b06</javax.el.version>
 		<javax.faces.version>2.3.9</javax.faces.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
-		<javax.persistence.version>2.2.1</javax.persistence.version>
+		<jakarta.persistence.version>3.1.0</jakarta.persistence.version>
 		<javax.websocket.version>1.1</javax.websocket.version>
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
@@ -132,14 +132,14 @@
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-runtime.version>2.3.6</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
-		<jersey.version>2.36</jersey.version>
+		<jersey.version>2.37</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20220320</json.version>
 		<jsoup.version>1.15.3</jsoup.version>
 		<junit.version>4.13.2</junit.version>
 		<mariadb-java-client.version>3.0.7</mariadb-java-client.version>
-		<mockito.version>4.7.0</mockito.version>
+		<mockito.version>4.8.0</mockito.version>
 		<mockserver.version>5.14.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.13.4</omnifaces.version>
@@ -418,9 +418,9 @@
 			<version>${javax.mail.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-			<version>${javax.persistence.version}</version>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>${jakarta.persistence.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
