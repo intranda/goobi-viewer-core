@@ -28,8 +28,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -52,7 +52,7 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = -3105025774455196485L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TermsOfUseEditBean.class);
+    private static final Logger logger = LogManager.getLogger(TermsOfUseEditBean.class);
 
     private TermsOfUse termsOfUse;
     private Locale selectedLocale = BeanUtils.getDefaultLocale();

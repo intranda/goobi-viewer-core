@@ -47,8 +47,8 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
@@ -82,7 +82,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class ExternalImageResource extends ImageResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExternalImageResource.class);
+    private static final Logger logger = LogManager.getLogger(ExternalImageResource.class);
 
     /**
      * @param request

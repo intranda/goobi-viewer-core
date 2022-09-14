@@ -46,8 +46,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -96,7 +96,7 @@ import io.goobi.viewer.solr.SolrTools;
 @CrowdsourcingCampaignBinding
 public class CampaignItemResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(CampaignItemResource.class);
+    private static final Logger logger = LogManager.getLogger(CampaignItemResource.class);
 
     protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
 

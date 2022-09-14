@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -52,7 +52,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class RisResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(RisResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(RisResourceBuilder.class);
 
     HttpServletRequest request;
     HttpServletResponse response;

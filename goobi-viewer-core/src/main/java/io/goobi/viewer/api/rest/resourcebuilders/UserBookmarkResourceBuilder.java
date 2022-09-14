@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -53,7 +53,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 
 public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserBookmarkResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(UserBookmarkResourceBuilder.class);
 
     private final User user;
 

@@ -31,8 +31,8 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -52,7 +52,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class RelatedPIValidator extends PIValidator {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(RelatedPIValidator.class);
+    private static final Logger logger = LogManager.getLogger(RelatedPIValidator.class);
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)

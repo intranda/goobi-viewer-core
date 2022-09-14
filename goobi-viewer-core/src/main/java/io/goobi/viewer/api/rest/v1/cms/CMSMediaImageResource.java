@@ -44,8 +44,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -68,7 +68,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class CMSMediaImageResource extends ImageResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSMediaImageResource.class);
+    private static final Logger logger = LogManager.getLogger(CMSMediaImageResource.class);
 
     public CMSMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,

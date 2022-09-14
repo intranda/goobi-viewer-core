@@ -36,8 +36,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
@@ -69,7 +69,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
      */
     public static final String REQUIRED_PRIVILEGE = "requiredPrivilege";
 
-    private static final Logger logger = LoggerFactory.getLogger(AccessConditionRequestFilter.class);
+    private static final Logger logger = LogManager.getLogger(AccessConditionRequestFilter.class);
 
     @Context
     private HttpServletRequest servletRequest;

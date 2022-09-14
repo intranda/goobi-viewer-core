@@ -36,8 +36,8 @@ import java.util.stream.Stream;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -65,7 +65,7 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  */
 public class SearchFunctionality implements Functionality, SearchInterface {
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchFunctionality.class);
+    private static final Logger logger = LogManager.getLogger(SearchFunctionality.class);
 
     /**
      * The current page of the search result list

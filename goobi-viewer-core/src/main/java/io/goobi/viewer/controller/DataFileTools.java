@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -53,7 +53,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class DataFileTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataFileTools.class);
+    private static final Logger logger = LogManager.getLogger(DataFileTools.class);
 
     /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.

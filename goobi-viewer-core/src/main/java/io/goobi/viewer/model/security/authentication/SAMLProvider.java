@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.coveo.saml.SamlClient;
 import com.coveo.saml.SamlException;
@@ -60,7 +60,7 @@ public class SAMLProvider implements IAuthenticationProvider, Serializable {
 
     private static final long serialVersionUID = -7433420581168842304L;
 
-    private static final Logger logger = LoggerFactory.getLogger(SAMLProvider.class);
+    private static final Logger logger = LogManager.getLogger(SAMLProvider.class);
 
     private final String name;
     private final String idpMetadataUrl;

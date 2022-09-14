@@ -27,8 +27,8 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.NetTools;
@@ -43,7 +43,7 @@ public class UsageStatisticsRecorder {
 
     private static final String USER_AGENT_HEADER = "User-Agent";
 
-    private static final Logger logger = LoggerFactory.getLogger(UsageStatisticsRecorder.class);
+    private static final Logger logger = LogManager.getLogger(UsageStatisticsRecorder.class);
 
     /**
      * {@link IDAO} to write recorded request counts to

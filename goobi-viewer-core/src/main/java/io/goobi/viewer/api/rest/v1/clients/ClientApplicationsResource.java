@@ -39,8 +39,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -67,7 +67,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @ViewerRestServiceBinding
 public class ClientApplicationsResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClientApplicationsResource.class);
+    private static final Logger logger = LogManager.getLogger(ClientApplicationsResource.class);
 
     private final IDAO dao;
     private final ClientApplicationManager clientManager;

@@ -23,8 +23,8 @@ package io.goobi.viewer.model.viewer;
 
 import java.io.Serializable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -35,7 +35,7 @@ public class Feedback implements Serializable {
 
     private static final long serialVersionUID = 1774579852945909396L;
 
-    private static final Logger logger = LoggerFactory.getLogger(Feedback.class);
+    private static final Logger logger = LogManager.getLogger(Feedback.class);
 
     private String name;
     private String senderAddress;

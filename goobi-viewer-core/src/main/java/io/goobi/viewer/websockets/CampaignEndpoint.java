@@ -40,8 +40,8 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -56,7 +56,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 @ServerEndpoint(value = "/crowdsourcing/campaign.socket", configurator = GetHttpSessionConfigurator.class)
 public class CampaignEndpoint {
 
-    private static final Logger logger = LoggerFactory.getLogger(CampaignEndpoint.class);
+    private static final Logger logger = LogManager.getLogger(CampaignEndpoint.class);
 
     private static Map<String, PageLock> pageLocks = new ConcurrentHashMap<>();
 

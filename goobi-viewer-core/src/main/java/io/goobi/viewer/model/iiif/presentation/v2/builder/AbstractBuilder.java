@@ -59,8 +59,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
@@ -98,7 +98,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public abstract class AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
+    private static final Logger logger = LogManager.getLogger(AbstractBuilder.class);
 
     /** Constant <code>REQUIRED_SOLR_FIELDS</code> */
     public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,

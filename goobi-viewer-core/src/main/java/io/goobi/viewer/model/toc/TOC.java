@@ -29,8 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -48,7 +48,7 @@ public class TOC implements Serializable {
 
     private static final long serialVersionUID = 2615373293377347746L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TOC.class);
+    private static final Logger logger = LogManager.getLogger(TOC.class);
 
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";

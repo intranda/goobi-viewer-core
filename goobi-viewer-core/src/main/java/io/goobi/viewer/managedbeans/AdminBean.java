@@ -47,8 +47,8 @@ import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.BCrypt;
@@ -87,7 +87,7 @@ public class AdminBean implements Serializable {
     private static final long serialVersionUID = -8334669036711935331L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(AdminBean.class);
+    private static final Logger logger = LogManager.getLogger(AdminBean.class);
 
     static final int DEFAULT_ROWS_PER_PAGE = 15;
 

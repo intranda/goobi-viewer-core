@@ -35,8 +35,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.controller.DataManager;
@@ -50,7 +50,7 @@ import io.goobi.viewer.controller.DataManager;
  */
 public class GlossaryManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlossaryManager.class);
+    private static final Logger logger = LogManager.getLogger(GlossaryManager.class);
     private static final String VOCABULARY_TITLE_REGEX = "\"title\":\"(.*?)\"";
     private static final String VOCABULARY_DESCRIPTION_REGEX = "\"description\":\"(.*?)\"";
 

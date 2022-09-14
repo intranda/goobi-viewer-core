@@ -40,8 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.SimpleResource;
@@ -95,7 +95,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
  */
 public class SequenceBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(SequenceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(SequenceBuilder.class);
 
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;

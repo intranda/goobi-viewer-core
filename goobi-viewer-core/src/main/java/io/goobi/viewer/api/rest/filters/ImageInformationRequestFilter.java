@@ -36,8 +36,8 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
@@ -62,7 +62,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 @Priority(FilterTools.PRIORITY_REDIRECT)
 public class ImageInformationRequestFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageInformationRequestFilter.class);
+    private static final Logger logger = LogManager.getLogger(ImageInformationRequestFilter.class);
 
     @Context
     private HttpServletRequest servletRequest;

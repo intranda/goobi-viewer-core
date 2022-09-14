@@ -37,8 +37,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper;
@@ -58,7 +58,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 @ViewerRestServiceBinding
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
+    private static final Logger logger = LogManager.getLogger(WebApplicationExceptionMapper.class);
 
     @Context
     HttpServletResponse response;

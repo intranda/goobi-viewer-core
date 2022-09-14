@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -40,7 +40,7 @@ import io.goobi.viewer.modules.IModule;
 public class UserTools {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(UserTools.class);
+    private static final Logger logger = LogManager.getLogger(UserTools.class);
 
     /**
      * Deletes given user from the database and removes any database rows that reference this user (only those that are of use to this user - public

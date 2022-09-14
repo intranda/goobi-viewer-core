@@ -35,8 +35,8 @@ import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.oa.Motivation;
@@ -61,7 +61,7 @@ import io.goobi.viewer.exceptions.PresentationException;
  */
 public class LayerBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(LayerBuilder.class);
+    private static final Logger logger = LogManager.getLogger(LayerBuilder.class);
 
     /**
      * <p>

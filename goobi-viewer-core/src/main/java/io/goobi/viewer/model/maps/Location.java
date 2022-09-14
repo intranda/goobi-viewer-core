@@ -27,8 +27,8 @@ import java.util.Objects;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -47,7 +47,7 @@ public class Location implements Serializable {
 
     private static final long serialVersionUID = 1628708143715554466L;
 
-    private static final Logger logger = LoggerFactory.getLogger(Location.class);
+    private static final Logger logger = LogManager.getLogger(Location.class);
 
     private final IArea area;
     private final String label;

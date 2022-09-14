@@ -35,8 +35,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.StringTools;
@@ -52,7 +52,7 @@ public class DownloadTicket implements Serializable {
     private static final long serialVersionUID = -4208299894404324724L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(DownloadTicket.class);
+    private static final Logger logger = LogManager.getLogger(DownloadTicket.class);
 
     /** Default validity for a ticket in days. */
     public static final int VALIDITY_DAYS = 30;

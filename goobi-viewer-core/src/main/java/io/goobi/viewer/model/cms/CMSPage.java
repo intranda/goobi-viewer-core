@@ -65,8 +65,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -114,7 +114,7 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
+    private static final Logger logger = LogManager.getLogger(CMSPage.class);
 
     /** Constant <code>GLOBAL_LANGUAGE="global"</code> */
     public static final String GLOBAL_LANGUAGE = "global";

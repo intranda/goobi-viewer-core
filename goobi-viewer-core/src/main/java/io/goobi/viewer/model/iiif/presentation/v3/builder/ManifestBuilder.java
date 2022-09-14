@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
@@ -89,7 +89,7 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
  */
 public class ManifestBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
+    private static final Logger logger = LogManager.getLogger(ManifestBuilder.class);
 
     /**
      * <p>

@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Enum containing supported mime types.
@@ -37,7 +37,7 @@ public enum BaseMimeType {
     OBJECT("object");
 
     /** Constant <code>logger</code> */
-    private static final Logger logger = LoggerFactory.getLogger(BaseMimeType.class);
+    private static final Logger logger = LogManager.getLogger(BaseMimeType.class);
 
     private final String name;
 

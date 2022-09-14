@@ -54,8 +54,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.config.mapping.PathParameter;
@@ -102,7 +102,7 @@ public class NavigationHelper implements Serializable {
 
     private static final long serialVersionUID = 4171362984701032679L;
 
-    private static final Logger logger = LoggerFactory.getLogger(NavigationHelper.class);
+    private static final Logger logger = LogManager.getLogger(NavigationHelper.class);
 
     private static final String URL_RSS = "rss";
 

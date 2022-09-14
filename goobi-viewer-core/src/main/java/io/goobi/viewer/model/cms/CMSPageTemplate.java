@@ -33,8 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
@@ -51,7 +51,7 @@ public class CMSPageTemplate implements Serializable {
     private static final long serialVersionUID = -4254711480254674992L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSPageTemplate.class);
+    private static final Logger logger = LogManager.getLogger(CMSPageTemplate.class);
 
     private String id;
 

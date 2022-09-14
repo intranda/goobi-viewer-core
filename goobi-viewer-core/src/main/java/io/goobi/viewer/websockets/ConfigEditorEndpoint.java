@@ -36,8 +36,8 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 
@@ -47,7 +47,7 @@ import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 @ServerEndpoint(value = "/admin/config/edit.socket", configurator = GetHttpSessionConfigurator.class)
 public class ConfigEditorEndpoint {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigEditorEndpoint.class);
+    private static final Logger logger = LogManager.getLogger(ConfigEditorEndpoint.class);
 
     private Optional<Path> lockedFilePath = Optional.empty();
     private Optional<String> httpSessionId = Optional.empty();

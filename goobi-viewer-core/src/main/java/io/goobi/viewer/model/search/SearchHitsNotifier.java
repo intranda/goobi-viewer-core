@@ -31,8 +31,8 @@ import java.util.Map;
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -50,7 +50,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class SearchHitsNotifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchHitsNotifier.class);
+    private static final Logger logger = LogManager.getLogger(SearchHitsNotifier.class);
 
     public String sendNewHitsNotifications() throws DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("sendNewHitsNotifications");

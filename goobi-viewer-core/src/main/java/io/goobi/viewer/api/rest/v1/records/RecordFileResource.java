@@ -56,8 +56,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -91,7 +91,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class RecordFileResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecordFileResource.class);
+    private static final Logger logger = LogManager.getLogger(RecordFileResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context
