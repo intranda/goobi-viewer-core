@@ -32,8 +32,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
@@ -63,7 +63,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public final class DataManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataManager.class);
+    private static final Logger logger = LogManager.getLogger(DataManager.class);
 
     private static final Object lock = new Object();
 

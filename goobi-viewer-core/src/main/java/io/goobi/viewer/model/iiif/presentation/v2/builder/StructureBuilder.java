@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -61,7 +61,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class StructureBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(StructureBuilder.class);
+    private static final Logger logger = LogManager.getLogger(StructureBuilder.class);
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
     /** Constant <code>BASE_RANGE_LABEL="CONTENT"</code> */

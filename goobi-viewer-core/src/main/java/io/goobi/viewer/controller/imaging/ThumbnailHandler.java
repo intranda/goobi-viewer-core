@@ -33,8 +33,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -92,7 +92,7 @@ public class ThumbnailHandler {
 
     private final String staticImagesPath;
 
-    private static final Logger logger = LoggerFactory.getLogger(ThumbnailHandler.class);
+    private static final Logger logger = LogManager.getLogger(ThumbnailHandler.class);
 
     private final IIIFUrlHandler iiifUrlHandler;
 

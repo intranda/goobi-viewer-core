@@ -46,8 +46,8 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
@@ -78,7 +78,7 @@ public class CalendarBean implements Serializable {
     private final static int MAX_ALLOWED_YEAR = LocalDateTime.now().getYear() + 1000;
     private final static int MIN_ALLOWED_YEAR = -10_000;
 
-    private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
+    private static final Logger logger = LogManager.getLogger(CalendarBean.class);
 
     @Inject
     private SearchBean searchBean;

@@ -25,8 +25,8 @@ import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
@@ -40,7 +40,7 @@ import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 @WebListener
 public class SessionListener implements HttpSessionListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionListener.class);
+    private static final Logger logger = LogManager.getLogger(SessionListener.class);
 
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpSessionListener#sessionCreated(javax.servlet.http.HttpSessionEvent)

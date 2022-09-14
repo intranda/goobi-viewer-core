@@ -22,8 +22,8 @@
 package io.goobi.viewer.model.metadata;
 
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocWrapper> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CompareYearSolrDocWrapper.class);
+    private static final Logger logger = LogManager.getLogger(CompareYearSolrDocWrapper.class);
 
     private SolrDocument solrDocument = null;
     private long year = 0;

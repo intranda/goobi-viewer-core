@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -41,7 +41,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
  */
 public class CMSCollectionTreeTab implements IPolyglott {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSCollectionTreeTab.class);
+    private static final Logger logger = LogManager.getLogger(CMSCollectionTreeTab.class);
 
     private Map<Locale, TranslationStatus> translationStatusMap = new HashMap<>(getLocales().size());
     private Locale selectedLocale = BeanUtils.getLocale();

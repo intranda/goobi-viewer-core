@@ -41,8 +41,8 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.ImageProfile;
@@ -76,7 +76,7 @@ import io.goobi.viewer.solr.SolrConstants;
 @ContentServerImageInfoBinding
 public class ImageInformationFilter implements ContainerResponseFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageInformationFilter.class);
+    private static final Logger logger = LogManager.getLogger(ImageInformationFilter.class);
 
     @Context
     private HttpServletRequest servletRequest;

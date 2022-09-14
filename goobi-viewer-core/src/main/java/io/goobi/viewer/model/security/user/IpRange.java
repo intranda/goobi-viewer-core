@@ -41,8 +41,8 @@ import jakarta.persistence.Table;
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -65,7 +65,7 @@ public class IpRange extends AbstractLicensee implements  Serializable {
     private static final long serialVersionUID = 2221051822633497315L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(IpRange.class);
+    private static final Logger logger = LogManager.getLogger(IpRange.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

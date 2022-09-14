@@ -29,8 +29,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.exceptions.RestApiException;
@@ -45,7 +45,7 @@ import io.goobi.viewer.exceptions.RestApiException;
 @Provider
 public class RestApiExceptionMapper implements ExceptionMapper<RestApiException> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionMapper.class);
+    private static final Logger logger = LogManager.getLogger(ExceptionMapper.class);
 
     @Context
     HttpServletResponse response;

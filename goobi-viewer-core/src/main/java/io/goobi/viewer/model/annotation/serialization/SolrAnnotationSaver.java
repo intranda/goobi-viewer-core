@@ -30,8 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
  */
 public class SolrAnnotationSaver implements AnnotationSaver {
 
-    private final static Logger logger = LoggerFactory.getLogger(SolrAnnotationSaver.class);
+    private final static Logger logger = LogManager.getLogger(SolrAnnotationSaver.class);
 
 
     @Override

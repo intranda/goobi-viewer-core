@@ -49,8 +49,8 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
@@ -78,7 +78,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 @CORSBinding
 public class ObjectResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(ObjectResource.class);
+    private static final Logger logger = LogManager.getLogger(ObjectResource.class);
 
     private final String pi;
     private final String filename;

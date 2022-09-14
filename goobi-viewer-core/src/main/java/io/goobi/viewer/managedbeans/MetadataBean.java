@@ -35,8 +35,8 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -60,7 +60,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class MetadataBean {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(MetadataBean.class);
+    private static final Logger logger = LogManager.getLogger(MetadataBean.class);
 
     @Inject
     private ActiveDocumentBean activeDocumentBean;

@@ -39,8 +39,8 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -54,7 +54,7 @@ import io.goobi.viewer.model.maps.GeoMap;
  */
 public class DynamicContentBuilder {
 
-    private final static Logger logger = LoggerFactory.getLogger(DynamicContentBuilder.class);
+    private final static Logger logger = LogManager.getLogger(DynamicContentBuilder.class);
 
     private FacesContext context = FacesContext.getCurrentInstance();
     private Application application = context.getApplication();

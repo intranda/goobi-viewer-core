@@ -32,8 +32,8 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -50,7 +50,7 @@ import io.goobi.viewer.model.security.user.User;
 @MappedSuperclass
 public class LogMessage implements Serializable, Comparable<LogMessage> {
 
-    private static final Logger logger = LoggerFactory.getLogger(LogMessage.class);
+    private static final Logger logger = LogManager.getLogger(LogMessage.class);
     private static final long serialVersionUID = -7884550362212875027L;
     /**
      * Constant for creator meaning that no creator was set

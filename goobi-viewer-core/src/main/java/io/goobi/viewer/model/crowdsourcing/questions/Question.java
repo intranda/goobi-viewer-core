@@ -49,8 +49,8 @@ import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -81,7 +81,7 @@ public class Question implements Serializable {
 
     private static final long serialVersionUID = 1230983333894006339L;
 
-    private static final Logger logger = LoggerFactory.getLogger(Question.class);
+    private static final Logger logger = LogManager.getLogger(Question.class);
 
     private static final String URI_ID_TEMPLATE =
             DataManager.getInstance().getConfiguration().getRestApiUrl() + "crowdsourcing/campaigns/{campaignId}/questions/{questionId}";

@@ -65,8 +65,8 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -128,7 +128,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private static final ExecutorService executor = Executors.newCachedThreadPool();
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(SearchBean.class);
+    private static final Logger logger = LogManager.getLogger(SearchBean.class);
 
     /** Constant <code>URL_ENCODING="UTF8"</code> */
     public static final String URL_ENCODING = "UTF8";

@@ -53,8 +53,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -69,7 +69,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class BasexEADParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(BasexEADParser.class);
+    private static final Logger logger = LogManager.getLogger(BasexEADParser.class);
 
     public static final Namespace NAMESPACE_EAD = Namespace.getNamespace("ead", "urn:isbn:1-931666-22-9");
 

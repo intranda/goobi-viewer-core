@@ -53,8 +53,8 @@ import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
@@ -77,7 +77,7 @@ public class AdminConfigEditorBean implements Serializable {
 
     private static final long serialVersionUID = -4120457702630667052L;
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminConfigEditorBean.class);
+    private static final Logger logger = LogManager.getLogger(AdminConfigEditorBean.class);
 
     /** Manual edit locks for files. */
     private static final FileLocks fileLocks = new FileLocks();

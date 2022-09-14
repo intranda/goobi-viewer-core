@@ -65,8 +65,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
@@ -109,7 +109,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public final class SearchHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchHelper.class);
+    private static final Logger logger = LogManager.getLogger(SearchHelper.class);
 
     /**
      * All configured facet fields. Used for {@link #defacetifyField(String)} and stored here for quick access

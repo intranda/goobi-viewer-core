@@ -37,8 +37,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.SimpleResource;
@@ -76,7 +76,7 @@ import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
  */
 public class CanvasBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
+    private static final Logger logger = LogManager.getLogger(ManifestBuilder.class);
 
     private final ImageHandler images;
     private final AbstractApiUrlManager imageUrlManager = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();

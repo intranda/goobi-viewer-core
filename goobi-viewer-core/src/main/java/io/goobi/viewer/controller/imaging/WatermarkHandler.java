@@ -30,8 +30,8 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
@@ -60,7 +60,7 @@ public class WatermarkHandler implements Serializable {
 
     private static final long serialVersionUID = 3341191578406800851L;
 
-    private static final Logger logger = LoggerFactory.getLogger(WatermarkHandler.class);
+    private static final Logger logger = LogManager.getLogger(WatermarkHandler.class);
 
     /** Constant <code>WATERMARK_TEXT_TYPE_URN="URN"</code> */
     public static final String WATERMARK_TEXT_TYPE_URN = "URN";

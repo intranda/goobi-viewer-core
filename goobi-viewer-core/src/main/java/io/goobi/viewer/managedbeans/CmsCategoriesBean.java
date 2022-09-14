@@ -31,8 +31,8 @@ import javax.inject.Named;
 import jakarta.persistence.RollbackException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -51,7 +51,7 @@ public class CmsCategoriesBean implements Serializable {
 
     private static final long serialVersionUID = 5297975169931740605L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsCategoriesBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsCategoriesBean.class);
 
     /**
      * Value holder for "name" input field. Must not be empty and not equals another category name for category to be valid

@@ -28,8 +28,8 @@ import java.util.function.BiConsumer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -55,7 +55,7 @@ import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 @JsonInclude(Include.NON_EMPTY)
 public class Task {
 
-    private static final Logger logger = LoggerFactory.getLogger(Task.class);
+    private static final Logger logger = LogManager.getLogger(Task.class);
     private static final AtomicLong idCounter = new AtomicLong(0);
 
     public enum Accessibility {

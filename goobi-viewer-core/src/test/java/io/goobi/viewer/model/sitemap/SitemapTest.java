@@ -33,8 +33,8 @@ import org.apache.commons.io.FileUtils;
 import org.jdom2.Element;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
@@ -44,7 +44,7 @@ import io.goobi.viewer.model.sitemap.Sitemap;
 
 public class SitemapTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(SitemapTest.class);
+    private static final Logger logger = LogManager.getLogger(SitemapTest.class);
 
     /**
      * @see Sitemap#createUrlElement(String,String,String,String)

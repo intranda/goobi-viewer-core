@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.IAnnotation;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -57,7 +57,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class AbstractAnnotationBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractAnnotationBuilder.class);
+    private static final Logger logger = LogManager.getLogger(AbstractAnnotationBuilder.class);
 
     protected static final String[] UGC_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.UGCTYPE,
             SolrConstants.MD_TEXT, SolrConstants.UGCCOORDS, SolrConstants.MD_BODY, SolrConstants.UGCTERMS, SolrConstants.ACCESSCONDITION,

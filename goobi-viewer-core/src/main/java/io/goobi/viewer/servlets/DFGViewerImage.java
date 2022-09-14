@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -55,7 +55,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public class DFGViewerImage extends HttpServlet implements Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(DFGViewerImage.class);
+    private static final Logger logger = LogManager.getLogger(DFGViewerImage.class);
 
     /**
      *

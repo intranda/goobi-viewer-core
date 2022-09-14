@@ -25,8 +25,8 @@ import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -92,7 +92,7 @@ public class CitationLink {
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(CitationLink.class);
+    private static final Logger logger = LogManager.getLogger(CitationLink.class);
 
     private final CitationLinkType type;
     private final CitationLinkLevel level;

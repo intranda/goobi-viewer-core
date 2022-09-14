@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -68,7 +68,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
  */
 public class SidebarWidgetUpdate implements IModelUpdate {
 
-    private static final Logger logger = LoggerFactory.getLogger(SidebarWidgetUpdate.class);
+    private static final Logger logger = LogManager.getLogger(SidebarWidgetUpdate.class);
 
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {

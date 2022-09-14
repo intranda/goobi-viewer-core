@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
@@ -47,7 +47,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  */
 public class SitemapBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(SitemapBuilder.class);
+    private static final Logger logger = LogManager.getLogger(SitemapBuilder.class);
 
 
     private static Thread workerThread = null;

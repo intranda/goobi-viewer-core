@@ -66,8 +66,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -83,7 +83,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class ViewerResourceBundle extends ResourceBundle {
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
+    private static final Logger logger = LogManager.getLogger(ViewerResourceBundle.class);
 
     private static final Object lock = new Object();
 

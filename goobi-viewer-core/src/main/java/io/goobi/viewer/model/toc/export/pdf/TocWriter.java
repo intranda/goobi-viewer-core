@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -54,7 +54,7 @@ import io.goobi.viewer.model.toc.TOCElement;
  */
 public class TocWriter {
 
-    private static final Logger logger = LoggerFactory.getLogger(TocWriter.class);
+    private static final Logger logger = LogManager.getLogger(TocWriter.class);
 
     private static final int DEFAULT_LEVEL_INDENT = 20;
     private static final int TITLE_MARGIN = 30;

@@ -25,8 +25,8 @@ import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -38,7 +38,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class SimpleBrowseElementInfo implements BrowseElementInfo {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleBrowseElementInfo.class);
+    private static final Logger logger = LogManager.getLogger(SimpleBrowseElementInfo.class);
 
     private String description = null;
     private URI linkURI = null;
