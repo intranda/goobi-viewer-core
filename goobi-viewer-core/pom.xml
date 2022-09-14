@@ -124,7 +124,7 @@
 		<javax.el.version>3.0.1-b06</javax.el.version>
 		<javax.faces.version>2.3.9</javax.faces.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
-		<jakarta.persistence.version>3.0.0</jakarta.persistence.version>
+		<jakarta.persistence.version>3.1.0</jakarta.persistence.version>
 		<javax.websocket.version>1.1</javax.websocket.version>
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
