@@ -1853,16 +1853,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
-     * @verifies parse drop down items correctly
-     */
-    @Test
-    public void parseSearchQueryGroupFromQuery_shouldParseDropDownItemsCorrectly() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
-    }
-
-    /**
-     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
      * @verifies parse items from facet string correctly
      */
     @Test

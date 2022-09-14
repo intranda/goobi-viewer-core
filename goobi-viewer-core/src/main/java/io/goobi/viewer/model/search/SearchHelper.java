@@ -2254,25 +2254,34 @@ public final class SearchHelper {
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
+                SearchItemOperator operator = null;
                 while (mPairs.find()) {
                     String pair = mPairs.group(1);
                     logger.trace("pair: {}", pair);
                     String[] pairSplit = pair.split(":");
                     if (pairSplit.length == 2) {
                         pairs.add(new StringPair(pairSplit[0],
-                                pairSplit[1].substring(SEARCH_TYPE_ADVANCED).replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
+                                pairSplit[1].substring(SEARCH_TYPE_ADVANCED)
+                                        .replace("(", "")
+                                        .replace(")", "")
+                                        .replace(" OR", "")
+                                        .replace(" AND", "")
+                                        .trim()));
                         fieldNames.add(pairSplit[0]);
                     }
-                    String op = mPairs.group(2);
-                    if (op != null && op.trim().equals("OR")) {
-                        operators.add(SearchItemOperator.OR);
-                    } else {
-                        operators.add(SearchItemOperator.AND);
+                    if (operator == null) {
+                        String op = mPairs.group(2);
+                        if (op != null && op.trim().equals("OR")) {
+                            operator = SearchItemOperator.OR;
+                        } else {
+                            operator = SearchItemOperator.AND;
+                        }
                     }
                 }
                 if (!pairs.isEmpty()) {
                     allPairs.add(pairs);
                     allFieldNames.add(fieldNames);
+                    operators.add(operator);
                 }
             }
         }
