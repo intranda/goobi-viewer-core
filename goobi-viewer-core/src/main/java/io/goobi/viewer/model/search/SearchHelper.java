@@ -2260,8 +2260,13 @@ public final class SearchHelper {
                     logger.trace("pair: {}", pair);
                     String[] pairSplit = pair.split(":");
                     if (pairSplit.length == 2) {
+                        if(pairSplit[1].contains(" AND ")) {
+                            operator = SearchItemOperator.AND;
+                        } else if (pairSplit[1].contains(" OR ")) {
+                            operator = SearchItemOperator.OR;
+                        }
                         pairs.add(new StringPair(pairSplit[0],
-                                pairSplit[1].substring(SEARCH_TYPE_ADVANCED)
+                                pairSplit[1]
                                         .replace("(", "")
                                         .replace(")", "")
                                         .replace(" OR", "")
@@ -2271,6 +2276,7 @@ public final class SearchHelper {
                     }
                     if (operator == null) {
                         String op = mPairs.group(2);
+                        logger.trace("op: {}", op);
                         if (op != null && op.trim().equals("OR")) {
                             operator = SearchItemOperator.OR;
                         } else {
