@@ -849,6 +849,24 @@ public class SearchBean implements SearchInterface, Serializable {
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
+        
+
+        // Create SearchQueryGroup from query
+        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
+            boolean parseGroupFromQuery = true;
+            for (SearchQueryGroup group : advancedQueryGroups) {
+                if (!group.isBlank()) {
+                    parseGroupFromQuery = false;
+                }
+            }
+            if (parseGroupFromQuery) {
+                advancedQueryGroups.clear();
+                advancedQueryGroups
+                        .add(SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getCurrentFacetString(),
+                                navigationHelper != null ? navigationHelper.getLocale() : null));
+            }
+        }
+
 
         //remember the current page to return to hit list in widget_searchResultNavigation
         setLastUsedSearchPage();
@@ -1376,22 +1394,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 discriminatorValue = navigationHelper.getSubThemeDiscriminatorValue();
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            }
-        }
-
-        // Create SearchQueryGroup from query
-        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
-            boolean parseGroupFromQuery = true;
-            for (SearchQueryGroup group : advancedQueryGroups) {
-                if (!group.isBlank()) {
-                    parseGroupFromQuery = false;
-                }
-            }
-            if (parseGroupFromQuery) {
-                advancedQueryGroups.clear();
-                advancedQueryGroups
-                        .add(SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getCurrentFacetString(),
-                                navigationHelper != null ? navigationHelper.getLocale() : null));
             }
         }
 
