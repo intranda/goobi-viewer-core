@@ -43,22 +43,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.ObjectUtils;
@@ -79,6 +65,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.dao.converter.CMSComponentConverter;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -90,6 +77,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.cms.content.CMSComponent;
+import io.goobi.viewer.model.cms.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
@@ -103,6 +92,21 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * <p>
@@ -121,7 +125,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code> */
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
     public static final String TOPBAR_SLIDER_ID = "topbar_slider";
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_page_id")
@@ -175,6 +179,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @PrivateOwned
     private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    //@Convert(converter = CMSComponentConverter.class)
+    private List<PersistentCMSComponent> cmsComponents = new ArrayList<>();
+    
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
      * could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
@@ -2239,5 +2248,25 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getAdminBackendUrl() {
         String prettyId = "adminCmsEditPage";
         return PrettyUrlTools.getAbsolutePageUrl(prettyId, this.getId());
+    }
+    
+    public List<PersistentCMSComponent> getCmsComponents() {
+        return cmsComponents;
+    }
+
+    public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {
+        CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
+        return contentManager.getComponent(p.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(p))).orElse(null);
+    }
+    
+    public boolean removeComponent(PersistentCMSComponent component) {
+        return this.cmsComponents.remove(component);
+    }
+    
+    public void addComponent(CMSComponent template) {
+        PersistentCMSComponent newComponent = new PersistentCMSComponent(template);
+        newComponent.setOrder(this.cmsComponents.size()+1);
+        newComponent.setOwnerPage(this);
+        this.cmsComponents.add(newComponent);
     }
 }

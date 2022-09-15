@@ -210,9 +210,8 @@ public final class CMSTemplateManager {
 
         updateTemplates(coreFolderPath, themeFolderPath);
         try {
-            Path[] paths = (Path[]) Arrays.stream(new Optional[] {coreFolderPath, themeFolderPath}).filter(Optional::isPresent).map(Optional::get).toArray();
             logger.info("Creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null));
-            this.contentManager = new CMSPageContentManager(paths);
+            this.contentManager = new CMSPageContentManager(Paths.get(filesystemPath), coreFolderPath.orElse(null), themeFolderPath.orElse(null));
         } catch (IOException e) {
             logger.error("Error creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null), e);
         }

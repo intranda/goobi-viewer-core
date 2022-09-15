@@ -22,12 +22,20 @@
 package io.goobi.viewer.model.cms.content;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import io.goobi.viewer.model.jsf.JsfComponent;
 
 public class CMSComponent {
 
+    private final Long persistenceId;
+    
+    private final String templateFilename;
+    
     private final JsfComponent jsfComponent;
     
     private final List<String> cssClasses = new ArrayList<>();
@@ -44,11 +52,41 @@ public class CMSComponent {
     
     private int order = 0;
     
-    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath) {
+    public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null));
+        this.cssClasses.addAll(jpa.map(PersistentCMSComponent::getCssClasses).orElse(new ArrayList<>()));
+        this.publicationState = jpa.map(PersistentCMSComponent::getPublicationState).orElse(this.publicationState);
+        this.order = jpa.map(PersistentCMSComponent::getOrder).orElse(this.order);
+        List<CMSContentItem> items = template.getContentItems().stream().map(item -> {
+            CMSContent content = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList()).stream().filter(i -> i.getComponentId().equals(item.getComponentId()))
+                    .findAny().orElse(null);
+            if(content != null) {                
+                return new CMSContentItem(item.getComponentId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent());
+            } else {
+                return new CMSContentItem(item);
+            }
+        }).collect(Collectors.toList());
+        this.contentItems.addAll(items);
+    }
+    
+    /**
+     * Build from xml template
+     * @param jsfComponent
+     * @param label
+     * @param description
+     * @param iconPath
+     */
+    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename) {
+        this(jsfComponent, label, description, iconPath, templateFilename, null);
+    }
+    
+    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Long persistenceId) {
+        this.persistenceId = null;
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
         this.iconPath = iconPath;
+        this.templateFilename = templateFilename;
     }
     
     public void setPublicationState(ContentItemPublicationState publicationState) {
@@ -137,5 +175,13 @@ public class CMSComponent {
     
     public String getIconPath() {
         return iconPath;
+    }
+    
+    public Long getPersistenceId() {
+        return persistenceId;
+    }
+    
+    public String getTemplateFilename() {
+        return templateFilename;
     }
 }

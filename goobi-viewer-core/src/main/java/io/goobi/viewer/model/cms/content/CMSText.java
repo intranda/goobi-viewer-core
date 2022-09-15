@@ -21,44 +21,52 @@
  */
 package io.goobi.viewer.model.cms.content;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_text")
-public class CMSText implements CMSContent {
+public class CMSText extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "text";
 
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
-    
     @Column(name = "text", nullable = true, columnDefinition = "SHORTTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text = new TranslatedText();
 
+    public CMSText() {
+        //empty
+    }
+    
+    public CMSText(CMSText orig) {
+        super();
+        this.text = new TranslatedText(orig.text);
+    }
+    
     @Override
     public String getBackendComponentName() {
         return BACKEND_COMPONENT_NAME;
     }
 
-    public Long getId() {
-        return id;
+    public TranslatedText getText() {
+        return text;
     }
     
-    public void setId(Long id) {
-        this.id = id;
+    public void setText(TranslatedText text) {
+        this.text = text;
+    }
+    
+    @Override
+    public CMSContent copy() {
+        CMSText copy = new CMSText(this);
+        return copy;
     }
     
 }

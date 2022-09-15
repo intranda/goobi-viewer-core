@@ -3022,6 +3022,7 @@ public class JPADAO implements IDAO {
             em.persist(o);
             commitTransaction(em);
         } catch (PersistenceException e) {
+            logger.error("Error adding cmsPage to database", e);
             handleException(em);
             return false;
         } finally {
@@ -3378,6 +3379,7 @@ public class JPADAO implements IDAO {
                 commitTransaction(em);
                 return true;
             } catch (PersistenceException e) {
+                logger.error("Error adding cmsPage to database", e);
                 handleException(em);
                 return false;
             } finally {

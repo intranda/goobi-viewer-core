@@ -55,12 +55,21 @@ public class CMSContentItem {
     
     private final JsfComponent jsfComponent;
 
+    public CMSContentItem(CMSContentItem orig) {
+        this.componentId = orig.componentId;
+        this.content = orig.content.copy();
+        orig.attributes.forEach((key, value) -> this.attributes.put(key, value));
+        this.label = orig.label;
+        this.description = orig.description;
+        this.jsfComponent = orig.jsfComponent;
+    }
+    
     /**
+     * 
      * @param componentId
      * @param content
      */
     public CMSContentItem(String componentId, CMSContent content, String label, String description, JsfComponent jsfComponent) {
-        super();
         if(StringUtils.isNotBlank(componentId)) {
             this.componentId = componentId;            
         } else {
@@ -68,6 +77,7 @@ public class CMSContentItem {
         }
         if(content != null) {            
             this.content = content;
+            this.content.setComponentId(this.getComponentId());
         } else {
             throw new IllegalArgumentException("CMSContent of COMSContentItem may not be null");
         }
@@ -76,6 +86,8 @@ public class CMSContentItem {
         this.jsfComponent = jsfComponent;
     }
     
+
+
     public void setAttribute(String name, Object value) {
         this.attributes.put(name, value);
     }

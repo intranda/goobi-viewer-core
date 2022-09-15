@@ -81,6 +81,9 @@
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.cms.content.CMSHtmlText</class>
 		<class>io.goobi.viewer.model.cms.content.CMSText</class>
+		<class>io.goobi.viewer.model.cms.content.PersistentCMSComponent</class>
+		<class>io.goobi.viewer.model.cms.content.CMSContent</class>
+		<class>io.goobi.viewer.model.cms.content.CMSImage</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -209,6 +212,11 @@
         <class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
         <class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.cms.content.CMSHtmlText</class>
+		<class>io.goobi.viewer.model.cms.content.CMSText</class>
+		<class>io.goobi.viewer.model.cms.content.PersistentCMSComponent</class>
+		<class>io.goobi.viewer.model.cms.content.CMSContent</class>
+		<class>io.goobi.viewer.model.cms.content.CMSImage</class>
         		
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />

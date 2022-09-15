@@ -21,12 +21,28 @@
  */
 package io.goobi.viewer.model.cms.content;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.eclipse.persistence.annotations.PrivateOwned;
+
+import io.goobi.viewer.dao.converter.StringListConverter;
+import io.goobi.viewer.model.cms.CMSPage;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_components")
@@ -38,6 +54,44 @@ public class PersistentCMSComponent {
     @Column(name = "category_id")
     private Long id;
     
+    @Column(name = "css_classes")
+    @Convert(converter = StringListConverter.class)
+    private final List<String> cssClasses = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "owningComponent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    private final List<CMSContent> contentItems = new ArrayList<>();
+    
+    @Column(name="publication_state")
+    @Enumerated(EnumType.STRING)
+    private ContentItemPublicationState publicationState = ContentItemPublicationState.ADMINISTRATOR;
+    
+    @Column(name="template_filename")
+    private String templateFilename;
+    
+    @Column(name="component_order")
+    private Integer order = 0;
+    
+    /** Reference to the owning <code>CMSPage</code>. */
+    @ManyToOne
+    @JoinColumn(name = "owner_page_id")
+    private CMSPage ownerPage;
+    
+    /**
+     * JPA contrutor
+     */
+    public PersistentCMSComponent() {
+    }
+    
+    public PersistentCMSComponent(CMSComponent component) {
+        this.id = component.getPersistenceId();
+        this.cssClasses.addAll(component.getCssClasses());
+        this.order = component.getOrder();
+        this.publicationState = component.getPublicationState();
+        this.templateFilename = component.getTemplateFilename();
+        this.contentItems.addAll(component.getContentItems().stream().map(CMSContentItem::getContent).map(CMSContent::copy).collect(Collectors.toList()));
+        this.contentItems.forEach(c -> c.setOwningComponent(this));
+    }
     
     public Long getId() {
         return id;
@@ -45,5 +99,63 @@ public class PersistentCMSComponent {
     
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the publicationState
+     */
+    public ContentItemPublicationState getPublicationState() {
+        return publicationState;
+    }
+
+    /**
+     * @param publicationState the publicationState to set
+     */
+    public void setPublicationState(ContentItemPublicationState publicationState) {
+        this.publicationState = publicationState;
+    }
+
+    /**
+     * @return the order
+     */
+    public Integer getOrder() {
+        return order;
+    }
+
+    /**
+     * @param order the order to set
+     */
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
+
+    /**
+     * @return the cssClasses
+     */
+    public List<String> getCssClasses() {
+        return cssClasses;
+    }
+
+    /**
+     * @return the contentItems
+     */
+    public List<CMSContent> getContentItems() {
+        return contentItems;
+    }
+    
+    public CMSPage getOwnerPage() {
+        return ownerPage;
+    }
+    
+    public void setOwnerPage(CMSPage ownerPage) {
+        this.ownerPage = ownerPage;
+    }
+    
+    public String getTemplateFilename() {
+        return templateFilename;
+    }
+    
+    public void setTemplateFilename(String templateFilename) {
+        this.templateFilename = templateFilename;
     }
 }

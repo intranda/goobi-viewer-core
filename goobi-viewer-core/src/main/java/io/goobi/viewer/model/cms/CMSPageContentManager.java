@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,7 +52,9 @@ public class CMSPageContentManager {
 
     public CMSPageContentManager(Path... configFolders) throws IOException {
         for (Path path : configFolders) {
-            this.components.addAll(loadComponents(path));
+            if(path != null && Files.exists(path)) {                
+                this.components.addAll(loadComponents(path));
+            }
         }
     }
 
@@ -76,6 +79,10 @@ public class CMSPageContentManager {
     
     public List<CMSComponent> getComponents() {
         return components;
+    }
+    
+    public Optional<CMSComponent> getComponent(String filename) {
+        return this.components.stream().filter(c -> c.getTemplateFilename().equals(filename)).findAny();
     }
 }
 
