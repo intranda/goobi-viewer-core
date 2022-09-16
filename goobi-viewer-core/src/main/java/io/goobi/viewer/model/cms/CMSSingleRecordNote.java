@@ -21,14 +21,14 @@
  */
 package io.goobi.viewer.model.cms;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -44,7 +44,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @DiscriminatorValue("SINGLE")
 public class CMSSingleRecordNote extends CMSRecordNote {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSSingleRecordNote.class);
+    private static final Logger logger = LogManager.getLogger(CMSSingleRecordNote.class);
 
     /**
      * PI of the record this note relates to. Should be effectively final, but can't be for DAO compatibility

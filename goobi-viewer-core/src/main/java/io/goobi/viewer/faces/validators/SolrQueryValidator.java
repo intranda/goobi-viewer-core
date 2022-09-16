@@ -34,8 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.Messages;
@@ -49,7 +49,7 @@ import io.goobi.viewer.solr.SolrTools;
 public class SolrQueryValidator implements Validator<String> {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(SolrQueryValidator.class);
+    private static final Logger logger = LogManager.getLogger(SolrQueryValidator.class);
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)

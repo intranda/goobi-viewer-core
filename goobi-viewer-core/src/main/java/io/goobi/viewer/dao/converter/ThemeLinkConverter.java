@@ -24,8 +24,8 @@ package io.goobi.viewer.dao.converter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 import org.json.JSONObject;
 
@@ -42,7 +42,7 @@ import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 public class ThemeLinkConverter implements AttributeConverter<List<ThemeLink>, String> {
 
     /* (non-Javadoc)
-     * @see javax.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
+     * @see jakarta.persistence.AttributeConverter#convertToDatabaseColumn(java.lang.Object)
      */
     @Override
     public String convertToDatabaseColumn(List<ThemeLink> attribute) {
@@ -54,7 +54,7 @@ public class ThemeLinkConverter implements AttributeConverter<List<ThemeLink>, S
     }
 
     /* (non-Javadoc)
-     * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
+     * @see jakarta.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
      */
     @Override
     public List<ThemeLink> convertToEntityAttribute(String dbData) {

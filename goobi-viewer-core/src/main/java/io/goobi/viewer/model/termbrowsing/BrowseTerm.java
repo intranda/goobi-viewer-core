@@ -25,8 +25,8 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 
@@ -39,7 +39,7 @@ public class BrowseTerm implements Serializable {
 
     private static final long serialVersionUID = -55691065713339706L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BrowseTerm.class);
+    private static final Logger logger = LogManager.getLogger(BrowseTerm.class);
 
     /** Raw term name. */
     private final String term;

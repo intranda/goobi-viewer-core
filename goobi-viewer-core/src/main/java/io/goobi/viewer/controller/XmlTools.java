@@ -52,8 +52,8 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPathBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -65,7 +65,7 @@ import io.goobi.viewer.model.xml.XMLError;
  */
 public class XmlTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(XmlTools.class);
+    private static final Logger logger = LogManager.getLogger(XmlTools.class);
 
     public static SAXBuilder getSAXBuilder() {
         SAXBuilder builder = new SAXBuilder();

@@ -27,15 +27,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.exceptions.RecordLimitExceededException;
 
 public class RecordLockManager {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(RecordLockManager.class);
+    private static final Logger logger = LogManager.getLogger(RecordLockManager.class);
 
     /** Currently viewed records */
     private final Map<String, Set<RecordLock>> loadedRecordMap = new ConcurrentHashMap<>();

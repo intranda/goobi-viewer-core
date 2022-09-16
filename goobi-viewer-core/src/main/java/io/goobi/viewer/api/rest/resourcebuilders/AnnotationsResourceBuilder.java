@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IAnnotationCollection;
@@ -71,7 +71,7 @@ public class AnnotationsResourceBuilder {
     private final OpenAnnotationBuilder oaBuilder;
     private final AnnotationConverter converter;
 
-    private static final Logger logger = LoggerFactory.getLogger(AnnotationsResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(AnnotationsResourceBuilder.class);
 
     private static final int MAX_ANNOTATIONS_PER_PAGE = 100;
 

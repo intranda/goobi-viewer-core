@@ -24,18 +24,18 @@ package io.goobi.viewer.model.annotation.comments;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.model.security.user.UserGroup;
 
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 @Table(name = "comment_groups")
 public class CommentGroup {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentGroup.class);
+    private static final Logger logger = LogManager.getLogger(CommentGroup.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

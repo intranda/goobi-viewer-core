@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -85,7 +85,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class ManifestBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
+    private static final Logger logger = LogManager.getLogger(ManifestBuilder.class);
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
     private BuildMode buildMode = BuildMode.IIIF;
 

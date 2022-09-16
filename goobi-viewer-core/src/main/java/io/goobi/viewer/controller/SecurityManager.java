@@ -24,13 +24,13 @@ package io.goobi.viewer.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class SecurityManager {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(SecurityManager.class);
+    private static final Logger logger = LogManager.getLogger(SecurityManager.class);
 
     private static final int ATTEMPTS_BEFORE_CAPTCHA = 5;
 

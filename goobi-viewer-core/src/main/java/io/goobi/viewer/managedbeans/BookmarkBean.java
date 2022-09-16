@@ -41,8 +41,8 @@ import javax.inject.Named;
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -71,7 +71,7 @@ public class BookmarkBean implements Serializable {
 
     private static final long serialVersionUID = -2656584301309913161L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BookmarkBean.class);
+    private static final Logger logger = LogManager.getLogger(BookmarkBean.class);
 
     @Inject
     private UserBean userBean;

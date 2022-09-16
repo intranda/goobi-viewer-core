@@ -28,8 +28,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -166,7 +166,7 @@ public class MetadataElement {
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(MetadataElement.class);
+    private static final Logger logger = LogManager.getLogger(MetadataElement.class);
 
     private String label = null;
     private String title = null;

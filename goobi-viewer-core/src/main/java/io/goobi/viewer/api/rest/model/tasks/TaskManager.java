@@ -39,8 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
@@ -71,7 +71,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  */
 public class TaskManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskManager.class);
+    private static final Logger logger = LogManager.getLogger(TaskManager.class);
 
     private final ConcurrentHashMap<Long, Task> tasks = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);

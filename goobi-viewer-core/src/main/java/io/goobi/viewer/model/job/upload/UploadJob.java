@@ -34,15 +34,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import javax.servlet.http.Part;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -60,8 +60,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.client.ClientProperties;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.omnifaces.util.Servlets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -92,7 +92,7 @@ public class UploadJob implements Serializable {
 
     private static final long serialVersionUID = 2732786560804670250L;
 
-    private static final Logger logger = LoggerFactory.getLogger(UploadJob.class);
+    private static final Logger logger = LogManager.getLogger(UploadJob.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

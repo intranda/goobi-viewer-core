@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -53,7 +53,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
     private static final long serialVersionUID = -5448163073874698918L;
 
-    private static final Logger logger = LoggerFactory.getLogger(StructElementStub.class);
+    private static final Logger logger = LogManager.getLogger(StructElementStub.class);
 
     /** IDDOC of the Solr document representing this structure element. */
     protected final long luceneId;

@@ -29,8 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.XmlTools;
@@ -41,7 +41,7 @@ import io.goobi.viewer.model.security.authentication.model.VuAuthenticationRespo
  */
 public class XServiceAuthenticationResponse {
 
-    private static final Logger logger = LoggerFactory.getLogger(XServiceAuthenticationResponse.class);
+    private static final Logger logger = LogManager.getLogger(XServiceAuthenticationResponse.class);
 
     private String id;
     private String errorMsg;

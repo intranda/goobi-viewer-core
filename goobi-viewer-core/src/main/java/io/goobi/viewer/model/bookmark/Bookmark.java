@@ -26,22 +26,22 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Locale;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -76,7 +76,7 @@ public class Bookmark implements Serializable {
 
     private static final long serialVersionUID = 9047168382986927374L;
 
-    private static final Logger logger = LoggerFactory.getLogger(Bookmark.class);
+    private static final Logger logger = LogManager.getLogger(Bookmark.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

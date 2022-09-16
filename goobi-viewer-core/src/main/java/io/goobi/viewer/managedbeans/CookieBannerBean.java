@@ -36,8 +36,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -57,7 +57,7 @@ import io.goobi.viewer.model.cms.CMSPage;
 public class CookieBannerBean implements Serializable {
 
     private static final long serialVersionUID = -6562240290904952926L;
-    private static final Logger logger = LoggerFactory.getLogger(CookieBannerBean.class);
+    private static final Logger logger = LogManager.getLogger(CookieBannerBean.class);
 
     private final IDAO dao;
     private final CookieBanner editCookieBanner;

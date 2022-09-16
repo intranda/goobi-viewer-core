@@ -265,15 +265,17 @@
                     </div>
                     
                     <!-- STATISTICS -->
-                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
-                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-                            <span>#{msg.widget_usage_statistics__title}</span>
-                        </h3>
-
-                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_statistics_usage />
-                        </div>
-                    </div>
+					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive}">
+	                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
+	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+	                            <span>#{msg.widget_usage_statistics__title}</span>
+	                        </h3>
+	
+	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+	                            <widgetComponent:widget_statistics_usage />
+	                        </div>
+	                    </div>
+                    </ui:fragment>
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">

@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 
@@ -42,7 +42,7 @@ public class ArchiveTree implements Serializable {
 
     private static final long serialVersionUID = 1798213211987072214L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ArchiveTree.class);
+    private static final Logger logger = LogManager.getLogger(ArchiveTree.class);
 
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";

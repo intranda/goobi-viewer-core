@@ -15,7 +15,7 @@
  */
 package io.goobi.viewer.dao.converter;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 
 import io.goobi.viewer.model.statistics.usage.SessionRequestCounts;
 

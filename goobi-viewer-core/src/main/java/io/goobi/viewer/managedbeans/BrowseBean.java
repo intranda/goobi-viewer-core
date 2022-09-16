@@ -40,8 +40,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -79,7 +79,7 @@ public class BrowseBean implements Serializable {
 
     private static final long serialVersionUID = 7613678633319477862L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BrowseBean.class);
+    private static final Logger logger = LogManager.getLogger(BrowseBean.class);
 
     @Inject
     private BreadcrumbBean breadcrumbBean;

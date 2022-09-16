@@ -170,9 +170,13 @@
     									</ui:repeat>
                                     </h:panelGroup>
 								</ui:repeat>
-
-								<viewerComponent:simplePaginator itemCount="#{activeDocumentBean.toc.numPages}" itemActive="#{activeDocumentBean.toc.currentPage}"
-									urlPrefix="#{navigationHelper.tocUrl}/#{activeDocumentBean.persistentIdentifier}/" urlSuffix="" />
+								
+								<!-- Render paginator if multiple TOC groups exists or the default group has children -->
+                                <ui:fragment rendered="#{fn:length(activeDocumentBean.toc.groupNames) > 1 or activeDocumentBean.toc.hasChildren}">
+								    <viewerComponent:simplePaginator itemCount="#{activeDocumentBean.toc.numPages}"
+								        itemActive="#{activeDocumentBean.toc.currentPage}"
+									    urlPrefix="#{navigationHelper.tocUrl}/#{activeDocumentBean.persistentIdentifier}/" urlSuffix="" />
+								</ui:fragment>
 							</div>
 						</h:panelGroup>
 

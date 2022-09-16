@@ -46,8 +46,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -69,7 +69,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class ArchiveManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArchiveManager.class);
+    private static final Logger logger = LogManager.getLogger(ArchiveManager.class);
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 

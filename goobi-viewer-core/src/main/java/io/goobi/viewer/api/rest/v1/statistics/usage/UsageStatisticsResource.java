@@ -34,8 +34,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
@@ -55,7 +55,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
 public class UsageStatisticsResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(UsageStatisticsResource.class);
+    private static final Logger logger = LogManager.getLogger(UsageStatisticsResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context

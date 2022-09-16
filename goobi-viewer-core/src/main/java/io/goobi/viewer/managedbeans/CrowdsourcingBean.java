@@ -40,7 +40,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,8 +48,8 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -91,7 +91,7 @@ public class CrowdsourcingBean implements Serializable {
 
     private static final long serialVersionUID = -6452528640177147828L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CrowdsourcingBean.class);
+    private static final Logger logger = LogManager.getLogger(CrowdsourcingBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 

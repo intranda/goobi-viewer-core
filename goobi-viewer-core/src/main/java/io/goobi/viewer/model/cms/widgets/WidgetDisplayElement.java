@@ -24,7 +24,7 @@ package io.goobi.viewer.model.cms.widgets;
 import java.util.List;
 import java.util.Locale;
 
-import javax.persistence.GenerationType;
+import jakarta.persistence.GenerationType;
 
 import org.apache.commons.lang3.StringUtils;
 

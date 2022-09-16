@@ -50,8 +50,8 @@ import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
 import de.intranda.digiverso.ocr.tei.convert.AbstractTEIConvert;
@@ -85,7 +85,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class TextResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(TextResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(TextResourceBuilder.class);
 
     private static final String RESOURCE_NOT_FOUND = "Resource not found";
     private static final String EXCEPTION_NO_DOCUMENT_FOUND = "No document found with pi ";

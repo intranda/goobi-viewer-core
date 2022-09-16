@@ -47,8 +47,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
@@ -61,7 +61,7 @@ import io.goobi.viewer.exceptions.PresentationException;
  */
 public final class CMSTemplateManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSTemplateManager.class);
+    private static final Logger logger = LogManager.getLogger(CMSTemplateManager.class);
 
     private static final String TEMPLATE_BASE_PATH = "/cms/templates/";
     private static final String TEMPLATE_ICONS_PATH = "icons/";

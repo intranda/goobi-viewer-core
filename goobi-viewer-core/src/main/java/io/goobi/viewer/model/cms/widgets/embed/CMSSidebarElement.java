@@ -21,25 +21,25 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -67,7 +67,7 @@ public class CMSSidebarElement {
     public static final String WIDGET_TYPE_AUTOMATIC = "AUTOMATIC";
     public static final String WIDGET_TYPE_CUSTOM = "CUSTOM";
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSSidebarElement.class);
+    private static final Logger logger = LogManager.getLogger(CMSSidebarElement.class);
     /** Constant <code>HASH_MULTIPLIER=11</code> */
     protected static final int HASH_MULTIPLIER = 11;
     private static final NumberIterator ID_COUNTER = new NumberIterator();

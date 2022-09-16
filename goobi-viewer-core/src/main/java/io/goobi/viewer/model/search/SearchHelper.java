@@ -65,8 +65,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
@@ -84,6 +84,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.search.SearchHit.HitType;
+import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
+import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
@@ -107,10 +109,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public final class SearchHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchHelper.class);
-
-    // public static final String[] FULLTEXT_SEARCH_FIELDS = { LuceneConstants.FULLTEXT, LuceneConstants.IDDOC_OWNER,
-    // LuceneConstants.IDDOC_IMAGEOWNER };
+    private static final Logger logger = LogManager.getLogger(SearchHelper.class);
 
     /**
      * All configured facet fields. Used for {@link #defacetifyField(String)} and stored here for quick access
@@ -172,6 +171,13 @@ public final class SearchHelper {
     public static Pattern patternYearRange = Pattern.compile("\\[[0-9]+ TO [0-9]+\\]");
     /** Constant <code>patternHyperlink</code> */
     public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
+
+    /**
+     * 
+     */
+    private SearchHelper() {
+        //
+    }
 
     /**
      * Main search method for flat search.
@@ -603,12 +609,10 @@ public final class SearchHelper {
                     PageType.determinePageType((String) doc.get(SolrConstants.DOCSTRCT), (String) doc.get(SolrConstants.MIMETYPE), anchorOrGroup,
                             doc.containsKey(SolrConstants.THUMBNAIL), false);
             return new StringPair(pi, pageType.name());
+        } catch (RecordNotFoundException e) {
+            //
         } catch (Exception e) {
-            if (e instanceof RecordNotFoundException) {
-                //
-            } else {
-                logger.error("Failed to retrieve record", e);
-            }
+            logger.error("Failed to retrieve record", e);
         }
 
         return null;
@@ -1756,73 +1760,68 @@ public final class SearchHelper {
             rows = 0;
         }
 
-        try {
-            List<StringPair> sortFields =
-                    StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-            QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows);
-            // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
-            if ("0-9".equals(startsWith)) {
-                // TODO Is this still necessary?
-                // Numerical filtering
-                Pattern p = Pattern.compile("[\\d]");
-                // Use hits (if sorting field is provided)
-                for (SolrDocument doc : resp.getResults()) {
-                    Collection<Object> termList = doc.getFieldValues(bmfc.getField());
-                    String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
-                    Set<String> usedTermsInCurrentDoc = new HashSet<>();
-                    for (Object o : termList) {
-                        String term = String.valueOf(o);
-                        // Only add to hit count if the same string is not in the same doc
-                        if (usedTermsInCurrentDoc.contains(term)) {
-                            continue;
-                        }
-                        String termStart = term;
-                        if (termStart.length() > 1) {
-                            termStart = term.substring(0, 1);
-                        }
-                        String compareTerm = termStart;
-                        if (StringUtils.isNotEmpty(sortTerm)) {
-                            compareTerm = sortTerm;
-                        }
-                        Matcher m = p.matcher(compareTerm);
-                        if (m.find()) {
-                            BrowseTerm browseTerm = terms.get(term);
-                            if (browseTerm == null) {
-                                browseTerm = new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
-                                terms.put(term, browseTerm);
-                            }
-                            sortTerm = null; // only use the sort term for the first term
-                            browseTerm.addToHitCount(1);
-                            usedTermsInCurrentDoc.add(term);
-                        }
+        List<StringPair> sortFields =
+                StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, rows);
+        // logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
+        if ("0-9".equals(startsWith)) {
+            // TODO Is this still necessary?
+            // Numerical filtering
+            Pattern p = Pattern.compile("[\\d]");
+            // Use hits (if sorting field is provided)
+            for (SolrDocument doc : resp.getResults()) {
+                Collection<Object> termList = doc.getFieldValues(bmfc.getField());
+                String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
+                Set<String> usedTermsInCurrentDoc = new HashSet<>();
+                for (Object o : termList) {
+                    String term = String.valueOf(o);
+                    // Only add to hit count if the same string is not in the same doc
+                    if (usedTermsInCurrentDoc.contains(term)) {
+                        continue;
                     }
-                }
-            } else {
-                String facetField = SearchHelper.facetifyField(bmfc.getField());
-                if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
-                    // If only browsing records and anchors, use faceting
-                    logger.trace("using faceting: {}", facetField);
-                    for (Count count : resp.getFacetField(facetField).getValues()) {
-                        terms.put(count.getName(),
-                                new BrowseTerm(count.getName(), null,
-                                        bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
-                                                .setHitCount(count.getCount()));
+                    String termStart = term;
+                    if (termStart.length() > 1) {
+                        termStart = term.substring(0, 1);
                     }
-                } else {
-                    // Without filtering or using alphabetical filtering
-                    // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
-                    //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                    //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
-
-                    // Sequential processing (doesn't break the sorting done by Solr)
-                    for (SolrDocument doc : resp.getResults()) {
-                        processSolrResult(doc, bmfc, startsWith, terms, true);
+                    String compareTerm = termStart;
+                    if (StringUtils.isNotEmpty(sortTerm)) {
+                        compareTerm = sortTerm;
+                    }
+                    Matcher m = p.matcher(compareTerm);
+                    if (m.find()) {
+                        BrowseTerm browseTerm = terms.get(term);
+                        if (browseTerm == null) {
+                            browseTerm = new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
+                            terms.put(term, browseTerm);
+                        }
+                        sortTerm = null; // only use the sort term for the first term
+                        browseTerm.addToHitCount(1);
+                        usedTermsInCurrentDoc.add(term);
                     }
                 }
             }
-        } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
-            throw new PresentationException(e.getMessage());
+        } else {
+            String facetField = SearchHelper.facetifyField(bmfc.getField());
+            if (resp.getResults().isEmpty() && resp.getFacetField(facetField) != null) {
+                // If only browsing records and anchors, use faceting
+                logger.trace("using faceting: {}", facetField);
+                for (Count count : resp.getFacetField(facetField).getValues()) {
+                    terms.put(count.getName(),
+                            new BrowseTerm(count.getName(), null,
+                                    bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
+                                            .setHitCount(count.getCount()));
+                }
+            } else {
+                // Without filtering or using alphabetical filtering
+                // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
+                //                ((List<SolrDocument>) resp.getResults()).parallelStream()
+                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, aggregateHits));
+
+                // Sequential processing (doesn't break the sorting done by Solr)
+                for (SolrDocument doc : resp.getResults()) {
+                    processSolrResult(doc, bmfc, startsWith, terms, true);
+                }
+            }
         }
 
         if (!terms.isEmpty()) {
@@ -2089,14 +2088,12 @@ public final class SearchHelper {
                         currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
                     }
                     // Remove quotation marks from phrases
-                    // logger.trace("field: {}", field);
-                    // logger.trace("value: {}", value);
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
                     }
                     if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {
-                            ret.put(currentField, new HashSet<String>());
+                            ret.put(currentField, new HashSet<>());
                         }
                         ret.get(currentField).add(value);
                         switch (currentField) {
@@ -2130,6 +2127,241 @@ public final class SearchHelper {
                 }
                 ret.get(currentField).add(s);
                 ret.get(_TITLE_TERMS).add("(" + s + ")");
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param query
+     * @param facetString
+     * @param locale
+     * @return
+     * @should parse phrase search query correctly
+     * @should parse regular search query correctly
+     * @should parse drop down items correctly
+     * @should parse range items correctly
+     * @should parse items from facet string correctly
+     * @should parse mixed search query correctly
+     */
+    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString, Locale locale) {
+        logger.trace("parseSearchQueryGroupFromQuery: {}", query);
+        SearchQueryGroup ret = new SearchQueryGroup(locale, 0);
+
+        // \((\w+:\"[\w ]+\"( AND | OR )*)+\)|\(+(\w+:\([\w ()]+\)( AND | OR )*)+\)|\((\w+:\(\[\w+ TO \w+\]\))\)
+        String patternAllItems =
+                "\\((\\w+:\\\"[\\w ]+\\\"( AND | OR )*)+\\)|\\(+(\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)|\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\))\\)";
+
+        String patternRegularItems = "\\((\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)";
+        String patternRegularPairs = "(\\w+:\\([\\w ()]+\\))( AND | OR )*";
+
+        String patternPhraseItems = "\\((\\w+:\"[\\w ]+\"( AND | OR )*)+\\)";
+        String patternPhrasePairs = "(\\w+:\"[\\w ]+\")( AND | OR )*";
+
+        String patternRangeItems = "\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\))\\)";
+        String patternRangePairs = "(\\w+:\\(\\[\\w+ TO \\w+\\]\\))";
+
+        String patternGroupOperator = "( AND | OR )";
+
+        String patternFacetString = "(\\w+:\\w+);;";
+
+        // Regular query
+        // (((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
+
+        // Phrase query
+        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
+
+        // Mixed query
+        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)) AND (DOCSTRCT_TOP:"monograph") AND (MD_YEARPUBLISH:[1900 TO 2000])))
+
+        List<List<StringPair>> allPairs = new ArrayList<>();
+        List<Set<String>> allFieldNames = new ArrayList<>();
+        List<SearchItemOperator> operators = new ArrayList<>();
+
+        // Remove outer parentheses
+        if (query.startsWith("((") && query.endsWith("))")) {
+            query = query.substring(1, query.length() - 1);
+        }
+
+        String queryRemainder = query;
+        Pattern pAllItems = Pattern.compile(patternAllItems);
+        Matcher mAllItems = pAllItems.matcher(query);
+        while (mAllItems.find()) {
+            String itemQuery = mAllItems.group();
+            logger.trace("item query: {}", itemQuery);
+            queryRemainder = queryRemainder.replace(itemQuery, "");
+
+            Pattern pPhraseItem = Pattern.compile(patternPhraseItems);
+            Matcher mPhraseItem = pPhraseItem.matcher(itemQuery);
+
+            Pattern pRegularItem = Pattern.compile(patternRegularItems);
+            Matcher mRegularItem = pRegularItem.matcher(itemQuery);
+
+            Pattern pRangeItem = Pattern.compile(patternRangeItems);
+            Matcher mRangeItem = pRangeItem.matcher(itemQuery);
+
+            if (mPhraseItem.find()) {
+                // Phrase search
+                logger.trace("phrase item: {}", itemQuery);
+                operators.add(SearchItemOperator.PHRASE);
+                Pattern pPairs = Pattern.compile(patternPhrasePairs);
+                Matcher mPairs = pPairs.matcher(itemQuery);
+
+                Set<String> fieldNames = new HashSet<>();
+                List<StringPair> pairs = new ArrayList<>();
+                while (mPairs.find()) {
+                    String pair = mPairs.group(1);
+                    logger.trace("pair: {}", pair);
+                    String[] pairSplit = pair.split(":");
+                    if (pairSplit.length == 2) {
+                        pairs.add(new StringPair(pairSplit[0], pairSplit[1].replace("\"", "").trim()));
+                        fieldNames.add(pairSplit[0]);
+                    }
+                }
+                if (!pairs.isEmpty()) {
+                    allPairs.add(pairs);
+                    allFieldNames.add(fieldNames);
+                }
+            } else if (mRangeItem.find()) {
+                // Range search
+                logger.trace("range item: {}", itemQuery);
+                Pattern pPairs = Pattern.compile(patternRangePairs);
+                Matcher mPairs = pPairs.matcher(itemQuery);
+                Set<String> fieldNames = new HashSet<>();
+                List<StringPair> pairs = new ArrayList<>();
+                while (mPairs.find()) {
+                    String pair = mPairs.group(1);
+                    logger.trace("pair: {}", pair);
+                    String[] pairSplit = pair.split(":");
+                    if (pairSplit.length == 2) {
+                        pairs.add(new StringPair(pairSplit[0],
+                                pairSplit[1].substring(2, pairSplit[1].length() - 2).trim()));
+                        fieldNames.add(pairSplit[0]);
+                    }
+                }
+                if (!pairs.isEmpty()) {
+                    allPairs.add(pairs);
+                    allFieldNames.add(fieldNames);
+                    operators.add(SearchItemOperator.AND);
+                }
+
+            } else if (mRegularItem.find()) {
+                // Regular search
+                logger.trace("regular item: {}", itemQuery);
+                Pattern pPairs = Pattern.compile(patternRegularPairs);
+                Matcher mPairs = pPairs.matcher(itemQuery);
+                Set<String> fieldNames = new HashSet<>();
+                List<StringPair> pairs = new ArrayList<>();
+                SearchItemOperator operator = null;
+                while (mPairs.find()) {
+                    String pair = mPairs.group(1);
+                    logger.trace("pair: {}", pair);
+                    String[] pairSplit = pair.split(":");
+                    if (pairSplit.length == 2) {
+                        if(pairSplit[1].contains(" AND ")) {
+                            operator = SearchItemOperator.AND;
+                        } else if (pairSplit[1].contains(" OR ")) {
+                            operator = SearchItemOperator.OR;
+                        }
+                        pairs.add(new StringPair(pairSplit[0],
+                                pairSplit[1]
+                                        .replace("(", "")
+                                        .replace(")", "")
+                                        .replace(" OR", "")
+                                        .replace(" AND", "")
+                                        .trim()));
+                        fieldNames.add(pairSplit[0]);
+                    }
+                    if (operator == null) {
+                        String op = mPairs.group(2);
+                        logger.trace("op: {}", op);
+                        if (op != null && op.trim().equals("OR")) {
+                            operator = SearchItemOperator.OR;
+                        } else {
+                            operator = SearchItemOperator.AND;
+                        }
+                    }
+                }
+                if (!pairs.isEmpty()) {
+                    allPairs.add(pairs);
+                    allFieldNames.add(fieldNames);
+                    operators.add(operator);
+                }
+            }
+        }
+
+        // Parse query group operator
+        logger.trace("query remainder: {}", queryRemainder);
+        Pattern pOperator = Pattern.compile(patternGroupOperator);
+        Matcher mOperator = pOperator.matcher(queryRemainder);
+        if (mOperator.find()) {
+            String groupOperator = mOperator.group(1);
+            logger.trace("group op: {}", groupOperator);
+            ret.setOperator("OR".equals(groupOperator.trim()) ? SearchQueryGroupOperator.OR : SearchQueryGroupOperator.AND);
+        }
+
+        // Parse facet string
+        if (StringUtils.isNotEmpty(facetString)) {
+            Pattern pFacetString = Pattern.compile(patternFacetString);
+            Matcher mFacetString = pFacetString.matcher(facetString);
+            Set<String> fieldNames = new HashSet<>();
+            List<StringPair> pairs = new ArrayList<>();
+            while (mFacetString.find()) {
+                String pair = mFacetString.group(1);
+                logger.trace("pair: {}", pair);
+                String[] pairSplit = pair.split(":");
+                if (pairSplit.length == 2) {
+                    pairs.add(new StringPair(pairSplit[0],
+                            pairSplit[1].replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
+                    fieldNames.add(pairSplit[0]);
+                }
+            }
+            if (!pairs.isEmpty()) {
+                allPairs.add(pairs);
+                allFieldNames.add(fieldNames);
+                operators.add(SearchItemOperator.IS);
+            }
+        }
+
+        // Build query items out of collected fields
+        for (int i = 0; i < allPairs.size(); ++i) {
+            List<StringPair> pairs = allPairs.get(i);
+            Set<String> fieldNames = allFieldNames.get(i);
+            SearchItemOperator operator = operators.get(i);
+            if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
+                    && fieldNames.contains(SolrConstants.NORMDATATERMS)
+                    && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
+                // All fields
+                SearchQueryItem item = new SearchQueryItem(locale);
+                item.setOperator(operator);
+                item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+                item.setValue(pairs.get(0).getTwo());
+                ret.getQueryItems().add(item);
+                logger.trace("added item: {}:{}", SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, pairs.get(0).getTwo());
+            } else {
+                for (StringPair pair : pairs) {
+                    switch (pair.getOne()) {
+                        case SolrConstants.SUPERDEFAULT:
+                        case SolrConstants.SUPERFULLTEXT:
+                        case SolrConstants.SUPERUGCTERMS:
+                            break;
+                        default:
+                            SearchQueryItem item = new SearchQueryItem(locale);
+                            item.setOperator(operator);
+                            item.setField(pair.getOne());
+                            if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne())) {
+                                String[] valueSplit = pair.getTwo().split(" TO ");
+                                item.setValue(valueSplit[0]);
+                                item.setValue2(valueSplit[1]);
+                            } else {
+                                item.setValue(pair.getTwo());
+                            }
+                            ret.getQueryItems().add(item);
+                            logger.trace("added item: {}:{}", pair.getOne(), pair.getTwo());
+                    }
+                }
             }
         }
 

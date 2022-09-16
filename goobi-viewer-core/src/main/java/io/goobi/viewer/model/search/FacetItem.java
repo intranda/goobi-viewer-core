@@ -35,8 +35,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -57,7 +57,7 @@ public class FacetItem implements Serializable, IFacetItem {
 
     private static final long serialVersionUID = 5033196184122928247L;
 
-    private static final Logger logger = LoggerFactory.getLogger(FacetItem.class);
+    private static final Logger logger = LogManager.getLogger(FacetItem.class);
 
     private static final Comparator<IFacetItem> NUMERIC_COMPARATOR = new FacetItem.NumericComparator();
     private static final Comparator<IFacetItem> ALPHABETIC_COMPARATOR = new FacetItem.AlphabeticComparator();

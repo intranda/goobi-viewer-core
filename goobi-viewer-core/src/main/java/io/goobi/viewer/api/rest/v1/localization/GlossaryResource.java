@@ -33,8 +33,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -56,7 +56,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @ViewerRestServiceBinding
 public class GlossaryResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlossaryResource.class);
+    private static final Logger logger = LogManager.getLogger(GlossaryResource.class);
 
     @Context
     private HttpServletRequest servletRequest;

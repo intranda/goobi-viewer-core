@@ -26,10 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
@@ -45,7 +45,7 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
  */
 public class CMSContentItemUpdate implements IModelUpdate {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSContentItemUpdate.class);
+    private static final Logger logger = LogManager.getLogger(CMSContentItemUpdate.class);
 
     private static final String DATATYPE_OLD = "varchar";
     private static final String DATATYPE_NEW = "varchar(4096)";

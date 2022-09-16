@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
@@ -42,7 +42,7 @@ public class TableDataProvider<T> implements Serializable {
 
     private static final long serialVersionUID = 6109453168491579420L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TableDataProvider.class);
+    private static final Logger logger = LogManager.getLogger(TableDataProvider.class);
 
     private int currentPage = 0;
     private int entriesPerPage;

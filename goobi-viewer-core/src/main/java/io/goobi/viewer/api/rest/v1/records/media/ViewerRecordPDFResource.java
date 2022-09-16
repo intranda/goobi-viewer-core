@@ -32,8 +32,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
@@ -54,7 +54,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ContentServerBinding
 public class ViewerRecordPDFResource extends MetsPdfResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewerRecordPDFResource.class);
+    private static final Logger logger = LogManager.getLogger(ViewerRecordPDFResource.class);
 
     private String filename;
 
