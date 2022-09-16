@@ -1822,11 +1822,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
-        Assert.assertEquals(SearchItemOperator.PHRASE, group.getQueryItems().get(0).getOperator());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
         Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
         Assert.assertEquals("bla", group.getQueryItems().get(1).getValue());
-        Assert.assertEquals(SearchItemOperator.PHRASE, group.getQueryItems().get(1).getOperator());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(1).getOperator());
     }
 
     /**
@@ -1864,11 +1864,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(0).getField());
         Assert.assertEquals("varia", group.getQueryItems().get(0).getValue());
-        Assert.assertEquals(SearchItemOperator.IS, group.getQueryItems().get(0).getOperator());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
         Assert.assertEquals("MD_CREATOR", group.getQueryItems().get(1).getField());
         Assert.assertEquals("bar", group.getQueryItems().get(1).getValue());
-        Assert.assertEquals(SearchItemOperator.IS, group.getQueryItems().get(1).getOperator());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(1).getOperator());
     }
 
     /**
@@ -1903,7 +1903,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
-        Assert.assertEquals(SearchItemOperator.PHRASE, group.getQueryItems().get(0).getOperator());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
         Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
         Assert.assertEquals("bla blup", group.getQueryItems().get(1).getValue());

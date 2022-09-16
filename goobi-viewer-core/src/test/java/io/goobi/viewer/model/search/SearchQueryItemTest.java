@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.search;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -33,35 +32,6 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchQueryItemTest extends AbstractSolrEnabledTest {
-
-    /**
-     * @see SearchQueryItem#getAvailableOperators()
-     * @verifies return IS if displaySelectItems true
-     */
-    @Test
-    public void getAvailableOperators_shouldReturnISIfDisplaySelectItemsTrue() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
-        item.setField(SolrConstants.DC);
-        Assert.assertTrue(item.isDisplaySelectItems());
-        List<SearchItemOperator> operators = item.getAvailableOperators();
-        Assert.assertEquals(1, operators.size());
-        Assert.assertEquals(SearchItemOperator.IS, operators.get(0));
-    }
-
-    /**
-     * @see SearchQueryItem#getAvailableOperators()
-     * @verifies return AND, OR, PHRASE if displaySelectItems false
-     */
-    @Test
-    public void getAvailableOperators_shouldReturnANDORPHRASEIfDisplaySelectItemsFalse() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
-        Assert.assertFalse(item.isDisplaySelectItems());
-        List<SearchItemOperator> operators = item.getAvailableOperators();
-        Assert.assertEquals(3, operators.size());
-        Assert.assertEquals(SearchItemOperator.AND, operators.get(0));
-        Assert.assertEquals(SearchItemOperator.OR, operators.get(1));
-        Assert.assertEquals(SearchItemOperator.PHRASE, operators.get(2));
-    }
 
     /**
      * @see SearchQueryItem#generateQuery(Set)
@@ -92,7 +62,6 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         }
         {
             SearchQueryItem item = new SearchQueryItem(null);
-            item.setOperator(SearchItemOperator.PHRASE);
             item.setField(SolrConstants.FULLTEXT);
             item.setValue("lorem ipsum dolor sit amet");
             Set<String> searchTerms = new HashSet<>(1);
@@ -103,7 +72,6 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         // Auto-tokenize phrase search field if so configured
         {
             SearchQueryItem item = new SearchQueryItem(null);
-            item.setOperator(SearchItemOperator.PHRASE);
             item.setField("MD_TITLE");
             item.setValue("lorem ipsum dolor sit amet");
             Set<String> searchTerms = new HashSet<>(0);
@@ -131,9 +99,8 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         {
             // Phrase searches should NOT have escaped terms
             SearchQueryItem item = new SearchQueryItem(null);
-            item.setOperator(SearchItemOperator.PHRASE);
             item.setField(SolrConstants.DEFAULT);
-            item.setValue("[foo] :bar:");
+            item.setValue("\"[foo] :bar:\"");
             Set<String> searchTerms = new HashSet<>(2);
             Assert.assertEquals("(SUPERDEFAULT:\"[foo] :bar:\" OR DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms, true, false));
         }
@@ -225,46 +192,11 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     public void generateQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
         SearchQueryItem item = new SearchQueryItem(null);
-        item.setOperator(SearchItemOperator.IS);
         item.setField(SolrConstants.FULLTEXT);
         item.setValue("\"foo bar\"~10");
         Set<String> searchTerms = new HashSet<>(2);
         Assert.assertEquals("(" + SolrConstants.SUPERFULLTEXT + ":\"foo bar\"~10 OR " + SolrConstants.FULLTEXT + ":\"foo bar\"~10)",
                 item.generateQuery(searchTerms, true, false));
-    }
-
-    /**
-     * @see SearchQueryItem#checkAutoOperator()
-     * @verifies set operator correctly
-     */
-    @Test
-    public void checkAutoOperator_shouldSetOperatorCorrectly() throws Exception {
-        {
-            SearchQueryItem item = new SearchQueryItem(null);
-            item.setOperator(SearchItemOperator.AUTO);
-            item.setValue("\"val\"");
-            item.checkAutoOperator();
-            Assert.assertEquals(SearchItemOperator.PHRASE, item.getOperator());
-        }
-        {
-            SearchQueryItem item = new SearchQueryItem(null);
-            item.setOperator(SearchItemOperator.AUTO);
-            item.setValue("val");
-            item.checkAutoOperator();
-            Assert.assertEquals(SearchItemOperator.AND, item.getOperator());
-        }
-    }
-
-    /**
-     * @see SearchQueryItem#checkAutoOperator()
-     * @verifies do nothing if no value set
-     */
-    @Test
-    public void checkAutoOperator_shouldDoNothingIfNoValueSet() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
-        item.setOperator(SearchItemOperator.AUTO);
-        item.checkAutoOperator();
-        Assert.assertEquals(SearchItemOperator.AUTO, item.getOperator());
     }
 
     /**
@@ -279,7 +211,6 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.toggleDisplaySelectItems();
         Assert.assertFalse(item.isDisplaySelectItems());
     }
-    
 
     /**
      * @see SearchQueryItem#toggleDisplaySelectItems()

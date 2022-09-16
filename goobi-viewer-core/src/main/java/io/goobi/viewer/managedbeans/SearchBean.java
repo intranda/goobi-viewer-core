@@ -745,20 +745,16 @@ public class SearchBean implements SearchInterface, Serializable {
                 logger.trace("Item query: {}", itemQuery);
                 sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
                 switch (queryItem.getOperator()) {
-                    case IS:
-                    case PHRASE:
-                        if (!queryItem.getValue().startsWith("\"")) {
-                            sbInfo.append('"');
-                        }
+                    case AND:
                         if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
                             // Session bookmark list value
                             sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
                         } else {
                             sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                         }
-                        if (!queryItem.getValue().endsWith("\"")) {
-                            sbInfo.append('"');
-                        }
+                        break;
+                    case NOT:
+                        sbInfo.append("NOT (").append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append(")");
                         break;
                     default:
                         if (queryItem.isRange()) {
@@ -849,7 +845,6 @@ public class SearchBean implements SearchInterface, Serializable {
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
-        
 
         // Create SearchQueryGroup from query
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
@@ -866,7 +861,6 @@ public class SearchBean implements SearchInterface, Serializable {
                                 navigationHelper != null ? navigationHelper.getLocale() : null));
             }
         }
-
 
         //remember the current page to return to hit list in widget_searchResultNavigation
         setLastUsedSearchPage();
@@ -1535,7 +1529,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (queryItem.getField() == null) {
                     queryItem.setField(facetItem.getField());
                 }
-                queryItem.setOperator(SearchItemOperator.IS);
                 queryItem.setValue(facetItem.getValue());
                 // logger.trace("updated query item: {}", queryItem);
                 populatedQueryItems.add(queryItem);
@@ -1546,7 +1539,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 // If no search field is set up for collection search, add new field containing the currently selected collection
                 SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
                 item.setField(facetItem.getField());
-                item.setOperator(SearchItemOperator.IS);
                 item.setValue(facetItem.getValue());
                 // ...but only if there is no exact field:value pair already among the query items
                 if (!populatedQueryItems.contains(item)) {
@@ -2846,7 +2838,6 @@ public class SearchBean implements SearchInterface, Serializable {
         SearchQueryItem item = this.advancedQueryGroups.get(0).getQueryItems().get(0);
         item.setValue(name);
         item.setField(SolrConstants.BOOKMARKS);
-        item.setOperator(SearchItemOperator.IS);
 
     }
 
@@ -2858,14 +2849,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getBookmarkListName() {
-        String value = this.advancedQueryGroups.stream()
+        return this.advancedQueryGroups.stream()
                 .flatMap(group -> group.getQueryItems().stream())
                 .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
                 .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
                 .findFirst()
                 .map(SearchQueryItem::getValue)
                 .orElse("");
-        return value;
     }
 
     /**
@@ -2879,7 +2869,6 @@ public class SearchBean implements SearchInterface, Serializable {
         SearchQueryItem item = this.advancedQueryGroups.get(0).getQueryItems().get(0);
         item.setValue("KEY::" + key);
         item.setField(SolrConstants.BOOKMARKS);
-        item.setOperator(SearchItemOperator.IS);
 
     }
 
@@ -2901,15 +2890,21 @@ public class SearchBean implements SearchInterface, Serializable {
         return value.replace("KEY::", "");
     }
 
+    /**
+     * 
+     * @param queryField
+     * @param queryValue
+     * @return
+     */
     public String searchInRecord(String queryField, String queryValue) {
 
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setField(queryField);
         if (StringUtils.isNotBlank(queryValue)) {
             this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setValue(queryValue);
         }
-        this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setOperator(SearchItemOperator.IS);
+        this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setOperator(SearchItemOperator.AND);
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-        this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setOperator(SearchItemOperator.AUTO);
+        this.getAdvancedQueryGroups().get(0).getQueryItems().get(1).setOperator(SearchItemOperator.AND);
         this.setActiveSearchType(1);
 
         return this.searchAdvanced();

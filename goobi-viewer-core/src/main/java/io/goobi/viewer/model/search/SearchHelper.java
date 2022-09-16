@@ -2205,7 +2205,7 @@ public final class SearchHelper {
             if (mPhraseItem.find()) {
                 // Phrase search
                 logger.trace("phrase item: {}", itemQuery);
-                operators.add(SearchItemOperator.PHRASE);
+                operators.add(SearchItemOperator.AND);
                 Pattern pPairs = Pattern.compile(patternPhrasePairs);
                 Matcher mPairs = pPairs.matcher(itemQuery);
 
@@ -2321,7 +2321,7 @@ public final class SearchHelper {
             if (!pairs.isEmpty()) {
                 allPairs.add(pairs);
                 allFieldNames.add(fieldNames);
-                operators.add(SearchItemOperator.IS);
+                operators.add(SearchItemOperator.AND);
             }
         }
 

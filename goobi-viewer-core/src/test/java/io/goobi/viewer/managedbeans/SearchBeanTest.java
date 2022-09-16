@@ -106,7 +106,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(1, group.getQueryItems().size());
         SearchQueryItem item = group.getQueryItems().get(0);
         Assert.assertEquals(SolrConstants.DC, item.getField());
-        Assert.assertEquals(SearchItemOperator.IS, item.getOperator());
+        Assert.assertEquals(SearchItemOperator.AND, item.getOperator());
         Assert.assertEquals("col", item.getValue());
     }
 
@@ -352,9 +352,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             {
                 // PHASE-operator
                 SearchQueryItem item = group.getQueryItems().get(0);
-                item.setOperator(SearchItemOperator.PHRASE);
                 item.setField(SolrConstants.FULLTEXT);
-                item.setValue("lorem ipsum dolor sit amet");
+                item.setValue("\"lorem ipsum dolor sit amet\"");
             }
         }
         Assert.assertEquals("((SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR SUPERUGCTERMS:(foo OR bar) OR DEFAULT:(foo OR bar)"
@@ -398,9 +397,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             {
                 // PHASE-operator
                 SearchQueryItem item = group.getQueryItems().get(0);
-                item.setOperator(SearchItemOperator.PHRASE);
                 item.setField(SolrConstants.FULLTEXT);
-                item.setValue("lorem ipsum dolor sit amet");
+                item.setValue("\"lorem ipsum dolor sit amet\"");
             }
         }
         sb.generateAdvancedSearchString();
@@ -421,14 +419,12 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
         {
             SearchQueryItem item = group.getQueryItems().get(0);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = group.getQueryItems().get(1);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("bar");
             Assert.assertTrue(item.isHierarchical());
@@ -453,14 +449,12 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
         {
             SearchQueryItem item = group.getQueryItems().get(0);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = group.getQueryItems().get(1);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("bar");
             Assert.assertTrue(item.isHierarchical());
@@ -484,14 +478,12 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
         {
             SearchQueryItem item = group.getQueryItems().get(0);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = group.getQueryItems().get(1);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
@@ -517,14 +509,12 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
         {
             SearchQueryItem item = group.getQueryItems().get(0);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = group.getQueryItems().get(1);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
@@ -552,14 +542,12 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
         {
             SearchQueryItem item = group.getQueryItems().get(0);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
         }
         {
             SearchQueryItem item = group.getQueryItems().get(1);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
             Assert.assertTrue(item.isHierarchical());
@@ -588,7 +576,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryGroup group = bean.getAdvancedQueryGroups().get(0);
         {
             SearchQueryItem item = group.getQueryItems().get(0);
-            item.setOperator(SearchItemOperator.IS);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
         }
