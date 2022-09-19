@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -465,11 +466,20 @@ public class SearchQueryItem implements Serializable {
             phrase = true;
         }
 
+        switch (operator) {
+            case AND:
+                sbItem.append('+');
+                break;
+            case NOT:
+                sbItem.append('-');
+                break;
+            default:
+                break;
+        }
+        sbItem.append('(');
+
         // Phrase search operator: just the whole value in quotation marks
         if (phrase) {
-            if (fields.size() > 1) {
-                sbItem.append('(');
-            }
             String useValue = value.trim();
             int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
             logger.trace("proximity distance: {}", proximitySearchDistance);
@@ -500,9 +510,6 @@ public class SearchQueryItem implements Serializable {
                     }
                 }
                 additionalField = true;
-            }
-            if (fields.size() > 1) {
-                sbItem.append(')');
             }
         }
         // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
@@ -631,6 +638,8 @@ public class SearchQueryItem implements Serializable {
                 }
             }
         }
+
+        sbItem.append(')');
 
         String item = sbItem.toString();
         item = item.replace("\\~", "~");
