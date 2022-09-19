@@ -76,7 +76,7 @@ public final class CMSTemplateManager {
 
     private static CMSTemplateManager instance;
 
-    private Map<String, CMSPageTemplate> templates;
+    private Map<String, CMSPageTemplate> templates = new HashMap<>();;
 
     //    private String relativeTemplateBasePath;
     //    private String absoluteTemplateBasePath;
@@ -108,7 +108,7 @@ public final class CMSTemplateManager {
                         ctm = new CMSTemplateManager(null, DataManager.getInstance().getConfiguration().getThemeRootPath());
                         instance = ctm;
                     } catch (NullPointerException e) {
-                        throw new IllegalStateException("Cannot access servlet context");
+                        throw new IllegalStateException("Cannot access servlet context", e);
                     } catch (PresentationException e) {
                         throw new IllegalStateException(e);
                     }
@@ -208,10 +208,12 @@ public final class CMSTemplateManager {
             logger.error(e.toString(), e);
         }
 
-        updateTemplates(coreFolderPath, themeFolderPath);
+        //updateTemplates(coreFolderPath, themeFolderPath);
         try {
             logger.info("Creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null));
-            this.contentManager = new CMSPageContentManager(Paths.get(filesystemPath), coreFolderPath.orElse(null), themeFolderPath.orElse(null));
+            //Add the fileSystem passed as argument to the contentManager so unit tests can define their own template path
+            Optional<Path> pathFromArguments = Optional.ofNullable(filesystemPath).map(Paths::get);
+            this.contentManager = new CMSPageContentManager(pathFromArguments.orElse(null), coreFolderPath.orElse(null), themeFolderPath.orElse(null));
         } catch (IOException e) {
             logger.error("Error creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null), e);
         }

@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.CMSTemplateManager;
+import io.goobi.viewer.model.cms.content.CMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 
 @Named
@@ -74,5 +76,7 @@ public class CmsPageEditBean implements Serializable {
         return selected;
     }
 
-
+    public List<CMSComponent> getAvailableComponents() {
+        return CMSTemplateManager.getInstance().getContentManager().getComponents();
+    }
 }

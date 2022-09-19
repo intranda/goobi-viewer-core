@@ -15,9 +15,9 @@
 
     <composite:implementation>
     
-	    <c:set scope="request" var="imageContent" value="cc.attrs.component.getFrstContentItem('CMSImage').content"/>
-		<c:set scope="request" var="image" value="cc.attrs.component.getFrstContentItem('CMSImage').content.mediaItem"/>
-		<c:set scope="request" var="text" value="cc.attrs.component.getFrstContentItem('CMSHtmlText').content.text"/>
+	    <c:set scope="request" var="imageContent" value="#{cc.attrs.component.getFrstContentItem('CMSImage').content}"/>
+		<c:set scope="request" var="image" value="#{cc.attrs.component.getFrstContentItem('CMSImage').content.mediaItem}"/>
+		<c:set scope="request" var="text" value="#{cc.attrs.component.getFrstContentItem('CMSHtmlText').content.text}"/>
     
     	<h:outputText escape="false" value="#{text.textOrDefault}"></h:outputText>
     	

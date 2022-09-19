@@ -16,8 +16,8 @@
 
     <composite:implementation>
     
-		<c:set scope="request" var="content" value="cc.attrs.component.firstContentItem.content"/>
-		<c:set scope="request" var="image" value="cc.attrs.component.firstContentItem.content.mediaItem"/>
+		<c:set scope="request" var="content" value="#{cc.attrs.component.firstContentItem.content}"/>
+		<c:set scope="request" var="image" value="#{cc.attrs.component.firstContentItem.content.mediaItem}"/>
 		
     	<ui:fragment rendered="#{not null content and not null image}">
 	    	<figure class="tpl-simple__media">

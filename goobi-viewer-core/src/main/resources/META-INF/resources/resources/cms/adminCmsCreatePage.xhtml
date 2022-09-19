@@ -136,172 +136,24 @@
                                                             <!-- Topbar slider -->
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
-                                                            <ui:repeat var="contentItem" value="#{cmsBean.selectedPage.getContentItems(locale).stream().filter(item -> item.appearInListings()).toList()}">
-                                                                <!-- HTML SNIPPET -->
-                                                              <ui:fragment rendered="#{contentItem.type == 'TEXT'}">
-                                                                    <div class="cms-module__option-group">
-                                                                        <div class="cms-module__option-label">
-                                                                            <label for="cmsCreatePageContenttypeText">#{msg[contentItem.itemLabel]}#{contentItem.mandatory ? '*'
-                                                                                : ''}:</label>
-                                                                        </div>
-                                                                        <div class="cms-module__option-control">
-                                                                            <h:inputText id="cmsCreatePageContenttypeText" styleClass="form-control"
-                                                                                value="#{contentItem.htmlFragment}" />
-                                                                           	<ui:fragment rendered="#{contentItem.hasInlineHelp}">
-                                                                           		<span class="cms-module__option-control-helptext">#{msg[contentItem.inlineHelp]}</span>
-                                                                           	</ui:fragment>
-                                                                        </div>
-                                                                        <div class="cms-module__option-help">
-                                                                        	<ui:fragment rendered="#{contentItem.hasInlineHelp}">
-	                                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-	                                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                                                            </button>
-                                                                            </ui:fragment>
-                                                                        </div>
-                                                                    </div>
-                                                                </ui:fragment>
+															<!-- Available content items -->
+															<h:panelGroup id="component_selection">
+																<ui:repeat var="component" value="#{cmsPageEditBean.availableComponents}">
+																	<button>
+																		<h4>#{msg[component.label]}</h4>
+																		<p>#{msg[component.description]}</p>
+																		<img src="#{navigationHelper.getResource(component.iconPath)}"/>
+																	</button>
+																</ui:repeat>
+															</h:panelGroup>
 
-                                                                <!-- TINYMCE -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'HTML'}">
-                                                                    <div class="cms-module__option-group">
-                                                                        <div class="cms-module__option-label">
-                                                                            <label for="cmsCreatePageContenttypeHtml">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
-                                                                        </div>
-                                                                        <div class="cms-module__option-control">
-                                                                            <h:inputTextarea id="cmsCreatePageContenttypeHtml" styleClass="form-control tinyMCE"
-                                                                                value="#{contentItem.htmlFragment}" />
-                                                                            <ui:fragment rendered="#{contentItem.hasInlineHelp}">
-                                                                           		<span class="cms-module__option-control-helptext">#{msg[contentItem.inlineHelp]}</span>
-                                                                           	</ui:fragment>
-                                                                        </div>
-                                                                        <div class="cms-module__option-help">
-                                                                            <ui:fragment rendered="#{contentItem.hasInlineHelp}">
-	                                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-	                                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-	                                                                            </button>
-                                                                            </ui:fragment>
-                                                                        </div>
-                                                                    </div>
-                                                                </ui:fragment>
-
-
-
-																<!-- CONTENT ITEM MEDIA -->
-																<ui:fragment rendered="#{contentItem.type == 'CONTENT_ITEM_HEADING'}">
-																	<ui:include src="/resources/cms/includes/contentTypes/contentItems/cms_createPageContentItemHeading.xhtml" />
-																</ui:fragment>
-
-																<!-- CONTENT ITEM TEXTEDITOR -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'CONTENT_ITEM_TEXTEDITOR'}">
-																	<ui:include src="/resources/cms/includes/contentTypes/contentItems/cms_createPageContentItemTextEditor.xhtml" />
-																</ui:fragment>
-                                                                
-																<!-- CONTENT ITEM MEDIA -->
-																<ui:fragment rendered="#{contentItem.type == 'CONTENT_ITEM_MEDIA'}">
-																	<ui:include src="/resources/cms/includes/contentTypes/contentItems/cms_createPageContentItemMedia.xhtml" />
-																</ui:fragment>
-
-
-
-
-                                                                <!-- CONTENT TYPE MEDIA -->
-<!--                                                                 <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMedia.xhtml" /> -->
-
-                                                                <!-- CONTENT TYPE SOLRQUERY -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'SOLRQUERY'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSolr.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE PAGELIST -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'PAGELIST'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageList.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE COLLECTION -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'COLLECTION'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCollection.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE TILEGRID -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'TILEGRID'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTileGrid.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE TOC -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'TOC'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeToc.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE RSS -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'RSS'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRss.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE FACETTING -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'SEARCH' or contentItem.type == 'COLLECTION'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeFacetting.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE SEARCH -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'SEARCH'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSearch.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE COMPONENT -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'COMPONENT'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeComponent.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE GLOSSARY -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'GLOSSARY'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeGlossary.xhtml" />
-                                                                </ui:fragment>
-
-                                                                <!-- CONTENT TYPE METADATA -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'METADATA'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeMetadata.xhtml" />
-                                                                </ui:fragment>
-                                                                
-                                                                <!-- CONTENT TYPE BROWSE -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'BROWSETERMS'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeBrowse.xhtml" />
-                                                                </ui:fragment>
-                                                                
-                                                                <!-- CONTENT TYPE BROWSE -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'GEOMAP'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeGeoMap.xhtml" />
-                                                                </ui:fragment>
-                                                                
-                                                                <!-- CONTENT TYPE SLIDER -->
-                                                                <ui:fragment rendered="#{contentItem.type == 'SLIDER'}">
-                                                                    <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSlider.xhtml" />
-                                                                </ui:fragment>
-                                                                
-                                                            </ui:repeat>
 
                                                             <!-- CONTENT TYPE LOCALE -->
                                                             <ui:fragment rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
                                                                 <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeLocale.xhtml" />
                                                             </ui:fragment>
 
-                                                            <!-- CONTENT TYPE CSS CLASS -->
-<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeCssClass.xhtml" /> -->
-
-                                                            <!-- CONTENT TYPE PRETTY URL -->
-<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePrettyUrl.xhtml" /> -->
-
-                                                            <!-- CONTENT TYPE URL PARAMS -->
-<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeUrlParams.xhtml" /> -->
-
-                                                            <!-- CONTENT TYPE RELATED PI -->
-<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeRelatedPi.xhtml" /> -->
-
-                                                            <!-- CONTENT TYPE SUBTHEME -->
-<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeSubtheme.xhtml" /> -->
-
-                                                            <!-- CONTENT TYPE PAGE BREADCRUMB PARENT -->
-<!--                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypePageBreadcrumbParent.xhtml" /> -->
-                                                        </div>
+                                                       </div>
                                                     </div>
                                                 </h:panelGroup>
 

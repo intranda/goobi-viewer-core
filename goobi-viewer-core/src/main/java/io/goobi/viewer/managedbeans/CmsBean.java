@@ -2782,5 +2782,9 @@ public class CmsBean implements Serializable {
     public Collection<Sorting> getSortingModes() {
         return Arrays.asList(Sorting.values());
     }
+    
+    public void setNewSelectedPage() {
+        this.selectedPage = new CMSPage();
+    }
 
 }

@@ -37,7 +37,7 @@ public class CMSText extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "text";
 
-    @Column(name = "text", nullable = true, columnDefinition = "SHORTTEXT")
+    @Column(name = "text", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text = new TranslatedText();
 

@@ -976,6 +976,7 @@
         <pattern value="/admin/cms/pages/new/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.setNewSelectedPage()}</action>
     </url-mapping>
 	<url-mapping id="adminCmsStaticPages">
 		<pattern value="/admin/cms/pages/mapping/" />
