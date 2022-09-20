@@ -239,6 +239,14 @@ public class SearchQueryItem implements Serializable {
     public boolean isUntokenizeForPhraseSearch() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field);
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isAllFields() {
+        return ADVANCED_SEARCH_ALL_FIELDS.equals(field);
+    }
 
     /**
      *

@@ -103,8 +103,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.resetAdvancedSearchParameters(1, 1);
         Assert.assertEquals(1, searchBean.getAdvancedQueryGroups().size());
         SearchQueryGroup group = searchBean.getAdvancedQueryGroups().get(0);
-        Assert.assertEquals(1, group.getQueryItems().size());
-        SearchQueryItem item = group.getQueryItems().get(0);
+        Assert.assertEquals(2, group.getQueryItems().size());
+        SearchQueryItem item = group.getQueryItems().get(1);
         Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertEquals(SearchItemOperator.AND, item.getOperator());
         Assert.assertEquals("col", item.getValue());
@@ -139,7 +139,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(2, sb.getAdvancedQueryGroups().size());
         SearchQueryGroup group = sb.getAdvancedQueryGroups().get(0);
         Assert.assertEquals(3, group.getQueryItems().size());
-        SearchQueryItem item = group.getQueryItems().get(0);
+        SearchQueryItem item = group.getQueryItems().get(1);
         Assert.assertNull(item.getField());
 
         sb.getFacets().setCurrentFacetString("DC:a");
@@ -159,7 +159,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(2, sb.getAdvancedQueryGroups().size());
         SearchQueryGroup group = sb.getAdvancedQueryGroups().get(0);
         Assert.assertEquals(3, group.getQueryItems().size());
-        SearchQueryItem item = group.getQueryItems().get(0);
+        SearchQueryItem item = group.getQueryItems().get(1);
         Assert.assertNull(item.getField());
 
         sb.getFacets().setCurrentFacetString("DC:a");
@@ -183,9 +183,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(2, sb.getAdvancedQueryGroups().size());
         SearchQueryGroup group = sb.getAdvancedQueryGroups().get(0);
         Assert.assertEquals(3, group.getQueryItems().size());
-        SearchQueryItem item1 = group.getQueryItems().get(0);
+        SearchQueryItem item1 = group.getQueryItems().get(1);
         Assert.assertNull(item1.getField());
-        SearchQueryItem item2 = group.getQueryItems().get(1);
+        SearchQueryItem item2 = group.getQueryItems().get(2);
         Assert.assertNull(item2.getField());
 
         item1.setField(SolrConstants.DC);

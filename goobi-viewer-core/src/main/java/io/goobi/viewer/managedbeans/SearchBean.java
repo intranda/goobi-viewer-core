@@ -583,17 +583,17 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbCurrentCollection = new StringBuilder();
 
         //Add fuzzy search terms
-        List<SearchQueryGroup> tempQueryGroups = new ArrayList<>();
-        for (SearchQueryGroup group : advancedQueryGroups) {
-            SearchQueryGroup tGroup = new SearchQueryGroup(group.getLocale(), group.getQueryItems().size());
-            tGroup.setOperator(group.getOperator());
-            tempQueryGroups.add(tGroup);
-            for (SearchQueryItem item : group.getQueryItems()) {
-                if (StringUtils.isBlank(item.getValue())) {
-                    tGroup.getQueryItems().add(item);
-                }
-            }
-        }
+        //        List<SearchQueryGroup> tempQueryGroups = new ArrayList<>();
+        //        for (SearchQueryGroup group : advancedQueryGroups) {
+        //            SearchQueryGroup tGroup = new SearchQueryGroup(group.getLocale(), group.getQueryItems().size());
+        //            tGroup.setOperator(group.getOperator());
+        //            tempQueryGroups.add(tGroup);
+        //            for (SearchQueryItem item : group.getQueryItems()) {
+        //                if (StringUtils.isBlank(item.getValue())) {
+        //                    tGroup.getQueryItems().add(item);
+        //                }
+        //            }
+        //        }
 
         for (SearchQueryGroup queryGroup : advancedQueryGroups) {
             StringBuilder sbGroup = new StringBuilder();
@@ -828,7 +828,6 @@ public class SearchBean implements SearchInterface, Serializable {
     public void hitsPerPageListener()
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("hitsPerPageListener");
-        //        setHitsPerPage(hitsPerPage);
         executeSearch();
     }
 
@@ -923,8 +922,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
         if (this.currentSearch != null) {
-            String query = this.currentSearch.generateFinalSolrQuery(null);
-            return query;
+            return this.currentSearch.generateFinalSolrQuery(null);
         }
 
         return new Search().generateFinalSolrQuery(null);
@@ -1916,36 +1914,6 @@ public class SearchBean implements SearchInterface, Serializable {
     public List<SearchQueryGroup> getAdvancedQueryGroups() {
         // logger.trace("getAdvancedQueryGroups: {}", advancedQueryGroups.size());
         return advancedQueryGroups;
-    }
-
-    /**
-     * <p>
-     * addNewAdvancedQueryGroup.
-     * </p>
-     *
-     * @should add group correctly
-     * @return a boolean.
-     */
-    public boolean addNewAdvancedQueryGroup() {
-        return advancedQueryGroups
-                .add(new SearchQueryGroup(BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber()));
-    }
-
-    /**
-     * <p>
-     * removeAdvancedQueryGroup.
-     * </p>
-     *
-     * @param group a {@link io.goobi.viewer.model.search.SearchQueryGroup} object.
-     * @should remove group correctly
-     * @return a boolean.
-     */
-    public boolean removeAdvancedQueryGroup(SearchQueryGroup group) {
-        if (advancedQueryGroups.size() > 1) {
-            return advancedQueryGroups.remove(group);
-        }
-
-        return false;
     }
 
     /**
