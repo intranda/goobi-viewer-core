@@ -263,14 +263,12 @@ public class CollectionBuilder extends AbstractBuilder {
             if (baseElement != null) {
 
                 BrowseElementInfo info = baseElement.getInfo();
-                if (info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {
-                    collection.setLabel(info.getTranslationsForName());
+                if (info != null && info instanceof CMSCollection) {
                     if(info instanceof CMSCollection) {
                         collection.setDescription(info.getTranslationsForDescription());
                     }
-                } else {
-                    collection.setLabel(getLabel(baseElement.getName()));
                 }
+                collection.setLabel(getLabel(baseElement.getName()));
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if (thumbURI != null) {

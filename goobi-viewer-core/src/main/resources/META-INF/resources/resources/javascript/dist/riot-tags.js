@@ -785,7 +785,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
 
 riot.tag('raw', '', function(opts) {
     this.root.innerHTML = opts.html;
@@ -804,27 +804,30 @@ this.on("mount", () => {
 })
 
 this.loadSubCollections = function() {
-
     let observable = rxjs.from(this.collections);
 
     for (let level = 0; level < opts.depth; level++) {
         observable = observable.pipe(
-         	rxjs.operators.filter( child => this.hasChildren(child) ),
          	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
          	rxjs.operators.mergeMap( child => child ),
         );
     }
     observable.pipe(
-    	rxjs.operators.debounceTime(100)
+    	rxjs.operators.debounceTime(100),
+     	rxjs.operators.tap( () => console.log("collections ", this.collections) ),
     )
-    .subscribe( () => {this.update();});
+    .subscribe( () => this.update());
 
 }.bind(this)
 
 this.fetchMembers = function(collection) {
-    return fetch(collection['@id'])
-    .then( result => result.json())
-    .then(json => {collection.members = json.members; return collection.members;})
+    if(this.hasChildren(collection)) {
+	    return fetch(collection['@id'])
+	    .then( result => result.json())
+	    .then(json => {collection.members = json.members; return collection.members;})
+    } else {
+        return Promise.resolve([collection]);
+    }
 }.bind(this)
 
 this.getValue = function(element) {
@@ -840,7 +843,7 @@ this.getChildren = function(collection) {
     if(collection.members) {
     	return collection.members.filter( child => viewerJS.iiif.isCollection(child));
     } else {
-        return [];
+        return [collection];
     }
 }.bind(this)
 
@@ -3560,6 +3563,7 @@ riot.tag2('subcollection', '<ul if="{collection.members && collection.members.le
 		}.bind(this)
 
 		this.getValue = function(element) {
+		    console.log("get value of ", element, this.opts.language, this.opts.defaultlanguage);
 		    return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
 		}.bind(this)
 
