@@ -58,8 +58,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -86,7 +86,7 @@ import io.goobi.viewer.solr.SolrTools;
 @Table(name = "cms_geomap")
 public class GeoMap {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeoMap.class);
+    private static final Logger logger = LogManager.getLogger(GeoMap.class);
 
     /**
      * Placeholder User if the actual creator could not be determined

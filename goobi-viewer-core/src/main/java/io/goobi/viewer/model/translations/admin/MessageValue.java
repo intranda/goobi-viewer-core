@@ -22,8 +22,8 @@
 package io.goobi.viewer.model.translations.admin;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 
@@ -33,7 +33,7 @@ import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 public class MessageValue {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(MessageValue.class);
+    private static final Logger logger = LogManager.getLogger(MessageValue.class);
 
     private final String language;
     private final String globalValue;

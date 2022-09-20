@@ -27,7 +27,7 @@
 	            <ul>
 	            	<!-- FIRST ITEM -->
                     <li class="inputfield-paginator__navigate inputfield-paginator__navigate-first-svg #{cc.attrs.itemActive == cc.attrs.firstItem ? 'inactive' : ''}">
-                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}">
+                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.firstItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_last}">
 							<ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
                             </ui:fragment>
@@ -51,7 +51,7 @@
 					<!-- INPUT FIELD TO ENTER PAGE NUMBER -->
 					<li class="inputfield-paginator__navigate inputfield-paginator__navigate-text">
 						<div class="inputfield-paginator__page-number-input" data-paginator="input">
-							<input data-input="number" onfocusout="viewerJS.paginator.showPageNumberLabel(event)" onchange="viewerJS.paginator.changePageNumber(event)" data-paginator="input-field"></input>
+							<input data-input="number" onfocusout="viewerJS.paginator.showPageNumberLabel(event)" onchange="viewerJS.paginator.changePageNumber(event)" data-paginator="input-field" aria-label="#{msg.aria__label_pagination_goto}"></input>
 						</div>
 						<div role="button" tabindex="0" class="inputfield-paginator__page-number-label" onclick="viewerJS.paginator.showPageNumberInput(event)" data-paginator="label">
 							<span data-paginator="actualPage" id="paginatorActualPageNumber">#{cc.attrs.itemActive}</span><span> #{msg.of} </span><span id="paginatorLastPageNumber">#{cc.attrs.lastItem}</span>
@@ -71,7 +71,7 @@
                     </li>
 	                <!-- LAST ITEM -->
                     <li class="inputfield-paginator__navigate inputfield-paginator__navigate-last-svg #{cc.attrs.itemActive == cc.attrs.lastItem ? 'inactive' : ''}">
-                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}">
+                        <a onclick="if(#{cc.attrs.itemActive == cc.attrs.lastItem}){return false;}" href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_last}">
                          <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
                              <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
                          </ui:fragment>

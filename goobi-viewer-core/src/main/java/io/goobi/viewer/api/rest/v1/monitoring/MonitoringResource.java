@@ -30,8 +30,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.Version;
 import io.goobi.viewer.api.rest.model.MonitoringStatus;
@@ -45,7 +45,7 @@ import io.swagger.v3.oas.annotations.Operation;
 @Path(ApiUrls.MONITORING)
 public class MonitoringResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(MonitoringResource.class);
+    private static final Logger logger = LogManager.getLogger(MonitoringResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context

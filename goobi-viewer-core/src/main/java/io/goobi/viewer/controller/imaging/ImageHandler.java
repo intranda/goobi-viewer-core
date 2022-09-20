@@ -30,8 +30,8 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -56,7 +56,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
  */
 public class ImageHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageHandler.class);
+    private static final Logger logger = LogManager.getLogger(ImageHandler.class);
 
     private final AbstractApiUrlManager urls;
 

@@ -35,8 +35,8 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -54,7 +54,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 public class IndexerTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexerTools.class);
+    private static final Logger logger = LogManager.getLogger(IndexerTools.class);
 
     /** Constant <code>SUFFIX_FULLTEXT_CROWDSOURCING="_txtcrowd"</code> */
     public static final String SUFFIX_FULLTEXT_CROWDSOURCING = "_txtcrowd";

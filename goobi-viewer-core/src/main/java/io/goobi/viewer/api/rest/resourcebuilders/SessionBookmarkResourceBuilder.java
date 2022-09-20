@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.PathParam;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -49,7 +49,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 
 public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionBookmarkResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(SessionBookmarkResourceBuilder.class);
 
     private final HttpSession session;
 

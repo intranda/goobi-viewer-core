@@ -35,8 +35,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -84,7 +84,7 @@ public class ImageDeliveryBean implements Serializable {
 
     private static final long serialVersionUID = -7128779942549718191L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageDeliveryBean.class);
+    private static final Logger logger = LogManager.getLogger(ImageDeliveryBean.class);
 
     @Inject
     private HttpServletRequest servletRequest;

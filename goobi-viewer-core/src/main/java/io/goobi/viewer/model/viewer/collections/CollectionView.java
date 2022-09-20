@@ -34,8 +34,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -56,7 +56,7 @@ import io.goobi.viewer.model.viewer.PageType;
  */
 public class CollectionView {
 
-    private static final Logger logger = LoggerFactory.getLogger(CollectionView.class);
+    private static final Logger logger = LogManager.getLogger(CollectionView.class);
 
     private List<HierarchicalBrowseDcElement> completeCollectionList = new ArrayList<>();
     private List<HierarchicalBrowseDcElement> visibleCollectionList = new ArrayList<>();

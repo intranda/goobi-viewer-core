@@ -27,8 +27,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -61,7 +61,7 @@ public class AdminClientsBean implements Serializable {
      */
     public static final String DEFAULT_TABLE_FILTER = "name_ip_identifier";
     private static final long serialVersionUID = -614644783330750969L;
-    private static final Logger logger = LoggerFactory.getLogger(AdminClientsBean.class);
+    private static final Logger logger = LogManager.getLogger(AdminClientsBean.class);
     private static final int LIST_ENTRIES_PER_PAGE = 10;
 
     private final IDAO dao;

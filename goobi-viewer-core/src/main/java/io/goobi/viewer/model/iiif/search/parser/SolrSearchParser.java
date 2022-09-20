@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -48,7 +48,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class SolrSearchParser extends AbstractSearchParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(SolrSearchParser.class);
+    private static final Logger logger = LogManager.getLogger(SolrSearchParser.class);
 
     private static final List<String> PAGEFIELDLIST = Arrays.asList(new String[] { SolrConstants.ORDER, SolrConstants.WIDTH, SolrConstants.HEIGHT });
 

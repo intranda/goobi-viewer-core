@@ -26,8 +26,8 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Timer {
 
-    private static final Logger logger = LoggerFactory.getLogger(Timer.class);
+    private static final Logger logger = LogManager.getLogger(Timer.class);
     private static final NumberFormat format = new DecimalFormat("0.00");
     private static final Timer instance = new Timer();
 

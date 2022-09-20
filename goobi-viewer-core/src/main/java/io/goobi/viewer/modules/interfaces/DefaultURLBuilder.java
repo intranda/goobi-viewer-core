@@ -25,8 +25,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -45,7 +45,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 public class DefaultURLBuilder implements IURLBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultURLBuilder.class);
+    private static final Logger logger = LogManager.getLogger(DefaultURLBuilder.class);
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.modules.interfaces.IURLBuilder#generateURL(io.goobi.viewer.model.search.BrowseElement)

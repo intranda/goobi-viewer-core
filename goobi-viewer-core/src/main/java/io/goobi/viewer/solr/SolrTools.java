@@ -47,8 +47,8 @@ import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -72,7 +72,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 public class SolrTools {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(SolrTools.class);
+    private static final Logger logger = LogManager.getLogger(SolrTools.class);
 
     private static final int MIN_SCHEMA_VERSION = 20190924;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";

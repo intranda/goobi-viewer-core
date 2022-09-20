@@ -27,8 +27,8 @@ import java.util.Locale;
 
 import javax.mail.MessagingException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -43,7 +43,7 @@ import io.goobi.viewer.model.viewer.PageType;
  */
 public class CommentMailNotificator implements ChangeNotificator {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentMailNotificator.class);
+    private static final Logger logger = LogManager.getLogger(CommentMailNotificator.class);
 
     private List<String> recipients;
     private List<String> bcc;

@@ -31,8 +31,8 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -43,7 +43,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class PasswordValidator implements Validator<String> {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(PasswordValidator.class);
+    private static final Logger logger = LogManager.getLogger(PasswordValidator.class);
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)

@@ -32,8 +32,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
 import io.goobi.viewer.controller.DataFileTools;
@@ -53,7 +53,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 @Path(RECORDS_FILES)
 public class MediaResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(MediaResource.class);
+    private static final Logger logger = LogManager.getLogger(MediaResource.class);
 
     @Context
     private HttpServletRequest request;

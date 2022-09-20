@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class DcSortingList {
 
-    //    private static final Logger logger = LoggerFactory.getLogger(DcSortingList.class);
+    //    private static final Logger logger = LogManager.getLogger(DcSortingList.class);
 
     private final String sortAfter;
     private final List<String> collections;

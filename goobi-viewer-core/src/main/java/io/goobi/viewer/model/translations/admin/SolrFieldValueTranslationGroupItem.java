@@ -31,8 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -41,7 +41,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
 
     /** Logger for this class */
-    private static final Logger logger = LoggerFactory.getLogger(SolrFieldValueTranslationGroupItem.class);
+    private static final Logger logger = LogManager.getLogger(SolrFieldValueTranslationGroupItem.class);
 
     /**
      * Protected constructor.

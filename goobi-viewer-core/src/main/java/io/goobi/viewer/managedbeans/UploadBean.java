@@ -26,8 +26,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -46,7 +46,7 @@ public class UploadBean implements Serializable {
     private static final long serialVersionUID = -766868003675598285L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(UserBean.class);
+    private static final Logger logger = LogManager.getLogger(UserBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 

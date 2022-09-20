@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -40,7 +40,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public abstract class AbstractLicensee implements ILicensee {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(AbstractLicensee.class);
+    private static final Logger logger = LogManager.getLogger(AbstractLicensee.class);
 
     /** {@inheritDoc} */
     @Override

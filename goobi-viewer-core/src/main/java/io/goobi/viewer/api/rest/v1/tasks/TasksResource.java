@@ -40,8 +40,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -66,7 +66,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @Path(TASKS)
 public class TasksResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(TasksResource.class);
+    private static final Logger logger = LogManager.getLogger(TasksResource.class);
     private final HttpServletRequest request;
 
 

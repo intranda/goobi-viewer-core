@@ -29,8 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -48,7 +48,7 @@ public class TOC implements Serializable {
 
     private static final long serialVersionUID = 2615373293377347746L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TOC.class);
+    private static final Logger logger = LogManager.getLogger(TOC.class);
 
     /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
     public static final String DEFAULT_GROUP = "_DEFAULT";
@@ -108,9 +108,7 @@ public class TOC implements Serializable {
      */
     public List<String> getGroupNames() {
         if (tocElementMap != null) {
-            List<String> groups = new ArrayList<>(tocElementMap.keySet());
-            //            groups.remove(DEFAULT_GROUP);
-            return groups;
+            return new ArrayList<>(tocElementMap.keySet());
         }
 
         return Collections.emptyList();
@@ -666,11 +664,9 @@ public class TOC implements Serializable {
     public boolean isHasChildren() {
         if (tocElementMap == null || tocElementMap.get(DEFAULT_GROUP) == null || tocElementMap.get(DEFAULT_GROUP).isEmpty()) {
             return false;
-        } else if (tocElementMap.get(DEFAULT_GROUP).size() == 1 && !tocElementMap.get(DEFAULT_GROUP).get(0).isHasChild()) {
-            return false;
-        } else {
-            return true;
         }
+
+        return !(tocElementMap.get(DEFAULT_GROUP).size() == 1 && !tocElementMap.get(DEFAULT_GROUP).get(0).isHasChild());
     }
 
     /**

@@ -35,8 +35,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,7 +64,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class JsonTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(JsonTools.class);
+    private static final Logger logger = LogManager.getLogger(JsonTools.class);
 
     private static ObjectMapper mapper = new ObjectMapper();
 

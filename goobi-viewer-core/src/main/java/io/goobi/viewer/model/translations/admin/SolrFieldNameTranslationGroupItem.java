@@ -24,8 +24,8 @@ package io.goobi.viewer.model.translations.admin;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -35,7 +35,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 public class SolrFieldNameTranslationGroupItem extends TranslationGroupItem {
 
     /** Logger for this class */
-    private static final Logger logger = LoggerFactory.getLogger(SolrFieldNameTranslationGroupItem.class);
+    private static final Logger logger = LogManager.getLogger(SolrFieldNameTranslationGroupItem.class);
 
     /**
      * Protected constructor.

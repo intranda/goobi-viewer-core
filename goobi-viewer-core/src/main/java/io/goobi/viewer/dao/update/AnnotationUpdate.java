@@ -31,8 +31,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +58,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class AnnotationUpdate implements IModelUpdate {
 
-    private static final Logger logger = LoggerFactory.getLogger(AnnotationUpdate.class);
+    private static final Logger logger = LogManager.getLogger(AnnotationUpdate.class);
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
