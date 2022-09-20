@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.goobi.viewer.model.jsf.JsfComponent;
+import jakarta.persistence.Transient;
 
 public class CMSComponent {
 
@@ -51,6 +52,8 @@ public class CMSComponent {
     private ContentItemPublicationState publicationState = ContentItemPublicationState.ADMINISTRATOR;
     
     private int order = 0;
+    
+    private int listPage = 1;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null));
@@ -183,5 +186,13 @@ public class CMSComponent {
     
     public String getTemplateFilename() {
         return templateFilename;
+    }
+    
+    public int getListPage() {
+        return listPage;
+    }
+    
+    public void setListPage(int listPage) {
+        this.listPage = listPage;
     }
 }

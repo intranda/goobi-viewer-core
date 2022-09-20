@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Optional;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -143,5 +144,30 @@ public class CMSImage extends CMSContent implements CMSMediaHolder {
     public CMSContent copy() {
         CMSImage copy = new CMSImage(this);
         return copy;
+    }
+
+    @Override
+    public boolean isComplete(Locale locale) {
+        return true;
+    }
+
+    @Override
+    public boolean isValid(Locale locale) {
+        return true;
+    }
+
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return false;
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        return BeanUtils.getDefaultLocale();
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        //noop
     }
 }

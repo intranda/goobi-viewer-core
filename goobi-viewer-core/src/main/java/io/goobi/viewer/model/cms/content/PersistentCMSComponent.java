@@ -23,12 +23,15 @@ package io.goobi.viewer.model.cms.content;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.dao.converter.StringListConverter;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -46,7 +49,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_components")
-public class PersistentCMSComponent {
+public class PersistentCMSComponent implements IPolyglott {
 
     /** Unique database ID. */
     @Id
@@ -93,6 +96,16 @@ public class PersistentCMSComponent {
         this.contentItems.forEach(c -> c.setOwningComponent(this));
     }
     
+    public PersistentCMSComponent(PersistentCMSComponent orig) {
+        this.id = orig.id;
+        this.cssClasses.addAll(orig.getCssClasses());
+        this.order = orig.getOrder();
+        this.publicationState = orig.publicationState;
+        this.templateFilename = orig.templateFilename;
+        this.contentItems.addAll(orig.getContentItems().stream().map(CMSContent::copy).collect(Collectors.toList()));
+        this.contentItems.forEach(c -> c.setOwningComponent(this));
+    }
+
     public Long getId() {
         return id;
     }
@@ -157,5 +170,56 @@ public class PersistentCMSComponent {
     
     public void setTemplateFilename(String templateFilename) {
         this.templateFilename = templateFilename;
+    }
+
+    @Override
+    public boolean isComplete(Locale locale) {
+        for (CMSContent cmsContent : contentItems) {
+            if(!cmsContent.isComplete(locale)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isValid(Locale locale) {
+        for (CMSContent cmsContent : contentItems) {
+            if(!cmsContent.isValid(locale)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isEmpty(Locale locale) {
+        for (CMSContent cmsContent : contentItems) {
+            if(!cmsContent.isEmpty(locale)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        if(this.contentItems.isEmpty()) {
+            return BeanUtils.getDefaultLocale();
+        } else {
+            return this.contentItems.get(0).getSelectedLocale();
+        }
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        for (CMSContent cmsContent : contentItems) {
+            cmsContent.setSelectedLocale(locale);
+        }
+    }
+
+    public void setListPage(int listPage) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

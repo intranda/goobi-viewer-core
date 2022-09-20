@@ -25,9 +25,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,61 +33,52 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.comparators.NullComparator;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
-import io.goobi.viewer.dao.converter.CMSComponentConverter;
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsBean;
-import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import io.goobi.viewer.model.cms.content.CMSComponent;
+import io.goobi.viewer.model.cms.content.CMSContent;
+import io.goobi.viewer.model.cms.content.CMSHtmlText;
+import io.goobi.viewer.model.cms.content.CMSText;
+import io.goobi.viewer.model.cms.content.CMSImage;
+import io.goobi.viewer.model.cms.content.CMSText;
 import io.goobi.viewer.model.cms.content.PersistentCMSComponent;
-import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
-import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault;
-import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.search.SearchInterface;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -115,7 +103,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage implements Comparable<CMSPage>, Harvestable {
+public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
@@ -125,7 +113,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /** Constant <code>CLASSIFICATION_OVERVIEWPAGE="overviewpage"</code> */
     public static final String CLASSIFICATION_OVERVIEWPAGE = "overviewpage";
     public static final String TOPBAR_SLIDER_ID = "topbar_slider";
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_page_id")
@@ -175,15 +163,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @PrivateOwned
-    private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
+    @Column(name = "title", nullable = false)
+    @Convert(converter = TranslatedTextConverter.class)
+    private TranslatedText title = new TranslatedText();
+
+    @Column(name = "menu_title", nullable = false)
+    @Convert(converter = TranslatedTextConverter.class)
+    private TranslatedText menuTitle = new TranslatedText();
+
+    @Column(name = "preview_text", nullable = false)
+    @Convert(converter = TranslatedTextConverter.class)
+    private TranslatedText previewText = new TranslatedText();
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     //@Convert(converter = CMSComponentConverter.class)
     private List<PersistentCMSComponent> cmsComponents = new ArrayList<>();
-    
+
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
      * could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
@@ -276,12 +272,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             }
         }
 
-        if (original.languageVersions != null) {
-            this.languageVersions = new ArrayList<>(original.languageVersions.size());
-            for (CMSPageLanguageVersion language : original.languageVersions) {
-                CMSPageLanguageVersion copy = new CMSPageLanguageVersion(language, this);
-                this.languageVersions.add(copy);
-            }
+        for (PersistentCMSComponent component : original.cmsComponents) {
+            PersistentCMSComponent copy = new PersistentCMSComponent(component);
+            this.cmsComponents.add(copy);
         }
     }
 
@@ -330,20 +323,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
 
         return id.compareTo(o.getId());
-    }
-
-    /**
-     * <p>
-     * resetItemData.
-     * </p>
-     */
-    public void resetItemData() {
-        logger.trace("Resetting item data");
-        for (CMSPageLanguageVersion lv : getLanguageVersions()) {
-            for (CMSContentItem ci : lv.getContentItems()) {
-                ci.resetData();
-            }
-        }
     }
 
     /**
@@ -484,28 +463,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     public void setUseDefaultSidebar(boolean useDefaultSidebar) {
         this.useDefaultSidebar = useDefaultSidebar;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>languageVersions</code>.
-     * </p>
-     *
-     * @return the languageVersions
-     */
-    public List<CMSPageLanguageVersion> getLanguageVersions() {
-        return languageVersions;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>languageVersions</code>.
-     * </p>
-     *
-     * @param languageVersions the languageVersions to set
-     */
-    public void setLanguageVersions(List<CMSPageLanguageVersion> languageVersions) {
-        this.languageVersions = languageVersions;
     }
 
     /**
@@ -679,90 +636,16 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a boolean.
      */
     public boolean isLanguageComplete(Locale locale) {
-        for (CMSPageLanguageVersion version : getLanguageVersions()) {
-            try {
-                if (version.getLanguage().equals(locale.getLanguage())) {
-                    return version.getStatus().equals(CMSPageStatus.FINISHED);
+        if (!this.title.isComplete(locale)) {
+            return false;
+        } else {
+            for (PersistentCMSComponent component : cmsComponents) {
+                if (!component.isComplete(locale)) {
+                    return false;
                 }
-            } catch (NullPointerException e) {
             }
+            return true;
         }
-        return false;
-    }
-
-    /**
-     * <p>
-     * getContentItem.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @param language a {@link java.lang.String} object.
-     * @return The item in the language version for the given language
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
-     */
-    public CMSContentItem getContentItem(String itemId, String language) throws CmsElementNotFoundException {
-        CMSPageLanguageVersion version = getBestLanguage(Locale.forLanguageTag(language));
-        return version.getContentItem(itemId);
-    }
-
-    /**
-     * <p>
-     * getDefaultLanguage.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
-     */
-    public CMSPageLanguageVersion getDefaultLanguage() throws CmsElementNotFoundException {
-        CMSPageLanguageVersion version = null;
-        String language = ViewerResourceBundle.getDefaultLocale().getLanguage();
-        version = getLanguageVersion(language);
-        if (version == null) {
-            version = new CMSPageLanguageVersion();
-        }
-        return version;
-    }
-
-    /**
-     * <p>
-     * getLanguageVersion.
-     * </p>
-     *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
-     */
-    public CMSPageLanguageVersion getLanguageVersion(Locale locale) throws CmsElementNotFoundException {
-        String language = locale.getLanguage();
-        return getLanguageVersion(language);
-    }
-
-    /**
-     * <p>
-     * getLanguageVersion.
-     * </p>
-     *
-     * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if any.
-     */
-    public CMSPageLanguageVersion getLanguageVersion(String language) throws CmsElementNotFoundException {
-        for (CMSPageLanguageVersion version : getLanguageVersions()) {
-            if (version.getLanguage().equals(language)) {
-                return version;
-            }
-        }
-        throw new CmsElementNotFoundException("No language version for " + language);
-        //        synchronized (languageVersions) {
-        //            try {
-        // CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this,
-        // language);
-        //                this.languageVersions.add(version);
-        //                return version;
-        //            } catch (NullPointerException | IllegalStateException e) {
-        //                return null;
-        //            }
-        //        }
     }
 
     /**
@@ -773,17 +656,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link java.lang.String} object.
      */
     public String getTitle() {
-        String title;
-        try {
-            title = getBestLanguage().getTitle();
-        } catch (CmsElementNotFoundException e) {
-            try {
-                title = getBestLanguageIncludeUnfinished().getTitle();
-            } catch (CmsElementNotFoundException e1) {
-                title = "";
-            }
-        }
-        return title;
+        return this.title.getTextOrDefault();
     }
 
     /**
@@ -795,39 +668,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link java.lang.String} object.
      */
     public String getTitle(Locale locale) {
-        try {
-            return getLanguageVersion(locale.getLanguage()).getTitle();
-        } catch (CmsElementNotFoundException e) {
-            return getTitle();
-        }
+        return this.title.getText(locale);
     }
 
     public IMetadataValue getTitleTranslations() {
-        Map<String, String> titles = getLanguageVersions().stream()
-                .filter(lv -> StringUtils.isNotBlank(lv.getTitle()))
-                .collect(Collectors.toMap(lv -> lv.getLanguage(), lv -> lv.getTitle()));
-        if (titles.size() == 0) {
-            return new SimpleMetadataValue("");
-        } else if (titles.size() == 1) {
-            return new SimpleMetadataValue(titles.entrySet().iterator().next().getValue());
-        } else {
-            return new MultiLanguageMetadataValue(titles);
-        }
+        return this.title;
     }
 
     public IMetadataValue getPreviewTranslations() {
-        Map<String, String> previewTexts = getLanguageVersions().stream()
-                .flatMap(lv -> lv.getContentItems().stream())
-                .filter(item -> CMSContentItemType.HTML.equals(item.getType()))
-                .filter(CMSContentItem::isPreview)
-                .collect(Collectors.toMap(item -> item.getOwnerPageLanguageVersion().getLanguage(), item -> item.getHtmlFragment()));
-        if (previewTexts.size() == 0) {
-            return new SimpleMetadataValue("");
-        } else if (previewTexts.size() == 1) {
-            return new SimpleMetadataValue(previewTexts.entrySet().iterator().next().getValue());
-        } else {
-            return new MultiLanguageMetadataValue(previewTexts);
-        }
+        return this.previewText;
     }
 
     /**
@@ -838,17 +687,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link java.lang.String} object.
      */
     public String getMenuTitle() {
-        String title;
-        try {
-            title = getBestLanguage().getMenuTitle();
-        } catch (CmsElementNotFoundException e) {
-            try {
-                title = getBestLanguageIncludeUnfinished().getMenuTitle();
-            } catch (CmsElementNotFoundException e1) {
-                title = "";
-            }
-        }
-        return title;
+        return this.menuTitle.getTextOrDefault();
     }
 
     /**
@@ -860,11 +699,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link java.lang.String} object.
      */
     public String getMenuTitle(Locale locale) {
-        try {
-            return getLanguageVersion(locale.getLanguage()).getMenuTitle();
-        } catch (CmsElementNotFoundException e) {
-            return getMenuTitle();
-        }
+        return this.menuTitle.getText(locale);
     }
 
     /**
@@ -875,17 +710,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link java.lang.String} object.
      */
     public String getMenuTitleOrTitle() {
-        String title;
-        try {
-            title = getBestLanguage().getMenuTitleOrTitle();
-        } catch (CmsElementNotFoundException e) {
-            try {
-                title = getBestLanguageIncludeUnfinished().getMenuTitleOrTitle();
-            } catch (CmsElementNotFoundException e1) {
-                title = "";
-            }
+        if (this.menuTitle.isEmpty()) {
+            return this.title.getTextOrDefault();
+        } else {
+            return this.menuTitle.getTextOrDefault();
         }
-        return title;
     }
 
     /**
@@ -897,11 +726,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link java.lang.String} object.
      */
     public String getMenuTitleOrTitle(Locale locale) {
-        try {
-            return getLanguageVersion(locale.getLanguage()).getMenuTitleOrTitle();
-        } catch (CmsElementNotFoundException e) {
-            return getMenuTitle();
-        }
+        return this.menuTitle.getValue(locale).orElse(this.title.getText(locale));
     }
 
     /**
@@ -950,212 +775,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /**
      * <p>
-     * getMediaName.
-     * </p>
-     *
-     * @param contentId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getMediaName(String contentId) {
-        CMSMediaItemMetadata metadata = getMediaMetadata(contentId);
-        return metadata == null ? "" : metadata.getName();
-    }
-
-    /**
-     * <p>
-     * getMediaDescription.
-     * </p>
-     *
-     * @param contentId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getMediaDescription(String contentId) {
-        CMSMediaItemMetadata metadata = getMediaMetadata(contentId);
-        return metadata == null ? "" : metadata.getDescription();
-    }
-
-    /**
-     * <p>
-     * getMediaMetadata.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
-     *         such item exists
-     */
-    public CMSMediaItemMetadata getMediaMetadata(String itemId) {
-        CMSContentItem item;
-        try {
-            item = getContentItemOrThrowException(itemId);
-        } catch (CmsElementNotFoundException e1) {
-            item = null;
-        }
-        if (item != null && item.getMediaItem() != null) {
-            return item.getMediaItem().getCurrentLanguageMetadata();
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * getMedia.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return The media item associated with the contentItem with the given itemId. May return null if no such item exists
-     */
-    public CMSMediaItem getMedia(String itemId) {
-        CMSContentItem item;
-        try {
-            item = getContentItemOrThrowException(itemId);
-        } catch (CmsElementNotFoundException e1) {
-            item = null;
-        }
-        if (item != null && item.getMediaItem() != null) {
-            return item.getMediaItem();
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * getContentItemIfExists.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
-     */
-    public Optional<CMSContentItem> getContentItemIfExists(String itemId) {
-        try {
-            return Optional.of(getContentItemOrThrowException(itemId));
-        } catch (CmsElementNotFoundException e) {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Return the content item of the given id for the most suitable language using {@link #getBestLanguage()} and - failing that
-     * {@link #getBestLanguageIncludeUnfinished()}.
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @throws io.goobi.viewer.exceptions.CmsElementNotFoundException if no matching element was found
-     */
-    public CMSContentItem getContentItemOrThrowException(String itemId) throws CmsElementNotFoundException {
-        CMSContentItem item = null;
-        try {
-            item = getBestLanguage().getContentItem(itemId);
-        } catch (CmsElementNotFoundException e) {
-            try {
-                item = getDefaultLanguage().getContentItem(itemId);
-            } catch (CmsElementNotFoundException e1) {
-                item = getBestLanguageIncludeUnfinished().getContentItem(itemId);
-            }
-        }
-
-        return item;
-    }
-
-    public CMSContentItem getContentItem(String itemId) {
-        try {
-            return getContentItemOrThrowException(itemId);
-        } catch(CmsElementNotFoundException e) {
-            return null;
-        }
-    }
-
-    public String getContentItemText(String itemId) {
-        try {
-            CMSContentItem item = getContentItemOrThrowException(itemId);
-            if (item != null) {
-                switch (item.getType()) {
-                    case TEXT:
-                        return item.getHtmlFragment();
-                    case HTML:
-                        // FA* check this
-                    case CONTENT_ITEM_TEXTEDITOR:
-                        String htmlText = item.getHtmlFragment();
-                        String plainText = htmlText.replaceAll("\\<.*?\\>", "");
-                        plainText = StringEscapeUtils.unescapeHtml4(plainText);
-                        return plainText;
-                    default:
-                        return item.toString();
-                }
-            }
-            return "";
-        } catch(CmsElementNotFoundException e) {
-            return "";
-        }
-
-    }
-
-    /**
-     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the current locale. Returns the LanguageVersion for the given
-     * locale if it exists has {@link CMSPageStatus} Finished. Otherwise returns the LanguageVersion of the viewer's default language if it exists and
-     * is Finished, or failing that the first available (non-global) finished language version
-     *
-     * @return
-     * @throws CmsElementNotFoundException
-     */
-    private CMSPageLanguageVersion getBestLanguage() throws CmsElementNotFoundException {
-        Locale currentLocale = CmsBean.getCurrentLocale();
-        return getBestLanguage(currentLocale);
-    }
-
-    /**
-     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale. Returns the LanguageVersion for the given
-     * locale if it exists has {@link CMSPageStatus} Finished. Otherwise returns the LanguageVersion of the viewer's default language if it exists and
-     * is Finished, or failing that the first available (non-global) finished language version
-     *
-     * @param locale The
-     * @return
-     * @throws CmsElementNotFoundException
-     */
-    private CMSPageLanguageVersion getBestLanguage(Locale locale) throws CmsElementNotFoundException {
-        // logger.trace("getBestLanguage");
-        CMSPageLanguageVersion language = getLanguageVersions().stream()
-                .filter(l -> l.getStatus() != null && l.getStatus().equals(CMSPageStatus.FINISHED))
-                .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
-                .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
-                .findFirst()
-                .orElseThrow(() -> new CmsElementNotFoundException("No finished language version exists for page " + this));
-        return language;
-    }
-
-    /**
-     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the given locale, including unfinished ve)rsions. Returns the
-     * LanguageVersion for the given locale if it exists. Otherwise returns the LanguageVersion of the viewer's default language if it exists, or
-     * failing that the first available (non-global) language version
-     *
-     * @param locale The
-     * @return
-     * @throws CmsElementNotFoundException
-     */
-    private CMSPageLanguageVersion getBestLanguageIncludeUnfinished(Locale locale) throws CmsElementNotFoundException {
-        CMSPageLanguageVersion language = getLanguageVersions().stream()
-                .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
-                .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
-                .sorted((p1, p2) -> ObjectUtils.compare(p2.getStatus(), p1.getStatus()))
-                .findFirst()
-                .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
-        return language;
-    }
-
-    /**
-     * Tries to find the best fitting {@link CMSPageLanguageVersion LanguageVersion} for the current locale, including unfinished versions. Returns
-     * the LanguageVersion for the given locale if it exists. Otherwise returns the LanguageVersion of the viewer's default language if it exists, or
-     * failing that the first available (non-global) language version
-     *
-     * @return
-     * @throws CmsElementNotFoundException
-     */
-    private CMSPageLanguageVersion getBestLanguageIncludeUnfinished() throws CmsElementNotFoundException {
-        Locale currentLocale = CmsBean.getCurrentLocale();
-        return getBestLanguageIncludeUnfinished(currentLocale);
-    }
-
-    /**
-     * <p>
      * getPageUrl.
      * </p>
      *
@@ -1176,233 +795,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /**
      * <p>
-     * hasContent.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return true if content item with the given item ID has content matching its type; false otherwisee
-     */
-    public boolean hasContent(String itemId) {
-        CMSContentItem item;
-        try {
-            item = getContentItemOrThrowException(itemId);
-        } catch (CmsElementNotFoundException e) {
-            return false;
-        }
-        switch (item.getType()) {
-            case TEXT:
-            case HTML:
-                // FA* check this
-            case CONTENT_ITEM_TEXTEDITOR:
-                return StringUtils.isNotBlank(item.getHtmlFragment());
-            case MEDIA:
-                return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
-            case COMPONENT:
-                return StringUtils.isNotBlank(item.getComponent());
-            case GEOMAP:
-                return item.getGeoMap() != null;
-            case SLIDER:
-                return item.getSlider() != null;
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * <p>
-     * getContent.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getContent(String itemId) {
-        return getContent(itemId, null, null);
-    }
-
-    /**
-     * <p>
      * getPreviewContent.
      * </p>
      *
      * @return the first TEXT or HTML contentItem with preview="true"
      */
     public String getPreviewContent() {
-        return getContentItems().stream()
-                .filter(CMSContentItem::isPreview)
-                .map(CMSContentItem::getItemId)
-                .map(id -> getContent(id))
-                .findFirst()
-                .orElse("");
-    }
-
-    /**
-     * <p>
-     * getMediaItem.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
-     */
-    public Optional<CMSMediaItem> getMediaItem(String itemId) {
-        return getContentItemIfExists(itemId).map(content -> content.getMediaItem());
-    }
-
-    /**
-     * <p>
-     * getMediaItem.
-     * </p>
-     *
-     * @return a {@link java.util.Optional} object.
-     */
-    public Optional<CMSMediaItem> getMediaItem() {
-        return getGlobalContentItems().stream()
-                .filter(content -> CMSContentItemType.MEDIA.equals(content.getType()))
-                .map(content -> content.getMediaItem())
-                .filter(item -> item != null)
-                .findFirst();
-    }
-
-    /**
-     * Returns the content of the content item with the given item ID as a string. Depending on the content item's type, this can be either text, a
-     * URL, a JSON object, etc.
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @param width a {@link java.lang.String} object.
-     * @param height a {@link java.lang.String} object.
-     * @return the content of the content item with the given item ID as a string
-     */
-    public String getContent(String itemId, String width, String height) {
-        logger.trace("Getting content {} from page {}", itemId, getId());
-        CMSContentItem item;
-        try {
-            item = getContentItemOrThrowException(itemId);
-
-            String contentString = "";
-            switch (item.getType()) {
-                case TEXT:
-                case HTML:
-                    // FA* check this
-                case CONTENT_ITEM_TEXTEDITOR:
-                    contentString = item.getHtmlFragment();
-                    break;
-                case MEDIA:
-                    String type = item.getMediaItem() != null ? item.getMediaItem().getContentType() : "";
-                    switch (type) {
-                        case CMSMediaItem.CONTENT_TYPE_XML:
-                            contentString = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                            break;
-                        case CMSMediaItem.CONTENT_TYPE_PDF:
-                        case CMSMediaItem.CONTENT_TYPE_VIDEO:
-                        case CMSMediaItem.CONTENT_TYPE_AUDIO:
-                            boolean useContentApi = DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls();
-                            Optional<AbstractApiUrlManager> urls;
-                            if (useContentApi) {
-                                urls = DataManager.getInstance().getRestApiManager().getContentApiManager();
-                            } else {
-                                urls = DataManager.getInstance().getRestApiManager().getDataApiManager();
-                            }
-
-                            boolean legacyApi = !urls.isPresent();
-                            if (legacyApi) {
-                                String baseUrl = useContentApi ? DataManager.getInstance().getRestApiManager().getContentApiUrl()
-                                        : DataManager.getInstance().getRestApiManager().getDataApiUrl();
-                                URI uri = URI.create(baseUrl + "cms/media/get/"
-                                        + item.getMediaItem().getId() + ".pdf");
-                                return uri.toString();
-                            }
-                            String filename = item.getMediaItem().getFileName();
-                            filename = URLEncoder.encode(filename, "utf-8");
-                            return urls.get().path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
-
-                        default:
-                            // Images
-                            contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
-                    }
-
-                    break;
-                case COMPONENT:
-                    contentString = item.getComponent();
-                    break;
-                case GLOSSARY:
-                    try {
-                        contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
-                    } catch (ContentNotFoundException | IOException e) {
-                        logger.error("Failed to load glossary " + item.getGlossaryName(), e);
-                    }
-                    break;
-                default:
-                    contentString = "";
-            }
-            return contentString;
-        } catch (CmsElementNotFoundException e1) {
-            logger.error("No content item of id {} found in page {}", itemId, this.getId());
-            return "";
-        } catch (ViewerConfigurationException e1) {
-            logger.error("Error in viewer configuration: " + e1.toString());
-            return "";
-        } catch (UnsupportedEncodingException e1) {
-            logger.error("Error trying to encode string: " + e1.toString());
-            return "";
-        }
-    }
-
-    /**
-     * <p>
-     * getGlobalContentItems.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<CMSContentItem> getGlobalContentItems() {
-        CMSPageLanguageVersion defaultVersion;
-        try {
-            defaultVersion = getLanguageVersion(GLOBAL_LANGUAGE);
-        } catch (CmsElementNotFoundException e) {
-            return Collections.emptyList();
-        }
-        List<CMSContentItem> items = defaultVersion.getContentItems();
-        return items;
-    }
-
-    /**
-     * <p>
-     * getContentItems.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<CMSContentItem> getContentItems() {
-        CMSPageLanguageVersion defaultVersion;
-        try {
-            defaultVersion = getLanguageVersion(CmsBean.getCurrentLocale().getLanguage());
-        } catch (CmsElementNotFoundException e) {
-            return new ArrayList<>();
-        }
-        List<CMSContentItem> items = defaultVersion.getCompleteContentItemList();
-        return items;
-    }
-
-    /**
-     * <p>
-     * getContentItems.
-     * </p>
-     *
-     * @param locale a {@link java.util.Locale} object.
-     * @return a {@link java.util.List} object.
-     */
-    public List<CMSContentItem> getContentItems(Locale locale) {
-        if (locale != null) {
-            CMSPageLanguageVersion version;
-            try {
-                version = getLanguageVersion(locale.getLanguage());
-            } catch (CmsElementNotFoundException e) {
-                return new ArrayList<>();
-            }
-            List<CMSContentItem> items = version.getCompleteContentItemList();
-            return items;
-        }
-        return null;
+        return this.previewText.getTextOrDefault();
     }
 
     private static CMSPageTemplate getTemplateById(String id) {
@@ -1435,10 +834,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @param listPage a int.
      */
     public void setListPage(int listPage) {
-        resetItemData();
+        this.cmsComponents.forEach(c -> c.setListPage(listPage));
         this.listPage = listPage;
-        this.getContentItems().forEach(item -> item.getFunctionality().setPageNo(listPage));
-
     }
 
     /**
@@ -1451,7 +848,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getPersistentUrl() {
         return persistentUrl;
     }
-    
+
     /**
      * <p>
      * Setter for the field <code>persistentUrl</code>.
@@ -1463,19 +860,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         persistentUrl = StringUtils.removeStart(persistentUrl, "/");
         persistentUrl = StringUtils.removeEnd(persistentUrl, "/");
         this.persistentUrl = persistentUrl.trim();
-    }
-
-    /**
-     * <p>
-     * resetEditorItemVisibility.
-     * </p>
-     */
-    public void resetEditorItemVisibility() {
-        if (getGlobalContentItems() != null) {
-            for (CMSContentItem item : getGlobalContentItems()) {
-                item.setVisible(false);
-            }
-        }
     }
 
     public static class PageComparator implements Comparator<CMSPage> {
@@ -1526,30 +910,25 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return a {@link java.lang.String} object.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
-    public String getTileGridUrl(String itemId) throws IllegalRequestException {
-        try {
-            CMSContentItem item = getContentItemOrThrowException(itemId);
-            if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
+    public String getTileGridUrl(CMSContentItem item) throws IllegalRequestException {
+        if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
 
-                String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
+            String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
 
-                String url = DataManager.getInstance()
-                        .getRestApiManager()
-                        .getDataApiManager()
-                        .map(urls -> urls.path(CMS_MEDIA)
-                                .query("tags", tags)
-                                .query("max", item.getNumberOfTiles())
-                                .query("prioritySlots", item.getNumberOfImportantTiles())
-                                .query("random", "true")
-                                .build())
-                        .orElse(getLegacyTileGridUrl(item));
+            String url = DataManager.getInstance()
+                    .getRestApiManager()
+                    .getDataApiManager()
+                    .map(urls -> urls.path(CMS_MEDIA)
+                            .query("tags", tags)
+                            .query("max", item.getNumberOfTiles())
+                            .query("prioritySlots", item.getNumberOfImportantTiles())
+                            .query("random", "true")
+                            .build())
+                    .orElse(getLegacyTileGridUrl(item));
 
-                return url;
-            }
-            throw new IllegalRequestException("Content item with id '" + itemId + "' is no tile grid item");
-        } catch (CmsElementNotFoundException e) {
-            throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
+            return url;
         }
+        throw new IllegalRequestException("Content item with id '" + item.getId() + "' is no tile grid item");
     }
 
     /**
@@ -1610,91 +989,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     }
 
     /**
-     * TODO HTML/text content items are only added to the last language version in the list, not all of them
-     *
-     * @param templateItem a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     */
-    public void addContentItem(CMSContentItem templateItem) {
-        synchronized (languageVersions) {
-            List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
-            for (CMSPageLanguageVersion language : languages) {
-                language.addContentItemFromTemplateItem(templateItem);
-            }
-
-            // getLanguageVersions().stream().filter(lang ->
-            // !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
-            //                        lang -> lang.addContentItem(item));
-            //            } else {
-            //                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
-            //            }
-        }
-    }
-
-    /**
-     * <p>
-     * hasContentItem.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean hasContentItem(final String itemId) {
-        synchronized (languageVersions) {
-            return languageVersions.stream()
-                    .flatMap(lang -> lang.getContentItems().stream())
-                    //                    .map(lang -> lang.getContentItem(itemId))
-                    //                    .filter(item -> item != null)
-                    .filter(item -> item.getItemId().equals(itemId))
-                    .findAny()
-                    .isPresent();
-        }
-    }
-
-    /**
-     * Returns the first found SearchFunctionality of any contained content items If no fitting item is found, a new default SearchFunctionality is
-     * returned
-     *
-     * @return SearchFunctionality, not null
-     */
-    public SearchFunctionality getSearch() {
-        Optional<CMSContentItem> searchItem =
-                getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType())).findFirst();
-        if (searchItem.isPresent()) {
-            return (SearchFunctionality) searchItem.get().getFunctionality();
-        }
-        logger.warn("Did not find search functionality in page " + this);
-        return new SearchFunctionality("", getPageUrl());
-    }
-
-    /**
-     * @return
-     */
-    public BrowseFunctionality getBrowse() {
-        Optional<CMSContentItem> item =
-                getGlobalContentItems().stream().filter(i -> CMSContentItemType.BROWSETERMS.equals(i.getType())).findFirst();
-        if (item.isPresent()) {
-            return (BrowseFunctionality) item.get().getFunctionality();
-        }
-        logger.warn("Did not find browse functionality in page " + this);
-        return new BrowseFunctionality("");
-    }
-
-    /**
-     * <p>
-     * hasSearchFunctionality.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean hasSearchFunctionality() {
-        Optional<CMSContentItem> searchItem = getGlobalContentItems().stream()
-                .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()) || CMSContentItemType.SOLRQUERY.equals(item.getType()))
-                .findFirst();
-        return searchItem.isPresent();
-
-    }
-
-    /**
      * <p>
      * isHasSidebarElements.
      * </p>
@@ -1706,18 +1000,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             return getSidebarElements() != null && !getSidebarElements().isEmpty();
         }
         return true;
-    }
-
-    /**
-     * <p>
-     * addLanguageVersion.
-     * </p>
-     *
-     * @param version a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} object.
-     */
-    public void addLanguageVersion(CMSPageLanguageVersion version) {
-        this.languageVersions.add(version);
-        version.setOwnerPage(this);
     }
 
     /**
@@ -1881,65 +1163,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        try {
-            String title = getBestLanguageIncludeUnfinished(Locale.ENGLISH).getTitle();
-            if (StringUtils.isBlank(title)) {
-                return "ID: " + this.getId() + " (no title)";
-
-            }
-            return title;
-        } catch (CmsElementNotFoundException e) {
+        String title = this.getTitle();
+        if (StringUtils.isBlank(title)) {
             return "ID: " + this.getId() + " (no title)";
+
         }
+        return title;
     }
 
-    /**
-     * Remove any language versions without primary key (because h2 doesn't like that)
-     */
-    public void cleanup() {
-        Iterator<CMSPageLanguageVersion> i = languageVersions.iterator();
-        while (i.hasNext()) {
-            CMSPageLanguageVersion langVersion = i.next();
-            if (langVersion.getId() == null) {
-                i.remove();
-            }
-        }
-
-    }
-
-    /**
-     * Return true if the page has a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} for the given locale
-     *
-     * @param locale a {@link java.util.Locale} object.
-     * @return true if the page has a {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion} for the given locale, false otherwise
-     */
-    public boolean hasLanguageVersion(Locale locale) {
-        return this.languageVersions.stream().anyMatch(l -> l.getLanguage().equals(locale.getLanguage()));
-    }
-
-    /**
-     * Adds {@link io.goobi.viewer.model.cms.CMSPageLanguageVersion}s for all given {@link java.util.Locale}s for which no language versions already
-     * exist
-     *
-     * @param locales a {@link java.util.List} object.
-     */
-    public void createMissingLanguageVersions(List<Locale> locales) {
-        for (Locale locale : locales) {
-            if (hasLanguageVersion(locale)) {
-                continue;
-            }
-            CMSPageLanguageVersion langVersion = new CMSPageLanguageVersion(locale.getLanguage());
-            addLanguageVersion(langVersion);
-            logger.info("Added new language version: {}", langVersion.getLanguage());
-
-            // check if all template content items exist in this language version and add missing items
-            CMSPageTemplate template = getTemplate();
-            if (template != null && template.getContentItems() != null)
-                for (CMSContentItem templateItem : getTemplate().getContentItems()) {
-                    langVersion.addContentItemFromTemplateItem(templateItem);
-                }
-        }
-    }
 
     /**
      * <p>
@@ -1963,24 +1194,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         this.wrapperElementClass = wrapperElementClass;
     }
 
-    /**
-     * <p>
-     * removeContentItem.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     */
-    public void removeContentItem(String itemId) {
-        for (CMSPageLanguageVersion languageVersion : languageVersions) {
-            CMSContentItem item;
-            try {
-                item = languageVersion.getContentItem(itemId);
-                languageVersion.removeContentItem(item);
-            } catch (CmsElementNotFoundException e) {
-                // continue
-            }
-        }
-    }
 
     /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
@@ -2018,12 +1231,25 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 logger.error(e.getMessage(), e);
             }
 
+            for (PersistentCMSComponent component : cmsComponents) {
+                for (CMSContent content : component.getContentItems()) {
+                    if(content instanceof CMSText || content instanceof CMSHtmlText || content instanceof CMSImage) {
+                        String baseFileName = id + "-" + content.getComponentId() + ".";
+                        for (Path file : cmsPageFiles) {
+                            if (file.getFileName().toString().startsWith(baseFileName)) {
+                                filesToDelete.add(file);
+                            }
+                        }
+                    }
+                }
+            }
+            
             // Collect files that match the page-contentid name pattern
             for (CMSPageLanguageVersion lv : getLanguageVersions()) {
                 for (CMSContentItem ci : lv.getContentItems()) {
-                	// FA* check this
+                    // FA* check this
                     if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())
-                    		// FA* check this
+                    // FA* check this
                             || CMSContentItemType.MEDIA.equals(ci.getType()) || CMSContentItemType.CONTENT_ITEM_TEXTEDITOR.equals(ci.getType())) {
                         String baseFileName = id + "-" + ci.getItemId() + ".";
                         for (Path file : cmsPageFiles) {
@@ -2122,7 +1348,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 return Collections.emptyList();
             case HTML:
             case TEXT:
-            // FA* check this
+                // FA* check this
             case CONTENT_ITEM_TEXTEDITOR:
                 return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
             default:
@@ -2249,7 +1475,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         String prettyId = "adminCmsEditPage";
         return PrettyUrlTools.getAbsolutePageUrl(prettyId, this.getId());
     }
-    
+
     public List<PersistentCMSComponent> getCmsComponents() {
         return cmsComponents;
     }
@@ -2258,14 +1484,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
         return contentManager.getComponent(p.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(p))).orElse(null);
     }
-    
+
     public boolean removeComponent(PersistentCMSComponent component) {
         return this.cmsComponents.remove(component);
     }
-    
+
     public void addComponent(CMSComponent template) {
         PersistentCMSComponent newComponent = new PersistentCMSComponent(template);
-        newComponent.setOrder(this.cmsComponents.size()+1);
+        newComponent.setOrder(this.cmsComponents.size() + 1);
         newComponent.setOwnerPage(this);
         this.cmsComponents.add(newComponent);
     }

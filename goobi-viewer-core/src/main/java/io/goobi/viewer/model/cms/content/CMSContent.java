@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.content;
 
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,7 +42,7 @@ import jakarta.persistence.ManyToOne;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public abstract class CMSContent {
+public abstract class CMSContent implements IPolyglott {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

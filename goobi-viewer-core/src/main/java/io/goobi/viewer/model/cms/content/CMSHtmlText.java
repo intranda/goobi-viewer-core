@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms.content;
 
+import java.util.Locale;
+
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
@@ -67,6 +69,31 @@ public class CMSHtmlText extends CMSContent {
     public CMSContent copy() {
         CMSHtmlText copy = new CMSHtmlText(this);
         return copy;
+    }
+
+    @Override
+    public boolean isComplete(Locale locale) {
+        return this.text.isComplete(locale);
+    }
+
+    @Override
+    public boolean isValid(Locale locale) {
+        return this.text.isValid(locale);
+    }
+
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return this.text.isEmpty(locale);
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        return this.text.getSelectedLocale();
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        this.text.setSelectedLocale(locale);
     }
     
 }
