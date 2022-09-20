@@ -28,39 +28,12 @@
 <!--                <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                 -->
 <!--            </ui:fragment> -->
             <h:form id="searchAdvancedForm" prependId="false">
-                <c:forEach var="queryGroup" items="#{searchBean.advancedQueryGroups}" varStatus="statusGroup">
                     <div class="search-advanced__group">
                         <!-- AJAX LOADER -->
                         <div class="search-advanced__loader"></div>
 
-                        <button
-							class="remove btn btn--clean"
-							title="#{msg.searchAdvanved_deleteSearchGroup}"
-                            jsf:action="#{searchBean.removeAdvancedQueryGroup(queryGroup)}"
-							jsf:disabled="#{fn:length(searchBean.advancedQueryGroups) == 1}">
-                            <i class="fa fa-times-circle" aria-hidden="true"></i>
-                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                            <f:passThroughAttribute name="data-placement" value="top" />
-                            <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSearchGroup}"/>
-                            <f:ajax render="@form" />
-                        </button>
-
-                        <!-- SEARCH ADVANCED CONNECTOR -->
-                        <div class="search-advanced__connector">
-                            #{msg.searchAdvanced_operatorItems}:
-                            <div class="custom-control custom-control--select">
-                                <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="value-text" value="#{queryGroup.operator}">
-                                	<f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanced_operatorItems}"/>
-                                	<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
-                                    <f:selectItems value="#{queryGroup.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
-                                </h:selectOneMenu>
-                            </div>
-                        </div>
-
-                        <hr />
-
                         <!-- SEARCH ADVANCED INPUT GROUP -->
-                        <c:forEach var="queryItem" items="#{queryGroup.queryItems}" varStatus="status">
+                        <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
                             <div id="searchAdvancedInputGroup-#{statusGroup.count}-#{status.count}" class="search-advanced__input-group">
                                 <div class="row mx-0">
                                     <ui:fragment rendered="#{queryItems.field.allFields}">
@@ -170,25 +143,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </c:forEach>
                     </div>
                 </c:forEach>
-
-                <!-- SEARCH ADVANCED CONNECT GROUP -->
-                <h:panelGroup rendered="#{fn:length(searchBean.advancedQueryGroups) > 1}">
-                    <div class="search-advanced__connect-group pull-left">
-                        #{msg.searchAdvanced_connectGroups}:
-                        <div class="custom-control custom-control--select">
-                            <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="custom-control custom-control--select value-text"
-                                value="#{searchBean.advancedSearchGroupOperator}">
-                                <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_operatorGroups}"/>
-								<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
-                                <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsAND}" itemValue="0" />
-                                <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsOR}" itemValue="1" />
-                            </h:selectOneMenu>
-                        </div>
-                    </div>
-                </h:panelGroup>
 
                 <div class="clearfix"></div>
 

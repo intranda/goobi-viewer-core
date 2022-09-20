@@ -1719,8 +1719,9 @@ public class CmsBean implements Serializable {
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+            search.execute(facets, null, searchBean.getHitsPerPage(), null, true,
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                    item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(search);
             searchBean.setHitsPerPageSetterCalled(false);
             return null;
@@ -1884,8 +1885,8 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been initialized
-     * yet, do so and add it to the Bean's CollectionView map
+     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
+     * initialized yet, do so and add it to the Bean's CollectionView map
      *
      * @param id The ContentItemId of the ContentItem to look for
      * @param page The page containing the collection ContentItem
@@ -1902,7 +1903,7 @@ public class CmsBean implements Serializable {
                 CMSContentItem contentItem = page.getContentItemOrThrowException(id);
                 collection = contentItem.initializeCollection(page.getSubThemeDiscriminatorValue());
                 collections.put(myId, collection);
-            } catch(CmsElementNotFoundException e) {
+            } catch (CmsElementNotFoundException e) {
                 logger.debug("Not matching collection element for id {} on page {}", id, page.getId());
             }
         }
@@ -1927,8 +1928,9 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the first available {@link io.goobi.viewer.model.viewer.collections.CollectionView} from any {@link io.goobi.viewer.model.cms.CMSContentItem} of the
-     * given {@link CMSPage page}. The CollectionView is added to the Bean's internal collection map
+     * Get the first available {@link io.goobi.viewer.model.viewer.collections.CollectionView} from any
+     * {@link io.goobi.viewer.model.cms.CMSContentItem} of the given {@link CMSPage page}. The CollectionView is added to the Bean's internal
+     * collection map
      *
      * @param page The CMSPage to provide the collection
      * @return The CollectionView or null if none was found

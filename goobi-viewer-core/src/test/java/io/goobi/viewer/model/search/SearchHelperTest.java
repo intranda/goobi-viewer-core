@@ -1032,61 +1032,31 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
-        List<SearchQueryGroup> groups = new ArrayList<>(2);
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.AND);
-            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val1");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
-            group.getQueryItems().get(1).setValue("foo bar");
-            groups.add(group);
-        }
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.OR);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val2");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
-            group.getQueryItems().get(1).setField("MD_SHELFMARK");
-            group.getQueryItems().get(1).setValue("bla blup");
-            groups.add(group);
-        }
+        SearchQueryGroup group = new SearchQueryGroup(null, 2);
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField("MD_FIELD");
+        group.getQueryItems().get(0).setValue("val1");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+        group.getQueryItems().get(1).setValue("foo bar");
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
-        Assert.assertEquals(" +((MD_FIELD:(val1) AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:(val2) OR MD_SHELFMARK:(bla OR blup)))", result);
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assert.assertEquals(" +((MD_FIELD:(val1) AND MD_TITLE:(foo AND bar)))", result);
     }
 
     @Test
     public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
-        List<SearchQueryGroup> groups = new ArrayList<>(2);
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.AND);
-            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val1");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
-            group.getQueryItems().get(1).setValue("foo bar");
-            groups.add(group);
-        }
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.OR);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val2");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
-            group.getQueryItems().get(1).setField("MD_SHELFMARK");
-            group.getQueryItems().get(1).setValue("bla blup");
-            groups.add(group);
-        }
+        SearchQueryGroup group = new SearchQueryGroup(null, 2);
+        group.getQueryItems().get(0).setField("MD_FIELD");
+        group.getQueryItems().get(0).setValue("val2");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+        group.getQueryItems().get(1).setField("MD_SHELFMARK");
+        group.getQueryItems().get(1).setValue("bla blup");
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
+        String result = SearchHelper.generateAdvancedExpandQuery(group, true);
         Assert.assertEquals(
-                " +((MD_FIELD:((val1 val1~1)) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:((val2 val2~1)) OR MD_SHELFMARK:((bla) OR (blup blup~1))))",
+                "(MD_SHELFMARK:((bla) OR (blup blup~1)))",
                 result);
     }
 
@@ -1096,8 +1066,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
-        List<SearchQueryGroup> groups = new ArrayList<>(1);
-
         SearchQueryGroup group = new SearchQueryGroup(null, 6);
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
@@ -1118,9 +1086,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(5).setField(SolrConstants.PI_ANCHOR);
         group.getQueryItems().get(5).setValue("PPN000");
-        groups.add(group);
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
         Assert.assertEquals(" +((MD_FIELD:(val)))", result);
     }
 
@@ -1912,11 +1879,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SolrConstants.DOCSTRCT_TOP, group.getQueryItems().get(2).getField());
         Assert.assertEquals("monograph", group.getQueryItems().get(2).getValue());
         //Assert.assertEquals(SearchItemOperator.PHRASE, group.getQueryItems().get(1).getOperator());
-        
+
         Assert.assertEquals("MD_YEARPUBLISH", group.getQueryItems().get(3).getField());
         Assert.assertEquals("1900", group.getQueryItems().get(3).getValue());
         Assert.assertEquals("2000", group.getQueryItems().get(3).getValue2());
-        
+
         Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(4).getField());
         Assert.assertEquals("varia", group.getQueryItems().get(4).getValue());
         // Assert.assertEquals(SearchItemOperator.IS, group.getQueryItems().get(4).getOperator());
