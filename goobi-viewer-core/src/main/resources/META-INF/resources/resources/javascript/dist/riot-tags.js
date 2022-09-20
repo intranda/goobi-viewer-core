@@ -813,9 +813,8 @@ this.loadSubCollections = function() {
         );
     }
     observable.pipe(
-    	rxjs.operators.debounceTime(100),
-     	rxjs.operators.tap( () => console.log("collections ", this.collections) ),
-    )
+    	rxjs.operators.debounceTime(100)
+     )
     .subscribe( () => this.update());
 
 }.bind(this)
@@ -3563,7 +3562,6 @@ riot.tag2('subcollection', '<ul if="{collection.members && collection.members.le
 		}.bind(this)
 
 		this.getValue = function(element) {
-		    console.log("get value of ", element, this.opts.language, this.opts.defaultlanguage);
 		    return viewerJS.iiif.getValue(element, this.opts.language, this.opts.defaultlanguage);
 		}.bind(this)
 
