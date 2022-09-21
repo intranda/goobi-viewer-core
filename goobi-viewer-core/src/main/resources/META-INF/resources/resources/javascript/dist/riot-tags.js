@@ -3548,7 +3548,7 @@ riot.tag2('slideshow', '<a if="{manifest === undefined}" data-linkid="{opts.pis}
             viewerJS.handleScrollPositionClick($target);
         }.bind(this)
 });
-riot.tag2('subcollection', '<ul if="{collection.members && collection.members.length > 0}" class="list card-body__list"><li each="{child in getChildren(collection)}"><div class="card-body__links"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></div><subcollection if="{child.members && child.members.length > 0}" collection="{child}"></subcollection></li></ul>', '', '', function(opts) {
+riot.tag2('subcollection', '<ul if="{collection.members && collection.members.length > 0}" class="list card-body__list"><li each="{child in getChildren(collection)}"><div class="card-body__links"><a class="card-body__collection" href="{getId(child.rendering)}">{getValue(child.label)} ({viewerJS.iiif.getContainedWorks(child)})</a><a class="card-body__rss" href="{viewerJS.iiif.getRelated(child, \'Rss feed\')[\'@id\']}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a></div><subcollection if="{child.members && child.members.length > 0}" collection="{child}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></li></ul>', '', '', function(opts) {
 		this.collection = this.opts.collection;
 
 		this.getId = function(element) {
