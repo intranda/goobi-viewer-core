@@ -321,8 +321,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bla \"blup\" -nein");
         }
 
-        Assert.assertEquals("(((SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR SUPERUGCTERMS:(foo OR bar) OR DEFAULT:(foo OR bar)"
-                + " OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR CMS_TEXT_ALL:(foo OR bar))))",
+        Assert.assertEquals("((SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar)"
+                + " FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) +(MD_TITLE:(bla AND \\\"blup\\\" -nein)))",
                 sb.generateAdvancedSearchString());
     }
 

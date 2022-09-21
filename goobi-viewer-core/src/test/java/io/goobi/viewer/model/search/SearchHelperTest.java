@@ -1042,7 +1042,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(1).setValue("foo bar");
 
         String result = SearchHelper.generateAdvancedExpandQuery(group, false);
-        Assert.assertEquals(" +((MD_FIELD:(val1) AND MD_TITLE:(foo AND bar)))", result);
+        Assert.assertEquals(" +(+(MD_FIELD:(val1)) +(MD_TITLE:(foo AND bar)))", result);
     }
 
     @Test
@@ -1055,9 +1055,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(1).setValue("bla blup");
 
         String result = SearchHelper.generateAdvancedExpandQuery(group, true);
-        Assert.assertEquals(
-                "(MD_SHELFMARK:((bla) OR (blup blup~1)))",
-                result);
+        Assert.assertEquals(" +(+(MD_FIELD:((val2 val2~1))) (MD_SHELFMARK:((bla) OR (blup blup~1))))", result);
     }
 
     /**
@@ -1088,7 +1086,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setValue("PPN000");
 
         String result = SearchHelper.generateAdvancedExpandQuery(group, false);
-        Assert.assertEquals(" +((MD_FIELD:(val)))", result);
+        Assert.assertEquals(" +(+(MD_FIELD:(val)))", result);
     }
 
     /**
@@ -1781,7 +1779,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(((SUPERDEFAULT:\"foo bar\" OR SUPERFULLTEXT:\"foo bar\" OR SUPERUGCTERMS:\"foo bar\" OR DEFAULT:\"foo bar\" OR FULLTEXT:\"foo bar\" OR NORMDATATERMS:\"foo bar\" OR UGCTERMS:\"foo bar\" OR CMS_TEXT_ALL:\"foo bar\")) AND ((SUPERFULLTEXT:\"bla\" AND FULLTEXT:\"bla\")))",
+                "((+(SUPERDEFAULT:\"foo bar\" OR SUPERFULLTEXT:\"foo bar\" OR SUPERUGCTERMS:\"foo bar\" OR DEFAULT:\"foo bar\" OR FULLTEXT:\"foo bar\" OR NORMDATATERMS:\"foo bar\" OR UGCTERMS:\"foo bar\" OR CMS_TEXT_ALL:\"foo bar\")) AND (+(SUPERFULLTEXT:\"bla\" AND FULLTEXT:\"bla\")))",
                 null, null);
         Assert.assertNotNull(group);
         Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());

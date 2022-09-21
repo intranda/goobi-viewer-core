@@ -2760,12 +2760,7 @@ public final class SearchHelper {
             String itemQuery = item.generateQuery(new HashSet<>(), false, allowFuzzySearch);
             if (StringUtils.isNotEmpty(itemQuery)) {
                 if (sbGroup.length() > 0) {
-                    if (orMode) {
-                        // When also searching in page document fields, the operator must be 'OR'
-                        sbGroup.append(SolrConstants.SOLR_QUERY_OR);
-                    } else {
-                        sbGroup.append(' ').append(group.getOperator().name()).append(' ');
-                    }
+                    sbGroup.append(' ');
                 }
                 sbGroup.append(itemQuery);
             }

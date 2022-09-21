@@ -33,9 +33,9 @@ import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.util.ClientUtils;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -45,7 +45,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -494,7 +493,7 @@ public class SearchQueryItem implements Serializable {
             boolean additionalField = false;
             for (String f : fields) {
                 if (additionalField) {
-                    sbItem.append(" OR ");
+                    sbItem.append(" ");
                 }
                 // Use _UNTOKENIZED field for phrase searches if the field is configured for that. In that case, only complete field value
                 // matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
@@ -527,7 +526,7 @@ public class SearchQueryItem implements Serializable {
                 boolean moreThanOneField = false;
                 for (String f : fields) {
                     if (moreThanOneField) {
-                        sbItem.append(" OR ");
+                        sbItem.append(" ");
                     }
                     String useField = f;
                     sbItem.append(useField).append(':');
@@ -550,10 +549,6 @@ public class SearchQueryItem implements Serializable {
 
                         if (val.charAt(0) == '-' && val.length() > 1) {
                             // negation
-                            //                            if (!"*".equals(value)) {
-                            //                                // Unless user searches for "contains not *", make sure only documents that actually have the field are found
-                            //                                sbItem.append(useField).append(":* ");
-                            //                            }
                             sbItem.append(" -");
                             val = val.substring(1);
                         } else if (moreThanOneValue) {
@@ -562,10 +557,10 @@ public class SearchQueryItem implements Serializable {
                                 //                                case SolrConstants.FULLTEXT:
                                 //                                case SolrConstants.UGCTERMS:
                                 case ADVANCED_SEARCH_ALL_FIELDS:
-                                    sbItem.append(" OR ");
+                                    sbItem.append(' ');
                                     break;
                                 default:
-                                    sbItem.append(' ').append(operator.name()).append(' ');
+                                    sbItem.append(SolrConstants.SOLR_QUERY_AND);
                                     break;
                             }
                         }
