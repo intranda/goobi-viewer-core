@@ -20,7 +20,7 @@
 				<attribute name="foo" value="bar"/>
 			</attributes>
 		</item>
-		<item id="image">
+		<item id="image" required="false">
 			<label>cms_content__image__label</label>
 			<description>cms_content__image__desc</description>
 			<className>io.goobi.viewer.model.cms.content.CMSImage</className>

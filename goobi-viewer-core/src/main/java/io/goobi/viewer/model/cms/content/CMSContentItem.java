@@ -54,6 +54,8 @@ public class CMSContentItem {
     private final String description;
     
     private final JsfComponent jsfComponent;
+    
+    private final boolean required;
 
     public CMSContentItem(CMSContentItem orig) {
         this.componentId = orig.componentId;
@@ -62,6 +64,7 @@ public class CMSContentItem {
         this.label = orig.label;
         this.description = orig.description;
         this.jsfComponent = orig.jsfComponent;
+        this.required = orig.required;
     }
     
     /**
@@ -69,7 +72,7 @@ public class CMSContentItem {
      * @param componentId
      * @param content
      */
-    public CMSContentItem(String componentId, CMSContent content, String label, String description, JsfComponent jsfComponent) {
+    public CMSContentItem(String componentId, CMSContent content, String label, String description, JsfComponent jsfComponent, boolean required) {
         if(StringUtils.isNotBlank(componentId)) {
             this.componentId = componentId;            
         } else {
@@ -84,9 +87,12 @@ public class CMSContentItem {
         this.label = label;
         this.description = description;
         this.jsfComponent = jsfComponent;
+        this.required = required;
     }
     
-
+    public boolean isRequired() {
+        return required;
+    }
 
     public void setAttribute(String name, Object value) {
         this.attributes.put(name, value);

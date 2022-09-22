@@ -70,9 +70,11 @@ public class CMSComponentReader {
                 String elementLabel = XmlTools.evaluateToFirstElement("label", element, null).map(Element::getText).orElse(null);
                 String elementDesc = XmlTools.evaluateToFirstElement("description", element, null).map(Element::getText).orElse(null);
                 String componentId = element.getAttributeValue("id");
+                String requiredString = element.getAttributeValue("required");
+                boolean required = !requiredString.equalsIgnoreCase("false");
                 
                 CMSContent content = createContentFromClassName(className);
-                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName));
+                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), required);
                 
                 List<Element> attributes = XmlTools.evaluateToElements("attributes/attribute", element, null);
                 for (Element attribute : attributes) {

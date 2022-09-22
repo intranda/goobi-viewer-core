@@ -21,16 +21,27 @@
  */
 package io.goobi.viewer.model.cms.content;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
@@ -48,7 +59,7 @@ public class CMSText extends CMSContent {
     }
     
     public CMSText(CMSText orig) {
-        super();
+        super(orig);
         this.text = new TranslatedText(orig.text);
     }
     
@@ -94,5 +105,36 @@ public class CMSText extends CMSContent {
     @Override
     public void setSelectedLocale(Locale locale) {
         this.text.setSelectedLocale(locale);
+    }
+    
+    @Override
+    public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
+        if (StringUtils.isEmpty(outputFolderPath)) {
+            throw new IllegalArgumentException("hotfolderPath may not be null or emptys");
+        }
+        if (StringUtils.isEmpty(namingScheme)) {
+            throw new IllegalArgumentException("namingScheme may not be null or empty");
+        }
+        if (text.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<File> ret = new ArrayList<>();
+        Path cmsDataDir = Paths.get(outputFolderPath, namingScheme + IndexerTools.SUFFIX_CMS);
+        if (!Files.isDirectory(cmsDataDir)) {
+            Files.createDirectory(cmsDataDir);
+        }
+        
+        List<File> filesWritten = new ArrayList<>();
+        for (String language : text.getLanguages()) {
+            String string = text.getValue(language).orElse(null);
+            if(StringUtils.isNotBlank(string)) {
+                File file = new File(cmsDataDir.toFile(), this.getId() + "-" + language + ".xml");                
+                FileUtils.writeStringToFile(file, string, StringTools.DEFAULT_ENCODING);
+                filesWritten.add(file);
+            }
+        }
+
+        return ret;
     }
 }

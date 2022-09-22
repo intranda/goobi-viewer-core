@@ -175,6 +175,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText previewText = new TranslatedText();
 
+    @JoinColumn(name = "slider_id")
+    private CMSSlider topbarSlider = null;
+    
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     //@Convert(converter = CMSComponentConverter.class)
@@ -213,6 +216,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
 
     @Transient
     private List<Selectable<CMSCategory>> selectableCategories = null;
+    
+    @Transient
+    private Locale selectedLocale = IPolyglott.getCurrentLocale();
 
     /**
      * @deprecated static pages are now stored in a separate table. This only remains for backwards compability
@@ -1243,23 +1249,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
                     }
                 }
             }
-            
-            // Collect files that match the page-contentid name pattern
-            for (CMSPageLanguageVersion lv : getLanguageVersions()) {
-                for (CMSContentItem ci : lv.getContentItems()) {
-                    // FA* check this
-                    if (CMSContentItemType.HTML.equals(ci.getType()) || CMSContentItemType.TEXT.equals(ci.getType())
-                    // FA* check this
-                            || CMSContentItemType.MEDIA.equals(ci.getType()) || CMSContentItemType.CONTENT_ITEM_TEXTEDITOR.equals(ci.getType())) {
-                        String baseFileName = id + "-" + ci.getItemId() + ".";
-                        for (Path file : cmsPageFiles) {
-                            if (file.getFileName().toString().startsWith(baseFileName)) {
-                                filesToDelete.add(file);
-                            }
-                        }
-                    }
-                }
-            }
+
             if (!filesToDelete.isEmpty()) {
                 for (Path file : filesToDelete) {
                     try {
@@ -1299,62 +1289,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
      * @throws java.io.IOException if any.
      */
     public List<File> exportTexts(String outputFolderPath, String namingScheme) throws IOException {
+        
+        List<CMSContent> contents = this.cmsComponents.stream()
+        .flatMap(p -> p.getContentItems().stream())
+        .collect(Collectors.toList());
+        
         List<File> ret = new ArrayList<>();
-        try {
-            // Default language items
-            CMSPageLanguageVersion defaultVersion = getDefaultLanguage();
-            if (defaultVersion != null && !defaultVersion.getContentItems().isEmpty()) {
-                for (CMSContentItem item : getDefaultLanguage().getContentItems()) {
-                    ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
-                }
-            }
-
-        } catch (CmsElementNotFoundException e) {
-            logger.error(e.getMessage(), e);
-        }
-        // Global language items
-        List<CMSContentItem> globalContentItems = getGlobalContentItems();
-        if (!globalContentItems.isEmpty()) {
-            for (CMSContentItem item : globalContentItems) {
-                ret.addAll(exportItemFiles(item, outputFolderPath, namingScheme, id));
+        for (CMSContent cmsContent : contents) {
+            try {
+                ret.addAll(cmsContent.exportHtmlFragment(outputFolderPath, namingScheme));
+            } catch (IOException | ViewerConfigurationException e) {
+                logger.error("Error writing html file for cms content " + cmsContent.getId());
             }
         }
-
         return ret;
-    }
-
-    /**
-     * Exports the contents of the given content item into the given hotfolder path for indexing. Only media, html and text content items can
-     * currently be exported.
-     *
-     * @param item Content item to export
-     * @param outputFolderPath Export path
-     * @param namingScheme Naming scheme for export folders
-     * @param cmsPageId Parent page ID; used in the text file naming scheme
-     * @return exported Files
-     * @throws IOException
-     * @should return media files directly
-     */
-    static List<File> exportItemFiles(CMSContentItem item, String outputFolderPath, String namingScheme, long cmsPageId) throws IOException {
-        if (item.getType() == null) {
-            return Collections.emptyList();
-        }
-        switch (item.getType()) {
-            case MEDIA:
-                if (item.getMediaItem() != null) {
-                    return Collections.singletonList(item.getMediaItem().getFilePath().toFile());
-                }
-                logger.warn("No media item attached, cannot export.");
-                return Collections.emptyList();
-            case HTML:
-            case TEXT:
-                // FA* check this
-            case CONTENT_ITEM_TEXTEDITOR:
-                return item.exportHtmlFragment(cmsPageId, outputFolderPath, namingScheme);
-            default:
-                return Collections.emptyList();
-        }
-
     }
 
     /**
@@ -1412,63 +1360,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         return getRelatedPI();
     }
 
-    public SearchInterface getSearchFunctionality() {
-        return (SearchInterface) this.getGlobalContentItems()
-                .stream()
-                .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
-                .findAny()
-                .map(item -> item.getFunctionality())
-                .orElse(null);
-    }
-
     /**
      * @return
      */
     public CMSSlider getTopBarSlider() {
-        try {
-            CMSPageLanguageVersion lang = getLanguageVersion(GLOBAL_LANGUAGE);
-            if (lang != null) {
-                CMSContentItem item = lang.getContentItem(TOPBAR_SLIDER_ID);
-                if (item != null) {
-                    return item.getSlider();
-                }
-            }
-        } catch (CmsElementNotFoundException e) {
-        }
-        return null;
+        return this.topbarSlider;
     }
 
-    private Optional<CMSContentItem> getTopBarSliderItem() {
-        try {
-            CMSPageLanguageVersion lang = getLanguageVersion(GLOBAL_LANGUAGE);
-            if (lang != null) {
-                CMSContentItem item = lang.getContentItem(TOPBAR_SLIDER_ID);
-                return Optional.ofNullable(item);
-            }
-        } catch (CmsElementNotFoundException e) {
-        }
-        return Optional.empty();
-    }
-
-    public boolean mayHaveTopBarSlider() {
-        return getTemplate().isMayHaveTopBarSlider();
-    }
-
-    public Long getTopBarSliderId() {
-        return Optional.ofNullable(getTopBarSlider()).map(CMSSlider::getId).orElse(null);
-    }
-
-    public void setTopBarSliderId(Long id) throws DAOException {
-        CMSContentItem sliderItem = getTopBarSliderItem().orElse(new CMSContentItem(CMSContentItemType.SLIDER));
-        sliderItem.setItemId(TOPBAR_SLIDER_ID);
-        sliderItem.setSliderId(id);
-        if (!hasContentItem(TOPBAR_SLIDER_ID)) {
-            try {
-                getLanguageVersion(GLOBAL_LANGUAGE).addContentItem(sliderItem);
-            } catch (CmsElementNotFoundException e) {
-                logger.error("Unable to set topbar slider: {}", e.toString());
-            }
-        }
+    public void setTopbarSlider(CMSSlider topbarSlider) {
+        this.topbarSlider = topbarSlider;
     }
 
     public String getAdminBackendUrl() {
@@ -1494,5 +1394,35 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         newComponent.setOrder(this.cmsComponents.size() + 1);
         newComponent.setOwnerPage(this);
         this.cmsComponents.add(newComponent);
+    }
+
+    @Override
+    public boolean isComplete(Locale locale) {
+        
+        return this.cmsComponents.stream().flatMap(comp -> comp.getContentItems().stream())
+                .allMatch(content -> !content.isComplete(locale));
+    }
+
+    @Override
+    public boolean isValid(Locale locale) {
+        return 
+    }
+
+    @Override
+    public boolean isEmpty(Locale locale) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        // TODO Auto-generated method stub
+        
     }
 }

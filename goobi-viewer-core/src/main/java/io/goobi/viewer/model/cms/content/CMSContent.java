@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.model.cms.content;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.persistence.Column;
@@ -102,5 +107,19 @@ public abstract class CMSContent implements IPolyglott {
     }
 
     public abstract CMSContent copy();
+
+    /**
+     * Writes HTML fragment value as file for re-indexing. HTML/text fragments are exported directly. Attached media items are exported as long as
+     * their content type is one of the supported text document formats.
+     *
+     * @param pageId ID of the owning CMS page
+     * @param outputFolderPath a {@link java.lang.String} object.
+     * @param namingScheme a {@link java.lang.String} object.
+     * @return Exported Files
+     * @should write files correctly
+     * @throws java.io.IOException if any.
+     * @throws ViewerConfigurationException 
+     */
+    public abstract List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException;
 
 }

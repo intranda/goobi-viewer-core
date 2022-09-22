@@ -21,16 +21,28 @@
  */
 package io.goobi.viewer.model.cms.content;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -47,19 +59,19 @@ import jakarta.persistence.Table;
 public class CMSImage extends CMSContent implements CMSMediaHolder {
 
     private static final String BACKEND_COMPONENT_NAME = "image";
-    
+
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
     public CMSImage() {
         //empty
     }
-    
-    public CMSImage(CMSImage orig)  {
+
+    public CMSImage(CMSImage orig) {
         super(orig);
         this.mediaItem = orig.mediaItem;
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return BACKEND_COMPONENT_NAME;
@@ -169,5 +181,34 @@ public class CMSImage extends CMSContent implements CMSMediaHolder {
     @Override
     public void setSelectedLocale(Locale locale) {
         //noop
+    }
+
+    @Override
+    public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
+        if (StringUtils.isEmpty(outputFolderPath)) {
+            throw new IllegalArgumentException("hotfolderPath may not be null or emptys");
+        }
+        if (StringUtils.isEmpty(namingScheme)) {
+            throw new IllegalArgumentException("namingScheme may not be null or empty");
+        }
+        if (this.mediaItem == null || !mediaItem.isHasExportableText()) {
+            return Collections.emptyList();
+        }
+
+        List<File> ret = new ArrayList<>();
+        Path cmsDataDir = Paths.get(outputFolderPath, namingScheme + IndexerTools.SUFFIX_CMS);
+        if (!Files.isDirectory(cmsDataDir)) {
+            Files.createDirectory(cmsDataDir);
+        }
+
+        // Export media item HTML content
+        String html = CmsMediaBean.getMediaFileAsString(mediaItem);
+        if (StringUtils.isNotEmpty(html)) {
+            File file = new File(cmsDataDir.toFile(), this.getId() + "-" + this.mediaItem.getId() + ".html");
+            FileUtils.writeStringToFile(file, html, StringTools.DEFAULT_ENCODING);
+            ret.add(file);
+        }
+
+        return ret;
     }
 }

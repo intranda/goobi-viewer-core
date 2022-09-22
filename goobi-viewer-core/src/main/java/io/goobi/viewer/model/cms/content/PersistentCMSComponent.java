@@ -46,6 +46,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_components")
@@ -79,6 +80,13 @@ public class PersistentCMSComponent implements IPolyglott {
     @ManyToOne
     @JoinColumn(name = "owner_page_id")
     private CMSPage ownerPage;
+    
+    /**
+     * If the content of this component is spread out over several pages of views, as in search result lists for example, 
+     * this number indicates the current page the user is seeing
+     */
+    @Transient
+    private int listPage = 1;
     
     /**
      * JPA contrutor
@@ -218,8 +226,19 @@ public class PersistentCMSComponent implements IPolyglott {
         }
     }
 
+    /**
+     * set the {@link #listPage}
+     * @param listPage
+     */
     public void setListPage(int listPage) {
-        // TODO Auto-generated method stub
-        return null;
+        this.listPage = listPage;
+    }
+    
+    /**
+     * get the {@link #listPage}
+     * @return
+     */
+    public int getListPage() {
+        return listPage;
     }
 }
