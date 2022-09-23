@@ -24,6 +24,7 @@ package io.goobi.viewer.model.cms.content;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSPage;
@@ -47,7 +48,7 @@ import jakarta.persistence.ManyToOne;
  */
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-public abstract class CMSContent implements IPolyglott {
+public abstract class CMSContent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -121,5 +122,9 @@ public abstract class CMSContent implements IPolyglott {
      * @throws ViewerConfigurationException 
      */
     public abstract List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException;
-
+    
+    
+    boolean isTranslatable() {
+        return this instanceof TranslatableCMSContent;
+    }
 }

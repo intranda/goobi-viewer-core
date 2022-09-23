@@ -1398,10 +1398,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
 
     @Override
     public boolean isComplete(Locale locale) {
-        
-        return this.cmsComponents.stream().flatMap(comp -> comp.getContentItems().stream())
+        Locale defaultLocale = IPolyglott.getDefaultLocale();
+        return this.title.isComplete(locale, defaultLocale, true) &&
+                this.previewText.isComplete(locale, defaultLocale, false) &&
+                this.menuTitle.isComplete(locale, defaultLocale, false) &&
+                this.cmsComponents.stream().flatMap(comp -> comp.getContentItems().stream())
                 .allMatch(content -> !content.isComplete(locale));
     }
+    
+    
 
     @Override
     public boolean isValid(Locale locale) {

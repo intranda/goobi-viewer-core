@@ -307,4 +307,20 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
 
         return false;
     }
+    
+    /**
+     * If required is true, true is returned if a non-empty value exists for the given locale.
+     * Otherwise return true unless defaultLocale has a non-empty value while locale has not.
+     * @param locale
+     * @param defaultLocale
+     * @param required
+     * @return 
+     */
+    public boolean isComplete(Locale locale, Locale defaultLocale, boolean required) {
+        if(required || isComplete(defaultLocale)) {
+            return isComplete(locale);
+        } else {
+            return true;
+        }
+    }
 }

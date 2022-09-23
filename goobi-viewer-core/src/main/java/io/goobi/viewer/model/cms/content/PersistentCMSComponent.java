@@ -182,7 +182,7 @@ public class PersistentCMSComponent implements IPolyglott {
 
     @Override
     public boolean isComplete(Locale locale) {
-        for (CMSContent cmsContent : contentItems) {
+        for (CMSContent cmsContent : contentItems.stream().filter(null)) {
             if(!cmsContent.isComplete(locale)) {
                 return false;
             }
@@ -221,7 +221,7 @@ public class PersistentCMSComponent implements IPolyglott {
 
     @Override
     public void setSelectedLocale(Locale locale) {
-        for (CMSContent cmsContent : contentItems) {
+        for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
             cmsContent.setSelectedLocale(locale);
         }
     }
@@ -240,5 +240,12 @@ public class PersistentCMSComponent implements IPolyglott {
      */
     public int getListPage() {
         return listPage;
+    }
+    
+    public List<TranslatableCMSContent> getTranslatableContentItems() {
+        return this.contentItems.stream()
+                .filter(CMSContent::isTranslatable)
+                .map(TranslatableCMSContent.class::cast)
+                .collect(Collectors.toList());
     }
 }
