@@ -53,6 +53,7 @@ import org.apache.logging.log4j.LogManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
@@ -98,8 +99,12 @@ public class RecordsFilesImageResource extends ImageResource {
         super(context, request, response, pi, filename);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
-        // TODO Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, otherwise the check in AccessConditionRequestFilter will fail!
-        request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
+        if(ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
+            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+        } else {            
+            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        }
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
