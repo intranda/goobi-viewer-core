@@ -182,7 +182,7 @@ public class PersistentCMSComponent implements IPolyglott {
 
     @Override
     public boolean isComplete(Locale locale) {
-        for (CMSContent cmsContent : contentItems.stream().filter(null)) {
+        for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
             if(!cmsContent.isComplete(locale)) {
                 return false;
             }
@@ -192,7 +192,7 @@ public class PersistentCMSComponent implements IPolyglott {
 
     @Override
     public boolean isValid(Locale locale) {
-        for (CMSContent cmsContent : contentItems) {
+        for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
             if(!cmsContent.isValid(locale)) {
                 return false;
             }
@@ -202,7 +202,7 @@ public class PersistentCMSComponent implements IPolyglott {
 
     @Override
     public boolean isEmpty(Locale locale) {
-        for (CMSContent cmsContent : contentItems) {
+        for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
             if(!cmsContent.isEmpty(locale)) {
                 return false;
             }
@@ -212,10 +212,10 @@ public class PersistentCMSComponent implements IPolyglott {
 
     @Override
     public Locale getSelectedLocale() {
-        if(this.contentItems.isEmpty()) {
+        if(getTranslatableContentItems().isEmpty()) {
             return BeanUtils.getDefaultLocale();
         } else {
-            return this.contentItems.get(0).getSelectedLocale();
+            return getTranslatableContentItems().get(0).getSelectedLocale();
         }
     }
 

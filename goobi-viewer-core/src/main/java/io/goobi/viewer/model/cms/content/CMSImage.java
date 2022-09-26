@@ -158,30 +158,6 @@ public class CMSImage extends CMSContent implements CMSMediaHolder {
         return copy;
     }
 
-    @Override
-    public boolean isComplete(Locale locale) {
-        return true;
-    }
-
-    @Override
-    public boolean isValid(Locale locale) {
-        return true;
-    }
-
-    @Override
-    public boolean isEmpty(Locale locale) {
-        return false;
-    }
-
-    @Override
-    public Locale getSelectedLocale() {
-        return BeanUtils.getDefaultLocale();
-    }
-
-    @Override
-    public void setSelectedLocale(Locale locale) {
-        //noop
-    }
 
     @Override
     public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {

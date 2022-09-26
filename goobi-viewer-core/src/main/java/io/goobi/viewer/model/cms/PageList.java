@@ -193,16 +193,16 @@ public class PageList implements Iterable<String> {
      */
     public SearchInterface getSearch(int pageIndex) throws NumberFormatException, DAOException {
         SearchInterface search = null;
-        String page = getPage(pageIndex);
-        if (isCMSPage(page)) {
-            CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(Long.parseLong(getPage()));
-            if (cmsPage != null) {
-                search = cmsPage.getSearch();
-            }
-        }
-        if (search == null) {
-            search = BeanUtils.getSearchBean();
-        }
+//        String page = getPage(pageIndex);
+//        if (isCMSPage(page)) {
+//            CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(Long.parseLong(getPage()));
+//            if (cmsPage != null) {
+//                search = cmsPage.getSearch();
+//            }
+//        }
+//        if (search == null) {
+//            search = BeanUtils.getSearchBean();
+//        }
         return search;
     }
 

@@ -64,7 +64,7 @@ public class CMSComponent {
             CMSContent content = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList()).stream().filter(i -> i.getComponentId().equals(item.getComponentId()))
                     .findAny().orElse(null);
             if(content != null) {                
-                return new CMSContentItem(item.getComponentId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent());
+                return new CMSContentItem(item.getComponentId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), item.isRequired());
             } else {
                 return new CMSContentItem(item);
             }

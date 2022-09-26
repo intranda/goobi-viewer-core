@@ -27,7 +27,6 @@
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
-        <class>io.goobi.viewer.model.cms.CMSContentItem</class>
         <class>io.goobi.viewer.model.cms.CMSCollection</class>
         <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
@@ -35,7 +34,6 @@
         <class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
         <class>io.goobi.viewer.model.cms.CMSPage</class>
-        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
         <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
         <class>io.goobi.viewer.model.cms.CMSRecordNote</class>

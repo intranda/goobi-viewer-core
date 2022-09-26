@@ -97,31 +97,6 @@ public class CMSSearch extends CMSContent {
     }
 
     @Override
-    public boolean isComplete(Locale locale) {
-        return true;
-    }
-
-    @Override
-    public boolean isValid(Locale locale) {
-        return true;
-    }
-
-    @Override
-    public boolean isEmpty(Locale locale) {
-        return false;
-    }
-
-    @Override
-    public Locale getSelectedLocale() {
-        return null;
-    }
-
-    @Override
-    public void setSelectedLocale(Locale locale) {
-        //noop
-    }
-
-    @Override
     public String getBackendComponentName() {
         return BACKEND_COMPONENT_NAME;
     }

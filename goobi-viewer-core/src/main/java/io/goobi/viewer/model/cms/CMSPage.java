@@ -810,21 +810,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         return this.previewText.getTextOrDefault();
     }
 
-    private static CMSPageTemplate getTemplateById(String id) {
-        return CMSTemplateManager.getInstance().getTemplate(id);
-    }
-
-    /**
-     * <p>
-     * getTemplate.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
-     */
-    public CMSPageTemplate getTemplate() {
-        return getTemplateById(getTemplateId());
-    }
-
     /**
      * Gets the pagination number for this page's main list if it contains one
      *
@@ -1402,15 +1387,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         return this.title.isComplete(locale, defaultLocale, true) &&
                 this.previewText.isComplete(locale, defaultLocale, false) &&
                 this.menuTitle.isComplete(locale, defaultLocale, false) &&
-                this.cmsComponents.stream().flatMap(comp -> comp.getContentItems().stream())
-                .allMatch(content -> !content.isComplete(locale));
+                this.cmsComponents.stream().flatMap(comp -> comp.getTranslatableContentItems().stream())
+                .allMatch(content -> !content.getText().isComplete(locale, defaultLocale, true)); //TODO: get actual value for required
     }
     
     
 
     @Override
     public boolean isValid(Locale locale) {
-        return 
+        return true; //TODO implement
     }
 
     @Override

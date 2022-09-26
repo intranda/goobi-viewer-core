@@ -46,7 +46,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_htmltext")
-public class CMSHtmlText extends CMSContent {
+public class CMSHtmlText extends CMSContent implements TranslatableCMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "MEDIUMTEXT";
     
