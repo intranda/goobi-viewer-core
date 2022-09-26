@@ -2712,7 +2712,7 @@ this.initHitsLayer = function(map) {
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
 		if(f.properties && f.properties.link) {
-			$(this.opts.search.loader).show();
+			$(this.opts.search?.loader).show();
 			window.location.assign(f.properties.link);
 		}
 	})
