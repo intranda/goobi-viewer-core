@@ -44,7 +44,7 @@
 			           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 			           		popoverOnHover: #{cc.attrs.popoverOnHover},
 			           		clusterMarkers: #{cc.attrs.clusterMarkers},
-			           		markerIcon: #{cc.attrs.geoMap.markerAsJSON},
+			           		markerIcon: (icon => icon)(#{cc.attrs.geoMap.markerAsJSON}),
 			            }
 		            },
 		            search: {
