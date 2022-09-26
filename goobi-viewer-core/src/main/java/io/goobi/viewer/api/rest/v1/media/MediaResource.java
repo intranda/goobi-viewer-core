@@ -124,7 +124,6 @@ public class MediaResource {
                 throw new PresentationException("Error accessing media resource", e);
             }
         } else {
-            logger.error("File '{}' not found.", file.toAbsolutePath());
             try {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             } catch (IOException e) {
