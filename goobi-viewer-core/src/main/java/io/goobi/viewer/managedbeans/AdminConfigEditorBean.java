@@ -486,12 +486,23 @@ public class AdminConfigEditorBean implements Serializable {
                     }
                 }
                 backupFiles = backupFolder.listFiles();
+                if (backupFiles.length > 1) {
+                    Arrays.sort(backupFiles, (a, b) -> {
+                        try {
+                            return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
+                        } catch (IOException e) {
+                            logger.error(e.getMessage());
+                            return 0;
+                        }
+                    }); // last modified comes on top
+                }
             }
 
             backupNames = new String[backupFiles.length];
             for (int i = 0; i < length; ++i) {
                 backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
                 backupRecords.add(new BackupRecord(backupNames[i], i));
+                logger.debug("Backup file: {}", backupFiles[i].getName());
             }
         } else {
             backupFiles = null;
