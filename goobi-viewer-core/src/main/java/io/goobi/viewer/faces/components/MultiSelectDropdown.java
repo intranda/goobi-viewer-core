@@ -59,9 +59,8 @@ public class MultiSelectDropdown extends UINamingContainer {
         List<Object> options = (List<Object>)getValueExpression("items").getValue(context.getELContext());
         Map<Object, Boolean> valueMap = options.stream().collect(Collectors.toMap(Function.identity(), o -> values.contains(getValue(o))));
         this.setValueMap(valueMap);
+        super.encodeBegin(context);
     }
-
-
 
     public Map<Object, Boolean> getValueMap() {
         return (Map<Object, Boolean>) getStateHelper().eval(PropertyKeys.valueMap, Collections.emptyMap());

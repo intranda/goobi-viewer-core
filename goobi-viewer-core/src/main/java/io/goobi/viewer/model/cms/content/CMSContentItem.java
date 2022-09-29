@@ -127,6 +127,10 @@ public class CMSContentItem {
         return componentId.hashCode();
     }
     
+    public boolean isMandatory() {
+        return this.required;
+    }
+
     /**
      * Two CMSContentItems are equal if their {@link #componentId}s are equal
      */

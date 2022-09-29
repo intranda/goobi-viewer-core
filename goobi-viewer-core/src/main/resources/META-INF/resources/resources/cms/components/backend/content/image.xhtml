@@ -19,9 +19,10 @@
 			val="cc.attrs.contentItem.content" />
 		<c:set scope="request" var="image"
 			val="cc.attrs.contentItem.content.mediaItem" />
+		
 		<viewerForms:inputFormField 
-       label="#{msg[content.name]}" 
-       helpText="#{msg[content.description]">
+	       label="#{msg[cc.attrs.contentItem.name]}" 
+	       helpText="#{msg[cc.attrs.contentItem.description]">
        
         <!-- MEDIA FILE -->
         <ui:fragment rendered="#{image != null}">

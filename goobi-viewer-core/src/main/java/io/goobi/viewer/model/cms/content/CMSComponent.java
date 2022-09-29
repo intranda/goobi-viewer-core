@@ -164,6 +164,12 @@ public class CMSComponent {
                 .findAny().orElse(null);
     }
     
+    public List<CMSContentItem> getTranslatableContentItems() {
+        return this.contentItems.stream()
+                .filter(item -> item.getContent() instanceof TranslatableCMSContent)
+                .collect(Collectors.toList());
+    }
+    
     public JsfComponent getJsfComponent() {
         return jsfComponent;
     }

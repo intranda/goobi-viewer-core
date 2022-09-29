@@ -48,7 +48,7 @@ import jakarta.persistence.Table;
 @Table(name = "cms_content_htmltext")
 public class CMSHtmlText extends CMSContent implements TranslatableCMSContent {
 
-    private static final String BACKEND_COMPONENT_NAME = "MEDIUMTEXT";
+    private static final String BACKEND_COMPONENT_NAME = "htmltext";
     
     @Column(name = "text", nullable = true, columnDefinition = "LONGTEXT")
     @Convert(converter = TranslatedTextConverter.class)

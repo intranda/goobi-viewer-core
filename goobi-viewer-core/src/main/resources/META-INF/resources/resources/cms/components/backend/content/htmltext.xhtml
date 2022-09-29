@@ -15,11 +15,11 @@
 
 
     <composite:implementation>
-		<c:set scope="request" var="content"
-			val="cc.attrs.contentItem.content" />
+
 		<viewerForms:htmlInputField 
-       label="#{msg[content.name]}" 
-       value="#{content.text}"
-       helpText="#{msg[content.description]"/>
+       label="#{msg[cc.attrs.contentItem.label]}" 
+       value="#{cc.attrs.contentItem.content.text}"
+       helpText="#{msg[cc.attrs.contentItem.description]"/>
     </composite:implementation>
+    
 </ui:composition>

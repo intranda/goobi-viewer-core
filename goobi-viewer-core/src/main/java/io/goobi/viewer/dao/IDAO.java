@@ -48,7 +48,6 @@ import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
@@ -1407,8 +1406,6 @@ public interface IDAO {
 
     public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
 
-    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException;
-
     /**
      * <p>
      * getAllCMSPages.
@@ -1657,16 +1654,6 @@ public interface IDAO {
      */
     public boolean deleteCMSMediaItem(CMSMediaItem item) throws DAOException;
 
-    /**
-     * <p>
-     * getMediaOwners.
-     * </p>
-     *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<CMSPage> getMediaOwners(CMSMediaItem item) throws DAOException;
 
     /**
      * Get a list of all {@link CMSMediaItem}s which contain the given category

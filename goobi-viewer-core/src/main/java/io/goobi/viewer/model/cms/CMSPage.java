@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.model.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -30,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -53,21 +50,18 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.content.CMSComponent;
 import io.goobi.viewer.model.cms.content.CMSContent;
 import io.goobi.viewer.model.cms.content.CMSHtmlText;
-import io.goobi.viewer.model.cms.content.CMSText;
 import io.goobi.viewer.model.cms.content.CMSImage;
 import io.goobi.viewer.model.cms.content.CMSText;
 import io.goobi.viewer.model.cms.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.content.TranslatableCMSContent;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
@@ -76,7 +70,6 @@ import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
-import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
@@ -892,52 +885,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         this.staticPageName = staticPageName;
     }
 
-    /**
-     * <p>
-     * getTileGridUrl.
-     * </p>
-     *
-     * @param itemId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
-     */
-    public String getTileGridUrl(CMSContentItem item) throws IllegalRequestException {
-        if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
-
-            String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
-
-            String url = DataManager.getInstance()
-                    .getRestApiManager()
-                    .getDataApiManager()
-                    .map(urls -> urls.path(CMS_MEDIA)
-                            .query("tags", tags)
-                            .query("max", item.getNumberOfTiles())
-                            .query("prioritySlots", item.getNumberOfImportantTiles())
-                            .query("random", "true")
-                            .build())
-                    .orElse(getLegacyTileGridUrl(item));
-
-            return url;
-        }
-        throw new IllegalRequestException("Content item with id '" + item.getId() + "' is no tile grid item");
-    }
-
-    /**
-     * @return
-     */
-    private static String getLegacyTileGridUrl(CMSContentItem item) {
-        StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-        sb.append("/rest/tilegrid/")
-                .append(CmsBean.getCurrentLocale().getLanguage())
-                .append("/")
-                .append(item.getNumberOfTiles())
-                .append("/")
-                .append(item.getNumberOfImportantTiles())
-                .append("/")
-                .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("$")))
-                .append("/");
-        return sb.toString();
-    }
 
     /**
      * <p>
@@ -1387,8 +1334,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         return this.title.isComplete(locale, defaultLocale, true) &&
                 this.previewText.isComplete(locale, defaultLocale, false) &&
                 this.menuTitle.isComplete(locale, defaultLocale, false) &&
-                this.cmsComponents.stream().flatMap(comp -> comp.getTranslatableContentItems().stream())
-                .allMatch(content -> !content.getText().isComplete(locale, defaultLocale, true)); //TODO: get actual value for required
+                this.cmsComponents.stream()
+                .map(this::getAsCMSComponent)
+                .flatMap(comp -> comp.getTranslatableContentItems().stream())
+                .allMatch(content -> !((TranslatableCMSContent)content.getContent()).getText().isComplete(locale, defaultLocale, content.isRequired()));
     }
     
     

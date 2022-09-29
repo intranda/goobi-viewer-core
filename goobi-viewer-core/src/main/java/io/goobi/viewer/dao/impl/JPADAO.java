@@ -39,21 +39,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.FlushModeType;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.NonUniqueResultException;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.Query;
-import jakarta.persistence.RollbackException;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.slf4j.Logger;
@@ -72,18 +57,19 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
 import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.CMSRecordNote;
 import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.content.CMSComponent;
+import io.goobi.viewer.model.cms.content.CMSContent;
+import io.goobi.viewer.model.cms.content.CMSContentItem;
+import io.goobi.viewer.model.cms.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
@@ -110,6 +96,20 @@ import io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 /**
  * <p>
@@ -3052,29 +3052,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     * @throws DAOException
-     * @see io.goobi.viewer.dao.IDAO#saveCMSTemplateEnabledStatuses(java.util.List)
-     * @should update rows correctly
-     */
-    @Override
-    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException {
-        if (templates == null) {
-            return 0;
-        }
-
-        int count = 0;
-        for (CMSPageTemplate template : templates) {
-            if (template.getEnabled().getId() != null) {
-                updateCMSPageTemplateEnabled(template.getEnabled());
-            } else {
-                addCMSPageTemplateEnabled(template.getEnabled());
-            }
-            count++;
-        }
-
-        return count;
-    }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
@@ -3575,40 +3552,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public List<CMSPage> getMediaOwners(CMSMediaItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            List<CMSPage> ownerList = new ArrayList<>();
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
-                q.setParameter("media", item);
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint("jakarta.persistence.cache.storeMode", "REFRESH");
-                for (Object o : q.getResultList()) {
-                    if (o instanceof CMSContentItem) {
-                        try {
-                            CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion().getOwnerPage();
-                            if (!ownerList.contains(page)) {
-                                ownerList.add(page);
-                            }
-                        } catch (NullPointerException e) {
-                            //
-                        }
-                    }
-                }
-                return ownerList;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms pages. Returning empty list");
-                return new ArrayList<>();
-            } finally {
-                close(em);
-            }
-        }
-    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
@@ -5636,9 +5579,8 @@ public class JPADAO implements IDAO {
         try {
 
             Query qItems = em.createQuery(
-                    "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
-            qItems.setParameter("map", map);
-            List<CMSContentItem> itemList = qItems.getResultList();
+                    "SELECT item FROM CMSGeomap item");
+            List<CMSContent> itemList = qItems.getResultList();
 
             Query qWidgets = em.createQuery(
                     "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
@@ -5646,8 +5588,8 @@ public class JPADAO implements IDAO {
             List<CMSSidebarElement> widgetList = qWidgets.getResultList();
 
             Stream<CMSPage> itemPages = itemList.stream()
-                    .map(CMSContentItem::getOwnerPageLanguageVersion)
-                    .map(CMSPageLanguageVersion::getOwnerPage);
+                    .map(CMSContent::getOwningComponent)
+                    .map(PersistentCMSComponent::getOwnerPage);
 
             Stream<CMSPage> widgetPages = widgetList.stream()
                     .map(CMSSidebarElement::getOwnerPage);
@@ -6053,14 +5995,12 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
 
-            Query qItems = em.createQuery(
-                    "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
-            qItems.setParameter("slider", slider);
-            List<CMSContentItem> itemList = qItems.getResultList();
+            Query qItems = em.createQuery("SELECT item FROM CMSSliderContent item");
+            List<CMSContent> itemList = qItems.getResultList();
 
             List<CMSPage> pageList = itemList.stream()
-                    .map(CMSContentItem::getOwnerPageLanguageVersion)
-                    .map(CMSPageLanguageVersion::getOwnerPage)
+                    .map(CMSContent::getOwningComponent)
+                    .map(PersistentCMSComponent::getOwnerPage)
                     .distinct()
                     .collect(Collectors.toList());
 

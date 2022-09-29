@@ -65,8 +65,12 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSContentItem;
+import io.goobi.viewer.model.cms.CMSMediaHolder;
+import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.content.CMSContent;
+import io.goobi.viewer.model.cms.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.content.TranslatableCMSContent;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -396,62 +400,43 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         SortedMap<CMSPage, List<String>> hitPages = new TreeMap<>();
-        try {
             // Collect relevant texts
             for (CMSPage page : cmsPages) {
-                if (page.getDefaultLanguage() == null) {
-                    continue;
+                List<String> texts = new ArrayList<>();
+                for (PersistentCMSComponent component : page.getCmsComponents()) {
+                    for (CMSContent content : component.getContentItems()) {
+                        if(content instanceof TranslatableCMSContent) {
+                            TranslatableCMSContent trCont = (TranslatableCMSContent)content;
+                            for (Locale locale : trCont.getText().getLocales()) {
+                                texts.add(trCont.getText().getText(locale));
+                            }
+                        } else if(content instanceof CMSMediaHolder) {
+                            CMSMediaItem media = ((CMSMediaHolder)content).getMediaItem();
+                            if(media != null && media.isHasExportableText()) {
+                                try {                                    
+                                    texts.add(CmsMediaBean.getMediaFileAsString(media));
+                                } catch (ViewerConfigurationException e) {
+                                    logger.error(e.getMessage(), e);
+                                }
+                            }
+                        }
+                    }
                 }
-
-                // Iterate over all default and global language version items
-                List<CMSContentItem> items = page.getDefaultLanguage().getContentItems();
-                items.addAll(page.getGlobalContentItems());
-                if (items.isEmpty()) {
-                    continue;
-                }
-                for (CMSContentItem item : items) {
-                    if (item.getType() == null) {
-                        continue;
-                    }
-                    String value = null;
-                    switch (item.getType()) {
-                        case HTML:
-                        case TEXT:
-                            if (StringUtils.isEmpty(item.getHtmlFragment())) {
-                                continue;
-                            }
-                            value = item.getHtmlFragment();
-                            break;
-                        case MEDIA:
-                            if (item.getMediaItem() == null || !item.getMediaItem().isHasExportableText()) {
-                                continue;
-                            }
-                            try {
-                                value = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                            } catch (ViewerConfigurationException e) {
-                                logger.error(e.getMessage(), e);
-                            }
-                            break;
-                        default:
-                            continue;
-                    }
-                    if (StringUtils.isEmpty(value)) {
-                        continue;
-                    }
-
-                    value = Jsoup.parse(value).text();
+                List<String> truncatedStrings = texts.stream()
+                .filter(StringUtils::isNotBlank)
+                .map(s -> {
+                    String value = Jsoup.parse(s).text();
                     String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.CMS_TEXT_ALL));
                     if (!highlightedValue.equals(value)) {
-                        List<String> truncatedStrings = hitPages.get(page);
-                        if (truncatedStrings == null) {
-                            truncatedStrings = new ArrayList<>();
-                            hitPages.put(page, truncatedStrings);
-                        }
-                        truncatedStrings.addAll(SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
-                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true, proximitySearchDistance));
-
+                        return SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
+                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true, proximitySearchDistance);
+                    } else {                        
+                        return new ArrayList<String>();
                     }
-                }
+                })
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+                hitPages.put(page, truncatedStrings);
             }
 
             // Add hits (one for each page)
@@ -476,9 +461,6 @@ public class SearchHit implements Comparable<SearchHit> {
                     logger.trace("Added {} CMS page child hits", count);
                 }
             }
-        } catch (CmsElementNotFoundException e) {
-            logger.error(e.getMessage(), e);
-        }
     }
 
     /**

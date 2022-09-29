@@ -229,23 +229,6 @@ public class CmsMediaBean implements Serializable {
         return item;
     }
 
-    /**
-     * <p>
-     * getMediaOwnerPages.
-     * </p>
-     *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<CMSPage> getMediaOwnerPages(CMSMediaItem item) throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
-        List<CMSPage> owners = new ArrayList<>();
-        if (dao != null) {
-            owners = dao.getMediaOwners(item);
-        }
-        return owners;
-    }
 
     /**
      * <p>

@@ -76,7 +76,6 @@ public final class CMSTemplateManager {
 
     private static CMSTemplateManager instance;
 
-    private Map<String, CMSPageTemplate> templates = new HashMap<>();;
 
     //    private String relativeTemplateBasePath;
     //    private String absoluteTemplateBasePath;
@@ -316,93 +315,7 @@ public final class CMSTemplateManager {
         return coreFolderUrl;
     }
 
-    private static Map<String, CMSPageTemplate> loadTemplates(Path path) throws IllegalArgumentException {
-        Map<String, CMSPageTemplate> templates = new LinkedHashMap<>();
-        List<CMSPageTemplate> templateList = null;
-        try {
-            try (Stream<java.nio.file.Path> templateFiles = Files.list(path)) {
-                templateList = templateFiles.filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
-                        .sorted()
-                        .map(templatePath -> CMSPageTemplate.loadFromXML(templatePath))
-                        .filter(template -> template != null)
-                        .collect(Collectors.toList());
-            }
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Error reading files from " + path, e);
-        }
 
-        if (templateList == null) {
-            logger.warn("No cms folder found in " + path + ". This theme is probably not configured to use cms");
-            return templates;
-        }
-        // logger.trace(templateFolder.getAbsolutePath());
-        for (CMSPageTemplate template : templateList) {
-            if (templates.get(template.getId()) != null) {
-                throw new IllegalArgumentException("Found two templates with id " + template.getId());
-            }
-            templates.put(template.getId(), template);
-        }
-        return templates;
-    }
-
-    /**
-     * <p>
-     * updateTemplates.
-     * </p>
-     *
-     * @param corePath a {@link java.util.Optional} object.
-     * @param themePath a {@link java.util.Optional} object.
-     */
-    public synchronized void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
-        templates = new HashMap<>();
-        //        logger.trace("themePath: {}", themePath.orElse(Paths.get("none")).toAbsolutePath().toString());
-        try {
-            //load theme templates
-            if (themePath.isPresent()) {
-                logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
-            }
-            themePath.map(path -> loadTemplates(path))
-                    .ifPresent(map -> map.entrySet()
-                            .stream()
-                            .peek(entry -> entry.getValue().setThemeTemplate(true))
-                            .forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
-            int size = templates.size();
-            logger.debug("Loaded {} THEME CMS templates", size);
-
-            //load core templates
-            if (corePath.isPresent()) {
-                logger.trace("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath().toString());
-            }
-            corePath.map(path -> loadTemplates(path))
-                    .ifPresent(map -> map.entrySet().stream().forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
-            logger.debug("Loaded {} CORE CMS templates", templates.size() - size);
-        } catch (IllegalArgumentException e) {
-            logger.error("Failed to update cms templates: " + e.toString(), e);
-        }
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>templates</code>.
-     * </p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    public Collection<CMSPageTemplate> getTemplates() {
-        return templates.values();
-    }
-
-    /**
-     * <p>
-     * getTemplate.
-     * </p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
-     */
-    public CMSPageTemplate getTemplate(String id) {
-        return templates.get(id);
-    }
 
     private Optional<String> getCoreIconFolderUrl() {
         return getCoreTemplateFolderUrl().map(url -> url + TEMPLATE_ICONS_PATH);
@@ -497,68 +410,5 @@ public final class CMSTemplateManager {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
     }
 
-    /**
-     * <p>
-     * getTemplateViewUrl.
-     * </p>
-     *
-     * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getTemplateViewUrl(CMSPageTemplate template) {
-        if (template != null) {
-            Optional<String> folderUrl = template.isThemeTemplate() ? getThemeViewFolderUrl() : getCoreViewFolderUrl();
-            Optional<String> viewUrl = folderUrl.map(url -> url + "/" + template.getHtmlFileName());
-            return viewUrl.orElse("");
-        }
-        return "";
-    }
-
-    /**
-     * <p>
-     * getTemplateViewUrl.
-     * </p>
-     *
-     * @param templateId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getTemplateViewUrl(String templateId) {
-        CMSPageTemplate template = getTemplate(templateId);
-        return getTemplateViewUrl(template);
-    }
-
-    /**
-     * <p>
-     * getTemplateIconUrl.
-     * </p>
-     *
-     * @param templateId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getTemplateIconUrl(String templateId) {
-        if (StringUtils.isNotBlank(templateId)) {
-            CMSPageTemplate template = getTemplate(templateId);
-            return getTemplateIconUrl(template);
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>
-     * getTemplateIconUrl.
-     * </p>
-     *
-     * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getTemplateIconUrl(CMSPageTemplate template) {
-        if (template != null) {
-            Optional<String> folderUrl = template.isThemeTemplate() ? getThemeIconFolderUrl() : getCoreIconFolderUrl();
-            Optional<String> viewUrl = folderUrl.map(url -> url + "/" + template.getIconFileName());
-            return viewUrl.orElse("");
-        }
-        return "";
-    }
 
 }
