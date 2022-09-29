@@ -465,14 +465,7 @@ public class AdminConfigEditorBean implements Serializable {
         if (length > 0) {
             // Sort by date (descending)
             if (length > 1) {
-                Arrays.sort(backupFiles, (a, b) -> {
-                    try {
-                        return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
-                    } catch (IOException e) {
-                        logger.error(e.getMessage());
-                        return 0;
-                    }
-                }); // last modified comes on top
+                sortFilesByDateModified(backupFiles);
             }
 
             // Trim old backup files, if so configured
@@ -487,14 +480,7 @@ public class AdminConfigEditorBean implements Serializable {
                 }
                 backupFiles = backupFolder.listFiles();
                 if (backupFiles.length > 1) {
-                    Arrays.sort(backupFiles, (a, b) -> {
-                        try {
-                            return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
-                        } catch (IOException e) {
-                            logger.error(e.getMessage());
-                            return 0;
-                        }
-                    }); // last modified comes on top
+                    sortFilesByDateModified(backupFiles);
                 }
             }
 
@@ -502,7 +488,7 @@ public class AdminConfigEditorBean implements Serializable {
             for (int i = 0; i < length; ++i) {
                 backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
                 backupRecords.add(new BackupRecord(backupNames[i], i));
-                logger.debug("Backup file: {}", backupFiles[i].getName());
+                logger.trace("Backup file: {}", backupFiles[i].getName());
             }
         } else {
             backupFiles = null;
@@ -510,6 +496,25 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         backupRecordsModel = new ListDataModel<>(backupRecords);
+    }
+
+    /**
+     * 
+     * @param backupFiles
+     */
+    static void sortFilesByDateModified(File[] backupFiles) {
+        if (backupFiles == null || backupFiles.length == 0) {
+            return;
+        }
+
+        Arrays.sort(backupFiles, (a, b) -> {
+            try {
+                return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                return 0;
+            }
+        }); // last modified comes on top
     }
 
     /**
