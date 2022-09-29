@@ -2260,7 +2260,7 @@ public final class SearchHelper {
                     logger.trace("pair: {}", pair);
                     String[] pairSplit = pair.split(":");
                     if (pairSplit.length == 2) {
-                        if(pairSplit[1].contains(" AND ")) {
+                        if (pairSplit[1].contains(" AND ")) {
                             operator = SearchItemOperator.AND;
                         } else if (pairSplit[1].contains(" OR ")) {
                             operator = SearchItemOperator.OR;
@@ -3193,26 +3193,28 @@ public final class SearchHelper {
      *
      * @param sortString a {@link java.lang.String} object.
      * @param navigationHelper a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
-     * @should parse string correctly
      * @return a {@link java.util.List} object.
+     * @should parse string correctly
      */
     public static List<StringPair> parseSortString(String sortString, NavigationHelper navigationHelper) {
+        if (StringUtils.isEmpty(sortString)) {
+            return Collections.emptyList();
+        }
+        
         List<StringPair> ret = new ArrayList<>();
-        if (StringUtils.isNotEmpty(sortString)) {
-            String[] sortStringSplit = sortString.split(";");
-            if (sortStringSplit.length > 0) {
-                for (String field : sortStringSplit) {
-                    ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
-                    logger.trace("Added sort field: {}", field);
-                    // add translated sort fields
-                    if (navigationHelper != null && field.startsWith("SORT_")) {
-                        Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
-                        StreamSupport.stream(locales.spliterator(), false)
-                                .sorted(new LocaleComparator(BeanUtils.getLocale()))
-                                .map(locale -> field + SolrConstants._LANG_ + locale.getLanguage().toUpperCase())
-                                .peek(language -> logger.trace("Adding sort field: {}", language))
-                                .forEach(language -> ret.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
-                    }
+        String[] sortStringSplit = sortString.split(";");
+        if (sortStringSplit.length > 0) {
+            for (String field : sortStringSplit) {
+                ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
+                logger.trace("Added sort field: {}", field);
+                // add translated sort fields
+                if (navigationHelper != null && field.startsWith("SORT_")) {
+                    Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
+                    StreamSupport.stream(locales.spliterator(), false)
+                            .sorted(new LocaleComparator(BeanUtils.getLocale()))
+                            .map(locale -> field + SolrConstants._LANG_ + locale.getLanguage().toUpperCase())
+                            .peek(language -> logger.trace("Adding sort field: {}", language))
+                            .forEach(language -> ret.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
                 }
             }
         }
