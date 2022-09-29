@@ -295,7 +295,7 @@ public class AdminConfigEditorBean implements Serializable {
      */
     public static void unlockFile(Path file, String sessionId) {
         logger.trace("Unlocking file {} for session {}", file, sessionId);
-        if(file != null) {            
+        if (file != null) {
             fileLocks.unlockFile(file, sessionId);
         }
     }
@@ -465,7 +465,14 @@ public class AdminConfigEditorBean implements Serializable {
         if (length > 0) {
             // Sort by date (descending)
             if (length > 1) {
-                Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
+                Arrays.sort(backupFiles, (a, b) -> {
+                    try {
+                        return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                        return 0;
+                    }
+                }); // last modified comes on top
             }
 
             // Trim old backup files, if so configured
