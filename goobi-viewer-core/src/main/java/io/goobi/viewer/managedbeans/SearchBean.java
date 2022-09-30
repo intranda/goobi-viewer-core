@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -219,15 +220,6 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Required setter for ManagedProperty injection TODO Is it, though?
-     *
-     * @param navigationHelper the navigationHelper to set
-     */
-    public void setNavigationHelper(NavigationHelper navigationHelper) {
-        this.navigationHelper = navigationHelper;
-    }
-
-    /**
      * <p>
      * clearSearchItemLists.
      * </p>
@@ -354,12 +346,6 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
-
-        // Search result URL is not yet available here, do not set breadcrumb
-        //        if (breadcrumbBean != null) {
-        //            breadcrumbBean.updateBreadcrumbsForSearchHits(StringTools.decodeUrl(facets.getCurrentFacetString()));
-        //        }
-
         resetSearchResults();
         if (resetParameters) {
             resetSearchParameters();
@@ -503,9 +489,6 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     break;
                 case 2:
-                    resetSimpleSearchParameters();
-                    resetAdvancedSearchParameters(1, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
-                    break;
                 case 3:
                     resetSimpleSearchParameters();
                     resetAdvancedSearchParameters(1, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
@@ -849,7 +832,6 @@ public class SearchBean implements SearchInterface, Serializable {
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
-        
 
         // Create SearchQueryGroup from query
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
@@ -866,7 +848,6 @@ public class SearchBean implements SearchInterface, Serializable {
                                 navigationHelper != null ? navigationHelper.getLocale() : null));
             }
         }
-
 
         //remember the current page to return to hit list in widget_searchResultNavigation
         setLastUsedSearchPage();
@@ -929,8 +910,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
         if (this.currentSearch != null) {
-            String query = this.currentSearch.generateFinalSolrQuery(null);
-            return query;
+            return this.currentSearch.generateFinalSolrQuery(null);
         }
 
         return new Search().generateFinalSolrQuery(null);
@@ -1026,10 +1006,7 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public List<String> autocomplete(String suggest) throws IndexUnreachableException {
         logger.trace("autocomplete: {}", suggest);
-        List<String> result = SearchHelper.searchAutosuggestion(suggest, facets.getCurrentFacets());
-        //Collections.sort(result);
-
-        return result;
+        return SearchHelper.searchAutosuggestion(suggest, facets.getCurrentFacets());
     }
 
     /** {@inheritDoc} */
@@ -1131,9 +1108,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         try {
             inSearchString = URLDecoder.decode(inSearchString, URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            logger.warn(e.getMessage());
-        } catch (IllegalArgumentException e) {
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
             logger.warn(e.getMessage());
         }
         if ("-".equals(inSearchString)) {
@@ -1262,8 +1237,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         if (!preparedTerms.contains(term)) {
                             preparedTerms.add(term);
                         }
-                        for (String field : searchTerms.keySet()) {
-                            searchTerms.get(field).add(unescapedTerm);
+                        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
+                            entry.getValue().add(unescapedTerm);
                         }
                     } else if (i > 0 && i < termsSplit.length - 1) {
                         // Two terms separated by OR: remove previous term and add it together with the next term as a group
@@ -1274,8 +1249,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         nextTerm = nextTerm.replace("\\*", "*"); // unescape falsely escaped truncation
                         preparedTerms.remove(previousIndex);
                         preparedTerms.add(prevTerm + " OR " + nextTerm);
-                        for (String field : searchTerms.keySet()) {
-                            searchTerms.get(field).add(unescapedNextTerm);
+                        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
+                            entry.getValue().add(unescapedNextTerm);
                         }
                         i++;
                     }
@@ -1379,9 +1354,7 @@ public class SearchBean implements SearchInterface, Serializable {
             if (StringTools.isStringUrlEncoded(searchStringInternal, URL_ENCODING)) {
                 searchStringInternal = URLDecoder.decode(searchStringInternal, URL_ENCODING);
             }
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        } catch (IllegalArgumentException e) {
+        } catch (UnsupportedEncodingException | IllegalArgumentException e) {
             logger.error(e.getMessage());
         }
         // Then unescape custom sequences
@@ -1449,7 +1422,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         if (!"-".equals(sortString)) {
-            if (SolrConstants.SORT_RANDOM.equals(sortString.toUpperCase())) {
+            if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(sortString)) {
                 sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
             }
             setSearchSortingOption(new SearchSortingOption(sortString));
@@ -2061,7 +2034,6 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws IllegalRequestException
      */
     public List<StringPair> getAllCollections() throws IllegalRequestException {
-        //        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         try {
             if (navigationHelper != null) {
                 return getAdvancedSearchSelectItems(SolrConstants.DC, navigationHelper.getLocale().getLanguage(), true);
@@ -2461,13 +2433,10 @@ public class SearchBean implements SearchInterface, Serializable {
                             + LocalDateTime.now().format(DateTools.formatterISO8601DateTime)
                             + ".xlsx\"");
             return wb;
-        } catch (IndexUnreachableException e) {
-            logger.error(e.getMessage(), e);
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (PresentationException e) {
+        } catch (IndexUnreachableException | DAOException | PresentationException e) {
             logger.error(e.getMessage(), e);
         }
+
         return null;
     }
 
@@ -2520,13 +2489,6 @@ public class SearchBean implements SearchInterface, Serializable {
         return advancedSearchQueryInfo;
     }
 
-    //    /**
-    //     * @return
-    //     */
-    //    public List<StringPair> getSortFields() {
-    //        return this.sortFields;
-    //    }
-
     /** {@inheritDoc} */
     @Override
     public SearchFacets getFacets() {
@@ -2575,12 +2537,11 @@ public class SearchBean implements SearchInterface, Serializable {
         if (navigationHelper == null) {
             return null;
         }
-        switch (activeSearchType) {
-            case SearchHelper.SEARCH_TYPE_ADVANCED:
-                return navigationHelper.getAdvancedSearchUrl();
-            default:
-                return navigationHelper.getSearchUrl();
+
+        if (SearchHelper.SEARCH_TYPE_ADVANCED == activeSearchType) {
+            return navigationHelper.getAdvancedSearchUrl();
         }
+        return navigationHelper.getSearchUrl();
     }
 
     /** {@inheritDoc} */
@@ -2605,20 +2566,17 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public StructElement getStructElement(String pi) throws IndexUnreachableException, PresentationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
-        return struct;
+        return new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
     }
 
     /** {@inheritDoc} */
     @Override
     public String getCurrentSearchUrlRoot() {
-        switch (activeSearchType) {
-            case 1:
-                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/searchadvanced";
-            default:
-                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search";
+        if (SearchHelper.SEARCH_TYPE_ADVANCED == activeSearchType) {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/searchadvanced";
         }
 
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search";
     }
 
     /**
@@ -2692,6 +2650,10 @@ public class SearchBean implements SearchInterface, Serializable {
         return basePath;
     }
 
+    /**
+     * 
+     * @param url
+     */
     private static void redirectToURL(String url) {
         final FacesContext context = FacesContext.getCurrentInstance();
         try {
@@ -2699,23 +2661,6 @@ public class SearchBean implements SearchInterface, Serializable {
         } catch (IOException e) {
             logger.error("Failed to redirect to url", e);
         }
-    }
-
-    /**
-     *
-     * @param field
-     * @param subQuery
-     * @param resultLimit
-     * @param reverseOrder
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @deprecated Use SearchBean.getStaticFacets(String, String, Integer, Boolean)
-     */
-    @Deprecated
-    public List<IFacetItem> getStaticDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
-            throws PresentationException, IndexUnreachableException {
-        return getStaticFacets(field, subQuery, resultLimit, reverseOrder);
     }
 
     /**
@@ -2858,14 +2803,13 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getBookmarkListName() {
-        String value = this.advancedQueryGroups.stream()
+        return this.advancedQueryGroups.stream()
                 .flatMap(group -> group.getQueryItems().stream())
                 .filter(item -> item.getField() != null && item.getField().equals(SolrConstants.BOOKMARKS))
                 .filter(item -> item.getValue() != null && !item.getValue().startsWith("KEY::"))
                 .findFirst()
                 .map(SearchQueryItem::getValue)
                 .orElse("");
-        return value;
     }
 
     /**
@@ -2901,6 +2845,12 @@ public class SearchBean implements SearchInterface, Serializable {
         return value.replace("KEY::", "");
     }
 
+    /**
+     * 
+     * @param queryField
+     * @param queryValue
+     * @return
+     */
     public String searchInRecord(String queryField, String queryValue) {
 
         this.getAdvancedQueryGroups().get(0).getQueryItems().get(0).setField(queryField);
@@ -2915,22 +2865,28 @@ public class SearchBean implements SearchInterface, Serializable {
         return this.searchAdvanced();
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isSolrIndexReachable() {
         return DataManager.getInstance().getSearchIndex().pingSolrIndex();
     }
 
+    /*
+     * 
+     */
     public boolean hasGeoLocationHits() {
         return this.currentSearch != null && !this.currentSearch.isHasGeoLocationHits();
     }
 
     public List<String> getHitsLocations() {
         if (this.currentSearch != null) {
-            List<String> locations = this.currentSearch.getHitsLocationList()
+            return this.currentSearch.getHitsLocationList()
                     .stream()
                     //                    .distinct()
                     .map(l -> l.getGeoJson())
                     .collect(Collectors.toList());
-            return locations;
         }
 
         return Collections.emptyList();
@@ -2942,11 +2898,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return
      */
     public boolean isShowGeoFacetMap() {
-        if (currentSearch != null && facets != null && (currentSearch.isHasGeoLocationHits() || facets.getGeoFacetting().hasFeature())) {
-            return true;
-        }
-
-        return false;
+        return currentSearch != null && facets != null && (currentSearch.isHasGeoLocationHits() || facets.getGeoFacetting().hasFeature());
     }
 
     public GeoMap getHitsMap() {

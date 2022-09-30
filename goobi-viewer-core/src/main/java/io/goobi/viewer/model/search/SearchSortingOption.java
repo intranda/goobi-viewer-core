@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
@@ -31,9 +33,11 @@ import io.goobi.viewer.solr.SolrConstants;
  * @author florian
  *
  */
-public class SearchSortingOption {
+public class SearchSortingOption implements Serializable {
 
-    static final String RANDOM_SORT_FIELD_LABEL= "searchSortingDropdown_random";
+    private static final long serialVersionUID = -3945291938805123872L;
+
+    static final String RANDOM_SORT_FIELD_LABEL = "searchSortingDropdown_random";
     static final String RELEVANCE_SORT_FIELD_LABEL = "searchSortingDropdown_relevance";
 
     private final String field;
