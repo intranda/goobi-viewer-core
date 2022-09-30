@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
 /**
  * <p>
@@ -76,7 +77,6 @@ public final class CMSTemplateManager {
 
     private static CMSTemplateManager instance;
 
-
     //    private String relativeTemplateBasePath;
     //    private String absoluteTemplateBasePath;
 
@@ -87,9 +87,10 @@ public final class CMSTemplateManager {
     private Optional<String> themeTemplateFolderUrl = Optional.empty();
     private Optional<Path> coreFolderPath = Optional.empty();
     private Optional<Path> themeFolderPath = Optional.empty();
+    private Optional<Path> passedFileSystemPath = Optional.empty();
 
     private CMSPageContentManager contentManager = null;
-    
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -207,19 +208,23 @@ public final class CMSTemplateManager {
             logger.error(e.toString(), e);
         }
 
-        //updateTemplates(coreFolderPath, themeFolderPath);
+        logger.info("Creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null));
+        //Add the fileSystem passed as argument to the contentManager so unit tests can define their own template path
+        this.passedFileSystemPath = Optional.ofNullable(filesystemPath).map(Paths::get);
+        this.reloadContentManager();
+    }
+
+    public CMSPageContentManager getContentManager() {
+        return contentManager;
+    }
+
+    public void reloadContentManager() {
         try {
-            logger.info("Creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null));
-            //Add the fileSystem passed as argument to the contentManager so unit tests can define their own template path
-            Optional<Path> pathFromArguments = Optional.ofNullable(filesystemPath).map(Paths::get);
-            this.contentManager = new CMSPageContentManager(pathFromArguments.orElse(null), coreFolderPath.orElse(null), themeFolderPath.orElse(null));
+            this.contentManager =
+                    new CMSPageContentManager(passedFileSystemPath.orElse(null), coreFolderPath.orElse(null), themeFolderPath.orElse(null));
         } catch (IOException e) {
             logger.error("Error creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null), e);
         }
-    }
-    
-    public CMSPageContentManager getContentManager() {
-        return contentManager;
     }
 
     /**
@@ -315,8 +320,6 @@ public final class CMSTemplateManager {
         return coreFolderUrl;
     }
 
-
-
     private Optional<String> getCoreIconFolderUrl() {
         return getCoreTemplateFolderUrl().map(url -> url + TEMPLATE_ICONS_PATH);
     }
@@ -409,6 +412,5 @@ public final class CMSTemplateManager {
     public Optional<Path> getThemeIconFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
     }
-
 
 }

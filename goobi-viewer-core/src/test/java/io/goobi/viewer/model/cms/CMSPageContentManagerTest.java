@@ -31,8 +31,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import io.goobi.viewer.model.cms.content.CMSComponent;
-import io.goobi.viewer.model.cms.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
 public class CMSPageContentManagerTest {
 

@@ -23,8 +23,8 @@ package io.goobi.viewer.model.cms.widgets.embed;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.type.DefaultWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
@@ -53,6 +53,11 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
     public CMSSidebarElementDefault(WidgetContentType type, CMSPage owner) {
         super(type, owner);
     }
+    
+
+    public CMSSidebarElementDefault(WidgetContentType orig, CMSPageTemplate owner) {
+        super(orig, owner);
+    }
 
     /**
      * Cloning constructor with a CMSPage to set as owner
@@ -62,5 +67,10 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
     public CMSSidebarElementDefault(CMSSidebarElementDefault orig, CMSPage owner) {
         super(orig.getContentType(), owner);
     }
+
+    public CMSSidebarElementDefault(CMSSidebarElementDefault orig, CMSPageTemplate owner) {
+        super(orig.getContentType(), owner);
+    }
+
 
 }

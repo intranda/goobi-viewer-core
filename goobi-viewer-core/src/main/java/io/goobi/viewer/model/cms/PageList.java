@@ -36,6 +36,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.viewer.PageType;
 
@@ -264,7 +265,7 @@ public class PageList implements Iterable<String> {
      * </p>
      *
      * @param idString a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getPage(String idString) throws DAOException {

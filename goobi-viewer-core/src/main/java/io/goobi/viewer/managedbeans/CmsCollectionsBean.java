@@ -49,9 +49,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSCollectionTranslation;
-import io.goobi.viewer.model.cms.CMSCollectionTreeTab;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.CMSCollectionTranslation;
+import io.goobi.viewer.model.cms.collections.CMSCollectionTreeTab;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
@@ -495,7 +495,7 @@ public class CmsCollectionsBean implements Serializable {
      * deleteCollection.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteCollection(CMSCollection collection) throws DAOException {
@@ -509,7 +509,7 @@ public class CmsCollectionsBean implements Serializable {
      * editCollection.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a {@link java.lang.String} object.
      */
     public String editCollection(CMSCollection collection) {
@@ -525,7 +525,7 @@ public class CmsCollectionsBean implements Serializable {
      * </p>
      *
      * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getCurrentLabel(String language) {
         return getCurrentCollection().getLabelAsTranslation(language);
@@ -537,7 +537,7 @@ public class CmsCollectionsBean implements Serializable {
      * </p>
      *
      * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getCurrentDescription(String language) {
         return getCurrentCollection().getDescriptionAsTranslation(language);

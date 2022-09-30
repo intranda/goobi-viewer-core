@@ -43,7 +43,8 @@ import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.misc.NumberIterator;
@@ -78,8 +79,13 @@ public class CMSSidebarElement {
 
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
-    @JoinColumn(name = "owner_page_id", nullable = false)
+    @JoinColumn(name = "owner_page_id", nullable = true)
     private CMSPage ownerPage;
+    
+    /** Reference to the owning <code>CMSPageTemplate</code>. */
+    @ManyToOne
+    @JoinColumn(name = "owner_template_id", nullable = true)
+    private CMSPageTemplate ownerTemplate;
 
     @Column(name = "sort_order")
     private int order;
@@ -116,6 +122,15 @@ public class CMSSidebarElement {
         this(type);
         this.ownerPage = owner;
     }
+    
+    /**
+     * Default constructor for a certain type of widget and owning CMSPageTemplate
+     * @param type
+     */
+    public CMSSidebarElement(WidgetContentType type, CMSPageTemplate owner) {
+        this(type);
+        this.ownerTemplate = owner;
+    }
 
     /**
      * Clones the given sidebar element and assigns the given CMSPage as owner.
@@ -125,6 +140,26 @@ public class CMSSidebarElement {
      * @return
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPage owner) {
+        switch (orig.getClass().getSimpleName()) {
+            case "CMSSidebarElementDefault":
+                return new CMSSidebarElementDefault((CMSSidebarElementDefault) orig, owner);
+            case "CMSSidebarElementAutomatic":
+                return new CMSSidebarElementAutomatic((CMSSidebarElementAutomatic) orig, owner);
+            case "CMSSidebarElementCustom":
+                return new CMSSidebarElementCustom((CMSSidebarElementCustom) orig, owner);
+            default:
+                throw new IllegalArgumentException("Copying of sidebar element type " + orig.getClass() + " not implemented");
+        }
+    }
+    
+    /**
+     * Clones the given sidebar element and assigns the given CMSPage as owner.
+     * Depends on cloning constructors of subclasses
+     * @param orig
+     * @param owner
+     * @return
+     */
+    public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPageTemplate owner) {
         switch (orig.getClass().getSimpleName()) {
             case "CMSSidebarElementDefault":
                 return new CMSSidebarElementDefault((CMSSidebarElementDefault) orig, owner);
@@ -165,6 +200,14 @@ public class CMSSidebarElement {
      */
     public void setOwnerPage(CMSPage ownerPage) {
         this.ownerPage = ownerPage;
+    }
+    
+    public CMSPageTemplate getOwnerTemplate() {
+        return ownerTemplate;
+    }
+    
+    public void setOwnerTemplate(CMSPageTemplate ownerTemplate) {
+        this.ownerTemplate = ownerTemplate;
     }
 
     /**

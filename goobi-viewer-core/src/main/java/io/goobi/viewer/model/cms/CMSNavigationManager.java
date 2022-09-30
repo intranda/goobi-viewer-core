@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.PageValidityStatus;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
@@ -128,7 +130,7 @@ public class CMSNavigationManager {
         List<CMSPage> cmsPages = BeanUtils.getCmsBean().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
             // Valid pages with a menu title and no relation to a particular record
-            if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus()) && StringUtils.isNotBlank(cmsPage.getMenuTitle())
+            if (cmsPage != null && cmsPage.isPublished() && StringUtils.isNotBlank(cmsPage.getMenuTitle())
                     && StringUtils.isEmpty(cmsPage.getRelatedPI())) {
                 SelectableNavigationItem item = new SelectableNavigationItem(cmsPage);
                 addAvailableItem(item);

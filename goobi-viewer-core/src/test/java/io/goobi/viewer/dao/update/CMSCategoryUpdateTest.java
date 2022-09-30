@@ -34,8 +34,8 @@ import org.junit.Test;
 import io.goobi.viewer.dao.update.CMSCategoryUpdate;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  * @author florian

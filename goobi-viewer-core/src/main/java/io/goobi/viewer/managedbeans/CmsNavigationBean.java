@@ -46,8 +46,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSNavigationManager;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.solr.SolrTools;
 
 /**

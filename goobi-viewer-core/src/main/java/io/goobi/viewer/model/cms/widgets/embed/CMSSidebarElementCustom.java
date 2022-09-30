@@ -25,8 +25,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.translations.TranslatedText;
 
@@ -57,6 +57,13 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
         super(widget.getType(), owner);
         this.widget = widget;
     }
+    
+
+    public CMSSidebarElementCustom(CustomSidebarWidget widget, CMSPageTemplate owner) {
+        super(widget.getType(), owner);
+        this.widget = widget;
+    }
+    
     /**
      * Cloning constructor with a CMSPage to set as owner
      * @param orig
@@ -66,6 +73,12 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
         super(orig.getContentType(), owner);
         this.widget = orig.widget;
     }
+
+    public CMSSidebarElementCustom(CMSSidebarElementCustom orig, CMSPageTemplate owner) {
+        super(orig.getContentType(), owner);
+        this.widget = orig.widget;
+    }
+
 
     /**
      * Get the {@link CustomSidebarWidget} providing the data

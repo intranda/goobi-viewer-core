@@ -23,10 +23,10 @@ package io.goobi.viewer.dao.converter;
 
 import java.util.Optional;
 
-import io.goobi.viewer.model.cms.CMSPageContentManager;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
-import io.goobi.viewer.model.cms.content.CMSComponent;
-import io.goobi.viewer.model.cms.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import jakarta.persistence.AttributeConverter;
 
 public class CMSComponentConverter implements AttributeConverter<CMSComponent, PersistentCMSComponent> {

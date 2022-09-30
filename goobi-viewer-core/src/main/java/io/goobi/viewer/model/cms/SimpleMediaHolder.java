@@ -24,6 +24,8 @@ package io.goobi.viewer.model.cms;
 import java.util.Collections;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 public class SimpleMediaHolder implements CMSMediaHolder {
 

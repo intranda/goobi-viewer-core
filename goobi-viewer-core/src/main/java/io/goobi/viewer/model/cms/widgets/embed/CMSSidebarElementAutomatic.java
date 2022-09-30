@@ -25,8 +25,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -61,6 +61,12 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
         this.map = map;
     }
 
+
+    public CMSSidebarElementAutomatic(GeoMap map, CMSPageTemplate owner) {
+        super(AutomaticWidgetType.WIDGET_CMSGEOMAP, owner);
+        this.map = map;
+    }
+    
     /**
      * Cloning constructor assigning the given CMSPage as owner
      * @param orig
@@ -70,6 +76,12 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
         super(orig.getContentType(), owner);
         this.map = orig.map;
     }
+
+    public CMSSidebarElementAutomatic(CMSSidebarElementAutomatic orig, CMSPageTemplate owner) {
+        super(orig.getContentType(), owner);
+        this.map = orig.map;
+    }
+
 
     /**
      * The underlying {@link GeoMap}

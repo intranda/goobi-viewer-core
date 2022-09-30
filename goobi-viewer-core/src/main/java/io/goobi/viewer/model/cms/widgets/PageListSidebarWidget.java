@@ -30,8 +30,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 import io.goobi.viewer.dao.converter.NumberListConverter;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.PageList;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
 /**

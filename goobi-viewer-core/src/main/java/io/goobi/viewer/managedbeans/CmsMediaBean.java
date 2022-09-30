@@ -63,12 +63,12 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.TranslatedSelectable;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.security.user.User;
 
 /**
@@ -217,7 +217,7 @@ public class CmsMediaBean implements Serializable {
      * createMediaItem.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public CMSMediaItem createMediaItem() {
         CMSMediaItem item = new CMSMediaItem();
@@ -235,7 +235,7 @@ public class CmsMediaBean implements Serializable {
      * deleteMedia.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteMedia(CMSMediaItem item) throws DAOException {
@@ -387,7 +387,7 @@ public class CmsMediaBean implements Serializable {
      * getMediaUrl.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -401,7 +401,7 @@ public class CmsMediaBean implements Serializable {
      * getMediaUrl.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @param width a {@link java.lang.String} object.
      * @param height a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -462,7 +462,7 @@ public class CmsMediaBean implements Serializable {
      * getMediaFileAsString.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -492,7 +492,7 @@ public class CmsMediaBean implements Serializable {
      * getMediaPreviewUrl.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
      * @throws java.lang.NumberFormatException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -509,7 +509,7 @@ public class CmsMediaBean implements Serializable {
      * isImage.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
      */
     public boolean isImage(CMSMediaItem item) {
@@ -521,7 +521,7 @@ public class CmsMediaBean implements Serializable {
      * isVideo.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
      */
     public boolean isVideo(CMSMediaItem item) {
@@ -533,7 +533,7 @@ public class CmsMediaBean implements Serializable {
      * isAudio.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
      */
     public boolean isAudio(CMSMediaItem item) {
@@ -545,7 +545,7 @@ public class CmsMediaBean implements Serializable {
      * isText.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
      */
     public boolean isText(CMSMediaItem item) {
@@ -570,7 +570,7 @@ public class CmsMediaBean implements Serializable {
      * {@link io.goobi.viewer.model.security.user.User#hasPrivilegeForAllSubthemeDiscriminatorValues()} is false for the current user and none of the
      * given categories is selected, then don't change the media categories since doing so would break category restrictions
      *
-     * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param media a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @param categories a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -602,7 +602,7 @@ public class CmsMediaBean implements Serializable {
      * saveMedia.
      * </p>
      *
-     * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param media a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveMedia(CMSMediaItem media) throws DAOException {

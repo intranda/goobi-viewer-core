@@ -56,7 +56,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -833,7 +833,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem}, fit into a box of the default width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height
      *
      * @param item a {@link java.util.Optional} object.
      * @return a {@link java.lang.String} object.
@@ -844,9 +844,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem}, fit into a box of the default width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(CMSMediaItem item) {
@@ -855,7 +855,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem}, fit into a box of the given width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height
      *
      * @param width a int.
      * @param height a int.
@@ -1007,11 +1007,11 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem}, fit into a box of the given width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height
      *
      * @param width a int.
      * @param height a int.
-     * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param media a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
      */
     public String getThumbnailUrl(CMSMediaItem media, int width, int height) {
@@ -1019,7 +1019,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the given size. The image is always square and
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the given size. The image is always square and
      * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param size a int.
@@ -1040,11 +1040,11 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the given size. The image is always square and
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the given size. The image is always square and
      * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param size a int.
-     * @param media a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param media a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(CMSMediaItem media, int size) {
@@ -1052,7 +1052,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the default size. The image is always square and
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square and
      * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param item a {@link java.util.Optional} object.
@@ -1063,10 +1063,10 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.CMSMediaItem} of the default size. The image is always square and
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square and
      * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
      */
     public String getSquareThumbnailUrl(CMSMediaItem item) {

@@ -52,6 +52,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
@@ -164,7 +165,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Constructor for CMSNavigationItem.
      * </p>
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSNavigationItem(CMSPage cmsPage) {
         setCmsPage(cmsPage);
@@ -372,7 +373,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Getter for the field <code>cmsPage</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSPage getCmsPage() {
         return cmsPage;
@@ -383,7 +384,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Setter for the field <code>cmsPage</code>.
      * </p>
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = cmsPage;

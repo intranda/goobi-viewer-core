@@ -36,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  * <p>
@@ -87,25 +88,6 @@ public class CMSStaticPage {
     }
 
     /**
-     * Construct a CMSStaticPage from a CMSPage referring to a static page. Used for Backwards compability
-     *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
-     * @throws java.lang.IllegalArgumentException if the cmsPage does not refer to a static page
-     * @throws java.lang.NullPointerException if the cmsPage is null
-     */
-    @SuppressWarnings("deprecation")
-    public CMSStaticPage(CMSPage cmsPage) {
-        String staticPageName = cmsPage.getStaticPageName();
-        if (StringUtils.isBlank(staticPageName)) {
-            throw new IllegalArgumentException("Can only create a static page from a CMSPage with a non-empty staticPageName");
-        }
-
-        this.id = null;
-        this.pageName = staticPageName.trim();
-        setCmsPage(cmsPage);
-    }
-
-    /**
      * <p>
      * getCmsPageOptional.
      * </p>
@@ -124,7 +106,7 @@ public class CMSStaticPage {
      * Getter for the field <code>cmsPage</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSPage getCmsPage() {
         return getCmsPageOptional().orElse(null);
@@ -174,7 +156,7 @@ public class CMSStaticPage {
      */
     public boolean isLanguageComplete(Locale locale) {
         if (getCmsPageOptional().isPresent()) {
-            return cmsPage.get().isLanguageComplete(locale);
+            return cmsPage.get().isComplete(locale);
         }
         return false;
     }

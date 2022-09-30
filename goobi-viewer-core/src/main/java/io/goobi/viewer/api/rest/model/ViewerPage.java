@@ -26,7 +26,7 @@ import java.net.URI;
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  * Simple template to create a json-representation of a viewer page, typically a CMS-Page.

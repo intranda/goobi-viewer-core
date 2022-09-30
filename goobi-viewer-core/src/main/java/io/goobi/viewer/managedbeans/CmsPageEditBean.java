@@ -34,7 +34,7 @@ import javax.inject.Named;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
-import io.goobi.viewer.model.cms.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 
 @Named

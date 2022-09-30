@@ -34,8 +34,9 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.content.CMSComponent;
-import io.goobi.viewer.model.cms.content.CMSHtmlText;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSHtmlText;
 
 public class CMSPageContentTest extends AbstractDatabaseEnabledTest {
 

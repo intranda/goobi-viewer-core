@@ -39,6 +39,8 @@ import org.mockito.Mockito;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
 
 /**
  * @author florian
