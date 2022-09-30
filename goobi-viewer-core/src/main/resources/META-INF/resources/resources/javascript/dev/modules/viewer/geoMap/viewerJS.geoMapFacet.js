@@ -101,8 +101,8 @@ var viewerJS = ( function ( viewer ) {
 
 
 		this.config.buttons.$toggleMarkers.on("click", () => {
-			this.hitsLayer.setVisible(!this.hitsLayer.isVisible());
-			this.heatmap.setVisible(!this.heatmap.isVisible());
+			this.hitsLayer?.setVisible(!this.hitsLayer.isVisible());
+			this.heatmap?.setVisible(!this.heatmap.isVisible());
 		})
 
 		$(this.config.buttons.$openEditMode).on("click", e => this.openEditMode());

@@ -189,7 +189,6 @@ public class IdentifierResolver extends HttpServlet {
                     if (DataManager.getInstance().getConfiguration().getUrnResolverFields().size() > 1) {
                         for (String f : DataManager.getInstance().getConfiguration().getUrnResolverFields()) {
                             if (!fieldName.equals(f)) {
-                                logger.trace("Querying field: {}", f);
                                 hits = query(f, fieldValue, moreFields, moreValues, request);
                                 if (hits.getNumFound() > 0) {
                                     found = true;
@@ -214,7 +213,6 @@ public class IdentifierResolver extends HttpServlet {
                         logger.error(e.getMessage());
                     }
                 }
-                return;
             } else if (hits.getNumFound() > 1) {
                 // 3.2 show multiple match, that indicates corrupted index
                 try {
@@ -461,12 +459,13 @@ public class IdentifierResolver extends HttpServlet {
      */
     private static SolrDocumentList query(String fieldName, String fieldValue, Map<Integer, String> moreFields, Map<Integer, String> moreValues,
             HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+        logger.trace("Querying field: {}", fieldName);
         StringBuilder sbQuery = new StringBuilder()
                 .append('+')
-                .append(fieldName.toUpperCase())
+                .append(ClientUtils.escapeQueryChars(fieldName.toUpperCase()))
                 .append(':')
                 .append('"')
-                .append(ClientUtils.escapeQueryChars(fieldValue))
+                .append(fieldValue)
                 .append('"');
 
         // Add additional field/value pairs to the query
@@ -482,8 +481,8 @@ public class IdentifierResolver extends HttpServlet {
         }
 
         sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
-        String query = sbQuery.toString();
-        // logger.trace("query: {}", StringTools.stripPatternBreakingChars(query));
+        String query = StringTools.stripPatternBreakingChars(sbQuery.toString());
+        // logger.trace("query: {}", query);
 
         // 3. evaluate the search
         return DataManager.getInstance().getSearchIndex().search(query);

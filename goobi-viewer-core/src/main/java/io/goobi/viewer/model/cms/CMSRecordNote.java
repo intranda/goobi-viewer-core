@@ -65,7 +65,7 @@ public abstract class CMSRecordNote {
     /**
      * Title of the note, plaintext
      */
-    @Column(name = "note_title", nullable = true, columnDefinition = "TINYTEXT")
+    @Column(name = "note_title", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteTitle = new TranslatedText();
 

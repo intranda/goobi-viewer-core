@@ -29,16 +29,13 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,8 +52,8 @@ import org.apache.commons.configuration2.event.EventListener;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
@@ -71,9 +68,6 @@ import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
-import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
-import io.goobi.viewer.model.metadata.MetadataReplaceRule;
-import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
@@ -1950,7 +1944,7 @@ public class Configuration extends AbstractConfiguration {
     public String getTempFolder() {
         return Paths.get(System.getProperty("java.io.tmpdir"), "viewer").toString();
     }
-    
+
     /**
      * 
      * @return
@@ -2841,8 +2835,8 @@ public class Configuration extends AbstractConfiguration {
      * getDefaultSortField.
      * </p>
      *
-     * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @should return correct value
      */
     public String getDefaultSortField() {
         List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
@@ -2872,19 +2866,43 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList(XML_PATH_SEARCH_SORTING_FIELD);
     }
 
-    public Collection<SearchSortingOption> getSearchSortingOptions() {
-        Set<SearchSortingOption> options = new LinkedHashSet<>();
+    /**
+     * 
+     * @return List of {@link SearchSortingOption}s from configured sorting fields
+     * @should place default sorting field on top
+     * @should handle descending configurations correctly
+     * @should ignore secondary fields from default config
+     */
+    public List<SearchSortingOption> getSearchSortingOptions() {
+        List<SearchSortingOption> options = new ArrayList<>();
         //default option
         String defaultField = getDefaultSortField();
+        if (defaultField.charAt(0) == '!') {
+            defaultField = defaultField.substring(1);
+        }
+        if (defaultField.contains(";")) {
+            defaultField = defaultField.substring(0, defaultField.indexOf(";"));
+        }
         List<String> fields = getSortFields();
         fields.remove(defaultField);
         fields.add(0, defaultField);
         for (String field : fields) {
-            options.add(new SearchSortingOption(field, true));
-            if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
-                options.add(new SearchSortingOption(field, false));
+            if (field.charAt(0) == '!') {
+                field = field.substring(1);
+            }
+            if (field.contains(";")) {
+                field = field.substring(0, field.indexOf(";"));
+            }
+            SearchSortingOption option = new SearchSortingOption(field, true);
+            if (!options.contains(option)) {
+                options.add(new SearchSortingOption(field, true));
+                // Add descending option for most fields
+                if (!SolrConstants.SORT_RANDOM.equals(field) && !SolrConstants.SORT_RELEVANCE.equals(field)) {
+                    options.add(new SearchSortingOption(field, false));
+                }
             }
         }
+
         return options;
     }
 

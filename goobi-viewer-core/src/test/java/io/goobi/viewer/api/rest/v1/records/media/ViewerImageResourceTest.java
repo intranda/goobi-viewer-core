@@ -180,6 +180,7 @@ public class ViewerImageResourceTest extends AbstractRestApiTest {
             assertEquals("attachment; filename=\"" + PI + "_" + FILENAME + ".pdf" + "\"", contentDisposition);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
+
     }
 
     @Test

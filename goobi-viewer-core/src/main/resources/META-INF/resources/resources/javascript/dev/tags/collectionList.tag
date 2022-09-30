@@ -34,9 +34,6 @@
 	
 		</div>
 	
-	
-	
-	
 			<div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
 				<p class="tpl-stacked-collection__long-info">
 					<raw html="{getDescription(collection)}"></raw>
@@ -47,7 +44,7 @@
 
 		<div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false">
 			<div class="card-body">
-				<subCollection if="{collection.members && collection.members.length > 0}" collection="{collection}"/>
+				<subCollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"/>
 			</div>
 		</div>
 	
@@ -74,28 +71,30 @@ this.on("mount", () => {
 })
 
 loadSubCollections() {
- 
     let observable = rxjs.from(this.collections);
     
     for (let level = 0; level < opts.depth; level++) { 
         observable = observable.pipe(
-         	rxjs.operators.filter( child => this.hasChildren(child) ),
          	rxjs.operators.mergeMap( child => this.fetchMembers(child) ),
          	rxjs.operators.mergeMap( child => child ),
         );
     }
     observable.pipe(
     	rxjs.operators.debounceTime(100)
-    )
-    .subscribe( () => {this.update();});
+     )
+    .subscribe( () => this.update());
 
 }
 
 
 fetchMembers(collection) {
-    return fetch(collection['@id'])
-    .then( result => result.json())
-    .then(json => {collection.members = json.members; return collection.members;})
+    if(this.hasChildren(collection)) {        
+	    return fetch(collection['@id'])
+	    .then( result => result.json())
+	    .then(json => {collection.members = json.members; return collection.members;})
+    } else {
+        return Promise.resolve([collection]);
+    }
 }
 
 getValue(element) {
@@ -111,7 +110,7 @@ getChildren(collection) {
     if(collection.members) {        
     	return collection.members.filter( child => viewerJS.iiif.isCollection(child));
     } else {
-        return [];
+        return [collection];
     }
 }
 

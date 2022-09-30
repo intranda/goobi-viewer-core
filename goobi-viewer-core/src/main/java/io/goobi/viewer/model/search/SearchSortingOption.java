@@ -166,12 +166,6 @@ public class SearchSortingOption {
             if (StringUtils.isBlank(this.field)) {
                 return StringUtils.isBlank(other.field);
             }
-            //            if (this.getField().equals(SolrConstants.SORT_RANDOM)) {
-            //                return other.getSortString().startsWith("random_");
-            //            }
-            //            if (other.getField().equals(SolrConstants.SORT_RANDOM)) {
-            //                return this.getSortString().startsWith("random_");
-            //            }
             return StringUtils.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
         }
         return false;
