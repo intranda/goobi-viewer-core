@@ -503,9 +503,6 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     break;
                 case 2:
-                    resetSimpleSearchParameters();
-                    resetAdvancedSearchParameters(1, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
-                    break;
                 case 3:
                     resetSimpleSearchParameters();
                     resetAdvancedSearchParameters(1, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
@@ -539,7 +536,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should re-select collection correctly
      */
     protected void resetAdvancedSearchParameters(int initialGroupNumber, int initialItemNumber) {
-        logger.trace("resetAdvancedSearchParameters");
+        logger.trace("resetAdvancedSearchParameters: {}/{}", initialGroupNumber, initialItemNumber);
         advancedSearchGroupOperator = 0;
         advancedQueryGroups.clear();
         for (int i = 0; i < initialGroupNumber; ++i) {
@@ -849,10 +846,9 @@ public class SearchBean implements SearchInterface, Serializable {
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
-        
 
         // Create SearchQueryGroup from query
-        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED) {
+        if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED && StringUtils.isNotEmpty(searchStringInternal)) {
             boolean parseGroupFromQuery = true;
             for (SearchQueryGroup group : advancedQueryGroups) {
                 if (!group.isBlank()) {
@@ -865,8 +861,12 @@ public class SearchBean implements SearchInterface, Serializable {
                         .add(SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getCurrentFacetString(),
                                 navigationHelper != null ? navigationHelper.getLocale() : null));
             }
+            if (advancedQueryGroups.isEmpty()) {
+                advancedQueryGroups.add(new SearchQueryGroup(BeanUtils.getLocale(),
+                        DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber()));
+                logger.debug("Query parsing failed, generated an empty search group.");
+            }
         }
-
 
         //remember the current page to return to hit list in widget_searchResultNavigation
         setLastUsedSearchPage();
@@ -929,8 +929,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public String getFinalSolrQuery() throws IndexUnreachableException {
         if (this.currentSearch != null) {
-            String query = this.currentSearch.generateFinalSolrQuery(null);
-            return query;
+            return this.currentSearch.generateFinalSolrQuery(null);
         }
 
         return new Search().generateFinalSolrQuery(null);
