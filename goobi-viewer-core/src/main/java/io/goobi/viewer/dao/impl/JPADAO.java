@@ -3163,7 +3163,7 @@ public class JPADAO implements IDAO {
                 sbQuery.append(QUERY_ELEMENT_AND).append("o.dateUpdated <= :toDate");
             }
             if (templateIds != null && !templateIds.isEmpty()) {
-                sbQuery.append(QUERY_ELEMENT_AND).append(')');
+                sbQuery.append(QUERY_ELEMENT_AND).append('(');
                 int count = 0;
                 for (String templateId : templateIds) {
                     if (count != 0) {
