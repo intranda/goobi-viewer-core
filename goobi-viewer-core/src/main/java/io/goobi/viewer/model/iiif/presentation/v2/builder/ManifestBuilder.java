@@ -125,8 +125,8 @@ public class ManifestBuilder extends AbstractBuilder {
         } else {
             ele.setImageNumber(1);
             manifest = new Manifest2(getManifestURI(ele.getPi()));
-            SearchService search = new SearchService(getSearchServiceURI(manifest.getId()));
-            AutoSuggestService autoComplete = new AutoSuggestService(getAutoSuggestServiceURI(manifest.getId()));
+            SearchService search = new SearchService(getSearchServiceURI(ele.getPi()));
+            AutoSuggestService autoComplete = new AutoSuggestService(getAutoCompleteServiceURI(ele.getPi()));
             search.addService(autoComplete);
             manifest.addService(search);
         }
