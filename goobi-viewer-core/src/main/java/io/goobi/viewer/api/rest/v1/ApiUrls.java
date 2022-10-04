@@ -158,7 +158,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String USERS_BOOKMARKS_LIST_RSS = "/{listId}/rss.xml";
     public static final String USERS_BOOKMARKS_LIST_RSS_JSON = "/{listId}/rss.json";
     public static final String USERS_BOOKMARKS_LIST_STATISTICS = "/{listId}/statistics";
-    public static final String USERS_BOOKMARKS_SHARED = "/shared";
     public static final String USERS_BOOKMARKS_PUBLIC = "/public";
     public static final String USERS_BOOKMARKS_LIST_SHARED = "/shared/{key}";
     public static final String USERS_BOOKMARKS_LIST_SHARED_MIRADOR = "/shared/{key}/mirador.json";
