@@ -2186,7 +2186,7 @@ public final class SearchHelper {
         }
 
         String queryRemainder = query;
-        Pattern pAllItems = Pattern.compile(patternAllItems);
+        Pattern pAllItems = Pattern.compile(patternAllItems); //NOSONAR no backtracking detected
         Matcher mAllItems = pAllItems.matcher(query);
         while (mAllItems.find()) {
             String itemQuery = mAllItems.group();
@@ -2206,7 +2206,7 @@ public final class SearchHelper {
                 // Phrase search
                 logger.trace("phrase item: {}", itemQuery);
                 operators.add(SearchItemOperator.PHRASE);
-                Pattern pPairs = Pattern.compile(patternPhrasePairs);
+                Pattern pPairs = Pattern.compile(patternPhrasePairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
 
                 Set<String> fieldNames = new HashSet<>();
@@ -2227,7 +2227,7 @@ public final class SearchHelper {
             } else if (mRangeItem.find()) {
                 // Range search
                 logger.trace("range item: {}", itemQuery);
-                Pattern pPairs = Pattern.compile(patternRangePairs);
+                Pattern pPairs = Pattern.compile(patternRangePairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2250,7 +2250,7 @@ public final class SearchHelper {
             } else if (mRegularItem.find()) {
                 // Regular search
                 logger.trace("regular item: {}", itemQuery);
-                Pattern pPairs = Pattern.compile(patternRegularPairs);
+                Pattern pPairs = Pattern.compile(patternRegularPairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2304,7 +2304,7 @@ public final class SearchHelper {
 
         // Parse facet string
         if (StringUtils.isNotEmpty(facetString)) {
-            Pattern pFacetString = Pattern.compile(patternFacetString);
+            Pattern pFacetString = Pattern.compile(patternFacetString); //NOSONAR no backtracking detected
             Matcher mFacetString = pFacetString.matcher(facetString);
             Set<String> fieldNames = new HashSet<>();
             List<StringPair> pairs = new ArrayList<>();
