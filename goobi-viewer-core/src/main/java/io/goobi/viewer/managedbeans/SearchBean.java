@@ -220,6 +220,15 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Required setter for ManagedProperty injection for unit tests.
+     *
+     * @param navigationHelper the navigationHelper to set
+     */
+    public void setNavigationHelper(NavigationHelper navigationHelper) {
+        this.navigationHelper = navigationHelper;
+    }
+
+    /**
      * <p>
      * clearSearchItemLists.
      * </p>
