@@ -421,11 +421,11 @@
         <sorting enabled="false">
             <!-- field: Fields used for sorting. Fields must be configured as 'multiValued="false"' in the Solr schema. Multiple (escaped) semicolon-separated
                 fields can be used for  hierarchical sorting (e.g. <luceneField>SORT_FIELD1\;SORT_FIELD2\;SORT_FIELD3</luceneField>). -->
-            <field default="true">RANDOM</field> 
             <field>RELEVANCE</field>
+            <field default="true">RANDOM</field>
             <field>SORT_CREATOR</field>
-            <field>SORT_TITLE</field>
-            <field>DATEUPDATED</field>
+            <field dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE</field>
+            <field>!DATECREATED</field>
             <field>SORT_YEARPUBLISH\;SORT_TITLE</field>
 			
             <!-- static: Sorting fields defined here will always used silently prior to the visible sorting fields. These fields can be used to always place

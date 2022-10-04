@@ -2186,7 +2186,7 @@ public final class SearchHelper {
         }
 
         String queryRemainder = query;
-        Pattern pAllItems = Pattern.compile(patternAllItems);
+        Pattern pAllItems = Pattern.compile(patternAllItems); //NOSONAR no backtracking detected
         Matcher mAllItems = pAllItems.matcher(query);
         while (mAllItems.find()) {
             String itemQuery = mAllItems.group();
@@ -2206,7 +2206,7 @@ public final class SearchHelper {
                 // Phrase search
                 logger.trace("phrase item: {}", itemQuery);
                 operators.add(SearchItemOperator.AND);
-                Pattern pPairs = Pattern.compile(patternPhrasePairs);
+                Pattern pPairs = Pattern.compile(patternPhrasePairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
 
                 Set<String> fieldNames = new HashSet<>();
@@ -2227,7 +2227,7 @@ public final class SearchHelper {
             } else if (mRangeItem.find()) {
                 // Range search
                 logger.trace("range item: {}", itemQuery);
-                Pattern pPairs = Pattern.compile(patternRangePairs);
+                Pattern pPairs = Pattern.compile(patternRangePairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2250,7 +2250,7 @@ public final class SearchHelper {
             } else if (mRegularItem.find()) {
                 // Regular search
                 logger.trace("regular item: {}", itemQuery);
-                Pattern pPairs = Pattern.compile(patternRegularPairs);
+                Pattern pPairs = Pattern.compile(patternRegularPairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2304,7 +2304,7 @@ public final class SearchHelper {
 
         // Parse facet string
         if (StringUtils.isNotEmpty(facetString)) {
-            Pattern pFacetString = Pattern.compile(patternFacetString);
+            Pattern pFacetString = Pattern.compile(patternFacetString); //NOSONAR no backtracking detected
             Matcher mFacetString = pFacetString.matcher(facetString);
             Set<String> fieldNames = new HashSet<>();
             List<StringPair> pairs = new ArrayList<>();
@@ -3165,26 +3165,28 @@ public final class SearchHelper {
      *
      * @param sortString a {@link java.lang.String} object.
      * @param navigationHelper a {@link io.goobi.viewer.managedbeans.NavigationHelper} object.
-     * @should parse string correctly
      * @return a {@link java.util.List} object.
+     * @should parse string correctly
      */
     public static List<StringPair> parseSortString(String sortString, NavigationHelper navigationHelper) {
+        if (StringUtils.isEmpty(sortString)) {
+            return Collections.emptyList();
+        }
+        
         List<StringPair> ret = new ArrayList<>();
-        if (StringUtils.isNotEmpty(sortString)) {
-            String[] sortStringSplit = sortString.split(";");
-            if (sortStringSplit.length > 0) {
-                for (String field : sortStringSplit) {
-                    ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
-                    logger.trace("Added sort field: {}", field);
-                    // add translated sort fields
-                    if (navigationHelper != null && field.startsWith("SORT_")) {
-                        Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
-                        StreamSupport.stream(locales.spliterator(), false)
-                                .sorted(new LocaleComparator(BeanUtils.getLocale()))
-                                .map(locale -> field + SolrConstants._LANG_ + locale.getLanguage().toUpperCase())
-                                .peek(language -> logger.trace("Adding sort field: {}", language))
-                                .forEach(language -> ret.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
-                    }
+        String[] sortStringSplit = sortString.split(";");
+        if (sortStringSplit.length > 0) {
+            for (String field : sortStringSplit) {
+                ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
+                logger.trace("Added sort field: {}", field);
+                // add translated sort fields
+                if (navigationHelper != null && field.startsWith("SORT_")) {
+                    Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
+                    StreamSupport.stream(locales.spliterator(), false)
+                            .sorted(new LocaleComparator(BeanUtils.getLocale()))
+                            .map(locale -> field + SolrConstants._LANG_ + locale.getLanguage().toUpperCase())
+                            .peek(language -> logger.trace("Adding sort field: {}", language))
+                            .forEach(language -> ret.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
                 }
             }
         }

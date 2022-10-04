@@ -146,6 +146,8 @@ public class IndexResource {
 
         if (query == null) {
             query = "+(ISWORK:*) ";
+        } else {
+            query = String.format("+(%s)", query);
         }
 
         String finalQuery =

@@ -347,15 +347,20 @@ public class StatisticsBean implements Serializable {
     }
 
     public LocalDate getLastUsageStatisticsCheck() throws PresentationException, IndexUnreachableException {
-        SolrDocumentList docs =  DataManager.getInstance().getSearchIndex().search(
-                "DOCTYPE:" + io.goobi.viewer.model.statistics.usage.StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
-                1, Arrays.asList(new StringPair(StatisticsLuceneFields.DATE, "desc")), 
-                Arrays.asList(StatisticsLuceneFields.DATE));
-        if(docs.size() == 1) {
-            Date date = (Date)docs.get(0).getFieldValue(StatisticsLuceneFields.DATE);
-            return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        } else {
-            return LocalDate.MIN;
+        try {            
+            SolrDocumentList docs =  DataManager.getInstance().getSearchIndex().search(
+                    "DOCTYPE:" + io.goobi.viewer.model.statistics.usage.StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
+                    1, Arrays.asList(new StringPair(StatisticsLuceneFields.DATE, "desc")), 
+                    Arrays.asList(StatisticsLuceneFields.DATE));
+            if(docs.size() == 1) {
+                Date date = (Date)docs.get(0).getFieldValue(StatisticsLuceneFields.DATE);
+                return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            } else {
+                return LocalDate.MIN;
+            }
+        } catch(PresentationException e) {
+            logger.error("Error getting last usage statistics check from solr", e);
+            return null;
         }
 
     }
