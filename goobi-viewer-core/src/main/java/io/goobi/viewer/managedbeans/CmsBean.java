@@ -45,21 +45,19 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.IndexerTools;
-import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
@@ -754,37 +752,6 @@ public class CmsBean implements Serializable {
     public String getIconUrlByTemplateId(String templateId) {
         String iconUrl = CMSTemplateManager.getInstance().getTemplateIconUrl(templateId);
         return iconUrl;
-    }
-
-    /**
-     * <p>
-     * getNestedPages.
-     * </p>
-     *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated use {@link CMSContentItem#getNestedPages()}
-     */
-    @Deprecated
-    public List<CMSPage> getNestedPages(CMSContentItem item) throws DAOException {
-        int size = item.getElementsPerPage();
-        int offset = item.getListOffset();
-
-        Stream<CMSPage> nestedPagesStream = getAllCMSPages().stream()
-                .filter(CMSPage::isPublished)
-                .filter(child -> item.getCategories().isEmpty()
-                        || !CollectionUtils.intersection(item.getCategories(), child.getCategories()).isEmpty());
-
-        if (item.isRandomizeItems()) {
-            nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
-        }
-
-        nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
-        List<CMSPage> nestedPages = nestedPagesStream.collect(Collectors.toList());
-        setNestedPagesCount((int) Math.ceil((offset + nestedPages.size()) / (double) size));
-
-        return nestedPages;
     }
 
     /**
@@ -1720,7 +1687,8 @@ public class CmsBean implements Serializable {
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
             search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
+                    item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(search);
             searchBean.setHitsPerPageSetterCalled(false);
             return null;
@@ -1884,8 +1852,8 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been initialized
-     * yet, do so and add it to the Bean's CollectionView map
+     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
+     * initialized yet, do so and add it to the Bean's CollectionView map
      *
      * @param id The ContentItemId of the ContentItem to look for
      * @param page The page containing the collection ContentItem
@@ -1902,7 +1870,7 @@ public class CmsBean implements Serializable {
                 CMSContentItem contentItem = page.getContentItemOrThrowException(id);
                 collection = contentItem.initializeCollection(page.getSubThemeDiscriminatorValue());
                 collections.put(myId, collection);
-            } catch(CmsElementNotFoundException e) {
+            } catch (CmsElementNotFoundException e) {
                 logger.debug("Not matching collection element for id {} on page {}", id, page.getId());
             }
         }
@@ -1927,8 +1895,9 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the first available {@link io.goobi.viewer.model.viewer.collections.CollectionView} from any {@link io.goobi.viewer.model.cms.CMSContentItem} of the
-     * given {@link CMSPage page}. The CollectionView is added to the Bean's internal collection map
+     * Get the first available {@link io.goobi.viewer.model.viewer.collections.CollectionView} from any
+     * {@link io.goobi.viewer.model.cms.CMSContentItem} of the given {@link CMSPage page}. The CollectionView is added to the Bean's internal
+     * collection map
      *
      * @param page The CMSPage to provide the collection
      * @return The CollectionView or null if none was found

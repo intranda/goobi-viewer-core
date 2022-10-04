@@ -221,7 +221,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         assertEquals(6, item.getListOffset());
 
-        List<CMSPage> children = bean.getNestedPages(item);
+        List<CMSPage> children = item.getNestedPages();
         assertEquals(1, children.size());
         assertEquals(3, item.getListPage());
     }
