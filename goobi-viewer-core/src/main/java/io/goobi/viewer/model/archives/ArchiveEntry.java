@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -40,7 +40,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 public class ArchiveEntry {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArchiveEntry.class);
+    private static final Logger logger = LogManager.getLogger(ArchiveEntry.class);
 
     // parent node
     private ArchiveEntry parentNode;

@@ -27,8 +27,8 @@ import java.util.Optional;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -47,7 +47,7 @@ import io.goobi.viewer.model.administration.legal.TermsOfUse;
 public class TermsOfUseBean implements Serializable {
 
     private static final long serialVersionUID = 5425114972697440546L;
-    private static final Logger logger = LoggerFactory.getLogger(TermsOfUseEditBean.class);
+    private static final Logger logger = LogManager.getLogger(TermsOfUseEditBean.class);
 
     private final Optional<TermsOfUse> termsOfUse = getTermsOfUseIfActiveAndAccessible();
 

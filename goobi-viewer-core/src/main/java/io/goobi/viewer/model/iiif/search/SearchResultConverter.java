@@ -44,8 +44,8 @@ import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.FieldListResource;
@@ -89,7 +89,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class SearchResultConverter {
 
-    private static final Logger logger = LoggerFactory.getLogger(IIIFSearchBuilder.class);
+    private static final Logger logger = LogManager.getLogger(IIIFSearchBuilder.class);
 
     private static final int MAX_TEXT_LENGTH = 20;
 

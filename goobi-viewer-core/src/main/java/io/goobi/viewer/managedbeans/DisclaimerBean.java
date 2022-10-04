@@ -37,8 +37,8 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -65,7 +65,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class DisclaimerBean implements Serializable {
 
     private static final long serialVersionUID = -6562240290914952926L;
-    private static final Logger logger = LoggerFactory.getLogger(DisclaimerBean.class);
+    private static final Logger logger = LogManager.getLogger(DisclaimerBean.class);
 
     @Inject
     ActiveDocumentBean activeDocumentBean;

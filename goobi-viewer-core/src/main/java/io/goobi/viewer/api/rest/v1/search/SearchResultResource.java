@@ -35,8 +35,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.search.SearchHitChildList;
@@ -59,7 +59,7 @@ import io.goobi.viewer.model.search.SearchHit;
 @ViewerRestServiceBinding
 public class SearchResultResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchResultResource.class);
+    private static final Logger logger = LogManager.getLogger(SearchResultResource.class);
 
     @Context
     private HttpServletRequest servletRequest;

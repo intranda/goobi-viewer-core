@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,7 +92,7 @@ public class DisplayUserGeneratedContent {
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(DisplayUserGeneratedContent.class);
+    private static final Logger logger = LogManager.getLogger(DisplayUserGeneratedContent.class);
     /** Constant <code>format</code> */
     public static final NumberFormat format = new DecimalFormat("00000000");
 

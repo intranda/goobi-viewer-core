@@ -36,8 +36,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -77,7 +77,7 @@ public class CmsCollectionsBean implements Serializable {
 
     private static final long serialVersionUID = -2862611194397865986L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsCollectionsBean.class);
     // private static final int MAX_IMAGES_PER_PAGE = 36;
 
     @Inject

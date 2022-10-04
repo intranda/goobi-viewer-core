@@ -33,8 +33,8 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
@@ -52,7 +52,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 discriminatorType = DiscriminatorType.STRING)
 public abstract class CMSRecordNote {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSRecordNote.class);
+    private static final Logger logger = LogManager.getLogger(CMSRecordNote.class);
 
     /**
      * Auto-generated database id
@@ -65,7 +65,7 @@ public abstract class CMSRecordNote {
     /**
      * Title of the note, plaintext
      */
-    @Column(name = "note_title", nullable = true, columnDefinition = "TINYTEXT")
+    @Column(name = "note_title", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText noteTitle = new TranslatedText();
 

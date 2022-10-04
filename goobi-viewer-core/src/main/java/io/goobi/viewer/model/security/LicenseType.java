@@ -47,8 +47,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -69,7 +69,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private static final long serialVersionUID = 9206827867178660886L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(LicenseType.class);
+    private static final Logger logger = LogManager.getLogger(LicenseType.class);
 
     // When adding a new static license type name, update isStaticLicenseType()!
     /** Constant <code>LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE="licenseType_setRepresentativeImage"</code> */
@@ -446,14 +446,16 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * @param redirect the redirect to set
      */
     public void setRedirect(boolean redirect) {
-        this.redirect = redirect;
         // Automatically remove any privileges except listing, if redirect mode is on
         if (redirect) {
             privilegesCopy.clear();
             privilegesCopy.add(PRIV_LIST);
-        } else {
+        } else if(this.redirect){
+            //only remove LIST if redirect is changed from true to false. 
+            //Otherwise LIST is removed each time the form is submitted
             privilegesCopy.remove(PRIV_LIST);
         }
+        this.redirect = redirect;
     }
 
     /**

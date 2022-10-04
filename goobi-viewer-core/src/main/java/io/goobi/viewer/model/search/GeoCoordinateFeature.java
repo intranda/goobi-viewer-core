@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * @author florian
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GeoCoordinateFeature {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeoCoordinateFeature.class);
+    private static final Logger logger = LogManager.getLogger(GeoCoordinateFeature.class);
 
     private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(([\\s\\d\\-.,]+)\\)\\)\\)"; //NOSONAR    backtracking save
 

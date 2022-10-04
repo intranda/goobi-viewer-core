@@ -54,8 +54,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -81,7 +81,7 @@ import io.goobi.viewer.messages.Messages;
 @AdminLoggedInBinding
 public class TempMediaFileResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(TempMediaFileResource.class);
+    private static final Logger logger = LogManager.getLogger(TempMediaFileResource.class);
     @Context
     protected HttpServletRequest servletRequest;
     @Context

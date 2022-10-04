@@ -59,8 +59,8 @@ import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -120,7 +120,7 @@ public class ViewManager implements Serializable {
 
     private static final long serialVersionUID = -7776362205876306849L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewManager.class);
+    private static final Logger logger = LogManager.getLogger(ViewManager.class);
 
     private ImageDeliveryBean imageDeliveryBean;
 

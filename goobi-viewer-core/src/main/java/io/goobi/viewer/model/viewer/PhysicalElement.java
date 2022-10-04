@@ -43,8 +43,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,7 +97,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     private static final long serialVersionUID = -6744820937107786721L;
 
-    private static final Logger logger = LoggerFactory.getLogger(PhysicalElement.class);
+    private static final Logger logger = LogManager.getLogger(PhysicalElement.class);
 
     /** Constant <code>WATERMARK_TEXT_TYPE_URN="URN"</code> */
     public static final String WATERMARK_TEXT_TYPE_URN = "URN";

@@ -34,8 +34,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.model.security.user.UserGroup;
 
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 @Table(name = "comment_groups")
 public class CommentGroup {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentGroup.class);
+    private static final Logger logger = LogManager.getLogger(CommentGroup.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

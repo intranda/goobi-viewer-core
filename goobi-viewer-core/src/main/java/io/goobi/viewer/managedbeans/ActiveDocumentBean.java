@@ -49,8 +49,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -120,7 +120,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private static final long serialVersionUID = -8686943862186336894L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
+    private static final Logger logger = LogManager.getLogger(ActiveDocumentBean.class);
 
     /**
      * Regex pattern 'imageToShow' matches if doublePageMode should be active

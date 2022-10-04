@@ -36,8 +36,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
@@ -70,7 +70,7 @@ public class RecordsListResource {
      *
      */
     private static final int DEFAULT_MAX_ROWS = 100;
-    private static final Logger logger = LoggerFactory.getLogger(RecordsListResource.class);
+    private static final Logger logger = LogManager.getLogger(RecordsListResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context

@@ -30,8 +30,8 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -50,7 +50,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
 
     private static final long serialVersionUID = 5369209153499598371L;
 
-    private static final Logger logger = LoggerFactory.getLogger(EventElement.class);
+    private static final Logger logger = LogManager.getLogger(EventElement.class);
 
     private String type;
     private List<String> dateStringsStart = new ArrayList<>();

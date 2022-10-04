@@ -37,8 +37,8 @@ import javax.annotation.PreDestroy;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.LicenseDescription;
@@ -59,7 +59,7 @@ import io.goobi.viewer.model.translations.language.Language;
 public class CreateRecordBean implements Serializable {
 
     private static final long serialVersionUID = -8052248087187114268L;
-    private static final Logger logger = LoggerFactory.getLogger(CreateRecordBean.class);
+    private static final Logger logger = LogManager.getLogger(CreateRecordBean.class);
 
     private String title;
     private String description;

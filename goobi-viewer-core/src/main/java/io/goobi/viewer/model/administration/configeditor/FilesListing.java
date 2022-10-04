@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -42,7 +42,7 @@ public class FilesListing implements Serializable {
 
     private static final long serialVersionUID = -1261644749731156548L;
 
-    private static final Logger logger = LoggerFactory.getLogger(FilesListing.class);
+    private static final Logger logger = LogManager.getLogger(FilesListing.class);
 
     private transient List<FileRecord> fileRecords = null;
     private transient DataModel<FileRecord> fileRecordsModel = null;

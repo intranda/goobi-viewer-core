@@ -25,8 +25,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Range3;
@@ -43,7 +43,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class RangeBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(RangeBuilder.class);
+    private static final Logger logger = LogManager.getLogger(RangeBuilder.class);
 
     /**
      * @param apiUrlManager

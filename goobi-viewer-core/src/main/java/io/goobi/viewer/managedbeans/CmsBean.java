@@ -51,8 +51,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -128,7 +128,7 @@ public class CmsBean implements Serializable {
 
     private static final long serialVersionUID = -2021732230593473827L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 

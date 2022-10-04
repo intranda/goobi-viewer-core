@@ -31,8 +31,8 @@ import javax.inject.Named;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -55,7 +55,7 @@ public class SitelinkBean implements Serializable {
     private static final long serialVersionUID = -3131868167344465016L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(SitelinkBean.class);
+    private static final Logger logger = LogManager.getLogger(SitelinkBean.class);
 
     private String value;
     //    private List<SearchHit> hits;

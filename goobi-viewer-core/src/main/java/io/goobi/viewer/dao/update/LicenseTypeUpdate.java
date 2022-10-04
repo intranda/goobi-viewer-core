@@ -23,8 +23,8 @@ package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -32,7 +32,7 @@ import io.goobi.viewer.model.security.LicenseType;
 
 public class LicenseTypeUpdate implements IModelUpdate {
 
-    private static final Logger logger = LoggerFactory.getLogger(LicenseTypeUpdate.class);
+    private static final Logger logger = LogManager.getLogger(LicenseTypeUpdate.class);
 
     private static final String LICENSE_TYPE_CAMPAIGNS = "licenseType_crowdsourcing_campaigns";
 

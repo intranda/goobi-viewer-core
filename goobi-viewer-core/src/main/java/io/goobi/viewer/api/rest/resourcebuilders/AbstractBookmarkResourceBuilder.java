@@ -28,8 +28,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
@@ -57,7 +57,7 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
  */
 public abstract class AbstractBookmarkResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractBookmarkResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(AbstractBookmarkResourceBuilder.class);
 
     public abstract List<BookmarkList> getAllBookmarkLists() throws DAOException, IOException, RestApiException;
     public abstract SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException;

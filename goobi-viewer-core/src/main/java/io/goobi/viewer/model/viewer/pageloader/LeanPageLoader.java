@@ -32,8 +32,8 @@ import javax.faces.model.SelectItem;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -53,7 +53,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
 
     private static final long serialVersionUID = 7841595315092878078L;
 
-    private static final Logger logger = LoggerFactory.getLogger(LeanPageLoader.class);
+    private static final Logger logger = LogManager.getLogger(LeanPageLoader.class);
 
     private static final String[] SELECT_ITEM_FIELDS = { SolrConstants.ORDER, SolrConstants.ORDERLABEL };
 

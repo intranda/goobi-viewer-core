@@ -31,8 +31,8 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -51,7 +51,7 @@ public class ArchiveBean implements Serializable {
 
     private static final long serialVersionUID = -1755934299534933504L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ArchiveBean.class);
+    private static final Logger logger = LogManager.getLogger(ArchiveBean.class);
 
     private String searchString;
     private boolean databaseLoaded = false;

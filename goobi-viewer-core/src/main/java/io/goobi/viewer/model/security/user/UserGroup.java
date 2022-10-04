@@ -42,8 +42,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -63,7 +63,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     private static final long serialVersionUID = -3038659744043035929L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(UserGroup.class);
+    private static final Logger logger = LogManager.getLogger(UserGroup.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

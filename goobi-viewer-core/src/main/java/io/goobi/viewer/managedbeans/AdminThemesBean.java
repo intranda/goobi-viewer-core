@@ -31,8 +31,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -53,7 +53,7 @@ public class AdminThemesBean implements Serializable {
 
     private static final long serialVersionUID = 837772138767500963L;
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminThemesBean.class);
+    private static final Logger logger = LogManager.getLogger(AdminThemesBean.class);
 
 
     private final String mainThemeName;

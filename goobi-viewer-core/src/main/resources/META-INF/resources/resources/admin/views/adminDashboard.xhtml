@@ -110,7 +110,7 @@
                             </ui:fragment>
 
                             <!-- LICENSES -->
-                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty hasAccessPermissingForTranslationFilesnotConfiguredAccessConditions}">
+                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminLicenseBean.notConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h2 class="col-9">#{msg.admin__licenses}</h2>

@@ -39,8 +39,8 @@ import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConvertAbbyyToAlto {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConvertAbbyyToAlto.class);
+    private static final Logger logger = LogManager.getLogger(ConvertAbbyyToAlto.class);
 
     //	private static Namespace altoNamespace = Namespace.getNamespace("alto", "http://www.loc.gov/standards/alto/ns-v2#");
     private static Namespace defaultNamespace = Namespace.getNamespace("http://www.loc.gov/standards/alto/ns-v2#");

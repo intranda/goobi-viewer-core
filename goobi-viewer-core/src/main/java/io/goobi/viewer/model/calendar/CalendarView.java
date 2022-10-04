@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -39,7 +39,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class CalendarView {
 
-    private static final Logger logger = LoggerFactory.getLogger(CalendarView.class);
+    private static final Logger logger = LogManager.getLogger(CalendarView.class);
 
     private final String pi;
     private final String anchorPi;

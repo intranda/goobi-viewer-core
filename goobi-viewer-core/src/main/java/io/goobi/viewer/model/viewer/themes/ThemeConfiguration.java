@@ -68,10 +68,10 @@ public class ThemeConfiguration {
     private SimpleMediaHolder icon;
     @Column(name = "stylesheet", nullable = true, columnDefinition = "LONGTEXT")
     private String styleSheet;
-    @Column(name = "social_media_link", nullable = true, columnDefinition = "TINYTEXT")
+    @Column(name = "social_media_link", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = ThemeLinkConverter.class)
     List<ThemeLink> socialMediaUrls = new ArrayList<>();
-    @Column(name = "footer_link", nullable = true, columnDefinition = "TINYTEXT")
+    @Column(name = "footer_link", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = ThemeLinkConverter.class)
     List<ThemeLink> footerLinks = new ArrayList<>();
 

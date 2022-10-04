@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -54,7 +54,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public class StatisticsSummaryBuilder {
 
-    private final Logger logger = LoggerFactory.getLogger(StatisticsSummaryBuilder.class);
+    private final Logger logger = LogManager.getLogger(StatisticsSummaryBuilder.class);
     
     /**
      * The DAO from which to query the usage statistics

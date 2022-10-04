@@ -43,8 +43,8 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +73,7 @@ import io.goobi.viewer.model.security.user.User;
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class PersistentAnnotation {
-    private static final Logger logger = LoggerFactory.getLogger(PersistentAnnotation.class);
+    private static final Logger logger = LogManager.getLogger(PersistentAnnotation.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

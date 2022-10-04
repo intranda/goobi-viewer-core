@@ -78,8 +78,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -116,7 +116,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSMediaResource.class);
+    private static final Logger logger = LogManager.getLogger(CMSMediaResource.class);
     @Context
     protected HttpServletRequest servletRequest;
     @Context

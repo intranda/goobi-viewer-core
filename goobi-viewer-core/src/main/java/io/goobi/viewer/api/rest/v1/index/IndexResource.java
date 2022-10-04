@@ -66,8 +66,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -106,7 +106,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @ViewerRestServiceBinding
 public class IndexResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexResource.class);
+    private static final Logger logger = LogManager.getLogger(IndexResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -146,6 +146,8 @@ public class IndexResource {
 
         if (query == null) {
             query = "+(ISWORK:*) ";
+        } else {
+            query = String.format("+(%s)", query);
         }
 
         String finalQuery =

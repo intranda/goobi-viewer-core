@@ -34,8 +34,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -60,7 +60,7 @@ public class IIIFUrlHandler {
      *
      */
     private static final String UTF_8 = "UTF-8";
-    private static final Logger logger = LoggerFactory.getLogger(IIIFUrlHandler.class);
+    private static final Logger logger = LogManager.getLogger(IIIFUrlHandler.class);
 
     private final AbstractApiUrlManager urls;
 

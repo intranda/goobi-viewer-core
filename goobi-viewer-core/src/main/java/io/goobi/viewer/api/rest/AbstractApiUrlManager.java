@@ -40,8 +40,8 @@ import org.apache.commons.collections4.iterators.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.client.ClientProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * @author florian
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractApiUrlManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractApiUrlManager.class);
+    private static final Logger logger = LogManager.getLogger(AbstractApiUrlManager.class);
 
     /**
      * @return The base url to the api without trailing slashes

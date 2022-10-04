@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
@@ -60,7 +60,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class NERBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(NERBuilder.class);
+    private static final Logger logger = LogManager.getLogger(NERBuilder.class);
 
     public DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {

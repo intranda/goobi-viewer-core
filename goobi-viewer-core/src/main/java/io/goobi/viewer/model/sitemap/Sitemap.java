@@ -39,8 +39,8 @@ import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -63,7 +63,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 public class Sitemap {
 
-    private static final Logger logger = LoggerFactory.getLogger(Sitemap.class);
+    private static final Logger logger = LogManager.getLogger(Sitemap.class);
 
     static Namespace nsSitemap = Namespace.getNamespace(null, "http://www.sitemaps.org/schemas/sitemap/0.9");
 
