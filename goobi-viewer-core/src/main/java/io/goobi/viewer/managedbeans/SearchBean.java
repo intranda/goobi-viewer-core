@@ -2433,7 +2433,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
             }
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
-            SXSSFWorkbook wb = new SXSSFWorkbook(25);
+            SXSSFWorkbook wb = new SXSSFWorkbook(25); //NOSONAR try-with-resources in the calling method
             SearchHelper.exportSearchAsExcel(wb, finalQuery, exportQuery, currentSearch.getAllSortFields(),
                     facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true), params, searchTerms, locale,
                     true, proximitySearchDistance, request);
