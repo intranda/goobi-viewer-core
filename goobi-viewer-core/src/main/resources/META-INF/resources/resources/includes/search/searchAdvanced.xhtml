@@ -34,33 +34,33 @@
 
                         <!-- SEARCH ADVANCED INPUT GROUP -->
                         <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
-                            <div id="searchAdvancedInputGroup-#{statusGroup.count}-#{status.count}" class="search-advanced__input-group">
+                            <div id="searchAdvancedInputGroup-0-#{status.count}" class="search-advanced__input-group">
                                 <div class="row mx-0">
-                                    <ui:fragment rendered="#{queryItems.field.allFields}">
-                                        <div class="col-12 col-sm-4 mb-3">
-                                            <!-- SELECT -->
+                                    <c:choose>
+                                    <c:when test="#{queryItem.allFields}">
+                                        <div class="col-12 col-sm-5 mb-3">
+                                            <!-- FIELD SELECT -->
                                             <div class="search-advanced__input-col">
                                                 <div class="custom-control custom-control--select">
-                                                    <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
+                                                    <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
                                                         valueChangeListener="#{queryItem.selectOneMenuListener}">
                                                         <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
                                                     	   <f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
 														  <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                                             <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
                                                         </c:forEach>
-                                                        <f:ajax
-                                                        render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />
+                                                        <f:ajax render=":searchAdvancedInputGroup-0-#{status.count}" />
                                                     </h:selectOneMenu>
                                                 </div>
                                             </div>
                                         </div>
-                                    </ui:fragment>
-                                    <ui:fragment rendered="#{!queryItems.field.allFields}">
-                                        <div class="col-6 col-sm-1 mb-3">
-                                        <!-- OPERATOR -->
-                                        <div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="col-6 col-sm-2 mb-3">
+                                        <!-- OPERATOR SELECT -->
+                                        <div id="advsearch_operator_0-#{status.count}" class="search-advanced__input-col text-center">
                                             <div class="custom-control custom-control--select">
-                                                <h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" styleClass="value-text"
+                                                <h:selectOneMenu id="advsearch_item_operator_0-#{status.count}" styleClass="value-text"
                                                     value="#{queryItem.operator}" disabled="#{queryItem.displaySelectItems or queryItem.range}">
                                                     <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_adv_search_link_search_terms}"/>
                                                     <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
@@ -70,47 +70,47 @@
                                         </div>
                                         </div>
                                         <div class="col-12 col-sm-3 mb-3">
-                                        <!-- SELECT -->
+                                        <!-- FIELD SELECT -->
                                         <div class="search-advanced__input-col">
                                             <div class="custom-control custom-control--select">
-                                                <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
+                                                <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
                                                     valueChangeListener="#{queryItem.selectOneMenuListener}">
                                                     <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
                                                         <f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
                                                         <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                                         <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
                                                     </c:forEach>
-                                                    <f:ajax
-                                                        render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />
+                                                    <f:ajax render=":searchAdvancedInputGroup-0-#{status.count}" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>
                                         </div>
-                                    </ui:fragment>
+                                    </c:otherwise>
+                                    </c:choose>
                                     
-                                    <div class="col-12 col-sm-6 mb-3">
+                                    <div class="col-12 col-sm-7 mb-3">
                                         <!-- INPUT FIELD -->
-                                        <h:panelGroup id="advsearch_value_group_#{statusGroup.count}-#{status.count}">
+                                        <h:panelGroup id="advsearch_value_group_0-#{status.count}">
                                             <div class="search-advanced__input-col">
                                                 <h:panelGroup rendered="#{!queryItem.displaySelectItems}">
                                                     <div class="form-group">
-                                                        <label class="sr-only" for="advsearchValueText_#{statusGroup.count}-#{status.count}"></label>
+                                                        <label class="sr-only" for="advsearchValueText_0-#{status.count}"></label>
                                                         <div class="input-group">
                                                             <ui:fragment rendered="#{queryItem.range}">
                                                             	<div class="search-advanced__year-span-from d-none d-lg-inline-block">#{msg.searchAdvanced_range_value1}</div>
-                                                                <h:inputText id="advsearchValue1Text_#{statusGroup.count}-#{status.count}"
+                                                                <h:inputText id="advsearchValue1Text_0-#{status.count}"
                                                                     styleClass="form-control value-text -with-right-border" value="#{queryItem.value}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
                                                                 </h:inputText>
                                                                 <i class="fa fa-arrows-h search-advanced__between-arrow d-lg-none" aria-hidden="true"></i>
                                                                 <div class="search-advanced__year-span-to d-none d-lg-inline-block">#{msg.searchAdvanced_range_value2}</div>
-                                                                <h:inputText id="advsearchValue2Text_#{statusGroup.count}-#{status.count}"
+                                                                <h:inputText id="advsearchValue2Text_0-#{status.count}"
                                                                     styleClass="form-control value-text -with-right-border" value="#{queryItem.value2}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
                                                                 </h:inputText>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{!queryItem.range}">
-                                                                <h:inputText id="advsearchValueText_#{statusGroup.count}-#{status.count}"
+                                                                <h:inputText id="advsearchValueText_0-#{status.count}"
                                                                     styleClass="form-control value-text" value="#{queryItem.value}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                                                     <f:passThroughAttribute name="aria-label" value="#{msg.searchFieldDemoText}" />
@@ -129,7 +129,7 @@
                                                 </h:panelGroup>
                                                 <h:panelGroup rendered="#{queryItem.displaySelectItems}">
                                                     <div class="custom-control custom-control--select">
-                                                        <h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" styleClass="value-text"
+                                                        <h:selectOneMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
                                                             value="#{queryItem.value}">
                                                             <c:forEach var="item" items="#{queryItem.selectItems}">
                                                                 <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
@@ -143,8 +143,8 @@
                                     </div>
                                 </div>
                             </div>
+                         </c:forEach>
                     </div>
-                </c:forEach>
 
                 <div class="clearfix"></div>
 
