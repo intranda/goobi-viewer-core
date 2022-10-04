@@ -2150,14 +2150,14 @@ public final class SearchHelper {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
         SearchQueryGroup ret = new SearchQueryGroup(locale, 0);
 
-        // \((\w+:\"[\w ]+\"( AND | OR )*)+\)|\(+(\w+:\([\w ()]+\)( AND | OR )*)+\)|\((\w+:\(\[\w+ TO \w+\]\))\)
+        // [+-]*\((\w+:\"[\w ]+\"[ ]*)+\)|[+-]*\(((\w+:\([\w ]+\)) *)+\)|[+-]*\((\w+:\(\[\w+ TO \w+\]\) *)\)
         String patternAllItems =
-                "\\((\\w+:\\\"[\\w ]+\\\"( AND | OR )*)+\\)|\\(+(\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)|\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\))\\)";
+                "[+-]*\\((\\w+:\\\"[\\w ]+\\\"[ ]*)+\\)|[+-]*\\(((\\w+:\\([\\w ]+\\)) *)+\\)|[+-]*\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\) *)\\)";
 
-        String patternRegularItems = "\\((\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)";
+        String patternRegularItems = "[+-]*\\(((\\w+:\\([\\w ]+\\)) *)+\\)";
         String patternRegularPairs = "(\\w+:\\([\\w ()]+\\))( AND | OR )*";
 
-        String patternPhraseItems = "\\((\\w+:\"[\\w ]+\"( AND | OR )*)+\\)";
+        String patternPhraseItems = "[+-]*\\((\\w+:\\\"[\\w ]+\\\"[ ]*)+\\)";
         String patternPhrasePairs = "(\\w+:\"[\\w ]+\")( AND | OR )*";
 
         String patternRangeItems = "\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\))\\)";
@@ -2168,13 +2168,13 @@ public final class SearchHelper {
         String patternFacetString = "(\\w+:\\w+);;";
 
         // Regular query
-        // (((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
+        // (+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) +(SUPERFULLTEXT:(bla AND blup) FULLTEXT:(bla AND blup)))
 
         // Phrase query
-        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
+        // (+(SUPERDEFAULT:"foo bar" SUPERFULLTEXT:"foo bar" SUPERUGCTERMS:"foo bar" DEFAULT:"foo bar" FULLTEXT:"foo bar" NORMDATATERMS:"foo bar" UGCTERMS:"foo bar" CMS_TEXT_ALL:"foo bar") +(SUPERFULLTEXT:"bla blup" FULLTEXT:"bla blup"))
 
         // Mixed query
-        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)) AND (DOCSTRCT_TOP:"monograph") AND (MD_YEARPUBLISH:[1900 TO 2000])))
+        // (+(SUPERDEFAULT:"foo bar" SUPERFULLTEXT:"foo bar" SUPERUGCTERMS:"foo bar" DEFAULT:"foo bar" FULLTEXT:"foo bar" NORMDATATERMS:"foo bar" UGCTERMS:"foo bar" CMS_TEXT_ALL:"foo bar") +(SUPERFULLTEXT:(bla) FULLTEXT:(bla)) +(DOCSTRCT_TOP:"monograph") +(MD_YEARPUBLISH:[1900 TO 2000]))
 
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();

@@ -1055,7 +1055,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(1).setValue("bla blup");
 
         String result = SearchHelper.generateAdvancedExpandQuery(group, true);
-        Assert.assertEquals(" +(+(MD_FIELD:((val2 val2~1))) (MD_SHELFMARK:((bla) OR (blup blup~1))))", result);
+        Assert.assertEquals(" +(+(MD_FIELD:((val2 val2~1))) (MD_SHELFMARK:((bla) AND (blup blup~1))))", result);
     }
 
     /**

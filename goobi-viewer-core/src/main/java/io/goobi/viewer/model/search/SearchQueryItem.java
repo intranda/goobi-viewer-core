@@ -620,6 +620,7 @@ public class SearchQueryItem implements Serializable {
                                 if (allowFuzzySearch) {
                                     escValue = SearchHelper.addFuzzySearchToken(escValue, prefix, suffix);
                                     sbItem.append("(").append(escValue).append(")");
+                                    logger.error(escValue);
                                 } else {
                                     sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
                                 }
