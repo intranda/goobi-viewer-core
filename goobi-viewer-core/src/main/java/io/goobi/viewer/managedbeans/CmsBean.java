@@ -150,7 +150,6 @@ public class CmsBean implements Serializable {
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
     private boolean displaySidebarEditor = false;
-    private int nestedPagesCount = 0;
     private boolean editMode = false;
     private Map<String, CollectionView> collections = new HashMap<>();
     private List<CMSStaticPage> staticPages = null;
@@ -1793,28 +1792,6 @@ public class CmsBean implements Serializable {
             return new ArrayList<>(solrDoc.getFieldNames());
         }
         return Collections.emptyList();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>nestedPagesCount</code>.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getNestedPagesCount() {
-        return nestedPagesCount;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>nestedPagesCount</code>.
-     * </p>
-     *
-     * @param nestedPages a int.
-     */
-    public void setNestedPagesCount(int nestedPages) {
-        this.nestedPagesCount = nestedPages;
     }
 
     /**
