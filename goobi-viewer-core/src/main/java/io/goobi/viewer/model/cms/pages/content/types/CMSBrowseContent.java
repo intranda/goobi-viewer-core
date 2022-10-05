@@ -37,6 +37,9 @@ import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -46,7 +49,10 @@ public class CMSBrowseContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "browse";
     
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
     
      @Column(name = "solr_field")
      private String solrField;
@@ -114,6 +120,16 @@ public class CMSBrowseContent extends CMSContent {
            throw new PresentationException("Error initializing browsing on page load", e);
         }
         return "";
+    }
+    
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

@@ -56,7 +56,7 @@ public class PersistentCMSComponent implements IPolyglott {
     /** Unique database ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "component_id")
     private Long id;
     
     @Column(name = "css_classes")

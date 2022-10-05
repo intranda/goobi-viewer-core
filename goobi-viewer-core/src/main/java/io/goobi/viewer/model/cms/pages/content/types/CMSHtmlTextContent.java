@@ -45,23 +45,32 @@ import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_content_text")
-public class CMSText extends CMSContent implements TranslatableCMSContent {
+@Table(name = "cms_content_htmltext")
+public class CMSHtmlTextContent extends CMSContent implements TranslatableCMSContent {
 
-    private static final String BACKEND_COMPONENT_NAME = "text";
+    private static final String BACKEND_COMPONENT_NAME = "htmltext";
+    
 
-    @Column(name = "text", nullable = true, columnDefinition = "TEXT")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
+    
+    @Column(name = "text", nullable = true, columnDefinition = "LONGTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text = new TranslatedText();
 
-    public CMSText() {
+    public CMSHtmlTextContent() {
         //empty
     }
     
-    public CMSText(CMSText orig) {
+    public CMSHtmlTextContent(CMSHtmlTextContent orig) {
         super(orig);
         this.text = new TranslatedText(orig.text);
     }
@@ -78,13 +87,13 @@ public class CMSText extends CMSContent implements TranslatableCMSContent {
     public void setText(TranslatedText text) {
         this.text = text;
     }
-    
+
     @Override
     public CMSContent copy() {
-        CMSText copy = new CMSText(this);
+        CMSHtmlTextContent copy = new CMSHtmlTextContent(this);
         return copy;
     }
-    
+
     @Override
     public boolean isComplete(Locale locale) {
         return this.text.isComplete(locale);
@@ -109,7 +118,7 @@ public class CMSText extends CMSContent implements TranslatableCMSContent {
     public void setSelectedLocale(Locale locale) {
         this.text.setSelectedLocale(locale);
     }
-    
+
     @Override
     public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
         if (StringUtils.isEmpty(outputFolderPath)) {
@@ -140,9 +149,19 @@ public class CMSText extends CMSContent implements TranslatableCMSContent {
 
         return ret;
     }
-
+    
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
+    }
+    
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 }

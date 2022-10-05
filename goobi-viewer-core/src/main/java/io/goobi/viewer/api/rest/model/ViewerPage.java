@@ -25,7 +25,7 @@ import java.net.URI;
 
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
@@ -59,9 +59,10 @@ public class ViewerPage {
         this.label = page.getTitleTranslations();
         this.description = page.getPreviewTranslations();
         this.link = URI.create(page.getUrl());
-        this.image = page.getGlobalContentItems().stream()
-                .filter(item -> CMSContentItemType.MEDIA.equals(item.getType()))
+        this.image = page.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream())
+                .filter(item -> item instanceof CMSMediaHolder)
                 .sorted()
+                .map(item -> (CMSMediaHolder)item)
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
                 .findFirst().orElse(null);
     }

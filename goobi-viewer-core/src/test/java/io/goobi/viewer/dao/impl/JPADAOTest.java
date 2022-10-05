@@ -63,22 +63,19 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSSlider.SourceType;
+import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.cms.pages.CMSPageLanguageVersion;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
-import io.goobi.viewer.model.cms.pages.CMSPageLanguageVersion.CMSPageStatus;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
-import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
@@ -1782,140 +1779,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCMSPage(long)
-     * @verifies return correct page
-     */
-    @Test
-    public void getCMSPage_shouldReturnCorrectPage() throws Exception {
-        CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
-        Assert.assertNotNull(page);
-        Assert.assertEquals(Long.valueOf(1), page.getId());
-        Assert.assertEquals("template_simple", page.getTemplateId());
-        Assert.assertNotNull(page.getDateCreated());
-
-        Assert.assertEquals(2, page.getLanguageVersions().size());
-        Assert.assertEquals("de", page.getLanguageVersions().get(0).getLanguage());
-        Assert.assertEquals(CMSPageStatus.FINISHED, page.getLanguageVersions().get(0).getStatus());
-        Assert.assertEquals("Titel 1", page.getLanguageVersions().get(0).getTitle());
-        Assert.assertEquals("Menütitel 1", page.getLanguageVersions().get(0).getMenuTitle());
-        boolean lv1found = false;
-        for (CMSPageLanguageVersion lv : page.getLanguageVersions()) {
-            if (lv.getId() != null && lv.getId() == 1) {
-                lv1found = true;
-                //				Assert.assertEquals(3, page.getLanguageVersions().get(1).getContentItems().size());
-            }
-        }
-        Assert.assertTrue(lv1found);
-        Assert.assertEquals("C1", page.getLanguageVersions().get(0).getContentItems().get(0).getItemId());
-        Assert.assertEquals(CMSContentItemType.HTML, page.getLanguageVersions().get(0).getContentItems().get(0).getType());
-    }
-
-    /**
-     * @see JPADAO#addCMSPage(CMSPage)
-     * @verifies add page correctly
-     */
-    @Test
-    public void addCMSPage_shouldAddPageCorrectly() throws Exception {
-        CMSPage page = new CMSPage();
-        page.setTemplateId("template_id");
-        page.setDateCreated(LocalDateTime.now());
-        page.setPublished(true);
-        page.setUseDefaultSidebar(false);
-
-        CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
-        page.getCategories().add(cClass);
-
-        CMSPageLanguageVersion version = new CMSPageLanguageVersion();
-        version.setLanguage("en");
-        version.setOwnerPage(page);
-        version.setTitle("title");
-        version.setMenuTitle("menutitle");
-        version.setStatus(CMSPageStatus.REVIEW_PENDING);
-        page.getLanguageVersions().add(version);
-
-        CMSContentItem item = new CMSContentItem();
-        item.setOwnerPageLanguageVersion(version);
-        item.setItemId("I1");
-        item.setType(CMSContentItemType.SOLRQUERY);
-        item.setElementsPerPage(3);
-        item.setSolrQuery("PI:PPN517154005");
-        item.setSolrSortFields("SORT_TITLE,DATECREATED");
-        version.getContentItems().add(item);
-
-        CMSCategory news = DataManager.getInstance().getDao().getCategoryByName("news");
-        CMSCategory other = DataManager.getInstance().getDao().getCategoryByName("other");
-        item.addCategory(news);
-        item.addCategory(other);
-
-        // TODO add sidebar elements
-
-        Assert.assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
-        Assert.assertNotNull(page.getId());
-
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllCMSPages().size());
-        CMSPage page2 = DataManager.getInstance().getDao().getCMSPage(page.getId());
-        Assert.assertNotNull(page2);
-        Assert.assertEquals(page.getTemplateId(), page2.getTemplateId());
-        Assert.assertEquals(page.getDateCreated(), page2.getDateCreated());
-        Assert.assertEquals(1, page2.getCategories().size());
-        Assert.assertEquals(cClass, page2.getCategories().get(0));
-        Assert.assertEquals(1, page.getLanguageVersions().size());
-        Assert.assertEquals(version.getLanguage(), page.getLanguageVersions().get(0).getLanguage());
-        Assert.assertEquals(version.getTitle(), page.getLanguageVersions().get(0).getTitle());
-        Assert.assertEquals(version.getMenuTitle(), page.getLanguageVersions().get(0).getMenuTitle());
-        Assert.assertEquals(version.getStatus(), page.getLanguageVersions().get(0).getStatus());
-        Assert.assertEquals(1, page.getLanguageVersions().get(0).getContentItems().size());
-        Assert.assertEquals(item.getItemId(), page.getLanguageVersions().get(0).getContentItems().get(0).getItemId());
-        Assert.assertEquals(item.getType(), page.getLanguageVersions().get(0).getContentItems().get(0).getType());
-        Assert.assertEquals(item.getElementsPerPage(), page.getLanguageVersions().get(0).getContentItems().get(0).getElementsPerPage());
-        Assert.assertEquals(item.getSolrQuery(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrQuery());
-        Assert.assertEquals(item.getSolrSortFields(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrSortFields());
-        Assert.assertEquals(2, item.getCategories().size());
-        Assert.assertTrue(item.getCategories().contains(news));
-    }
-
-    /**
-     * @see JPADAO#updateCMSPage(CMSPage)
-     * @verifies update page correctly
-     */
-    @Test
-    public void updateCMSPage_shouldUpdatePageCorrectly() throws Exception {
-        CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
-        page.createMissingLanguageVersions(Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH }));
-        Assert.assertNotNull(page);
-        page.getLanguageVersion("de").setTitle("Deutscher Titel");
-        page.getLanguageVersion("en").setTitle("English title");
-        page.getLanguageVersion("fr").setTitle("Titre français");
-        page.getLanguageVersions().remove(0);
-        page.getProperty("TEST_PROPERTY").setValue("true");
-
-        CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
-        page.getCategories().add(cClass);
-
-        LocalDateTime now = LocalDateTime.now();
-        page.setDateUpdated(now);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
-
-        CMSPage page2 = DataManager.getInstance().getDao().getCMSPage(1);
-        Assert.assertNotNull(page2);
-        Assert.assertEquals(page.getDateUpdated(), page2.getDateUpdated());
-        Assert.assertEquals("English title", page2.getLanguageVersion("en").getTitle());
-        Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
-        Assert.assertEquals(2, page2.getLanguageVersions().size());
-        Assert.assertEquals(3, page2.getCategories().size());
-        Assert.assertTrue(page.getCategories().contains(cClass));
-        Assert.assertEquals(now, page2.getDateUpdated());
-        Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
-
-        page.getLanguageVersion("fr").setTitle("");
-        page.removeCategory(cClass);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
-        Assert.assertEquals("", page.getLanguageVersion("fr").getTitle());
-        Assert.assertEquals(2, page.getCategories().size(), 0);
-        Assert.assertFalse(page.getCategories().contains(cClass));
-    }
-
-    /**
      * @see JPADAO#deleteCMSPage(CMSPage)
      * @verifies delete page correctly
      */
@@ -2324,7 +2187,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
         List<String> subThemes = Arrays.asList(new String[] { "s1" });
-        List<String> templates = Arrays.asList(new String[] { "t1", "t2" });
+        List<Long> templates = Arrays.asList(new Long[] { 1l, 2l });
 
         Map<String, String> params = new HashMap<>();
 
@@ -2366,7 +2229,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testCreateCMSPageFilter_createValidQueryWithOneParam() throws AccessDeniedException {
 
-        List<String> templates = Arrays.asList(new String[] { "t1", "t2" });
+        List<Long> templates = Arrays.asList(new Long[] { 1l, 2l });
 
         Map<String, String> params = new HashMap<>();
 

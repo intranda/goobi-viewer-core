@@ -21,6 +21,17 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
+import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
+import io.goobi.viewer.model.misc.NumberIterator;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
@@ -37,19 +48,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
-import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
-import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
-import io.goobi.viewer.model.misc.NumberIterator;
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * <p>

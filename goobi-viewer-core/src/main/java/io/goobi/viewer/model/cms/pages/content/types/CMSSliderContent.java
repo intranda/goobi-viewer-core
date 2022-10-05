@@ -30,11 +30,23 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 
 public class CMSSliderContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "slider";
    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
+    
+    @JoinColumn(name = "slider_id")
     private CMSSlider slider;
     
     public CMSSliderContent() {
@@ -73,4 +85,13 @@ public class CMSSliderContent extends CMSContent {
         return null;
     }
     
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

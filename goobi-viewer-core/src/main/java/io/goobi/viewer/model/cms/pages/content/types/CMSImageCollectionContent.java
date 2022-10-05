@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.persistence.annotations.PrivateOwned;
+
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.StringListConverter;
@@ -42,22 +44,35 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_imagecollection")
-public class CMSImageCollection extends CMSContent implements CMSCategoryHolder {
+public class CMSImageCollectionContent extends CMSContent implements CMSCategoryHolder {
 
     private static final String COMPONENT_NAME = "imagecollection";
     private static final int DEFAULT_IMAGES_PER_VIEW = 10;
     private static final int DEFAULT_IMPORTANT_IMAGES_PER_VIEW = 0;
     
-    @Column(name="categories", columnDefinition = "MEDIUMTEXT")
-    @Convert(converter = StringListConverter.class)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "owner_content_id")
+    @PrivateOwned
     private List<CMSCategory> categories;
     
     @Column(name="images_per_view")
@@ -67,13 +82,13 @@ public class CMSImageCollection extends CMSContent implements CMSCategoryHolder 
     
     @Transient List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
     
-    public CMSImageCollection() {
+    public CMSImageCollectionContent() {
         this.categories = new ArrayList<>();
         imagesPerView = DEFAULT_IMAGES_PER_VIEW;
         importantImagesPerView = DEFAULT_IMPORTANT_IMAGES_PER_VIEW;
     }
     
-    private CMSImageCollection(CMSImageCollection orig) {
+    private CMSImageCollectionContent(CMSImageCollectionContent orig) {
         this.categories = orig.categories;
         this.imagesPerView = orig.imagesPerView;
         this.importantImagesPerView = orig.importantImagesPerView;
@@ -165,7 +180,7 @@ public class CMSImageCollection extends CMSContent implements CMSCategoryHolder 
 
     @Override
     public CMSContent copy() {
-        return new CMSImageCollection(this);
+        return new CMSImageCollectionContent(this);
     }
 
     @Override
@@ -198,4 +213,13 @@ public class CMSImageCollection extends CMSContent implements CMSCategoryHolder 
         }
     }
     
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

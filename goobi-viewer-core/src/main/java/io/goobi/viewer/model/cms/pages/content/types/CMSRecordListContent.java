@@ -43,14 +43,23 @@ import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_record_list")
-public class CMSRecordList extends CMSContent {
+public class CMSRecordListContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "recordlist";
+    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
     
     @Column(name = "solr_query")
     private String solrQuery = "";
@@ -67,11 +76,11 @@ public class CMSRecordList extends CMSContent {
     @Transient
     private final SearchFunctionality search;
     
-    public CMSRecordList() {
+    public CMSRecordListContent() {
         this.search = initSearch();
     }
     
-    private CMSRecordList(CMSRecordList orig) {
+    private CMSRecordListContent(CMSRecordListContent orig) {
         super(orig);
         this.solrQuery = orig.solrQuery;
         this.sortField = orig.sortField;
@@ -138,7 +147,7 @@ public class CMSRecordList extends CMSContent {
     
     @Override
     public CMSContent copy() {
-        return new CMSRecordList(this);
+        return new CMSRecordListContent(this);
     }
 
     @Override
@@ -176,6 +185,16 @@ public class CMSRecordList extends CMSContent {
         } catch (PresentationException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
             throw new PresentationException("Error initializing search hit list on page load", e);
         }
+    }
+    
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

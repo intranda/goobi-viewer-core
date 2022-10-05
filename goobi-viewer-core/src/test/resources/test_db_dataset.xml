@@ -165,38 +165,30 @@
     <cms_sliders source_type="2" slider_id="3" name="CMSPage Slider" description="Slider from solr CMS pages" style="base" categories="tag1,tag2" />
     
     <cms_collections cms_collection_id="1" solr_field="DC" solr_value="dcimage" media_item_id="1" />
-		
-	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
-	    published="true" use_default_sidebar="false"/>
-	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
-        published="false" use_default_sidebar="true"/>
-    <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
-        published="true" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" />
+		        
+    <cms_content_htmltext cms_content_id="1" component_id="text" owning_component="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
+    <cms_content_image cms_content_id="1" component_id="image" owning_component="2" media_item_id="1" />   
+    <cms_content_text cms_content_id="1" component_id="text" owning_component="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
+    <cms_content_htmltext cms_content_id="2" component_id="text" owning_component="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
+    <cms_content_image cms_content_id="2" component_id="image" owning_component="4" media_item_id="2" />   
+    
+    <cms_components component_id="1" publication_state="PUBLISHED" templateFilename="htmltext.xml" order="1" owner_page_id="1"/>
+    <cms_components component_id="2" publication_state="PUBLISHED" templateFilename="image.xml" order="2" owner_page_id="1"/>
+    <cms_components component_id="3" publication_state="PUBLISHED" templateFilename="text.xml" order="1" owner_page_id="2"/>
+    <cms_components component_id="4" publication_state="PUBLISHED" templateFilename="textwithimage.xml" order="1" owner_page_id="3"/>        
+    
+	<cms_pages cms_page_id="1" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
+	    publication_status="PUBLISHED" use_default_sidebar="false"/>
+	<cms_pages cms_page_id="2" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
+        publication_status="PRIVATE" use_default_sidebar="true"/>
+    <cms_pages cms_page_id="3" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
+        publication_status="PUBLISHED" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" />
         
-    <cms_properties id="1" property_key="DISPLAY_CHILD_TAGS_AS_HEADERS" property_value="false" owner_page_id="3"/>  
-        
+    
+    
     <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
     <cms_static_pages static_page_id="2" static_page_name="search"/>
-    
         
-    <cms_page_language_versions cms_page_language_version_id="1" owner_page_id="1" language="de" status="FINISHED"
-        title="Titel 1" menu_title="Menütitel 1" />
-    <cms_page_language_versions cms_page_language_version_id="2" owner_page_id="1" language="en" status="FINISHED"
-        title="Title 1" menu_title="Menu title 1" />
-    <cms_page_language_versions cms_page_language_version_id="3" owner_page_id="2" language="global" status="FINISHED"
-        title="Title 1" menu_title="Menu title 1"/>
-        
-    <cms_content_items cms_content_item_id="1" item_id="C1" type="HTML"  owner_page_language_version_id="1"
-        html_fragment="&lt;b&gt;Hello CMS&lt;/b&gt;" />
-    <cms_content_items cms_content_item_id="2" item_id="C2" type="MEDIA" owner_page_language_version_id="1"
-        media_item_id="1" />
-    <cms_content_items cms_content_item_id="3" item_id="C3" type="SOLRQUERY" owner_page_language_version_id="1"
-        solr_query="PI:*" solr_sort_fields="SORT_TITLE,DATECREATED" elements_per_page="20" />
-    <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" owner_page_language_version_id="1" 
-    	elements_per_page="5" />
-    <cms_content_items cms_content_item_id="5" item_id="C5" type="GEOMAP" geomap_id="1" owner_page_language_version_id="1"/>
-    <cms_content_items cms_content_item_id="6" item_id="C6" type="GEOMAP" geomap_id="1" owner_page_language_version_id="3"/>
-    <cms_content_items cms_content_item_id="7" item_id="C7" type="SLIDER" slider_id="1" owner_page_language_version_id="3"/>
     
     <cms_page_cms_categories page_id="1" category_id="4" />
     <cms_page_cms_categories page_id="1" category_id="5" />

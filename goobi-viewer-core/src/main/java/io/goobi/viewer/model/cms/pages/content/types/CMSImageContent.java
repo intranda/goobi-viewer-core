@@ -52,24 +52,34 @@ import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_image")
-public class CMSImage extends CMSContent implements CMSMediaHolder {
+public class CMSImageContent extends CMSContent implements CMSMediaHolder {
 
     private static final String BACKEND_COMPONENT_NAME = "image";
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
+    
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
-    public CMSImage() {
+    public CMSImageContent() {
         //empty
     }
 
-    public CMSImage(CMSImage orig) {
+    public CMSImageContent(CMSImageContent orig) {
         super(orig);
         this.mediaItem = orig.mediaItem;
     }
@@ -156,7 +166,7 @@ public class CMSImage extends CMSContent implements CMSMediaHolder {
 
     @Override
     public CMSContent copy() {
-        CMSImage copy = new CMSImage(this);
+        CMSImageContent copy = new CMSImageContent(this);
         return copy;
     }
 
@@ -193,5 +203,15 @@ public class CMSImage extends CMSContent implements CMSMediaHolder {
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
+    }
+    
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 }

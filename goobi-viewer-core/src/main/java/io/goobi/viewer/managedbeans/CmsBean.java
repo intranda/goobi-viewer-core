@@ -89,8 +89,8 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.PageValidityStatus;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
-import io.goobi.viewer.model.cms.pages.content.types.CMSRecordList;
-import io.goobi.viewer.model.cms.pages.content.types.CMSSearch;
+import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.search.Search;
@@ -1579,7 +1579,7 @@ public class CmsBean implements Serializable {
                 .getDao()
                 .getAllCMSPages()
                 .stream()
-                .filter(cmsPage -> cmsPage.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream()).anyMatch(item -> item instanceof CMSSearch))
+                .filter(cmsPage -> cmsPage.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream()).anyMatch(item -> item instanceof CMSSearchContent))
                 .collect(Collectors.toList());
     }
 
@@ -1828,7 +1828,7 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String getRepresentativeImageForQuery(CMSRecordList item)
+    public String getRepresentativeImageForQuery(CMSRecordListContent item)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         int width = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
         int height = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
@@ -1850,12 +1850,12 @@ public class CmsBean implements Serializable {
      */
     public String getRepresentativeImageForQuery(CMSPage page, int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        CMSRecordList contentItem = page.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream())
-                .filter(item -> item instanceof CMSRecordList)
-                .map(i -> (CMSRecordList)i)
+        CMSRecordListContent contentItem = page.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream())
+                .filter(item -> item instanceof CMSRecordListContent)
+                .map(i -> (CMSRecordListContent)i)
                 .findAny()
                 .orElseThrow(
-                        () -> new IllegalStateException("The page does not contain content items of type '" + CMSRecordList.class.getSimpleName() + "'"));
+                        () -> new IllegalStateException("The page does not contain content items of type '" + CMSRecordListContent.class.getSimpleName() + "'"));
         return getRepresentativeImageForQuery(contentItem, width, height);
     }
 
@@ -1872,7 +1872,7 @@ public class CmsBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String getRepresentativeImageForQuery(CMSRecordList item, int width, int height)
+    public String getRepresentativeImageForQuery(CMSRecordListContent item, int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         if (StringUtils.isBlank(item.getSolrQuery())) {
             throw new IllegalStateException("Item " + item + " does not define a solr query");

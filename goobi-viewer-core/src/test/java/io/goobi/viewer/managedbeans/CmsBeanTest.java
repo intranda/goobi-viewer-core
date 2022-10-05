@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -37,7 +36,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +46,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -120,7 +117,6 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();
-        page.setTemplateId("new");
         assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
 
         List<CMSStaticPage> staticPages = bean.getStaticPages();
@@ -206,23 +202,5 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         for (int i = 0; i < pageTypes.size(); ++i) {
             Assert.assertEquals(pageTypes.get(i).getName(), pages.get(i).getPageName());
         }
-    }
-
-    @Test
-    public void testGetNestedPages() throws DAOException {
-        List<CMSPage> pages = Arrays.asList(new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage());
-        pages.forEach(page -> page.setPublished(true));
-        CmsBean bean = Mockito.spy(CmsBean.class);
-        Mockito.when(bean.getAllCMSPages()).thenReturn(pages);
-        CMSContentItem item = Mockito.mock(CMSContentItem.class);
-        Mockito.when(item.getElementsPerPage()).thenReturn(3);
-        Mockito.when(item.getListPage()).thenReturn(3);
-        Mockito.when(item.getListOffset()).thenCallRealMethod();
-
-        assertEquals(6, item.getListOffset());
-
-        List<CMSPage> children = bean.getNestedPages(item);
-        assertEquals(1, children.size());
-        assertEquals(3, item.getListPage());
     }
 }

@@ -49,11 +49,6 @@ import jakarta.persistence.ManyToOne;
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class CMSContent {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
     
     /**
      * Mirrors the {@link CMSContentItem#getComponentId()} of the enclosing {@link CMSContentItem}
@@ -74,7 +69,7 @@ public abstract class CMSContent {
     }
     
     protected CMSContent(CMSContent orig) {
-        this.id = orig.id;
+        this.setId(orig.getId());
         this.componentId = orig.componentId;
         this.owningComponent = orig.owningComponent;
     }
@@ -83,13 +78,9 @@ public abstract class CMSContent {
         return "cms/backend/components/content";
     }
     
-    public Long getId() {
-        return id;
-    }
+    public abstract Long getId();
     
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public abstract void setId(Long id);
     
     public String getComponentId() {
         return componentId;

@@ -41,15 +41,24 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.search.SearchHelper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_search")
-public class CMSSearch extends CMSContent {
+public class CMSSearchContent extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "search";
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
+    
     @Column(name = "search_prefix")
     private String searchPrefix = "";
 
@@ -62,11 +71,11 @@ public class CMSSearch extends CMSContent {
     @Transient
     private final SearchFunctionality search;
 
-    public CMSSearch() {
+    public CMSSearchContent() {
         this.search = initSearch();
     }
 
-    public CMSSearch(CMSSearch orig) {
+    public CMSSearchContent(CMSSearchContent orig) {
         super(orig);
         this.searchPrefix = orig.searchPrefix;
         this.displayEmptySearchResults = orig.displayEmptySearchResults;
@@ -116,7 +125,7 @@ public class CMSSearch extends CMSContent {
 
     @Override
     public CMSContent copy() {
-        CMSSearch copy = new CMSSearch(this);
+        CMSSearchContent copy = new CMSSearchContent(this);
         return copy;
     }
 
@@ -167,6 +176,16 @@ public class CMSSearch extends CMSContent {
         this.search.search(this.getOwningPage().getSubThemeDiscriminatorValue());
         BeanUtils.getNavigationHelper().addSearchUrlWithCurrentSortStringToHistory();
         return "";
+    }
+    
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

@@ -23,6 +23,7 @@ package io.goobi.viewer.model.cms.pages;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,8 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import gov.loc.mets.FileType.Stream;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -68,10 +67,10 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSHtmlText;
-import io.goobi.viewer.model.cms.pages.content.types.CMSImage;
-import io.goobi.viewer.model.cms.pages.content.types.CMSSearch;
-import io.goobi.viewer.model.cms.pages.content.types.CMSText;
+import io.goobi.viewer.model.cms.pages.content.types.CMSHtmlTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSImageContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSTextContent;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
@@ -82,7 +81,6 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
-import io.goobi.viewer.model.viewer.collections.CollectionView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -108,7 +106,9 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
+public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable {
+
+    private static final long serialVersionUID = -3601192218326197746L;
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
@@ -1101,7 +1101,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
 
             for (PersistentCMSComponent component : cmsComponents) {
                 for (CMSContent content : component.getContentItems()) {
-                    if(content instanceof CMSText || content instanceof CMSHtmlText || content instanceof CMSImage) {
+                    if(content instanceof CMSTextContent || content instanceof CMSHtmlTextContent || content instanceof CMSImageContent) {
                         String baseFileName = id + "-" + content.getComponentId() + ".";
                         for (Path file : cmsPageFiles) {
                             if (file.getFileName().toString().startsWith(baseFileName)) {
@@ -1301,13 +1301,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
 
     public boolean hasSearchFunctionality() {
         return this.cmsComponents.stream().flatMap(c -> c.getContentItems().stream())
-                .anyMatch(content -> content instanceof CMSSearch);
+                .anyMatch(content -> content instanceof CMSSearchContent);
     }
 
     public Optional<SearchFunctionality> getSearch() {
         return this.cmsComponents.stream().flatMap(c -> c.getContentItems().stream())
-                .filter(content -> content instanceof CMSSearch)
-                .map(content -> ((CMSSearch)content).getSearch())
+                .filter(content -> content instanceof CMSSearchContent)
+                .map(content -> ((CMSSearchContent)content).getSearch())
                 .findAny();
     }
 

@@ -30,18 +30,28 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.maps.GeoMap;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
-public class CMSGeomap extends CMSContent {
+public class CMSGeomapContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "geomap";
     
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
+    
     public GeoMap map;
     
-    public CMSGeomap() {
+    public CMSGeomapContent() {
         
     }
     
-    public CMSGeomap(CMSGeomap orig) {
+    public CMSGeomapContent(CMSGeomapContent orig) {
         this.map = orig.map;
     }
     
@@ -52,7 +62,7 @@ public class CMSGeomap extends CMSContent {
 
     @Override
     public CMSContent copy() {
-        return new CMSGeomap(this);
+        return new CMSGeomapContent(this);
     }
 
     @Override
@@ -63,5 +73,15 @@ public class CMSGeomap extends CMSContent {
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
+    }
+    
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
     }
 }

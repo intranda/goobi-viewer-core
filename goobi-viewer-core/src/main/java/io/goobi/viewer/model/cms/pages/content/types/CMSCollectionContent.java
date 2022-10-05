@@ -44,11 +44,20 @@ import io.goobi.viewer.solr.SolrConstants;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 
 public class CMSCollectionContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "collection";
+    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
     
     @Column(name="solr_field")
     private String solrField = SolrConstants.DC;
@@ -224,4 +233,13 @@ public class CMSCollectionContent extends CMSContent {
         }
     }
 
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
