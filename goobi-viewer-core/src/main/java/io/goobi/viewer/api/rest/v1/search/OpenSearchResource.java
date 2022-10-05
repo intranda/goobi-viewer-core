@@ -35,8 +35,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -61,7 +61,7 @@ public class OpenSearchResource {
 
     private static final String RESOURCE_URL_REGEX = "\\{resourceUrl:(.+?)\\}";
 
-    private static final Logger logger = LoggerFactory.getLogger(OpenSearchResource.class);
+    private static final Logger logger = LogManager.getLogger(OpenSearchResource.class);
 
     @Context
     private HttpServletRequest servletRequest;

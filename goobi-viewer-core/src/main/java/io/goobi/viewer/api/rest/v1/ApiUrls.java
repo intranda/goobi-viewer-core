@@ -110,11 +110,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_ALTO = "/alto/{filename}";
     public static final String RECORDS_FILES_CMDI = "/cmdi/{filename}";
     public static final String RECORDS_FILES_TEI = "/tei/{filename}";
-    /**
-     * @deprecated use {@link #RECORDS_FILES_IMAGE}{@link #RECORDS_FILES_IMAGE_PDF} instead
-     */
-    @Deprecated
-    public static final String RECORDS_FILES_PDF = "/pdf/{filename}";
+
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
     public static final String RECORDS_FILES_VIDEO = "/video/{mimetype}/{filename}";
@@ -158,7 +154,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String USERS_BOOKMARKS_LIST_RSS = "/{listId}/rss.xml";
     public static final String USERS_BOOKMARKS_LIST_RSS_JSON = "/{listId}/rss.json";
     public static final String USERS_BOOKMARKS_LIST_STATISTICS = "/{listId}/statistics";
-    public static final String USERS_BOOKMARKS_SHARED = "/shared";
     public static final String USERS_BOOKMARKS_PUBLIC = "/public";
     public static final String USERS_BOOKMARKS_LIST_SHARED = "/shared/{key}";
     public static final String USERS_BOOKMARKS_LIST_SHARED_MIRADOR = "/shared/{key}/mirador.json";

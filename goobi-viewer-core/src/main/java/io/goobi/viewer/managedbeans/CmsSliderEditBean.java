@@ -36,8 +36,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,7 +67,7 @@ public class CmsSliderEditBean implements Serializable {
 
     private static final long serialVersionUID = -2204866565916114208L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsSliderEditBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsSliderEditBean.class);
 
     private static final String COLLECTION_FIELD = "DC";
 

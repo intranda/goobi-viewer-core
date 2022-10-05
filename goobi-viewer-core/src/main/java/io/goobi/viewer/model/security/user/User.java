@@ -50,8 +50,8 @@ import javax.servlet.http.Part;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
@@ -100,7 +100,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     private static final long serialVersionUID = 549769987121664488L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(User.class);
+    private static final Logger logger = LogManager.getLogger(User.class);
 
     /** Constant <code>ATTRIBUTE_LOGINS="logins"</code> */
     public static final String ATTRIBUTE_LOGINS = "logins";

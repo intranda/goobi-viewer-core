@@ -25,15 +25,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  */
 public class ExcelExport {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExcelExport.class);
+    private static final Logger logger = LogManager.getLogger(ExcelExport.class);
 
     private SXSSFWorkbook workbook;
     private String fileName;

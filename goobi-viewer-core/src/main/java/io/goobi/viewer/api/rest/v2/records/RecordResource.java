@@ -42,8 +42,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
@@ -82,7 +82,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @CORSBinding
 public class RecordResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecordResource.class);
+    private static final Logger logger = LogManager.getLogger(RecordResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context

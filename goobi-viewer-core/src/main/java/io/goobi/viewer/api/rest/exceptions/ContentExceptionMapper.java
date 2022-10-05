@@ -31,8 +31,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -56,7 +56,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceUnavailableExce
 @Provider
 public class ContentExceptionMapper implements ExceptionMapper<ContentLibException>{
 
-    private static final Logger logger = LoggerFactory.getLogger(ContentExceptionMapper.class);
+    private static final Logger logger = LogManager.getLogger(ContentExceptionMapper.class);
 
     @Context HttpServletResponse response;
     @Context HttpServletRequest request;

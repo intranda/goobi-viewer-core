@@ -41,8 +41,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -73,7 +73,7 @@ public class AnnotationBean implements Serializable {
 
     private static final long serialVersionUID = 8377250065305331020L;
 
-    private static final Logger logger = LoggerFactory.getLogger(AnnotationBean.class);
+    private static final Logger logger = LogManager.getLogger(AnnotationBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 

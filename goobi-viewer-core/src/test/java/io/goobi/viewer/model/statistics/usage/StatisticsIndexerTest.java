@@ -105,7 +105,6 @@ public class StatisticsIndexerTest {
         
         assertEquals(query1, query2);
         assertEquals("+DOCTYPE:STATISTICS_USAGE +STATISTICS_DATE:\"2022-08-30T00:00:00Z\"", query1);
-        System.out.println(query1);
     }
     
     private DailySessionUsageStatistics createStatistics() {

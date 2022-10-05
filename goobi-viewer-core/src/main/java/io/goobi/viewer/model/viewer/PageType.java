@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -141,7 +141,7 @@ public enum PageType {
     other(""); //unknown page type name in Navigationhelper. Probably a cms-page
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(PageType.class);
+    private static final Logger logger = LogManager.getLogger(PageType.class);
 
     public final String path;
     private final String label;

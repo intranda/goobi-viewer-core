@@ -35,8 +35,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -65,7 +65,7 @@ public class CmsRecordNotesBean implements Serializable{
 
     private static final long serialVersionUID = 1436349423447175132L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsRecordNotesBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsRecordNotesBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 10;
 
@@ -213,6 +213,6 @@ public class CmsRecordNotesBean implements Serializable{
 
     public String getSearchUrlForNote(CMSMultiRecordNote note)  {
         String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", query, "1", "-", "-");
     }
 }

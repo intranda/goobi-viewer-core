@@ -44,8 +44,8 @@ import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -65,7 +65,7 @@ import io.goobi.viewer.model.viewer.PageType;
 public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSNavigationItem.class);
+    private static final Logger logger = LogManager.getLogger(CMSNavigationItem.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

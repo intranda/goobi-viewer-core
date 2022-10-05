@@ -32,9 +32,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
  */
 public class CMSPageContentManager {
     
-    private static final Logger logger = LoggerFactory.getLogger(CMSPageContentManager.class);
+    private static final Logger logger = LogManager.getLogger(CMSPageContentManager.class);
     
     private final List<CMSComponent> components = new ArrayList<>();
 

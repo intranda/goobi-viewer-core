@@ -37,8 +37,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -65,7 +65,7 @@ import io.goobi.viewer.solr.SolrTools;
 public class IdentifierResolver extends HttpServlet {
 
     /** Loggers for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(IdentifierResolver.class);
+    private static final Logger logger = LogManager.getLogger(IdentifierResolver.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -189,7 +189,6 @@ public class IdentifierResolver extends HttpServlet {
                     if (DataManager.getInstance().getConfiguration().getUrnResolverFields().size() > 1) {
                         for (String f : DataManager.getInstance().getConfiguration().getUrnResolverFields()) {
                             if (!fieldName.equals(f)) {
-                                logger.trace("Querying field: {}", f);
                                 hits = query(f, fieldValue, moreFields, moreValues, request);
                                 if (hits.getNumFound() > 0) {
                                     found = true;
@@ -214,7 +213,6 @@ public class IdentifierResolver extends HttpServlet {
                         logger.error(e.getMessage());
                     }
                 }
-                return;
             } else if (hits.getNumFound() > 1) {
                 // 3.2 show multiple match, that indicates corrupted index
                 try {
@@ -461,12 +459,13 @@ public class IdentifierResolver extends HttpServlet {
      */
     private static SolrDocumentList query(String fieldName, String fieldValue, Map<Integer, String> moreFields, Map<Integer, String> moreValues,
             HttpServletRequest request) throws PresentationException, IndexUnreachableException {
+        logger.trace("Querying field: {}", fieldName);
         StringBuilder sbQuery = new StringBuilder()
                 .append('+')
-                .append(fieldName.toUpperCase())
+                .append(ClientUtils.escapeQueryChars(fieldName.toUpperCase()))
                 .append(':')
                 .append('"')
-                .append(ClientUtils.escapeQueryChars(fieldValue))
+                .append(fieldValue)
                 .append('"');
 
         // Add additional field/value pairs to the query
@@ -482,8 +481,8 @@ public class IdentifierResolver extends HttpServlet {
         }
 
         sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
-        String query = sbQuery.toString();
-        // logger.trace("query: {}", StringTools.stripPatternBreakingChars(query));
+        String query = StringTools.stripPatternBreakingChars(sbQuery.toString());
+        // logger.trace("query: {}", query);
 
         // 3. evaluate the search
         return DataManager.getInstance().getSearchIndex().search(query);

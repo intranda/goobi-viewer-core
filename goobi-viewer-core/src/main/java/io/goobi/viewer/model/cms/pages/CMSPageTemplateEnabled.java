@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.model.cms.pages;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Persistence class for the enabled/disabled status of a CMSPageTemplate (which is itself not persisted in the DB).
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class CMSPageTemplateEnabled {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSPageTemplateEnabled.class);
+    private static final Logger logger = LogManager.getLogger(CMSPageTemplateEnabled.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

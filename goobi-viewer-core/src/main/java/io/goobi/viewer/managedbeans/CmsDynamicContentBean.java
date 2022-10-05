@@ -30,8 +30,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.jboss.weld.exceptions.IllegalStateException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -47,7 +47,7 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
 @ViewScoped
 public class CmsDynamicContentBean implements Serializable{
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsDynamicContentBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsDynamicContentBean.class);
 
     private static final long serialVersionUID = 644204008911471246L;
     private HtmlPanelGroup topBarGroup = null;

@@ -76,8 +76,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -88,7 +88,7 @@ import io.goobi.viewer.exceptions.HTTPException;
  */
 public class NetTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(NetTools.class);
+    private static final Logger logger = LogManager.getLogger(NetTools.class);
 
     /**
      * Used to detect requests by web-crawlers

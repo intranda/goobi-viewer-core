@@ -64,8 +64,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.client.ClientProperties;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -101,7 +101,7 @@ public abstract class DownloadJob implements Serializable {
     /** Constant <code>TTL_FORMAT="dd'T'HH:mm:ss"</code> */
     protected static final String TTL_FORMAT = "dd'T'HH:mm:ss";
 
-    private static final Logger logger = LoggerFactory.getLogger(DownloadJob.class);
+    private static final Logger logger = LogManager.getLogger(DownloadJob.class);
 
     private static final long serialVersionUID = -491389510147134159L;
 

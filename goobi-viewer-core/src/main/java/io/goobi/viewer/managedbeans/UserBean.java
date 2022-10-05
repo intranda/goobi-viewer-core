@@ -50,8 +50,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -92,7 +92,7 @@ public class UserBean implements Serializable {
 
     private static final long serialVersionUID = 5917173704087714181L;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserBean.class);
+    private static final Logger logger = LogManager.getLogger(UserBean.class);
 
     @Inject
     private CaptchaBean captchaBean;

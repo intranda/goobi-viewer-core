@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +34,10 @@ import java.util.Set;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -53,6 +54,7 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.SecurityQuestion;
@@ -69,7 +71,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class ConfigurationTest extends AbstractTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
+    private static final Logger logger = LogManager.getLogger(ConfigurationTest.class);
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
@@ -1427,7 +1429,41 @@ public class ConfigurationTest extends AbstractTest {
     public void getDefaultSortField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(SolrConstants.SORT_RANDOM, DataManager.getInstance().getConfiguration().getDefaultSortField());
     }
-    
+
+    /**
+     * @see Configuration#getSearchSortingOptions()
+     * @verifies place default sorting field on top
+     */
+    @Test
+    public void getSearchSortingOptions_shouldPlaceDefaultSortingFieldOnTop() throws Exception {
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Assert.assertEquals(10, result.size());
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, result.get(0).getField());
+    }
+
+    /**
+     * @see Configuration#getSearchSortingOptions()
+     * @verifies handle descending configurations correctly
+     */
+    @Test
+    public void getSearchSortingOptions_shouldHandleDescendingConfigurationsCorrectly() throws Exception {
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Assert.assertEquals(10, result.size());
+        Assert.assertEquals(SolrConstants.DATECREATED, result.get(6).getField());
+        Assert.assertEquals(SolrConstants.DATECREATED, result.get(7).getField());
+    }
+
+    /**
+     * @see Configuration#getSearchSortingOptions()
+     * @verifies ignore secondary fields from default config
+     */
+    @Test
+    public void getSearchSortingOptions_shouldIgnoreSecondaryFieldsFromDefaultConfig() throws Exception {
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Assert.assertEquals(10, result.size());
+        Assert.assertEquals("SORT_YEARPUBLISH", result.get(8).getField());
+        Assert.assertEquals("SORT_YEARPUBLISH", result.get(9).getField());
+    }
 
     /**
      * @see Configuration#getUrnResolverFields()
@@ -1491,6 +1527,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
         List<String> fields = DataManager.getInstance().getConfiguration().getSortFields();
         Assert.assertEquals(6, fields.size());
+        Assert.assertEquals("!" + SolrConstants.DATECREATED, fields.get(4));
         Assert.assertEquals("SORT_YEARPUBLISH;SORT_TITLE", fields.get(5));
     }
 

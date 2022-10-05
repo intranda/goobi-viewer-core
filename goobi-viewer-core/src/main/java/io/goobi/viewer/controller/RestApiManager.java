@@ -23,8 +23,8 @@ package io.goobi.viewer.controller;
 
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
@@ -53,7 +53,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  */
 public class RestApiManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestApiManager.class);
+    private static final Logger logger = LogManager.getLogger(RestApiManager.class);
 
     private Configuration config = null;
 

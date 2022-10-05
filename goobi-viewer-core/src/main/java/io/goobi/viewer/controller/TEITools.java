@@ -26,8 +26,8 @@ import java.io.IOException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TEITools {
 
-    private final static Logger logger = LoggerFactory.getLogger(TEITools.class);
+    private final static Logger logger = LogManager.getLogger(TEITools.class);
 
     /**
      * Returns the full-text part of the given TEI document string.

@@ -24,8 +24,8 @@ package io.goobi.viewer.dao.converter;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -35,7 +35,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 @Converter
 public class SimpleMediaHolderConverter implements AttributeConverter<SimpleMediaHolder, Long> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleMediaHolderConverter.class);
+    private static final Logger logger = LogManager.getLogger(SimpleMediaHolderConverter.class);
 
 
     @Override

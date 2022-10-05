@@ -37,8 +37,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AjaxResponseException;
@@ -62,7 +62,7 @@ import io.goobi.viewer.model.viewer.PageType;
 @ViewScoped
 public class CustomWidgetEditBean implements Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomWidgetEditBean.class);
+    private static final Logger logger = LogManager.getLogger(CustomWidgetEditBean.class);
 
     private static final long serialVersionUID = 4892069370268036814L;
     private CustomSidebarWidget widget = null;

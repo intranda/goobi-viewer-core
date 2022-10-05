@@ -47,10 +47,10 @@ import javax.inject.Named;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -120,7 +120,7 @@ public class CmsBean implements Serializable {
 
     private static final long serialVersionUID = -2021732230593473827L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
@@ -144,7 +144,6 @@ public class CmsBean implements Serializable {
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
     private boolean displaySidebarEditor = false;
-    private int nestedPagesCount = 0;
     private boolean editMode = false;
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
@@ -1307,7 +1306,6 @@ public class CmsBean implements Serializable {
         return null;
     }
 
-
     /**
      * <p>
      * hasSearchResults.
@@ -1347,28 +1345,6 @@ public class CmsBean implements Serializable {
             return new ArrayList<>(solrDoc.getFieldNames());
         }
         return Collections.emptyList();
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>nestedPagesCount</code>.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getNestedPagesCount() {
-        return nestedPagesCount;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>nestedPagesCount</code>.
-     * </p>
-     *
-     * @param nestedPages a int.
-     */
-    public void setNestedPagesCount(int nestedPages) {
-        this.nestedPagesCount = nestedPages;
     }
 
     /**

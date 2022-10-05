@@ -41,8 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
@@ -69,7 +69,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @ViewerRestServiceBinding
 public class AuthorityResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthorityResource.class);
+    private static final Logger logger = LogManager.getLogger(AuthorityResource.class);
 
     @Context
     private HttpServletRequest servletRequest;

@@ -36,26 +36,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -69,6 +56,19 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * <p>
@@ -82,7 +82,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     private static final long serialVersionUID = 31745843830948125L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSMediaItem.class);
+    private static final Logger logger = LogManager.getLogger(CMSMediaItem.class);
 
     /** Constant <code>CONTENT_TYPE_XML="text/xml"</code> */
     public static final String CONTENT_TYPE_XML = "text/xml";

@@ -36,8 +36,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mockito.Mockito;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -55,7 +56,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsBeanTest.class);
+    private static final Logger logger = LogManager.getLogger(CmsBeanTest.class);
 
     /**
      * @throws java.lang.Exception

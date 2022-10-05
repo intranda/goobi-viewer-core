@@ -55,8 +55,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
@@ -68,7 +68,7 @@ import de.unigoettingen.sub.commons.util.PathConverter;
  */
 public class FileTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
+    private static final Logger logger = LogManager.getLogger(FileTools.class);
 
     /** Constant <code>filenameFilterXML</code> */
     public static FilenameFilter filenameFilterXML = new FilenameFilter() {

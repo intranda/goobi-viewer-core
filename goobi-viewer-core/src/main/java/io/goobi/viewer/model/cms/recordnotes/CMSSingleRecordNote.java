@@ -21,18 +21,16 @@
  */
 package io.goobi.viewer.model.cms.recordnotes;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
@@ -44,7 +42,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @DiscriminatorValue("SINGLE")
 public class CMSSingleRecordNote extends CMSRecordNote {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSSingleRecordNote.class);
+    private static final Logger logger = LogManager.getLogger(CMSSingleRecordNote.class);
 
     /**
      * PI of the record this note relates to. Should be effectively final, but can't be for DAO compatibility

@@ -33,8 +33,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.wa.Motivation;
 import io.goobi.viewer.controller.DataManager;
@@ -63,7 +63,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class CommentManager implements AnnotationLister<Comment> {
 
-    private final static Logger logger = LoggerFactory.getLogger(CommentManager.class);
+    private final static Logger logger = LogManager.getLogger(CommentManager.class);
 
     private final AnnotationSaver saver;
     private final AnnotationDeleter deleter;

@@ -30,8 +30,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -47,7 +47,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  */
 public class ViewHistory {
 
-    private static Logger logger = LoggerFactory.getLogger(ViewHistory.class);
+    private static Logger logger = LogManager.getLogger(ViewHistory.class);
 
     private static final String PREVIOUS_URL = "previousURL";
     private static final String CURRENT_URL = "currentURL";

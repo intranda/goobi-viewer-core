@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -56,7 +56,7 @@ public class SearchFacets implements Serializable {
 
     private static final long serialVersionUID = -7170821006287251119L;
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchFacets.class);
+    private static final Logger logger = LogManager.getLogger(SearchFacets.class);
 
     private final Object lock = new Object();
 
@@ -413,7 +413,7 @@ public class SearchFacets implements Serializable {
     public boolean isDisplayFacetExpandLink(String field) {
         List<IFacetItem> facetItems = availableFacets.get(field);
         int expandSize = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
-        
+
         return facetItems != null && !isFacetExpanded(field) && expandSize > 0 && facetItems.size() > expandSize;
     }
 
@@ -469,18 +469,6 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentHierarchicalFacetString.
-     * </p>
-     *
-     * @return the currentCollection
-     */
-    @Deprecated
-    public String getCurrentHierarchicalFacetString() {
-        return "-";
-    }
-
-    /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
      * @param currentFacetString a {@link java.lang.String} object.
@@ -491,17 +479,6 @@ public class SearchFacets implements Serializable {
      */
     public void setCurrentFacetString(String currentFacetString) {
         parseFacetString(currentFacetString, currentFacets, labelMap);
-    }
-
-    /**
-     * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for
-     * currentHierarchicalFacets.
-     *
-     * @param currentHierarchicalFacetString a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public void setCurrentHierarchicalFacetString(String currentHierarchicalFacetString) {
-        //
     }
 
     /**
@@ -931,7 +908,7 @@ public class SearchFacets implements Serializable {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        
+
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
@@ -1035,7 +1012,7 @@ public class SearchFacets implements Serializable {
         if (language == null) {
             throw new IllegalArgumentException("language may not be null");
         }
-        
+
         return field.contains(SolrConstants._LANG_) && !field.endsWith(SolrConstants._LANG_ + language.toUpperCase());
     }
 

@@ -28,18 +28,18 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
 public class CMSComponentReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSComponentReader.class);
+    private static final Logger logger = LogManager.getLogger(CMSComponentReader.class);
     
     public CMSComponent read(Path templateFile) throws IOException, JDOMException {
         

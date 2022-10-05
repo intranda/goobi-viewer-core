@@ -28,8 +28,8 @@ import java.util.Map;
 
 import jakarta.persistence.PersistenceException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
@@ -45,7 +45,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
  */
 public class CMSMediaUpdate implements IModelUpdate {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSMediaUpdate.class);
+    private static final Logger logger = LogManager.getLogger(CMSMediaUpdate.class);
 
     private static final String DATATYPE_OLD = "longblob";
     private static final String DATATYPE_NEW = "text";

@@ -40,8 +40,8 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -77,7 +77,7 @@ public class AdminLicenseBean implements Serializable {
     private static final long serialVersionUID = 4036951960661161323L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(AdminLicenseBean.class);
+    private static final Logger logger = LogManager.getLogger(AdminLicenseBean.class);
 
     private static final String MSG_ADMIN_LICENSE_SAVE_FAILURE = "license_licenseSaveFailure";
     private static final String MSG_ADMIN_LICENSE_SAVE_SUCCESS = "license_licenseSaveSuccess";

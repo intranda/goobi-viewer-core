@@ -41,8 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
@@ -74,7 +74,7 @@ public class Metadata implements Serializable {
 
     private static final long serialVersionUID = 5671775647919258310L;
 
-    private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
+    private static final Logger logger = LogManager.getLogger(Metadata.class);
 
     // Configuration
 

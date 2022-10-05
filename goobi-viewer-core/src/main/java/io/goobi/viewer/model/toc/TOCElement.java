@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -51,7 +51,7 @@ public class TOCElement implements Serializable {
     private static final long serialVersionUID = 5022749180237132594L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(TOCElement.class);
+    private static final Logger logger = LogManager.getLogger(TOCElement.class);
 
     private final Map<String, String> metadata = new HashMap<>();
     private final IMetadataValue label;

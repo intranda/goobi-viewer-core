@@ -36,8 +36,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -47,7 +47,7 @@ import io.goobi.viewer.controller.DateTools;
  */
 public class HttpResponseFilter implements Filter {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpResponseFilter.class);
+    private static final Logger logger = LogManager.getLogger(HttpResponseFilter.class);
 
     private static boolean preventProxyCaching = DataManager.getInstance().getConfiguration().isPreventProxyCaching();
     private static String alwaysCacheRegex = "/css|jquery|primefaces|\\.js|\\.gif|\\.png|\\.ico|\\.jpg|\\.jpeg";

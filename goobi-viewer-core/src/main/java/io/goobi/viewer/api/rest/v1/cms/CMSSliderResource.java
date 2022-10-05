@@ -40,8 +40,8 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -75,7 +75,7 @@ public class CMSSliderResource {
      *
      */
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSSliderResource.class);
+    private static final Logger logger = LogManager.getLogger(CMSSliderResource.class);
 
     private final CMSSlider slider;
 

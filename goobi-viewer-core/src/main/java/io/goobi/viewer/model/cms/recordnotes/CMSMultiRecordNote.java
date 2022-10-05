@@ -26,22 +26,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
@@ -53,7 +52,7 @@ import io.goobi.viewer.solr.SolrTools;
 @DiscriminatorValue("MULTI")
 public class CMSMultiRecordNote extends CMSRecordNote {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSMultiRecordNote.class);
+    private static final Logger logger = LogManager.getLogger(CMSMultiRecordNote.class);
 
     /**
      * PI of the record this note relates to. Should be effectively final, but can't be for DAO campatibility

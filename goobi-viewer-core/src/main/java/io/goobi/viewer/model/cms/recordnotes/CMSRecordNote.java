@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.model.cms.recordnotes;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
@@ -32,12 +37,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Class holding a formatted text related to a single PI which may be edited in the admin/cms-backend and displayed in a (sidebar) widget
@@ -52,7 +51,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 discriminatorType = DiscriminatorType.STRING)
 public abstract class CMSRecordNote {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSRecordNote.class);
+    private static final Logger logger = LogManager.getLogger(CMSRecordNote.class);
 
     /**
      * Auto-generated database id

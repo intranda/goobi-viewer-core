@@ -32,8 +32,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -57,7 +57,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
      */
     private static final String CLASSIFICATION_SEPARATOR_REGEX = "::|\\$";
 
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
+    private static final Logger logger = LogManager.getLogger(DatabaseUpdater.class);
 
     protected Map<String, Map<String, List<Long>>> entityMap = null;
     protected List<CMSMediaItem> media = null;

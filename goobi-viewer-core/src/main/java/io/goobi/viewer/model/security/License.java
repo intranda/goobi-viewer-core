@@ -32,8 +32,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.ConsentScopeConverter;
@@ -78,7 +78,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     private static final long serialVersionUID = 1363557138283960150L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(License.class);
+    private static final Logger logger = LogManager.getLogger(License.class);
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

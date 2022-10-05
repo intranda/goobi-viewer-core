@@ -28,8 +28,8 @@ import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * @author florian
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class GravatarUserAvatar implements UserAvatar {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(GravatarUserAvatar.class);
+    private static final Logger logger = LogManager.getLogger(GravatarUserAvatar.class);
 
     private static final String DEFAULT_GRAVATAR_ICON = "";
     private static final String DEFAULT_HTTP_404 = "404";

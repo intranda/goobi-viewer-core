@@ -59,8 +59,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
@@ -98,7 +98,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public abstract class AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
+    private static final Logger logger = LogManager.getLogger(AbstractBuilder.class);
 
     /** Constant <code>REQUIRED_SOLR_FIELDS</code> */
     public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
@@ -522,7 +522,7 @@ public abstract class AbstractBuilder {
     public List<String> getSolrFieldList() {
         Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
         for (String string : REQUIRED_SOLR_FIELDS) {
-                fields.add(string);
+            fields.add(string);
         }
         String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField)) {
@@ -572,7 +572,7 @@ public abstract class AbstractBuilder {
         }
         return Optional.empty();
     }
-    
+
     /**
      * <p>
      * getDescription.
@@ -845,23 +845,6 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * <p>
-     * getSearchServiceURI.
-     * </p>
-     *
-     * @param target a {@link java.net.URI} object.
-     * @return a {@link java.net.URI} object.
-     * @deprecated use {@link #getSearchServiceURI(String)} instead
-     */
-    public URI getSearchServiceURI(URI target) {
-        String baseURI = target.toString();
-        if (!baseURI.endsWith("/")) {
-            baseURI += "/";
-        }
-        return URI.create(baseURI + "search");
-    }
-
-    /**
      * Get URL to search service from {@link ApiUrls}
      *
      * @param pi The persistent identifier of the work to search
@@ -869,23 +852,6 @@ public abstract class AbstractBuilder {
      */
     public URI getSearchServiceURI(String pi) {
         return URI.create(urls.path(RECORDS_RECORD, RECORDS_MANIFEST_SEARCH).params(pi).build());
-    }
-
-    /**
-     * <p>
-     * getAutoSuggestServiceURI.
-     * </p>
-     *
-     * @param target a {@link java.net.URI} object.
-     * @return a {@link java.net.URI} object.
-     * @deprecated use {@link #getAutoCompleteServiceURI(String)} instead
-     */
-    public URI getAutoSuggestServiceURI(URI target) {
-        String baseURI = target.toString();
-        if (!baseURI.endsWith("/")) {
-            baseURI += "/";
-        }
-        return URI.create(baseURI + "autocomplete");
     }
 
     /**
@@ -909,7 +875,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getSearchURI(String pi, String query, List<String> motivation) {
-        String uri = getSearchServiceURI(getManifestURI(pi)).toString();
+        String uri = getSearchServiceURI(pi).toString();
         uri += ("?q=" + query);
         if (!motivation.isEmpty()) {
             uri += ("&motivation=" + StringUtils.join(motivation, "+"));
@@ -928,7 +894,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getAutoSuggestURI(String pi, String query, List<String> motivation) {
-        String uri = getAutoSuggestServiceURI(getManifestURI(pi)).toString();
+        String uri = getAutoCompleteServiceURI(pi).toString();
         if (StringUtils.isNotBlank(query)) {
             uri += ("?q=" + query);
             if (!motivation.isEmpty()) {

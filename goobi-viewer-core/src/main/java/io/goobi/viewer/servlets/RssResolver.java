@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedOutput;
@@ -59,7 +59,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class RssResolver extends HttpServlet {
     private static final long serialVersionUID = -8188360280492927624L;
 
-    private static final Logger logger = LoggerFactory.getLogger(RssResolver.class);
+    private static final Logger logger = LogManager.getLogger(RssResolver.class);
 
     private static final String PARAM_FILTERQUERY = "filterQuery";
     private static final String PARAM_LANGUAGE = "language";

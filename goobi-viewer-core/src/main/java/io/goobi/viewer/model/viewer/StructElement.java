@@ -38,8 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -68,7 +68,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     private static final long serialVersionUID = 9048792944197887061L;
 
-    private static final Logger logger = LoggerFactory.getLogger(StructElement.class);
+    private static final Logger logger = LogManager.getLogger(StructElement.class);
 
     /** If false; the Solr document with the given IDDOC does not exist in the index. */
     private boolean exists = false;

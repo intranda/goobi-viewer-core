@@ -29,8 +29,8 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 import java.net.URI;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.wa.ImageResource;
 import de.intranda.api.iiif.presentation.v3.Collection3;
@@ -57,7 +57,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class CollectionBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(CollectionBuilder.class);
+    private static final Logger logger = LogManager.getLogger(CollectionBuilder.class);
 
     /**
      * Required field to create manifest stubs for works in collection
@@ -135,7 +135,7 @@ public class CollectionBuilder extends AbstractBuilder {
 
         } else {
             collection.setLabel(ViewerResourceBundle.getTranslations(collectionName, false));
-            ImageResource thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
+            ImageResource thumb = new ImageResource(null);
             if (thumb != null) {
                 collection.addThumbnail(thumb);
             }
@@ -161,10 +161,10 @@ public class CollectionBuilder extends AbstractBuilder {
                 thumb = getThumbnail(pi);
             } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
                 logger.error("Error creating thumbnail for record " + collectionName, e);
-                thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
+                thumb = new ImageResource(null);
             }
         } else {
-            thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
+            thumb = new ImageResource(null);
         }
         return thumb;
     }

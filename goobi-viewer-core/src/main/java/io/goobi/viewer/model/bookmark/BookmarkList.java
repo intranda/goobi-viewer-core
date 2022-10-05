@@ -45,8 +45,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -83,7 +83,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     private static final long serialVersionUID = -3040539541804852903L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BookmarkList.class);
+    private static final Logger logger = LogManager.getLogger(BookmarkList.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

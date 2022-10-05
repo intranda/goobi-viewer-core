@@ -45,8 +45,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.jsoup.Jsoup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -137,7 +137,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchHit.class);
+    private static final Logger logger = LogManager.getLogger(SearchHit.class);
 
     private static final String SEARCH_HIT_TYPE_PREFIX = "searchHitType_";
 

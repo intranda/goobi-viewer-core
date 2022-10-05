@@ -53,8 +53,8 @@ import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
@@ -77,7 +77,7 @@ public class AdminConfigEditorBean implements Serializable {
 
     private static final long serialVersionUID = -4120457702630667052L;
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminConfigEditorBean.class);
+    private static final Logger logger = LogManager.getLogger(AdminConfigEditorBean.class);
 
     /** Manual edit locks for files. */
     private static final FileLocks fileLocks = new FileLocks();
@@ -295,7 +295,7 @@ public class AdminConfigEditorBean implements Serializable {
      */
     public static void unlockFile(Path file, String sessionId) {
         logger.trace("Unlocking file {} for session {}", file, sessionId);
-        if(file != null) {            
+        if (file != null) {
             fileLocks.unlockFile(file, sessionId);
         }
     }
@@ -465,7 +465,7 @@ public class AdminConfigEditorBean implements Serializable {
         if (length > 0) {
             // Sort by date (descending)
             if (length > 1) {
-                Arrays.sort(backupFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified())); // last modified comes on top
+                sortFilesByDateModified(backupFiles);
             }
 
             // Trim old backup files, if so configured
@@ -479,12 +479,16 @@ public class AdminConfigEditorBean implements Serializable {
                     }
                 }
                 backupFiles = backupFolder.listFiles();
+                if (backupFiles.length > 1) {
+                    sortFilesByDateModified(backupFiles);
+                }
             }
 
             backupNames = new String[backupFiles.length];
             for (int i = 0; i < length; ++i) {
                 backupNames[i] = backupFiles[i].getName().replaceFirst(".+?(?=([0-9]+))", "").replaceFirst(fullCurrentConfigFileType, "");
                 backupRecords.add(new BackupRecord(backupNames[i], i));
+                logger.trace("Backup file: {}", backupFiles[i].getName());
             }
         } else {
             backupFiles = null;
@@ -492,6 +496,25 @@ public class AdminConfigEditorBean implements Serializable {
         }
 
         backupRecordsModel = new ListDataModel<>(backupRecords);
+    }
+
+    /**
+     * 
+     * @param backupFiles
+     */
+    static void sortFilesByDateModified(File[] backupFiles) {
+        if (backupFiles == null || backupFiles.length == 0) {
+            return;
+        }
+
+        Arrays.sort(backupFiles, (a, b) -> {
+            try {
+                return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                return 0;
+            }
+        }); // last modified comes on top
     }
 
     /**

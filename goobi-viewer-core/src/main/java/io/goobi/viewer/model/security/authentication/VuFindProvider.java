@@ -30,8 +30,8 @@ import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -53,7 +53,7 @@ import io.goobi.viewer.model.security.user.User;
  */
 public class VuFindProvider extends HttpAuthenticationProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(VuFindProvider.class);
+    private static final Logger logger = LogManager.getLogger(VuFindProvider.class);
     private static final String USER_GROUP_ROLE_MEMBER = "member";
 
     private VuAuthenticationResponse authenticationResponse;

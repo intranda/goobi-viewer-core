@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -48,7 +48,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 /**
  * <p>
  * CMSSidebarElement class.
@@ -62,11 +61,12 @@ import jakarta.persistence.Table;
 @DiscriminatorValue("BASE")
 public class CMSSidebarElement {
 
+    private static final Logger logger = LogManager.getLogger(CMSSidebarElement.class);
+    
     public static final String WIDGET_TYPE_DEFAULT = "DEFAULT";
     public static final String WIDGET_TYPE_AUTOMATIC = "AUTOMATIC";
     public static final String WIDGET_TYPE_CUSTOM = "CUSTOM";
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSSidebarElement.class);
     /** Constant <code>HASH_MULTIPLIER=11</code> */
     protected static final int HASH_MULTIPLIER = 11;
     private static final NumberIterator ID_COUNTER = new NumberIterator();

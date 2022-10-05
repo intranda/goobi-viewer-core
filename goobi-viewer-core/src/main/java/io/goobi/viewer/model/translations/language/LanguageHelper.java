@@ -35,8 +35,8 @@ import org.apache.commons.configuration2.reloading.PeriodicReloadingTrigger;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * <p>
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LanguageHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(LanguageHelper.class);
+    private static final Logger logger = LogManager.getLogger(LanguageHelper.class);
 
     ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
 

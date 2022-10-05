@@ -33,8 +33,8 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.model.maps.GeoMap;
 
@@ -48,7 +48,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 public class DCRecordWriter {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(DCRecordWriter.class);
+    private static final Logger logger = LogManager.getLogger(DCRecordWriter.class);
 
     public static final Namespace namespaceDC = Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
 

@@ -22,7 +22,6 @@
 package io.goobi.viewer.api.rest.resourcebuilders;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +30,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -53,7 +52,7 @@ import io.goobi.viewer.model.security.user.UserGroup;
 
 public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserBookmarkResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(UserBookmarkResourceBuilder.class);
 
     private final User user;
 
@@ -75,26 +74,6 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
         BookmarkList.sortBookmarkLists(ret);
 
         return ret;
-    }
-
-    /**
-     * Returns all bookmark lists shared with the current user and not owned by him
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.RestApiException if any.
-     * @deprecated not used anymore. Replaced by generating share key
-     */
-    @Override
-    public List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException {
-        return DataManager.getInstance()
-                .getDao()
-                .getAllBookmarkLists()
-                .stream()
-                .filter(bl -> !user.equals(bl.getOwner()))
-                .filter(bs -> isSharedTo(bs, user))
-                .collect(Collectors.toList());
     }
 
     /**
@@ -399,16 +378,6 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
      */
     public Long countUserBookmarks(Long id) throws RestApiException, DAOException, IOException {
         return getBookmarkListById(id).getItems().stream().count();
-    }
-
-    /**
-     * @param bookmarkList
-     * @param user
-     * @return
-     * @deprecated not used anymore. Replaced by assigning share key
-     */
-    private boolean isSharedTo(BookmarkList bookmarkList, User user) {
-        return bookmarkList.getGroupShares().stream().anyMatch(group -> isInGroup(user, group));
     }
 
     /**

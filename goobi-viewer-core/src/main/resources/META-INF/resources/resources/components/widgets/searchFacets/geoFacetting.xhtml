@@ -69,7 +69,6 @@
 	          <script type="text/javascript">	
 	        
 					$(document).ready(e => {	
-									    
 				    let config = {
 				      		areaString: '#{searchBean.facets.geoFacetFeature}',
 				      		map: {
@@ -84,7 +83,7 @@
 				      				style: {
 				      					fillOpacity: 0.02
 				      				},
-									markerIcon: #{configurationBean.markerForFacetting.toJSONString()}
+									markerIcon: (icon => icon)(#{configurationBean.markerForFacetting.toJSONString()})
 				      			},
 				      			areaLayer: {
 				      				style : {

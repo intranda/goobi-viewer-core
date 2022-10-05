@@ -30,9 +30,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -85,7 +85,7 @@ import jakarta.persistence.Transient;
 public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSPageTemplate.class);
+    private static final Logger logger = LogManager.getLogger(CMSPageTemplate.class);
 
 
     @Id

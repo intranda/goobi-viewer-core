@@ -38,8 +38,8 @@ import java.net.URI;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -68,7 +68,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
  */
 public class AnnotationConverter {
 
-    private static final Logger logger = LoggerFactory.getLogger(AnnotationConverter.class);
+    private static final Logger logger = LogManager.getLogger(AnnotationConverter.class);
     private final AbstractApiUrlManager urls;
 
     public AnnotationConverter() {
