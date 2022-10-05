@@ -520,9 +520,9 @@ public class UserBean implements Serializable {
             }
 
             try {
-                BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
+                BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
                         .ifPresentOrElse(bean -> bean.invalidate(), () -> {
-                            throw new IllegalStateException("Cannot access cmsBean to invalidate");
+                            throw new IllegalStateException("Cannot access collectionViewBean to invalidate");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
                         .ifPresentOrElse(bean -> bean.resetAccess(), () -> {

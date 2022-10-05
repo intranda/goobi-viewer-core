@@ -468,7 +468,7 @@ public class AdminLicenseBean implements Serializable {
             currentLicense.getAllowedCmsTemplates().clear();
             for (Selectable<CMSPageTemplate> selectable : currentLicense.getSelectableTemplates()) {
                 if (selectable.isSelected()) {
-                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue().getId().toString());
+                    currentLicense.getAllowedCmsTemplates().add(selectable.getValue());
                 }
             }
         }

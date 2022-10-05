@@ -97,7 +97,7 @@ public class CollectionViewBean {
     }
 
     public static String getCollectionId(CMSCollectionContent content) {
-        return content.getOwningComponent().getOwnerPage().getId() + content.getComponentId();
+        return content.getOwningComponent().getOwnerPage().getId() + "_" + content.getComponentId();
     }
 
     public Optional<CollectionView> getCollectionIfStored(CMSCollectionContent content) {
@@ -108,6 +108,11 @@ public class CollectionViewBean {
     
     public boolean removeCollection(CMSCollectionContent content) {
         String myId = getCollectionId(content);
+        return removeCollection(myId);
+    }
+
+    private boolean removeCollection(String myId) {
+        this.collectionStatistics.remove(myId);
         return collections.remove(myId) != null;
     }
     
@@ -151,7 +156,7 @@ public class CollectionViewBean {
             @Override
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
                 Map<String, CollectionResult> dcStrings =
-                        SearchHelper.findAllCollectionsFromField(useCollectionField, content.getGroupingSolrField(), content.getCombinedFilterQuery(), true, true,
+                        SearchHelper.findAllCollectionsFromField(useCollectionField, content.getGroupingField(), content.getCombinedFilterQuery(), true, true,
                                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField()));
                 return dcStrings;
             }
@@ -216,4 +221,39 @@ public class CollectionViewBean {
         }
         return map;
     }
+
+    public void removeCollectionsForPage(CMSPage page) {
+        String idRegex = page.getId() + "_" + "\\w";
+        new ArrayList<>(this.collections.keySet()).forEach(id -> {
+            if(id.matches(idRegex)) {
+                removeCollection(id);
+            }
+        });
+        
+    }
+    
+    public List<CollectionView> getLoadedCollectionsForPage(CMSPage page) {
+        String idRegex = page.getId() + "_" + "\\w";
+        return new ArrayList<>(this.collections.keySet()).stream()
+        .filter(id -> id.matches(idRegex))
+        .map(id -> this.collections.get(id))
+        .collect(Collectors.toList());
+    }
+    
+    /**
+     * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
+     * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)
+     *
+     * @param field The solr field the colleciton is based on
+     * @return a {@link java.util.List} object.
+     */
+    public List<CollectionView> getCollections(String field) {
+        return collections.values().stream().filter(collection -> field.equals(collection.getField())).collect(Collectors.toList());
+    }
+
+    public void invalidate() {
+        this.collections = new HashMap<>();
+        this.collectionStatistics = new HashMap<>();
+    }
+    
 }

@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +38,11 @@ import org.slf4j.LoggerFactory;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSContentItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
+import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 
 /**
  * Converts all Tags and Classifications from previous viewer-cms versions to the {@link io.goobi.viewer.model.cms.CMSCategory} system. This includes
@@ -62,7 +62,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
     protected Map<String, Map<String, List<Long>>> entityMap = null;
     protected List<CMSMediaItem> media = null;
     protected List<CMSPage> pages = null;
-    protected List<CMSContentItem> content = null;
+    protected List<CMSContent> content = null;
     protected List<CMSCategory> categories = null;
 
     /** {@inheritDoc} */
@@ -132,7 +132,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
         this.media = dao.getAllCMSMediaItems();
         this.pages = dao.getAllCMSPages();
         this.categories = dao.getAllCategories();
-        this.content = this.pages.stream().flatMap(page -> page.getGlobalContentItems().stream()).collect(Collectors.toList());
+        this.content = this.pages.stream().flatMap(page -> page.getCmsComponents().stream()).flatMap(c -> c.getContentItems().stream()).collect(Collectors.toList());
     }
 
     /**
@@ -276,7 +276,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
         }
     }
 
-    private static void linkToContentItems(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSContentItem> items) {
+    private static void linkToContentItems(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSContent> items) {
         if (map != null) {
             for (String categoryName : map.keySet()) {
                 CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(categoryName)).findFirst().orElse(null);
@@ -286,8 +286,10 @@ public class CMSCategoryUpdate implements IModelUpdate {
                     List<Long> itemIds = map.get(categoryName);
                     for (Long itemId : itemIds) {
                         try {
-                            CMSContentItem item = items.stream()
+                            CMSCategoryHolder item = items.stream()
                                     .filter(i -> itemId.equals(i.getId()))
+                                    .filter(i -> i instanceof CMSCategoryHolder)
+                                    .map(i -> (CMSCategoryHolder)i)
                                     .findFirst()
                                     .orElseThrow(() -> new DAOException("No contentItem found by Id " + itemId));
                             item.addCategory(category);

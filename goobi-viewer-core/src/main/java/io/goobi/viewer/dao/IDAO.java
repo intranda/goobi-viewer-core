@@ -1580,7 +1580,7 @@ public interface IDAO {
     public boolean deleteCMSPage(CMSPage page) throws DAOException;
 
     public List<CMSPageTemplate> getAllCMSPageTemplates() throws DAOException;
-    public CMSPageTemplate geCMSPageTemplate() throws DAOException;
+    public CMSPageTemplate getCMSPageTemplate(Long id) throws DAOException;
     public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException;
     public boolean updateCMSPageTemplate(CMSPageTemplate template) throws DAOException;
     public boolean removeCMSPageTemplate(CMSPageTemplate template) throws DAOException;

@@ -473,7 +473,7 @@ public class CmsCollectionsBean implements Serializable {
         if (collectionView != null) {
             collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
         }
-        List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
+        List<CollectionView> collections = BeanUtils.getCollectionViewBean().getCollections(collection.getSolrField());
         collections.forEach(view -> view.setCollectionInfo(collection.getSolrFieldValue(), collection));
     }
 
@@ -485,7 +485,7 @@ public class CmsCollectionsBean implements Serializable {
         if (collectionView != null) {
             collectionView.removeCollectionInfo(collection.getSolrFieldValue());
         }
-        List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
+        List<CollectionView> collections = BeanUtils.getCollectionViewBean().getCollections(collection.getSolrField());
         collections.forEach(view -> view.removeCollectionInfo(collection.getSolrFieldValue()));
 
     }

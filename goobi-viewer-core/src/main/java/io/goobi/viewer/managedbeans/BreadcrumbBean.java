@@ -212,15 +212,12 @@ public class BreadcrumbBean implements Serializable {
             CMSPage currentPage = cmsPage;
 
             // If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
-            try {
-                if (cmsPage.getCollectionIfLoaded().map(CollectionView::isSubcollection).orElse(false)) {
-                    LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
-                            cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
-                    tempBreadcrumbs.add(0, link);
-                    // logger.trace("added cms page collection breadcrumb: {}", link.toString());
-                }
-            } catch (PresentationException | IndexUnreachableException | IllegalRequestException e) {
-                logger.error(e.toString(), e);
+            List<CollectionView> pageCollections = BeanUtils.getCollectionViewBean().getLoadedCollectionsForPage(cmsPage);
+            if(!pageCollections.isEmpty()) {
+                CollectionView firstCollection = pageCollections.get(0);
+                LabeledLink link = new LabeledLink(firstCollection.getTopVisibleElement(),
+                        firstCollection.getCollectionUrl(firstCollection.getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
+                tempBreadcrumbs.add(0, link);
             }
 
             while (currentPage != null) {

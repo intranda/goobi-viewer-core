@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.Column;
@@ -49,7 +50,7 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_imagecollection")
-public class CMSImageCollection extends CMSContent {
+public class CMSImageCollection extends CMSContent implements CMSCategoryHolder {
 
     private static final String COMPONENT_NAME = "imagecollection";
     private static final int DEFAULT_IMAGES_PER_VIEW = 10;
@@ -175,6 +176,26 @@ public class CMSImageCollection extends CMSContent {
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
+    }
+
+    @Override
+    public boolean addCategory(CMSCategory category) {
+        if(!this.categories.contains(category)) {            
+            this.selectableCategories = null; //reset selectable categories
+            return this.categories.add(category);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeCategory(CMSCategory category) {
+        if(this.categories.contains(category)) {            
+            this.selectableCategories = null; //reset selectable categories
+            return this.categories.remove(category);
+        } else {
+            return false;
+        }
     }
     
 }

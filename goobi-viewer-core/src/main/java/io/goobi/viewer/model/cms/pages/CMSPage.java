@@ -133,13 +133,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
     @Column(name = "publication_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.PRIVATE;
-    
-    /**
-     * Set to true to disallow users to change {@link CMSComponent}s contained in this page. The content of those components may still be edited
-     * This is always set from the {@link CMSPageTemplate} from which this page is created
-     */
-    @Column(name = "lock_components")
-    private boolean lockComponents = false;
 
     @Column(name = "page_sorting", nullable = true)
     private Long pageSorting = null;
@@ -192,6 +185,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
     @PrivateOwned
     //@Convert(converter = CMSComponentConverter.class)
     private List<PersistentCMSComponent> cmsComponents = new ArrayList<>();
+    
+    /**
+     * A {@link CMSPageTemplate} used to create this page. Must be null if the page hasn't been created using a template.
+     * Used to apply user privileges for templates to pages derived from that template as well as determining if a page may be edited by a user 
+     */
+    @Column(name = "template_id", nullable = true)
+    private CMSPageTemplate template = null;
 
     /**
      * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
@@ -245,7 +245,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         this.dateCreated = original.dateCreated;
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
-        this.lockComponents = original.lockComponents;
+        this.template = original.template;
         if (original.pageSorting != null) {
             this.pageSorting = original.pageSorting;
         }
@@ -295,7 +295,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
         this.categories = new ArrayList<>(original.getCategories());
         this.wrapperElementClass = original.getWrapperElementClass();
-        this.lockComponents = original.isLockComponents();
+        this.template = original;
 
         if (original.getSidebarElements() != null) {
             this.sidebarElements = new ArrayList<>(original.getSidebarElements().size());
@@ -1008,24 +1008,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
     }
 
     /**
-     * <p>
-     * getCollection.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
-     */
-    public CollectionView getCollection() throws PresentationException, IndexUnreachableException, IllegalRequestException {
-        return BeanUtils.getCmsBean().getCollection(this);
-    }
-
-    public Optional<CollectionView> getCollectionIfLoaded() {
-        return BeanUtils.getCmsBean().getCollectionIfStored(this);
-    }
-
-    /**
      * Returns the property with the given key or else creates a new one with that key and returns it
      *
      * @param key a {@link java.lang.String} object.
@@ -1328,8 +1310,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
                 .map(content -> ((CMSSearch)content).getSearch())
                 .findAny();
     }
-    
-    public boolean isLockComponents() {
-        return lockComponents;
+
+    public Optional<CMSPageTemplate> getTemplate() {
+        return Optional.ofNullable(this.template);
     }
 }

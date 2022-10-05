@@ -175,10 +175,10 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     private List<CMSCategory> allowedCategories = new ArrayList<>();
 
     /** List of allowed CMS templates. */
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
-    @Column(name = "template_id")
-    private List<String> allowedCmsTemplates = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"),
+    inverseJoinColumns = @JoinColumn(name = "template_id"))
+    private List<CMSPageTemplate> allowedCmsTemplates = new ArrayList<>();
 
     /** List of allowed crowdsourcing campaigns. */
     @ManyToMany(fetch = FetchType.LAZY)
@@ -634,13 +634,14 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      *
      * @return
+     * @throws DAOException 
      */
-    public List<Selectable<CMSPageTemplate>> getSelectableTemplates() {
+    public List<Selectable<CMSPageTemplate>> getSelectableTemplates() throws DAOException {
         if (selectableTemplates == null) {
-            List<CMSPageTemplate> allTemplates = BeanUtils.getCmsBean().getTemplates();
+            List<CMSPageTemplate> allTemplates = DataManager.getInstance().getDao().getAllCMSPageTemplates();
             selectableTemplates =
                     allTemplates.stream()
-                            .map(template -> new Selectable<>(template, this.allowedCmsTemplates.contains(template.getId())))
+                            .map(template -> new Selectable<>(template, this.allowedCmsTemplates.contains(template)))
                             .collect(Collectors.toList());
         }
         return selectableTemplates;
@@ -957,7 +958,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the allowedCmsTemplates
      */
-    public List<String> getAllowedCmsTemplates() {
+    public List<CMSPageTemplate> getAllowedCmsTemplates() {
         return allowedCmsTemplates;
     }
 
@@ -968,7 +969,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @param allowedCmsTemplates the allowedCmsTemplates to set
      */
-    public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
+    public void setAllowedCmsTemplates(List<CMSPageTemplate> allowedCmsTemplates) {
         this.allowedCmsTemplates = allowedCmsTemplates;
     }
 

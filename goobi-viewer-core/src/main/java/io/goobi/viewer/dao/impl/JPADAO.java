@@ -62,10 +62,9 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
-import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
@@ -3102,7 +3101,7 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
-            List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
+            List<Long> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
@@ -4270,7 +4269,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
+    public long getCMSPageCount(Map<String, String> filters, List<Long> allowedTemplates, List<String> allowedSubthemes,
             List<String> allowedCategories) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -4667,25 +4666,25 @@ public class JPADAO implements IDAO {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
-    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<String> allowedTemplateIds,
+    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<Long> allowedTemplates,
             List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
 
         String query = "";
 
         int index = 0;
-        if (allowedTemplateIds != null && !allowedTemplateIds.isEmpty()) {
+        if (allowedTemplates != null && !allowedTemplates.isEmpty()) {
             query += "(";
-            for (String template : allowedTemplateIds) {
+            for (Long template : allowedTemplates) {
                 String templateParameter = "tpl" + ++index;
-                query += (":" + templateParameter + " = " + pageParameter + ".templateId");
+                query += (":" + templateParameter + " = " + pageParameter + ".template");
                 query += " OR ";
-                params.put(templateParameter, template);
+                params.put(templateParameter, template.toString());
             }
             if (query.endsWith(" OR ")) {
                 query = query.substring(0, query.length() - 4);
             }
             query += ") AND";
-        } else if (allowedTemplateIds != null) {
+        } else if (allowedTemplates != null) {
             throw new AccessDeniedException("User may not view pages with any templates");
         }
 
@@ -6901,6 +6900,90 @@ public class JPADAO implements IDAO {
         try {
             startTransaction(em);
             DailySessionUsageStatistics o = em.getReference(DailySessionUsageStatistics.class, id);
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public List<CMSPageTemplate> getAllCMSPageTemplates() throws DAOException {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT o FROM CMSPageTemplate o");
+                return q.getResultList();
+            } catch (PersistenceException e) {
+                logger.error("Exception \"" + e.toString() + "\" when trying to get cms page templates. Returning empty list");
+                return new ArrayList<>();
+            } finally {
+                close(em);
+            }
+    }
+
+    @Override
+    public CMSPageTemplate getCMSPageTemplate(Long id) throws DAOException {
+            logger.trace("getCMSPage: {}", id);
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                CMSPageTemplate o = em.getReference(CMSPageTemplate.class, id);
+                return o;
+            } catch (EntityNotFoundException e) {
+                return null;
+            } finally {
+                close(em);
+            }
+    }
+
+    @Override
+    public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(template);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error adding cmsPage to database", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+    }
+
+    @Override
+    public boolean updateCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(template);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean removeCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CMSPageTemplate o = em.getReference(CMSPageTemplate.class, template.getId());
             em.remove(o);
             commitTransaction(em);
             return true;
