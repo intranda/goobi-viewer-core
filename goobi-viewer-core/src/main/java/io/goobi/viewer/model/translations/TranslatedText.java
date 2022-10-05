@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
