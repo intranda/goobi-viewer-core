@@ -34,7 +34,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_MI
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RSS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RSS_JSON;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_PUBLIC;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_SHARED;
 
 import java.io.IOException;
 import java.util.List;
@@ -326,15 +325,6 @@ public class BookmarkResource {
     public List<BookmarkList> getPublicBookmarkLists()
             throws DAOException, IOException, RestApiException {
         return builder.getAllPublicBookmarkLists();
-    }
-
-    @GET
-    @Path(USERS_BOOKMARKS_SHARED)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Deprecated
-    public List<BookmarkList> getSharedBookmarkLists()
-            throws DAOException, IOException, RestApiException, ContentLibException {
-        return builder.getAllSharedBookmarkLists();
     }
 
     @GET

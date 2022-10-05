@@ -460,18 +460,6 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentHierarchicalFacetString.
-     * </p>
-     *
-     * @return the currentCollection
-     */
-    @Deprecated
-    public String getCurrentHierarchicalFacetString() {
-        return "-";
-    }
-
-    /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
      * @param currentFacetString a {@link java.lang.String} object.
@@ -482,17 +470,6 @@ public class SearchFacets implements Serializable {
      */
     public void setCurrentFacetString(String currentFacetString) {
         parseFacetString(currentFacetString, currentFacets, labelMap);
-    }
-
-    /**
-     * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for
-     * currentHierarchicalFacets.
-     *
-     * @param currentHierarchicalFacetString a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public void setCurrentHierarchicalFacetString(String currentHierarchicalFacetString) {
-        //
     }
 
     /**
