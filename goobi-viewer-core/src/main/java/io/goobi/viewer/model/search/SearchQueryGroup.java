@@ -66,7 +66,7 @@ public class SearchQueryGroup implements Serializable {
         this.locale = locale;
         init(initSize);
     }
-    
+
     /**
      * 
      * @param initSize
@@ -74,15 +74,20 @@ public class SearchQueryGroup implements Serializable {
     public void init(int initSize) {
         queryItems.clear();
         operator = SearchQueryGroupOperator.AND;
-        
+
         SearchQueryItem item = new SearchQueryItem(locale);
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         queryItems.add(item);
-        for (int i = 0; i < initSize-1; ++i) {
+        for (int i = 0; i < initSize - 1; ++i) {
             queryItems.add(new SearchQueryItem(locale));
         }
     }
-    
+
+    /**
+     * Replaces query items in this group with the given list.
+     * 
+     * @param items
+     */
     public void injectItems(List<SearchQueryItem> items) {
         queryItems.clear();
         queryItems.addAll(items);
