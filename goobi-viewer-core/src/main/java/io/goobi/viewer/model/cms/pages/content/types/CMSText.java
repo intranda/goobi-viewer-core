@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
@@ -138,5 +139,10 @@ public class CMSText extends CMSContent implements TranslatableCMSContent {
         }
 
         return ret;
+    }
+
+    @Override
+    public String handlePageLoad(boolean resetResults) throws PresentationException {
+        return null;
     }
 }

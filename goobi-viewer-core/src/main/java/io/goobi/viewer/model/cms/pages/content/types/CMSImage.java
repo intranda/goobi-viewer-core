@@ -43,6 +43,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -187,5 +188,10 @@ public class CMSImage extends CMSContent implements CMSMediaHolder {
         }
 
         return ret;
+    }
+    
+    @Override
+    public String handlePageLoad(boolean resetResults) throws PresentationException {
+        return null;
     }
 }

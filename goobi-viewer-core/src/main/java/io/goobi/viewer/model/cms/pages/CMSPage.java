@@ -133,6 +133,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
     @Column(name = "publication_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.PRIVATE;
+    
+    /**
+     * Set to true to disallow users to change {@link CMSComponent}s contained in this page. The content of those components may still be edited
+     * This is always set from the {@link CMSPageTemplate} from which this page is created
+     */
+    @Column(name = "lock_components")
+    private boolean lockComponents = false;
 
     @Column(name = "page_sorting", nullable = true)
     private Long pageSorting = null;
@@ -238,6 +245,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         this.dateCreated = original.dateCreated;
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
+        this.lockComponents = original.lockComponents;
         if (original.pageSorting != null) {
             this.pageSorting = original.pageSorting;
         }
@@ -287,7 +295,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
         this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
         this.categories = new ArrayList<>(original.getCategories());
         this.wrapperElementClass = original.getWrapperElementClass();
-
+        this.lockComponents = original.isLockComponents();
 
         if (original.getSidebarElements() != null) {
             this.sidebarElements = new ArrayList<>(original.getSidebarElements().size());
@@ -1319,5 +1327,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott {
                 .filter(content -> content instanceof CMSSearch)
                 .map(content -> ((CMSSearch)content).getSearch())
                 .findAny();
+    }
+    
+    public boolean isLockComponents() {
+        return lockComponents;
     }
 }

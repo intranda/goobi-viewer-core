@@ -27,72 +27,84 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.CmsBean;
+import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.search.SearchHelper;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+@Entity
+@Table(name = "cms_content_search")
 public class CMSSearch extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "search";
-    
+
     @Column(name = "search_prefix")
     private String searchPrefix = "";
-    
+
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
 
     @Column(name = "searchType")
     private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
-    
+
     @Transient
     private final SearchFunctionality search;
-    
+
     public CMSSearch() {
         this.search = initSearch();
     }
-    
+
     public CMSSearch(CMSSearch orig) {
-       super(orig);
-       this.searchPrefix = orig.searchPrefix;
-       this.displayEmptySearchResults = orig.displayEmptySearchResults;
-       this.searchType = orig.searchType;
-       this.search = initSearch();
+        super(orig);
+        this.searchPrefix = orig.searchPrefix;
+        this.displayEmptySearchResults = orig.displayEmptySearchResults;
+        this.searchType = orig.searchType;
+        this.search = initSearch();
     }
-    
+
     private SearchFunctionality initSearch() {
         SearchFunctionality func = new SearchFunctionality(this.searchPrefix, this.getOwningComponent().getOwnerPage().getPageUrl());
         func.setPageNo(this.getOwningComponent().getListPage());
         func.setActiveSearchType(this.searchType);
         return func;
     }
-    
+
     public void setSearchPrefix(String searchPrefix) {
         this.searchPrefix = searchPrefix;
     }
-    
+
     public String getSearchPrefix() {
         return searchPrefix;
     }
-    
+
     public void setDisplayEmptySearchResults(boolean displayEmptySearchResults) {
         this.displayEmptySearchResults = displayEmptySearchResults;
     }
-    
+
     public boolean isDisplayEmptySearchResults() {
         return displayEmptySearchResults;
     }
-    
+
     public void setSearchType(int searchType) {
         this.searchType = searchType;
     }
-    
+
     public int getSearchType() {
         return searchType;
     }
-    
+
     public SearchFunctionality getSearch() {
         return search;
     }
@@ -111,6 +123,50 @@ public class CMSSearch extends CMSContent {
     @Override
     public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
         return Collections.emptyList();
+    }
+
+    @Override
+    public String handlePageLoad(boolean resetResults) throws PresentationException {
+        try {
+            SearchBean searchBean = BeanUtils.getSearchBean();
+            if (searchBean != null) {
+                if (resetResults) {
+                    //TODO: perform searchBean.resetSearchFilter hre instead of in pretty-config. Needs testing
+                    searchBean.resetSearchAction();
+                    searchBean.setActiveSearchType(this.getSearchType());
+                }
+                if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
+                    searchBean.setShowReducedSearchOptions(true);
+                    return searchAction();
+                } else if (this.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
+                    String searchString = StringUtils.isNotBlank(this.search.getQueryString().replace("-", "")) ? this.search.getQueryString() : "";
+                    searchBean.setExactSearchString(searchString);
+                    searchBean.setShowReducedSearchOptions(false);
+                    return searchAction();
+                } else {
+                    searchBean.setShowReducedSearchOptions(false);
+                }
+            }
+        } catch (ViewerConfigurationException | IndexUnreachableException | DAOException e) {
+            throw new PresentationException("Error setting up search on page load", e);
+        }
+        return "";
+    }
+
+    /**
+     * Uses SearchBean to execute a search.
+     *
+     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    private String searchAction() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
+        this.search.search(this.getOwningPage().getSubThemeDiscriminatorValue());
+        BeanUtils.getNavigationHelper().addSearchUrlWithCurrentSortStringToHistory();
+        return "";
     }
 
 }

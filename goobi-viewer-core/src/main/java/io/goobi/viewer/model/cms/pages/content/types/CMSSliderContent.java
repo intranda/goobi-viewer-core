@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
@@ -67,6 +68,9 @@ public class CMSSliderContent extends CMSContent {
         return Collections.emptyList();
     }
 
-    
+    @Override
+    public String handlePageLoad(boolean resetResults) throws PresentationException {
+        return null;
+    }
     
 }

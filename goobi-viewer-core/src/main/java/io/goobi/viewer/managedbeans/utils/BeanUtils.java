@@ -57,6 +57,7 @@ import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.CollectionViewBean;
 import io.goobi.viewer.managedbeans.ContentBean;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
@@ -343,6 +344,10 @@ public class BeanUtils {
      */
     public static AdminBean getAdminBean() {
         return (AdminBean) getBeanByName("adminBean", AdminBean.class);
+    }
+    
+    public static CollectionViewBean getCollectionViewBean() {
+        return (CollectionViewBean) getBeanByName("collectionViewBean", CollectionViewBean.class);
     }
 
     /**

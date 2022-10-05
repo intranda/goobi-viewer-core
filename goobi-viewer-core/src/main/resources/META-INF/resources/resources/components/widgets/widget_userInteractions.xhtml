@@ -84,7 +84,7 @@
                          <h:panelGroup rendered="#{userBean.user.hasPrivilegesForTemplate('templateOverviewPage')}">
                             <li>
                                 <h:commandLink
-                                    action="#{cmsBean.createAndOpenNewPage('templateOverviewPage', msg.overviewPage, activeDocumentBean.viewManager.pi)}">
+                                    action="#{cmsBean.createAndOpenNewPage(msg.overviewPage, activeDocumentBean.viewManager.pi)}">
                                         #{msg.action__create_linked_cms_page__label}
                                     </h:commandLink>
                             </li>

@@ -24,11 +24,11 @@ package io.goobi.viewer.model.cms.pages.content;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -107,6 +107,10 @@ public abstract class CMSContent {
         this.owningComponent = owningComponent;
     }
 
+    public CMSPage getOwningPage() {
+        return this.getOwningComponent().getOwnerPage();
+    }
+    
     public abstract CMSContent copy();
 
     /**
@@ -123,6 +127,13 @@ public abstract class CMSContent {
      */
     public abstract List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException;
     
+    /**
+     * Method to call when loading a CMSPage including this content item
+     * @param cmsBean
+     * @return a jsf action response
+     * @throws PresentationException 
+     */
+    public abstract String handlePageLoad(boolean resetResults) throws PresentationException;
     
     boolean isTranslatable() {
         return this instanceof TranslatableCMSContent;

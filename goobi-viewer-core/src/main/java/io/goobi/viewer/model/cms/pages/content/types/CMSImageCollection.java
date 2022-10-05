@@ -34,6 +34,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.StringListConverter;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -171,4 +172,9 @@ public class CMSImageCollection extends CMSContent {
         return Collections.emptyList();
     }
 
+    @Override
+    public String handlePageLoad(boolean resetResults) throws PresentationException {
+        return null;
+    }
+    
 }

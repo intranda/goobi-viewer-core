@@ -99,6 +99,12 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott 
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated;
     
+    /**
+     * Set to true to disallow users to change {@link CMSComponent}s contained in a page created from this template. The content of those components may still be edited
+     */
+    @Column(name = "lock_components")
+    private boolean lockComponents = false;
+    
     @Column(name = "publication_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.PRIVATE;
@@ -170,6 +176,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott 
         this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
         this.categories = new ArrayList<>(original.categories);
         this.wrapperElementClass = original.wrapperElementClass;
+        this.lockComponents = original.lockComponents;
 
         if (original.sidebarElements != null) {
             this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
@@ -748,5 +755,13 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott 
         this.title.setSelectedLocale(locale);
         this.description.setSelectedLocale(locale);
         this.cmsComponents.forEach(comp -> comp.setSelectedLocale(locale));
+    }
+    
+    public boolean isLockComponents() {
+        return lockComponents;
+    }
+    
+    public void setLockComponents(boolean lockComponents) {
+        this.lockComponents = lockComponents;
     }
 }
