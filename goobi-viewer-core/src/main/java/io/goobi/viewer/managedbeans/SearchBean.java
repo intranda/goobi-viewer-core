@@ -564,7 +564,7 @@ public class SearchBean implements SearchInterface, Serializable {
     String generateAdvancedSearchString() {
         logger.trace("generateAdvancedSearchString");
         StringBuilder sb = new StringBuilder("(");
-        StringBuilder sbInfo = new StringBuilder("(");
+        StringBuilder sbInfo = new StringBuilder();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
         Set<String> usedHierarchicalFields = new HashSet<>();
@@ -607,28 +607,29 @@ public class SearchBean implements SearchInterface, Serializable {
                         break;
                     }
                 }
-                if (skipQueryItem) {
-                    continue;
+
+                if (!skipQueryItem) {
+                    String itemQuery =
+                            new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).toString();
+                    // logger.trace("item query: {}", itemQuery);
+
+                    // Check whether this combination already exists and skip, if that's the case
+                    if (usedFieldValuePairs.contains(itemQuery)) {
+                        // logger.trace("facet item already exists: {}", itemQuery);
+                        continue;
+                    }
+                    usedFieldValuePairs.add(itemQuery);
+                    usedHierarchicalFields.add(queryItem.getField());
+
+                    sbCurrentCollection.append(itemQuery + ";;");
+
+                    sbInfo.append('(')
+                            .append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
+                            .append(": \"")
+                            .append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
+                            .append('"')
+                            .append(')');
                 }
-
-                String itemQuery =
-                        new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).toString();
-                // logger.trace("item query: {}", itemQuery);
-
-                // Check whether this combination already exists and skip, if that's the case
-                if (usedFieldValuePairs.contains(itemQuery)) {
-                    // logger.trace("facet item already exists: {}", itemQuery);
-                    continue;
-                }
-                usedFieldValuePairs.add(itemQuery);
-                usedHierarchicalFields.add(queryItem.getField());
-
-                sbCurrentCollection.append(itemQuery + ";;");
-
-                sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
-                        .append(": \"")
-                        .append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
-                        .append('"');
                 continue;
             }
 
@@ -697,7 +698,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             logger.trace("Item query: {}", itemQuery);
-            sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
+            sbInfo.append('(').append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
             switch (queryItem.getOperator()) {
                 case AND:
                     if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
@@ -717,6 +718,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         sbInfo.append(ViewerResourceBundle.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
             }
+            sbInfo.append(')');
 
             // Add item query part to the group query
             if (itemQuery.length() > 0) {
@@ -742,7 +744,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
         // Add this group's query part to the main query
         if (sb.length() > 0) {
-            sbInfo.append(')');
             sb.append(')');
         }
         if (sb.toString().equals("()")) {
