@@ -89,6 +89,7 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -228,6 +229,7 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
         		
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />

@@ -66,11 +66,6 @@ public class CMSImageContent extends CMSContent implements CMSMediaHolder {
 
     private static final String BACKEND_COMPONENT_NAME = "image";
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
     
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
@@ -204,14 +199,5 @@ public class CMSImageContent extends CMSContent implements CMSMediaHolder {
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
-    
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 }

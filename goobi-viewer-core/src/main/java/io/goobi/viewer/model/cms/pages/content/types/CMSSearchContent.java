@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,6 +39,7 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.SearchHelper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,11 +55,6 @@ public class CMSSearchContent extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "search";
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
     
     @Column(name = "search_prefix")
     private String searchPrefix = "";
@@ -84,10 +81,14 @@ public class CMSSearchContent extends CMSContent {
     }
 
     private SearchFunctionality initSearch() {
-        SearchFunctionality func = new SearchFunctionality(this.searchPrefix, this.getOwningComponent().getOwnerPage().getPageUrl());
-        func.setPageNo(this.getOwningComponent().getListPage());
-        func.setActiveSearchType(this.searchType);
-        return func;
+        if(this.getOwningComponent() != null) {            
+            SearchFunctionality func = new SearchFunctionality(this.searchPrefix, Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwnerPage()).map(p -> p.getPageUrl()).orElse(""));
+            func.setPageNo(Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getListPage).orElse(1));
+            func.setActiveSearchType(this.searchType);
+            return func;
+        } else {
+            return new SearchFunctionality(this.searchPrefix, "");
+        }
     }
 
     public void setSearchPrefix(String searchPrefix) {
@@ -176,16 +177,6 @@ public class CMSSearchContent extends CMSContent {
         this.search.search(this.getOwningPage().getSubThemeDiscriminatorValue());
         BeanUtils.getNavigationHelper().addSearchUrlWithCurrentSortStringToHistory();
         return "";
-    }
-    
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 
 }

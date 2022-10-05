@@ -48,12 +48,7 @@ import jakarta.persistence.Transient;
 public class CMSBrowseContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "browse";
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
-    
+  
      @Column(name = "solr_field")
      private String solrField;
     
@@ -84,9 +79,13 @@ public class CMSBrowseContent extends CMSContent {
     }
     
     private BrowseFunctionality initBrowse() {
-        BrowseFunctionality b  = new BrowseFunctionality(this.solrField);
-        b.setPageNo(this.getOwningComponent().getListPage());
-        return b;
+        if(getOwningComponent() != null) {            
+            BrowseFunctionality b  = new BrowseFunctionality(this.solrField);
+            b.setPageNo(this.getOwningComponent().getListPage());
+            return b;
+        } else {
+            return new BrowseFunctionality(this.solrField);
+        }
     }
 
     @Override
@@ -122,14 +121,6 @@ public class CMSBrowseContent extends CMSContent {
         return "";
     }
     
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 
 }

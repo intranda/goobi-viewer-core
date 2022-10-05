@@ -63,12 +63,7 @@ public class CMSImageCollectionContent extends CMSContent implements CMSCategory
     private static final String COMPONENT_NAME = "imagecollection";
     private static final int DEFAULT_IMAGES_PER_VIEW = 10;
     private static final int DEFAULT_IMPORTANT_IMAGES_PER_VIEW = 0;
-    
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
+ 
     
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "owner_content_id")
@@ -212,14 +207,5 @@ public class CMSImageCollectionContent extends CMSContent implements CMSCategory
             return false;
         }
     }
-    
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 }

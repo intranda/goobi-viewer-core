@@ -56,10 +56,6 @@ public class CMSTextContent extends CMSContent implements TranslatableCMSContent
 
     private static final String BACKEND_COMPONENT_NAME = "text";
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
     
     @Column(name = "text", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
@@ -152,15 +148,5 @@ public class CMSTextContent extends CMSContent implements TranslatableCMSContent
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
-    }
-    
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
     }
 }

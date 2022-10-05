@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,7 +56,9 @@ import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvide
  */
 @Named
 @SessionScoped
-public class CollectionViewBean {
+public class CollectionViewBean implements Serializable {
+
+    private static final long serialVersionUID = 6707278968715712945L;
 
     private static final Logger logger = Logger.getLogger(CollectionView.class);
     

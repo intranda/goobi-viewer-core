@@ -39,12 +39,6 @@ public class CMSGeomapContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "geomap";
     
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
-    
     public GeoMap map;
     
     public CMSGeomapContent() {
@@ -74,14 +68,5 @@ public class CMSGeomapContent extends CMSContent {
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
-    
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 }

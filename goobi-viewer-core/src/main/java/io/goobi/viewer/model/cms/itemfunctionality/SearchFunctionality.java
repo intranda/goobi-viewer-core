@@ -264,7 +264,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
-        getSearchBean().setCurrentPage(pageNo);
+        
+        Optional.ofNullable(getSearchBean()).ifPresent(bean -> bean.setCurrentPage(pageNo));
     }
 
     /* (non-Javadoc)
@@ -273,7 +274,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /** {@inheritDoc} */
     @Override
     public int getPageNo() {
-        return getSearchBean().getCurrentPage();
+        return Optional.ofNullable(getSearchBean()).map(bean -> bean.getCurrentPage()).orElse(1);
     }
 
     /** {@inheritDoc} */

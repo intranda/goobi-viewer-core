@@ -546,7 +546,7 @@ public final class DataManager {
     public ClientApplicationManager getClientManager() throws DAOException {
         if(this.clientManager == null) {
             synchronized (lock) {
-                this.clientManager = new ClientApplicationManager(dao);
+                this.clientManager = new ClientApplicationManager(getDao());
             }
         }
         return this.clientManager;

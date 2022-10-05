@@ -166,17 +166,6 @@
     
     <cms_collections cms_collection_id="1" solr_field="DC" solr_value="dcimage" media_item_id="1" />
 		        
-    <cms_content_htmltext cms_content_id="1" component_id="text" owning_component="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
-    <cms_content_image cms_content_id="1" component_id="image" owning_component="2" media_item_id="1" />   
-    <cms_content_text cms_content_id="1" component_id="text" owning_component="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
-    <cms_content_htmltext cms_content_id="2" component_id="text" owning_component="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
-    <cms_content_image cms_content_id="2" component_id="image" owning_component="4" media_item_id="2" />   
-    
-    <cms_components component_id="1" publication_state="PUBLISHED" templateFilename="htmltext.xml" order="1" owner_page_id="1"/>
-    <cms_components component_id="2" publication_state="PUBLISHED" templateFilename="image.xml" order="2" owner_page_id="1"/>
-    <cms_components component_id="3" publication_state="PUBLISHED" templateFilename="text.xml" order="1" owner_page_id="2"/>
-    <cms_components component_id="4" publication_state="PUBLISHED" templateFilename="textwithimage.xml" order="1" owner_page_id="3"/>        
-    
 	<cms_pages cms_page_id="1" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
 	    publication_status="PUBLISHED" use_default_sidebar="false"/>
 	<cms_pages cms_page_id="2" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
@@ -184,8 +173,18 @@
     <cms_pages cms_page_id="3" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
         publication_status="PUBLISHED" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" />
         
+    <cms_components component_id="1" publication_state="PUBLISHED" templateFilename="htmltext.xml" order="1" owner_page_id="1"/>
+    <cms_components component_id="2" publication_state="PUBLISHED" templateFilename="image.xml" order="2" owner_page_id="1"/>
+    <cms_components component_id="3" publication_state="PUBLISHED" templateFilename="text.xml" order="1" owner_page_id="2"/>
+    <cms_components component_id="4" publication_state="PUBLISHED" templateFilename="textwithimage.xml" order="1" owner_page_id="3"/>        
     
+    <cms_content_htmltext cms_content_id="1" component_id="text" owning_component="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
+    <cms_content_image cms_content_id="1" component_id="image" owning_component="2" media_item_id="1" />   
+    <cms_content_text cms_content_id="1" component_id="text" owning_component="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
+    <cms_content_htmltext cms_content_id="2" component_id="text" owning_component="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
+    <cms_content_image cms_content_id="2" component_id="image" owning_component="4" media_item_id="2" />   
     
+      
     <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
     <cms_static_pages static_page_id="2" static_page_name="search"/>
         

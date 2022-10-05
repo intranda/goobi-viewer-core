@@ -54,12 +54,7 @@ import jakarta.persistence.Transient;
 public class CMSRecordListContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "recordlist";
-    
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
     
     @Column(name = "solr_query")
     private String solrQuery = "";
@@ -91,9 +86,13 @@ public class CMSRecordListContent extends CMSContent {
     }
     
     private SearchFunctionality initSearch() {
-        SearchFunctionality func = new SearchFunctionality(this.solrQuery, this.getOwningComponent().getOwnerPage().getPageUrl());
-        func.setPageNo(this.getOwningComponent().getListPage());
-        return func;
+        if(this.getOwningComponent() != null) {            
+            SearchFunctionality func = new SearchFunctionality(this.solrQuery, this.getOwningComponent().getOwnerPage().getPageUrl());
+            func.setPageNo(this.getOwningComponent().getListPage());
+            return func;
+        } else {
+            return new SearchFunctionality(this.solrQuery, "");
+        }
     }
     
     @Override
@@ -186,15 +185,6 @@ public class CMSRecordListContent extends CMSContent {
             throw new PresentationException("Error initializing search hit list on page load", e);
         }
     }
-    
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 
 }

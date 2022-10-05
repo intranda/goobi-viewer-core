@@ -130,7 +130,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated;
 
-    @Column(name = "publication_status", nullable = false)
+    @Column(name = "publication_status")
     @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.PRIVATE;
 
@@ -190,7 +190,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * A {@link CMSPageTemplate} used to create this page. Must be null if the page hasn't been created using a template.
      * Used to apply user privileges for templates to pages derived from that template as well as determining if a page may be edited by a user 
      */
-    @Column(name = "template_id", nullable = true)
+    @JoinColumn(name = "template_id")
     private CMSPageTemplate template = null;
 
     /**

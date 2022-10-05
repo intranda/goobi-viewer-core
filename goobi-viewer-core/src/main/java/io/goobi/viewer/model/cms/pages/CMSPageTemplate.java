@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.pages;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,10 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_page_templates")
-public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott {
+public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott, Serializable {
+
+    private static final long serialVersionUID = 9175944585243255552L;
+
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSPageTemplate.class);

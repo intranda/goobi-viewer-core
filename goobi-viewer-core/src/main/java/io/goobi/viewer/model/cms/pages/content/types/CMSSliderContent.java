@@ -40,11 +40,6 @@ public class CMSSliderContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "slider";
    
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_content_id")
-    private Long id;
     
     @JoinColumn(name = "slider_id")
     private CMSSlider slider;
@@ -84,14 +79,5 @@ public class CMSSliderContent extends CMSContent {
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
-    
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-    
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+
 }

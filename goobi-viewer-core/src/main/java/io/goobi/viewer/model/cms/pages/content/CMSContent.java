@@ -38,6 +38,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Interface for all classes containing a specific kind of content for a {@link CMSPage}. 
@@ -47,8 +48,13 @@ import jakarta.persistence.ManyToOne;
  *
  */
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@MappedSuperclass
 public abstract class CMSContent {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_id")
+    private Long id;
     
     /**
      * Mirrors the {@link CMSContentItem#getComponentId()} of the enclosing {@link CMSContentItem}
@@ -77,10 +83,6 @@ public abstract class CMSContent {
     public String getBackendComponentLibrary() {
         return "cms/backend/components/content";
     }
-    
-    public abstract Long getId();
-    
-    public abstract void setId(Long id);
     
     public String getComponentId() {
         return componentId;
@@ -128,5 +130,13 @@ public abstract class CMSContent {
     
     boolean isTranslatable() {
         return this instanceof TranslatableCMSContent;
+    }
+    
+    public Long getId() {
+        return this.id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
     }
 }
