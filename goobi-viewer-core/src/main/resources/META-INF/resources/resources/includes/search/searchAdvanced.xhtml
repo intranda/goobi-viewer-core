@@ -49,7 +49,7 @@
 														  <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                                             <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
                                                         </c:forEach>
-                                                        <f:ajax render=":searchAdvancedInputGroup-0-#{status.count}" />
+                                                        <f:ajax render=":searchAdvancedInputGroup-0-#{status.count} :advsearch_value_group_0-#{status.count}" />
                                                     </h:selectOneMenu>
                                                 </div>
                                             </div>
@@ -80,7 +80,7 @@
                                                         <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                                         <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
                                                     </c:forEach>
-                                                    <f:ajax render=":searchAdvancedInputGroup-0-#{status.count}" />
+                                                    <f:ajax render=":searchAdvancedInputGroup-0-#{status.count} :advsearch_value_group_0-#{status.count}" />
                                                 </h:selectOneMenu>
                                             </div>
                                         </div>
@@ -144,6 +144,9 @@
                                 </div>
                             </div>
                          </c:forEach>
+                         
+						<div>Fuzzy search:</div> <viewerComponent:toggleSwitch name="fuzzeSearchToggle" value="#{searchBean.fuzzySearchEnabled}"/>
+                         
                     </div>
 
                 <div class="clearfix"></div>
@@ -159,6 +162,7 @@
 						#{msg.reset}
 					</button>
                 </div>
+                
             </h:form>
         </h:panelGroup>
     </div>
