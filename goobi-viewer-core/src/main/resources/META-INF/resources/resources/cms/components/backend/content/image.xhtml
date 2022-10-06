@@ -16,33 +16,33 @@
 	
     <composite:implementation>
 		<c:set scope="request" var="content"
-			val="cc.attrs.contentItem.content" />
+			val="#{cc.attrs.contentItem.content}" />
 		<c:set scope="request" var="image"
-			val="cc.attrs.contentItem.content.mediaItem" />
+			val="#{cc.attrs.contentItem.content.mediaItem}" />
 		
 		<viewerForms:inputFormField 
-	       label="#{msg[cc.attrs.contentItem.name]}" 
-	       helpText="#{msg[cc.attrs.contentItem.description]">
+	       label="#{msg[cc.attrs.contentItem.label]}" 
+	       helpText="#{msg[cc.attrs.contentItem.description]}">
        
         <!-- MEDIA FILE -->
-        <ui:fragment rendered="#{image != null}">
+        <ui:fragment rendered="#{cc.attrs.contentItem.content.mediaItem != null}">
             <ui:include src="/resources/cms/includes/mediaFile.xhtml">
-                <ui:param name="item" value="#{content.mediaItemWrapper}" />
+                <ui:param name="item" value="#{cc.attrs.contentItem.content.mediaItemWrapper}" />
             </ui:include>
         </ui:fragment>
 
         <!-- ACTIONS -->
         <div class="cms-module__actions">
             <h:commandLink 
-                action="#{cmsBean.setSelectedMediaHolder(content)}" 
-                value="#{image == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
-                class="btn #{image == null ? 'btn--default' : 'btn--clean'}" 
+                action="#{cmsBean.setSelectedMediaHolder(cc.attrs.contentItem.content)}" 
+                value="#{cc.attrs.contentItem.content.mediaItem == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                class="btn #{cc.attrs.contentItem.content.mediaItem == null ? 'btn--default' : 'btn--clean'}" 
                 role="button">
                 <f:ajax execute="@form" render="mediaSelectPanel" />
             </h:commandLink>
             <h:commandLink 
-                rendered="#{image != null}" 
-                action="#{content.setMediaItem(null)}" 
+                rendered="#{cc.attrs.contentItem.content.mediaItem != null}" 
+                action="#{cc.attrs.contentItem.content.setMediaItem(null)}" 
                 value="#{msg.cms_selectMediaItem_deselect}"
                 class="btn btn--clean delete" 
                 role="button">

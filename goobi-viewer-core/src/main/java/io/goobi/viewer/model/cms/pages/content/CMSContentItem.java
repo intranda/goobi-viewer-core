@@ -130,6 +130,10 @@ public class CMSContentItem {
     public boolean isMandatory() {
         return this.required;
     }
+    
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
 
     /**
      * Two CMSContentItems are equal if their {@link #componentId}s are equal

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import jakarta.persistence.Transient;
 
-public class CMSComponent {
+public class CMSComponent implements Comparable<CMSComponent> {
 
     private final Long persistenceId;
     
@@ -200,5 +200,10 @@ public class CMSComponent {
     
     public void setListPage(int listPage) {
         this.listPage = listPage;
+    }
+
+    @Override
+    public int compareTo(CMSComponent o) {
+        return Integer.compare(this.order, o.order);
     }
 }

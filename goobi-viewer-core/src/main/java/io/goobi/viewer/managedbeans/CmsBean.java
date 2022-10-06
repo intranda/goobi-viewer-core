@@ -41,6 +41,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -85,6 +87,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.PageValidityStatus;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
@@ -93,6 +96,7 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
+import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -153,7 +157,11 @@ public class CmsBean implements Serializable {
     private List<String> solrGroupFields = null;
 
     private List<String> luceneFields = null;
+    
+    private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
 
+    private UIComponent contentItemsGroup = new HtmlPanelGroup();
+    
     /**
      * <p>
      * init.
@@ -2189,6 +2197,39 @@ public class CmsBean implements Serializable {
     
     public void setNewSelectedPage() {
         this.selectedPage = new CMSPage();
+    }
+    
+    public CMSPageEditState getPageEditState() {
+        return pageEditState;
+    }
+    
+    public void setPageEditState(CMSPageEditState pageEditState) {
+        this.pageEditState = pageEditState;
+    }
+    
+    public void setPanelGroup(UIComponent group) {
+        this.contentItemsGroup = group;
+    }
+    
+    public UIComponent getPanelGroup() {
+        
+            String componentClass = (String) this.contentItemsGroup.getAttributes().get("component-class");
+        
+            DynamicContentBuilder builder = new DynamicContentBuilder();
+            for (UIComponent comp : contentItemsGroup.getChildren()) {
+                comp.getChildren().clear();
+            }
+            contentItemsGroup.getChildren().clear();
+            List<CMSComponent> cmsComponents = getSelectedPage().getComponents();
+            for (CMSComponent cmsComponent : cmsComponents) {
+                UIComponent componentGroup = builder.createTag("div", Collections.singletonMap("class", componentClass));
+                contentItemsGroup.getChildren().add(componentGroup);
+                for (CMSContentItem item : cmsComponent.getContentItems()) {
+                    UIComponent component = builder.build(item.getJsfComponent(), componentGroup, item.getAttributes());
+                    component.getAttributes().put("contentItem", item);
+                }
+            }
+        return this.contentItemsGroup;
     }
 
 }

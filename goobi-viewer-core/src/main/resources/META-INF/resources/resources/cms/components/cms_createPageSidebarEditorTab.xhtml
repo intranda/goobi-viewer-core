@@ -13,7 +13,7 @@
 
 	<composite:implementation>
 		<div role="tabpanel"
-			class="tab-pane #{cmsBean.selectedLocale == null ? 'active':''} sidebar-editor__wrapper"
+			class="tab-pane #{cmsBean.pageEditState == 'SIDEBAR' ? 'active':''} sidebar-editor__wrapper"
 			id="sidebarTab">
 
 			<!-- sidebar editor -->

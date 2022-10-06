@@ -722,6 +722,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getMenuTitleOrTitle(Locale locale) {
         return this.menuTitle.getValue(locale).orElse(this.title.getText(locale));
     }
+    
+    public TranslatedText getMenuTitleTranslations() {
+        return this.menuTitle;
+    }
 
     /**
      * <p>
@@ -1225,12 +1229,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /**
      * @return
      */
-    public CMSSlider getTopBarSlider() {
+    public CMSSlider getTopbarSlider() {
         return this.topbarSlider;
     }
 
     public void setTopbarSlider(CMSSlider topbarSlider) {
         this.topbarSlider = topbarSlider;
+    }
+    
+    public Long getTopbarSliderId() {
+        return Optional.ofNullable(this.topbarSlider).map(CMSSlider::getId).orElse(null);
+    }
+    
+    public void setTopbarSliderId(Long id) throws DAOException {
+        setTopbarSlider(DataManager.getInstance().getDao().getSlider(id));
     }
 
     public String getAdminBackendUrl() {
@@ -1240,6 +1252,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public List<PersistentCMSComponent> getCmsComponents() {
         return cmsComponents;
+    }
+    
+    public List<CMSComponent> getComponents() {
+        List<CMSComponent> components = getCmsComponents().stream()
+                .map(this::getAsCMSComponent)
+                .sorted()
+                .collect(Collectors.toList());
+        return components;
     }
 
     public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {

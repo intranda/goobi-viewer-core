@@ -14,36 +14,7 @@
     <composite:implementation>
         <div id="cmsCreatePageMetadataItemWrapper" class="admin__default-block">
             <!-- METADATA ITEM TYPE -->
-            <div class="page-metadata-item page-metadata-item-type ">
-                <h2>
-                    #{msg[cmsBean.selectedPage.template.name]}
-                </h2>
 
-                <div class="cms-create-page__template-box">
-                    <div class="cms-create-page__template-box-image">
-                        <img alt="Template Icon" src="#{cmsBean.getIconUrlByTemplateId(cmsBean.selectedPage.template.id)}" title="#{msg.label__cms_template_id}: #{cmsBean.selectedPage.template.id}"/>
-                    </div>
-                    <div class="cms-create-page__template-box-text">
-                        <p>
-                            <h:outputText value="#{msg[cmsBean.selectedPage.template.description]}" />
-                        </p>
-                    </div>
-					<div class="mx-clearfloats"></div>
-                </div>
-
-                <script type="text/javascript">
-                    // init template description popover
-                    $(".page-metadata-item-type .info-btn").popover({
-                        html : true,
-                        title : "#{msg[cmsBean.selectedPage.template.name]}",
-                        content : `#{msg[cmsBean.selectedPage.template.description]}`,
-                        placement : "bottom",
-                        trigger : "click",
-                        container : "body"
-                    });
-                </script>
-
-            </div>
             
             
              <h3 class="admin__sidebar-divider-top">#{msg.cms_pageMetadata_privacyStatus}</h3>

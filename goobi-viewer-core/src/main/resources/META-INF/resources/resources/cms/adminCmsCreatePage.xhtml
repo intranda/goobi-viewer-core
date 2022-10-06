@@ -2,7 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml" 
     xmlns:h="http://xmlns.jcp.org/jsf/html" 
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:c="http://java.sun.com/jsp/jstl/core" 
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -27,13 +27,14 @@
                 </h:form>
 
                 <h:panelGroup rendered="#{cmsBean.selectedPage != null}">
+                <c:set scope="request" var="page" value="#{cmsBean.selectedPage}"/>
 	                <div class="admin__title-bar">
 	                    <h1 class="admin__title">
 		                    <ui:fragment rendered="#{cmsBean.editMode}">
 		                    #{msg.cms_editPage}
 		                    </ui:fragment>
-		                    <ui:fragment rendered="#{!cmsBean.editMode}">
-		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.name]}
+		                    <ui:fragment rendered="#{!cmsBean.editMode and page.template.isPresent()}">
+		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.get().name]}
 		                    </ui:fragment>
 	                    </h1>
 	                    <!-- EXIT -->
@@ -61,21 +62,23 @@
                                         <div>
                                             <!-- NAV TABS -->
                                             <ul class="nav nav-tabs">
-                                                <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-                                                    <li class="#{cmsBean.selectedLocale == locale ? 'active':''}">
-                                                        <h:commandLink role="button" value="#{locale}" action="#{cmsBean.setSelectedLocale(locale)}" immediate="false" />
+                                                <c:forEach var="locale" items="#{page.getLocales()}">
+                                                    <li class="#{cmsBean.pageEditState == 'CONTENT' and page.selectedLocale == locale ? 'active':''}">
+                                                        <h:commandLink role="button" value="#{locale}"  immediate="false" 
+                                                        action="#{page.setSelectedLocale(locale)}"
+                                                        actionListener="#{cmsBean.setPageEditState('CONTENT')}" />
                                                     </li>
                                                 </c:forEach>
-                                                <li class="#{cmsBean.selectedLocale == null ? 'active':''} nav-tabs__sidebar-button">
-                                                    <h:commandLink role="button" value="#{msg.cms_pageSidebar}" action="#{cmsBean.setSelectedLocale(null)}" />
+                                                <li class="#{cmsBean.pageEditState == 'SIDEBAR' ? 'active':''} nav-tabs__sidebar-button">
+                                                    <h:commandLink role="button" value="#{msg.cms_pageSidebar}" action="#{cmsBean.setPageEditState('SIDEBAR')}" />
                                                 </li>
                                             </ul>
 
                                             <div class="tab-content">
                                                 <!-- LOCALIZE TABS -->
-                                                <h:panelGroup rendered="#{cmsBean.selectedLocale != null}">
-                                                    <ui:param name="locale" value="#{cmsBean.selectedLocale}" />
-                                                    <div class="tab-pane #{cmsBean.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
+                                                <h:panelGroup rendered="#{cmsBean.pageEditState == 'CONTENT'}">
+                                                    <ui:param name="locale" value="#{page.selectedLocale}" />
+                                                    <div class="tab-pane #{page.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
                                                         <!-- PAGE CONTENT -->
                                                         <div class="edit-content-page edit-content-page-content">
                                                             <!-- TITLE -->
@@ -85,7 +88,7 @@
                                                                 </div>
                                                                 <div class="cms-module__option-control">
                                                                     <h:inputText id="cmsCreatePageTitle" styleClass="form-control"
-                                                                        value="#{cmsBean.selectedPage.getLanguageVersion(locale).title}" />
+                                                                        value="#{page.titleTranslations.text}" />
                                                                     <span class="cms-module__option-control-helptext">#{msg.help__cms_page_title}</span>
                                                                 </div>
                                                                 <div class="cms-module__option-help">
@@ -102,7 +105,7 @@
                                                                 </div>
                                                                 <div class="cms-module__option-control">
                                                                     <h:inputText id="cmsCreatePageMenutitle" styleClass="form-control"
-                                                                        value="#{cmsBean.selectedPage.getLanguageVersion(locale).menuTitle}" />
+                                                                        value="#{cmsBean.selectedPage.menuTitleTranslations.text}" />
                                                                     <span class="cms-module__option-control-helptext">#{msg.help__cms_page_menutitle}</span>
                                                                 </div>
                                                                 <div class="cms-module__option-help">
@@ -113,7 +116,6 @@
                                                             </div>
 
                                                             <!-- PAGE SORTING -->
-                                                            <ui:fragment rendered="#{cmsBean.selectedPage.template.displaySortingField}">
                                                                 <div class="cms-module__option-group">
                                                                     <div class="cms-module__option-label">
                                                                         <label for="cmsCreatePageSortingField">#{msg.label__cms_page_sortfield}:</label>
@@ -131,27 +133,26 @@
                                                                         </button>
                                                                     </div>
                                                                 </div>
-                                                            </ui:fragment>
                                                             
                                                             <!-- Topbar slider -->
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
 															<!-- Available content items -->
-															<h:panelGroup id="component_selection">
-																<ui:repeat var="component" value="#{cmsPageEditBean.availableComponents}">
-																	<button>
-																		<h4>#{msg[component.label]}</h4>
-																		<p>#{msg[component.description]}</p>
-																		<img src="#{navigationHelper.getResource(component.iconPath)}"/>
-																	</button>
-																</ui:repeat>
-															</h:panelGroup>
-
-
-                                                            <!-- CONTENT TYPE LOCALE -->
-                                                            <ui:fragment rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
-                                                                <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeLocale.xhtml" />
-                                                            </ui:fragment>
+															<div id="componentSelect">
+																<h:panelGroup id="component_selection">
+																	<ui:repeat var="comp" value="#{cmsPageEditBean.availableComponents}">
+																		<button jsf:action="#{page.addComponent(comp)}">
+																			<h4>#{msg[comp.label]}</h4>
+																			<p>#{msg[comp.description]}</p>
+																			<img src="#{request.contextPath}#{navigationHelper.getResource(comp.iconPath)}"/>
+																			<f:ajax render="pageComponents" onevent="(data) => {if(data.status == 'success')refreshComponents();}"></f:ajax>
+																		</button>
+																	</ui:repeat>
+																</h:panelGroup>
+															</div>
+															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
+															
+															<h:panelGroup id="pageComponents" class="page-component-list" component-class="page-component" binding="#{cmsBean.panelGroup}"></h:panelGroup>
 
                                                        </div>
                                                     </div>

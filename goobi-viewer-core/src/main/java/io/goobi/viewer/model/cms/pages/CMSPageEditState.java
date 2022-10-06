@@ -19,33 +19,22 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.jsf;
+package io.goobi.viewer.model.cms.pages;
 
-public class JsfComponent {
+/**
+ * Used to select whether sidebar widgets or main content is being edited in adminCmsCreatePage
+ * @author florian
+ *
+ */
+public enum CMSPageEditState {
 
-    private final String library;
-    private final String name;
-    
-    public JsfComponent(String library, String name) {
-        this.library = library;
-        this.name = name;
-    }
-    
-    public String getLibrary() {
-        return library;
-    }
-    
-    public String getName() {
-        return name;
-    }
-
-    public String getFilename() {
-        if(name.matches("(i?)[^.]+\\.x?html")) {
-            return name;
-        } else {
-            return name + ".xhtml";
-        }
-    }
-    
+    /**
+     * Editing main page content, including CMSComponents
+     */
+    CONTENT,
+    /**
+     * Editing sidebar widgets
+     */
+    SIDEBAR
     
 }

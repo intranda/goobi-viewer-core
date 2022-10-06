@@ -32,12 +32,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import com.rometools.rome.io.SyndFeedOutput;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.jsf.DynamicContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
@@ -140,6 +139,7 @@ public class DynamicBean implements Serializable {
                 getExternalContext().getRequestParameterMap();
         params.forEach( (key, value) -> System.out.println(key + ": " + value) );
     }
+
 
 
 }

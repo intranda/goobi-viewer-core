@@ -7,7 +7,7 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
     <!-- CONTENT TYPE SUBTHEME -->
-    <h:panelGroup id="contentSliderGroup" styleClass="cms-module__option-group" rendered="#{cmsBean.selectedPage.mayHaveTopBarSlider()}" layout="block">
+    <h:panelGroup id="contentSliderGroup" styleClass="cms-module__option-group" layout="block">
         <div class="cms-module__option-label">
             <label for="sliderSelect">#{msg.label__cms_page_topbar_slider}:</label>
         </div>
@@ -32,7 +32,7 @@
                     <h:selectOneMenu 
                         id="topbarSliderSelect" 
                         styleClass="form-control" 
-                        value="#{cmsBean.selectedPage.topBarSliderId}">
+                        value="#{cmsBean.selectedPage.topbarSliderId}">
                         <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="false" noSelectionOption="true"></f:selectItem>
                         <f:selectItems 
                             value="#{cmsSliderBean.allSliders}"

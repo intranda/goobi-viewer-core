@@ -513,7 +513,7 @@ public class CmsMediaBean implements Serializable {
      * @return a boolean.
      */
     public boolean isImage(CMSMediaItem item) {
-        return item.getFileName().matches(getImageFilter());
+        return item != null && item.getFileName().matches(getImageFilter());
     }
 
     /**
@@ -525,7 +525,7 @@ public class CmsMediaBean implements Serializable {
      * @return a boolean.
      */
     public boolean isVideo(CMSMediaItem item) {
-        return item.getFileName().matches(getVideoFilter());
+        return item != null && item.getFileName().matches(getVideoFilter());
     }
 
     /**
@@ -537,7 +537,7 @@ public class CmsMediaBean implements Serializable {
      * @return a boolean.
      */
     public boolean isAudio(CMSMediaItem item) {
-        return item.getFileName().matches(getAudioFilter());
+        return item != null && item.getFileName().matches(getAudioFilter());
     }
 
     /**
@@ -549,7 +549,7 @@ public class CmsMediaBean implements Serializable {
      * @return a boolean.
      */
     public boolean isText(CMSMediaItem item) {
-        return item.getFileName().matches(getDocumentFilter());
+        return item != null && item.getFileName().matches(getDocumentFilter());
     }
 
     /**

@@ -39,12 +39,14 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -61,7 +63,7 @@ public class DynamicContentBuilder {
     private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
     
     public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) {
-        UIComponent composite = loadCompositeComponent(parent, jsfComponent.getLibrary(), jsfComponent.getName());
+        UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
         if(composite != null && attributes != null) {
             for(Entry<String, Object> entry : attributes.entrySet()) {
                 composite.getAttributes().put(entry.getKey(), entry.getValue());
@@ -141,7 +143,7 @@ public class DynamicContentBuilder {
         }
         return composite;
     }
-
+    
     /**
      * @param string2
      * @param string
@@ -170,7 +172,7 @@ public class DynamicContentBuilder {
         return composite;
     }
 
-    private UIComponent createTag(String name, Map<String, String> attributes) {
+    public UIComponent createTag(String name, Map<String, String> attributes) {
         UIComponent component = new UIComponentBase() {
 
             @Override

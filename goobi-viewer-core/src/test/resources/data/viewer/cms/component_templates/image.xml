@@ -11,7 +11,7 @@
 		<item id="image">
 			<label>cms_content__image__label</label>
 			<description>cms_content__image__desc</description>
-			<className>io.goobi.viewer.model.cms.content.CMSImage</className>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSImageContent</className>
 			<jsfComponent>
 				<library>/cms/components/backend/content</library>
 				<name>image</name>

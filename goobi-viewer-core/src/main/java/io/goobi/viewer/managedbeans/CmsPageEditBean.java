@@ -28,14 +28,20 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
+import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 
 @Named
 @ViewScoped
@@ -44,7 +50,8 @@ public class CmsPageEditBean implements Serializable {
     private static final long serialVersionUID = 7163586584773468296L;
 
     private Map<WidgetDisplayElement, Boolean> sidebarWidgets;
-
+    
+    
     @Inject
     public CmsPageEditBean(CMSSidebarWidgetsBean widgetsBean) {
         try {
@@ -79,4 +86,5 @@ public class CmsPageEditBean implements Serializable {
     public List<CMSComponent> getAvailableComponents() {
         return CMSTemplateManager.getInstance().getContentManager().getComponents();
     }
+
 }

@@ -82,11 +82,11 @@ public class CmsDynamicContentBean implements Serializable{
         this.topBarGroup = new HtmlPanelGroup();
         if(this.cmsPage == null) {
             throw new IllegalStateException("CMSPage must be set before loading content");
-        } else if(this.cmsPage.getTopBarSlider() != null) {
+        } else if(this.cmsPage.getTopbarSlider() != null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            DynamicContent slider = builder.createContent("topBarSlider", DynamicContentType.SLIDER, Map.of("sliderId", cmsPage.getTopBarSlider().getId()));
+            DynamicContent slider = builder.createContent("topBarSlider", DynamicContentType.SLIDER, Map.of("sliderId", cmsPage.getTopbarSlider().getId()));
             if(builder.build(slider, this.topBarGroup) == null) {
-                logger.error("Error building slider compoenent from slider " + cmsPage.getTopBarSlider().getId());
+                logger.error("Error building slider compoenent from slider " + cmsPage.getTopbarSlider().getId());
             }
         }
 

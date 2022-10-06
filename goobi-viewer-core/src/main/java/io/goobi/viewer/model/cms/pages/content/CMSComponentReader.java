@@ -65,7 +65,7 @@ public class CMSComponentReader {
                 String elementLabel = XmlTools.evaluateToFirstElement("label", element, null).map(Element::getText).orElse(null);
                 String elementDesc = XmlTools.evaluateToFirstElement("description", element, null).map(Element::getText).orElse(null);
                 String componentId = element.getAttributeValue("id");
-                String requiredString = element.getAttributeValue("required");
+                String requiredString = element.getAttributeValue("required", "false");
                 boolean required = !requiredString.equalsIgnoreCase("false");
                 
                 CMSContent content = createContentFromClassName(className);
@@ -79,7 +79,7 @@ public class CMSComponentReader {
                 }
                 component.addContentItem(item);
             } catch (InstantiationException e) {
-                logger.error("Error instantiating CMSContent from class '{}'", className, e);
+                logger.error("Error instantiating CMSContent from class '{}'", className);
             }
         }
         
