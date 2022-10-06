@@ -5460,15 +5460,6 @@ public class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isFuzzySearchEnabled() {
-        return getLocalBoolean("search.fuzzy[@enabled]", false);
-    }
-
-    /**
-     *
-     * @return
-     * @should return correct value
-     */
     public boolean isUseFacetsAsExpandQuery() {
         return getLocalBoolean("search.useFacetsAsExpandQuery[@enabled]", false);
     }

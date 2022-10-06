@@ -184,6 +184,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private Search currentSearch;
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
+    /** Fuzzy search switch. */
+    private boolean fuzzySearchEnabled = false;
 
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
@@ -693,8 +695,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             } else {
                 // Generate item query
-                itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true,
-                        DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
+                itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), true, fuzzySearchEnabled);
             }
 
             logger.trace("Item query: {}", itemQuery);
@@ -835,8 +836,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 additionalExpandQueryfields = Collections.singletonList(SolrConstants.MONTHDAY);
             }
             String expandQuery = activeSearchType == 1
-                    ? SearchHelper.generateAdvancedExpandQuery(advancedSearchQueryGroup,
-                            DataManager.getInstance().getConfiguration().isFuzzySearchEnabled())
+                    ? SearchHelper.generateAdvancedExpandQuery(advancedSearchQueryGroup, fuzzySearchEnabled)
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
                                     additionalExpandQueryfields),
@@ -1177,7 +1177,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 String unescapedTerm = term;
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
                 if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
-                    if (DataManager.getInstance().getConfiguration().isFuzzySearchEnabled()) {
+                    if (fuzzySearchEnabled) {
                         // Fuzzy search term augmentation
                         String[] wildcards = SearchHelper.getWildcardsTokens(term);
                         term = SearchHelper.addFuzzySearchToken(wildcards[1], wildcards[0], wildcards[2]);
@@ -2062,6 +2062,20 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setCurrentSearch(Search currentSearch) {
         logger.trace("Setting current search to {}", currentSearch);
         this.currentSearch = currentSearch;
+    }
+
+    /**
+     * @return the fuzzySearchEnabled
+     */
+    public boolean isFuzzySearchEnabled() {
+        return fuzzySearchEnabled;
+    }
+
+    /**
+     * @param fuzzySearchEnabled the fuzzySearchEnabled to set
+     */
+    public void setFuzzySearchEnabled(boolean fuzzySearchEnabled) {
+        this.fuzzySearchEnabled = fuzzySearchEnabled;
     }
 
     /**

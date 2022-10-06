@@ -3202,16 +3202,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isFuzzySearchEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
-    }
-
-    /**
      * @see Configuration#isContentUploadEnabled()
      * @verifies return correct value
      */
