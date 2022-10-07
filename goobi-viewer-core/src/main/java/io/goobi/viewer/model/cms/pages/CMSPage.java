@@ -170,11 +170,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText title = new TranslatedText();
 
-    @Column(name = "menu_title", nullable = false)
+    @Column(name = "menu_title", nullable = true)
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText menuTitle = new TranslatedText();
 
-    @Column(name = "preview_text", nullable = false)
+    @Column(name = "preview_text", nullable = true)
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText previewText = new TranslatedText();
 

@@ -165,37 +165,34 @@
     <cms_sliders source_type="2" slider_id="3" name="CMSPage Slider" description="Slider from solr CMS pages" style="base" categories="tag1,tag2" />
     
     <cms_collections cms_collection_id="1" solr_field="DC" solr_value="dcimage" media_item_id="1" />
-		        
+    	        
 	<cms_pages cms_page_id="1" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
-	    publication_status="PUBLISHED" use_default_sidebar="false"/>
+	    publication_status="PUBLISHED" use_default_sidebar="false" title="{&quot;en&quot;: &quot;title 1&quot;}"/>
 	<cms_pages cms_page_id="2" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
-        publication_status="PRIVATE" use_default_sidebar="true"/>
+        publication_status="PRIVATE" use_default_sidebar="true" title="{&quot;en&quot;: &quot;title 2&quot;}"/>
     <cms_pages cms_page_id="3" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
-        publication_status="PUBLISHED" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" />
-        
-    <cms_components component_id="1" publication_state="PUBLISHED" templateFilename="htmltext.xml" order="1" owner_page_id="1"/>
-    <cms_components component_id="2" publication_state="PUBLISHED" templateFilename="image.xml" order="2" owner_page_id="1"/>
-    <cms_components component_id="3" publication_state="PUBLISHED" templateFilename="text.xml" order="1" owner_page_id="2"/>
-    <cms_components component_id="4" publication_state="PUBLISHED" templateFilename="textwithimage.xml" order="1" owner_page_id="3"/>        
-    
-    <cms_content_htmltext cms_content_id="1" component_id="text" owning_component="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
-    <cms_content_image cms_content_id="1" component_id="image" owning_component="2" media_item_id="1" />   
-    <cms_content_text cms_content_id="1" component_id="text" owning_component="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
-    <cms_content_htmltext cms_content_id="2" component_id="text" owning_component="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
-    <cms_content_image cms_content_id="2" component_id="image" owning_component="4" media_item_id="2" />   
-    
-      
+        publication_status="PUBLISHED" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" 
+        title="{&quot;en&quot;: &quot;title 3&quot;}"/>
+
+    <cms_components component_id="1" publication_state="PUBLISHED" template_filename="htmltext.xml" component_order="1" owner_page_id="1"/>
+    <cms_components component_id="2" publication_state="PUBLISHED" template_filename="image.xml" component_order="2" owner_page_id="1"/>
+    <cms_components component_id="3" publication_state="PUBLISHED" template_filename="text.xml" component_order="1" owner_page_id="2"/>
+    <cms_components component_id="4" publication_state="PUBLISHED" template_filename="textwithimage.xml" component_order="1" owner_page_id="3"/>        
+     		     
+<!--     <cms_content_htmltext cms_content_id="1" component_id="text" owning_component="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />    -->
+<!--     <cms_content_image cms_content_id="1" component_id="image" owning_component="2" media_item_id="1" />    -->
+<!--     <cms_content_text cms_content_id="1" component_id="text" owning_component="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />    -->
+<!--     <cms_content_htmltext cms_content_id="2" component_id="text" owning_component="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />    -->
+<!--     <cms_content_image cms_content_id="2" component_id="image" owning_component="4" media_item_id="2" />    -->
+
     <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
     <cms_static_pages static_page_id="2" static_page_name="search"/>
-        
-    
+
     <cms_page_cms_categories page_id="1" category_id="4" />
     <cms_page_cms_categories page_id="1" category_id="5" />
     <cms_page_cms_categories page_id="2" category_id="4" />
     <cms_page_cms_categories page_id="3" category_id="6" />
-    
-    <cms_content_item_cms_categories content_item_id="4" category_id="4" />
-    
+        
     <cms_navigation_items cms_navigation_item_id="1" item_label="item 1" page_url="url 1" item_order="1" />
     <cms_navigation_items cms_navigation_item_id="2" item_label="item 2" page_url="url 2" item_order="1"
         parent_item_id="1" cms_page_id="2" />
