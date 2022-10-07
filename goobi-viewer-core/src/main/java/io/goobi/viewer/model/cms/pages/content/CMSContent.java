@@ -48,7 +48,7 @@ import jakarta.persistence.MappedSuperclass;
  *
  */
 @Entity
-@MappedSuperclass
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class CMSContent {
     
     @Id
