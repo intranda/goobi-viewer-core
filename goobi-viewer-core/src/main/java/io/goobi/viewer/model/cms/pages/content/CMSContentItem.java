@@ -21,13 +21,19 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlPanelGroup;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
 /**
@@ -57,6 +63,8 @@ public class CMSContentItem {
     
     private final boolean required;
 
+    private UIComponent uiComponent;
+    
     public CMSContentItem(CMSContentItem orig) {
         this.componentId = orig.componentId;
         this.content = orig.content.copy();
@@ -145,6 +153,28 @@ public class CMSContentItem {
         } else {
             return false;
         }
+    }
+    
+    public UIComponent getUiComponent() {
+        
+        
+        if(this.uiComponent == null) {
+            DynamicContentBuilder builder = new DynamicContentBuilder();
+            String id = FilenameUtils.getBaseName(this.getJsfComponent().getName()) + "_" + System.nanoTime();
+            this.uiComponent = new HtmlPanelGroup();
+            this.uiComponent.setId(id);
+            UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
+            wrapper.setId(id + "_wrapper");
+            this.uiComponent.getChildren().add(wrapper);
+            UIComponent component = builder.build(this.getJsfComponent(), wrapper, this.getAttributes());
+            component.getAttributes().put("contentItem", this);
+            component.setId(id + "_content");
+        }
+        return uiComponent;
+    }
+    
+    public void setUiComponent(UIComponent uiComponent) {
+        this.uiComponent = uiComponent;
     }
 
 }

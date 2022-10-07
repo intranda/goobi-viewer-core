@@ -9,16 +9,16 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
-    <composite:interface>
-		<composite:attribute name="contentItem" required="true" type="io.goobi.viewer.model.cms.content.CMSContentItem" />
-    </composite:interface>
+	<composite:interface>
+		<composite:attribute name="contentItem" required="true"
+			type="io.goobi.viewer.model.cms.pages.content.CMSContentItem" />
+	</composite:interface>
 
 
     <composite:implementation>
-
 		<viewerForms:htmlInputField 
        label="#{msg[cc.attrs.contentItem.label]}" 
-       value="#{cc.attrs.contentItem.content.text}"
+       value="#{cc.attrs.contentItem.content.text.text}"
        helpText="#{msg[cc.attrs.contentItem.description]}"/>
     </composite:implementation>
     

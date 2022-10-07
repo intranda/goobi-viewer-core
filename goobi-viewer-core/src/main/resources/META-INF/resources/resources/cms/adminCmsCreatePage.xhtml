@@ -145,14 +145,22 @@
 																			<h4>#{msg[comp.label]}</h4>
 																			<p>#{msg[comp.description]}</p>
 																			<img src="#{request.contextPath}#{navigationHelper.getResource(comp.iconPath)}"/>
-																			<f:ajax render="pageComponents" onevent="(data) => {if(data.status == 'success')refreshComponents();}"></f:ajax>
+																			<f:ajax render="pageComponents" ></f:ajax>
 																		</button>
 																	</ui:repeat>
 																</h:panelGroup>
 															</div>
-															<h:commandScript name="refreshComponents" render="pageComponents mediaSelectPanel"></h:commandScript>
 															
-															<h:panelGroup id="pageComponents" class="page-component-list" component-class="page-component" binding="#{cmsBean.panelGroup}"></h:panelGroup>
+															<h:panelGroup id="pageComponents" class="page-component-list" >
+																<c:forEach var="cmsComponent" items="#{page.components}">
+																	<div class="page-component">
+																		<c:forEach var="contentItem" items="#{cmsComponent.contentItems}">
+																			<h:panelGroup binding="#{contentItem.uiComponent}"></h:panelGroup>																			
+																		</c:forEach>
+																	</div>
+																</c:forEach>
+															</h:panelGroup>
+															
 
                                                        </div>
                                                     </div>

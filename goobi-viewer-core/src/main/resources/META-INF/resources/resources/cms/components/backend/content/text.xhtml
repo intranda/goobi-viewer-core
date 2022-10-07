@@ -10,15 +10,14 @@
 
 	<composite:interface>
 		<composite:attribute name="contentItem" required="true"
-			type="io.goobi.viewer.model.cms.content.CMSContentItem" />
+			type="io.goobi.viewer.model.cms.pages.content.CMSContentItem" />
 	</composite:interface>
 
 
 	<composite:implementation>
-	
 		<viewerForms:textInputField 
 			label="#{msg[cc.attrs.contentItem.label]}"
-			value="#{cc.attrs.contentItem.content.text}" 
+			value="#{cc.attrs.contentItem.content.text.text}" 
 			helpText="#{msg[cc.attrs.contentItem.description]}" />
 			
 	</composite:implementation>

@@ -321,7 +321,7 @@ var viewerJS = (function () {
 		    })
 		})
     }
-    
+   
     viewer.initTinyMCE  = function(event) {
         //trigger initializazion if either no event was given or if it is a jsf event in status 'success'
         if(!event || event.status == "success") {            

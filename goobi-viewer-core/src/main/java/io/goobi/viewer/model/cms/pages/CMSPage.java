@@ -30,9 +30,11 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -40,9 +42,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.PrivateOwned;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
@@ -224,6 +226,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Transient
     private Locale selectedLocale = IPolyglott.getCurrentLocale();
 
+    /**
+     * Map to keep {@link CMSComponent}s persistent while viewing/working on a single page. 
+     * The components are created from the dao-persisted {@link PersistentCMSComponent}s when {@link CMSPage#getComponents()}
+     * is called and cached in this map. 
+     * These mappings are explicitly not cloned along with the page since they should only pesist within one view of the page
+     */
+    @Transient
+    private Map<PersistentCMSComponent, CMSComponent> componentMap = new HashMap<>();
+    
     /**
      * <p>
      * Constructor for CMSPage.
@@ -1266,10 +1277,16 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .collect(Collectors.toList());
         return components;
     }
+    
 
     public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {
-        CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
-        return contentManager.getComponent(p.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(p))).orElse(null);
+        CMSComponent comp = componentMap.get(p);
+        if(comp == null) {            
+            CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
+            comp = contentManager.getComponent(p.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(p))).orElse(null);
+            componentMap.put(p, comp);
+        }
+        return comp;
     }
 
     public boolean removeComponent(PersistentCMSComponent component) {
