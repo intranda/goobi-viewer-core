@@ -495,7 +495,8 @@ var viewerJS = (function () {
 						$('#feedbackModal .feedback-modal__recipient-dropdown').find('[data-recipient-id="'+recipient+'"]').attr('selected', 'selected');
 					}
 					$('#feedbackModal').on('hidden.bs.modal', function (e) {
-						history.replaceState({}, '', window.location.href.replace("#feedback", ""));
+						history.replaceState({}, '', window.location.href.replace(/#feedback.*$/, ""));
+						console.log('hide1');
 					})
 					break;
 				case "#?page":
