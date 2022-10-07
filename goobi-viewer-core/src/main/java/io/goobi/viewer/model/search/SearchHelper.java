@@ -2148,7 +2148,7 @@ public final class SearchHelper {
      */
     public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString, Locale locale) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
-        SearchQueryGroup ret = new SearchQueryGroup(locale, 0);
+        SearchQueryGroup ret = new SearchQueryGroup(locale, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
 
         // [+-]*\((\w+:\"[\w ]+\"[ ]*)+\)|[+-]*\(((\w+:\([\w ]+\)) *)+\)|[+-]*\((\w+:\(\[\w+ TO \w+\]\) *)\)
         String patternAllItems =
@@ -2351,15 +2351,15 @@ public final class SearchHelper {
                     && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
                 SearchQueryItem item;
-                if (!ret.getQueryItems().isEmpty() && ret.getQueryItems().get(0).getField().equals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS)) {
+                if (ret.getQueryItems().size() > i) {
                     // Re-use existing all-fields item, if available
-                    item = ret.getQueryItems().get(0);
+                    item = ret.getQueryItems().get(i);
                 } else {
                     item = new SearchQueryItem(locale);
                     ret.getQueryItems().add(item);
-                    item.setOperator(operator);
-                    item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
                 }
+                item.setOperator(operator);
+                item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
                 item.setValue(pairs.get(0).getTwo());
                 logger.trace("added item: {}:{}", SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, pairs.get(0).getTwo());
             } else {
@@ -2370,7 +2370,13 @@ public final class SearchHelper {
                         case SolrConstants.SUPERUGCTERMS:
                             break;
                         default:
-                            SearchQueryItem item = new SearchQueryItem(locale);
+                            SearchQueryItem item;
+                            if (ret.getQueryItems().size() > i) {
+                                // Re-use existing all-fields item, if available
+                                item = ret.getQueryItems().get(i);
+                            } else {
+                                item = new SearchQueryItem(locale);
+                            }
                             item.setOperator(operator);
                             item.setField(pair.getOne());
                             if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne())) {

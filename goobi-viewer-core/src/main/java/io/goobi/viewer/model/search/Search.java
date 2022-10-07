@@ -1078,7 +1078,7 @@ public class Search implements Serializable {
      * @return the hits
      */
     public List<SearchHit> getHits() {
-        logger.trace("hits: {}", hits.size());
+        // logger.trace("hits: {}", hits.size());
         return hits;
     }
 

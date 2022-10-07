@@ -1395,18 +1395,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getAdvancedSearchDefaultItemNumber.
-     * </p>
-     *
-     * @should return correct value
-     * @return a int.
-     */
-    public int getAdvancedSearchDefaultItemNumber() {
-        return getLocalInt("search.advanced.defaultItemNumber", 2);
-    }
-
-    /**
-     * <p>
      * getAdvancedSearchFields.
      * </p>
      *
@@ -1431,6 +1419,7 @@ public class Configuration extends AbstractConfiguration {
             boolean hierarchical = subElement.getBoolean("[@hierarchical]", false);
             boolean range = subElement.getBoolean("[@range]", false);
             boolean untokenizeForPhraseSearch = subElement.getBoolean("[@untokenizeForPhraseSearch]", false);
+            boolean visible = subElement.getBoolean("[@visible]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
@@ -1439,6 +1428,7 @@ public class Configuration extends AbstractConfiguration {
                     .setRange(range)
                     .setUntokenizeForPhraseSearch(untokenizeForPhraseSearch)
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
+                    .setVisible(visible)
                     .setDisplaySelectItemsThreshold(displaySelectItemsThreshold));
         }
 

@@ -175,7 +175,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Group of query item clusters for the advanced search. */
     private final SearchQueryGroup advancedSearchQueryGroup =
-            new SearchQueryGroup(BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
+            new SearchQueryGroup(BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
 
@@ -217,7 +217,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     @PostConstruct
     public void init() {
-        resetAdvancedSearchParameters(DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
+        resetAdvancedSearchParameters();
     }
 
     /**
@@ -480,14 +480,14 @@ public class SearchBean implements SearchInterface, Serializable {
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
         if (resetAll) {
             resetSimpleSearchParameters();
-            resetAdvancedSearchParameters(DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
+            resetAdvancedSearchParameters();
             if (calendarBean != null) {
                 calendarBean.resetCurrentSelection();
             }
         } else {
             switch (activeSearchType) {
                 case 0:
-                    resetAdvancedSearchParameters(DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
+                    resetAdvancedSearchParameters();
                     if (calendarBean != null) {
                         calendarBean.resetCurrentSelection();
                     }
@@ -501,7 +501,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 case 2:
                 case 3:
                     resetSimpleSearchParameters();
-                    resetAdvancedSearchParameters(DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
+                    resetAdvancedSearchParameters();
                     break;
                 default: // nothing
             }
@@ -530,9 +530,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should reset variables correctly
      * @should re-select collection correctly
      */
-    protected void resetAdvancedSearchParameters(int initialItemNumber) {
+    protected void resetAdvancedSearchParameters() {
         logger.trace("resetAdvancedSearchParameters");
-        advancedSearchQueryGroup.init(initialItemNumber);
+        advancedSearchQueryGroup.init(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
         // If currentCollection is set, pre-select it in the advanced search menu
         mirrorAdvancedSearchCurrentHierarchicalFacets();
     }
@@ -545,7 +545,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setAdvancedQueryItemsReset(boolean reset) {
         logger.trace("setAdvancedQueryItemsReset");
         if (reset) {
-            resetAdvancedSearchParameters(DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
+            resetAdvancedSearchParameters();
         }
     }
 
@@ -2037,7 +2037,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setSearchInCurrentItemString(String searchInCurrentItemString) {
         // Reset the advanced search parameters prior to setting
-        resetAdvancedSearchParameters(DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
+        resetAdvancedSearchParameters();
         this.searchInCurrentItemString = searchInCurrentItemString;
     }
 
