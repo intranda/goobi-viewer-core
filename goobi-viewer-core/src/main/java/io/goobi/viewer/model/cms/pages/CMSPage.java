@@ -242,6 +242,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         if (original.id != null) {
             this.id = original.id;
         }
+        
+        this.title = new TranslatedText(original.title);
+        this.menuTitle = new TranslatedText(original.menuTitle);
+        this.previewText = new TranslatedText(original.previewText);
+        this.topbarSlider = original.topbarSlider;
         this.dateCreated = original.dateCreated;
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
@@ -1271,11 +1276,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return this.cmsComponents.remove(component);
     }
 
-    public void addComponent(CMSComponent template) {
+    public PersistentCMSComponent addComponent(CMSComponent template) {
         PersistentCMSComponent newComponent = new PersistentCMSComponent(template);
         newComponent.setOrder(this.cmsComponents.size() + 1);
         newComponent.setOwnerPage(this);
         this.cmsComponents.add(newComponent);
+        return newComponent;
     }
 
     @Override
