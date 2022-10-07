@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <component>
 	<jsfComponent>
-		<library>/cms/components/frontend/component</library>
+		<library>cms/components/frontend/component</library>
 		<name>text</name>
 	</jsfComponent>
 	<label>cms_component__text__label</label>
 	<description>cms_component__text__desc</description>
-	<icon>/cms/components/frontend/component/icon/text.png</icon>
+	<icon>cms/components/frontend/component/icon/text.png</icon>
 	<content>
 		<item id="text">
 			<label>cms_content__text__label</label>
 			<description>cms_content__text__desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSTextContent</className>
 			<jsfComponent>
-				<library>/cms/components/backend/content</library>
+				<library>cms/components/backend/content</library>
 				<name>text</name>
 			</jsfComponent>
 			<attributes>
