@@ -80,7 +80,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void resetAdvancedSearchParameters_shouldResetVariablesCorrectly() throws Exception {
         SearchBean searchBean = new SearchBean();
-        searchBean.resetAdvancedSearchParameters(3);
+        searchBean.resetAdvancedSearchParameters();
         Assert.assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
     }
 
@@ -93,8 +93,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean searchBean = new SearchBean();
         searchBean.getFacets().setCurrentFacetString("DC:col");
 
-        searchBean.resetAdvancedSearchParameters(1);
-        Assert.assertEquals(2, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        searchBean.resetAdvancedSearchParameters();
+        Assert.assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
         Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertEquals(SearchItemOperator.AND, item.getOperator());
@@ -112,11 +112,6 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.setActiveSearchType(0);
         Assert.assertEquals("pretty:search", searchBean.resetSearchAction());
         searchBean.setActiveSearchType(1);
-        //        Assert.assertEquals("pretty:extendedsearch", searchBean.resetSearchAction());
-        //        searchBean.setActiveSearchType(2);
-        //        Assert.assertEquals("pretty:timelinesearch", searchBean.resetSearchAction());
-        //        searchBean.setActiveSearchType(3);
-        //        Assert.assertEquals("pretty:calendarsearch", searchBean.resetSearchAction());
     }
 
     /**
@@ -126,7 +121,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void mirrorAdvancedSearchCurrentCollection_shouldSetCollectionItemCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters(3);
+        sb.resetAdvancedSearchParameters();
         Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
         Assert.assertNull(item.getField());
@@ -144,7 +139,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void mirrorAdvancedSearchCurrentCollection_shouldResetCollectionItemCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters(3);
+        sb.resetAdvancedSearchParameters();
         Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
         Assert.assertNull(item.getField());
@@ -166,17 +161,17 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldMirrorFacetItemsToSearchQueryItemsCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters(3);
+        sb.resetAdvancedSearchParameters();
         Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item1 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
-        Assert.assertNull(item1.getField());
+        Assert.assertEquals(SolrConstants.DC, item1.getField());
         SearchQueryItem item2 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(2);
-        Assert.assertNull(item2.getField());
+        Assert.assertEquals("MD_TITLE", item2.getField());
 
         item1.setField(SolrConstants.DC);
         sb.getFacets().setCurrentFacetString("DC:a;;DC:b");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals(2, sb.getFacets().getCurrentFacets().size());
+        Assert.assertEquals(3, sb.getFacets().getCurrentFacets().size());
         Assert.assertEquals(SolrConstants.DC, item1.getField());
         Assert.assertEquals("a", item1.getValue());
         Assert.assertEquals(SolrConstants.DC, item2.getField());
@@ -190,7 +185,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotReplaceQueryItemsAlreadyInUse() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters(3);
+        sb.resetAdvancedSearchParameters();
         SearchQueryItem item1 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         SearchQueryItem item2 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
         SearchQueryItem item3 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(2);
@@ -214,7 +209,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotAddIdenticalHierarchicalQueryItems() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters(1);
+        sb.resetAdvancedSearchParameters();
         SearchQueryItem item1 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
 
         item1.setField(SolrConstants.DC);
@@ -222,7 +217,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.getFacets().setCurrentFacetString("DC:foo;;DC:foo");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         // There should be no second query item generated for the other DC:foo
-        Assert.assertEquals(1, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
+        Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
         Assert.assertEquals(SolrConstants.DC, item1.getField());
         Assert.assertEquals("foo", item1.getValue());
     }
@@ -303,7 +298,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldConstructQueryCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters(2);
+        sb.resetAdvancedSearchParameters();
 
         // First group
         {
@@ -333,7 +328,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldConstructQueryInfoCorrectly() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters(2);
+        sb.resetAdvancedSearchParameters();
 
         // First group
         {
@@ -363,7 +358,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectly() throws Exception {
         SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters(2);
+        bean.resetAdvancedSearchParameters();
 
         {
             SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -390,7 +385,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInCurrentFacets() throws Exception {
         SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters(2);
+        bean.resetAdvancedSearchParameters();
         bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;"); // current facet string already contains this field
 
         {
@@ -418,7 +413,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldOnlyAddIdenticalFacetsOnce() throws Exception {
         SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters(2);
+        bean.resetAdvancedSearchParameters();
 
         {
             SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -445,7 +440,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInCurrentFacets() throws Exception {
         SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters(2);
+        bean.resetAdvancedSearchParameters();
 
         bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;");
 
@@ -474,7 +469,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldNotReplaceObsoleteFacetsWithDuplicates() throws Exception {
         SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters(2);
+        bean.resetAdvancedSearchParameters();
 
         // Current facets are DC:foo and DC:bar
         bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
@@ -506,7 +501,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void generateAdvancedSearchString_shouldRemoveFacetsThatAreNotMatchedAmongQueryItems() throws Exception {
         SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters(1);
+        bean.resetAdvancedSearchParameters();
 
         bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
         Assert.assertEquals(2, bean.getFacets().getCurrentFacets().size());

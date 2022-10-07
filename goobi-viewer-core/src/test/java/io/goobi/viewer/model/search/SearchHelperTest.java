@@ -1032,7 +1032,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(null, 2);
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(0).setField("MD_FIELD");
@@ -1047,7 +1047,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Test
     public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(null, 2);
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
         group.getQueryItems().get(0).setField("MD_FIELD");
         group.getQueryItems().get(0).setValue("val2");
         group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
@@ -1064,7 +1064,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(null, 6);
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);

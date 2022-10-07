@@ -451,8 +451,8 @@
 			<defaultItemNumber>3</defaultItemNumber>
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
-				<field hierarchical="true">DC</field>
-				<field untokenizeForPhraseSearch="true">MD_TITLE</field>
+				<field hierarchical="true" visible="true">DC</field>
+				<field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
 				<field>MD_CREATOR</field>
 				<field>MD_PUBLISHER</field>
 				<field>MD_PLACEPUBLISH</field>
