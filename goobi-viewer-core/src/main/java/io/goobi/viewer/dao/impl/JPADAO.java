@@ -64,6 +64,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
+import io.goobi.viewer.model.cms.pages.PublicationStatus;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
@@ -3265,8 +3266,9 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em
-                    .createQuery("SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.published = true")
+                    .createQuery("SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.publicationStatus = :publicationStatus")
                     .setParameter("pi", pi)
+                    .setParameter("publicationStatus", PublicationStatus.PUBLISHED)
                     .setMaxResults(1);
 
             return (CMSPage) getSingleResult(q).orElse(null);

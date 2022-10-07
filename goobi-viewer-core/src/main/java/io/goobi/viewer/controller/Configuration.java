@@ -5308,6 +5308,7 @@ public class Configuration extends AbstractConfiguration {
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
             marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
             marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
+            return marker;
         }
         return new GeoMapMarker("");
     }
