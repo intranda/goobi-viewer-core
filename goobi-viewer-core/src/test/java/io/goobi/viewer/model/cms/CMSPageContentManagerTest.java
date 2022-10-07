@@ -46,10 +46,10 @@ public class CMSPageContentManagerTest {
         assertEquals(4, components.size());
         CMSComponent htmlComponent = components.stream().filter(c -> c.getLabel().equals("cms_component__htmltext__label")).findAny().orElse(null);
         assertNotNull(htmlComponent);
-        assertEquals("/cms/components/frontend/component", htmlComponent.getJsfComponent().getLibrary());
+        assertEquals("cms/components/frontend/component", htmlComponent.getJsfComponent().getLibrary());
         assertEquals("htmltext", htmlComponent.getJsfComponent().getName());
         assertEquals("cms_component__htmltext__desc", htmlComponent.getDescription());
-        assertEquals("/cms/components/frontend/component/icon/thmltext.png", htmlComponent.getIconPath());
+        assertEquals("cms/components/frontend/component/icon/htmltext.png", htmlComponent.getIconPath());
         CMSContentItem item = htmlComponent.getContentItem("text");
         assertNotNull(item);
         
