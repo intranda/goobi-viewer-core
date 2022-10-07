@@ -31,14 +31,20 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.maps.GeoMap;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "cms_content_geomap")
 public class CMSGeomapContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "geomap";
     
+    @JoinColumn(name="geomap_id")
     public GeoMap map;
     
     public CMSGeomapContent() {

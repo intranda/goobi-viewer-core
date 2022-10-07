@@ -599,8 +599,9 @@ var viewerJS = (function () {
 	
     // CONTENT ITEMS JS DRAFT
 	$(document).ready(function(){
-		
-		new SimpleLightbox({elements: '.lightbox-test a'});
+		if(typeof SimpleLightbox != "undefined" ) {			
+			new SimpleLightbox({elements: '.lightbox-test a'});
+		}
 
 	});
 

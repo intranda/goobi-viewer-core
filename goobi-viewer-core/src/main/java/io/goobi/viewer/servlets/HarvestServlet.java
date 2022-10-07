@@ -207,11 +207,10 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     // Get a JSON list of all identifiers  and timestamps of records that have an overview page update in the given time frame
                     try {
                         // EXAMPLE: ?action=getlist_overviewpage&from=2015-06-26&until=2016-01-01&first=0&pageSize=100
-                        String[] templates = { "templateOverviewPage", "templateOverviewPageLegacy" };
-                        long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate, Arrays.asList(templates));
+                        long count = DataManager.getInstance().getDao().getCMSPageWithRelatedPiCount(fromDate, toDate);
                         List<CMSPage> cmsPages = DataManager.getInstance()
                                 .getDao()
-                                .getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate, Arrays.asList(templates));
+                                .getCMSPagesWithRelatedPi(first, pageSize, fromDate, toDate);
                         JSONArray jsonArray = convertToJSON(count, cmsPages);
                         response.setContentType("application/json");
                         response.getWriter().write(jsonArray.toString());

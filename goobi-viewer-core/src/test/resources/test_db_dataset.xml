@@ -178,12 +178,17 @@
     <cms_components component_id="2" publication_state="PUBLISHED" template_filename="image.xml" component_order="2" owner_page_id="1"/>
     <cms_components component_id="3" publication_state="PUBLISHED" template_filename="text.xml" component_order="1" owner_page_id="2"/>
     <cms_components component_id="4" publication_state="PUBLISHED" template_filename="textwithimage.xml" component_order="1" owner_page_id="3"/>        
+    <cms_components component_id="5" publication_state="PUBLISHED" template_filename="sliderandmap.xml" component_order="1" owner_page_id="3"/>        
      		     
     <cms_content_htmltext cms_content_id="1" component_id="text" owning_component="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
     <cms_content_image cms_content_id="1" component_id="image" owning_component="2" media_item_id="1" />   
     <cms_content_text cms_content_id="1" component_id="text" owning_component="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
     <cms_content_htmltext cms_content_id="2" component_id="text" owning_component="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
-    <cms_content_image cms_content_id="2" component_id="image" owning_component="4" media_item_id="2" />   
+    <cms_content_image cms_content_id="2" component_id="image" owning_component="4" media_item_id="4" />   
+    <cms_content_slider cms_content_id="1" component_id="slider" owning_component="5" slider_id="1" />   
+    <cms_content_geomap cms_content_id="1" component_id="map" owning_component="5" geomap_id="1" />   
+
+	<cms_page_sidebar_elements cms_sidebar_element_id="1" owner_page_id="2" sort_order="1" generation_type="AUTOMATIC" content_type="content_type" geomap_id="1"/>
 
     <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
     <cms_static_pages static_page_id="2" static_page_name="search"/>

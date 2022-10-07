@@ -31,11 +31,15 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "cms_content_slider")
 public class CMSSliderContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "slider";

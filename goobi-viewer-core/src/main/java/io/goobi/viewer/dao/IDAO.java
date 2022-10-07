@@ -1493,11 +1493,10 @@ public interface IDAO {
      * @param pageSize a int.
      * @param fromDate a {@link java.time.LocalDateTime} object.
      * @param toDate a {@link java.time.LocalDateTime} object.
-     * @param templateIds Optional list of template IDs for filtering.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate)
             throws DAOException;
 
     /**
@@ -1525,7 +1524,7 @@ public interface IDAO {
      * @return a long.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate) throws DAOException;
 
     /**
      *

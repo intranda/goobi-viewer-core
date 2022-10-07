@@ -3129,7 +3129,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate)
             throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -3140,18 +3140,6 @@ public class JPADAO implements IDAO {
             }
             if (toDate != null) {
                 sbQuery.append(QUERY_ELEMENT_AND).append("o.dateUpdated <= :toDate");
-            }
-            if (templateIds != null && !templateIds.isEmpty()) {
-                sbQuery.append(QUERY_ELEMENT_AND).append('(');
-                int count = 0;
-                for (String templateId : templateIds) {
-                    if (count != 0) {
-                        sbQuery.append(" OR ");
-                    }
-                    sbQuery.append("o.templateId = '").append(templateId).append("'");
-                    count++;
-                }
-                sbQuery.append(')');
             }
             sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
             Query q = em.createQuery(sbQuery.toString());
@@ -3207,7 +3195,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException {
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -3218,18 +3206,6 @@ public class JPADAO implements IDAO {
             }
             if (toDate != null) {
                 sbQuery.append(QUERY_ELEMENT_AND).append("o.dateUpdated <= :toDate");
-            }
-            if (templateIds != null && !templateIds.isEmpty()) {
-                sbQuery.append(QUERY_ELEMENT_AND).append("(");
-                int count = 0;
-                for (String templateId : templateIds) {
-                    if (count != 0) {
-                        sbQuery.append(" OR ");
-                    }
-                    sbQuery.append("o.templateId = '").append(templateId).append("'");
-                    count++;
-                }
-                sbQuery.append(')');
             }
             Query q = em.createQuery(sbQuery.toString());
             if (fromDate != null) {
@@ -5553,7 +5529,8 @@ public class JPADAO implements IDAO {
         try {
 
             Query qItems = em.createQuery(
-                    "SELECT item FROM CMSGeomap item");
+                    "SELECT item FROM CMSGeomapContent item WHERE item.map = :map");
+            qItems.setParameter("map", map);
             List<CMSContent> itemList = qItems.getResultList();
 
             Query qWidgets = em.createQuery(

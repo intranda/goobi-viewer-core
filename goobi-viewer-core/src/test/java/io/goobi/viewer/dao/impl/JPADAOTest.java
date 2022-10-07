@@ -1708,22 +1708,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Arrays.asList("template_simple", "template_two"))
-                        .size());
-        // Wrong template
-        Assert.assertEquals(0,
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Collections.singletonList("wrong_tempalte"))
+                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0))
                         .size());
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0),
-                                Collections.singletonList("template_simple"))
+                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0))
                         .size());
     }
 
@@ -1751,20 +1742,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Arrays.asList("template_simple", "template_two")));
-        // Wrong template
-        Assert.assertEquals(0,
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Collections.singletonList("wrong_template")));
-        // Wrong date range
-        Assert.assertEquals(0,
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0),
-                                Collections.singletonList("template_simple")));
+                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0)));
     }
 
     /**
@@ -2193,7 +2171,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, subThemes, categories);
 
-        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId) AND (:thm1 = p.subThemeDiscriminatorValue) AND "
+        String shouldQuery = "(:tpl1 = p.template OR :tpl2 = p.template) AND (:thm1 = p.subThemeDiscriminatorValue) AND "
                 + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
         Assert.assertEquals(shouldQuery, query);
 
@@ -2201,8 +2179,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("c2", params.get("cat2"));
         Assert.assertEquals("c3", params.get("cat3"));
         Assert.assertEquals("s1", params.get("thm1"));
-        Assert.assertEquals("t1", params.get("tpl1"));
-        Assert.assertEquals("t2", params.get("tpl2"));
+        Assert.assertEquals("1", params.get("tpl1"));
+        Assert.assertEquals("2", params.get("tpl2"));
 
     }
 
@@ -2235,11 +2213,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, null, null);
 
-        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId)";
+        String shouldQuery = "(:tpl1 = p.template OR :tpl2 = p.template)";
         Assert.assertEquals(shouldQuery, query);
 
-        Assert.assertEquals("t1", params.get("tpl1"));
-        Assert.assertEquals("t2", params.get("tpl2"));
+        Assert.assertEquals("1", params.get("tpl1"));
+        Assert.assertEquals("2", params.get("tpl2"));
     }
 
     /**
@@ -3089,7 +3067,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
         assertEquals(1, pages.size());
-        assertEquals(Long.valueOf(2l), pages.iterator().next().getId());
+        assertEquals(Long.valueOf(3l), pages.iterator().next().getId());
     }
 
     /**
