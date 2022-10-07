@@ -70,6 +70,7 @@ public class SearchQueryGroup implements Serializable {
     /**
      * 
      * @param fieldConfigs
+     * @should create and preselect visible fields
      */
     public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs) {
         queryItems.clear();

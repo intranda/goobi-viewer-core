@@ -1440,12 +1440,10 @@ public class SearchBean implements SearchInterface, Serializable {
             boolean matched = false;
             for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
                 // field:value pair already exists
-                if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || queryItem.getField().equals(facetItem.getField()))) {
+                if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
                     // Override existing items without a field or with the same field with current facet value
                     // logger.trace("updating query item: {}", queryItem);
-                    if (queryItem.getField() == null) {
-                        queryItem.setField(facetItem.getField());
-                    }
+                    queryItem.setField(facetItem.getField());
                     queryItem.setValue(facetItem.getValue());
                     // logger.trace("updated query item: {}", queryItem);
                     populatedQueryItems.add(queryItem);
@@ -1467,12 +1465,12 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
         // Reset any hierarchical query items that could not be used for existing facets
-        for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
-            if (queryItem.isHierarchical() && !populatedQueryItems.contains(queryItem)) {
-                // logger.trace("Resetting advanced query item {}", queryItem);
-                queryItem.reset();
-            }
-        }
+        //        for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
+        //            if (queryItem.isHierarchical() && !populatedQueryItems.contains(queryItem)) {
+        //                // logger.trace("Resetting advanced query item {}", queryItem);
+        //                queryItem.reset();
+        //            }
+        //        }
     }
 
     public String removeChronologyFacetAction() {
