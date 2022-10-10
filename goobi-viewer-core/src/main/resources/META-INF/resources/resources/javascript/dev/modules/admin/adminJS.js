@@ -52,6 +52,7 @@ $( document ).ready(function() {
 	$("body").on("click", '[data-toggle="helptext"]', function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
 		$(this).parents().siblings('.admin__form-help-text').toggleClass('in');
+		$('.-refreshHCsticky').hcSticky('refresh', {});
 	});
 
 // hide license functions if open access toggle is yes
