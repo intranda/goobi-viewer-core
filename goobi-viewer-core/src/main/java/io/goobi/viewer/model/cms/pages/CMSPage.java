@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -297,6 +298,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             copy.setOwnerPage(this);
             this.cmsComponents.add(copy);
         }
+        //sort components and normalize order attributes
+        Collections.sort(this.cmsComponents);
+        for (int i = 0; i < this.cmsComponents.size(); i++) {
+            this.cmsComponents.get(i).setOrder(i+1);
+        }
     }
     
     /**
@@ -323,11 +329,17 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             }
         }
 
+        
         for (PersistentCMSComponent component : original.getCmsComponents()) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwnerPage(this);
             copy.setOwnerTemplate(null);
             this.cmsComponents.add(copy);
+        }
+        //sort components and normalize order attributes
+        Collections.sort(this.cmsComponents);
+        for (int i = 0; i < this.cmsComponents.size(); i++) {
+            this.cmsComponents.get(i).setOrder(i);
         }
     }
 

@@ -10,27 +10,25 @@
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
     <composite:interface>
-		<composite:attribute name="component" required="true" type="io.goobi.viewer.model.cms.content.CMSComponent" />
+		<composite:attribute name="component" required="true"/>
+		<composite:attribute name="cmsContent" required="false" default="#{cc.attrs.component.firstContentItem.content}"/>
+		<composite:attribute name="image" required="false" default="#{cc.attrs.cmsContent.mediaItem}"/>
     </composite:interface>
 
 
     <composite:implementation>
-    
-		<c:set scope="request" var="content" value="#{cc.attrs.component.firstContentItem.content}"/>
-		<c:set scope="request" var="image" value="#{cc.attrs.component.firstContentItem.content.mediaItem}"/>
-		
-    	<ui:fragment rendered="#{not null content and not null image}">
+    	<ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.image != null}">
 	    	<figure class="tpl-simple__media">
-	        	<ui:fragment rendered="#{cmsMediaBean.isImage(image)}">
-					<img src="#{content.getUrl(1920, null)}" class="img-fluid" alt="#{image.alternativeText}" title="#{image.name}" />
+	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image)}">
+					<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid" alt="#{cc.attrs.image.alternativeText}" title="#{cc.attrs.image.name}" />
 	            </ui:fragment>
-	            <ui:fragment rendered="#{cmsMediaBean.isVideo(image)}">
-					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{image.name}">
-						<source src="#{content.url}"/>
+	            <ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.image)}">
+					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.image.name}">
+						<source src="#{cc.attrs.cmsContent.url}"/>
 					</video>
 	            </ui:fragment>
 	            <figcaption>
-	                #{image.description}
+	                #{cc.attrs.image.description}
 	            </figcaption>
 			</figure>
 		</ui:fragment>

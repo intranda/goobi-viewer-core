@@ -22,8 +22,10 @@
 package io.goobi.viewer.model.cms.pages.content;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -36,6 +38,7 @@ import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -44,14 +47,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_components")
-public class PersistentCMSComponent implements IPolyglott {
+public class PersistentCMSComponent implements IPolyglott, Comparable<PersistentCMSComponent> {
 
     /** Unique database ID. */
     @Id
@@ -87,6 +92,12 @@ public class PersistentCMSComponent implements IPolyglott {
     @JoinColumn(name = "owner_template_id")
     private CMSPageTemplate ownerTemplate;
     
+    @ElementCollection
+    @JoinTable(name="cms_component_attribute_map", joinColumns=@JoinColumn(name="attribute_id"))
+    @MapKeyColumn (name="component_id")
+    @Column(name="cms_component_attributes")
+    Map<String,String> attributes = new HashMap<>();
+    
     /**
      * If the content of this component is spread out over several pages of views, as in search result lists for example, 
      * this number indicates the current page the user is seeing
@@ -120,6 +131,8 @@ public class PersistentCMSComponent implements IPolyglott {
         this.ownerTemplate = orig.ownerTemplate;
         this.contentItems.addAll(orig.getContentItems().stream().map(CMSContent::copy).collect(Collectors.toList()));
         this.contentItems.forEach(c -> c.setOwningComponent(this));
+        this.attributes = new HashMap<>(orig.attributes);
+
     }
 
     public Long getId() {
@@ -263,5 +276,26 @@ public class PersistentCMSComponent implements IPolyglott {
                 .filter(CMSContent::isTranslatable)
                 .map(TranslatableCMSContent.class::cast)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int compareTo(PersistentCMSComponent o) {
+        return Integer.compare(this.order, o.order);
+    }
+    
+    public void setAttribute(String key, String value) {
+        this.attributes.put(key, value);
+    }
+    
+    public String getAttribute(String key) {
+        return this.attributes.get(key);
+    }
+    
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
     }
 }

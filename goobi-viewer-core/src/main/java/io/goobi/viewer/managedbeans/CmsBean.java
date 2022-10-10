@@ -675,7 +675,9 @@ public class CmsBean implements Serializable {
         }
         
         for (PersistentCMSComponent persistentCMSComponent : componentsToDelete) {
-            DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent);
+            if(persistentCMSComponent.getId() != null) {                
+                DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent);
+            }
         }
         
         setSidebarElementOrder(selectedPage);
@@ -2223,7 +2225,9 @@ public class CmsBean implements Serializable {
 
     public boolean deleteComponent(CMSComponent component) {
        PersistentCMSComponent persistentComponent = this.selectedPage.getPersistentComponent(component);
-       this.componentsToDelete.add(persistentComponent);
+       if(persistentComponent.getId() != null) {           
+           this.componentsToDelete.add(persistentComponent);
+       }
        return this.selectedPage.removeComponent(component);
     }
 }

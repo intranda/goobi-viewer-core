@@ -153,6 +153,11 @@
 															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
 															<h:panelGroup id="pageComponents" class="page-component-list" >
 																<c:forEach var="cmsComponent" items="#{page.components}">
+																	
+																	WIDTH: #{page.getPersistentComponent(cmsComponent).getAttribute('width')}
+																	<button jsf:action="#{page.getPersistentComponent(cmsComponent).setAttribute('width', '50%')}">50%</button>
+																	<button jsf:action="#{page.getPersistentComponent(cmsComponent).setAttribute('width', '100%')}">100%</button>
+																	
 																	<div class="page-component">
 																		<button jsf:action="#{page.decrementOrder(cmsComponent)}">
 																			<i class="fa fa-arrow-up" aria-hidden="true"></i>

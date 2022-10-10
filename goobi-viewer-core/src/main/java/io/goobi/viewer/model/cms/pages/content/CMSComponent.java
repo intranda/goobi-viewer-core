@@ -216,8 +216,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
     }
     
     public UIComponent getUiComponent() {
-        
-        
+
         if(this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             String id = FilenameUtils.getBaseName(this.getJsfComponent().getName()) + "_" + System.nanoTime();
