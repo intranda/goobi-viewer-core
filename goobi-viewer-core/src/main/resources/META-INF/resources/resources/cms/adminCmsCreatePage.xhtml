@@ -150,10 +150,22 @@
 																	</ui:repeat>
 																</h:panelGroup>
 															</div>
-															
+															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
 															<h:panelGroup id="pageComponents" class="page-component-list" >
 																<c:forEach var="cmsComponent" items="#{page.components}">
 																	<div class="page-component">
+																		<button jsf:action="#{page.decrementOrder(cmsComponent)}">
+																			<i class="fa fa-arrow-up" aria-hidden="true"></i>
+																			<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																		</button>
+																		<button jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
+																			<i class="fa fa-trash-o" aria-hidden="true"></i>
+																			<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																		</button>
+																		<button jsf:action="#{page.incrementOrder(cmsComponent)}">
+																			<i class="fa fa-arrow-down" aria-hidden="true"></i>
+																			<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																		</button>
 																		<c:forEach var="contentItem" items="#{cmsComponent.contentItems}">
 																			<h:panelGroup binding="#{contentItem.uiComponent}"></h:panelGroup>																			
 																		</c:forEach>

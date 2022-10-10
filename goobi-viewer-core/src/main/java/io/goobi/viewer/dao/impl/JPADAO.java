@@ -3357,6 +3357,29 @@ public class JPADAO implements IDAO {
             }
         }
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSComponent(PersistentCMSComponent component) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                PersistentCMSComponent o = em.getReference(PersistentCMSComponent.class, component.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+    
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")

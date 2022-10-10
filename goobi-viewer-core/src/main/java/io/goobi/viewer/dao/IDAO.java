@@ -46,6 +46,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
@@ -2648,6 +2649,8 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
+    boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
 
 
 

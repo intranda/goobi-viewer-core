@@ -183,7 +183,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @JoinColumn(name = "slider_id")
     private CMSSlider topbarSlider = null;
     
-    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.REMOVE })
     @PrivateOwned
     //@Convert(converter = CMSComponentConverter.class)
     private List<PersistentCMSComponent> cmsComponents = new ArrayList<>();
@@ -1356,5 +1356,55 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public Optional<CMSPageTemplate> getTemplate() {
         return Optional.ofNullable(this.template);
+    }
+    
+    public boolean removeComponent(CMSComponent component) {
+        PersistentCMSComponent persistentComponent = getPersistentComponent(component);
+        if(persistentComponent != null) {
+            this.componentMap.remove(persistentComponent);
+            return this.cmsComponents.remove(persistentComponent);
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent}
+     * to the given order value. Also, sets the order value of all Components which previously had the given order
+     * to the order value of the given component
+     * @param component
+     * @param order
+     * @return
+     */
+    public void setComponentOrder(CMSComponent component, int order) {
+        PersistentCMSComponent persistentComponent = getPersistentComponent(component);
+        Integer currentOrder = persistentComponent.getOrder();
+        this.getCmsComponents().stream().filter(c -> Integer.compare(c.getOrder(), order) == 0)
+        .forEach(comp -> {
+            comp.setOrder(currentOrder);
+            this.componentMap.remove(comp);
+        });
+        persistentComponent.setOrder(order);
+        this.componentMap.remove(persistentComponent);
+    }
+    
+    public void incrementOrder(CMSComponent component) {
+        this.setComponentOrder(component, component.getOrder()+1);
+    }
+    
+    public void decrementOrder(CMSComponent component) {
+        this.setComponentOrder(component, component.getOrder()-1);
+    }
+
+    public PersistentCMSComponent getPersistentComponent(CMSComponent component) {
+        PersistentCMSComponent persistentComponent = componentMap.entrySet().stream()
+                .filter(e -> e.getValue() == component).findAny()
+                .map(e -> e.getKey())
+                .orElse(null);
+        return persistentComponent;
+    }
+
+    public void resetCachedData() {
+       this.componentMap = new HashMap<>();
     }
 }

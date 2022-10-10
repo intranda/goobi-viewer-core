@@ -28,6 +28,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlPanelGroup;
+
+import org.apache.commons.io.FilenameUtils;
+
+import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import jakarta.persistence.Transient;
 
@@ -54,6 +60,8 @@ public class CMSComponent implements Comparable<CMSComponent> {
     private int order = 0;
     
     private int listPage = 1;
+    
+    private UIComponent uiComponent;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null));
@@ -205,5 +213,24 @@ public class CMSComponent implements Comparable<CMSComponent> {
     @Override
     public int compareTo(CMSComponent o) {
         return Integer.compare(this.order, o.order);
+    }
+    
+    public UIComponent getUiComponent() {
+        
+        
+        if(this.uiComponent == null) {
+            DynamicContentBuilder builder = new DynamicContentBuilder();
+            String id = FilenameUtils.getBaseName(this.getJsfComponent().getName()) + "_" + System.nanoTime();
+            this.uiComponent = new HtmlPanelGroup();
+            this.uiComponent.setId(id);
+            UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
+            component.getAttributes().put("component", this);
+            component.setId(id + "_component");
+        }
+        return uiComponent;
+    }
+    
+    public void setUiComponent(UIComponent uiComponent) {
+        this.uiComponent = uiComponent;
     }
 }

@@ -77,16 +77,8 @@
 
                             <!-- INDIVIDUAL PAGE ROWS -->
                             <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'} #{page.published == true ? '' : '-unpublished'}" role="row">
+                                <div class="row no-gutters admin__table-entry #{page.published == true ? '' : '-unpublished'}" role="row">
                                     <div class="col-6 d-flex">
-                                        <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
-                                        	<div class="admin__table-img align-self-center" role="presentation">
-                                            	<img alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
-                                            </div>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{page.validityStatus != 'VALID'}" role="gridcell">
-                                            <img class="admin__table-img align-self-center" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
-                                        </ui:fragment>
 
                                         <div class="admin__table-data" role="gridcell">
                                             <span class="admin__table-name #{page.published == true ? '' : '-unpublished'}">#{page.title}</span>
@@ -132,12 +124,12 @@
 	                                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
 	                                            <div class="col-2">
 	                                                <!-- LANGUAGE COMPLETE -->
-	                                                <ui:fragment rendered="#{page.isLanguageComplete(locale)}">
+	                                                <ui:fragment rendered="#{page.isComplete(locale)}">
 	                                                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
 	                                                </ui:fragment>
 
 	                                                <!-- LANGUAGE INCOMPLETE -->
-	                                                <ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
+	                                                <ui:fragment rendered="#{!page.isComplete(locale)}">
 	                                                    <i class="fa fa-square-o" aria-hidden="true"></i>
 	                                                </ui:fragment>
 	                                            </div>

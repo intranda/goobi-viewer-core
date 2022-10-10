@@ -92,6 +92,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.PageValidityStatus;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.glossary.Glossary;
@@ -159,8 +160,8 @@ public class CmsBean implements Serializable {
     private List<String> luceneFields = null;
     
     private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
-
-    private UIComponent contentItemsGroup = new HtmlPanelGroup();
+    
+    private List<PersistentCMSComponent> componentsToDelete = new ArrayList<>();
     
     /**
      * <p>
@@ -672,12 +673,17 @@ public class CmsBean implements Serializable {
             // Only authorized CMS admins may save
             return;
         }
-
+        
+        for (PersistentCMSComponent persistentCMSComponent : componentsToDelete) {
+            DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent);
+        }
+        
         setSidebarElementOrder(selectedPage);
 
         // Save
         boolean success = false;
         selectedPage.setDateUpdated(LocalDateTime.now());
+        
         logger.trace("update dao");
         if (selectedPage.getId() != null) {
             success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
@@ -2206,30 +2212,18 @@ public class CmsBean implements Serializable {
     public void setPageEditState(CMSPageEditState pageEditState) {
         this.pageEditState = pageEditState;
     }
-    
-    public void setPanelGroup(UIComponent group) {
-        this.contentItemsGroup = group;
-    }
-    
-    public UIComponent getPanelGroup() {
-        
-            String componentClass = (String) this.contentItemsGroup.getAttributes().get("component-class");
-        
-            DynamicContentBuilder builder = new DynamicContentBuilder();
-            for (UIComponent comp : contentItemsGroup.getChildren()) {
-                comp.getChildren().clear();
-            }
-            contentItemsGroup.getChildren().clear();
-            List<CMSComponent> cmsComponents = getSelectedPage().getComponents();
-            for (CMSComponent cmsComponent : cmsComponents) {
-                UIComponent componentGroup = builder.createTag("div", Collections.singletonMap("class", componentClass));
-                contentItemsGroup.getChildren().add(componentGroup);
-                for (CMSContentItem item : cmsComponent.getContentItems()) {
-                    UIComponent component = builder.build(item.getJsfComponent(), componentGroup, item.getAttributes());
-                    component.getAttributes().put("contentItem", item);
-                }
-            }
-        return this.contentItemsGroup;
+
+    public String getCurrentPageUrl() {
+        if(this.currentPage != null) {
+            return "cmsPage.xhtml";
+        } else {
+            return "";
+        }
     }
 
+    public boolean deleteComponent(CMSComponent component) {
+       PersistentCMSComponent persistentComponent = this.selectedPage.getPersistentComponent(component);
+       this.componentsToDelete.add(persistentComponent);
+       return this.selectedPage.removeComponent(component);
+    }
 }

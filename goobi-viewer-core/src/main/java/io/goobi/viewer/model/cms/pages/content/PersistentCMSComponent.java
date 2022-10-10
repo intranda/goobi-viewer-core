@@ -63,7 +63,7 @@ public class PersistentCMSComponent implements IPolyglott {
     @Convert(converter = StringListConverter.class)
     private final List<String> cssClasses = new ArrayList<>();
     
-    @OneToMany(mappedBy = "owningComponent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OneToMany(mappedBy = "owningComponent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.REMOVE })
     @PrivateOwned
     private final List<CMSContent> contentItems = new ArrayList<>();
     
