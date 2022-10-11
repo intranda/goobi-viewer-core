@@ -27,16 +27,16 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -47,7 +47,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * Class collecting usage statistics data for a number of days to provide an overall summary for output 
+ * Class collecting usage statistics data for a number of days to provide an overall summary for output
  * 
  * @author florian
  *
@@ -55,50 +55,53 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class StatisticsSummaryBuilder {
 
     private final Logger logger = LogManager.getLogger(StatisticsSummaryBuilder.class);
-    
+
     /**
      * The DAO from which to query the usage statistics
+     * 
      * @deprecated statistics are queried from SOLR (via {@link SolrSearchIndex})
      */
-    @Deprecated(since="22.08")
+    @Deprecated(since = "22.08")
     private final IDAO dao;
-    
+
     /**
      * The SOLR interface from which to query the usage statistics
      */
     private final SolrSearchIndex searchIndex;
-     
+
     /**
      * Constructor using instances from {@link DataManager}
+     * 
      * @throws DAOException
      */
     public StatisticsSummaryBuilder() throws DAOException {
-          this(DataManager.getInstance().getDao(), DataManager.getInstance().getSearchIndex());      
+        this(DataManager.getInstance().getDao(), DataManager.getInstance().getSearchIndex());
     }
-    
+
     /**
      * Default constructor
-     * @param dao   the {@link IDAO} to set. May be null since it isn't used
-     * @param searchIndex   the {@link SolrSearchIndex} to set
+     * 
+     * @param dao the {@link IDAO} to set. May be null since it isn't used
+     * @param searchIndex the {@link SolrSearchIndex} to set
      */
     public StatisticsSummaryBuilder(IDAO dao, SolrSearchIndex searchIndex) {
         this.dao = dao;
         this.searchIndex = searchIndex;
     }
-    
+
     /**
      * Collect usage statistics from SOLR in a {@link StatisticsSummary}
-     * @param filter    a {@link StatisticsSummaryFilter} to filter results
-     * @return  a {@link StatisticsSummary}
+     * 
+     * @param filter a {@link StatisticsSummaryFilter} to filter results
+     * @return a {@link StatisticsSummary}
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public StatisticsSummary loadSummary(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException, PresentationException {
-        StatisticsSummary fromDAO = loadFromSolr(filter);
-        return fromDAO;
+        return loadFromSolr(filter);
     }
-    
+
     /**
      * 
      * @param filter
@@ -107,105 +110,111 @@ public class StatisticsSummaryBuilder {
      * @throws IndexUnreachableException
      * @deprecated statistics are loaded from solr, using the {@link #loadFromSolr(StatisticsSummaryFilter) method
      */
-    @Deprecated(since="22.08")
+    @Deprecated(since = "22.08")
     private StatisticsSummary loadFromDAO(StatisticsSummaryFilter filter) throws DAOException, IndexUnreachableException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
         List<DailySessionUsageStatistics> days = this.dao.getUsageStatistics(filter.getStartDate(), filter.getEndDate());
-        return days.stream().reduce(StatisticsSummary.empty(), (s,d) -> this.add(s, d, identifiersToInclude) , StatisticsSummary::add);
+        return days.stream().reduce(StatisticsSummary.empty(), (s, d) -> add(s, d, identifiersToInclude), StatisticsSummary::add);
     }
-    
+
     private StatisticsSummary loadFromSolr(StatisticsSummaryFilter filter) throws IndexUnreachableException, PresentationException {
         List<String> identifiersToInclude = getFilteredIdentifierList(filter);
         List<String> fields = getFieldListForRecords(identifiersToInclude);
-        if(!fields.isEmpty()) {            
+        if (!fields.isEmpty()) {
             fields.add(StatisticsLuceneFields.DATE);
         }
         SolrDocumentList docs = this.searchIndex.search(getSolrQuery(filter), fields);
-        return docs.stream().reduce(StatisticsSummary.empty(), this::add , StatisticsSummary::add);
+        return docs.stream().reduce(StatisticsSummary.empty(), this::add, StatisticsSummary::add);
     }
+
     private StatisticsSummary add(StatisticsSummary s, SolrDocument d) {
         StatisticsSummary s2 = getStatisticsFromSolrDoc(d);
         return s.add(s2);
     }
 
+    @SuppressWarnings("unchecked")
     private StatisticsSummary getStatisticsFromSolrDoc(SolrDocument doc) {
-        Long[] counts = new Long[] {0l,0l,0l,0l,0l,0l};
+        Long[] counts = new Long[] { 0l, 0l, 0l, 0l, 0l, 0l };
         for (String fieldName : doc.getFieldNames()) {
-            if(fieldName.startsWith(StatisticsLuceneFields.RECORD_STATISTICS_PREFIX)) {
-            try {
-                List<Long> values = (List<Long>)doc.getFieldValue(fieldName);
-                for (int i = 0; i < counts.length; i++) {
-                    counts[i] += values.get(i);
+            if (fieldName.startsWith(StatisticsLuceneFields.RECORD_STATISTICS_PREFIX)) {
+                try {
+                    List<Long> values = (List<Long>) doc.getFieldValue(fieldName);
+                    for (int i = 0; i < counts.length; i++) {
+                        counts[i] += values.get(i);
+                    }
+                } catch (ClassCastException e) {
+                    logger.warn("Envountered solr doc field of unexcepted type: '{}' : '{}'", fieldName, doc.getFieldValue(fieldName));
                 }
-            } catch(ClassCastException e) {
-                logger.warn("Envountered solr doc field of unexcepted type: '{}' : '{}'",  fieldName, doc.getFieldValue(fieldName));
-            }
             }
         }
 
-        Map<RequestType, RequestTypeSummary> map = new HashMap<>();
+        Map<RequestType, RequestTypeSummary> map = new EnumMap<>(RequestType.class);
         LocalDate date = getDate(doc);
-        for (int i = 0; i < counts.length; i+=2) {
-                RequestType type = RequestType.getTypeForTotalCountIndex(i);
-                long total = counts[i];
-                long unique = counts[i+1];
-                map.put(type, new RequestTypeSummary(total, unique, date, date));
+        for (int i = 0; i < counts.length; i += 2) {
+            RequestType type = RequestType.getTypeForTotalCountIndex(i);
+            long total = counts[i];
+            long unique = counts[i + 1];
+            map.put(type, new RequestTypeSummary(total, unique, date, date));
         }
         return new StatisticsSummary(map);
     }
-    
-    private LocalDate getDate(SolrDocument doc) {
-        if(doc.containsKey(StatisticsLuceneFields.DATE)) {            
-            Date date = (Date)doc.getFieldValue(StatisticsLuceneFields.DATE);
+
+    private static LocalDate getDate(SolrDocument doc) {
+        if (doc.containsKey(StatisticsLuceneFields.DATE)) {
+            Date date = (Date) doc.getFieldValue(StatisticsLuceneFields.DATE);
             return new Timestamp(date.getTime()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        } else {
-            return null;
         }
+        return null;
     }
 
-    private List<String> getFieldListForRecords(List<String> identifiersToInclude) {
+    private static List<String> getFieldListForRecords(List<String> identifiersToInclude) {
         return identifiersToInclude.stream().map(StatisticsLuceneFields::getFieldName).collect(Collectors.toList());
     }
 
-    private String getSolrQuery(StatisticsSummaryFilter filter) {
+    private static String getSolrQuery(StatisticsSummaryFilter filter) {
         StringBuilder sb = new StringBuilder();
         sb.append("+").append(SolrConstants.DOCTYPE).append(":").append(StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE);
-        
-        if(filter.isDateRange()) {
-            sb.append(" +").append(StatisticsLuceneFields.DATE).append(":")
-            .append("[")
-            .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
-            .append(" TO ")
-            .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getEndDate().atStartOfDay()))
-            .append("]");
-        } else if(filter.hasStartDateRestriction()) {
-            sb.append(" +").append(StatisticsLuceneFields.DATE).append(":")
-            .append("\"").append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
-            .append("\"");
+
+        if (filter.isDateRange()) {
+            sb.append(" +")
+                    .append(StatisticsLuceneFields.DATE)
+                    .append(":")
+                    .append("[")
+                    .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
+                    .append(" TO ")
+                    .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getEndDate().atStartOfDay()))
+                    .append("]");
+        } else if (filter.hasStartDateRestriction()) {
+            sb.append(" +")
+                    .append(StatisticsLuceneFields.DATE)
+                    .append(":")
+                    .append("\"")
+                    .append(StatisticsLuceneFields.solrDateFormatter.format(filter.getStartDate().atStartOfDay()))
+                    .append("\"");
         }
         return sb.toString();
     }
 
     private List<String> getFilteredIdentifierList(StatisticsSummaryFilter filter) throws IndexUnreachableException {
         List<String> identifiersToInclude = new ArrayList<>();
-        if(StringUtils.isNotBlank(filter.getFilterQuery())) {
+        if (StringUtils.isNotBlank(filter.getFilterQuery())) {
             try {
-            String completeFilter = "+({}) +ISWORK:*".replace("{}", filter.getFilterQuery());
+                String completeFilter = "+({}) +ISWORK:*".replace("{}", filter.getFilterQuery());
                 identifiersToInclude.addAll(this.searchIndex
                         .search(completeFilter, Collections.singletonList(SolrConstants.PI))
-                        .stream().map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
+                        .stream()
+                        .map(doc -> doc.getFieldValue(SolrConstants.PI).toString())
                         .collect(Collectors.toList()));
-            } catch (PresentationException  e) {
+            } catch (PresentationException e) {
                 throw new IndexUnreachableException(e.toString());
             }
         }
         return identifiersToInclude;
     }
-    
-    private StatisticsSummary add(StatisticsSummary summary, DailySessionUsageStatistics dailyStats, List<String> identifiersToInclude) {
+
+    private static StatisticsSummary add(StatisticsSummary summary, DailySessionUsageStatistics dailyStats, List<String> identifiersToInclude) {
         StatisticsSummary dailyStatsSummary = new StatisticsSummary(dailyStats, identifiersToInclude);
-        StatisticsSummary combined = summary.add(dailyStatsSummary);
-        return combined;
+        return summary.add(dailyStatsSummary);
     }
 
 }

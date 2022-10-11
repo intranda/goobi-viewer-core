@@ -37,9 +37,14 @@
                            
                            <h:form id="adminLicensesForm" prependId="false">
 
-						   <h2 class="admin__licenses-optional-heading">
-						       #{msg.admin__rights_entries_heading}
-						   </h2>
+
+						   <ui:fragment rendered="#{not empty adminLicenseBean.allLicenses}">
+	
+							   <h2 class="admin__licenses-optional-heading">
+							       #{msg.admin__rights_entries_heading}
+							   </h2>
+							   
+						   </ui:fragment>
 
                            <div class="admin__entry-list">
                                <ui:repeat var="license" value="#{adminLicenseBean.allLicenses}">

@@ -2803,7 +2803,6 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return List of facet fields to be used as range values
      */
-    @SuppressWarnings("static-method")
     public List<String> getRangeFacetFields() {
         return Collections.singletonList(SolrConstants._CALENDAR_YEAR);
     }
@@ -4924,8 +4923,8 @@ public class Configuration extends AbstractConfiguration {
     public List<ManifestLinkConfiguration> getIIIFSeeAlsoMetadataConfigurations() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.seeAlso.metadata");
         List<ManifestLinkConfiguration> links = new ArrayList<>(configs.size());
-        for (HierarchicalConfiguration config : configs) {
-            String label = config.getString("[@label]", "");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            String label = config.getString(XML_PATH_ATTRIBUTE_LABEL, "");
             String format = config.getString("[@format]", "");
             MetadataParameter param = MetadataParameter.createFromConfig(config.configurationAt("param"), true);
             Metadata md = new Metadata("", "", Arrays.asList(param));
