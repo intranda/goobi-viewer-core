@@ -1784,7 +1784,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") +(SUPERFULLTEXT:\"bla blup\" FULLTEXT:\"bla blup\"))",
+                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") +(SUPERFULLTEXT:\"bla blüp\" FULLTEXT:\"bla blüp\"))",
                 null, null);
         Assert.assertNotNull(group);
         Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
@@ -1806,7 +1806,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) -(SUPERFULLTEXT:(bla AND blup) FULLTEXT:(bla AND blup)))",
+                "(+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) -(SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)))",
                 null, null);
         Assert.assertNotNull(group);
         Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
@@ -1865,7 +1865,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void parseSearchQueryGroupFromQuery_shouldParseMixedSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") (SUPERFULLTEXT:(bla AND blup) FULLTEXT:(bla AND blup)) +(DOCSTRCT_TOP:\"monograph\") -(MD_YEARPUBLISH:([1900 TO 2000])))",
+                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") (SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)) +(DOCSTRCT_TOP:\"monograph\") -(MD_YEARPUBLISH:([1900 TO 2000])))",
                 "DC:varia;;MD_CREATOR:bar;;", null);
         Assert.assertNotNull(group);
         Assert.assertEquals(6, group.getQueryItems().size());
