@@ -37,7 +37,7 @@
                             <div id="searchAdvancedInputGroup-0-#{status.count}" class="search-advanced__input-group">
                                 <div class="row mx-0">
                                     <c:choose>
-                                    <c:when test="#{queryItem.allFields}">
+                                    <c:when test="#{status.count == 1}">
                                         <div class="col-12 col-sm-5 mb-3">
                                             <!-- FIELD SELECT -->
                                             <div class="search-advanced__input-col">
