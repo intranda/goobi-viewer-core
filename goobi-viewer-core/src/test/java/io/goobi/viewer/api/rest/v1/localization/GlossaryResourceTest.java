@@ -45,11 +45,12 @@ import io.goobi.viewer.model.glossary.Glossary;
  * @author florian
  *
  */
-public class GlossaryResourceTest extends AbstractRestApiTest{
+public class GlossaryResourceTest extends AbstractRestApiTest {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetGlossaries() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS).build())
+        try (Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -64,8 +65,8 @@ public class GlossaryResourceTest extends AbstractRestApiTest{
     }
 
     @Test
-    public void testGetGlossaryFile() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS_FILE).params("wiener.json").build())
+    public void testGetGlossaryFile() {
+        try (Response response = target(urls.path(LOCALIZATION, LOCALIZATION_VOCABS_FILE).params("wiener.json").build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {

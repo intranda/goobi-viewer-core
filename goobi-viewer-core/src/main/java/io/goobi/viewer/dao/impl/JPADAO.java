@@ -6859,6 +6859,7 @@ public class JPADAO implements IDAO {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();

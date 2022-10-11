@@ -57,11 +57,10 @@ import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  *
- * This class migrates migrates data from the deprcated table cms_sidebar_elements to the new table cms_page_sidebar_elements,
- * which backs {@link CMSSidebarElement}. For user configurable widgets it also creates an entry in 'custom_sidebar_widgets',
- * which backs {@link CustomSidebarWidget}.
- * The table cms_sidebar_elements is eventually dropped.
- * The updae is only performed if the table cms_sidebar_elements still exists in the database
+ * This class migrates migrates data from the deprcated table cms_sidebar_elements to the new table cms_page_sidebar_elements, which backs
+ * {@link CMSSidebarElement}. For user configurable widgets it also creates an entry in 'custom_sidebar_widgets', which backs
+ * {@link CustomSidebarWidget}. The table cms_sidebar_elements is eventually dropped. The updae is only performed if the table cms_sidebar_elements
+ * still exists in the database
  *
  * @author florian
  *
@@ -72,16 +71,16 @@ public class SidebarWidgetUpdate implements IModelUpdate {
 
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
-        if(dao.tableExists("cms_sidebar_elements")) {
+        if (dao.tableExists("cms_sidebar_elements")) {
             migrateWidgetTables(dao);
             return true;
-        } else {
-            return false;
         }
+        return false;
 
     }
 
-    private void migrateWidgetTables(IDAO dao) throws DAOException {
+    @SuppressWarnings("unchecked")
+    private static void migrateWidgetTables(IDAO dao) throws DAOException {
         List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM cms_sidebar_elements");
 
         List<Object[]> legacyWidgets = dao.getNativeQueryResults("SELECT * FROM cms_sidebar_elements");
@@ -129,12 +128,12 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                             }
                             break;
                         case CUSTOM:
-                            if(CustomWidgetType.WIDGET_HTML.equals(contentType)) {
+                            if (CustomWidgetType.WIDGET_HTML.equals(contentType)) {
                                 widget_title = type;
                             }
                             CustomSidebarWidget widget = createCustomWidget(inner_html, linked_pages, widget_title, additional_query,
                                     result_display_limit, search_field, contentType, widget_mode, css_class);
-                            if(widget != null) {
+                            if (widget != null) {
                                 dao.addCustomWidget(widget);
                                 logger.error("CREATED NEW SIDEBAR WIDGET OF TYPE '{}' FOR USE IN CMS PAGE '{}'", contentType, ownerPage);
                                 element = new CMSSidebarElementCustom(widget, ownerPage);
@@ -152,13 +151,13 @@ public class SidebarWidgetUpdate implements IModelUpdate {
         dao.executeUpdate("DROP TABLE cms_sidebar_elements");
     }
 
-    private CustomSidebarWidget createCustomWidget(String inner_html, String linked_pages, String widget_title, String additional_query,
+    private static CustomSidebarWidget createCustomWidget(String inner_html, String linked_pages, String widget_title, String additional_query,
             Integer result_display_limit, String search_field, WidgetContentType contentType, String widget_mode, String css_class) {
         CustomWidgetType customType = (CustomWidgetType) contentType;
         CustomSidebarWidget widget = new CustomSidebarWidget();
         switch (customType) {
             case WIDGET_HTML:
-                if(StringUtils.isNotBlank(inner_html)) {
+                if (StringUtils.isNotBlank(inner_html)) {
                     HtmlSidebarWidget htmlWidget = new HtmlSidebarWidget();
                     setTitle(widget_title, htmlWidget);
                     htmlWidget.getHtmlText().mapEach(oldValue -> inner_html);
@@ -176,7 +175,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
             case WIDGET_RSSFEED:
                 RssFeedSidebarWidget rssWidget = new RssFeedSidebarWidget();
                 setTitle(StringUtils.isBlank(widget_title) ? "lastImports" : widget_title, rssWidget);
-                if(StringUtils.isNotBlank(widget_title)) {
+                if (StringUtils.isNotBlank(widget_title)) {
                     rssWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
                 } else {
                     rssWidget.setTitle(new TranslatedText(ViewerResourceBundle.getTranslations("lastImports")));
@@ -199,16 +198,16 @@ public class SidebarWidgetUpdate implements IModelUpdate {
         return widget;
     }
 
-    private void setTitle(String widget_title, CustomSidebarWidget htmlWidget) {
-        TranslatedText translatedTitle = new TranslatedText(ViewerResourceBundle.getTranslations(widget_title, false));
-        if(translatedTitle.isEmpty()) {
-            htmlWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
+    private static void setTitle(String widgetTitle, CustomSidebarWidget htmlWidget) {
+        TranslatedText translatedTitle = new TranslatedText(ViewerResourceBundle.getTranslations(widgetTitle, false));
+        if (translatedTitle.isEmpty()) {
+            htmlWidget.getTitle().setValue(widgetTitle, IPolyglott.getDefaultLocale());
         } else {
             htmlWidget.setTitle(translatedTitle);
         }
     }
 
-    private WidgetContentType parseContentType(String type) {
+    private static WidgetContentType parseContentType(String type) {
         WidgetContentType contentType = null;
         if (StringUtils.isNotBlank(type)) {
             switch (type) {
@@ -243,7 +242,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
         return contentType;
     }
 
-    private List<Long> parseIds(String string, String separatorPattern) {
+    private static List<Long> parseIds(String string, String separatorPattern) {
         return Arrays.stream(string.split(separatorPattern)).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
     }
 
