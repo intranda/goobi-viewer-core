@@ -764,7 +764,7 @@
                 <configuration>
                     <release>11</release>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
-					<!--compilerArgument>-Xlint:unchecked</compilerArgument -->
+					<compilerArgument>-Xlint:unchecked</compilerArgument>
 				</configuration>
 			</plugin>
 			<plugin>
