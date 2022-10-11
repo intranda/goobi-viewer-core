@@ -1428,4 +1428,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         component.setAttribute(key, value);
         getPersistentComponent(component).setAttribute(key, value);
     }
+    
+    public void toggleAttribute(CMSComponent component, String key, String value) {
+        if(StringUtils.isBlank(component.getAttribute(key).getValue())) {
+            setAttribute(component, key, value);
+        } else {
+            setAttribute(component, key, null);
+
+        }
+    }
 }

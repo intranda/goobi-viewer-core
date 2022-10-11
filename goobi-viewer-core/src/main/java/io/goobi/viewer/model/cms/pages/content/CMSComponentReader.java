@@ -25,7 +25,10 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -51,8 +54,21 @@ public class CMSComponentReader {
         String desc = XmlTools.evaluateToFirstElement("description", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         String icon = XmlTools.evaluateToFirstElement("icon", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         
+        List<Element> attributeElements = XmlTools.evaluateToElements("attribute", templateDoc.getRootElement(), null);
+        Map<String, CMSComponentAttribute> attributes = new HashMap<>(attributeElements.size());
+        for (Element element : attributeElements) {
+            String attrName = element.getAttributeValue("name");
+            String attrLabel = element.getAttributeValue("label");
+            String attrType = element.getAttributeValue("type");
+            List<String> options = XmlTools.evaluateToElements("value", element, null).stream().map(Element::getText).collect(Collectors.toList());
+            String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
+            CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, options);
+            attr.setValue(value);
+            attributes.put(attr.getName(), attr);
+        }
+        
         String filename = FilenameUtils.getBaseName(templateFile.getFileName().toString());
-        CMSComponent component = new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename);
+        CMSComponent component = new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, attributes);
         
         List<Element> contentElements = XmlTools.evaluateToElements("content/item", templateDoc.getRootElement(), null);
         
@@ -71,8 +87,8 @@ public class CMSComponentReader {
                 CMSContent content = createContentFromClassName(className);
                 CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), required);
                 
-                List<Element> attributes = XmlTools.evaluateToElements("attributes/attribute", element, null);
-                for (Element attribute : attributes) {
+                List<Element> itemAttributes = XmlTools.evaluateToElements("attributes/attribute", element, null);
+                for (Element attribute : itemAttributes) {
                     String name = attribute.getAttributeValue("name");
                     String value = attribute.getAttributeValue("value");
                     item.setAttribute(name, value);

@@ -18,4 +18,12 @@
 			</jsfComponent>
 		</item>
 	</content>
+	<attribute name="width" label="cms__component_attribute__width">
+		<value>25</value>
+		<value>50</value>
+		<value>75</value>
+		<value default="true">100</value>
+	</attribute>
+	<attribute name="lightbox" label="cms__component_attribute__lightbox" type="boolean">
+	</attribute>
 </component>

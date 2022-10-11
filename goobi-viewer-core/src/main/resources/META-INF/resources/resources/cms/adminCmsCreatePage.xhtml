@@ -154,14 +154,20 @@
 															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
 															<h:panelGroup id="pageComponents" class="page-component-list" >
 																<c:forEach var="cmsComponent" items="#{page.components}">
-																	<h:panelGroup id="componentAttributes">
-																		<button jsf:action="#{page.setAttribute(cmsComponent, 'width', '50%')}" class="attribute-button #{cmsComponent.getAttribute('width') == '50%' ? 'active' : ''}">50%
-																			<f:ajax render="pageComponents"/>
-																		</button>
-																		<button jsf:action="#{page.setAttribute(cmsComponent, 'width', '100%')}" class="attribute-button #{cmsComponent.getAttribute('width') == '50%' ? '' : 'active'}">100%
-																			<f:ajax render="pageComponents"/>
-																		</button>
-																	</h:panelGroup>
+																		<ui:repeat var="attribute" value="#{cmsComponent.attributes.values()}">
+																				<ui:fragment rendered="#{attribute.type == 'boolean'}">
+																					<button jsf:action="#{page.toggleAttribute(cmsComponent, attribute.name, 'true')}" class="attribute-button #{attribute.value == 'true' ? 'active' : ''}">#{msg[attribute.label]}
+																						<f:ajax execute="@this" render="@this"/>
+																					</button>
+																				</ui:fragment>
+																				<ui:fragment rendered="#{attribute.type != 'boolean'}">
+																					<ui:repeat var="option" value="#{attribute.options}">
+																						<button jsf:action="#{page.setAttribute(cmsComponent, attribute.name, option)}" class="attribute-button #{attribute.value == option ? 'active' : ''}">#{msg[option]}
+																							<f:ajax render="pageComponents"/>
+																						</button>
+																					</ui:repeat>
+																				</ui:fragment>
+																		</ui:repeat>
 																	<div class="page-component">
 																		<button jsf:action="#{page.decrementOrder(cmsComponent)}">
 																			<i class="fa fa-arrow-up" aria-hidden="true"></i>

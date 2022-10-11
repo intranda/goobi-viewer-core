@@ -23,6 +23,7 @@ package io.goobi.viewer.model.cms;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,6 +33,7 @@ import java.util.List;
 import org.junit.Test;
 
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
@@ -53,6 +55,20 @@ public class CMSPageContentManagerTest {
         CMSContentItem item = htmlComponent.getContentItem("text");
         assertNotNull(item);
         
+        CMSComponent imageComponent = components.stream().filter(c -> c.getLabel().equals("cms_component__image__label")).findAny().orElse(null);
+        assertNotNull(imageComponent);
+        assertEquals(2, imageComponent.getAttributes().size());
+        
+        CMSComponentAttribute widthAttribute = imageComponent.getAttribute("width");
+        assertNotNull(widthAttribute);
+        assertEquals("cms__component_attribute__width", widthAttribute.getLabel());
+        assertEquals(4, widthAttribute.getOptions().size());
+        assertTrue(widthAttribute.getOptions().contains("50"));
+        assertEquals("100", widthAttribute.getValue());
+        
+        CMSComponentAttribute lightboxAttribute = imageComponent.getAttribute("lightbox");
+        assertNotNull(lightboxAttribute);
+        assertEquals("boolean", lightboxAttribute.getType());
     }
 
 }

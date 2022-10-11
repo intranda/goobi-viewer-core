@@ -24,9 +24,9 @@ package io.goobi.viewer.model.cms.pages.content;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,7 +37,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
-import jakarta.persistence.metamodel.SetAttribute;
 
 public class CMSComponent implements Comparable<CMSComponent> {
 
@@ -63,12 +62,13 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     private int listPage = 1;
     
-    private final Map<String, String> attributes;
+    private final Map<String, CMSComponentAttribute> attributes;
     
     private UIComponent uiComponent;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
-        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap()));
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null), 
+                CMSComponent.initializeAttributes(template.getAttributes(), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())));
         this.cssClasses.addAll(jpa.map(PersistentCMSComponent::getCssClasses).orElse(new ArrayList<>()));
         this.publicationState = jpa.map(PersistentCMSComponent::getPublicationState).orElse(this.publicationState);
         this.order = jpa.map(PersistentCMSComponent::getOrder).orElse(this.order);
@@ -83,7 +83,8 @@ public class CMSComponent implements Comparable<CMSComponent> {
         }).collect(Collectors.toList());
         this.contentItems.addAll(items);
     }
-    
+
+
     /**
      * Build from xml template
      * @param jsfComponent
@@ -91,18 +92,18 @@ public class CMSComponent implements Comparable<CMSComponent> {
      * @param description
      * @param iconPath
      */
-    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename) {
-        this(jsfComponent, label, description, iconPath, templateFilename, null, Collections.emptyMap());
+    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Map<String, CMSComponentAttribute> attributes) {
+        this(jsfComponent, label, description, iconPath, templateFilename, null, attributes);
     }
     
-    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Long persistenceId, Map<String, String> attributes) {
+    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Long persistenceId, Map<String, CMSComponentAttribute> attributes) {
         this.persistenceId = null;
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
         this.iconPath = iconPath;
         this.templateFilename = templateFilename;
-        this.attributes = attributes == null ? Collections.emptyMap() : new HashMap<>(attributes);
+        this.attributes = attributes == null ? Collections.emptyMap() : attributes;
     }
     
     public void setPublicationState(ContentItemPublicationState publicationState) {
@@ -238,11 +239,30 @@ public class CMSComponent implements Comparable<CMSComponent> {
         this.uiComponent = uiComponent;
     }
     
-    public String getAttribute(String key) {
+    public CMSComponentAttribute getAttribute(String key) {
         return this.attributes.get(key);
     }
     
     public void setAttribute(String key, String value) {
-        this.attributes.put(key, value);
+        this.attributes.get(key).setValue(value);
+    }
+    
+    public Map<String, CMSComponentAttribute> getAttributes() {
+        return attributes;
+    }
+    
+    
+    private static Map<String, CMSComponentAttribute> initializeAttributes(Map<String, CMSComponentAttribute> attrs,
+            Map<String, String> initialValues) {
+        Map<String, CMSComponentAttribute> newAttrs = new HashMap<>(attrs.size());
+        for (CMSComponentAttribute attr : attrs.values()) {
+            String key = attr.getName();
+            CMSComponentAttribute newAttr = new CMSComponentAttribute(attr);
+            if(initialValues.containsKey(key)) {
+                newAttr.setValue(initialValues.get(key));
+            }
+            newAttrs.put(key, newAttr);
+        }
+        return newAttrs;
     }
 }
