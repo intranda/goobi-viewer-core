@@ -1788,7 +1788,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 null, null);
         Assert.assertNotNull(group);
         Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
-        Assert.assertEquals(2, group.getQueryItems().size());
+        Assert.assertEquals(3, group.getQueryItems().size());
 
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
@@ -1810,7 +1810,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 null, null);
         Assert.assertNotNull(group);
         Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
-        Assert.assertEquals(2, group.getQueryItems().size());
+        Assert.assertEquals(3, group.getQueryItems().size());
 
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
@@ -1819,6 +1819,23 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
         Assert.assertEquals("bla blup", group.getQueryItems().get(1).getValue());
         Assert.assertEquals(SearchItemOperator.NOT, group.getQueryItems().get(1).getOperator());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
+     * @verifies parse range items correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseRangeItemsCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("(MD_YEARPUBLISH:([1900 TO 2000]))", null, null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(3, group.getQueryItems().size());
+
+        Assert.assertEquals("MD_YEARPUBLISH", group.getQueryItems().get(0).getField());
+        Assert.assertEquals("1900", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals("2000", group.getQueryItems().get(0).getValue2());
+        Assert.assertEquals(SearchItemOperator.OR, group.getQueryItems().get(0).getOperator());
     }
 
     /**
@@ -1832,30 +1849,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
         Assert.assertEquals(3, group.getQueryItems().size());
 
-        Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(1).getField());
-        Assert.assertEquals("varia", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("varia", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
+
+        Assert.assertEquals("MD_CREATOR", group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bar", group.getQueryItems().get(1).getValue());
         Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(1).getOperator());
-
-        Assert.assertEquals("MD_CREATOR", group.getQueryItems().get(2).getField());
-        Assert.assertEquals("bar", group.getQueryItems().get(2).getValue());
-        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(2).getOperator());
-    }
-
-    /**
-     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
-     * @verifies parse range items correctly
-     */
-    @Test
-    public void parseSearchQueryGroupFromQuery_shouldParseRangeItemsCorrectly() throws Exception {
-        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("(MD_YEARPUBLISH:([1900 TO 2000]))", null, null);
-        Assert.assertNotNull(group);
-        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
-        Assert.assertEquals(2, group.getQueryItems().size());
-
-        Assert.assertEquals("MD_YEARPUBLISH", group.getQueryItems().get(1).getField());
-        Assert.assertEquals("1900", group.getQueryItems().get(1).getValue());
-        Assert.assertEquals("2000", group.getQueryItems().get(1).getValue2());
-        Assert.assertEquals(SearchItemOperator.OR, group.getQueryItems().get(1).getOperator());
     }
 
     /**

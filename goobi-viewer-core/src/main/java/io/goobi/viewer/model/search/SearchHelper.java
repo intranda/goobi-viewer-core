@@ -49,6 +49,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.streaming.SXSSFCell;
@@ -65,8 +67,6 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
@@ -84,7 +84,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.search.SearchHit.HitType;
-import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -2323,41 +2322,37 @@ public final class SearchHelper {
             Pattern pFacetString = Pattern.compile(patternFacetString); //NOSONAR no backtracking detected
             Matcher mFacetString = pFacetString.matcher(facetString);
             Set<String> fieldNames = new HashSet<>();
-            List<StringPair> pairs = new ArrayList<>();
             while (mFacetString.find()) {
                 String pair = mFacetString.group(1);
                 logger.trace("pair: {}", pair);
                 String[] pairSplit = pair.split(":");
                 if (pairSplit.length == 2) {
-                    pairs.add(new StringPair(pairSplit[0],
-                            pairSplit[1].replace("(", "").replace(")", "").trim()));
                     fieldNames.add(pairSplit[0]);
+                    allPairs.add(Collections.singletonList(new StringPair(pairSplit[0],
+                            pairSplit[1].replace("(", "").replace(")", "").trim())));
+                    allFieldNames.add(fieldNames);
+                    operators.add(SearchItemOperator.AND);
                 }
-            }
-            if (!pairs.isEmpty()) {
-                allPairs.add(pairs);
-                allFieldNames.add(fieldNames);
-                operators.add(SearchItemOperator.AND);
             }
         }
 
-        // Build query items out of collected fields
+        // Add/reassign query items out of collected fields
         for (int i = 0; i < allPairs.size(); ++i) {
             List<StringPair> pairs = allPairs.get(i);
             Set<String> fieldNames = allFieldNames.get(i);
             SearchItemOperator operator = operators.get(i);
+            SearchQueryItem item;
+            if (ret.getQueryItems().size() > i) {
+                // Re-use existing all-fields item, if available
+                item = ret.getQueryItems().get(i);
+            } else {
+                item = new SearchQueryItem(locale);
+                ret.getQueryItems().add(item);
+            }
             if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
                     && fieldNames.contains(SolrConstants.NORMDATATERMS)
                     && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
-                SearchQueryItem item;
-                if (ret.getQueryItems().size() > i) {
-                    // Re-use existing all-fields item, if available
-                    item = ret.getQueryItems().get(i);
-                } else {
-                    item = new SearchQueryItem(locale);
-                    ret.getQueryItems().add(item);
-                }
                 item.setOperator(operator);
                 item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
                 item.setValue(pairs.get(0).getTwo());
@@ -2370,13 +2365,6 @@ public final class SearchHelper {
                         case SolrConstants.SUPERUGCTERMS:
                             break;
                         default:
-                            SearchQueryItem item;
-                            if (ret.getQueryItems().size() > i) {
-                                // Re-use existing all-fields item, if available
-                                item = ret.getQueryItems().get(i);
-                            } else {
-                                item = new SearchQueryItem(locale);
-                            }
                             item.setOperator(operator);
                             item.setField(pair.getOne());
                             if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne())) {
@@ -2386,8 +2374,7 @@ public final class SearchHelper {
                             } else {
                                 item.setValue(pair.getTwo());
                             }
-                            ret.getQueryItems().add(item);
-                            logger.trace("added item: {}:{}", pair.getOne(), pair.getTwo());
+                            logger.trace("added item: {}", pair);
                     }
                 }
             }
