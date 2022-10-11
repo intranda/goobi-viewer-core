@@ -1419,4 +1419,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void resetCachedData() {
        this.componentMap = new HashMap<>();
     }
+    
+    public String getAttribute(CMSComponent component, String key) {
+        return getPersistentComponent(component).getAttribute(key);
+    }
+    
+    public void setAttribute(CMSComponent component, String key, String value) {
+        component.setAttribute(key, value);
+        getPersistentComponent(component).setAttribute(key, value);
+    }
 }

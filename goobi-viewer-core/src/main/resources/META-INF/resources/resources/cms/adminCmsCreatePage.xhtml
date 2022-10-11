@@ -150,14 +150,18 @@
 																	</ui:repeat>
 																</h:panelGroup>
 															</div>
+															<!--  -->
 															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
 															<h:panelGroup id="pageComponents" class="page-component-list" >
 																<c:forEach var="cmsComponent" items="#{page.components}">
-																	
-																	WIDTH: #{page.getPersistentComponent(cmsComponent).getAttribute('width')}
-																	<button jsf:action="#{page.getPersistentComponent(cmsComponent).setAttribute('width', '50%')}">50%</button>
-																	<button jsf:action="#{page.getPersistentComponent(cmsComponent).setAttribute('width', '100%')}">100%</button>
-																	
+																	<h:panelGroup id="componentAttributes">
+																		<button jsf:action="#{page.setAttribute(cmsComponent, 'width', '50%')}" class="attribute-button #{cmsComponent.getAttribute('width') == '50%' ? 'active' : ''}">50%
+																			<f:ajax render="pageComponents"/>
+																		</button>
+																		<button jsf:action="#{page.setAttribute(cmsComponent, 'width', '100%')}" class="attribute-button #{cmsComponent.getAttribute('width') == '50%' ? '' : 'active'}">100%
+																			<f:ajax render="pageComponents"/>
+																		</button>
+																	</h:panelGroup>
 																	<div class="page-component">
 																		<button jsf:action="#{page.decrementOrder(cmsComponent)}">
 																			<i class="fa fa-arrow-up" aria-hidden="true"></i>

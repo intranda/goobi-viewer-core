@@ -23,8 +23,10 @@ package io.goobi.viewer.model.cms.pages.content;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
-import jakarta.persistence.Transient;
+import jakarta.persistence.metamodel.SetAttribute;
 
 public class CMSComponent implements Comparable<CMSComponent> {
 
@@ -61,10 +63,12 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     private int listPage = 1;
     
+    private final Map<String, String> attributes;
+    
     private UIComponent uiComponent;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
-        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null));
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap()));
         this.cssClasses.addAll(jpa.map(PersistentCMSComponent::getCssClasses).orElse(new ArrayList<>()));
         this.publicationState = jpa.map(PersistentCMSComponent::getPublicationState).orElse(this.publicationState);
         this.order = jpa.map(PersistentCMSComponent::getOrder).orElse(this.order);
@@ -88,16 +92,17 @@ public class CMSComponent implements Comparable<CMSComponent> {
      * @param iconPath
      */
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename) {
-        this(jsfComponent, label, description, iconPath, templateFilename, null);
+        this(jsfComponent, label, description, iconPath, templateFilename, null, Collections.emptyMap());
     }
     
-    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Long persistenceId) {
+    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Long persistenceId, Map<String, String> attributes) {
         this.persistenceId = null;
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
         this.iconPath = iconPath;
         this.templateFilename = templateFilename;
+        this.attributes = attributes == null ? Collections.emptyMap() : new HashMap<>(attributes);
     }
     
     public void setPublicationState(ContentItemPublicationState publicationState) {
@@ -231,5 +236,13 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     public void setUiComponent(UIComponent uiComponent) {
         this.uiComponent = uiComponent;
+    }
+    
+    public String getAttribute(String key) {
+        return this.attributes.get(key);
+    }
+    
+    public void setAttribute(String key, String value) {
+        this.attributes.put(key, value);
     }
 }
