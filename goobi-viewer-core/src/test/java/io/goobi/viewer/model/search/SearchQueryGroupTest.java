@@ -26,11 +26,11 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchQueryGroupTest extends AbstractDatabaseEnabledTest {
+public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     
     /**
     * @see SearchQueryGroup#init(List)
