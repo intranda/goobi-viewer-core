@@ -64,7 +64,7 @@ public class SearchQueryItem implements Serializable {
         NOT;
 
         public String getLabel() {
-            return ViewerResourceBundle.getTranslation("searchQueryItemOperator_" + this.name(), null);
+            return ViewerResourceBundle.getTranslation("searchOperator_" + this.name(), null);
         }
     }
 
