@@ -1795,7 +1795,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
         Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
-        Assert.assertEquals("bla blup", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals("bla blüp", group.getQueryItems().get(1).getValue());
         Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(1).getOperator());
     }
 
@@ -1817,7 +1817,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
         Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
-        Assert.assertEquals("bla blup", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals("bla blüp", group.getQueryItems().get(1).getValue());
         Assert.assertEquals(SearchItemOperator.NOT, group.getQueryItems().get(1).getOperator());
     }
 
@@ -1875,7 +1875,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
         Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
-        Assert.assertEquals("bla blup", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals("bla blüp", group.getQueryItems().get(1).getValue());
         Assert.assertEquals(SearchItemOperator.OR, group.getQueryItems().get(1).getOperator());
 
         Assert.assertEquals(SolrConstants.DOCSTRCT_TOP, group.getQueryItems().get(2).getField());

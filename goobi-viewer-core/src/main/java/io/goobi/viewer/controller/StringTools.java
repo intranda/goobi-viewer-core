@@ -75,7 +75,7 @@ public class StringTools {
     /** Constant <code>REGEX_BRACES="\\{(\\w+)\\}"</code> */
     public static final String REGEX_BRACES = "\\{(\\w+)\\}";
     /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code> */
-    public static final String REGEX_WORDS = "[a-zäáàâöóòôüúùûëéèêßñ0123456789]+";
+    public static final String REGEX_WORDS = "[\\wäáàâöóòôüúùûëéèêßñ]+";
     /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
 

@@ -2149,18 +2149,18 @@ public final class SearchHelper {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
         SearchQueryGroup ret = new SearchQueryGroup(locale, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
 
-        // [+-]*\((\w+:\"[\w ]+\"[ ]*)+\)|[+-]*\(((\w+:\([\w ]+\)) *)+\)|[+-]*\((\w+:\(\[\w+ TO \w+\]\) *)\)
+        // [+-]*\((\w+:\"[\wäáàâöóòôüúùûëéèêßñ ]+\" *)+\)|[+-]*\(((\w+:\([\wäáàâöóòôüúùûëéèêßñ ]+\)) *)+\)|[+-]*\((\w+:\(\[[\wäáàâöóòôüúùûëéèêßñ]+ TO [\wäáàâöóòôüúùûëéèêßñ]+\]\) *)\)
         String patternAllItems =
-                "[+-]*\\((\\w+:\\\"[\\w ]+\\\"[ ]*)+\\)|[+-]*\\(((\\w+:\\([\\w ]+\\)) *)+\\)|[+-]*\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\) *)\\)";
+                "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)+\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)";
 
-        String patternRegularItems = "([+-]*)\\(((\\w+:\\([\\w ]+\\)) *)+\\)";
-        String patternRegularPairs = "(\\w+:\\([\\w ()]+\\))";
+        String patternRegularItems = "([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)+\\)";
+        String patternRegularPairs = "(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))";
 
-        String patternPhraseItems = "([+-]*)\\((\\w+:\\\"[\\w ]+\\\"[ ]*)+\\)";
-        String patternPhrasePairs = "(\\w+:\"[\\w ]+\")";
+        String patternPhraseItems = "([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)";
+        String patternPhrasePairs = "(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")";
 
-        String patternRangeItems = "([+-]*)\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\) *)\\)";
-        String patternRangePairs = "(\\w+:\\(\\[\\w+ TO \\w+\\]\\))";
+        String patternRangeItems = "([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)";
+        String patternRangePairs = "(\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\))";
 
         String patternFacetString = "(\\w+:\\w+);;";
 
