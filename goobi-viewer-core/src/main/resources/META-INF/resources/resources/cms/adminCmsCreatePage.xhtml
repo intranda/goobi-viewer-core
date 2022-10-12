@@ -143,11 +143,11 @@
                                                                 </div>
                                                             </div>
 
-                                                            <!-- Topbar slider -->
+                                                            <!-- TOPBAR SLIDER -->
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
 
-															<!-- Available content items -->
+															<!-- AVAILABLE CONTENT COMPONENTS -->
 															<div id="componentSelect">
 																<h:panelGroup id="component_selection">
 																
@@ -171,8 +171,8 @@
 
 																		<button jsf:action="#{page.addComponent(comp)}">
 																			<h4>#{msg[comp.label]}</h4>
-																			<p>#{msg[comp.description]}</p>
-																			<img src="#{request.contextPath}#{navigationHelper.getResource(comp.iconPath)}"/>
+<!-- 																			<p>#{msg[comp.description]}</p> -->
+<!-- 																			<img src="#{request.contextPath}#{navigationHelper.getResource(comp.iconPath)}"/> -->
 																			<f:ajax render="pageComponents" ></f:ajax>
 																		</button>
 																		
@@ -182,51 +182,38 @@
 															</div>
 															
 															
-															<!-- CONTENT ITEMS ON THIS PAGE -->
+															<!-- CONTENT COMPONENTS ON THIS PAGE -->
 															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
 															
-															<h:panelGroup layout="block" id="pageComponents" class="page-component-list admin__content-items-wrapper" >
+															<h:panelGroup layout="block" id="pageComponents" class="page-component-list admin__content-components-wrapper" >
 																
 																<c:forEach var="cmsComponent" items="#{page.components}">
 
-																<!-- CONTENT ITEM ORDER FUNCTIONS -->
-																<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+
 																
 
-																		<div class="admin__content-item">
+																		<div class="admin__content-component">
+																		
 
-																			<!-- CONTENT ITEM INNER -->
-																			<div class="admin__content-item-inner">
+
+																			<!-- CONTENT COMPONENT INNER -->
+																			<div class="admin__content-component-inner">
 																	
 
 																				<!-- CONTENT HEADER + TOOLBAR -->
-																				<div class="admin__content-item-header">
-																					<h2 class="admin__content-item-heading">Name: #{msg[cmsComponent.label]}</h2>
+																				<div class="admin__content-component-header">
+																				
+																					<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
 
-																					<div class="admin__content-item-options">
-																					
-																					
-																					
-<!-- 																	            		DISPLAY: CONTENT ITEM ONLY VISIBLE FOR ADMINS -->
-<!-- 																	            		<div class="admin__content-item-option admin__content-item-option-unpublished">Not published</div> -->
-<!-- 																	            		DISPLAY: CONTENT ITEM NOT VISIBLE FOR DESKTOP OR MOBILE -->
-<!-- 																	            		<div class="admin__content-item-option admin__content-item-option-no-desktop-view">Hide for desktop</div> -->
-<!-- 																	            		<div class="admin__content-item-option admin__content-item-option-no-mobile-view">Hide for mobile</div> -->
-<!-- 																						LAYOUT: SIZING OPTIONS -->
-<!-- 																						<div class="admin__content-item-option admin__content-item-option-size">100 %</div> -->
-<!-- 																						<div class="admin__content-item-option admin__content-item-option-size">50 %</div> -->
-																						
-																						
-																						
-																						
-																						
+																					<div class="admin__content-component-options">
+
 																						<ui:repeat var="attribute" value="#{cmsComponent.attributes.values()}">
 																								
 																								<ui:fragment rendered="#{attribute.type == 'toggle'}">
 																								
 																									<ui:repeat var="option" value="#{attribute.options}">
 																									
-																										<button jsf:action="#{page.toggleAttribute(cmsComponent, attribute.name, option.value)}" class="attribute-button #{option.value == attribute.value ? 'active' : ''}">#{msg[option.label]}
+																										<button  jsf:action="#{page.toggleAttribute(cmsComponent, attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
 																											<f:ajax execute="@this" render="pageComponents"/>
 																										</button>
 
@@ -236,7 +223,7 @@
 																								
 																								<ui:fragment rendered="#{attribute.type != 'toggle'}">
 																									<ui:repeat var="option" value="#{attribute.options}">
-																										<button jsf:action="#{page.setAttribute(cmsComponent, attribute.name, option.value)}" class="attribute-button #{option.value == attribute.value ? 'active' : ''}">#{msg[option.label]}
+																										<button jsf:action="#{page.setAttribute(cmsComponent, attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
 																											<f:ajax render="pageComponents"/>
 																										</button>
 																									</ui:repeat>
@@ -244,12 +231,14 @@
 
 																						</ui:repeat>
 
-
-																						<button jsf:action="#{cmsComponent.togglePrivate()}" class="attribute-button #{cmsComponent.isPrivate() ? 'active' : ''}">Private
+																						<!-- SET THIS CONTENT COMPONENT TO PRIVATE - ONLY VISIBLE FOR ADMINS -->
+																						<button jsf:action="#{cmsComponent.togglePrivate()}" class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">Private
 																							<f:ajax render="pageComponents"/>
 																						</button>
+																						
+																						<!-- CONTENT COMPONENT ORDER + DELETE FUNCTIONS -->
+																						<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
 
-																					
 																					</div>
 																	
 																				</div>
@@ -261,16 +250,12 @@
 
 																			
 
-																			<!-- DELETE THIS CONTENT ITEM -->
-																			<button class="admin__content-item-delete" jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
-																				<i class="fa fa-trash-o" aria-hidden="true"></i>
-																				<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																			</button>
+
 																			
 
 
 																		
-																		<div class="admin__content-item-inner">
+																		<div class="admin__content-component-content-items-wrapper">
 
 																			<c:forEach var="contentItem" items="#{cmsComponent.contentItems}">
 																				<h:panelGroup layout="block" binding="#{contentItem.uiComponent}"></h:panelGroup>																			

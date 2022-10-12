@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
+import io.goobi.viewer.model.security.user.User;
 
 public class CMSComponent implements Comparable<CMSComponent> {
     
@@ -280,5 +280,13 @@ public class CMSComponent implements Comparable<CMSComponent> {
             newAttrs.put(key, newAttr);
         }
         return newAttrs;
+    }
+    
+    public boolean hasAccess(User user) {
+        if(isPublished()) {
+            return true;
+        } else {
+            return user.isCmsAdmin();
+        }
     }
 }

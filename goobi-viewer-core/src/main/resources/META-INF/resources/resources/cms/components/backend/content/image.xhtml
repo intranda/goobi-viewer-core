@@ -20,10 +20,6 @@
 		<c:set scope="request" var="image"
 			val="#{cc.attrs.contentItem.content.mediaItem}" />
 		
-		<viewerForms:inputFormField 
-			id="inputForm"
-	       label="#{msg[cc.attrs.contentItem.label]}" 
-	       helpText="#{msg[cc.attrs.contentItem.description]}">
        
         <!-- MEDIA FILE -->
         <ui:fragment rendered="#{cc.attrs.contentItem.content.mediaItem != null}">
@@ -50,8 +46,7 @@
                 <f:ajax execute="@form" render="@form" />
             </h:commandLink>
         </div>
-       
-       </viewerForms:inputFormField>
+
     </composite:implementation>
     
 </ui:composition>
