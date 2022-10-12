@@ -79,7 +79,7 @@
 		<sonar.java.target>11</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>4500</checkstyle.max.violations>
+		<checkstyle.max.violations>4050</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 
@@ -764,7 +764,7 @@
                 <configuration>
                     <release>11</release>
 					<compilerArgument>-Xlint:deprecation</compilerArgument>
-					<!--compilerArgument>-Xlint:unchecked</compilerArgument -->
+					<compilerArgument>-Xlint:unchecked</compilerArgument>
 				</configuration>
 			</plugin>
 			<plugin>
