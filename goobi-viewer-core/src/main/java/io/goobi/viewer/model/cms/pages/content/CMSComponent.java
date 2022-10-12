@@ -274,6 +274,14 @@ public class CMSComponent implements Comparable<CMSComponent> {
         setPublished(!privat);
     }
     
+    public void togglePrivate() {
+        setPrivate(!this.isPrivate());
+    }
+    
+    public void togglePublished() {
+        setPublished(!isPublished());
+    }
+    
     private static Map<String, CMSComponentAttribute> initializeAttributes(Map<String, CMSComponentAttribute> attrs,
             Map<String, String> initialValues) {
         Map<String, CMSComponentAttribute> newAttrs = new HashMap<>(attrs.size());
