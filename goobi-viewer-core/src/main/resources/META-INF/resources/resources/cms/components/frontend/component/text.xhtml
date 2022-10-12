@@ -14,10 +14,29 @@
 		<composite:attribute name="component" required="true" type="io.goobi.viewer.model.cms.content.CMSComponent" />
     </composite:interface>
 
+    <composite:implementation>
+		<ui:fragment rendered="#{cc.attrs.isPrivate == false || userBean.admin == true}">
 
-    <composite:implementation>    
-    	<h:outputText escape="false" value="#{cc.attrs.component.firstContentItem.content.text.textOrDefault}"></h:outputText>
-    	#{cc.attrs.width}
+			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
+			<div class="content-component content-component__text
+						-width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes}
+						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
+						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}">
+						
+				<!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
+				<ui:fragment rendered="#{cc.attrs.notPublished == true and userBean.admin == true}">
+					<div class="content-component__not-published-info">#{msg.content_item_not_published_yet}</div>
+				</ui:fragment>
+
+<!-- 				<br/>- Echo results area start -<br/> -->
+<!-- 				attrs.hideOnScreenSizes: #{cc.attrs.hideOnScreenSizes}<br/> -->
+<!-- 				attrs.isPrivate: #{cc.attrs.isPrivate}<br/> -->
+<!-- 				- Echo results area end -<br/><br/> -->
+				
+				<!-- RENDER THE TEXT CONTENT -->
+				<h:outputText escape="false" value="#{cc.attrs.component.firstContentItem.content.text.textOrDefault}"></h:outputText>
+			</div>
+
+		</ui:fragment>
     </composite:implementation>
-
 </ui:composition>

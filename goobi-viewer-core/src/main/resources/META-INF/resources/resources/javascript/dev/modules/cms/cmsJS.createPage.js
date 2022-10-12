@@ -153,13 +153,6 @@ var cmsJS = ( function( cms ) {
         },
     };
 
-	$(document).ready(function() {
-		$('.admin__content-item-option').on('click', function() {
-			$(this).toggleClass('-active');
-		});
-	});
-
-
     
     return cms;
     
