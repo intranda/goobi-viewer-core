@@ -24,6 +24,7 @@ package io.goobi.viewer.model.cms.pages;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -44,10 +45,12 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
@@ -138,7 +141,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     
     @OneToMany(mappedBy = "ownerTemplate", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
-    private List<PersistentCMSComponent> cmsComponents = new ArrayList<>();
+    private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
 
     /**
      * A html class name to be applied to the DOM element containing the page html
@@ -155,6 +158,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @Transient
     private Locale selectedLocale = IPolyglott.getCurrentLocale();
 
+    @Transient
+    private List<CMSComponent> cmsComponents = new ArrayList<>();
+    
     /**
      * <p>
      * Constructor for CMSPage.
@@ -190,9 +196,20 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             }
         }
 
-        for (PersistentCMSComponent component : original.cmsComponents) {
+        CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
+        for (PersistentCMSComponent component : original.getPersistentComponents()) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
-            this.cmsComponents.add(copy);
+            copy.setOwnerTemplate(this);
+            this.persistentComponents.add(copy);
+            CMSComponent comp = contentManager.getComponent(copy.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(copy))).orElse(null);
+            if(comp != null) {                
+                this.cmsComponents.add(comp);
+            }
+        }
+        //sort components and normalize order attributes
+        Collections.sort(this.cmsComponents);
+        for (int i = 0; i < this.cmsComponents.size(); i++) {
+            this.cmsComponents.get(i).setOrder(i);
         }
     }
 
@@ -533,7 +550,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         if (!this.title.isComplete(locale)) {
             return false;
         } else {
-            for (PersistentCMSComponent component : cmsComponents) {
+            for (PersistentCMSComponent component : persistentComponents) {
                 if (!component.isComplete(locale)) {
                     return false;
                 }
@@ -703,45 +720,104 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return PrettyUrlTools.getAbsolutePageUrl(prettyId, this.getId());
     }
 
-    public List<PersistentCMSComponent> getCmsComponents() {
-        return cmsComponents;
+
+    public List<PersistentCMSComponent> getPersistentComponents() {
+        return persistentComponents;
     }
+    
+    public List<CMSComponent> getComponents() {
+        return this.cmsComponents;
+    }
+    
 
     public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {
-        CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
-        return contentManager.getComponent(p.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(p))).orElse(null);
+        return this.cmsComponents.stream()
+                .filter(c -> c.getPersistentComponent() == p)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Component " + p.getId() + " is not registered in page"));
     }
 
     public boolean removeComponent(PersistentCMSComponent component) {
+        this.cmsComponents.remove(getAsCMSComponent(component));
+        return this.persistentComponents.remove(component);
+    }
+    
+    public boolean removeComponent(CMSComponent component) {
+        this.persistentComponents.remove(component.getPersistentComponent());
         return this.cmsComponents.remove(component);
     }
 
-    public void addComponent(CMSComponent template) {
-        PersistentCMSComponent newComponent = new PersistentCMSComponent(template);
-        newComponent.setOrder(this.cmsComponents.size() + 1);
-        newComponent.setOwnerTemplate(this);
-        this.cmsComponents.add(newComponent);
+    public PersistentCMSComponent addComponent(CMSComponent template) {
+        PersistentCMSComponent persistentComponent = new PersistentCMSComponent(template);
+        persistentComponent.setOrder(getHighestComponentOrder() + 1);
+        persistentComponent.setOwnerTemplate(this);
+        this.persistentComponents.add(persistentComponent);
+        CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
+        this.cmsComponents.add(cmsComponent);
+        return persistentComponent;
+    }
+
+    private int getHighestComponentOrder() {
+        return this.persistentComponents.stream()
+                .mapToInt(PersistentCMSComponent::getOrder)
+                .max().orElse(0);
     }
 
     @Override
     public boolean isComplete(Locale locale) {
         Locale defaultLocale = IPolyglott.getDefaultLocale();
         return this.title.isComplete(locale, defaultLocale, true) &&
-                this.description.isComplete(locale, defaultLocale, false) &&
                 this.cmsComponents.stream()
-                .map(this::getAsCMSComponent)
                 .flatMap(comp -> comp.getTranslatableContentItems().stream())
-                .allMatch(content -> !((TranslatableCMSContent)content.getContent()).getText().isComplete(locale, defaultLocale, content.isRequired()));
+                .allMatch(content -> ((TranslatableCMSContent)content.getContent()).getText().isComplete(locale, defaultLocale, content.isRequired()));
     }
-    
+
     @Override
     public boolean isValid(Locale locale) {
         return this.title.isValid(locale) &&
                 this.cmsComponents.stream()
-                .map(this::getAsCMSComponent)
                 .flatMap(comp -> comp.getTranslatableContentItems().stream())
                 .filter(content -> content.isRequired())
                 .allMatch(content -> ((TranslatableCMSContent)content.getContent()).getText().isValid(locale));
+
+    }
+
+    public boolean hasSearchFunctionality() {
+        return this.persistentComponents.stream().flatMap(c -> c.getContentItems().stream())
+                .anyMatch(content -> content instanceof CMSSearchContent);
+    }
+
+    public Optional<SearchFunctionality> getSearch() {
+        return this.persistentComponents.stream().flatMap(c -> c.getContentItems().stream())
+                .filter(content -> content instanceof CMSSearchContent)
+                .map(content -> ((CMSSearchContent)content).getSearch())
+                .findAny();
+    }
+
+    /**
+     * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent}
+     * to the given order value. Also, sets the order value of all Components which previously had the given order
+     * to the order value of the given component
+     * @param component
+     * @param order
+     * @return
+     */
+    public void setComponentOrder(CMSComponent component, int order) {
+        PersistentCMSComponent persistentComponent = component.getPersistentComponent();
+        Integer currentOrder = persistentComponent.getOrder();
+        this.getComponents().stream().filter(c -> Integer.compare(c.getOrder(), order) == 0)
+        .forEach(comp -> {
+            comp.setOrder(currentOrder);
+        });
+        persistentComponent.setOrder(order);
+    }
+    
+    public void incrementOrder(CMSComponent component) {
+        this.setComponentOrder(component, component.getOrder()+1);
+    }
+    
+    public void decrementOrder(CMSComponent component) {
+        this.setComponentOrder(component, component.getOrder()-1);
     }
 
     @Override
@@ -758,7 +834,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     public void setSelectedLocale(Locale locale) {
         this.title.setSelectedLocale(locale);
         this.description.setSelectedLocale(locale);
-        this.cmsComponents.forEach(comp -> comp.setSelectedLocale(locale));
+        this.persistentComponents.forEach(comp -> comp.setSelectedLocale(locale));
     }
     
     public boolean isLockComponents() {

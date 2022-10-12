@@ -64,10 +64,6 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
     @Column(name = "component_id")
     private Long id;
     
-    @Column(name = "css_classes")
-    @Convert(converter = StringListConverter.class)
-    private final List<String> cssClasses = new ArrayList<>();
-    
     @OneToMany(mappedBy = "owningComponent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.REMOVE })
     @PrivateOwned
     private final List<CMSContent> contentItems = new ArrayList<>();
@@ -112,8 +108,6 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
     }
     
     public PersistentCMSComponent(CMSComponent component) {
-        this.id = component.getPersistenceId();
-        this.cssClasses.addAll(component.getCssClasses());
         this.order = component.getOrder();
         this.publicationState = component.getPublicationState();
         this.templateFilename = component.getTemplateFilename();
@@ -123,7 +117,6 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
     
     public PersistentCMSComponent(PersistentCMSComponent orig) {
         this.id = orig.id;
-        this.cssClasses.addAll(orig.getCssClasses());
         this.order = orig.getOrder();
         this.publicationState = orig.publicationState;
         this.templateFilename = orig.templateFilename;
@@ -169,13 +162,6 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
      */
     public void setOrder(Integer order) {
         this.order = order;
-    }
-
-    /**
-     * @return the cssClasses
-     */
-    public List<String> getCssClasses() {
-        return cssClasses;
     }
 
     /**

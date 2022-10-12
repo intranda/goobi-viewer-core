@@ -62,8 +62,7 @@ public class CMSComponentReader {
             String attrType = element.getAttributeValue("type");
             List<Option> options = XmlTools.evaluateToElements("value", element, null).stream().map(this::createOption).collect(Collectors.toList());
             String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
-            CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, options);
-            attr.setValue(value);
+            CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, options, value);
             attributes.put(attr.getName(), attr);
         }
         

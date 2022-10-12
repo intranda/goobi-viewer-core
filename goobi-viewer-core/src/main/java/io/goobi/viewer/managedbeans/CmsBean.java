@@ -1193,7 +1193,7 @@ public class CmsBean implements Serializable {
             return "";
         }
         
-        currentPage.getCmsComponents().stream().flatMap(comp -> comp.getContentItems().stream())
+        currentPage.getPersistentComponents().stream().flatMap(comp -> comp.getContentItems().stream())
         .forEach(content -> {
             try {
                 content.handlePageLoad(resetSearch);
@@ -1571,7 +1571,7 @@ public class CmsBean implements Serializable {
                 .getDao()
                 .getAllCMSPages()
                 .stream()
-                .filter(cmsPage -> cmsPage.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream()).anyMatch(item -> item instanceof CMSSearchContent))
+                .filter(cmsPage -> cmsPage.getPersistentComponents().stream().flatMap(c -> c.getContentItems().stream()).anyMatch(item -> item instanceof CMSSearchContent))
                 .collect(Collectors.toList());
     }
 
@@ -1842,7 +1842,7 @@ public class CmsBean implements Serializable {
      */
     public String getRepresentativeImageForQuery(CMSPage page, int width, int height)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
-        CMSRecordListContent contentItem = page.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream())
+        CMSRecordListContent contentItem = page.getPersistentComponents().stream().flatMap(c -> c.getContentItems().stream())
                 .filter(item -> item instanceof CMSRecordListContent)
                 .map(i -> (CMSRecordListContent)i)
                 .findAny()
@@ -2224,7 +2224,7 @@ public class CmsBean implements Serializable {
     }
 
     public boolean deleteComponent(CMSComponent component) {
-       PersistentCMSComponent persistentComponent = this.selectedPage.getPersistentComponent(component);
+       PersistentCMSComponent persistentComponent = component.getPersistentComponent();
        if(persistentComponent.getId() != null) {           
            this.componentsToDelete.add(persistentComponent);
        }

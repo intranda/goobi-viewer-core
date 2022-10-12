@@ -85,12 +85,12 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         textContent.getText().setText("Entered Text", Locale.ENGLISH);
         
         assertTrue(dao.addCMSPage(page));
-        assertTrue(page.removeComponent(textComponentInPage));
+        assertTrue(page.removeComponent(page.getAsCMSComponent(textComponentInPage)));
         
         CMSPage loaded = dao.getCMSPage(page.getId());
         CMSPage cloned = new CMSPage(loaded);
         
-        CMSTextContent clonedTextContent = (CMSTextContent)cloned.getCmsComponents().get(0).getContentItems().get(0);
+        CMSTextContent clonedTextContent = (CMSTextContent)cloned.getPersistentComponents().get(0).getContentItems().get(0);
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));
     }
 

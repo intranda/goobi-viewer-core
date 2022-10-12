@@ -403,7 +403,7 @@ public class SearchHit implements Comparable<SearchHit> {
             // Collect relevant texts
             for (CMSPage page : cmsPages) {
                 List<String> texts = new ArrayList<>();
-                for (PersistentCMSComponent component : page.getCmsComponents()) {
+                for (PersistentCMSComponent component : page.getPersistentComponents()) {
                     for (CMSContent content : component.getContentItems()) {
                         if(content instanceof TranslatableCMSContent) {
                             TranslatableCMSContent trCont = (TranslatableCMSContent)content;

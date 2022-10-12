@@ -132,7 +132,7 @@ public class CMSCategoryUpdate implements IModelUpdate {
         this.media = dao.getAllCMSMediaItems();
         this.pages = dao.getAllCMSPages();
         this.categories = dao.getAllCategories();
-        this.content = this.pages.stream().flatMap(page -> page.getCmsComponents().stream()).flatMap(c -> c.getContentItems().stream()).collect(Collectors.toList());
+        this.content = this.pages.stream().flatMap(page -> page.getPersistentComponents().stream()).flatMap(c -> c.getContentItems().stream()).collect(Collectors.toList());
     }
 
     /**

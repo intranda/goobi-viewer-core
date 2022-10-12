@@ -30,14 +30,19 @@ public class CMSComponentAttribute {
     private final String label;
     private final String type;
     private final List<Option> options;
-    private String value;
+    private final String value;
 
-    public CMSComponentAttribute(String name, String label, String type, List<Option> options) {
+    public CMSComponentAttribute(CMSComponentAttribute orig, String value) {
+        this(orig.name, orig.label, orig.type, orig.options, value);
+    }
+    
+    public CMSComponentAttribute(String name, String label, String type, List<Option> options, String value) {
         super();
         this.name = name;
         this.label = label;
         this.type = type;
         this.options = options;
+        this.value = value;
     }
 
     public CMSComponentAttribute(CMSComponentAttribute orig) {
@@ -53,13 +58,6 @@ public class CMSComponentAttribute {
      */
     public String getValue() {
         return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
     }
 
     /**

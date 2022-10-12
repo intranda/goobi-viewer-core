@@ -34,20 +34,17 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
 public class CMSComponent implements Comparable<CMSComponent> {
-
-    private final Long persistenceId;
     
     private final String templateFilename;
     
     private final JsfComponent jsfComponent;
-    
-    private final List<String> cssClasses = new ArrayList<>();
-    
+        
     private final List<CMSContentItem> contentItems = new ArrayList<>();
     
     private final String label;
@@ -56,22 +53,18 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     private final String iconPath;
     
-    private ContentItemPublicationState publicationState = ContentItemPublicationState.ADMINISTRATOR;
-    
-    private int order = 0;
-    
-    private int listPage = 1;
-    
     private final Map<String, CMSComponentAttribute> attributes;
+    
+    private final PersistentCMSComponent persistentComponent;
+   
+    private int listPage = 1;
     
     private UIComponent uiComponent;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
-        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), jpa.map(PersistentCMSComponent::getId).orElse(null), 
-                CMSComponent.initializeAttributes(template.getAttributes(), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())));
-        this.cssClasses.addAll(jpa.map(PersistentCMSComponent::getCssClasses).orElse(new ArrayList<>()));
-        this.publicationState = jpa.map(PersistentCMSComponent::getPublicationState).orElse(this.publicationState);
-        this.order = jpa.map(PersistentCMSComponent::getOrder).orElse(this.order);
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), 
+                CMSComponent.initializeAttributes(template.getAttributes(), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())), jpa);
+        
         List<CMSContentItem> items = template.getContentItems().stream().map(item -> {
             CMSContent content = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList()).stream().filter(i -> i.getComponentId().equals(item.getComponentId()))
                     .findAny().orElse(null);
@@ -83,64 +76,41 @@ public class CMSComponent implements Comparable<CMSComponent> {
         }).collect(Collectors.toList());
         this.contentItems.addAll(items);
     }
-
-
-    /**
-     * Build from xml template
-     * @param jsfComponent
-     * @param label
-     * @param description
-     * @param iconPath
-     */
+    
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Map<String, CMSComponentAttribute> attributes) {
-        this(jsfComponent, label, description, iconPath, templateFilename, null, attributes);
+        this(jsfComponent, label, description, iconPath, templateFilename, attributes, Optional.empty());
     }
     
-    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Long persistenceId, Map<String, CMSComponentAttribute> attributes) {
-        this.persistenceId = null;
+    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Map<String, CMSComponentAttribute> attributes, Optional<PersistentCMSComponent> jpa) {
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
         this.iconPath = iconPath;
         this.templateFilename = templateFilename;
         this.attributes = attributes == null ? Collections.emptyMap() : attributes;
+        this.persistentComponent = jpa.orElse(null);
+    }
+    
+    public PersistentCMSComponent getPersistentComponent() {
+        return persistentComponent;
     }
     
     public void setPublicationState(ContentItemPublicationState publicationState) {
-        this.publicationState = publicationState;
+        Optional.ofNullable(persistentComponent).ifPresent(p -> p.setPublicationState(publicationState));
     }
     
     public ContentItemPublicationState getPublicationState() {
-        return publicationState;
+        return Optional.ofNullable(persistentComponent).map(PersistentCMSComponent::getPublicationState).orElse(ContentItemPublicationState.PUBLISHED);
     }
     
     public void setOrder(int order) {
-        this.order = order;
+        Optional.ofNullable(persistentComponent).ifPresent(p -> p.setOrder(order));
     }
     
     public int getOrder() {
-        return order;
+        return Optional.ofNullable(persistentComponent).map(PersistentCMSComponent::getOrder).orElse(0);
     }
-    
-    public boolean addCssClass(String className) {
-        if(!this.cssClasses.contains(className)) {
-            return this.cssClasses.add(className);
-        } else {
-            return false;
-        }
-    }
-    
-    public boolean removeClass(String className) {
-        if(this.cssClasses.contains(className)) {
-            return this.cssClasses.remove(className);
-        } else {
-            return false;
-        }
-    }
-    
-    public List<String> getCssClasses() {
-        return cssClasses;
-    }
+
     
     public boolean addContentItem(CMSContentItem item) {
         if(!this.contentItems.contains(item)) {
@@ -200,10 +170,6 @@ public class CMSComponent implements Comparable<CMSComponent> {
         return iconPath;
     }
     
-    public Long getPersistenceId() {
-        return persistenceId;
-    }
-    
     public String getTemplateFilename() {
         return templateFilename;
     }
@@ -218,7 +184,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
 
     @Override
     public int compareTo(CMSComponent o) {
-        return Integer.compare(this.order, o.order);
+        return Integer.compare(this.getOrder(), o.getOrder());
     }
     
     public UIComponent getUiComponent() {
@@ -250,8 +216,30 @@ public class CMSComponent implements Comparable<CMSComponent> {
         return this.attributes.get(key);
     }
     
+    public String getAttributeValue(String key) {
+        return this.attributes.get(key).getValue();
+    }
+    
     public void setAttribute(String key, String value) {
-        this.attributes.get(key).setValue(value);
+        CMSComponentAttribute attr = this.attributes.get(key);
+        if(attr != null) {
+            this.attributes.put(key, new CMSComponentAttribute(attr, value));
+            Optional.ofNullable(persistentComponent).ifPresent(p -> p.setAttribute(key, value));
+        } else {
+            throw new IllegalArgumentException("Attempting to change the not configured attribute " + key);
+        }
+    }
+    
+    
+    public void toggleAttribute(String key, String value) {
+        String oldValue = getAttribute(key).getValue();
+        if(StringUtils.isBlank(oldValue)) {
+            setAttribute( key, value);
+        } else if(oldValue.equals(value)){
+            setAttribute( key, null);
+        } else {
+            setAttribute( key, value);
+        }
     }
     
     public Map<String, CMSComponentAttribute> getAttributes() {
@@ -259,7 +247,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
     }
     
     public boolean isPublished() {
-        return ContentItemPublicationState.PUBLISHED.equals(this.publicationState);
+        return ContentItemPublicationState.PUBLISHED.equals(this.getPublicationState());
     }
     
     public void setPublished(boolean published) {
@@ -287,10 +275,8 @@ public class CMSComponent implements Comparable<CMSComponent> {
         Map<String, CMSComponentAttribute> newAttrs = new HashMap<>(attrs.size());
         for (CMSComponentAttribute attr : attrs.values()) {
             String key = attr.getName();
-            CMSComponentAttribute newAttr = new CMSComponentAttribute(attr);
-            if(initialValues.containsKey(key)) {
-                newAttr.setValue(initialValues.get(key));
-            }
+            String value = Optional.ofNullable(initialValues.get(key)).orElse(attr.getValue());
+            CMSComponentAttribute newAttr = new CMSComponentAttribute(attr, value);
             newAttrs.put(key, newAttr);
         }
         return newAttrs;

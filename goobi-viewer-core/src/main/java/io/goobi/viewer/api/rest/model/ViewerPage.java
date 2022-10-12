@@ -59,7 +59,7 @@ public class ViewerPage {
         this.label = page.getTitleTranslations();
         this.description = page.getPreviewTranslations();
         this.link = URI.create(page.getUrl());
-        this.image = page.getCmsComponents().stream().flatMap(c -> c.getContentItems().stream())
+        this.image = page.getPersistentComponents().stream().flatMap(c -> c.getContentItems().stream())
                 .filter(item -> item instanceof CMSMediaHolder)
                 .sorted()
                 .map(item -> (CMSMediaHolder)item)
