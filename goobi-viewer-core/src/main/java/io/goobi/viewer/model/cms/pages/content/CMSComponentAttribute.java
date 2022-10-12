@@ -90,6 +90,10 @@ public class CMSComponentAttribute {
         return options;
     }
 
+    public boolean getBooleanValue() {
+        return Boolean.getBoolean(this.value);
+    }
+
     
 
 }
