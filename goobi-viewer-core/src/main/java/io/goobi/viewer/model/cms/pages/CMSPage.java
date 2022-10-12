@@ -1430,11 +1430,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
     
     public void toggleAttribute(CMSComponent component, String key, String value) {
-        if(StringUtils.isBlank(component.getAttribute(key).getValue())) {
+        String oldValue = component.getAttribute(key).getValue();
+        if(StringUtils.isBlank(oldValue)) {
             setAttribute(component, key, value);
-        } else {
+        } else if(oldValue.equals(value)){
             setAttribute(component, key, null);
-
+        } else {
+            setAttribute(component, key, value);
         }
     }
 }
