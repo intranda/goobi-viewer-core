@@ -32,7 +32,7 @@
 				<ui:fragment rendered="#{cc.attrs.notPublished == true and userBean.admin == true}">
 					<div class="content-item__not-published-info">#{msg.content_item_not_published_yet}</div>
 				</ui:fragment>
-						
+
 				<!-- RENDER THE TEXT EDITOR CONTENT -->
 				<!-- FA* the cmsPage.getContent method has to be dynamic and not a fixed item -->
 				<h2><h:outputText escape="true" value="#{cmsPage.getContent('item01')}" /></h2>

@@ -3,6 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
@@ -19,14 +20,19 @@
 		<!-- CONTENT ITEM ORDER FUNCTIONS: SHOWS POSITION NUMBER AND USER IS ABLE TO MOVE ITEM UP AND DOWN IN LIST -->
 	    <div class="admin__content-item-order-wrapper">
 
-			<!-- UP BUTTON -->
-	    	<div class="admin__content-item-order-arrow-up"><i class="fa fa-arrow-up" aria-hidden="true"></i></div>
+			<!-- UP IN ORDER BUTTON -->
+			<button class="admin__content-item-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}">
+				<i class="fa fa-arrow-up" aria-hidden="true"></i>
+				<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+			</button>
 
-	    	<!-- POSITION OF THIS CONTENT ITEM IN LIST -->
-		    <div class="admin__content-item-order-number">3</div>
+		    <div class="admin__content-item-order-number">#{cmsComponent.order}</div>
 
-		    <!-- DOWN BUTTON -->
-		    <div class="admin__content-item-order-arrow-down"><i class="fa fa-arrow-down" aria-hidden="true"></i></div>
+		    <!-- DOWN IN ORDER BUTTON -->
+			<button class="admin__content-item-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}">
+				<i class="fa fa-arrow-down" aria-hidden="true"></i>
+				<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+			</button>
 
 	    </div>
 

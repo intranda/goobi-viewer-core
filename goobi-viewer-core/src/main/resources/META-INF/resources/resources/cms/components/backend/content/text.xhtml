@@ -11,14 +11,25 @@
 	<composite:interface>
 		<composite:attribute name="contentItem" required="true"
 			type="io.goobi.viewer.model.cms.pages.content.CMSContentItem" />
+			
 	</composite:interface>
 
-
 	<composite:implementation>
-		<viewerForms:textInputField 
-			label="#{msg[cc.attrs.contentItem.label]}"
-			value="#{cc.attrs.contentItem.content.text.text}" 
-			helpText="#{msg[cc.attrs.contentItem.description]}" />
-			
+
+
+
+		<h:panelGroup layout="block" id="inputGroup">
+			<h:inputText 
+				value="#{contentItem.content.text.text}" 
+				id="inputFieldContentItemText"
+				label="input"
+				styleClass="form-control" >
+				<f:passThroughAttribute name="aria-label" value="text box" />
+			</h:inputText>
+		</h:panelGroup>
+
+		
+
+
 	</composite:implementation>
 </ui:composition>

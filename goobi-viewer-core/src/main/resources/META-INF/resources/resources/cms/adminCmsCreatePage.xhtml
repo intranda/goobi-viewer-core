@@ -79,8 +79,12 @@
                                                 <h:panelGroup rendered="#{cmsBean.pageEditState == 'CONTENT'}">
                                                     <ui:param name="locale" value="#{page.selectedLocale}" />
                                                     <div class="tab-pane #{page.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
+                                                        
+                                                        
                                                         <!-- PAGE CONTENT -->
                                                         <div class="edit-content-page edit-content-page-content">
+                                                        
+                                                        
                                                             <!-- TITLE -->
                                                             <div class="cms-module__option-group">
                                                                 <div class="cms-module__option-label">
@@ -97,6 +101,9 @@
                                                                     </button>
                                                                 </div>
                                                             </div>
+                                                            
+                                                            
+                                                            
 
                                                             <!-- MENUTITLE -->
                                                             <div class="cms-module__option-group">
@@ -114,77 +121,172 @@
                                                                     </button>
                                                                 </div>
                                                             </div>
-
-                                                            <!-- PAGE SORTING -->
-                                                                <div class="cms-module__option-group">
-                                                                    <div class="cms-module__option-label">
-                                                                        <label for="cmsCreatePageSortingField">#{msg.label__cms_page_sortfield}:</label>
-                                                                    </div>
-                                                                    <div class="cms-module__option-control">
-                                                                        <h:inputText id="cmsCreatePageSortingField" styleClass="form-control"
-                                                                            value="#{cmsBean.selectedPage.pageSorting}">
-                                                                            <f:passThroughAttribute name="type" value="number" />
-                                                                        </h:inputText>
-                                                                        <span class="cms-module__option-control-helptext">#{msg.help__cms_page_sortfield}</span>
-                                                                    </div>
-                                                                    <div class="cms-module__option-help">
-                                                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
                                                             
+                                                            
+
+                                                        	<!-- PAGE SORTING -->
+                                                            <div class="cms-module__option-group">
+                                                                <div class="cms-module__option-label">
+                                                                    <label for="cmsCreatePageSortingField">#{msg.label__cms_page_sortfield}:</label>
+                                                                </div>
+                                                                <div class="cms-module__option-control">
+                                                                    <h:inputText id="cmsCreatePageSortingField" styleClass="form-control"
+                                                                        value="#{cmsBean.selectedPage.pageSorting}">
+                                                                        <f:passThroughAttribute name="type" value="number" />
+                                                                    </h:inputText>
+                                                                    <span class="cms-module__option-control-helptext">#{msg.help__cms_page_sortfield}</span>
+                                                                </div>
+                                                                <div class="cms-module__option-help">
+                                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
                                                             <!-- Topbar slider -->
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
+
 
 															<!-- Available content items -->
 															<div id="componentSelect">
 																<h:panelGroup id="component_selection">
+																
+							                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{componentSelected}">
+							                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
+							                                                <f:selectItems
+							                                                value="#{cmsPageEditBean.availableComponents}"
+							                                                var="comp"
+							                                                itemLabel="#{msg[comp.label]}"
+							                                                itemValue="#{comp}"
+							                                                itemDescription="#{msg[comp.description]}" />
+							                                            </h:selectOneMenu>
+							                                            
+																		<button jsf:action="#{page.addComponent(componentSelected)}">
+																			Hinzufügen
+																			<f:ajax render="pageComponents" ></f:ajax>
+																		</button>
+							                                            
+																
 																	<ui:repeat var="comp" value="#{cmsPageEditBean.availableComponents}">
+
 																		<button jsf:action="#{page.addComponent(comp)}">
 																			<h4>#{msg[comp.label]}</h4>
 																			<p>#{msg[comp.description]}</p>
 																			<img src="#{request.contextPath}#{navigationHelper.getResource(comp.iconPath)}"/>
 																			<f:ajax render="pageComponents" ></f:ajax>
 																		</button>
+																		
+																		
 																	</ui:repeat>
 																</h:panelGroup>
 															</div>
-															<!--  -->
+															
+															
+															<!-- CONTENT ITEMS ON THIS PAGE -->
 															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
-															<h:panelGroup id="pageComponents" class="page-component-list" >
+															
+															<h:panelGroup layout="block" id="pageComponents" class="page-component-list admin__content-items-wrapper" >
+																
 																<c:forEach var="cmsComponent" items="#{page.components}">
-																		<ui:repeat var="attribute" value="#{cmsComponent.attributes.values()}">
-																				<ui:fragment rendered="#{attribute.type == 'boolean'}">
-																					<button jsf:action="#{page.toggleAttribute(cmsComponent, attribute.name, 'true')}" class="attribute-button #{attribute.value == 'true' ? 'active' : ''}">#{msg[attribute.label]}
-																						<f:ajax execute="@this" render="@this"/>
-																					</button>
-																				</ui:fragment>
-																				<ui:fragment rendered="#{attribute.type != 'boolean'}">
-																					<ui:repeat var="option" value="#{attribute.options}">
-																						<button jsf:action="#{page.setAttribute(cmsComponent, attribute.name, option)}" class="attribute-button #{attribute.value == option ? 'active' : ''}">#{msg[option]}
+
+																<!-- CONTENT ITEM ORDER FUNCTIONS -->
+																<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+																
+
+																		<div class="admin__content-item">
+
+																			<!-- CONTENT ITEM INNER -->
+																			<div class="admin__content-item-inner">
+																	
+
+																				<!-- CONTENT HEADER + TOOLBAR -->
+																				<div class="admin__content-item-header">
+																					<h2 class="admin__content-item-heading">Name: #{msg[cmsComponent.label]}</h2>
+
+																					<div class="admin__content-item-options">
+																					
+																					
+																					
+<!-- 																	            		DISPLAY: CONTENT ITEM ONLY VISIBLE FOR ADMINS -->
+<!-- 																	            		<div class="admin__content-item-option admin__content-item-option-unpublished">Not published</div> -->
+<!-- 																	            		DISPLAY: CONTENT ITEM NOT VISIBLE FOR DESKTOP OR MOBILE -->
+<!-- 																	            		<div class="admin__content-item-option admin__content-item-option-no-desktop-view">Hide for desktop</div> -->
+<!-- 																	            		<div class="admin__content-item-option admin__content-item-option-no-mobile-view">Hide for mobile</div> -->
+<!-- 																						LAYOUT: SIZING OPTIONS -->
+<!-- 																						<div class="admin__content-item-option admin__content-item-option-size">100 %</div> -->
+<!-- 																						<div class="admin__content-item-option admin__content-item-option-size">50 %</div> -->
+																						
+																						
+																						
+																						
+																						
+																						<ui:repeat var="attribute" value="#{cmsComponent.attributes.values()}">
+																								
+																								<ui:fragment rendered="#{attribute.type == 'toggle'}">
+																								
+																									<ui:repeat var="option" value="#{attribute.options}">
+																									
+																										<button jsf:action="#{page.toggleAttribute(cmsComponent, attribute.name, option.value)}" class="attribute-button #{option.value == attribute.value ? 'active' : ''}">#{msg[option.label]}
+																											<f:ajax execute="@this" render="pageComponents"/>
+																										</button>
+
+																									</ui:repeat>
+																									
+																								</ui:fragment>
+																								
+																								<ui:fragment rendered="#{attribute.type != 'toggle'}">
+																									<ui:repeat var="option" value="#{attribute.options}">
+																										<button jsf:action="#{page.setAttribute(cmsComponent, attribute.name, option.value)}" class="attribute-button #{option.value == attribute.value ? 'active' : ''}">#{msg[option.label]}
+																											<f:ajax render="pageComponents"/>
+																										</button>
+																									</ui:repeat>
+																								</ui:fragment>
+
+																						</ui:repeat>
+
+
+																						<button jsf:action="#{cmsComponent.togglePrivate()}" class="attribute-button #{cmsComponent.isPrivate() ? 'active' : ''}">Private
 																							<f:ajax render="pageComponents"/>
 																						</button>
-																					</ui:repeat>
-																				</ui:fragment>
-																		</ui:repeat>
-																	<div class="page-component">
-																		<button jsf:action="#{page.decrementOrder(cmsComponent)}">
-																			<i class="fa fa-arrow-up" aria-hidden="true"></i>
-																			<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																		</button>
-																		<button jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
-																			<i class="fa fa-trash-o" aria-hidden="true"></i>
-																			<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																		</button>
-																		<button jsf:action="#{page.incrementOrder(cmsComponent)}">
-																			<i class="fa fa-arrow-down" aria-hidden="true"></i>
-																			<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																		</button>
-																		<c:forEach var="contentItem" items="#{cmsComponent.contentItems}">
-																			<h:panelGroup binding="#{contentItem.uiComponent}"></h:panelGroup>																			
-																		</c:forEach>
+
+																					
+																					</div>
+																	
+																				</div>
+																	
+																			</div>
+
+
+																
+
+																			
+
+																			<!-- DELETE THIS CONTENT ITEM -->
+																			<button class="admin__content-item-delete" jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
+																				<i class="fa fa-trash-o" aria-hidden="true"></i>
+																				<f:ajax execute="pageComponents" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																			</button>
+																			
+
+
+																		
+																		<div class="admin__content-item-inner">
+
+																			<c:forEach var="contentItem" items="#{cmsComponent.contentItems}">
+																				<h:panelGroup layout="block" binding="#{contentItem.uiComponent}"></h:panelGroup>																			
+																			</c:forEach>
+
+																		</div>
+																	
+																	
+																	
+																	
 																	</div>
+																	
+																	
+
+																	
+																	
 																</c:forEach>
 															</h:panelGroup>
 															

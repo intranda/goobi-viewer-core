@@ -4,7 +4,7 @@
 		<library>cms/components/frontend/component</library>
 		<name>text</name>
 	</jsfComponent>
-	<label>cms_component__text__label</label>
+	<label>cms_component__text_label</label>
 	<description>cms_component__text__desc</description>
 	<icon>cms/components/frontend/component/icon/text.png</icon>
 	<content>
@@ -22,8 +22,15 @@
 			</attributes>
 		</item>
 	</content>
-	<attribute name="width" label="cms__component_attribute__width">
-		<value>50</value>
-		<value default="true">100</value>
+
+	<attribute name="width">
+		<value label="50 %">50</value>
+		<value label="100 %" default="true">100</value>
 	</attribute>
+
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
+	
 </component>
