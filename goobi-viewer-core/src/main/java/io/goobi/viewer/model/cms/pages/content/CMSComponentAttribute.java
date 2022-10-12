@@ -29,10 +29,10 @@ public class CMSComponentAttribute {
     private final String name;
     private final String label;
     private final String type;
-    private final List<String> options;
+    private final List<Option> options;
     private String value;
 
-    public CMSComponentAttribute(String name, String label, String type, List<String> options) {
+    public CMSComponentAttribute(String name, String label, String type, List<Option> options) {
         super();
         this.name = name;
         this.label = label;
@@ -86,7 +86,7 @@ public class CMSComponentAttribute {
     /**
      * @return the options
      */
-    public List<String> getOptions() {
+    public List<Option> getOptions() {
         return options;
     }
 

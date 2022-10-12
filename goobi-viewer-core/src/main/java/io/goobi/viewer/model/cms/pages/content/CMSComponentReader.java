@@ -60,7 +60,7 @@ public class CMSComponentReader {
             String attrName = element.getAttributeValue("name");
             String attrLabel = element.getAttributeValue("label");
             String attrType = element.getAttributeValue("type");
-            List<String> options = XmlTools.evaluateToElements("value", element, null).stream().map(Element::getText).collect(Collectors.toList());
+            List<Option> options = XmlTools.evaluateToElements("value", element, null).stream().map(this::createOption).collect(Collectors.toList());
             String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
             CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, options);
             attr.setValue(value);
@@ -103,6 +103,12 @@ public class CMSComponentReader {
         
     }
 
+    private Option createOption(Element element) {
+        String label = element.getAttributeValue("label");
+        String value = element.getText();
+        return new Option(value, label);
+    }
+    
     private CMSContent createContentFromClassName(String className)
             throws InstantiationException {
         try {            
