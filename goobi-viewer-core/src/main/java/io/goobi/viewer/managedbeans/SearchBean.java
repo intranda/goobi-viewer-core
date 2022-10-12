@@ -189,11 +189,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
-
-    /**
-     * Whether to only display the current search parameters rather than the full input mask
-     */
-    private boolean showReducedSearchOptions = false;
+    
     /** Reusable Random object. */
     private Random random = new SecureRandom();
 
@@ -1499,12 +1495,10 @@ public class SearchBean implements SearchInterface, Serializable {
             search.redirectToSearchUrl(true);
             return "";
         } else if (PageType.browse.equals(oPath.map(path -> path.getPageType()).orElse(PageType.other))) {
-            String ret = facets.removeFacetAction(facetQuery, "pretty:browse4");
-            return ret;
+            return facets.removeFacetAction(facetQuery, "pretty:browse4");
         } else {
-            String ret = facets.removeFacetAction(facetQuery,
+            return facets.removeFacetAction(facetQuery,
                     activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5" : "pretty:newSearch5");
-            return ret;
         }
     }
 
@@ -2627,28 +2621,6 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public boolean isExplicitSearchPerformed() {
         return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
-    }
-
-    /**
-     * <p>
-     * isShowReducedSearchOptions.
-     * </p>
-     *
-     * @return the showReducedSearchOptions
-     */
-    public boolean isShowReducedSearchOptions() {
-        return showReducedSearchOptions;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>showReducedSearchOptions</code>.
-     * </p>
-     *
-     * @param showReducedSearchOptions the showReducedSearchOptions to set
-     */
-    public void setShowReducedSearchOptions(boolean showReducedSearchOptions) {
-        this.showReducedSearchOptions = showReducedSearchOptions;
     }
 
     /**
