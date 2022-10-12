@@ -258,6 +258,21 @@ public class CMSComponent implements Comparable<CMSComponent> {
         return attributes;
     }
     
+    public boolean isPublished() {
+        return ContentItemPublicationState.PUBLISHED.equals(this.publicationState);
+    }
+    
+    public void setPublished(boolean published) {
+        setPublicationState(published ? ContentItemPublicationState.PUBLISHED : ContentItemPublicationState.ADMINISTRATOR);
+    }
+    
+    public boolean isPrivate() {
+        return !isPublished();
+    }
+    
+    public void setPrivate(boolean privat) {
+        setPublished(!privat);
+    }
     
     private static Map<String, CMSComponentAttribute> initializeAttributes(Map<String, CMSComponentAttribute> attrs,
             Map<String, String> initialValues) {
