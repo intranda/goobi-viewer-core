@@ -24,9 +24,7 @@
         </h:panelGroup>
 
         <h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
-<!--             <ui:fragment rendered="#{search.searchPerformed}"> -->
-<!--                <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                 -->
-<!--            </ui:fragment> -->
+            <h2>#{msg.search__search_query}:</h2>
             <h:form id="searchAdvancedForm" prependId="false">
                     <div class="search-advanced__group">
                         <!-- AJAX LOADER -->
@@ -162,6 +160,51 @@
 						#{msg.reset}
 					</button>
                 </div>
+                
+                <!-- SEARCH LIST SORTING -->
+                <h2>#{msg.search__search_output}:</h2>
+                <div class="search-list__nav-helper-wrapper">
+                    <div class="search-list__nav-helper-item">
+                        <div class="search-list__nav-helper-label">
+                            <label for="hitsPerPageSelect" id="searchListSortingLabel">#{msg.search__hits_per_page}:</label>
+                        </div>
+                        <div class="custom-control custom-control--select">
+                             <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}">
+                                 <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}"
+                                     itemLabel="#{value}" itemValue="#{value}" />
+                                 <f:passThroughAttribute name="aria-labelledby" value="searchListSortingLabel"/>
+                                 <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
+                             </h:selectOneMenu>
+                             <h:commandButton style="display: none" action="#{search.search(cmsBean.currentPage.subThemeDiscriminatorValue)}">
+                                 <f:passThroughAttribute name="data-hits-per-page" value="reload"/>
+                             </h:commandButton>
+                        </div>
+                    </div>
+
+                    <div class="search-list__nav-helper-item" >
+                        <div class="search-list__nav-helper-label">
+                            <label for="sortSelect">#{msg.sortBy}:</label>
+                        </div>
+                        <div class="custom-control custom-control--select">
+                            <h:selectOneMenu value="#{search.sortString}" id="sortSelect">
+                                <f:selectItems value="#{searchBean.searchSortingOptions}"
+                                    var="option"
+                                    itemLabel="#{option.label}"
+                                    itemValue="#{option.sortString}"/>
+                            </h:selectOneMenu>                                
+                        </div>
+                    </div>
+                    
+                    <!-- PAGINATOR -->
+                    <viewerComponent:inputFieldPaginator 
+                        classSuffix="-top"
+                        itemCount="#{search.lastPage}" 
+                        itemActive="#{search.currentPage}" 
+                        urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
+                        urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
+
+               </div>
+
                 
             </h:form>
         </h:panelGroup>
