@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
@@ -105,6 +106,9 @@ public class CMSComponentReader {
     private Option createOption(Element element) {
         String label = element.getAttributeValue("label");
         String value = element.getText();
+        if(StringUtils.isBlank(label)) {
+            label = value;
+        }
         return new Option(value, label);
     }
     

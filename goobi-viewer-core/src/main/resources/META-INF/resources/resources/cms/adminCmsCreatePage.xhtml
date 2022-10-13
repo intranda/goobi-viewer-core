@@ -150,34 +150,21 @@
 															<!-- AVAILABLE CONTENT COMPONENTS -->
 															<div id="componentSelect">
 																<h:panelGroup id="component_selection">
-																
-							                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{componentSelected}">
+							                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{cmsBean.selectedComponent}">
 							                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
 							                                                <f:selectItems
 							                                                value="#{cmsPageEditBean.availableComponents}"
 							                                                var="comp"
 							                                                itemLabel="#{msg[comp.label]}"
-							                                                itemValue="#{comp}"
+							                                                itemValue="#{comp.templateFilename}"
 							                                                itemDescription="#{msg[comp.description]}" />
+							                                                <f:ajax event="valueChange" execute="@this" render="component_selection"></f:ajax>
 							                                            </h:selectOneMenu>
 							                                            
-																		<button jsf:action="#{page.addComponent(componentSelected)}">
-																			Hinzufügen
-																			<f:ajax render="pageComponents" ></f:ajax>
+																		<button jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}">
+																			#{msg.cms_page__add_component}
+																			<f:ajax execute="@this" render="@all" ></f:ajax>
 																		</button>
-							                                            
-																
-																	<ui:repeat var="comp" value="#{cmsPageEditBean.availableComponents}">
-
-																		<button jsf:action="#{page.addComponent(comp)}">
-																			<h4>#{msg[comp.label]}</h4>
-<!-- 																			<p>#{msg[comp.description]}</p> -->
-<!-- 																			<img src="#{request.contextPath}#{navigationHelper.getResource(comp.iconPath)}"/> -->
-																			<f:ajax render="pageComponents" ></f:ajax>
-																		</button>
-																		
-																		
-																	</ui:repeat>
 																</h:panelGroup>
 															</div>
 															
@@ -213,7 +200,7 @@
 																								
 																									<ui:repeat var="option" value="#{attribute.options}">
 																									
-																										<button  jsf:action="#{page.toggleAttribute(cmsComponent, attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
+																										<button  jsf:action="#{cmsComponent.toggleAttribute(attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
 																											<f:ajax execute="@this" render="pageComponents"/>
 																										</button>
 
@@ -223,7 +210,7 @@
 																								
 																								<ui:fragment rendered="#{attribute.type != 'toggle'}">
 																									<ui:repeat var="option" value="#{attribute.options}">
-																										<button jsf:action="#{page.setAttribute(cmsComponent, attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
+																										<button jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
 																											<f:ajax render="pageComponents"/>
 																										</button>
 																									</ui:repeat>

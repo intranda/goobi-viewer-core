@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.dao.converter.StringListConverter;
@@ -270,7 +271,11 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
     }
     
     public void setAttribute(String key, String value) {
-        this.attributes.put(key, value);
+        if(StringUtils.isBlank(value)) {
+            this.attributes.remove(key);
+        } else {            
+            this.attributes.put(key, value);
+        }
     }
     
     public String getAttribute(String key) {

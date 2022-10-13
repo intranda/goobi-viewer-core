@@ -163,6 +163,8 @@ public class CmsBean implements Serializable {
     
     private List<PersistentCMSComponent> componentsToDelete = new ArrayList<>();
     
+    private String selectedComponent = "";
+    
     /**
      * <p>
      * init.
@@ -2229,5 +2231,32 @@ public class CmsBean implements Serializable {
            this.componentsToDelete.add(persistentComponent);
        }
        return this.selectedPage.removeComponent(component);
+    }
+    
+    public String getSelectedComponent() {
+        return selectedComponent;
+    }
+    
+    public void setSelectedComponent(String selectedComponent) {
+        this.selectedComponent = selectedComponent;
+    }
+    
+    public void addComponent(CMSPage page, String componentFilename) {
+        if(page != null) {
+            if(StringUtils.isNotBlank(componentFilename)) {
+                try {                    
+                    page.addComponent(componentFilename);
+                    setSelectedComponent(null);
+                } catch(IllegalArgumentException e) {
+                    logger.error("Cannot add component: No component found for filename {}.", componentFilename);
+                    Messages.error(null, "admin__cms__create_page__error_unknown_component_name", componentFilename);
+                }
+            } else {
+                logger.error("Cannot add component: No component filename given");
+                Messages.error("admin__cms__create_page__error_no_component_name_given");
+            }
+        } else {
+            logger.error("Cannot add component: No page given");
+        }
     }
 }

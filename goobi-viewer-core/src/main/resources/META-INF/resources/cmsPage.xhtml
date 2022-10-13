@@ -44,8 +44,8 @@
 							<h1 >#{page.title}</h1>
 						</ui:fragment>
 						
-						<c:forEach var="component" items="#{page.components}">
-								<h:panelGroup binding="#{component.uiComponent}"></h:panelGroup>
+						<c:forEach var="cmsComponent" items="#{page.components}">
+								<h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
 						</c:forEach>
 					</div>
 

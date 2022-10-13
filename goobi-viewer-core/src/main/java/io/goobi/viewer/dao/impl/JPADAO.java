@@ -3327,7 +3327,8 @@ public class JPADAO implements IDAO {
                 em.merge(page);
                 commitTransaction(em);
                 return true;
-            } catch (PersistenceException e) {
+            } catch (PersistenceException | NullPointerException e) {
+                logger.error("Error saving page ", e);
                 handleException(em);
                 return false;
             } finally {
