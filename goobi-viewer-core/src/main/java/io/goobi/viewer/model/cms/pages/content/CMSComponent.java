@@ -198,11 +198,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
             component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
-                if("toggle".equalsIgnoreCase(attribute.getType())) {
-                    component.getAttributes().put(attribute.getName(), attribute.getBooleanValue());
-                } else {
-                    component.getAttributes().put(attribute.getName(), attribute.getValue());
-                }
+                component.getAttributes().put(attribute.getName(), attribute.getValue());
             }
             component.setId(id + "_component");
         }
