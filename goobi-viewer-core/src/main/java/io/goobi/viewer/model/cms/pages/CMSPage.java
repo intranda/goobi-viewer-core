@@ -336,7 +336,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 this.cmsComponents.add(comp);
             }
         }
-        //sort components and normalize order attributes
+        sortComponents();
+    }
+    
+    private void sortComponents() {
         Collections.sort(this.cmsComponents);
         for (int i = 0; i < this.cmsComponents.size(); i++) {
             this.cmsComponents.get(i).setOrder(i+1);
@@ -1296,15 +1299,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Component " + p.getId() + " is not registered in page"));
     }
-
-    public boolean removeComponent(PersistentCMSComponent component) {
-        this.cmsComponents.remove(getAsCMSComponent(component));
-        return this.persistentComponents.remove(component);
-    }
     
     public boolean removeComponent(CMSComponent component) {
         this.persistentComponents.remove(component.getPersistentComponent());
-        return this.cmsComponents.remove(component);
+        boolean success = this.cmsComponents.remove(component);
+        if(success) {            
+            sortComponents();
+        }
+        return success;
     }
     
     public PersistentCMSComponent addComponent(String filename) throws IllegalArgumentException {
