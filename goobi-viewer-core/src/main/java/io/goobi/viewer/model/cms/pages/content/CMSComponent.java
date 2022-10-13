@@ -56,10 +56,11 @@ public class CMSComponent implements Comparable<CMSComponent> {
     private final Map<String, CMSComponentAttribute> attributes;
     
     private final PersistentCMSComponent persistentComponent;
-   
+
     private int listPage = 1;
     
     private UIComponent uiComponent;
+    private UIComponent backendUiComponent;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), 
@@ -212,6 +213,24 @@ public class CMSComponent implements Comparable<CMSComponent> {
         this.uiComponent = uiComponent;
     }
     
+    public UIComponent getBackendUiComponent() {
+        if(this.backendUiComponent == null) {
+            DynamicContentBuilder builder = new DynamicContentBuilder();
+            String id = FilenameUtils.getBaseName("component_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
+            this.backendUiComponent = new HtmlPanelGroup();
+            this.backendUiComponent.setId(id);
+            for (CMSContentItem cmsContentItem : contentItems) {
+                UIComponent itemComponent = cmsContentItem.getUiComponent();
+                this.backendUiComponent.getChildren().add(itemComponent);
+            }
+        }
+        return backendUiComponent;
+    }
+    
+    public void setBackendUiComponent(UIComponent backendUiComponent) {
+        this.backendUiComponent = backendUiComponent;
+    }
+    
     public CMSComponentAttribute getAttribute(String key) {
         return this.attributes.get(key);
     }
@@ -286,7 +305,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
         if(isPublished()) {
             return true;
         } else {
-            return user.isCmsAdmin();
+            return user != null && user.isCmsAdmin();
         }
     }
 }

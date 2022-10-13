@@ -9,8 +9,7 @@
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
 	<composite:interface>
-		<composite:attribute name="contentItem" required="true"
-			type="io.goobi.viewer.model.cms.pages.content.CMSContentItem" />
+		<composite:attribute name="contentItem" required="true"/>
 			
 	</composite:interface>
 
@@ -20,7 +19,7 @@
 
 		<h:panelGroup layout="block" id="inputGroup">
 			<h:inputText 
-				value="#{contentItem.content.text.text}" 
+				value="#{cc.attrs.contentItem.content.text.text}" 
 				id="inputFieldContentItemText"
 				label="input"
 				styleClass="form-control" >

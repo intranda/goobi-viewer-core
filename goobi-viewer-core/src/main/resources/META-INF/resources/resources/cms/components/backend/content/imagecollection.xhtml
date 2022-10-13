@@ -9,13 +9,12 @@
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
 	<composite:interface>
-		<composite:attribute name="contentItem" required="true"
-			type="io.goobi.viewer.model.cms.content.CMSContentItem" />
+		<composite:attribute name="contentItem" required="true"/>
 	</composite:interface>
 
 
 	<composite:implementation>
-		<c:set scope="request" var="content" val="cc.attrs.contentItem.content" />
+		<c:set scope="request" var="content" val="#{cc.attrs.contentItem.content}" />
 		
 		<viewerForms:inputFormField 
 	       label="#{msg.admin__category_select}" 
