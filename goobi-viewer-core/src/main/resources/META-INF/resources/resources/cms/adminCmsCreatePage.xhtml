@@ -78,7 +78,7 @@
                                                 <!-- LOCALIZE TABS -->
                                                 <h:panelGroup rendered="#{cmsBean.pageEditState == 'CONTENT'}">
                                                     <ui:param name="locale" value="#{page.selectedLocale}" />
-                                                    <div class="tab-pane #{page.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
+                                                    <div class="tab-pane admin__cms-create-page-inner #{page.selectedLocale == locale ? 'active':''}" id="#{locale.language}">
                                                         
                                                         
                                                         <!-- PAGE CONTENT -->
@@ -146,29 +146,6 @@
                                                             <!-- TOPBAR SLIDER -->
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
-
-															<!-- AVAILABLE CONTENT COMPONENTS -->
-															<div id="componentSelect">
-																<h:panelGroup id="component_selection">
-							                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{cmsBean.selectedComponent}">
-							                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
-							                                                <f:selectItems
-							                                                value="#{cmsPageEditBean.availableComponents}"
-							                                                var="comp"
-							                                                itemLabel="#{msg[comp.label]}"
-							                                                itemValue="#{comp.templateFilename}"
-							                                                itemDescription="#{msg[comp.description]}" />
-							                                                <f:ajax event="valueChange" execute="@this" render="component_selection"></f:ajax>
-							                                            </h:selectOneMenu>
-							                                            
-																		<button jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}">
-																			#{msg.cms_page__add_component}
-																			<f:ajax execute="@this" render="@all" ></f:ajax>
-																		</button>
-																</h:panelGroup>
-															</div>
-															
-															
 															<!-- CONTENT COMPONENTS ON THIS PAGE -->
 															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
 															
@@ -262,6 +239,30 @@
 																</c:forEach>
 															</h:panelGroup>
 															
+															<!-- AVAILABLE CONTENT COMPONENTS -->
+															<div class="admin__content-component-add-area">
+
+																<div class="admin__content-component-add-area-label">#{msg.cms__page_new_component}</div>
+																
+																<h:panelGroup id="componentSelectionWrapper" layout="block" styleClass="admin__content-component-add-select-wrapper">
+							                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{cmsBean.selectedComponent}">
+							                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
+							                                                <f:selectItems
+							                                                value="#{cmsPageEditBean.availableComponents}"
+							                                                var="comp"
+							                                                itemLabel="#{msg[comp.label]}"
+							                                                itemValue="#{comp.templateFilename}"
+							                                                itemDescription="#{msg[comp.description]}" />
+							                                                <f:ajax event="valueChange" execute="@this" render="componentSelectionWrapper"></f:ajax>
+							                                            </h:selectOneMenu>
+							                                            
+																		<button class="btn btn--default admin__content-component-add-area-button" jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}">
+																			#{msg.cms__page_add_component}
+																			<f:ajax execute="@this" render="@all" ></f:ajax>
+																		</button>
+																</h:panelGroup>
+
+														</div>
 
                                                        </div>
                                                     </div>

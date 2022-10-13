@@ -16,20 +16,23 @@
 
 	<composite:implementation>
 
-
-
-		<h:panelGroup layout="block" id="inputGroup">
-			<h:inputText 
-				value="#{contentItem.content.text.text}" 
-				id="inputFieldContentItemText"
-				label="input"
-				styleClass="form-control" >
-				<f:passThroughAttribute name="aria-label" value="text box" />
-			</h:inputText>
-		</h:panelGroup>
-
+		<div class="admin__content-component-description">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</div>
 		
+		<div class="admin__content-item-text">
+		
+			<div class="admin__content-component-content-item-start">Text:</div>
+			
+			<h:panelGroup layout="block" id="inputGroup" styleClass="admin__content-component-content-item-end">
+				<h:inputText 
+					value="#{contentItem.content.text.text}" 
+					id="inputFieldContentItemText"
+					label="input"
+					styleClass="form-control" >
+					<f:passThroughAttribute name="aria-label" value="text box" />
+				</h:inputText>
+			</h:panelGroup>
 
+		</div>
 
 	</composite:implementation>
 </ui:composition>
