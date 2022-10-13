@@ -1409,4 +1409,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void decrementOrder(CMSComponent component) {
         this.setComponentOrder(component, component.getOrder()-1);
     }
+    
+    public boolean isFirstComponent(CMSComponent component) {
+        return this.cmsComponents.indexOf(component) == 0;
+    }
+    
+    public boolean isLastComponent(CMSComponent component) {
+        return this.cmsComponents.indexOf(component) == this.cmsComponents.size()-1;
+    }
 }

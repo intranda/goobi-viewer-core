@@ -17,7 +17,7 @@
 
 
     <composite:implementation>
-    	<ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.image != null}">
+    	<ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.image != null and cc.attrs.component.hasAccess(userBean.user)}">
     	
 			<!-- CONTENT ITEM IMAGE HALF -->
 			<div class="content-component content-component__image

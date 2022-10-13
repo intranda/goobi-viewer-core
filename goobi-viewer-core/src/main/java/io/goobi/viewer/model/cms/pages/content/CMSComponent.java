@@ -56,10 +56,11 @@ public class CMSComponent implements Comparable<CMSComponent> {
     private final Map<String, CMSComponentAttribute> attributes;
     
     private final PersistentCMSComponent persistentComponent;
-   
+
     private int listPage = 1;
     
     private UIComponent uiComponent;
+    private UIComponent backendUiComponent;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), 
@@ -197,11 +198,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
             component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
-                if("toggle".equalsIgnoreCase(attribute.getType())) {
-                    component.getAttributes().put(attribute.getName(), attribute.getBooleanValue());
-                } else {
-                    component.getAttributes().put(attribute.getName(), attribute.getValue());
-                }
+                component.getAttributes().put(attribute.getName(), attribute.getValue());
             }
             component.setId(id + "_component");
         }
@@ -210,6 +207,24 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     public void setUiComponent(UIComponent uiComponent) {
         this.uiComponent = uiComponent;
+    }
+    
+    public UIComponent getBackendUiComponent() {
+        if(this.backendUiComponent == null) {
+            DynamicContentBuilder builder = new DynamicContentBuilder();
+            String id = FilenameUtils.getBaseName("component_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
+            this.backendUiComponent = new HtmlPanelGroup();
+            this.backendUiComponent.setId(id);
+            for (CMSContentItem cmsContentItem : contentItems) {
+                UIComponent itemComponent = cmsContentItem.getUiComponent();
+                this.backendUiComponent.getChildren().add(itemComponent);
+            }
+        }
+        return backendUiComponent;
+    }
+    
+    public void setBackendUiComponent(UIComponent backendUiComponent) {
+        this.backendUiComponent = backendUiComponent;
     }
     
     public CMSComponentAttribute getAttribute(String key) {
@@ -286,7 +301,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
         if(isPublished()) {
             return true;
         } else {
-            return user.isCmsAdmin();
+            return user != null && user.isCmsAdmin();
         }
     }
 }
