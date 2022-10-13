@@ -24,6 +24,9 @@ package io.goobi.viewer.model.cms;
 import java.util.Locale;
 import java.util.Optional;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,12 +34,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  * <p>

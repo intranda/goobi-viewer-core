@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
+
+import io.goobi.viewer.dao.converter.StringListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -34,10 +37,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.dao.converter.StringListConverter;
 
 /**
  * Class to persist sliders ("slideshows") created in CMS backend

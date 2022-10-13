@@ -32,6 +32,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
+import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
@@ -156,7 +157,6 @@ public class CMSContentItem {
     }
     
     public UIComponent getUiComponent() {
-        
         
         if(this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
