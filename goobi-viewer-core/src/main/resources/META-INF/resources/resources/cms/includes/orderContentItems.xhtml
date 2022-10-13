@@ -23,7 +23,7 @@
 	    	<div class="admin__content-component-order-inner-wrapper">
 	
 				<!-- UP IN ORDER BUTTON -->
-				<button class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}">
+				<button jsf:disabled="#{page.isFirstComponent(cmsComponent)}" class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}">
 					<i class="fa fa-arrow-up" aria-hidden="true"></i>
 					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 				</button>
@@ -31,7 +31,7 @@
 			    <div class="admin__content-component-order-number">#{cmsComponent.order}</div>
 	
 			    <!-- DOWN IN ORDER BUTTON -->
-				<button class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}">
+				<button jsf:disabled="#{page.isLastComponent(cmsComponent)}" class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}">
 					<i class="fa fa-arrow-down" aria-hidden="true"></i>
 					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 				</button>
