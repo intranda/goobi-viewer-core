@@ -25,10 +25,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 
-import javax.mail.MessagingException;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -36,6 +34,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
+import jakarta.mail.MessagingException;
 
 /**
  * @author florian
@@ -47,9 +46,6 @@ public class CommentMailNotificator implements ChangeNotificator {
 
     private List<String> recipients;
     private List<String> bcc;
-
-    public CommentMailNotificator() {
-    }
 
     /**
      *

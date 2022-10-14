@@ -38,11 +38,10 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -59,6 +58,7 @@ import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.ViewManager;
+import jakarta.mail.MessagingException;
 
 /**
  * <p>
@@ -497,8 +497,7 @@ public class BookmarkBean implements Serializable {
             for (BookmarkList bookmarkList : getBookmarkListsForUser(userBean.getUser())) {
                 if (bookmarkList.getName().equals(name) && bookmarkList.getOwner().equals(userBean.getUser())) {
                     ((UIInput) toValidate).setValid(false);
-                    logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' for user '" + userBean.getEmail()
-                            + "' could not be added. A bookmark list with this name for this use may already exist.");
+                    logger.debug("BookmarkList '{}' for user '{}' could not be added. A bookmark list with this name for this use may already exist.", currentBookmarkList.getName(),  userBean.getEmail());
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_createBookmarkListNameExists", null);
                     FacesMessage message =
                             new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation(msg.replace("{0}", name), null), null);
@@ -516,7 +515,6 @@ public class BookmarkBean implements Serializable {
      * @return a boolean.
      */
     public boolean isCurrentBookmarkListMine() {
-        UserBean userBean = BeanUtils.getUserBean();
         return currentBookmarkList != null && (isNewBookmarkList() || currentBookmarkList.getOwner().equals(userBean.getUser()));
     }
 
@@ -554,7 +552,6 @@ public class BookmarkBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<String> getCurrentBookmarkListNames() throws DAOException {
-        UserBean userBean = BeanUtils.getUserBean();
         List<BookmarkList> bookmarkLists = getBookmarkListsForUser(userBean.getUser());
         if (bookmarkLists == null || bookmarkLists.isEmpty()) {
             return Collections.emptyList();
