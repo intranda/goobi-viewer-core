@@ -433,7 +433,7 @@ public class TocMaker {
                 logger.warn("Group ID field not found on IDDOC {}", doc.getFieldValue(SolrConstants.IDDOC));
                 continue;
             }
-            String groupSortField = groupIdField.replace(SolrConstants.PREFIX_GROUPORDER, SolrConstants.PREFIX_GROUPORDER);
+            String groupSortField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             Integer order = (Integer) doc.getFieldValue(groupSortField);
             if (order == null) {
                 logger.warn("No {} on group member {}", groupSortField, doc.getFieldValue("PI"));
