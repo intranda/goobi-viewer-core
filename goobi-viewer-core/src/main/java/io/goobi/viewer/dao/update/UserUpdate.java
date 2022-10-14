@@ -34,10 +34,9 @@ import io.goobi.viewer.model.security.user.User;
  */
 public class UserUpdate implements IModelUpdate {
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
-     */
+    /** {@inheritDoc} */
     @Override
+    @SuppressWarnings("unchecked")
     public boolean update(IDAO dao) throws DAOException, SQLException {
         if (dao.columnsExists("users", "use_gravatar")) {
             List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM users WHERE use_gravatar=1");
@@ -46,8 +45,8 @@ public class UserUpdate implements IModelUpdate {
             }
             dao.executeUpdate("ALTER TABLE users DROP COLUMN use_gravatar");
         }
-        return true;
 
+        return true;
     }
 
 }

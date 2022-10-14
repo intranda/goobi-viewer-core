@@ -25,11 +25,10 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import jakarta.persistence.PersistenceException;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
@@ -37,8 +36,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSMediaItem;
 
 /**
- * Converts {@link CMSMediaItem cms_media_items.link_url} from the LONGBLOB datatype (URI in java) to TEXT (String in java).
- * Extracts the link texts from all entries and writes them into the table again as Text
+ * Converts {@link CMSMediaItem cms_media_items.link_url} from the LONGBLOB datatype (URI in java) to TEXT (String in java). Extracts the link texts
+ * from all entries and writes them into the table again as Text
  *
  * @author florian
  *
@@ -55,19 +54,21 @@ public class CMSMediaUpdate implements IModelUpdate {
      * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public boolean update(IDAO dao) throws DAOException, SQLException {
         logger.debug("Checking database for deprecated cms_media_items.link_url datatype");
-        List<String> types = dao.getNativeQueryResults("SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_media_items' AND COLUMN_NAME = 'link_url' ");
+        List<String> types = dao.getNativeQueryResults(
+                "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_media_items' AND COLUMN_NAME = 'link_url' ");
         if (types.contains(DATATYPE_OLD)) {
             logger.debug("Updating cms_media_items.link_url datatype from " + DATATYPE_OLD + " to " + DATATYPE_NEW);
 
             List<Object[]> results =
                     dao.getNativeQueryResults("SELECT cms_media_item_id, link_url FROM cms_media_items WHERE link_url IS NOT NULL");
-            Map<Long, String> linkUrlMap = new HashMap();
+            Map<Long, String> linkUrlMap = new HashMap<>();
             for (Object[] res : results) {
                 if (res[0] instanceof Long && res[1] instanceof byte[]) {
                     String value = parseUrl((byte[]) res[1]);
-                    if(value != null) {
+                    if (value != null) {
                         linkUrlMap.put((Long) res[0], value);
                     } else {
                         logger.warn("Encountered link url in cms_media_items which could not be parsed at cms_media_item_id = {}", res[0]);
@@ -78,12 +79,13 @@ public class CMSMediaUpdate implements IModelUpdate {
             }
             dao.executeUpdate("ALTER TABLE cms_media_items MODIFY COLUMN link_url " + DATATYPE_NEW);
 
-            for (Long id : linkUrlMap.keySet()) {
+            for (Entry<Long, String> entry : linkUrlMap.entrySet()) {
                 try {
-                dao.executeUpdate("UPDATE cms_media_items SET link_url = '" + linkUrlMap.get(id) + "' WHERE cms_media_item_id = " + id);
-                logger.trace("Updated cms_media_items value at cms_media_item_id = '{}' to '{}'", id, linkUrlMap.get(id));
-                } catch(Throwable e) {
-                    logger.error("Error attempting to update cms_media_items value at cms_media_item_id = '{}' to '{}'",  id, linkUrlMap.get(id));
+                    dao.executeUpdate("UPDATE cms_media_items SET link_url = '" + entry.getValue() + "' WHERE cms_media_item_id = " + entry.getKey());
+                    logger.trace("Updated cms_media_items value at cms_media_item_id = '{}' to '{}'", entry.getKey(), entry.getValue());
+                } catch (Exception e) {
+                    logger.error("Error attempting to update cms_media_items value at cms_media_item_id = '{}' to '{}'", entry.getKey(),
+                            entry.getValue());
                 }
             }
 
@@ -92,7 +94,6 @@ public class CMSMediaUpdate implements IModelUpdate {
 
         return true;
     }
-
 
     protected String parseUrl(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
@@ -106,8 +107,7 @@ public class CMSMediaUpdate implements IModelUpdate {
     }
 
     protected String parseUrl(String blob) {
-        String url = StringTools.findFirstMatch(blob, URL_REGEX, 0).orElse(null);
-        return url;
+        return StringTools.findFirstMatch(blob, URL_REGEX, 0).orElse(null);
     }
 
 }
