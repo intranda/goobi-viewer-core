@@ -1272,6 +1272,26 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return Optional.ofNullable(this.topbarSlider).map(CMSSlider::getId).orElse(null);
     }
     
+    /**
+     * 
+     * @param topbarSlider
+     * @throws DAOException 
+     * @deprecated only used for backward compatibility with older themes
+     */
+    @Deprecated
+    public void setTopBarSliderId(Long id) throws DAOException {
+        this.setTopbarSliderId(id);
+    }
+    
+    /**
+     * 
+     * @param topbarSlider
+     * @deprecated only used for backward compatibility with older themes
+     */
+    public Long getTopBarSliderId() {
+        return getTopbarSliderId();
+    } 
+    
     public void setTopbarSliderId(Long id) throws DAOException {
         setTopbarSlider(DataManager.getInstance().getDao().getSlider(id));
     }

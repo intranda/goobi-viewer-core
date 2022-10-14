@@ -705,6 +705,11 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                 .anyMatch(license -> LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName()) && license.isPrivCmsAllTemplates());
     }
 
+    public boolean hasPrivilegesForTemplate(String template) {
+        //TODO: adapt widget_userInteractions.xhtml to new template model
+        return false;
+    }
+    
     /**
      * <p>
      * hasPrivilegesForTemplate.
