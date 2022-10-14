@@ -28,17 +28,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import javax.mail.MessagingException;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
@@ -47,6 +39,13 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
+import jakarta.mail.MessagingException;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Transient;
 
 /**
  * <p>

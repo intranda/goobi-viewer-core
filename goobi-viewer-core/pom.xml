@@ -356,12 +356,6 @@
 			<version>${icu.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>${inject.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>${jackson.version}</version>
@@ -391,6 +385,11 @@
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>${jakarta.annotation-api.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -411,11 +410,12 @@
 			<artifactId>javax.faces</artifactId>
 			<version>${javax.faces.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
-			<version>${javax.mail.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${inject.version}</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
