@@ -107,7 +107,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
             item.setField("MD_TITLE");
             item.setValue("lorem ipsum dolor sit amet");
             Set<String> searchTerms = new HashSet<>(0);
-            Assert.assertEquals("MD_TITLE" + SolrConstants._UNTOKENIZED + ":\"lorem ipsum dolor sit amet\"",
+            Assert.assertEquals("MD_TITLE" + SolrConstants.SUFFIX_UNTOKENIZED + ":\"lorem ipsum dolor sit amet\"",
                     item.generateQuery(searchTerms, true, false));
             Assert.assertTrue(searchTerms.isEmpty());
         }

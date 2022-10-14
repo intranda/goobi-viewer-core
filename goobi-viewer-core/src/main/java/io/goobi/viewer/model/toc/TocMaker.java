@@ -161,7 +161,7 @@ public class TocMaker {
         ret.put(TOC.DEFAULT_GROUP, new ArrayList<TOCElement>());
 
         // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
-        boolean sourceFormatPdfAllowed = SolrConstants._METS.equals(structElement.getSourceDocFormat());
+        boolean sourceFormatPdfAllowed = SolrConstants.SOURCEDOCFORMAT_METS.equals(structElement.getSourceDocFormat());
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(new StringBuilder(SolrConstants.IDDOC).append(':').append(structElement.getLuceneId()).toString(),
@@ -335,7 +335,7 @@ public class TocMaker {
                     .append(':')
                     .append(groupIdValue);
 
-            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            String groupSortField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             sortFields.add(new StringPair(groupSortField, "asc"));
             returnFields.add(groupSortField); // add each sorting field to return list
         }
@@ -433,7 +433,7 @@ public class TocMaker {
                 logger.warn("Group ID field not found on IDDOC {}", doc.getFieldValue(SolrConstants.IDDOC));
                 continue;
             }
-            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            String groupSortField = groupIdField.replace(SolrConstants.PREFIX_GROUPORDER, SolrConstants.PREFIX_GROUPORDER);
             Integer order = (Integer) doc.getFieldValue(groupSortField);
             if (order == null) {
                 logger.warn("No {} on group member {}", groupSortField, doc.getFieldValue("PI"));
@@ -564,7 +564,7 @@ public class TocMaker {
                 // Collect group IDs to which this volume might belong
                 List<String> groupIds = new ArrayList<>();
                 for (String fieldName : volumeDoc.getFieldNames()) {
-                    if (fieldName.startsWith(SolrConstants.GROUPID_)) {
+                    if (fieldName.startsWith(SolrConstants.PREFIX_GROUPID)) {
                         for (Object objValue : volumeDoc.getFieldValues(fieldName)) {
                             groupIds.add((String) objValue);
                         }

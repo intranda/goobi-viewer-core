@@ -281,7 +281,7 @@ public class JsonTools {
         jsonObj.put("id", pi);
         Object title = doc.getFieldValue(SolrConstants.TITLE);
         if (title == null && StringUtils.isNotEmpty(language)) {
-            title = doc.getFieldValue(SolrConstants.TITLE + SolrConstants._LANG_ + language.toUpperCase());
+            title = doc.getFieldValue(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + language.toUpperCase());
         }
         if (title == null) {
             title = doc.getFieldValue(SolrConstants.LABEL);

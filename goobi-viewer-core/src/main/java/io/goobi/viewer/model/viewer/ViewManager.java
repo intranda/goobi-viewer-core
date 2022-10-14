@@ -162,7 +162,7 @@ public class ViewManager implements Serializable {
     private String opacUrl = null;
     private String contextObject = null;
     private List<String> versionHistory = null;
-    private PageOrientation firstPageOrientation = PageOrientation.right;
+    private PageOrientation firstPageOrientation = PageOrientation.RIGHT;
     private boolean doublePageMode = false;
     private int firstPdfPage;
     private int lastPdfPage;
@@ -171,7 +171,6 @@ public class ViewManager implements Serializable {
     private Long pagesWithAlto = null;
     private Boolean workHasTEIFiles = null;
     private Boolean metadataViewOnly = null;
-    private List<String> downloadFilenames = null;
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
@@ -279,7 +278,7 @@ public class ViewManager implements Serializable {
     public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
         String anchorPi = anchorStructElement != null ? anchorStructElement.getPi() : (topStructElement.isAnchor() ? pi : null);
-        return new CalendarView(pi, anchorPi, topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants._CALENDAR_YEAR));
+        return new CalendarView(pi, anchorPi, topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
 
     }
 
@@ -373,7 +372,7 @@ public class ViewManager implements Serializable {
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
-        if (actualPageOrientation.equals(PageOrientation.left)) {
+        if (actualPageOrientation.equals(PageOrientation.LEFT)) {
             return getPage(this.currentImageOrder);
         } else if (topStructElement != null && topStructElement.isRtl()) {
             return getPage(this.currentImageOrder + 1);
@@ -395,7 +394,7 @@ public class ViewManager implements Serializable {
         if (topStructElement != null && topStructElement.isRtl()) {
             actualPageOrientation = actualPageOrientation.opposite();
         }
-        if (actualPageOrientation.equals(PageOrientation.right)) {
+        if (actualPageOrientation.equals(PageOrientation.RIGHT)) {
             return getPage(this.currentImageOrder);
         } else if (topStructElement != null && topStructElement.isRtl()) {
             return getPage(this.currentImageOrder - 1);
@@ -1759,7 +1758,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
-        if (topStructElement != null && SolrConstants._METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
+        if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
             try {
                 StringBuilder sbPath = new StringBuilder();
                 sbPath.append(DataManager.getInstance().getConfiguration().getDfgViewerUrl());
@@ -2154,7 +2153,7 @@ public class ViewManager implements Serializable {
             return false;
         }
         // Only allow PDF downloads for records coming from METS files
-        if (!SolrConstants._METS.equals(topStructElement.getSourceDocFormat())) {
+        if (!SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat())) {
             return false;
         }
 
@@ -2849,7 +2848,7 @@ public class ViewManager implements Serializable {
      * @throws IOException
      */
     private List<String> listDownloadableContent() throws PresentationException, IndexUnreachableException, DAOException, IOException {
-        //        if (this.downloadFilenames == null) {
+        List<String> downloadFilenames = Collections.emptyList();
         Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
         if (Files.exists(sourceFileDir) && AccessConditionUtils.checkContentFileAccessPermission(pi,
                 (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted()) {
@@ -2859,13 +2858,11 @@ public class ViewManager implements Serializable {
                 if (StringUtils.isNotEmpty(hideDownloadFilesRegex)) {
                     filenames = filenames.filter(filename -> !filename.matches(hideDownloadFilesRegex));
                 }
-                this.downloadFilenames = filenames.collect(Collectors.toList());
+                downloadFilenames = filenames.collect(Collectors.toList());
             }
-        } else {
-            this.downloadFilenames = Collections.emptyList();
         }
-        //        }
-        return this.downloadFilenames;
+
+        return downloadFilenames;
     }
 
     /**
