@@ -1029,7 +1029,6 @@ public final class SearchHelper {
      * @should construct suffix correctly if user has overriding license privilege
      * @should construct suffix correctly if ip range has license privilege
      * @should construct suffix correctly if moving wall license
-     * @should construct suffix correctly for alternate privilege
      * @should add overridden license types from user privilege
      * @should add overridden license types from license type privilege
      * @should add overridden license types from open access license

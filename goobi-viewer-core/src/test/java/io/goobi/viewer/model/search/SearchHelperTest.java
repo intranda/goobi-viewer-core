@@ -214,22 +214,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,String)
-     * @verifies construct suffix correctly for alternate privilege
-     */
-    @Test
-    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyForAlternatePrivilege() throws Exception {
-        User user = DataManager.getInstance().getDao().getUser(2);
-        // User has metadata download privilege for 'license type 3 name', but not listing
-        Assert.assertFalse(
-                SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty())
-                        .contains("ACCESSCONDITION:\"license type 3 name\""));
-        Assert.assertTrue(
-                SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty())
-                        .contains("ACCESSCONDITION:\"license type 3 name\""));
-    }
-
-    /**
      * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,Optional,String)
      * @verifies add overridden license types from user privilege
      */
