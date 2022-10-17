@@ -159,7 +159,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
                                 Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(p.getPi() + ".xml", p.getDataRepository(),
                                         (actualImageName != null && topDocument.getSourceDocFormat() != null) ? topDocument.getSourceDocFormat()
-                                                : SolrConstants._METS));
+                                                : SolrConstants.SOURCEDOCFORMAT_METS));
                                 if (Files.exists(indexedSourceFile)) {
                                     request.setProperty("param:metsFile", indexedSourceFile.toUri());
                                 }

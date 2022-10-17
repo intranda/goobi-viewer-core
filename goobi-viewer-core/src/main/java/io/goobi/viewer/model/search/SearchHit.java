@@ -507,7 +507,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         // Check whether TEI is available at all
-        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase());
+        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
         if (StringUtils.isEmpty(teiFilename)) {
             teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI);
         }
@@ -755,7 +755,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
                         if (!(docFieldName.startsWith("MD_") || docFieldName.startsWith("NORM_"))
-                                || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                                || docFieldName.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                             continue;
                         }
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {

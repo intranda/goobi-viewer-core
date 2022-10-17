@@ -402,8 +402,8 @@ public class SolrTools {
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
             String locale = null;
-            if (languageField.startsWith(key + SolrConstants._LANG_)) {
-                locale = languageField.substring(languageField.lastIndexOf(SolrConstants._LANG_) + 6).toLowerCase();
+            if (languageField.startsWith(key + SolrConstants.MIDFIX_LANG)) {
+                locale = languageField.substring(languageField.lastIndexOf(SolrConstants.MIDFIX_LANG) + 6).toLowerCase();
             } else {
                 locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
             }
@@ -433,12 +433,12 @@ public class SolrTools {
             List<String> fieldNames = doc.getMetadataFields()
                     .keySet()
                     .stream()
-                    .filter(field -> field.equals(key) || field.startsWith(key + SolrConstants._LANG_))
+                    .filter(field -> field.equals(key) || field.startsWith(key + SolrConstants.MIDFIX_LANG))
                     .collect(Collectors.toList());
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.matches(key + "_LANG_\\w{2,3}")) {
-                    locale = languageField.substring(languageField.lastIndexOf(SolrConstants._LANG_) + 6).toLowerCase();
+                    locale = languageField.substring(languageField.lastIndexOf(SolrConstants.MIDFIX_LANG) + 6).toLowerCase();
                 } else {
                     locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
                 }

@@ -232,7 +232,7 @@ public class MetadataTools {
         // citation_publication_date
         if (structElement.getMetadataValue(SolrConstants.YEARPUBLISH) != null) {
             String value = structElement.getMetadataValue(SolrConstants.YEARPUBLISH);
-            List<String> normalizedValues = structElement.getMetadataValues(SolrConstants._CALENDAR_YEAR);
+            List<String> normalizedValues = structElement.getMetadataValues(SolrConstants.CALENDAR_YEAR);
             if (normalizedValues != null && !normalizedValues.isEmpty()) {
                 for (String normalizedValue : normalizedValues) {
                     if (value.contains(normalizedValue)) {

@@ -696,8 +696,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (nerAvailable == null) {
             nerAvailable = DataManager.getInstance()
                     .getSearchIndex()
-                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_PERSON" + SolrConstants._UNTOKENIZED + ":* OR NE_LOCATION"
-                            + SolrConstants._UNTOKENIZED + ":* OR NE_CORPORATION" + SolrConstants._UNTOKENIZED + ":*)") > 0;
+                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_PERSON" + SolrConstants.SUFFIX_UNTOKENIZED + ":* OR NE_LOCATION"
+                            + SolrConstants.SUFFIX_UNTOKENIZED + ":* OR NE_CORPORATION" + SolrConstants.SUFFIX_UNTOKENIZED + ":*)") > 0;
         }
 
         return nerAvailable;

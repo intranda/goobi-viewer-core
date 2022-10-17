@@ -1771,7 +1771,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         String termQuery = null;
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
         }
 
         List<String> filterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
@@ -1806,7 +1806,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         String termQuery = null;
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
         }
 
         List<String> filterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
@@ -2132,7 +2132,7 @@ public class SearchBean implements SearchInterface, Serializable {
             List<AdvancedSearchFieldConfiguration> toRemove = new ArrayList<>();
             language = language.toUpperCase();
             for (AdvancedSearchFieldConfiguration field : fields) {
-                if (field.getField().contains(SolrConstants._LANG_) && !field.getField().endsWith(language)) {
+                if (field.getField().contains(SolrConstants.MIDFIX_LANG) && !field.getField().endsWith(language)) {
                     toRemove.add(field);
                 }
             }
@@ -2430,7 +2430,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             String termQuery = null;
             if (boostTopLevelDocstructs && searchTerms != null) {
-                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
             }
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
             SXSSFWorkbook wb = new SXSSFWorkbook(25); //NOSONAR try-with-resources in the calling method

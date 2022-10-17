@@ -599,7 +599,7 @@ public class BrowseElement implements Serializable {
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
                             continue;
                         }
-                        if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                        if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                             continue;
                         }
                         // Skip fields that are already in the list

@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -2381,12 +2380,9 @@ public class ConfigurationTest extends AbstractTest {
     public void testBrokenConfig() {
         DataManager.getInstance()
                 .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
-        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
-        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
-        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
-        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
-        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
+        Assert.assertEquals("src/test/resources/localConfig/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+        Assert.assertEquals("src/test/resources/data/viewer/", DataManager.getInstance().getConfiguration().getViewerHome());
+        Assert.assertEquals("src/test/resources/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
 
     }
 
@@ -2580,13 +2576,13 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSitelinksField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
     }
 
     @Test
     public void getGetConfiguredCollections() {
         List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollections();
-        Assert.assertEquals(fields.size(), 3);
+        Assert.assertEquals(3, fields.size());
         Assert.assertTrue(fields.contains("DC"));
         Assert.assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
         Assert.assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
