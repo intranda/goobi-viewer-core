@@ -436,25 +436,6 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
-        return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, null);
-    }
-
-    /**
-     * Returns all suffixes relevant to search filtering.
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param addStaticQuerySuffix a boolean.
-     * @param addCollectionBlacklistSuffix a boolean.
-     * @param addDiscriminatorValueSuffix a boolean.
-     * @param privilege Privilege to check
-     * @should add static suffix
-     * @should not add static suffix if not requested
-     * @should add collection blacklist suffix
-     * @should add discriminator value suffix
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
-            String privilege) {
         StringBuilder sbSuffix = new StringBuilder("");
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
@@ -466,7 +447,7 @@ public final class SearchHelper {
         if (addCollectionBlacklistSuffix) {
             sbSuffix.append(getCollectionBlacklistFilterSuffix(SolrConstants.DC));
         }
-        String filterQuerySuffix = getFilterQuerySuffix(request, privilege);
+        String filterQuerySuffix = getFilterQuerySuffix(request);
         // logger.trace("filterQuerySuffix: {}", filterQuerySuffix);
         if (filterQuerySuffix != null) {
             sbSuffix.append(filterQuerySuffix);
@@ -1018,16 +999,16 @@ public final class SearchHelper {
      * Updates the calling agent's session with a personalized filter sub-query.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param privilege
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
+    public static void updateFilterQuerySuffix(HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
-                        ClientApplicationManager.getClientFromRequest(request), privilege);
+                getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
+                        (User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
+                        ClientApplicationManager.getClientFromRequest(request));
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
     }
@@ -1035,10 +1016,10 @@ public final class SearchHelper {
     /**
      * Constructs a personal search query filter suffix for the given user and IP address.
      *
+     * @param licenseTypes
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
      * @param client
-     * @param privilege Privilege to check
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1049,8 +1030,11 @@ public final class SearchHelper {
      * @should construct suffix correctly if ip range has license privilege
      * @should construct suffix correctly if moving wall license
      * @should construct suffix correctly for alternate privilege
+     * @should add overridden license types from user privilege
+     * @should add overridden license types from license type privilege
+     * @should add overridden license types from open access license
      */
-    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, Optional<ClientApplication> client, String privilege)
+    public static String getPersonalFilterQuerySuffix(List<LicenseType> licenseTypes, User user, String ipAddress, Optional<ClientApplication> client)
             throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
         // No restrictions for admins
@@ -1062,15 +1046,16 @@ public final class SearchHelper {
                 && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";
         }
-        if (privilege == null) {
-            privilege = IPrivilegeHolder.PRIV_LIST;
-        }
 
         StringBuilder query = new StringBuilder();
         query.append(" +(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(SolrConstants.OPEN_ACCESS_VALUE).append('"');
+        
+        if (licenseTypes == null || licenseTypes.isEmpty()) {
+            return "";
+        }
 
         Set<String> usedLicenseTypes = new HashSet<>();
-        for (LicenseType licenseType : DataManager.getInstance().getDao().getRecordLicenseTypes()) {
+        for (LicenseType licenseType : licenseTypes) {
             if (usedLicenseTypes.contains(licenseType.getName())) {
                 continue;
             }
@@ -1083,31 +1068,24 @@ public final class SearchHelper {
                 // in which case it should also be added without a date restriction
             }
 
-            // License type contains listing privilege
-            if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(privilege)) {
-                query.append(licenseType.getFilterQueryPart());
-                usedLicenseTypes.add(licenseType.getName());
-                continue;
-            }
-
-            if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null).isGranted()) {
-                // If the user has an explicit permission to list a certain license type, ignore all other license types
+            // Open access, license type privileges and explicit privileges
+            if (licenseType.isOpenAccess()
+                    || licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST) || AccessConditionUtils
+                            .checkAccessPermission(Collections.singletonList(licenseType),
+                                    new HashSet<>(Collections.singletonList(licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress,
+                                    client, null)
+                            .isGranted()) {
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
-            } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
-                // If there are overriding license types for which the user has listing permission, ignore the current license type
+
+                // If the current license type overrides other license types, add permissions for those as well
                 for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
-                    if (!usedLicenseTypes.contains(overridingLicenseType.getName())
-                            && AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                                    new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
-                                    null).isGranted()) {
+                    if (!usedLicenseTypes.contains(overridingLicenseType.getName())) {
                         query.append(overridingLicenseType.getFilterQueryPart());
                         usedLicenseTypes.add(overridingLicenseType.getName());
-                        logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
+                        logger.trace("User has additional listing privilege for license type '{}' due to '{}' overriding it.",
                                 overridingLicenseType.getName(), licenseType.getName());
-                        break;
                     }
                 }
             }
@@ -3036,7 +3014,7 @@ public final class SearchHelper {
         }
 
         // Suffixes
-        String suffixes = getAllSuffixes(request, true, true, null);
+        String suffixes = getAllSuffixes(request, true, true);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
@@ -3046,10 +3024,9 @@ public final class SearchHelper {
 
     /**
      * @param request
-     * @param privilege
      * @return Filter query suffix string from the HTTP session
      */
-    static String getFilterQuerySuffix(HttpServletRequest request, String privilege) {
+    static String getFilterQuerySuffix(HttpServletRequest request) {
         if (request == null) {
             request = BeanUtils.getRequest();
         }
@@ -3065,7 +3042,7 @@ public final class SearchHelper {
         // If not suffix generated yet, initiate update
         if (ret == null) {
             try {
-                updateFilterQuerySuffix(request, privilege);
+                updateFilterQuerySuffix(request);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
@@ -3200,7 +3177,7 @@ public final class SearchHelper {
         if (StringUtils.isEmpty(sortString)) {
             return Collections.emptyList();
         }
-        
+
         List<StringPair> ret = new ArrayList<>();
         String[] sortStringSplit = sortString.split(";");
         if (sortStringSplit.length > 0) {
