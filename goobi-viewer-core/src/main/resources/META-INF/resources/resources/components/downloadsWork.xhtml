@@ -149,16 +149,17 @@
                         
                             <!-- IIIF MANIFEST -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
-	                           <a 
+	                           <button 
                                    id="iiifManifest"
                                    class="badge badge-dark widget-usage__work-download-iiif" 
 	                               data-copy="iiif-manifest" 
 	                               data-clipboard-text="#{imageDelivery.iiifManifest}" 
 	                               data-copy-done="#{msg.copyUrlDone}"
                                    title="#{msg.copyUrl}"
-                                   aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.iiif}"> 
+                                   aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.iiif}"
+                                   tabindex="0"> 
 	                               #{msg.iiif}
-	                           </a> 
+	                           </button> 
 	                       </ui:fragment>      
 	                    
                             <!-- MIRADOR -->
