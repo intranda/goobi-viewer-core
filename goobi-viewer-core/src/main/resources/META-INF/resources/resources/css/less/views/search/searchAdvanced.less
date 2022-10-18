@@ -2,16 +2,18 @@
    Search Advanced
    style declarations for searchAdvanced.xhtml
    ==============================================================*/
+
 /* SAERCH ADVANCED */
-/* BLOCK */
 .search-advanced {
-	margin-bottom: 1.5rem;
-    /* ELEMENT */
-    &__group {
+	&__entry-area-title,
+	&__additional-options-title {
+		margin-bottom: 10px;
+	}
+    &__entry-area {
         position: relative;
-        margin-bottom: 21px;
-        padding: 10px;
-        border: 1px solid @middlegray;
+		display: grid;
+		gap: @gap-sizer;
+        padding: @gap-sizer;
         .remove[disabled="disabled"] {
             display: none;
         }
@@ -21,11 +23,11 @@
             right: .5rem;
             padding: .5rem;
             color: inherit;
-			&:focus,
-			&:hover,
-			&:active {
-				color: inherit;
-			}
+            &:focus,
+            &:hover,
+            &:active {
+                color: inherit;
+            }
         }
     }
     &__loader {
@@ -38,43 +40,53 @@
         background-image: url("@{images}/ajax_preloader.gif");
         background-position: center center;
         background-repeat: no-repeat;
-        background-color: rgba(255,255,255,0.75);
+        background-color: rgba(255, 255, 255, 0.75);
         z-index: 10;
     }
     &__connector,
     &__connect-group {
-    	.custom-control--select {
-    		display: inline-block;
-    		width: 80px;
-    		border: none;
-    		&:after {
-    			right: 10px;
-    		}
-    		select {
-    			padding: 0;
-    		}
-    	}
+        .custom-control--select {
+            display: inline-block;
+            width: 80px;
+            border: none;
+            &:after {
+                right: 10px;
+            }
+            select {
+                padding: 0;
+            }
+        }
     }
+	&__operator-field-pair-wrapper {
+		display: grid;
+		gap: @gap-sizer;
+		grid-template-columns: minmax(100px, auto) minmax(100px, auto);
+	}
     &__input-group {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: @gap-sizer;
+	
+	
         .form-control__select,
         input[type="text"] {
             border-right: none;
-			height: auto;
+            height: auto;
             &:focus {
                 border-right-color: @blue;
                 & + .input-group-append {
-                	border-color: @blue;
+                    border-color: @blue;
                 }
             }
             &.-with-right-border {
-            	border-right: 1px solid @middlegray;
-            	&:focus {
-                	border-right-color: @blue;
-                	& + .input-group-append {
-                	border-color: @blue;
-                	}
-            	}
-        	}
+                border-right: 1px solid @middlegray;
+                &:focus {
+                    border-right-color: @blue;
+                    & + .input-group-append {
+                        border-color: @blue;
+                    }
+                }
+            }
         }
         .input-group-append {
             padding: 0;
@@ -94,10 +106,10 @@
         }
         .custom-control--select {
             &.disabled {
-            	display: none;
-            	&:after {
-	                display: none;
-	            }
+                display: none;
+                &:after {
+                    display: none;
+                }
             }
             select[disabled] {
                 border-radius: 0;
@@ -112,49 +124,53 @@
             padding-left: 0;
         }
     }
+	&__select-values {
+		width: auto;
+	}
     &__additional-wrapper {
-    	display: flex;
-    	align-items: center;
+        display: flex;
+        align-items: center;
     }
     &__additional-action {
-    	font-size: 1.4rem;
+        font-size: 1.4rem;
     }
     &__between-arrow {
-	    display: flex;
-		align-items: center;
-		padding: 0 0.7rem;
-		font-size: 1.6rem;
+        display: flex;
+        align-items: center;
+        padding: 0 0.7rem;
+        font-size: 1.6rem;
     }
     &__year-span-from {
-    		align-self: center;
-    		margin-right: 1rem;
+        align-self: center;
+        margin-right: 1rem;
     }
     &__year-span-to {
-    		align-self: center;
-    		margin-right: 1rem;
-    		margin-left: 1rem;
+        align-self: center;
+        margin-right: 1rem;
+        margin-left: 1rem;
     }
     &__input-col {
-        a, button {
+        a,
+        button {
             display: inline-block;
             padding: 7px;
-			color: inherit;
+            color: inherit;
             &:hover,
             &:focus,
             &:active {
                 text-decoration: none;
                 outline: none !important;
-				color: inherit;
+                color: inherit;
             }
-			&[disabled="disabled"]{
-				display:none;
-			}
+            &[disabled="disabled"] {
+                display: none;
+            }
         }
         span {
             display: none;
         }
         .form-group {
-        	margin: 0;
+            margin: 0;
         }
     }
     &__connect-group {
@@ -164,38 +180,61 @@
         margin-bottom: 21px;
         padding: .5rem 18px;
         text-align: right;
-        a, button {
+        a,
+        button {
             color: inherit;
             &:hover,
             &:focus,
             &:active {
                 text-decoration: none;
-                color:inherit;
+                color: inherit;
             }
         }
     }
     &__action {
-		display: flex;
-		flex-flow: row-reverse;
+        display: flex;
+        flex-flow: row-reverse;
         .btn {
             margin: 0 0 0 5px;
         }
     }
+    &__fuzzy-search-option-wrapper {
+        display: flex;
+        gap: @gap-sizer;
+    }
+	&__additional-options-area {
+		margin: 30px 0;
+	}
+    &__nav-helper-box {
+		display: flex;
+		justify-content: space-between;
+        padding: @gap-sizer;
+    }
+	&__custom-control {
+		width: auto;
+		select {
+			max-width: 100%;
+			width: auto;
+		}
+	}
+
+	// GAP SIZING VARIABLE
+	@gap-sizer: 20px;
 }
 /* MODIFICATION */
 
 @{RTL} .search-advanced {
-	&__input-group {
-		.input-group-append {
-			border-left: 1px solid @middlegray;
-			border-right: none;
-		}
+    &__input-group {
+        .input-group-append {
+            border-left: 1px solid @middlegray;
+            border-right: none;
+        }
         .form-control__select,
         input[type="text"] {
             border-left: none;
             border-right: 1px solid @middlegray;
         }
-	}
+    }
 }
 
 
@@ -208,8 +247,7 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
     .search-advanced__input-group input[type="text"],
-    .search-advanced__input-group .form-control__select {
-    }
+    .search-advanced__input-group .form-control__select {}
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
