@@ -459,24 +459,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getMultivolumeThumbnailHeight()
-     * @verifies return correct value
-     */
-    @Test
-    public void getMultivolumeThumbnailHeight_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(13, DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight());
-    }
-
-    /**
-     * @see Configuration#getMultivolumeThumbnailWidth()
-     * @verifies return correct value
-     */
-    @Test
-    public void getMultivolumeThumbnailWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(12, DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth());
-    }
-
-    /**
      * @see Configuration#isUserRegistrationEnabled()
      * @verifies return correct value
      */
@@ -2005,15 +1987,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isDisplayTimeMatrix_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplayTimeMatrix());
-    }
-
-    /**
-     * @see Configuration#showThumbnailsInToc()
-     * @verifies return correct value
-     */
-    @Test
-    public void showThumbnailsInToc_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().showThumbnailsInToc());
     }
 
     /**

@@ -807,13 +807,6 @@
 	</metadata>
 
 	<toc>
-        <!-- multiVolumeThumbnails/@enabled: Whether to display thumbnails of contained works in anchor toc. Default is "true" -->
-        <multiVolumeThumbnails enabled="false">
-            <!-- width|height: size settings for multivolume TOC  thumbnails -->
-            <width>12</width>
-            <height>13</height>
-        </multiVolumeThumbnails>
-
 		<!-- voumeSortFields: Solr fields by which the volumes in an anchor TOC 
 			shall be sorted. Custom templates can be defined for anchor docstruc types, 
 			otherwise "_DEFAULT" is used. Optional "order" attribute (default is "asc"). -->

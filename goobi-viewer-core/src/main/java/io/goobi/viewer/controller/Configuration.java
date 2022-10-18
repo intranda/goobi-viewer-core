@@ -3182,30 +3182,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getMultivolumeThumbnailWidth.
-     * </p>
-     *
-     * @should return correct value
-     * @return a int.
-     */
-    public int getMultivolumeThumbnailWidth() {
-        return getLocalInt("toc.multiVolumeThumbnails.width", 50);
-    }
-
-    /**
-     * <p>
-     * getMultivolumeThumbnailHeight.
-     * </p>
-     *
-     * @should return correct value
-     * @return a int.
-     */
-    public int getMultivolumeThumbnailHeight() {
-        return getLocalInt("toc.multiVolumeThumbnails.height", 60);
-    }
-
-    /**
-     * <p>
      * getDisplayBreadcrumbs.
      * </p>
      *
@@ -4053,18 +4029,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isDisplaySearchRssLinks() {
         return getLocalBoolean("rss.displaySearchRssLinks", true);
-    }
-
-    /**
-     * <p>
-     * showThumbnailsInToc.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean showThumbnailsInToc() {
-        return this.getLocalBoolean("toc.multiVolumeThumbnails[@enabled]", true);
     }
 
     /**

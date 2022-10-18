@@ -377,17 +377,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * showThumbnailsInToc.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean showThumbnailsInToc() {
-        return DataManager.getInstance().getConfiguration().showThumbnailsInToc();
-    }
-
-    /**
-     * <p>
      * isAdvancedSearchEnabled.
      * </p>
      *
