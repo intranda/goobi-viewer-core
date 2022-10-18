@@ -1145,18 +1145,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getContentServerWrapperUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getContentServerWrapperUrl() {
-        return getLocalString("urls.contentServerWrapper");
-    }
-
-    /**
-     * <p>
      * getDownloadUrl.
      * </p>
      *
@@ -4216,18 +4204,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getCmsTemplateFolder.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCmsTemplateFolder() {
-        return getLocalString("cms.templateFolder", "resources/cms/templates/");
-    }
-
-    /**
-     * <p>
      * getCmsMediaFolder.
      * </p>
      *
@@ -4544,18 +4520,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public int getExcelDownloadTimeout() {
         return getLocalInt("search.export.excel.timeout", 120);
-    }
-
-    /**
-     * <p>
-     * isDisplayEmptyTocInSidebar.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isDisplayEmptyTocInSidebar() {
-        return getLocalBoolean("sidebar.sidebarToc.visibleIfEmpty", true);
     }
 
     /**

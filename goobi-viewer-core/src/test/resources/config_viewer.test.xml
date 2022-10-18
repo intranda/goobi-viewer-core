@@ -78,11 +78,6 @@
 		<!-- solr: URL to the Solr index core -->
 		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
 
-		<!-- contentServer: relative path to contentServer from the Goobi viewer 
-			context -->
-		<contentServer>contentServer_value</contentServer>
-		<!-- contentServerWrapper: absolute path to the content servlet -->
-		<contentServerWrapper>contentServerWrapper_value</contentServerWrapper>
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
 		<dfg-viewer>dfg-viewer_value</dfg-viewer>
@@ -985,9 +980,6 @@
 			<!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
             <visibleInFullscreen>false</visibleInFullscreen>
 
-			<!-- display sidebarToc if it only contains the root element -->
-			<visibleIfEmpty>false</visibleIfEmpty>
-
 			<!-- pageNumbersVisible: if false, page numbers in the sidebar toc are 
 				hidden (default is false) -->
 			<pageNumbersVisible>true</pageNumbersVisible>
@@ -1112,9 +1104,6 @@
 		<useCustomNavBar>true</useCustomNavBar>
 		<!-- mediaFolder: contains media files uploaded for CMS -->
 		<mediaFolder>cmsMediaFolder_value</mediaFolder>
-		<!-- templateFolder: contains template files for CMS. Only used if template 
-			views are rendered from an external folder using a base template -->
-		<templateFolder>cmsTemplateFolder_value</templateFolder>
 		<!-- classifications: Classifications are character sequences for tagging 
 			CMS pages -->
 		<classifications>

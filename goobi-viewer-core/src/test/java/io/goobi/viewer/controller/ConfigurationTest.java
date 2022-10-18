@@ -2066,15 +2066,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getCmsMediaFolder()
-     * @verifies return correct value
-     */
-    @Test
-    public void getCmsTemplateFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("cmsTemplateFolder_value", DataManager.getInstance().getConfiguration().getCmsTemplateFolder());
-    }
-
-    /**
      * @see Configuration#getCmsClassifications()
      * @verifies return all configured elements
      */
@@ -2463,15 +2454,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
         Assert.assertEquals("MD_ACCESSLOCATIONS", results.get(0));
-    }
-
-    /**
-     * @see Configuration#isDisplayEmptyTocInSidebar()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplayEmptyTocInSidebar_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
     }
 
     @Test

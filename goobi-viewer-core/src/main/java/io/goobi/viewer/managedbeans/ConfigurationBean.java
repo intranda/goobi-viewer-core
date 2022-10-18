@@ -98,7 +98,6 @@ public class ConfigurationBean implements Serializable {
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
     }
-    
 
     /**
      * <p>
@@ -511,17 +510,6 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isSidebarOpacLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
-    }
-
-    /**
-     * <p>
-     * isDisplayEmptyTocInSidebar.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplayEmptyTocInSidebar() {
-        return DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar();
     }
 
     /**
