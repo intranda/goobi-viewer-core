@@ -943,7 +943,7 @@
                     <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
                 </downloadOptions>
             </page>
-            <citationRecommendation enabled="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+            <citationRecommendation enabled="false">
                 <!-- Available citation styles (supported by citeproc) -->
                 <styles>
                     <style>modern-language-association</style>
@@ -958,7 +958,7 @@
                     </metadata>
                 </source>
             </citationRecommendation>
-            <citationLinks enabled="false" recordIntroText="record intro text" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+            <citationLinks enabled="false" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
                 <!-- links: Citation link configurations. -->
                 <links>
                     <link type="URL" for="record" label="LABEL_URN" field="URN" pattern="https://nbn-resolving.org/{value}/" topstructValueFallback="true"  />

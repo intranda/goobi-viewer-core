@@ -1327,30 +1327,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @return String
-     */
-    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText();
-    }
-
-    /**
-     *
-     * @return String
-     */
-    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText();
-    }
-
-    /**
-     *
-     * @return String
-     */
-    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText();
-    }
-
-    /**
-     *
      * @return List of available citation style names
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {

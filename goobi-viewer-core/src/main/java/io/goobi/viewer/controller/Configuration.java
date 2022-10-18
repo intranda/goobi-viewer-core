@@ -771,33 +771,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
-     * @return String
-     * @should return correct value
-     */
-    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
-        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@recordIntroText]", "");
-    }
-
-    /**
-     *
-     * @return String
-     * @should return correct value
-     */
-    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
-        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@docstructIntroText]", "");
-    }
-
-    /**
-     *
-     * @return String
-     * @should return correct value
-     */
-    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
-        return getLocalString("sidebar.sidebarWidgetUsage.citationLinks[@imageIntroText]", "");
-    }
-
-    /**
-     *
      * @return
      * @should return all configured values
      */

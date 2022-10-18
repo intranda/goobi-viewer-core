@@ -2920,34 +2920,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinksDocstructIntroText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageCitationLinksDocstructIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinksImageIntroText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageCitationLinksImageIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("docstruct intro text",
-                DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinksRecordIntroText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageCitationLinksRecordIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText());
-    }
-
-    /**
      * @see Configuration#getSidebarWidgetUsageCitationStyles()
      * @verifies return all configured values
      */
