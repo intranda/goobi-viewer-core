@@ -911,8 +911,34 @@ public class Search implements Serializable {
      * @param sortString the sortString to set
      */
     public void setSortString(String sortString) {
+        logger.trace("setSortString: {}", sortString);
         this.sortString = sortString;
         sortFields = SearchHelper.parseSortString(this.sortString, null);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public SearchSortingOption getSearchSortingOption() {
+        logger.trace("getSearchSortingOption");
+        if (sortFields != null && !sortFields.isEmpty()) {
+            logger.trace("getSearchSortingOption: {}", new SearchSortingOption(sortFields.get(0).getOne(), "asc".equals(sortFields.get(0).getTwo())));
+            return new SearchSortingOption(sortFields.get(0).getOne(), "asc".equals(sortFields.get(0).getTwo()));
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param option
+     */
+    public void setSearchSortingOption(SearchSortingOption option) {
+        logger.trace("setSearchSortingOption: {}", option);
+        if (option != null) {
+            setSortString((option.isDescending() ? "!" : "") + option.getField());
+        }
     }
 
     /**
