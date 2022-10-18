@@ -2817,7 +2817,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, licenses.size());
         Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
         Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
-        Assert.assertEquals("", licenses.get(0).getIcon());
     }
 
     @Test

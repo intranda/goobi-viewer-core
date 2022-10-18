@@ -480,7 +480,7 @@
 		<!-- boostTopLevelDocstructs: If true, anchors receive a factor 10 boost, 
 			volumes and standalone records a factor 5 boost. This results in anchors 
 			appearing on top, followed by other records, followed by lower level docstructs, 
-			when sorting by relevance. Does not apply if aggregateHits=true. Default is true. -->
+			when sorting by relevance. Default is true. -->
 		<boostTopLevelDocstructs>false</boostTopLevelDocstructs>
 		<!-- displayAdditionalMetadata: Add relevant metadata fields and values 
 			to the search hits if they contain requested search terms. Default is enabled=true. -->
@@ -800,8 +800,8 @@
         <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
 	    	of available license types when a user is asked to selec a license -->
         <licenses>
-			<license label="CC0 1.0" icon="" url="https://creativecommons.org/publicdomain/zero/1.0/" />
-    		<license label="In Copyright" icon="" url="http://rightsstatements.org/vocab/InC/1.0/" />
+			<license label="CC0 1.0" url="https://creativecommons.org/publicdomain/zero/1.0/" />
+    		<license label="In Copyright" url="http://rightsstatements.org/vocab/InC/1.0/" />
 		</licenses>
         
 	</metadata>

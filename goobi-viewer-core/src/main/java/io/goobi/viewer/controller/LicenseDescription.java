@@ -24,14 +24,13 @@ package io.goobi.viewer.controller;
 /**
  * @author florian
  *
- * Contains descriptive information, like a label and an icon toa license type url
+ *         Contains descriptive information, like a label and an icon toa license type url
  *
  */
 public class LicenseDescription {
 
     private final String url;
     private String label;
-    private String icon;
 
     /**
      *
@@ -55,25 +54,10 @@ public class LicenseDescription {
     }
 
     /**
-     * @return the icon
-     */
-    public String getIcon() {
-        return icon;
-    }
-
-    /**
-     * @param icon the icon to set
-     */
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    /**
      * @return the url
      */
     public String getUrl() {
         return url;
     }
-
 
 }

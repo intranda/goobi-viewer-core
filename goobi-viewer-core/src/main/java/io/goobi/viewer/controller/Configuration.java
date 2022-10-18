@@ -5297,10 +5297,8 @@ public class Configuration extends AbstractConfiguration {
             String url = node.getString(XML_PATH_ATTRIBUTE_URL, "");
             if (StringUtils.isNotBlank(url)) {
                 String label = node.getString(XML_PATH_ATTRIBUTE_LABEL, url);
-                String icon = node.getString(XML_PATH_ATTRIBUTE_ICON, "");
                 LicenseDescription license = new LicenseDescription(url);
                 license.setLabel(label);
-                license.setIcon(icon);
                 licenses.add(license);
             }
         }
