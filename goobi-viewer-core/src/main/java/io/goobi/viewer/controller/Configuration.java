@@ -701,15 +701,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     *
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarWidgetDownloadsIntroductionText() {
-        return getLocalString("sidebar.sidebarWidgetDownloads[@introductionText]", "");
-    }
-
-    /**
      * <p>
      * Returns a regex such that all download files which filenames fit this regex should not be visible in the downloads widget. If an empty string
      * is returned, all downloads should remain visible
@@ -835,15 +826,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return ret;
-    }
-
-    /**
-     *
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarWidgetUsageIntroductionText() {
-        return getLocalString("sidebar.sidebarWidgetUsage[@introductionText]", "");
     }
 
     /**

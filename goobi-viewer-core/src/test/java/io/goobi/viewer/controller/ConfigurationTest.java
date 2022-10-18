@@ -1163,15 +1163,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
     }
 
-    /**
-     * @see Configuration#getSidebarWidgetDownloadsIntroductionText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetDownloadsIntroductionText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("MASTERVALUE_DOWNLOADS_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText());
-    }
-
     @Test
     public void getHideDownloadFileRegex_returnConfiguredValue() throws Exception {
         Assert.assertEquals("(wug_.*|AK_.*)", DataManager.getInstance().getConfiguration().getHideDownloadFileRegex());
@@ -2899,15 +2890,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isDisplayWidgetUsage_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsage());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageIntroductionText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
     }
 
     /**

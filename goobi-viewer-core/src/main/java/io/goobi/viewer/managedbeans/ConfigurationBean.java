@@ -1315,15 +1315,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarWidgetUsageIntroductionText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText();
-    }
-
-    /**
-     *
      * @return List of configured <code>DownloadOption</code> items
      */
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
@@ -1332,15 +1323,6 @@ public class ConfigurationBean implements Serializable {
 
     public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
-    }
-
-    /**
-     *
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarWidgetDownloadsIntroductionText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText();
     }
 
     /**
