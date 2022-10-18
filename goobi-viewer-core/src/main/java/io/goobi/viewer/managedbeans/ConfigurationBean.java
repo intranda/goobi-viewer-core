@@ -90,18 +90,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * getContentServletUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getContentServletUrl() {
-        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-    }
-
-    /**
-     * <p>
      * getName.
      * </p>
      *
@@ -110,47 +98,7 @@ public class ConfigurationBean implements Serializable {
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
     }
-
-    /**
-     * <p>
-     * isShowSidebarEventMetadata.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isShowSidebarEventMetadata() {
-        return DataManager.getInstance().getConfiguration().isShowSidebarEventMetadata();
-    }
-
-    /**
-     * <p>
-     * getContentServerWrapperUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getContentServerWrapperUrl() {
-        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-    }
-
-    /**
-     * <p>
-     * getContentServerWrapperUrlWithoutLastSlash.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getContentServerWrapperUrlWithoutLastSlash() {
-        String csWrapperUrl = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-        if (csWrapperUrl != null) {
-            // delete the last /
-            int endIndex = csWrapperUrl.lastIndexOf('/');
-            csWrapperUrl = csWrapperUrl.substring(0, endIndex);
-        }
-        return csWrapperUrl;
-    }
+    
 
     /**
      * <p>

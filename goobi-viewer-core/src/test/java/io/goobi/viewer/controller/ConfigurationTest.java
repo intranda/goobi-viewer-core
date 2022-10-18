@@ -166,16 +166,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getContentServerWrapperUrl()
-     * @verifies return correct value
-     */
-    @Deprecated
-    @Test
-    public void getContentServerWrapperUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("contentServerWrapper_value", DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-    }
-
-    /**
      * @see Configuration#getDownloadUrl()
      * @verifies return correct value
      */
@@ -1283,24 +1273,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isSolrBackwardsCompatible_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
-    }
-
-    /**
-     * @see Configuration#isShowSidebarEventMetadata()
-     * @verifies return correct value
-     */
-    @Test
-    public void isShowSidebarEventMetadata_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isShowSidebarEventMetadata());
-    }
-
-    /**
-     * @see Configuration#isShowRecordLabelIfNoOtherViews()
-     * @verifies return correct value
-     */
-    @Test
-    public void isShowRecordLabelIfNoOtherViews_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews());
     }
 
     /**

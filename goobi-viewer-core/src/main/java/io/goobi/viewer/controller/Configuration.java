@@ -2372,30 +2372,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isShowSidebarEventMetadata.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isShowSidebarEventMetadata() {
-        return getLocalBoolean("sidebar.metadata.showEventMetadata", true);
-    }
-
-    /**
-     * <p>
-     * isShowSidebarEventMetadata.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isShowRecordLabelIfNoOtherViews() {
-        return getLocalBoolean("sidebar.metadata.showRecordLabelIfNoOtherViews", false);
-    }
-
-    /**
-     * <p>
      * isSidebarFulltextLinkVisible.
      * </p>
      *

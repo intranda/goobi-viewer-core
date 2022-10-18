@@ -2263,12 +2263,6 @@ public class ViewManager implements Serializable {
      */
     public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (metadataViewOnly == null) {
-            // Check whether this mode is enabled first to avoid all the other checks
-            if (!DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews()) {
-                metadataViewOnly = false;
-                return metadataViewOnly;
-            }
-
             // Display object view criteria
             if (isDisplayObjectViewLink()) {
                 metadataViewOnly = false;
