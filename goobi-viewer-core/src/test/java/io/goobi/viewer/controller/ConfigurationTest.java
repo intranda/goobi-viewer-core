@@ -2423,21 +2423,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getDocstructTargetPageType(String)
+     * @see Configuration#getRecordTargetPageType(String)
      * @verifies return correct value
      */
     @Test
-    public void getDocstructTargetPageType_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("toc", DataManager.getInstance().getConfiguration().getDocstructTargetPageType("Catalogue"));
+    public void getRecordTargetPageType_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("toc", DataManager.getInstance().getConfiguration().getRecordTargetPageType("Catalogue"));
     }
 
     /**
-     * @see Configuration#getDocstructTargetPageType(String)
+     * @see Configuration#getRecordTargetPageType(String)
      * @verifies return null if docstruct not found
      */
     @Test
-    public void getDocstructTargetPageType_shouldReturnNullIfDocstructNotFound() throws Exception {
-        Assert.assertNull(DataManager.getInstance().getConfiguration().getDocstructTargetPageType("notfound"));
+    public void getRecordTargetPageType_shouldReturnNullIfDocstructNotFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getConfiguration().getRecordTargetPageType("notfound"));
     }
 
     /**

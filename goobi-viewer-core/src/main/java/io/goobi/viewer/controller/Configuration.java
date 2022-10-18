@@ -930,7 +930,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
         if (fields == null) {
             return Collections.emptyList();
         }
@@ -3661,16 +3661,16 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getDocstructTargetPageType.
+     * getRecordTargetPageType.
      * </p>
      *
-     * @param docstruct a {@link java.lang.String} object.
+     * @param publicationType a {@link java.lang.String} object.
      * @should return correct value
      * @should return null if docstruct not found
      * @return a {@link java.lang.String} object.
      */
-    public String getDocstructTargetPageType(String docstruct) {
-        return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
+    public String getRecordTargetPageType(String publicationType) {
+        return getLocalString("viewer.recordTargetPageTypes." + publicationType);
     }
 
     public String getPageTypeExitView(PageType type) {
@@ -4298,7 +4298,8 @@ public class Configuration extends AbstractConfiguration {
             HierarchicalConfiguration<ImmutableNode> sub = it.next();
             Map<String, String> fieldConfig = new HashMap<>();
             fieldConfig.put("jsonField", sub.getString("[@jsonField]", null));
-            fieldConfig.put("luceneField", sub.getString("[@luceneField]", null));
+            fieldConfig.put("luceneField", sub.getString("[@solrField]", null)); // deprecated
+            fieldConfig.put("solrField", sub.getString("[@solrField]", null));
             fieldConfig.put("multivalue", sub.getString("[@multivalue]", null));
             ret.add(fieldConfig);
         }
@@ -5097,7 +5098,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isCopyrightIndicatorEnabled() {
-        return getLocalBoolean("webGuiDisplay.copyrightIndicator[@enabled]", false);
+        return getLocalBoolean("sidebar.copyrightIndicator[@enabled]", false);
     }
 
     /**
@@ -5106,7 +5107,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorStyle() {
-        return getLocalString("webGuiDisplay.copyrightIndicator[@style]", "widget");
+        return getLocalString("sidebar.copyrightIndicator[@style]", "widget");
     }
 
     /**
@@ -5115,7 +5116,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorStatusField() {
-        return getLocalString("webGuiDisplay.copyrightIndicator.status[@field]");
+        return getLocalString("sidebar.copyrightIndicator.status[@field]");
     }
 
     /**
@@ -5128,7 +5129,7 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webGuiDisplay.copyrightIndicator.status.value");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("sidebar.copyrightIndicator.status.value");
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             String content = config.getString("[@content]");
             if (value.equals(content)) {
@@ -5156,7 +5157,7 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webGuiDisplay.copyrightIndicator.license.value");
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("sidebar.copyrightIndicator.license.value");
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             String content = config.getString("[@content]");
             if (value.equals(content)) {
@@ -5175,7 +5176,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorLicenseField() {
-        return getLocalString("webGuiDisplay.copyrightIndicator.license[@field]");
+        return getLocalString("sidebar.copyrightIndicator.license[@field]");
     }
 
     public boolean isDisplaySocialMediaShareLinks() {

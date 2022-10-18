@@ -356,13 +356,12 @@
 			<viewImage>viewImage_value</viewImage>
 		</pageTypes>
 
-		<!-- docstructTargetPageTypes: Overrides the default target view URL for 
-			given docstruct types. An optinal _DEFAULT configuration can be used for 
-			all docstruct types without an explicit configuration. These targets are 
-			also used for PURL generation. -->
-		<docstructTargetPageTypes>
+        <!-- recordTargetPageTypes: Overrides the default target view URL for given publication types.
+             An optional _DEFAULT configuration can be used for all publication types without an explicit configuration.
+             These targets are also used for PURL generation. -->
+		<recordTargetPageTypes>
 			<Catalogue>toc</Catalogue>
-		</docstructTargetPageTypes>
+		</recordTargetPageTypes>
 
 		<!-- <fulltextPercentageWarningThreshold>: If a record's percentage of 
 			pages having full-Text/ALTO documents falls below the configured value, a 
@@ -787,14 +786,14 @@
                 <ignoreLeadingChars>.[]</ignoreLeadingChars>
             </sorting>
 
-			<!-- luceneField: defines index fields that are available for browsing. 
+			<!-- field: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
-			<luceneField sortField="SORT_AUTHOR" filterQuery="+DOCTYPE:DOCSTRCT" alwaysApplyFilter="true">MD_AUTHOR_UNTOKENIZED</luceneField>
-			<luceneField sortField="SORT_TITLE">MD_TITLE_LANG_DE_UNTOKENIZED</luceneField>
-			<luceneField sortField="SORT_TITLE">MD_TITLE_LANG_EN_UNTOKENIZED</luceneField>
+			<field sortField="SORT_AUTHOR" filterQuery="+DOCTYPE:DOCSTRCT" alwaysApplyFilter="true">MD_AUTHOR_UNTOKENIZED</field>
+			<field sortField="SORT_TITLE">MD_TITLE_LANG_DE_UNTOKENIZED</field>
+			<field sortField="SORT_TITLE">MD_TITLE_LANG_EN_UNTOKENIZED</field>
 			<!-- TODO: describe in the manual -->
-			<!-- <luceneField sortField="SORT_TITLE" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</luceneField> -->
-			<luceneField>MD_SHELFMARK</luceneField>
+			<!-- <field sortField="SORT_TITLE" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</field> -->
+			<field>MD_SHELFMARK</field>
 		</browsingMenu>
 
 		<!-- addDublinCoreMetaTags: render dc metadata to html head -->
@@ -1028,6 +1027,26 @@
 		
         <!-- @enabled: If true, the OPAC link from the current record will be displayed. Default is false. -->
         <opac enabled="true" />
+        
+        <!-- copyrightIndicator/@enabled: If true, copyright status of the current record will be visualized with colors and icons. Default is false. -->
+        <copyrightIndicator enabled="true" style="trafficlight">
+            <status field="MD_ACCESSCONDITION">
+                <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
+                <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
+                <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
+            </status>
+
+            <license field="MD_ACCESSCONDITIONCOPYRIGHT">
+                <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
+                    <!-- icon: one or more icons are allowed per value -->
+                    <icon>cc0.svg</icon>
+                </value>
+                <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
+                    <icon>paragraph50.svg</icon>
+                </value>
+            </license>
+        </copyrightIndicator>
+        
 	</sidebar>
 
 
@@ -1080,25 +1099,6 @@
 		
 		<!-- displayCrowdsourcingModuleLinks: Switch to enable crowdsourcing transcription links (default is false) -->
         <displayCrowdsourcingModuleLinks>true</displayCrowdsourcingModuleLinks>
-        
-        <!-- copyrightIndicator/@enabled: If true, copyright status of the current record will be visualized with colors and icons. Default is false. -->
-        <copyrightIndicator enabled="true" style="trafficlight">
-            <status field="MD_ACCESSCONDITION">
-                <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
-                <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
-                <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
-            </status>
-
-            <license field="MD_ACCESSCONDITIONCOPYRIGHT">
-                <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
-                    <!-- icon: one or more icons are allowed per value -->
-                    <icon>cc0.svg</icon>
-                </value>
-                <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
-                    <icon>paragraph50.svg</icon>
-                </value>
-            </license>
-        </copyrightIndicator>
 	</webGuiDisplay>
 
 
@@ -1232,12 +1232,12 @@
 	<!-- Web API configuration -->
 	<webapi>
 		<!-- fields: Custom JSON fields. Each <field> element must contain the 
-			attributes 'jsonField' (name of the field for JSON datasets) and 'luceneField' 
+			attributes 'jsonField' (name of the field for JSON datasets) and 'solrField' 
 			(source index field name). An optional attribute 'multivalue' can be set 
 			to 'true' to return a list with all found values in JSON. -->
 		<fields>
-			<field jsonField="json1" luceneField="lucene1" multivalue="true" />
-			<field jsonField="json2" luceneField="lucene2" />
+			<field jsonField="json1" solrField="lucene1" multivalue="true" />
+			<field jsonField="json2" solrField="lucene2" />
 		</fields>
 
 		<iiif>

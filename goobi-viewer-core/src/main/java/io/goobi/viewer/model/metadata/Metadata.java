@@ -748,7 +748,7 @@ public class Metadata implements Serializable {
         // Regular, atomic metadata
         boolean found = false;
         for (MetadataParameter param : params) {
-            // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
+            // Skip topstruct-only parameters, if this is not a topstruct or anchor/group
             if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
                 continue;
             }
