@@ -3718,18 +3718,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isForceJpegConversion.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isForceJpegConversion() {
-        return getLocalBoolean("viewer.forceJpegConversion", false);
-    }
-
-    /**
-     * <p>
      * getPageLoaderThreshold.
      * </p>
      *

@@ -1900,15 +1900,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isForceJpegConversion()
-     * @verifies return correct value
-     */
-    @Test
-    public void isForceJpegConversion_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isForceJpegConversion());
-    }
-
-    /**
      * @see Configuration#getAltoFolder()
      * @verifies return correct value
      */

@@ -318,11 +318,6 @@
 			(representative thumbnail of the first attached volume). Default is GENERIC. -->
 		<anchorThumbnailMode>FIRSTVOLUME</anchorThumbnailMode>
 
-		<!-- forceJpegConversion: Always request JPEG images from the content server. 
-			If false, the content server will determine the most efficient delivery format 
-			based on image properties. Default is false. -->
-		<forceJpegConversion>true</forceJpegConversion>
-
     <!-- watermarkTextConfiguration: Watermark text source. The order of 
         <text> elements is the order in which each source will be checked. "URN" 
         and "PURL" are reserved keywords for URN and PURL, items starting with "SOLR:" 
