@@ -1205,18 +1205,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getContentServerRealUrl.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getContentServerRealUrl() {
-        return getLocalString("urls.contentServer");
-    }
-
-    /**
-     * <p>
      * getSourceFileUrl.
      * </p>
      *

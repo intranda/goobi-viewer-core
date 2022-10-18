@@ -157,15 +157,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getContentServerRealUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getContentServerRealUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("contentServer_value", DataManager.getInstance().getConfiguration().getContentServerRealUrl());
-    }
-
-    /**
      * @see Configuration#getDownloadUrl()
      * @verifies return correct value
      */
@@ -179,7 +170,6 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    @Deprecated
     public void getDataRepositoriesHome_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("src/test/resources/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
     }
