@@ -1746,6 +1746,18 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getCmsMediaFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getCmsMediaFolder() {
+        return getLocalString("cmsMediaFolder", "cms_media");
+    }
+
+    /**
+     * <p>
      * getCmsTextFolder.
      * </p>
      *
@@ -4155,18 +4167,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * getCmsMediaFolder.
-     * </p>
-     *
-     * @should return correct value
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCmsMediaFolder() {
-        return getLocalString("cms.mediaFolder", "cms_media");
-    }
-
-    /**
      * A folder for temporary storage of media files. Used by DC record creation to store uploaded files
      *
      * @return "temp_media" unless otherwise configured in "tempMediaFolder"
@@ -4177,18 +4177,6 @@ public class Configuration extends AbstractConfiguration {
 
     public String getUserAvatarFolder() {
         return getLocalString("userAvatarFolder", "users/avatar");
-    }
-
-    /**
-     * <p>
-     * getCmsClassifications.
-     * </p>
-     *
-     * @should return all configured elements
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getCmsClassifications() {
-        return getLocalList("cms.classifications.classification");
     }
 
     /**

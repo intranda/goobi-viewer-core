@@ -31,6 +31,8 @@
 	<origContentFolder>source</origContentFolder>
     <!-- pdfFolder: contains pre-generated PDFs -->
     <pdfFolder>PDF</pdfFolder>
+    <!-- <cmsMediaFolder>: contains media files uploaded for CMS -->
+    <cmsMediaFolder>cmsMediaFolder_value</cmsMediaFolder>
     <!-- cmsTextFolder: contains extracted CMS page texts for indexing-->
     <cmsTextFolder>cms</cmsTextFolder>
 	<!-- altoFolder: contains ALTO files -->
@@ -1093,17 +1095,6 @@
 	<bookmarks enabled="false" />
 
 	<cms>
-		<!-- mediaFolder: contains media files uploaded for CMS -->
-		<mediaFolder>cmsMediaFolder_value</mediaFolder>
-		<!-- classifications: Classifications are character sequences for tagging 
-			CMS pages -->
-		<classifications>
-			<classification>classification1</classification>
-			<classification>classification2</classification>
-			<classification>classification3</classification>
-			<classification>classification4</classification>
-		</classifications>
-
 		<mediaDisplayWidth>600</mediaDisplayWidth>
 		<mediaDisplayHeight>800</mediaDisplayHeight>
 	</cms>

@@ -2028,19 +2028,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("cmsMediaFolder_value", DataManager.getInstance().getConfiguration().getCmsMediaFolder());
     }
 
-    /**
-     * @see Configuration#getCmsClassifications()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getCmsClassifications_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getCmsClassifications().size());
-        Assert.assertEquals("classification1", DataManager.getInstance().getConfiguration().getCmsClassifications().get(0));
-        Assert.assertEquals("classification2", DataManager.getInstance().getConfiguration().getCmsClassifications().get(1));
-        Assert.assertEquals("classification3", DataManager.getInstance().getConfiguration().getCmsClassifications().get(2));
-        Assert.assertEquals("classification4", DataManager.getInstance().getConfiguration().getCmsClassifications().get(3));
-    }
-
     @Test
     public void getCmsMediaDisplayWidthTest() {
         Assert.assertEquals(600, DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth());
