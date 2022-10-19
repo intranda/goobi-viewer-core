@@ -480,6 +480,7 @@ public class SearchBean implements SearchInterface, Serializable {
             if (calendarBean != null) {
                 calendarBean.resetCurrentSelection();
             }
+            setSortString("");
         } else {
             switch (activeSearchType) {
                 case 0:
@@ -487,6 +488,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (calendarBean != null) {
                         calendarBean.resetCurrentSelection();
                     }
+                    setSortString("");
                     break;
                 case 1:
                     resetSimpleSearchParameters();
@@ -498,11 +500,11 @@ public class SearchBean implements SearchInterface, Serializable {
                 case 3:
                     resetSimpleSearchParameters();
                     resetAdvancedSearchParameters();
+                    setSortString("");
                     break;
                 default: // nothing
             }
         }
-        setSortString("");
     }
 
     /**
@@ -750,7 +752,6 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.trace("{} + {}", facets.getCurrentFacetStringPrefix(), sbCurrentCollection);
             facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
-            logger.trace(facets.getCurrentFacetString());
             facets.setCurrentFacetString(facets.getCurrentFacetString());
         }
 
@@ -1381,6 +1382,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public String getSortString() {
+        logger.trace("getSortString: {}", searchSortingOption);
         if (searchSortingOption == null) {
             setSortString("-");
         }
