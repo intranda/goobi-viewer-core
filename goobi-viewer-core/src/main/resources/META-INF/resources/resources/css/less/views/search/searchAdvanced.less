@@ -43,34 +43,21 @@
         background-color: rgba(255, 255, 255, 0.75);
         z-index: 10;
     }
-    &__connector,
-    &__connect-group {
-        .custom-control--select {
-            display: inline-block;
-            width: 80px;
-            border: none;
-            &:after {
-                right: 10px;
-            }
-            select {
-                padding: 0;
-            }
-        }
-    }
+
 	&__operator-field-pair-wrapper {
 		display: grid;
 		gap: @gap-sizer;
 		grid-template-columns: minmax(100px, auto) minmax(100px, auto);
 	}
+	
+	
     &__input-group {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: @gap-sizer;
-	
-	
+
         .form-control__select,
         input[type="text"] {
-            border-right: none;
             height: auto;
             &:focus {
                 border-right-color: @blue;
@@ -117,13 +104,26 @@
                 opacity: 0.4;
             }
         }
-        button {
-            padding: 0 10px;
-        }
-        .row .col-sm-1 {
-            padding-left: 0;
-        }
+//        button {
+//            padding: 0 10px;
+//        }
     }
+	&__input-group-field {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: stretch;
+		width: 100%;
+	}
+	&__input-group-append {
+		transition: border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
+	}
+	&__input-value {
+		position: relative;
+		flex: 1 1 auto;
+		width: 1%;
+		margin-bottom: 0;
+	}
 	&__select-values {
 		width: auto;
 	}
@@ -149,6 +149,7 @@
         margin-right: 1rem;
         margin-left: 1rem;
     }
+
     &__input-col {
         a,
         button {
@@ -173,24 +174,6 @@
             margin: 0;
         }
     }
-    &__connect-group {
-        padding: 0 10px;
-    }
-    &__add-group {
-        margin-bottom: 21px;
-        padding: .5rem 18px;
-        text-align: right;
-        a,
-        button {
-            color: inherit;
-            &:hover,
-            &:focus,
-            &:active {
-                text-decoration: none;
-                color: inherit;
-            }
-        }
-    }
     &__action {
         display: flex;
         flex-flow: row-reverse;
@@ -209,26 +192,35 @@
 		display: flex;
 		justify-content: space-between;
         padding: @gap-sizer;
-    }
+		flex-wrap: wrap;
+		gap: 15px 0px;
+	}
+	&__nav-helper-item {
+		display: grid;
+		grid-template-columns: 120px 1fr;
+		grid-column-gap: 20px;
+		align-items: center;
+	}
+	&__nav-helper-label {}
 	&__custom-control {
 		width: auto;
 		select {
 			max-width: 100%;
-			width: auto;
+			width: 100%;
 		}
 	}
-
 	// GAP SIZING VARIABLE
 	@gap-sizer: 20px;
+	.admin__radio-switch {
+		label {}
+	}
 }
+
+
 /* MODIFICATION */
 
 @{RTL} .search-advanced {
     &__input-group {
-        .input-group-append {
-            border-left: 1px solid @middlegray;
-            border-right: none;
-        }
         .form-control__select,
         input[type="text"] {
             border-left: none;
@@ -236,7 +228,6 @@
         }
     }
 }
-
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {}
@@ -246,8 +237,15 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .search-advanced__input-group input[type="text"],
-    .search-advanced__input-group .form-control__select {}
+	.search-advanced {
+		&__entry-area {
+			gap: 30px;
+		}
+		&__input-group {
+			grid-template-columns: 1fr;
+			gap: 10px;
+		}
+	}
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

@@ -15,7 +15,7 @@
 
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
-    	<ui:fragment rendered="#{navigationHelper.currentPage == 'search'}">
+    	<ui:fragment rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist'}">
     		<h1 class="search-list__options-container-heading">#{msg.search}</h1>
     	</ui:fragment>
     
