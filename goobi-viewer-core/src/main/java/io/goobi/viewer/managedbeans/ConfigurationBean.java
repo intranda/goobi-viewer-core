@@ -1142,47 +1142,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isAddDublinCoreMetaTags.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isAddDublinCoreMetaTags() {
-        return DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags();
-    }
-
-    /**
-     * <p>
-     * isAddHighwirePressMetaTags.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isAddHighwirePressMetaTags() {
-        return DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags();
-    }
-
-    /**
-     *
-     * @return number of allowed metadata parameters for metadata configuration
-     */
-    @Deprecated
-    public int getMetadataParamNumber() {
-        return 20;
-    }
-
-    /**
-     *
-     * @return
-     * @should return correct list
-     */
-    @Deprecated
-    public List<Integer> getMetadataParamNumberList() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * <p>
      * isDisplaySidebarBrowsingTerms.
      * </p>
      *

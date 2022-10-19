@@ -785,12 +785,6 @@
 			<!-- <field sortField="SORT_TITLE" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</field> -->
 			<field>MD_SHELFMARK</field>
 		</browsingMenu>
-
-		<!-- addDublinCoreMetaTags: render dc metadata to html head -->
-		<addDublinCoreMetaTags>true</addDublinCoreMetaTags>
-
-		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
-		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>
         
         <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
 	    	of available license types when a user is asked to selec a license -->

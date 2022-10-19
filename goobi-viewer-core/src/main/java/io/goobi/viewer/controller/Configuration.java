@@ -3158,30 +3158,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isAddDublinCoreMetaTags.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isAddDublinCoreMetaTags() {
-        return getLocalBoolean("metadata.addDublinCoreMetaTags", false);
-    }
-
-    /**
-     * <p>
-     * isAddHighwirePressMetaTags.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isAddHighwirePressMetaTags() {
-        return getLocalBoolean("metadata.addHighwirePressMetaTags", false);
-    }
-
-    /**
-     * <p>
      * useTiles.
      * </p>
      *

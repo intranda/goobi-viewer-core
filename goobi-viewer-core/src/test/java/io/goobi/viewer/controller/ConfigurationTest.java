@@ -1090,24 +1090,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isAddDublinCoreMetaTags()
-     * @verifies return correct value
-     */
-    @Test
-    public void isAddDublinCoreMetaTags_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags());
-    }
-
-    /**
-     * @see Configuration#isAddHighwirePressMetaTags()
-     * @verifies return correct value
-     */
-    @Test
-    public void isAddHighwirePressMetaTags_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags());
-    }
-
-    /**
      * @see Configuration#isMetadataPdfEnabled()
      * @verifies return correct value
      */
