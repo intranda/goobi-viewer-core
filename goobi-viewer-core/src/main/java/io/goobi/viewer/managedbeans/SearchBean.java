@@ -189,7 +189,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
-    
+
     /** Reusable Random object. */
     private Random random = new SecureRandom();
 
@@ -1373,6 +1373,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
             }
             setSearchSortingOption(new SearchSortingOption(sortString));
+        } else {
+            setSearchSortingOption(null);
         }
     }
 
@@ -1403,6 +1405,10 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setSearchSortingOption(SearchSortingOption searchSortingOption) {
         logger.trace("setSearchSortingOption: {}", searchSortingOption);
         this.searchSortingOption = searchSortingOption;
+        // Sync with currentSearch, if available
+        if (currentSearch != null) {
+            currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
+        }
     }
 
     /**
