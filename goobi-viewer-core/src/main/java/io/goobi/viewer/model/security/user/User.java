@@ -111,6 +111,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
     private static final String URI_ID_REGEX = "/users/(\\d{1,19})/?$";
 
+    static final String EMAIL_ADDRESS_ANONYMOUS = "anonymous@goobi.io";
+
     @Transient
     private transient BCrypt bcrypt = new BCrypt();
 
@@ -1287,8 +1289,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @return true if user email address equals the configured anonymous user address; false otherwise
      */
     public boolean isAnonymous() {
-        String anonymousAddress = DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress();
-        return StringUtils.isNotEmpty(anonymousAddress) && anonymousAddress.equals(email);
+        return EMAIL_ADDRESS_ANONYMOUS.equals(email);
     }
 
     /**

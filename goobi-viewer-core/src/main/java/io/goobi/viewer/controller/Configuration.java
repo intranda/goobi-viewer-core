@@ -4156,18 +4156,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * useCustomNavBar.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean useCustomNavBar() {
-        return getLocalBoolean("cms.useCustomNavBar", false);
-    }
-
-    /**
-     * <p>
      * getCmsMediaFolder.
      * </p>
      *

@@ -1093,9 +1093,6 @@
 	<bookmarks enabled="false" />
 
 	<cms>
-		<!-- useCustomNavBar: enables the use of a custom navigation navigation 
-			menu, configurable with cms-functionality -->
-		<useCustomNavBar>true</useCustomNavBar>
 		<!-- mediaFolder: contains media files uploaded for CMS -->
 		<mediaFolder>cmsMediaFolder_value</mediaFolder>
 		<!-- classifications: Classifications are character sequences for tagging 

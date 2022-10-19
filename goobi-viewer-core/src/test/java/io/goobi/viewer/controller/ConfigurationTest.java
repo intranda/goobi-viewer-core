@@ -2020,15 +2020,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#useCustomNavBar()
-     * @verifies return correct value
-     */
-    @Test
-    public void useCustomNavBar_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().useCustomNavBar());
-    }
-
-    /**
      * @see Configuration#getCmsMediaFolder()
      * @verifies return correct value
      */

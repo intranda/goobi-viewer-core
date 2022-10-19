@@ -128,17 +128,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isUseCustomNavBar.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isUseCustomNavBar() {
-        return DataManager.getInstance().getConfiguration().useCustomNavBar();
-    }
-
-    /**
-     * <p>
      * useOpenSeadragon.
      * </p>
      *
