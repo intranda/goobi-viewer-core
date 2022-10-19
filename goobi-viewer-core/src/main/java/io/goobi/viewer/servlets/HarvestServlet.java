@@ -36,7 +36,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,10 +44,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -59,6 +58,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.misc.Harvestable;
+import jakarta.mail.MessagingException;
 
 /**
  * Servlet for harvesting crowdsourcing data and overview pages.

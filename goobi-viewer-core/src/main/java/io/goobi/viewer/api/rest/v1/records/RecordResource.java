@@ -256,7 +256,8 @@ public class RecordResource {
         String dataRepository = se.getDataRepository();
 
         String filePath =
-                DataFileTools.getSourceFilePath(pi + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
+                DataFileTools.getSourceFilePath(pi + ".xml", dataRepository,
+                        format != null ? format.toUpperCase() : SolrConstants.SOURCEDOCFORMAT_METS);
         Path path = Paths.get(filePath);
 
         if (Files.isRegularFile(path)) {

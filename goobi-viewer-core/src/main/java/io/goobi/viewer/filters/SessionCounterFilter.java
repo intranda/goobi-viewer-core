@@ -54,24 +54,15 @@ public class SessionCounterFilter implements Filter {
 
     private static final Logger logger = LogManager.getLogger(SessionCounterFilter.class);
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
     /** {@inheritDoc} */
     @Override
     public void init(FilterConfig arg0) throws ServletException {
+        // TODO document why this method is empty
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-     * javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
     /** {@inheritDoc} */
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws IOException, ServletException {
         // logger.trace("doFilter");
         HttpServletRequest req = (HttpServletRequest) request;
@@ -93,7 +84,6 @@ public class SessionCounterFilter implements Filter {
                         .format(DateTools.formatterJavaUtilDateToString));
         metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
 
-        //       Enumeration<String> sessionAttributes = req.getSession().getAttributeNames();
         Optional<Map<Object, Map>> logicalViews =
                 Optional.ofNullable((Map) req.getSession().getAttribute("com.sun.faces.renderkit.ServerSideStateHelper.LogicalViewMap"));
         Integer numberOfLogicalViews = logicalViews.map(map -> map.keySet().size()).orElse(0);
@@ -104,13 +94,9 @@ public class SessionCounterFilter implements Filter {
         fc.doFilter(request, response); // continue
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.servlet.Filter#destroy()
-     */
     /** {@inheritDoc} */
     @Override
     public void destroy() {
+        //
     }
 }

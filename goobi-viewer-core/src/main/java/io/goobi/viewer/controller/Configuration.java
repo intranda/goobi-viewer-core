@@ -2778,7 +2778,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
+                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -2793,7 +2793,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
+                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -2813,9 +2813,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return List of facet fields to be used as range values
      */
-    @SuppressWarnings("static-method")
     public List<String> getRangeFacetFields() {
-        return Collections.singletonList(SolrConstants._CALENDAR_YEAR);
+        return Collections.singletonList(SolrConstants.CALENDAR_YEAR);
     }
 
     /**
@@ -4934,8 +4933,8 @@ public class Configuration extends AbstractConfiguration {
     public List<ManifestLinkConfiguration> getIIIFSeeAlsoMetadataConfigurations() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.seeAlso.metadata");
         List<ManifestLinkConfiguration> links = new ArrayList<>(configs.size());
-        for (HierarchicalConfiguration config : configs) {
-            String label = config.getString("[@label]", "");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            String label = config.getString(XML_PATH_ATTRIBUTE_LABEL, "");
             String format = config.getString("[@format]", "");
             MetadataParameter param = MetadataParameter.createFromConfig(config.configurationAt("param"), true);
             Metadata md = new Metadata("", "", Arrays.asList(param));

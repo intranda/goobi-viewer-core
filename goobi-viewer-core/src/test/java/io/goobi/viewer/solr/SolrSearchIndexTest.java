@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -39,8 +41,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -132,12 +132,12 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFacetsCorrectly() throws Exception {
-        String[] facetFields = { SolrConstants._CALENDAR_YEAR, SolrConstants._CALENDAR_MONTH };
+        String[] facetFields = { SolrConstants.CALENDAR_YEAR, SolrConstants.CALENDAR_MONTH };
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", null, Arrays.asList(facetFields), 0, false);
-        Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_YEAR));
-        Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_MONTH));
+                .searchFacetsAndStatistics(SolrConstants.CALENDAR_YEAR + ":*", null, Arrays.asList(facetFields), 0, false);
+        Assert.assertNotNull(resp.getFacetField(SolrConstants.CALENDAR_YEAR));
+        Assert.assertNotNull(resp.getFacetField(SolrConstants.CALENDAR_MONTH));
     }
 
     /**
@@ -146,12 +146,12 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFieldStatisticsForEveryFacetFieldIfRequested() throws Exception {
-        String[] facetFields = { SolrConstants._CALENDAR_YEAR };
+        String[] facetFields = { SolrConstants.CALENDAR_YEAR };
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", null, Arrays.asList(facetFields), 0, true);
+                .searchFacetsAndStatistics(SolrConstants.CALENDAR_YEAR + ":*", null, Arrays.asList(facetFields), 0, true);
         Assert.assertNotNull(resp.getFieldStatsInfo());
-        FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
+        FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants.CALENDAR_YEAR);
         Assert.assertNotNull(info);
     }
 
@@ -163,7 +163,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     public void searchFacetsAndStatistics_shouldNotReturnAnyDocs() throws Exception {
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", null, Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0,
+                .searchFacetsAndStatistics(SolrConstants.CALENDAR_YEAR + ":*", null, Collections.singletonList(SolrConstants.CALENDAR_YEAR), 0,
                         false);
         Assert.assertTrue(resp.getResults().isEmpty());
     }
@@ -274,15 +274,17 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void getSpellingSuggestions() throws IndexUnreachableException {
         List<String> suggestions = DataManager.getInstance()
-        .getSearchIndex().querySpellingSuggestions("tier", 0.7f, false);
+                .getSearchIndex()
+                .querySpellingSuggestions("tier", 0.7f, false);
         assertEquals(1, suggestions.size());
         assertTrue(suggestions.contains("thier"));
 
         suggestions = DataManager.getInstance()
-                .getSearchIndex().querySpellingSuggestions("tier", 0.5f, false);
-                assertEquals(10, suggestions.size());
-                assertTrue(suggestions.contains("thier"));
-                assertTrue(suggestions.contains("teil"));
+                .getSearchIndex()
+                .querySpellingSuggestions("tier", 0.5f, false);
+        assertEquals(10, suggestions.size());
+        assertTrue(suggestions.contains("thier"));
+        assertTrue(suggestions.contains("teil"));
 
     }
 
@@ -293,7 +295,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         String query = "*:*";
 
         String string = DataManager.getInstance()
-        .getSearchIndex().getHeatMap("WKT_COORDS", world, query, "", 1);
+                .getSearchIndex()
+                .getHeatMap("WKT_COORDS", world, query, "", 1);
         assertNotNull(string);
         JSONObject json = new JSONObject(string);
 

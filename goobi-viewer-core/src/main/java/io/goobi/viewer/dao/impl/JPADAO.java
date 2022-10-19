@@ -125,9 +125,9 @@ public class JPADAO implements IDAO {
     private static final String PARAM_STOREMODE = "jakarta.persistence.cache.storeMode";
     private static final String PARAM_STOREMODE_VALUE_REFRESH = "REFRESH";
 
-    private static final String QUERY_ELEMENT_AND = " AND ";
+    static final String QUERY_ELEMENT_AND = " AND ";
     private static final String QUERY_ELEMENT_DESC = " DESC";
-    private static final String QUERY_ELEMENT_WHERE = " WHERE ";
+    static final String QUERY_ELEMENT_WHERE = " WHERE ";
 
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
@@ -6806,6 +6806,7 @@ public class JPADAO implements IDAO {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();

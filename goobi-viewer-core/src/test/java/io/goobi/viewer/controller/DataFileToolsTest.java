@@ -39,9 +39,9 @@ public class DataFileToolsTest extends AbstractTest {
     @Test
     public void getSourceFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
         Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
-                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants._METS));
+                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS));
         Assert.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
-                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants._METS));
+                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_METS));
     }
 
     /**
@@ -51,9 +51,9 @@ public class DataFileToolsTest extends AbstractTest {
     @Test
     public void getSourceFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
         Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_lido/PPN123.xml",
-                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants._LIDO));
+                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_LIDO));
         Assert.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN123.xml",
-                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants._LIDO));
+                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_LIDO));
     }
 
     /**
@@ -63,9 +63,9 @@ public class DataFileToolsTest extends AbstractTest {
     @Test
     public void getSourceFilePath_shouldConstructDenkXwebFilePathCorrectly() throws Exception {
         Assert.assertEquals("src/test/resources/data/viewer/data/1/indexed_denkxweb/PPN123.xml",
-                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants._DENKXWEB));
+                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
         Assert.assertEquals("src/test/resources/data/viewer/indexed_denkxweb/PPN123.xml",
-                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants._DENKXWEB));
+                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
     }
 
     /**
@@ -74,7 +74,7 @@ public class DataFileToolsTest extends AbstractTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() throws Exception {
-        DataFileTools.getSourceFilePath(null, null, SolrConstants._METS);
+        DataFileTools.getSourceFilePath(null, null, SolrConstants.SOURCEDOCFORMAT_METS);
     }
 
     /**

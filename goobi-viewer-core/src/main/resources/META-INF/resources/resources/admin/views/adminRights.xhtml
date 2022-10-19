@@ -2,7 +2,6 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:jsf="http://xmlns.jcp.org/jsf"
-    
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
@@ -38,9 +37,14 @@
                            
                            <h:form id="adminLicensesForm" prependId="false">
 
-						   <h2 class="admin__licenses-optional-heading">
-						       #{msg.admin__rights_entries_heading}
-						   </h2>
+
+						   <ui:fragment rendered="#{not empty adminLicenseBean.allLicenses}">
+	
+							   <h2 class="admin__licenses-optional-heading">
+							       #{msg.admin__rights_entries_heading}
+							   </h2>
+							   
+						   </ui:fragment>
 
                            <div class="admin__entry-list">
                                <ui:repeat var="license" value="#{adminLicenseBean.allLicenses}">

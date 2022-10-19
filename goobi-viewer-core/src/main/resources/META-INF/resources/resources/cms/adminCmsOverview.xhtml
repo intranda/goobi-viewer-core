@@ -1,7 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-
+   				xmlns:jsf="http://xmlns.jcp.org/jsf"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -95,10 +95,22 @@
                                                 <ui:fragment rendered="#{page.published}">
                                                     <a href="#{cmsBean.getUrl(page)}" target="_blank" class="admin__table-action-link" aria-label="#{msg.cms_pageView}: #{page.title}">#{msg.cms_pagePreview}</a>
                                                 </ui:fragment>
-                                                <!-- DELETE -->
-                                                <ui:fragment rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}">
-                                                    <h:commandLink styleClass="admin__table-action-link -redlink" action="#{cmsBean.setSelectedPage(page)}" title="#{msg.cms_pageMetadata_delete}">#{msg.cms_pageMetadata_delete}<f:passThroughAttribute name="data-toggle" value="modal" /><f:passThroughAttribute name="data-target" value="#deletePageModal" /><f:ajax render="@none" /></h:commandLink>
-                                                </ui:fragment>
+
+												<!-- DELETE -->
+	                                           <button
+	                                           	   type="button"
+	                                               class="admin__table-action-link -redlink"
+	                                               title="#{msg.cms_pageMetadata_delete}"
+	                                               data-require-confirmation="true"
+	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_pageMetadata_delete, page.title)}"
+	                                               jsf:rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}"
+	                                               jsf:action="#{cmsBean.deletePage(page)}"
+	                                               aria-label="#{msg.delete}" >
+	                                               #{msg.delete}
+	                                                <f:ajax render="@all" />
+	                                           </button>
+	                                           
+                                                
                                             </div>
                                         </div>
                                     </div>

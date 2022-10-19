@@ -134,7 +134,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
-    public static final String _TITLE_TERMS = "_TITLE_TERMS";
+    public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":{0})^20.0";
     public static final String EMBEDDED_QUERY_TEMPLATE = "_query_:\"{0}\"";
@@ -524,7 +524,7 @@ public final class SearchHelper {
         String finalQuery = prepareQuery(query);
         String termQuery = null;
         if (boostTopLevelDocstructs) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
         }
         finalQuery = buildFinalQuery(finalQuery, termQuery, boostTopLevelDocstructs,
                 aggregateHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
@@ -862,15 +862,15 @@ public final class SearchHelper {
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
         int[] ret = { -1, -1 };
 
-        String searchString = String.format("+%s:*", SolrConstants._CALENDAR_YEAR);
+        String searchString = String.format("+%s:*", SolrConstants.CALENDAR_YEAR);
         if (StringUtils.isNotBlank(subQuery)) {
             searchString += " " + subQuery;
         }
 
         // logger.debug("searchString: {}", searchString);
-        QueryResponse resp = searchCalendar(searchString, Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
+        QueryResponse resp = searchCalendar(searchString, Collections.singletonList(SolrConstants.CALENDAR_YEAR), 0, true);
 
-        FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
+        FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants.CALENDAR_YEAR);
         Object min = info.getMin();
         if (min instanceof Long || min instanceof Integer) {
             ret[0] = (int) min;
@@ -2022,7 +2022,7 @@ public final class SearchHelper {
         query = query.replace("(", "").replace(")", "").replace(SolrConstants.SOLR_QUERY_AND, " ").replace(SolrConstants.SOLR_QUERY_OR, " ");
 
         Map<String, Set<String>> ret = new HashMap<>();
-        ret.put(_TITLE_TERMS, new HashSet<>());
+        ret.put(TITLE_TERMS, new HashSet<>());
 
         // Drop proximity search tokens
         query = query.replaceAll(patternProximitySearchToken.pattern(), "");
@@ -2045,8 +2045,8 @@ public final class SearchHelper {
                     field = SolrConstants.FULLTEXT;
                 } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
                     field = SolrConstants.UGCTERMS;
-                } else if (field.endsWith(SolrConstants._UNTOKENIZED)) {
-                    field = field.substring(0, field.length() - SolrConstants._UNTOKENIZED.length());
+                } else if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                    field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
                 }
                 String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
                 if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
@@ -2057,7 +2057,7 @@ public final class SearchHelper {
                     ret.get(field).add(phraseWithoutQuotation);
                 }
                 query = query.replace(phrase, "");
-                ret.get(_TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
+                ret.get(TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
             }
         }
 
@@ -2084,8 +2084,8 @@ public final class SearchHelper {
                     } else if (SolrConstants.SUPERUGCTERMS.equals(currentField)) {
                         currentField = SolrConstants.UGCTERMS;
                     }
-                    if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
-                        currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
+                    if (currentField.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                        currentField = currentField.substring(0, currentField.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
                     }
                     // Remove quotation marks from phrases
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
@@ -2106,7 +2106,7 @@ public final class SearchHelper {
                                 break;
                             default:
                                 if (!"true".equals(value.trim())) {
-                                    ret.get(_TITLE_TERMS).add("(" + value + ")");
+                                    ret.get(TITLE_TERMS).add("(" + value + ")");
                                 }
                                 break;
                         }
@@ -2119,14 +2119,14 @@ public final class SearchHelper {
                 }
                 if (currentField == null) {
                     currentField = SolrConstants.DEFAULT;
-                } else if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
-                    currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
+                } else if (currentField.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                    currentField = currentField.substring(0, currentField.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
                 }
                 if (ret.get(currentField) == null) {
                     ret.put(currentField, new HashSet<>());
                 }
                 ret.get(currentField).add(s);
-                ret.get(_TITLE_TERMS).add("(" + s + ")");
+                ret.get(TITLE_TERMS).add("(" + s + ")");
             }
         }
 
@@ -2450,8 +2450,8 @@ public final class SearchHelper {
      * @should leave year month day fields unaltered
      */
     public static String facetifyField(String fieldName) {
-        if (fieldName != null && (fieldName.startsWith("BOOL_") || fieldName.equals(SolrConstants._CALENDAR_YEAR)
-                || fieldName.equals(SolrConstants._CALENDAR_MONTH) || fieldName.equals(SolrConstants._CALENDAR_DAY))) {
+        if (fieldName != null && (fieldName.startsWith("BOOL_") || fieldName.equals(SolrConstants.CALENDAR_YEAR)
+                || fieldName.equals(SolrConstants.CALENDAR_MONTH) || fieldName.equals(SolrConstants.CALENDAR_DAY))) {
             return fieldName;
         }
         return adaptField(fieldName, SolrConstants.PREFIX_FACET);
@@ -2515,18 +2515,18 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT_SUB:
             case SolrConstants.DOCSTRCT_TOP:
                 return prefix + fieldName;
-            case SolrConstants._CALENDAR_YEAR:
-            case SolrConstants._CALENDAR_MONTH:
-            case SolrConstants._CALENDAR_DAY:
+            case SolrConstants.CALENDAR_YEAR:
+            case SolrConstants.CALENDAR_MONTH:
+            case SolrConstants.CALENDAR_DAY:
                 if ("SORT_".equals(prefix)) {
                     return "SORTNUM_" + fieldName;
                 }
                 fieldName = applyPrefix(fieldName, prefix);
-                fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                fieldName = fieldName.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
                 return fieldName;
             default:
                 fieldName = applyPrefix(fieldName, prefix);
-                fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                fieldName = fieldName.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
                 return fieldName;
         }
     }
@@ -2596,9 +2596,9 @@ public final class SearchHelper {
             case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT:
             case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT_SUB:
             case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT_TOP:
-            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_YEAR:
-            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_MONTH:
-            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_DAY:
+            case SolrConstants.PREFIX_FACET + SolrConstants.CALENDAR_YEAR:
+            case SolrConstants.PREFIX_FACET + SolrConstants.CALENDAR_MONTH:
+            case SolrConstants.PREFIX_FACET + SolrConstants.CALENDAR_DAY:
                 return fieldName.substring(6);
             default:
                 if (fieldName.startsWith(SolrConstants.PREFIX_FACET)) {
@@ -2645,7 +2645,7 @@ public final class SearchHelper {
                 case SolrConstants.DOCSTRCT:
                     continue;
                 default:
-                    if (field.startsWith(SolrConstants.GROUPID_)) {
+                    if (field.startsWith(SolrConstants.PREFIX_GROUPID)) {
                         continue;
                     }
             }
@@ -2757,7 +2757,7 @@ public final class SearchHelper {
                     case SolrConstants.BOOKMARKS:
                         continue;
                     default:
-                        if (item.getField().startsWith(SolrConstants.GROUPID_)) {
+                        if (item.getField().startsWith(SolrConstants.PREFIX_GROUPID)) {
                             continue;
                         }
                 }
@@ -2857,9 +2857,9 @@ public final class SearchHelper {
                 // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                ret.add(SolrConstants._CALENDAR_DAY);
-                ret.add(SolrConstants._CALENDAR_MONTH);
-                ret.add(SolrConstants._CALENDAR_YEAR);
+                ret.add(SolrConstants.CALENDAR_DAY);
+                ret.add(SolrConstants.CALENDAR_MONTH);
+                ret.add(SolrConstants.CALENDAR_YEAR);
                 break;
             default:
                 if (searchFilter == null || searchFilter.equals(SEARCH_FILTER_ALL)) {
@@ -2869,7 +2869,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.NORMDATATERMS);
                     ret.add(SolrConstants.UGCTERMS);
                     ret.add(SolrConstants.CMS_TEXT_ALL);
-                    ret.add(SolrConstants._CALENDAR_DAY);
+                    ret.add(SolrConstants.CALENDAR_DAY);
                 } else {
                     ret.add(searchFilter.getField());
                 }
@@ -3212,7 +3212,7 @@ public final class SearchHelper {
                     Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
                     StreamSupport.stream(locales.spliterator(), false)
                             .sorted(new LocaleComparator(BeanUtils.getLocale()))
-                            .map(locale -> field + SolrConstants._LANG_ + locale.getLanguage().toUpperCase())
+                            .map(locale -> field + SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase())
                             .peek(language -> logger.trace("Adding sort field: {}", language))
                             .forEach(language -> ret.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
                 }

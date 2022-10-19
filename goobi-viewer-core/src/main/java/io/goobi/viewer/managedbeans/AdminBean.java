@@ -1080,7 +1080,7 @@ public class AdminBean implements Serializable {
 
         Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
         try {
-            String metsFilePath = DataFileTools.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants._METS);
+            String metsFilePath = DataFileTools.getSourceFilePath(pi + ".xml", dataRepository, SolrConstants.SOURCEDOCFORMAT_METS);
             Document doc = XmlTools.readXmlFile(metsFilePath);
             if (doc == null || doc.getRootElement() == null) {
                 logger.error("Invalid METS file: {}", metsFilePath);

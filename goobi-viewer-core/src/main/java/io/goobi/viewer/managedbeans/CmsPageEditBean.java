@@ -57,7 +57,7 @@ public class CmsPageEditBean implements Serializable {
         try {
             this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
         } catch (DAOException e) {
-            this.sidebarWidgets = Collections.EMPTY_MAP;
+            this.sidebarWidgets = Collections.emptyMap();
         }
     }
 

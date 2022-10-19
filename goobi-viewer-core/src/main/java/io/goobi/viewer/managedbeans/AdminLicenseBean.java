@@ -36,12 +36,11 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.inject.Named;
-import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -66,6 +65,7 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.mail.MessagingException;
 
 /**
  * Administration backend functions.

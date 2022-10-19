@@ -114,8 +114,8 @@ public class CalendarView {
             return Collections.emptyList();
         }
 
-        return SearchHelper.getFacetValues("+" + SolrConstants.PI_ANCHOR + ":" + anchorPi + " +" + SolrConstants._CALENDAR_DAY + ":*",
-                SolrConstants._CALENDAR_YEAR, 1);
+        return SearchHelper.getFacetValues("+" + SolrConstants.PI_ANCHOR + ":" + anchorPi + " +" + SolrConstants.CALENDAR_DAY + ":*",
+                SolrConstants.CALENDAR_YEAR, 1);
     }
 
     /**

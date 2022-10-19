@@ -276,11 +276,11 @@ public class DataFileTools {
             throw new IllegalArgumentException("format may not be null or empty (file name: " + fileName + ")");
         }
         switch (format) {
-            case SolrConstants._METS:
-            case SolrConstants._LIDO:
-            case SolrConstants._DENKXWEB:
-            case SolrConstants._WORLDVIEWS:
-            case SolrConstants._DUBLINCORE:
+            case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_LIDO:
+            case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
+            case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
+            case SolrConstants.SOURCEDOCFORMAT_DUBLINCORE:
                 break;
             default:
                 throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | DUBLINCORE | WORLDVIEWS");
@@ -288,19 +288,19 @@ public class DataFileTools {
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
-            case SolrConstants._METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
-            case SolrConstants._LIDO:
+            case SolrConstants.SOURCEDOCFORMAT_LIDO:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
                 break;
-            case SolrConstants._DENKXWEB:
+            case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedDenkxwebFolder());
                 break;
-            case SolrConstants._DUBLINCORE:
+            case SolrConstants.SOURCEDOCFORMAT_DUBLINCORE:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedDublinCoreFolder());
                 break;
-            case SolrConstants._WORLDVIEWS:
+            case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
         }

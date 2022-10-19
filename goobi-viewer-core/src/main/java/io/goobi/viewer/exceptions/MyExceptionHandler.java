@@ -81,12 +81,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
     /** {@inheritDoc} */
     @Override
-    public ExceptionHandler getWrapped() {
-        return super.getWrapped();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void handle() throws FacesException {
         for (Iterator<ExceptionQueuedEvent> i = getUnhandledExceptionQueuedEvents().iterator(); i.hasNext();) {
             ExceptionQueuedEvent event = i.next();
@@ -281,6 +275,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      * @param fc
      * @return
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public String getSessionDetails(FacesContext fc) {
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
         if (session == null) {
