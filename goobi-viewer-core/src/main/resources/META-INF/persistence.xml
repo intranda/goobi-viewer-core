@@ -82,13 +82,13 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSHtmlTextContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageCollectionContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSLongTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
 		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
 
 		<properties>

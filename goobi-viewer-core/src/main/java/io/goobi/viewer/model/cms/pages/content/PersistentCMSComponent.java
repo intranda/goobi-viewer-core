@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.pages.content;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,14 +32,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
-import io.goobi.viewer.dao.converter.StringListConverter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.translations.IPolyglott;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -113,6 +112,15 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
         this.publicationState = component.getPublicationState();
         this.templateFilename = component.getTemplateFilename();
         this.contentItems.addAll(component.getContentItems().stream().map(CMSContentItem::getContent).map(CMSContent::copy).collect(Collectors.toList()));
+        this.contentItems.forEach(c -> c.setOwningComponent(this));
+    }
+    
+    
+    public PersistentCMSComponent(CMSComponent template, Collection<CMSContent> contentData) {
+        this.order = template.getOrder();
+        this.publicationState = template.getPublicationState();
+        this.templateFilename = template.getTemplateFilename();
+        this.contentItems.addAll(contentData.stream().map(CMSContent::copy).collect(Collectors.toList()));
         this.contentItems.forEach(c -> c.setOwningComponent(this));
     }
     

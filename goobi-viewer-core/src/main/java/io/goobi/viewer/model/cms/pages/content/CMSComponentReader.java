@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -61,9 +62,14 @@ public class CMSComponentReader {
             String attrName = element.getAttributeValue("name");
             String attrLabel = element.getAttributeValue("label");
             String attrType = element.getAttributeValue("type");
+            boolean bool = Optional.ofNullable(element.getAttributeValue("boolean")).map(Boolean::parseBoolean).orElse(false);
+            boolean display = Optional.ofNullable(element.getAttributeValue("display")).map(Boolean::parseBoolean).orElse(true);
             List<Option> options = XmlTools.evaluateToElements("value", element, null).stream().map(this::createOption).collect(Collectors.toList());
             String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
-            CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, options, value);
+            if(!display && StringUtils.isBlank(value)) {
+                value = options.iterator().next().getValue();
+            }
+            CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, display, bool, options, value);
             attributes.put(attr.getName(), attr);
         }
         
@@ -86,13 +92,7 @@ public class CMSComponentReader {
                 
                 CMSContent content = createContentFromClassName(className);
                 CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), required);
-                
-                List<Element> itemAttributes = XmlTools.evaluateToElements("attributes/attribute", element, null);
-                for (Element attribute : itemAttributes) {
-                    String name = attribute.getAttributeValue("name");
-                    String value = attribute.getAttributeValue("value");
-                    item.setAttribute(name, value);
-                }
+
                 component.addContentItem(item);
             } catch (InstantiationException e) {
                 logger.error("Error instantiating CMSContent from class '{}'", className);

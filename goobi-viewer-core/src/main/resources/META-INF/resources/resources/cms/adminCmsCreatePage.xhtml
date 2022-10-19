@@ -173,7 +173,7 @@
 
 																						<ui:repeat var="attribute" value="#{cmsComponent.attributes.values()}">
 																								
-																								<ui:fragment rendered="#{attribute.type == 'toggle'}">
+																								<ui:fragment rendered="#{attribute.display and attribute.type == 'toggle'}">
 																								
 																									<ui:repeat var="option" value="#{attribute.options}">
 																									
@@ -185,7 +185,7 @@
 																									
 																								</ui:fragment>
 																								
-																								<ui:fragment rendered="#{attribute.type != 'toggle'}">
+																								<ui:fragment rendered="#{attribute.display and attribute.type != 'toggle'}">
 																									<ui:repeat var="option" value="#{attribute.options}">
 																										<button jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
 																											<f:ajax render="pageComponents"/>

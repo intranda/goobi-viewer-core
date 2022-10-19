@@ -39,7 +39,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 
 public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
@@ -81,7 +81,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         CMSComponent textComponent = contentManager.getComponent("text").orElse(null);
         assertNotNull(textComponent);
         PersistentCMSComponent textComponentInPage = page.addComponent(textComponent);
-        CMSTextContent textContent = (CMSTextContent) textComponentInPage.getContentItems().get(0);
+        CMSShortTextContent textContent = (CMSShortTextContent) textComponentInPage.getContentItems().get(0);
         textContent.getText().setText("Entered Text", Locale.ENGLISH);
         
         assertTrue(dao.addCMSPage(page));
@@ -90,7 +90,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         CMSPage loaded = dao.getCMSPage(page.getId());
         CMSPage cloned = new CMSPage(loaded);
         
-        CMSTextContent clonedTextContent = (CMSTextContent)cloned.getPersistentComponents().get(0).getContentItems().get(0);
+        CMSShortTextContent clonedTextContent = (CMSShortTextContent)cloned.getPersistentComponents().get(0).getContentItems().get(0);
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));
     }
 

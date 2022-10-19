@@ -61,20 +61,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_content_image")
-public class CMSImageContent extends CMSContent implements CMSMediaHolder {
+@Table(name = "cms_content_media")
+public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
 
-    private static final String BACKEND_COMPONENT_NAME = "image";
+    private static final String BACKEND_COMPONENT_NAME = "media";
 
     
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
-    public CMSImageContent() {
+    public CMSMediaContent() {
         //empty
     }
 
-    public CMSImageContent(CMSImageContent orig) {
+    public CMSMediaContent(CMSMediaContent orig) {
         super(orig);
         this.mediaItem = orig.mediaItem;
     }
@@ -161,7 +161,7 @@ public class CMSImageContent extends CMSContent implements CMSMediaHolder {
 
     @Override
     public CMSContent copy() {
-        CMSImageContent copy = new CMSImageContent(this);
+        CMSMediaContent copy = new CMSMediaContent(this);
         return copy;
     }
 

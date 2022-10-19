@@ -29,30 +29,28 @@ import java.util.List;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.maps.GeoMap;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_content_geomap")
-public class CMSGeomapContent extends CMSContent {
+@Table(name = "cms_content_rss")
+public class CMSRSSContent extends CMSContent {
 
-    private static final String COMPONENT_NAME = "geomap";
+    private static final String COMPONENT_NAME = "rss";
     
-    @JoinColumn(name="geomap_id")
-    public GeoMap map;
-    
-    public CMSGeomapContent() {
+    @Column(name="items_per_view")
+    private int itemsPerView = 10;
+    @Column(name="filter_query")
+    private String filterQuery = "";
+
+    public CMSRSSContent() {
         
     }
     
-    public CMSGeomapContent(CMSGeomapContent orig) {
-        this.map = orig.map;
+    private CMSRSSContent(CMSRSSContent orig) {
+        this.itemsPerView = orig.itemsPerView;
+        this.filterQuery = orig.filterQuery;
     }
     
     @Override
@@ -62,9 +60,25 @@ public class CMSGeomapContent extends CMSContent {
 
     @Override
     public CMSContent copy() {
-        return new CMSGeomapContent(this);
+        return new CMSRSSContent(this);
     }
 
+    public int getItemsPerView() {
+        return itemsPerView;
+    }
+    
+    public void setItemsPerView(int itemsPerView) {
+        this.itemsPerView = itemsPerView;
+    }
+    
+    public String getFilterQuery() {
+        return filterQuery;
+    }
+    
+    public void setFilterQuery(String filterQuery) {
+        this.filterQuery = filterQuery;
+    }
+    
     @Override
     public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
         return Collections.emptyList();
@@ -72,15 +86,7 @@ public class CMSGeomapContent extends CMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
-        return null;
-    }
-    
-    public GeoMap getMap() {
-        return map;
-    }
-    
-    public void setMap(GeoMap map) {
-        this.map = map;
+        return "";
     }
 
 }

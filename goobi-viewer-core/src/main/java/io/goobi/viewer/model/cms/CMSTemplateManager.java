@@ -33,8 +33,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.ProviderNotFoundException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
@@ -47,6 +53,8 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.cms.legacy.CMSPageTemplate;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 
 /**
@@ -68,6 +76,8 @@ public final class CMSTemplateManager {
     private static final Object lock = new Object();
 
     private static CMSTemplateManager instance;
+
+    private Map<String, CMSComponent> legacyTemplateComponents;
 
     //    private String relativeTemplateBasePath;
     //    private String absoluteTemplateBasePath;
@@ -204,6 +214,7 @@ public final class CMSTemplateManager {
         //Add the fileSystem passed as argument to the contentManager so unit tests can define their own template path
         this.passedFileSystemPath = Optional.ofNullable(filesystemPath).map(Paths::get);
         this.reloadContentManager();
+        this.updateTemplates(coreFolderPath.map(p -> p.resolve("legacy")), themeFolderPath.map(p -> p.resolve("legacy")));
     }
 
     public CMSPageContentManager getContentManager() {
@@ -312,6 +323,94 @@ public final class CMSTemplateManager {
         return coreFolderUrl;
     }
 
+    private static Map<String, CMSPageTemplate> loadTemplates(Path path) throws IllegalArgumentException {
+        Map<String, CMSPageTemplate> templates = new LinkedHashMap<>();
+        List<CMSPageTemplate> templateList = null;
+        try {
+            try (Stream<java.nio.file.Path> templateFiles = Files.list(path)) {
+                templateList = templateFiles.filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
+                        .sorted()
+                        .map(templatePath -> CMSPageTemplate.loadFromXML(templatePath))
+                        .filter(template -> template != null)
+                        .collect(Collectors.toList());
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Error reading files from " + path, e);
+        }
+
+        if (templateList == null) {
+            logger.warn("No cms folder found in " + path + ". This theme is probably not configured to use cms");
+            return templates;
+        }
+        // logger.trace(templateFolder.getAbsolutePath());
+        for (CMSPageTemplate template : templateList) {
+            if (templates.get(template.getId()) != null) {
+                throw new IllegalArgumentException("Found two templates with id " + template.getId());
+            }
+            templates.put(template.getId(), template);
+        }
+        return templates;
+    }
+
+    /**
+     * <p>
+     * updateTemplates.
+     * </p>
+     *
+     * @param corePath a {@link java.util.Optional} object.
+     * @param themePath a {@link java.util.Optional} object.
+     */
+    public synchronized void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
+        legacyTemplateComponents = new HashMap<>();
+        //        logger.trace("themePath: {}", themePath.orElse(Paths.get("none")).toAbsolutePath().toString());
+        try {
+            //load theme templates
+            if (themePath.isPresent()) {
+                logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
+            }
+            themePath.map(path -> loadTemplates(path))
+                    .ifPresent(map -> map.entrySet()
+                            .stream()
+                            .peek(entry -> entry.getValue().setThemeTemplate(true))
+                            .forEach(entry -> legacyTemplateComponents.putIfAbsent(entry.getKey(), entry.getValue().createCMSComponent())));
+            int size = legacyTemplateComponents.size();
+            logger.debug("Loaded {} THEME CMS templates", size);
+
+            //load core templates
+            if (corePath.isPresent()) {
+                logger.trace("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath().toString());
+            }
+            corePath.map(path -> loadTemplates(path))
+                    .ifPresent(map -> map.entrySet().stream().forEach(entry -> legacyTemplateComponents.putIfAbsent(entry.getKey(), entry.getValue().createCMSComponent())));
+            logger.debug("Loaded {} CORE CMS templates", legacyTemplateComponents.size() - size);
+        } catch (IllegalArgumentException e) {
+            logger.error("Failed to update cms templates: " + e.toString(), e);
+        }
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>templates</code>.
+     * </p>
+     *
+     * @return a {@link java.util.Collection} object.
+     */
+    public Collection<CMSComponent> getLegacyComponents() {
+        return legacyTemplateComponents.values();
+    }
+
+    /**
+     * <p>
+     * getTemplate.
+     * </p>
+     *
+     * @param id a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     */
+    public CMSComponent getLegacyComponent(String templateId) {
+        return legacyTemplateComponents.get(templateId);
+    }
+
     private Optional<String> getCoreIconFolderUrl() {
         return getCoreTemplateFolderUrl().map(url -> url + TEMPLATE_ICONS_PATH);
     }
@@ -403,6 +502,15 @@ public final class CMSTemplateManager {
      */
     public Optional<Path> getThemeIconFolderPath() {
         return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
+    }
+
+    public Optional<CMSComponent> getComponent(String templateFilename) {
+        Optional<CMSComponent> component = this.getContentManager().getComponent(templateFilename);
+        if(component.isEmpty()) {
+            return Optional.ofNullable(this.legacyTemplateComponents.get(templateFilename));
+        } else {
+            return component;
+        }
     }
 
 }

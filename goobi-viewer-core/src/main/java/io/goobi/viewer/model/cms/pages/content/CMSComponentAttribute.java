@@ -29,28 +29,34 @@ public class CMSComponentAttribute {
     private final String name;
     private final String label;
     private final String type;
+    private final boolean display;
+    private final boolean booleanValue;
     private final List<Option> options;
     private final String value;
 
     public CMSComponentAttribute(CMSComponentAttribute orig, String value) {
-        this(orig.name, orig.label, orig.type, orig.options, value);
+        this(orig.name, orig.label, orig.type, orig.display, orig.booleanValue, orig.options, value);
     }
     
-    public CMSComponentAttribute(String name, String label, String type, List<Option> options, String value) {
+    public CMSComponentAttribute(String name, String label, String type, boolean display, boolean booleanValue, List<Option> options, String value) {
         super();
         this.name = name;
         this.label = label;
         this.type = type;
         this.options = options;
         this.value = value;
+        this.display = display;
+        this.booleanValue = booleanValue;
     }
 
     public CMSComponentAttribute(CMSComponentAttribute orig) {
         this.name = orig.name;
         this.label = orig.label;
         this.type = orig.type;
+        this.display = orig.display;
         this.options = new ArrayList<>(orig.options);
         this.value = orig.value;
+        this.booleanValue = orig.booleanValue;
     }
 
     /**
@@ -89,9 +95,16 @@ public class CMSComponentAttribute {
     }
 
     public boolean getBooleanValue() {
-        return Boolean.getBoolean(this.value);
+        return Boolean.parseBoolean(this.value);
+    }
+    
+    public boolean isDisplay() {
+        return display;
     }
 
+    public boolean isBooleanValue() {
+        return booleanValue;
+    }
     
 
 }

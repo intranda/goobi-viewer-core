@@ -49,7 +49,8 @@ public class DatabaseUpdater {
             new CMSContentItemUpdate(),
             new AnnotationUpdate(),
             new SidebarWidgetUpdate(),
-            new CommentGroupUpdate()
+            new CommentGroupUpdate(),
+            new CMSPageUpdate()
     };
 
     private final IDAO dao;

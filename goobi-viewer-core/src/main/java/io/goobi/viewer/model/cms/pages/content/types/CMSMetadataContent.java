@@ -23,46 +23,67 @@ package io.goobi.viewer.model.cms.pages.content.types;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.maps.GeoMap;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "cms_content_geomap")
-public class CMSGeomapContent extends CMSContent {
+public class CMSMetadataContent extends CMSContent {
 
-    private static final String COMPONENT_NAME = "geomap";
+    private static final String COMPONENT_NAME = "metadata";
+    private static final String DEFAULT_METADATA_FIELD_SELECTION = "URN,PI,MD_TITLE,DOCSTRCT_TOP";
     
-    @JoinColumn(name="geomap_id")
-    public GeoMap map;
+    @Column(name="metadata_fields")
+    private String metadataFields = DEFAULT_METADATA_FIELD_SELECTION;
     
-    public CMSGeomapContent() {
+    public CMSMetadataContent() {
         
     }
     
-    public CMSGeomapContent(CMSGeomapContent orig) {
-        this.map = orig.map;
+    private CMSMetadataContent(CMSMetadataContent orig) {
+        this.metadataFields = orig.metadataFields;
     }
     
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
     }
+    
+    public String getMetadataFields() {
+        return metadataFields;
+    }
+    
+    public void setMetadataFields(String metadataFields) {
+        this.metadataFields = metadataFields;
+    }
+    
+    public List<String> getMetadataFieldsAsList() {
+        if (StringUtils.isNotBlank(metadataFields)) {
+            List<String> ret = Arrays.stream(metadataFields.split(",")).collect(Collectors.toList());
+            return ret;
+        }
+        return new ArrayList<>();
+    }
+
+    public void setMetadataFieldsAsList(List<String> fields) {
+        if (fields == null || fields.isEmpty()) {
+            this.metadataFields = null;
+        } else {
+            this.metadataFields = StringUtils.join(fields, ",");
+        }
+    }
 
     @Override
     public CMSContent copy() {
-        return new CMSGeomapContent(this);
+        return new CMSMetadataContent(this);
     }
 
     @Override
@@ -72,15 +93,7 @@ public class CMSGeomapContent extends CMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
-        return null;
-    }
-    
-    public GeoMap getMap() {
-        return map;
-    }
-    
-    public void setMap(GeoMap map) {
-        this.map = map;
+        return "";
     }
 
 }

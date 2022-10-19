@@ -53,9 +53,7 @@ public class CMSContentItem {
      * The actual {@link CMSContent} wrapped in this item
      */
     private final CMSContent content;
-    
-    private final Map<String, Object> attributes = new HashMap<>(); 
-    
+        
     private final String label;
     
     private final String description;
@@ -69,7 +67,6 @@ public class CMSContentItem {
     public CMSContentItem(CMSContentItem orig) {
         this.componentId = orig.componentId;
         this.content = orig.content.copy();
-        orig.attributes.forEach((key, value) -> this.attributes.put(key, value));
         this.label = orig.label;
         this.description = orig.description;
         this.jsfComponent = orig.jsfComponent;
@@ -103,14 +100,6 @@ public class CMSContentItem {
         return required;
     }
 
-    public void setAttribute(String name, Object value) {
-        this.attributes.put(name, value);
-    }
-    
-    public Object getAttribute(String name) {
-        return this.attributes.get(name);
-    }
-    
     public String getComponentId() {
         return componentId;
     }
@@ -139,10 +128,6 @@ public class CMSContentItem {
     public boolean isMandatory() {
         return this.required;
     }
-    
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
 
     /**
      * Two CMSContentItems are equal if their {@link #componentId}s are equal
@@ -166,7 +151,7 @@ public class CMSContentItem {
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
             wrapper.setId(id + "_wrapper");
             this.uiComponent.getChildren().add(wrapper);
-            UIComponent component = builder.build(this.getJsfComponent(), wrapper, this.getAttributes());
+            UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.emptyMap());
             component.getAttributes().put("contentItem", this);
             component.setId(id + "_content");
         }

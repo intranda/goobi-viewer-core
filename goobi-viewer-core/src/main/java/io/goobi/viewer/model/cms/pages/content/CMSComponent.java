@@ -198,7 +198,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
             component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
-                component.getAttributes().put(attribute.getName(), attribute.getValue());
+                component.getAttributes().put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
             }
             component.setId(id + "_component");
         }

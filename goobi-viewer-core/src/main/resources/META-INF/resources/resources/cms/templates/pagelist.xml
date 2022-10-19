@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>pagelist</name>
+	</jsfComponent>
+	<label>cms_component__pagelist__label</label>
+	<description>cms_component__pagelist__desc</description>
+	<icon>cms/components/frontend/component/icon/pagelist.png</icon>
+	<content>
+		<item id="pagelist">
+			<label>cms_content__pagelist__label</label>
+			<description>cms_content__pagelist__desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>pagelist</name>
+			</jsfComponent>
+			<attributes>
+				<attribute name="random" value="false"/>
+				<attribute name="paginated" value="true"/>
+			</attributes>
+		</item>
+	</content>
+	<attribute name="randomizeItems" display="false" boolean="true">
+		<value>false</value>
+	</attribute>
+	<attribute name="usePagination" display="false" boolean="true">
+		<value>true</value>
+	</attribute>
+	<attribute name="width" label="cms__component_attribute__width">
+		<value>50</value>
+		<value default="true">100</value>
+	</attribute>
+</component>

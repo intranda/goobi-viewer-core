@@ -29,40 +29,44 @@ import java.util.List;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.maps.GeoMap;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_geomap")
-public class CMSGeomapContent extends CMSContent {
+public class CMSGlossaryContent extends CMSContent {
 
-    private static final String COMPONENT_NAME = "geomap";
+    private static final String COMPONENT_NAME = "glossary";
     
-    @JoinColumn(name="geomap_id")
-    public GeoMap map;
+    @Column(name="glossary")
+    private String glossaryName;
     
-    public CMSGeomapContent() {
+    public CMSGlossaryContent() {
         
     }
     
-    public CMSGeomapContent(CMSGeomapContent orig) {
-        this.map = orig.map;
+    private CMSGlossaryContent(CMSGlossaryContent orig) {
+        this.glossaryName = orig.glossaryName;
     }
+    
     
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
     }
 
+    public String getGlossaryName() {
+        return glossaryName;
+    }
+    
+    public void setGlossaryName(String glossaryName) {
+        this.glossaryName = glossaryName;
+    }
+    
     @Override
     public CMSContent copy() {
-        return new CMSGeomapContent(this);
+        return new CMSGlossaryContent(this);
     }
 
     @Override
@@ -72,15 +76,7 @@ public class CMSGeomapContent extends CMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
-        return null;
-    }
-    
-    public GeoMap getMap() {
-        return map;
-    }
-    
-    public void setMap(GeoMap map) {
-        this.map = map;
+        return "";
     }
 
 }

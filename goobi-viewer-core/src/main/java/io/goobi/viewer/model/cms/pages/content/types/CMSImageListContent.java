@@ -57,10 +57,10 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
-@Table(name = "cms_content_imagecollection")
-public class CMSImageCollectionContent extends CMSContent implements CMSCategoryHolder {
+@Table(name = "cms_content_imagelist")
+public class CMSImageListContent extends CMSContent implements CMSCategoryHolder {
 
-    private static final String COMPONENT_NAME = "imagecollection";
+    private static final String COMPONENT_NAME = "imagelist";
     private static final int DEFAULT_IMAGES_PER_VIEW = 10;
     private static final int DEFAULT_IMPORTANT_IMAGES_PER_VIEW = 0;
  
@@ -77,13 +77,13 @@ public class CMSImageCollectionContent extends CMSContent implements CMSCategory
     
     @Transient List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
     
-    public CMSImageCollectionContent() {
+    public CMSImageListContent() {
         this.categories = new ArrayList<>();
         imagesPerView = DEFAULT_IMAGES_PER_VIEW;
         importantImagesPerView = DEFAULT_IMPORTANT_IMAGES_PER_VIEW;
     }
     
-    private CMSImageCollectionContent(CMSImageCollectionContent orig) {
+    private CMSImageListContent(CMSImageListContent orig) {
         this.categories = orig.categories;
         this.imagesPerView = orig.imagesPerView;
         this.importantImagesPerView = orig.importantImagesPerView;
@@ -175,7 +175,7 @@ public class CMSImageCollectionContent extends CMSContent implements CMSCategory
 
     @Override
     public CMSContent copy() {
-        return new CMSImageCollectionContent(this);
+        return new CMSImageListContent(this);
     }
 
     @Override

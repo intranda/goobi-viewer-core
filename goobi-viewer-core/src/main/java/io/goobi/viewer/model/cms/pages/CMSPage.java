@@ -55,23 +55,27 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSProperty;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
+import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSHtmlTextContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSImageContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSLongTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
@@ -107,7 +111,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable {
+public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable, CMSMediaHolder{
 
     private static final long serialVersionUID = -3601192218326197746L;
 
@@ -178,7 +182,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Column(name = "preview_text", nullable = true)
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText previewText = new TranslatedText();
-
+    
+    @JoinColumn(name = "preview_image_id")
+    private CMSMediaItem previewImage;
+ 
     @JoinColumn(name = "slider_id")
     private CMSSlider topbarSlider = null;
     
@@ -190,7 +197,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * A {@link CMSPageTemplate} used to create this page. Must be null if the page hasn't been created using a template.
      * Used to apply user privileges for templates to pages derived from that template as well as determining if a page may be edited by a user 
      */
-    @JoinColumn(name = "template_id")
+    @JoinColumn(name = "page_template_id")
     private CMSPageTemplate template = null;
 
     /**
@@ -329,9 +336,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     
     private void initialiseCMSComponents() {
         this.cmsComponents = new ArrayList<>();
-        CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
         for (PersistentCMSComponent component : this.persistentComponents) {
-            CMSComponent comp = contentManager.getComponent(component.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(component))).orElse(null);
+            CMSComponent comp = CMSTemplateManager.getInstance().getComponent(component.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(component))).orElse(null);
             if(comp != null) {                
                 this.cmsComponents.add(comp);
             }
@@ -1136,7 +1142,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
             for (PersistentCMSComponent component : persistentComponents) {
                 for (CMSContent content : component.getContentItems()) {
-                    if(content instanceof CMSTextContent || content instanceof CMSHtmlTextContent || content instanceof CMSImageContent) {
+                    if(content instanceof CMSShortTextContent || content instanceof CMSLongTextContent || content instanceof CMSMediaContent) {
                         String baseFileName = id + "-" + content.getComponentId() + ".";
                         for (Path file : cmsPageFiles) {
                             if (file.getFileName().toString().startsWith(baseFileName)) {
@@ -1438,5 +1444,59 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     
     public boolean isLastComponent(CMSComponent component) {
         return this.cmsComponents.indexOf(component) == this.cmsComponents.size()-1;
+    }
+    
+    public void setTitle(TranslatedText title) {
+        this.title = title;
+    }
+    
+    public void setMenuTitle(TranslatedText menuTitle) {
+        this.menuTitle = menuTitle;
+    }
+    
+    public void setPreviewText(TranslatedText previewText) {
+        this.previewText = previewText;
+    }
+
+    public CMSMediaItem getPreviewImage() {
+        return previewImage;
+    }
+    
+    public void setPreviewImage(CMSMediaItem previewImage) {
+        this.previewImage = previewImage;
+    }
+    
+    @Override
+    public void setMediaItem(CMSMediaItem item) {
+        this.previewImage = item;
+    }
+
+    @Override
+    public CMSMediaItem getMediaItem() {
+        return this.previewImage;
+    }
+
+    @Override
+    public String getMediaFilter() {
+        return CmsMediaBean.getImageFilter();
+
+    }
+
+    @Override
+    public boolean hasMediaItem() {
+        return this.previewImage != null;
+    }
+
+    @Override
+    public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+        if (hasMediaItem()) {
+            return new CategorizableTranslatedSelectable<>(previewImage, true,
+                    previewImage.getFinishedLocales()
+                            .stream()
+                            .findFirst()
+                            .orElse(BeanUtils.getLocale()),
+                    Collections.emptyList());
+        }
+        return null;
     }
 }
