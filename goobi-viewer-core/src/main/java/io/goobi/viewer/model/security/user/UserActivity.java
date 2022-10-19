@@ -40,12 +40,12 @@ public class UserActivity {
     public static final String LABEL_TRUNCATE_SUFFIX = "...";
 
     public enum ActivityType {
-        crowdsourcingContent("ugc", "fa fa-sticky-note-o"),
-        crowdsourcingTranscription("transcription", "fa fa-file-text"),
-        campaignAnnotation("Annotation", "fa fa-sticky-note"),
-        comment("Comment", "fa fa-comment"),
-        search("label__user_search", "fa fa-search"),
-        bookmark("bookmarkList", "fa fa-bookmark");
+        CROWDSOURCING_CONTENT("ugc", "fa fa-sticky-note-o"),
+        CROWDSOURCING_TRANSCRIPTION("transcription", "fa fa-file-text"),
+        CAMPAIGN_ANNOTATION("Annotation", "fa fa-sticky-note"),
+        COMMENT("Comment", "fa fa-comment"),
+        SEARCH("label__user_search", "fa fa-search"),
+        BOOKMARK("bookmarkList", "fa fa-bookmark");
 
         private final String icon;
         private final String label;
@@ -69,6 +69,13 @@ public class UserActivity {
     private final LocalDateTime date;
     private final boolean update;
 
+    /**
+     * 
+     * @param type
+     * @param label
+     * @param date
+     * @param update
+     */
     public UserActivity(ActivityType type, String label, LocalDateTime date, boolean update) {
         this.type = type;
         this.label = label;
@@ -77,30 +84,30 @@ public class UserActivity {
     }
 
     public static UserActivity getFromComment(Comment comment) {
-        return new UserActivity(ActivityType.comment, truncate(comment.getDisplayText()), comment.getDateCreated(), false);
+        return new UserActivity(ActivityType.COMMENT, truncate(comment.getDisplayText()), comment.getDateCreated(), false);
     }
 
     public static UserActivity getFromCommentUpdate(Comment comment) {
-        return new UserActivity(ActivityType.comment, truncate(comment.getDisplayText()), comment.getDateModified(), true);
+        return new UserActivity(ActivityType.COMMENT, truncate(comment.getDisplayText()), comment.getDateModified(), true);
     }
 
     public static UserActivity getFromCampaignAnnotation(CrowdsourcingAnnotation anno) {
-        return new UserActivity(ActivityType.campaignAnnotation, truncate(anno.getContentString()), anno.getDateCreated(), false);
+        return new UserActivity(ActivityType.CAMPAIGN_ANNOTATION, truncate(anno.getContentString()), anno.getDateCreated(), false);
     }
 
     public static UserActivity getFromCampaignAnnotationUpdate(CrowdsourcingAnnotation anno) {
-        return new UserActivity(ActivityType.campaignAnnotation, truncate(anno.getContentString()), anno.getDateModified(), true);
+        return new UserActivity(ActivityType.CAMPAIGN_ANNOTATION, truncate(anno.getContentString()), anno.getDateModified(), true);
     }
 
     public static UserActivity getFromBookmark(Bookmark bookmark) {
         String listName = truncate(bookmark.getBookmarkList().getName(), 22);
-        String bookmarkName = truncate(bookmark.getName(), MAX_LABEL_LENGTH-listName.length()-3);
+        String bookmarkName = truncate(bookmark.getName(), MAX_LABEL_LENGTH - listName.length() - 3);
         String label = bookmarkName + " (" + listName + ")";
-        return new UserActivity(ActivityType.bookmark, label, bookmark.getDateAdded(), false);
+        return new UserActivity(ActivityType.BOOKMARK, label, bookmark.getDateAdded(), false);
     }
 
     public static UserActivity getFromSearch(Search search) {
-        return new UserActivity(ActivityType.search, truncate(search.getName()), search.getDateUpdated(), false);
+        return new UserActivity(ActivityType.SEARCH, truncate(search.getName()), search.getDateUpdated(), false);
     }
 
     /**
@@ -140,11 +147,10 @@ public class UserActivity {
     }
 
     private static String truncate(String text, int length) {
-        if(StringUtils.isNotBlank(text) && text.length() > length) {
+        if (StringUtils.isNotBlank(text) && text.length() > length) {
             return text.substring(0, length) + LABEL_TRUNCATE_SUFFIX;
-        } else {
-            return text;
         }
+        return text;
     }
 
     /**
@@ -152,16 +158,15 @@ public class UserActivity {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            UserActivity other = (UserActivity)obj;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            UserActivity other = (UserActivity) obj;
             return this.type.equals(other.type) && StringUtils.equals(this.label, other.label);
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
-     * Build from label and  type
+     * Build from label and type
      */
     @Override
     public int hashCode() {

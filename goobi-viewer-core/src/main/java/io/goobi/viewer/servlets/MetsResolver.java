@@ -151,7 +151,7 @@ public class MetsResolver extends HttpServlet {
         String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
 
         String filePath =
-                DataFileTools.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
+                DataFileTools.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants.SOURCEDOCFORMAT_METS);
 
         response.setContentType("text/xml");
         File file = new File(filePath);

@@ -1193,7 +1193,7 @@ public class Metadata implements Serializable {
             if (StringUtils.isBlank(md.getLabel())) {
                 continue;
             }
-            if (md.getLabel().contains(SolrConstants._LANG_)) {
+            if (md.getLabel().contains(SolrConstants.MIDFIX_LANG)) {
                 String lang = md.getLabel().substring(md.getLabel().length() - 2);
                 String rawFieldName = md.getLabel().substring(0, md.getLabel().length() - 8);
                 // Mark wrong field names for removal

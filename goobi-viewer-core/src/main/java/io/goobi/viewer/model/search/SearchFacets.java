@@ -610,7 +610,7 @@ public class SearchFacets implements Serializable {
 
         for (String facetField : facetFields) {
             String matchingFacet = facets.stream()
-                    .filter(facet -> facet.replace(SolrConstants._UNTOKENIZED, "").startsWith(facetField + ":"))
+                    .filter(facet -> facet.replace(SolrConstants.SUFFIX_UNTOKENIZED, "").startsWith(facetField + ":"))
                     .findFirst()
                     .orElse("");
             if (StringUtils.isNotBlank(matchingFacet)) {
@@ -751,7 +751,7 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        if (!SolrConstants._CALENDAR_YEAR.equals(field) && !field.startsWith("MDNUM_")) {
+        if (!SolrConstants.CALENDAR_YEAR.equals(field) && !field.startsWith("MDNUM_")) {
             logger.info("{} is not an integer type field, cannot use with a range query", field);
             return;
         }
@@ -1004,7 +1004,7 @@ public class SearchFacets implements Serializable {
             throw new IllegalArgumentException("language may not be null");
         }
 
-        return field.contains(SolrConstants._LANG_) && !field.endsWith(SolrConstants._LANG_ + language.toUpperCase());
+        return field.contains(SolrConstants.MIDFIX_LANG) && !field.endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase());
     }
 
     /**

@@ -367,9 +367,9 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         //        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
 
         String[] values = { "-20", "-10", "10", "2018" };
-        facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR, Arrays.asList(values));
-        Assert.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants._CALENDAR_YEAR));
-        Assert.assertEquals("2018", facets.getAbsoluteMaxRangeValue(SolrConstants._CALENDAR_YEAR));
+        facets.populateAbsoluteMinMaxValuesForField(SolrConstants.CALENDAR_YEAR, Arrays.asList(values));
+        Assert.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants.CALENDAR_YEAR));
+        Assert.assertEquals("2018", facets.getAbsoluteMaxRangeValue(SolrConstants.CALENDAR_YEAR));
 
     }
 
@@ -385,11 +385,11 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         //        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-20", false));
         //        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-10", false));
         //        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":10", false));
-        //        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
+        //        facets.getAvailableFacets().put(SolrConstants.CALENDAR_YEAR, facetItems);
 
         String[] values = { "-20", "-10", "10", "2018" };
-        facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR, Arrays.asList(values));
-        List<Integer> valueRange = facets.getValueRange(SolrConstants._CALENDAR_YEAR);
+        facets.populateAbsoluteMinMaxValuesForField(SolrConstants.CALENDAR_YEAR, Arrays.asList(values));
+        List<Integer> valueRange = facets.getValueRange(SolrConstants.CALENDAR_YEAR);
         Assert.assertNotNull(valueRange);
         Assert.assertEquals(4, valueRange.size());
         Assert.assertArrayEquals(new Integer[] { -20, -10, 10, 2018 }, valueRange.toArray());

@@ -64,6 +64,13 @@
                                         <f:passThroughAttribute name="data-popover-dismiss" value="click-outside" />
                                         <f:passThroughAttribute name="data-popover-placement" value="bottom" />
                                     </h:commandButton>
+                                    
+                                    <script>
+                                    // FOCUS POPOVER AUTOMATICALLY - WCAG GUIDELINES - DIRTY FIX
+                                    $('[data-popover-element="#downloadImagePopover"]').on('click', function () {
+                                    	setTimeout(function() { $('#downloadSelectSizes_0').focus()}, 50);
+                                    });
+                                    </script>
                            
                                 </ui:fragment>
 

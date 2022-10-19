@@ -124,68 +124,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, null, null, true, true, ".");
         Assert.assertTrue(collections.size() > 40);
-        //        List<String> keys = new ArrayList<>(collections.keySet());
-        // Collections.sort(keys);
-        //        for (String key : keys) {
-        //            switch (key) {
-        //                case ("dc3d"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition"):
-        //                    Assert.assertEquals(Long.valueOf(6), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition.fulltextlocked"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition.movingwall"):
-        //                    Assert.assertEquals(Long.valueOf(1), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition.pdflocked"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcannotations"):
-        //                    Assert.assertEquals(Long.valueOf(15), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcannotations.generated"):
-        //                    Assert.assertEquals(Long.valueOf(15), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcannotations.geocoordinates"):
-        //                    Assert.assertEquals(Long.valueOf(3), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata"):
-        //                    Assert.assertEquals(Long.valueOf(12), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata.gnd"):
-        //                    Assert.assertEquals(Long.valueOf(5), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata.provenance"):
-        //                    Assert.assertEquals(Long.valueOf(1), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata.viaf"):
-        //                    Assert.assertEquals(Long.valueOf(4), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcboarndigital"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcconvolute"):
-        //                    Assert.assertEquals(Long.valueOf(6), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcdownload"):
-        //                    Assert.assertEquals(Long.valueOf(3), collections.get(key).getCount());
-        //                    break;
-        //                // TODO others
-        //                case ("dcnewspaper"):
-        //                    Assert.assertEquals(Long.valueOf(18), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcrelations"):
-        //                    Assert.assertEquals(Long.valueOf(120), collections.get(key).getCount());
-        //                    break;
-        //                default:
-        //                    //                    Assert.fail("Unknown collection name: " + key);
-        //                    break;
-        //            }
-        //    }
-
     }
 
     @Test
@@ -546,7 +484,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
                 "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
-        Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+        Set<String> terms = result.get(SearchHelper.TITLE_TERMS);
         Assert.assertNotNull(terms);
         Assert.assertEquals(6, terms.size());
         Assert.assertTrue(terms.contains("(value1)"));
@@ -603,7 +541,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(terms.contains("UGC"));
         }
         {
-            Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+            Set<String> terms = result.get(SearchHelper.TITLE_TERMS);
             Assert.assertNotNull(terms);
             Assert.assertEquals(1, terms.size());
             Assert.assertTrue(terms.contains("\"foo\""));
@@ -712,9 +650,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void defacetifyField_shouldDefacetifyCorrectly() throws Exception {
         Assert.assertEquals(SolrConstants.DC, SearchHelper.defacetifyField(SolrConstants.FACET_DC));
         Assert.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_DOCSTRCT"));
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.defacetifyField("FACET_YEAR"));
-        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.defacetifyField("FACET_YEARMONTH"));
-        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.defacetifyField("FACET_YEARMONTHDAY"));
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.defacetifyField("FACET_YEAR"));
+        Assert.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.defacetifyField("FACET_YEARMONTH"));
+        Assert.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.defacetifyField("FACET_YEARMONTHDAY"));
         Assert.assertEquals("MD_TITLE", SearchHelper.defacetifyField("FACET_TITLE"));
     }
 
@@ -746,9 +684,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void facetifyField_shouldLeaveYearMonthDayFieldsUnaltered() throws Exception {
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.facetifyField(SolrConstants._CALENDAR_YEAR));
-        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.facetifyField(SolrConstants._CALENDAR_MONTH));
-        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.facetifyField(SolrConstants._CALENDAR_DAY));
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.facetifyField(SolrConstants.CALENDAR_YEAR));
+        Assert.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.facetifyField(SolrConstants.CALENDAR_MONTH));
+        Assert.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.facetifyField(SolrConstants.CALENDAR_DAY));
     }
 
     /**
@@ -823,9 +761,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void adaptField_shouldNotApplyFacetPrefixToCalendarFields() throws Exception {
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.adaptField(SolrConstants._CALENDAR_YEAR, "FACET_"));
-        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.adaptField(SolrConstants._CALENDAR_MONTH, "FACET_"));
-        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.adaptField(SolrConstants._CALENDAR_DAY, "FACET_"));
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.adaptField(SolrConstants.CALENDAR_YEAR, "FACET_"));
+        Assert.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.adaptField(SolrConstants.CALENDAR_MONTH, "FACET_"));
+        Assert.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.adaptField(SolrConstants.CALENDAR_DAY, "FACET_"));
     }
 
     /**
@@ -955,9 +893,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateExpandQuery_shouldNotEscapeAsterisks() throws Exception {
-        List<String> fields = Arrays.asList(new String[] { SolrConstants._CALENDAR_DAY });
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.CALENDAR_DAY });
         Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
+        searchTerms.put(SolrConstants.CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
         Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
