@@ -49,30 +49,15 @@
 		gap: @gap-sizer;
 		grid-template-columns: minmax(100px, auto) minmax(100px, auto);
 	}
-	
-	
     &__input-group {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: @gap-sizer;
-
         .form-control__select,
         input[type="text"] {
             height: auto;
             &:focus {
                 border-right-color: @blue;
-                & + .input-group-append {
-                    border-color: @blue;
-                }
-            }
-            &.-with-right-border {
-                border-right: 1px solid @middlegray;
-                &:focus {
-                    border-right-color: @blue;
-                    & + .input-group-append {
-                        border-color: @blue;
-                    }
-                }
             }
         }
         .input-group-append {
@@ -104,9 +89,6 @@
                 opacity: 0.4;
             }
         }
-//        button {
-//            padding: 0 10px;
-//        }
     }
 	&__input-group-field {
 		position: relative;
@@ -114,9 +96,6 @@
 		flex-wrap: wrap;
 		align-items: stretch;
 		width: 100%;
-	}
-	&__input-group-append {
-		transition: border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
 	}
 	&__input-value {
 		position: relative;
