@@ -1210,7 +1210,7 @@ public class AccessConditionUtils {
                 .filter(l -> {
                     return applyingLicenses.stream()
                             .filter(ol -> !ol.equals(l))
-                            .noneMatch(ol -> l.getLicenseType().getOverridingLicenseTypes().contains(ol.getLicenseType()));
+                            .noneMatch(ol -> l.getLicenseType().getOverriddenLicenseTypes().contains(ol.getLicenseType()));
                 })
                 .collect(Collectors.toList());
     }

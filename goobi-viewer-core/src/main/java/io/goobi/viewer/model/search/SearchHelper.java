@@ -1095,9 +1095,9 @@ public final class SearchHelper {
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
-            } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
+            } else if (!licenseType.getOverriddenLicenseTypes().isEmpty()) {
                 // If there are overriding license types for which the user has listing permission, ignore the current license type
-                for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
+                for (LicenseType overridingLicenseType : licenseType.getOverriddenLicenseTypes()) {
                     if (!usedLicenseTypes.contains(overridingLicenseType.getName())
                             && AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
                                     new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,

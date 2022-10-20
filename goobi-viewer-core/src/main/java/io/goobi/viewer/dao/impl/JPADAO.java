@@ -1513,6 +1513,33 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getOverridingLicenseType(io.goobi.viewer.model.security.LicenseType)
+     * @should return all matching rows
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<LicenseType> getOverridingLicenseType(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT a FROM LicenseType a WHERE :lt MEMBER OF a.overriddenLicenseTypes")
+                    .setParameter("lt", licenseType)
+                    .getResultList();
+        } catch (NoResultException e) {
+            return Collections.emptyList();
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return Collections.emptyList();
+        } finally {
+            close(em);
+        }
+    }
+
     /*
      * (non-Javadoc)
      *
