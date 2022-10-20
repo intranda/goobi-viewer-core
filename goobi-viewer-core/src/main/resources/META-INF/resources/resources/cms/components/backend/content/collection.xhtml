@@ -1,0 +1,291 @@
+<ui:composition
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+
+	<composite:interface>
+		<composite:attribute name="contentItem" required="true"/>
+	</composite:interface>
+
+<div class="cms-module__option-group">
+        <!-- LABEL -->
+        <div class="cms-module__option-label">
+            <label for="pageListCategory">#{msg[cc.attrs.contentItem.itemLabel]}#{cc.attrs.contentItem.mandatory?'*':''}:</label>
+        </div>
+        
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="collectionSelectGroup">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="collectionSelect" 
+                        infoClass="cms-module__option-message-status success" 
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- SELECT MENU -->
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu
+                        id="collectionSelect"
+                        styleClass="form-control" 
+                        value="#{cc.attrs.contentItem.content.solrField}">
+                        <f:selectItems 
+                            value="#{cmsBean.getLuceneFields()}"
+                            var="field"
+                            itemValue="#{field}"
+                            itemLabel="#{field}" />
+                        <f:ajax render="baseCollection ignoreCollectionGroup" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.contentItem.itemLabel]}" />
+                    </h:selectOneMenu>
+                </div>
+            </h:panelGroup>
+            
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_collection_select}</span>
+        </div>
+        
+        <!-- TOGGLE INLINE HELP -->
+        <div class="cms-module__option-help">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- BASE COLLECTION -->
+    <div class="cms-module__option-group">
+        <!-- LABEL -->
+        <div class="cms-module__option-label">
+            <label for="baseCollection">#{msg.cms_itemBaseCollection}:</label>
+        </div>
+        
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="baseCollectionGroup">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="baseCollection" 
+                        infoClass="cms-module__option-message-status success" 
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- SELECT MENU -->
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu  
+                        id="baseCollection"
+                        styleClass="form-control" 
+                        value="#{cc.attrs.contentItem.content.collectionName}"
+                        disabled="#{empty cc.attrs.contentItem.content.solrField}">
+                        <f:selectItems 
+                            value="#{cc.attrs.contentItem.content.possibleBaseCollectionList}" 
+                            var="field" 
+                            itemValue="#{field}" 
+                            itemLabel="#{msg[field]}" />
+                        <f:ajax render="ignoreCollectionGroup" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemBaseCollection}" />
+                    </h:selectOneMenu>
+                </div>
+            </h:panelGroup>
+            
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_collection_base}</span>
+        </div>
+        
+        <!-- TOGGLE INLINE HELP -->
+        <div class="cms-module__option-help">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- IGNORE COLLECTION -->
+    <div class="cms-module__option-group">
+        <!-- LABEL -->
+        <div class="cms-module__option-label">
+            <label for="ignoreCollection">#{msg.cms_itemIgnoreCollections}:</label>
+        </div>
+        
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="ignoreCollectionGroup">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="ignoreCollection" 
+                        infoClass="cms-module__option-message-status success" 
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- MULTI SELECT MENU -->
+                <div class="custom-control custom-control--select multiple">
+                    <h:selectManyMenu 
+                        id="ignoreCollection" 
+                        styleClass="form-control" 
+                        value="#{cc.attrs.contentItem.content.ignoreCollectionsAsList}"
+                        disabled="#{empty contentItem.collectionField}">
+                        <f:selectItem  
+                            itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
+                        <f:selectItems 
+                            value="#{cc.attrs.contentItem.content.possibleIgnoreCollectionList}" 
+                            var="field" 
+                            itemValue="#{field}" 
+                            itemLabel="#{msg[field]}" />
+                        <f:ajax render="@none" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemIgnoreCollections}" />
+                    </h:selectManyMenu>
+                </div>
+            </h:panelGroup>
+            
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_page_type_collection_ignore}</span>
+        </div>
+        
+        <!-- TOGGLE INLINE HELP -->
+        <div class="cms-module__option-help">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    
+                <!-- GROUP BY SOLR FIELD -->
+		    <div class="cms-module__option-group">
+		        <div class="cms-module__option-label">
+		            <label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
+		        </div>
+		        <div class="cms-module__option-control">
+		            <div class="custom-control custom-control--select">
+		                <h:selectOneMenu id="groupByFieldCollection" styleClass="form-control" value="#{cc.attrs.contentItem.content.groupingField}">
+		                    <f:selectItem itemValue="" itemLabel="#{msg.select}" />
+		                    <f:selectItems value="#{cmsBean.possibleGroupFields}" 
+		                    	var="field"
+		                    	itemValue="#{field}" 
+		                    	itemLabel="#{msg[field]} (#{field})" />
+		                    	<f:passThroughAttribute name="aria-label" value="#{msg.cms_itemGroupByField}" />
+		                </h:selectOneMenu>
+		            </div>
+		            <span class="cms-module__option-control-helptext">#{msg.inline_help__group_by_field}</span>
+		        </div>
+		        <div class="cms-module__option-help">
+		            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+		                <i class="fa fa-question-circle" aria-hidden="true"></i>
+		            </button>
+		        </div>
+		    </div>
+		    
+		 <!-- SORTING MODE -->
+		 <div class="cms-module__option-group">
+	        <div class="cms-module__option-label">
+	            <label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
+	        </div>
+			 <div class="cms-module__option-control">
+	            <!-- AREA FOR AJAX REFRESH -->
+	            <h:panelGroup id="sortingSelectGroup">
+	                <!-- VALIDATION MESSAGE -->
+	                <div class="cms-module__option-message">
+	                    <h:messages for="sortingSelect" 
+	                        infoClass="cms-module__option-message-status success" 
+	                        warnClass="cms-module__option-message-status warning"
+	                        errorClass="cms-module__option-message-status danger" />
+	
+	                    <div class="cms-module__option-message-mark">
+	                        <i class="fa fa-check" aria-hidden="true"></i>
+	                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+	                    </div>
+	                </div>
+	                
+	                <!-- SELECT MENU -->
+	                <div class="custom-control custom-control--select">
+	                    <h:selectOneMenu
+	                        id="sortingSelect"
+	                        styleClass="form-control" 
+	                        value="#{groupingField.sorting}">
+	                        <f:selectItems 
+	                            value="#{cmsBean.sortingModes}"
+	                            var="mode"
+	                            itemValue="#{mode}"
+	                            itemLabel="#{msg[mode.label]}" />
+	                        <f:passThroughAttribute name="aria-label" value="#{msg.label__sorting_mode}" />
+	                    </h:selectOneMenu>
+	                </div>
+	            </h:panelGroup>
+	            
+	            <!-- INLINE HELP -->
+	            <span class="cms-module__option-control-helptext">#{msg.inline_help__sorting_mode}</span>
+	        </div>
+	        <div class="cms-module__option-help">
+	            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+	                <i class="fa fa-question-circle" aria-hidden="true"></i>
+	            </button>
+	        </div>
+	    </div>
+	    
+	            <!-- COLLECTION EXPANDED -->
+        <div class="cms-module__option-group">
+            <!-- LABEL -->
+            <div class="cms-module__option-label">
+                <label for="collectionExpanded">#{msg.cms_collectionOpenExpanded}:</label>
+            </div>
+            
+            <div class="cms-module__option-control align-self-center">
+                <!-- AREA FOR AJAX REFRESH -->
+                <h:panelGroup id="collectionExpandedGroup" layout="block" styleClass="cms-module__option-checkbox">
+                    <!-- VALIDATION MESSAGE -->
+                    <div class="cms-module__option-message">
+                        <h:messages for="collectionExpanded" 
+                            infoClass="cms-module__option-message-status success" 
+                            warnClass="cms-module__option-message-status warning"
+                            errorClass="cms-module__option-message-status danger" />
+    
+                        <div class="cms-module__option-message-mark">
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                            <i class="fa fa-exclamation" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- CHECKBOX -->
+                    <h:selectBooleanCheckbox
+                        id="collectionExpanded" 
+                        value="#{cc.attrs.contentItem.content.openExpanded}">
+                        <f:ajax event="change" render="@this" />
+                        <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionOpenExpanded}" />
+                    </h:selectBooleanCheckbox>
+                </h:panelGroup>
+                
+                <!-- INLINE HELP -->
+                <span class="cms-module__option-control-helptext inline">#{msg.inline_help__cms_page_type_collection_expanded}</span>
+            </div>
+            
+            <!-- TOGGLE INLINE HELP -->
+            <div class="cms-module__option-help">
+                <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div> 
+	    
+</ui:composition>

@@ -34,10 +34,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.search.CollectionResult;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.Sorting;
 import io.goobi.viewer.solr.SolrConstants;
@@ -239,6 +241,36 @@ public class CMSCollectionContent extends CMSContent {
         } else {
             return this.filterQuery;
         }
+    }
+    
+    /**
+     * Querys solr for a list of all values of the set collectionField which my serve as a collection
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
+        if (StringUtils.isBlank(solrField)) {
+            return Collections.singletonList("");
+        }
+        Map<String, CollectionResult> dcStrings = getColletionMap();
+        List<String> list = new ArrayList<>(dcStrings.keySet());
+        list.add(0, "");
+        Collections.sort(list);
+        return list;
+    }
+    
+    /**
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public Map<String, CollectionResult> getColletionMap() throws IndexUnreachableException {
+        if (dcStrings == null) {
+            dcStrings =
+                    SearchHelper.findAllCollectionsFromField(solrField, null, getFilterQuery(), true, true,
+                            DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField));
+        }
+        return dcStrings;
     }
 
 }

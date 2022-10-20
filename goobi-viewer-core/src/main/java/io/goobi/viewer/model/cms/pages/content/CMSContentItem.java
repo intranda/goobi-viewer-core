@@ -113,6 +113,10 @@ public class CMSContentItem {
         return label;
     }
     
+    public String getItemLabel() {
+        return getLabel();
+    }
+    
     public String getDescription() {
         return description;
     }
