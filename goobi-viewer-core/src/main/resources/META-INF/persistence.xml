@@ -91,6 +91,10 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
 		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -201,6 +205,10 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSTextContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
 		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
 		
 		<properties>
