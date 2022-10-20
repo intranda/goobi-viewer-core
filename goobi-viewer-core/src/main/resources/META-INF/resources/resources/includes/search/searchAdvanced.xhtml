@@ -204,15 +204,37 @@
 
                 <!-- SEARCH ADVANCED ACTION -->
                 <div class="search-advanced__action">
-                    <h:commandButton styleClass="btn btn--full search-advanced__action-search-button" value="#{msg.search}" action="#{search.searchAdvanced}">
-                        <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
-                    </h:commandButton>
+                	<div class="search-advanced__action-submit-button-wrapper small-button-loader__wrapper">
+                
+	                    <h:commandButton styleClass="btn btn--full search-advanced__action-search-button" value="#{msg.search}" action="#{search.searchAdvanced}">
+	                        <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
+	                        <f:passThroughAttribute name="data-target" value="buttonLoaderClickEvent" />
+	                    </h:commandButton>
+	                    
+	                    <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+                    
+                    </div>
+                    
                     <button
 						class="btn btn--default search-advanced__action-reset-button"
 						jsf:action="#{search.resetSearch}">
 						#{msg.reset}
 					</button>
                 </div>
+
+                <script>
+                
+                window.addEventListener("unload", (event) => {
+    					$('[data-target="buttonLoader"]').hide();
+    					$('[data-target="buttonLoaderClickEvent').css('opacity', '1');
+                  });
+                
+    				$('[data-target="buttonLoaderClickEvent"]').on('click', function(e) {
+    					$('[data-target="buttonLoader"]').fadeIn('fast');
+    					$('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
+    				});
+                
+				</script>
 
             </h:form>
         </h:panelGroup>
