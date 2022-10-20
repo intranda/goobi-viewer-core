@@ -2429,6 +2429,7 @@ public final class SearchHelper {
             String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
             if (bq != null) {
                 params.put("bq", bq);
+                logger.trace("bq: {}", bq);
             }
         }
 
@@ -2981,8 +2982,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      *
      */
-    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType)
-            throws IndexUnreachableException {
+    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType) {
         return buildFinalQuery(rawQuery, termQuery, boostTopLevelDocstructs, null, aggregationType);
     }
 
@@ -3025,9 +3025,7 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-            String prefix = "";
-            String template =
-                    "+(" + prefix + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
+            String template = "+(" + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
             sbQuery = new StringBuilder(template);
         }
 
