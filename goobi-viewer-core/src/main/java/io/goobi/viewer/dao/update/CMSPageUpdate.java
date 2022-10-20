@@ -93,8 +93,10 @@ public class CMSPageUpdate implements IModelUpdate {
 
                 TranslatedText title = getTranslatedText(pageLanguageVersions, "title");
                 TranslatedText menuTitle = getTranslatedText(pageLanguageVersions, "menu_title");
+                Boolean published = (Boolean) pageValues.get("published");
                 Long topbarSliderId = getTopbarSliderId(contentItemMap, pageLanguageVersions);
-
+                
+                
                 Map<String, Map<String, Object>> previewTexts = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "preview01");
                 Map<String, String> previewValues = previewTexts.entrySet()
                         .stream()
@@ -116,6 +118,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 page.setTopbarSliderId(topbarSliderId);
                 page.setPreviewText(previewText);
                 page.setPreviewImage(previewImage);
+                page.setPublished(published);
 
                 Map<String, CMSContent> contentMap = createContentObjects(pageContentItemsMap, dao);
 
@@ -134,15 +137,20 @@ public class CMSPageUpdate implements IModelUpdate {
             }
             updatedPages.add(page);
         }
+        
+
 
         for (CMSPage cmsPage : updatedPages) {
             try {                
-                dao.updateCMSPage(cmsPage);
+                if(!dao.updateCMSPage(cmsPage)) {
+                    throw new DAOException("Saving page failed");
+                }
             } catch (Throwable e) {
                 logger.error("Error updating page {}", cmsPage.getId(), e);
                 throw e;
             }
         }
+        
         dao.executeUpdate("DROP TABLE cms_content_item_cms_categories");
         dao.executeUpdate("DROP TABLE cms_content_items");
         dao.executeUpdate("DROP TABLE cms_page_language_versions");

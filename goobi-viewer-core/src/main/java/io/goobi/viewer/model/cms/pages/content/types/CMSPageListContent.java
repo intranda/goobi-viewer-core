@@ -46,7 +46,10 @@ import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -59,10 +62,10 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     private static final int DEFAULT_ITEMS_PER_VIEW = 10;
 
     
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "owner_content_id")
-    @PrivateOwned
-    private List<CMSCategory> categories;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cms_content_pagelist_categories", joinColumns = @JoinColumn(name = "content_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<CMSCategory> categories = new ArrayList<>();
+    
     @Column(name="items_per_view")
     private int itemsPerView;
     @Column(name="group_by_category")

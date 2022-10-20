@@ -48,10 +48,13 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -63,12 +66,11 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     private static final String COMPONENT_NAME = "imagelist";
     private static final int DEFAULT_IMAGES_PER_VIEW = 10;
     private static final int DEFAULT_IMPORTANT_IMAGES_PER_VIEW = 0;
- 
+
     
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "owner_content_id")
-    @PrivateOwned
-    private List<CMSCategory> categories;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cms_content_imagelist_categories", joinColumns = @JoinColumn(name = "content_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<CMSCategory> categories = new ArrayList<>();
     
     @Column(name="images_per_view")
     private int imagesPerView;

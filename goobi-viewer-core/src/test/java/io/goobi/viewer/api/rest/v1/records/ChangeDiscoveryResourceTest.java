@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -43,10 +42,7 @@ import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
-import io.goobi.viewer.api.rest.v1.ApiUrlManagerTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * @author florian
@@ -80,7 +76,7 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             OrderedCollection<Activity> activities = new OrderedCollection<>();
-            activities = mapper.readValue(entity, activities.getClass());
+            activities = mapper.readValue(entity, OrderedCollection.class);
             assertTrue(activities.getTotalItems() > 0);
             Assert.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getId().toString());
             Assert.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build(), activities.getFirst().getId().toString());

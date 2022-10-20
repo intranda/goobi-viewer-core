@@ -120,6 +120,12 @@ public class CMSPageTemplate implements Serializable {
                 template.setIconFileName(root.getChildText("icon"));
                 template.setHtmlFileName(root.getChildText("html"));
                 for (Element eleContentItem : root.getChild("content").getChildren("item")) {
+                    
+                    String itemId = eleContentItem.getAttributeValue("id");
+                    if("preview01".equals(itemId)) {
+                        continue;//preview texts are directly in cmsPage. They should not be loaded as content item
+                    }
+                    
                     CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
                     CMSContentItemTemplate item = new CMSContentItemTemplate(type);
                     item.setItemId(eleContentItem.getAttributeValue("id"));
