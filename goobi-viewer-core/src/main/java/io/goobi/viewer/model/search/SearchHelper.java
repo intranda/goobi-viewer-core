@@ -1993,8 +1993,8 @@ public final class SearchHelper {
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
      * @should remove proximity search tokens
-     * @should remove plus characters
      * @should remove range values
+     * @should remove operators from field names
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         logger.trace("extractSearchTermsFromQuery:{}", query);
@@ -2076,6 +2076,12 @@ public final class SearchHelper {
                         continue;
                     }
                     currentField = field;
+
+                    // Remove operators before field name
+                    if (currentField.charAt(0) == '+' || currentField.charAt(0) == '-') {
+                        currentField = currentField.substring(1);
+                    }
+
                     if (SolrConstants.SUPERDEFAULT.equals(currentField)) {
                         currentField = SolrConstants.DEFAULT;
                     } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {

@@ -528,28 +528,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
-     * @verifies remove plus characters
-     */
-    @Test
-    public void extractSearchTermsFromQuery_shouldRemovePlusCharacters() throws Exception {
-        Map<String, Set<String>> result =
-                SearchHelper.extractSearchTermsFromQuery("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +ACCESSCONDITION:\"foo\"", null);
-        {
-            Set<String> terms = result.get(SolrConstants.DOCTYPE);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("UGC"));
-        }
-        {
-            Set<String> terms = result.get(SearchHelper.TITLE_TERMS);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("\"foo\""));
-        }
-    }
-
-    /**
-     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
      * @verifies remove range values
      */
     @Test
@@ -560,6 +538,20 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Set<String> terms = result.get("MD_YEARPUBLISH");
             Assert.assertNull(terms);
         }
+    }
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove operators from field names
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveOperatorsFromFieldNames() throws Exception {
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery(
+                        " (+(SUPERDEFAULT:(berlin) SUPERFULLTEXT:(berlin) SUPERUGCTERMS:(berlin)) +(MD_AUTHOR:(karl)))",
+                        null);
+        Assert.assertTrue(result.containsKey("MD_AUTHOR"));
+
     }
 
     /**
@@ -1031,7 +1023,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String result = SearchHelper.generateAdvancedExpandQuery(group, false);
         Assert.assertEquals(" +(+(MD_FIELD:(val)))", result);
     }
-    
 
     /**
      * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup,boolean)
