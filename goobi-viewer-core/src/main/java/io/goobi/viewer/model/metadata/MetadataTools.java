@@ -288,7 +288,7 @@ public class MetadataTools {
         }
         // citation_doi
         if (structElement.getMetadataValue("MD_PI_DOI_URL") != null) {
-            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_PI_DOI_URL"));
+            String value = structElement.getMetadataValue("MD_PI_DOI_URL");
             result.append("\r\n<meta name=\"citation_doi\" content=\"").append(value).append("\" />");
         }
 
