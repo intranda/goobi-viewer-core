@@ -239,7 +239,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         for (int i = 2; i <= 3; ++i) {
             LicenseType lt2 = new LicenseType("lt" + i);
             licenseTypes.add(lt2);
-            lt.getOverridingLicenseTypes().add(lt2);
+            lt.getOverriddenLicenseTypes().add(lt2);
         }
 
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(licenseTypes, null, null, Optional.empty());
@@ -262,7 +262,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         for (int i = 2; i <= 3; ++i) {
             LicenseType lt2 = new LicenseType("lt" + i);
             licenseTypes.add(lt2);
-            lt.getOverridingLicenseTypes().add(lt2);
+            lt.getOverriddenLicenseTypes().add(lt2);
         }
 
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(licenseTypes, null, null, Optional.empty());

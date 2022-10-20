@@ -1079,7 +1079,7 @@ public final class SearchHelper {
                 usedLicenseTypes.add(licenseType.getName());
 
                 // If the current license type overrides other license types, add permissions for those as well
-                for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
+                for (LicenseType overridingLicenseType : licenseType.getOverriddenLicenseTypes()) {
                     if (!usedLicenseTypes.contains(overridingLicenseType.getName())) {
                         query.append(overridingLicenseType.getFilterQueryPart());
                         usedLicenseTypes.add(overridingLicenseType.getName());

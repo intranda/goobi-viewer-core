@@ -24,9 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,11 +32,10 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -55,8 +52,9 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * Bean to check whether the disclaimer applies to a page/record as well as provide a configuration json object for the javascript
- * This bean is session scoped, so all stored settings are discarded outside a jsf session
+ * Bean to check whether the disclaimer applies to a page/record as well as provide a configuration json object for the javascript This bean is
+ * session scoped, so all stored settings are discarded outside a jsf session
+ * 
  * @author florian
  *
  */
@@ -90,11 +88,10 @@ public class DisclaimerBean implements Serializable {
      * the consentScope to use as long as the user doesn't change
      */
     private Optional<ConsentScope> currentConsentScope = Optional.empty();
+
     /**
      * map storing PIs of records and whether the disclaimer applies to them
      */
-    private Map<String, Boolean> recordApplicabilityMap = new HashMap<>();
-
 
     /**
      * Default constructor using the IDAO from the {@link DataManager} class
@@ -115,9 +112,6 @@ public class DisclaimerBean implements Serializable {
 
     }
 
-
-
-
     /**
      * Get the stored disclaimer to display on a viewer web-page. Do not use for modifications
      *
@@ -133,14 +127,14 @@ public class DisclaimerBean implements Serializable {
                 logger.error("Error retrieving disclaimer from dao: {}", e.toString());
                 return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
      * The configuration object for the disclaimer to be used by the viewerJS.disclaimerModal module
-     * @return  a json object
+     * 
+     * @return a json object
      */
     public String getDisclaimerConfig() {
         if (dao != null) {
@@ -148,13 +142,15 @@ public class DisclaimerBean implements Serializable {
                 Disclaimer disclaimer = dao.getDisclaimer();
                 JSONObject json = new JSONObject();
                 if (disclaimer != null && disclaimer.isActive()) {
-                    if (disclaimer.getDisplayScope().appliesToPage(navigationHelper.getCurrentPageType(), activeDocumentBean.getPersistentIdentifier(), searchIndex)) {
+                    if (disclaimer.getDisplayScope()
+                            .appliesToPage(navigationHelper.getCurrentPageType(), activeDocumentBean.getPersistentIdentifier(), searchIndex)) {
                         ConsentScope scope = getConsentScope(disclaimer);
                         json.put("active", disclaimer.isActive());
                         json.put("lastEdited", disclaimer.getRequiresConsentAfter().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
                         json.put("storage", scope.getStorageMode().toString().toLowerCase());
                         json.put("daysToLive", scope.getDaysToLive());
-                        json.put("disclaimerText", disclaimer.getText().getTextOrDefault(navigationHelper.getLocale(), navigationHelper.getDefaultLocale()));
+                        json.put("disclaimerText",
+                                disclaimer.getText().getTextOrDefault(navigationHelper.getLocale(), navigationHelper.getDefaultLocale()));
                         navigationHelper.getSessionId().ifPresent(id -> {
                             json.put("sessionId", id);
                         });
@@ -169,30 +165,26 @@ public class DisclaimerBean implements Serializable {
         return "{}";
     }
 
-
     /**
-     * Checks the currently logged in user. If it matches the user stored in this bean return the stored consentScope.
-     * Otherwise check if a license of type {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} applies to the current user,
-     * any of its user groups or the current ip.
-     * Then set the user stored in the bean to the current user and the stored consentScope to a consentScope from a license
-     * or from the disclaimer if there is no matching license.
-     * Then return the stored consentScope
+     * Checks the currently logged in user. If it matches the user stored in this bean return the stored consentScope. Otherwise check if a license of
+     * type {@link LicenseType#LICENSE_TYPE_LEGAL_DISCLAIMER} applies to the current user, any of its user groups or the current ip. Then set the user
+     * stored in the bean to the current user and the stored consentScope to a consentScope from a license or from the disclaimer if there is no
+     * matching license. Then return the stored consentScope
      *
-     * @param disclaimer    must not be null
-     * @return  the applying consentScope, never null
+     * @param disclaimer must not be null
+     * @return the applying consentScope, never null
      * @throws DAOException
      */
     private ConsentScope getConsentScope(Disclaimer disclaimer) throws DAOException {
 
         Optional<User> user = Optional.ofNullable(userBean).map(UserBean::getUser);
-        if(user.equals(currentUser) && currentConsentScope.isPresent()) {
-            return currentConsentScope.get();
-        } else {
-            currentUser = user;
-            Optional<License> licenseToUse = getApplyingLicenses(user, this.licenseType).stream().findAny();
-            currentConsentScope = Optional.of(licenseToUse.map(License::getDisclaimerScope).orElse(disclaimer.getAcceptanceScope()));
+        if (user.equals(currentUser) && currentConsentScope.isPresent()) {
             return currentConsentScope.get();
         }
+        currentUser = user;
+        Optional<License> licenseToUse = getApplyingLicenses(user, this.licenseType).stream().findAny();
+        currentConsentScope = Optional.of(licenseToUse.map(License::getDisclaimerScope).orElse(disclaimer.getAcceptanceScope()));
+        return currentConsentScope.get();
 
     }
 
@@ -203,23 +195,21 @@ public class DisclaimerBean implements Serializable {
         List<IpRange> ipRanges = dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
 
         List<License> applyingLicenses = licenses.stream()
-        .filter(license -> {
-           return user.map(u -> u.equals(license.getUser())).orElse(false)
-                   || userGroups.contains(license.getUserGroup())
-                   || ipRanges.contains(license.getIpRange());
-        })
-        .collect(Collectors.toList());
+                .filter(license -> {
+                    return user.map(u -> u.equals(license.getUser())).orElse(false)
+                            || userGroups.contains(license.getUserGroup())
+                            || ipRanges.contains(license.getIpRange());
+                })
+                .collect(Collectors.toList());
 
         return applyingLicenses.stream()
                 .filter(l -> {
                     return applyingLicenses.stream()
-                    .filter(ol -> !ol.equals(l))
-                    .noneMatch(ol -> l.getLicenseType().getOverridingLicenseTypes().contains(ol.getLicenseType()));
+                            .filter(ol -> !ol.equals(l))
+                            .noneMatch(ol -> l.getLicenseType().getOverriddenLicenseTypes().contains(ol.getLicenseType()));
                 })
                 .collect(Collectors.toList());
     }
-
-
 
     private static IDAO retrieveDAO() {
         try {
@@ -229,7 +219,6 @@ public class DisclaimerBean implements Serializable {
             return null;
         }
     }
-
 
     private static LicenseType getDisclaimerLicenseType(IDAO dao) {
         try {
