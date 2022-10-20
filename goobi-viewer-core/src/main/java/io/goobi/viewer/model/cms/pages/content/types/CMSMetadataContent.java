@@ -35,7 +35,11 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "cms_content_metadata")
 public class CMSMetadataContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "metadata";

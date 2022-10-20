@@ -89,6 +89,7 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
 		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
 
 		<properties>
@@ -199,6 +200,7 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
 		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
 		
 		<properties>

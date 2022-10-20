@@ -22,17 +22,16 @@
 package io.goobi.viewer.model.cms.pages.content;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
-import de.intranda.monitoring.timer.Timer;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
@@ -43,6 +42,8 @@ import io.goobi.viewer.model.jsf.JsfComponent;
  *
  */
 public class CMSContentItem {
+    
+    private static final Logger logger = LogManager.getLogger(CMSContentItem.class);
     
     /**
      * Local identifier within the component. Used to reference this item within the component xhtml
@@ -151,9 +152,13 @@ public class CMSContentItem {
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
             wrapper.setId(id + "_wrapper");
             this.uiComponent.getChildren().add(wrapper);
-            UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.emptyMap());
-            component.getAttributes().put("contentItem", this);
-            component.setId(id + "_content");
+            if(StringUtils.isBlank(this.getJsfComponent().getFilename())) {
+                logger.warn("No backend component available for contentItem {}" + this.getContent().getBackendComponentName());
+            } else {                
+                UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.emptyMap());
+                component.getAttributes().put("contentItem", this);
+                component.setId(id + "_content");
+            }
         }
         return uiComponent;
     }

@@ -107,7 +107,7 @@ public final class CMSTemplateManager {
                 ctm = instance;
                 if (ctm == null) {
                     try {
-                        ctm = new CMSTemplateManager(null, DataManager.getInstance().getConfiguration().getThemeRootPath());
+                        ctm = new CMSTemplateManager(null, DataManager.getInstance().getConfiguration().getThemeRootPath(), null);
                         instance = ctm;
                     } catch (NullPointerException e) {
                         throw new IllegalStateException("Cannot access servlet context", e);
@@ -132,10 +132,30 @@ public final class CMSTemplateManager {
      */
     public static CMSTemplateManager getInstance(String templateFolderPath, String themeRootPath) throws PresentationException {
         synchronized (lock) {
-            instance = new CMSTemplateManager(templateFolderPath, themeRootPath);
+            instance = new CMSTemplateManager(templateFolderPath, themeRootPath, null);
         }
 
         return instance;
+    }
+    
+    public static CMSTemplateManager getInstance(ServletContext context) throws PresentationException {
+        CMSTemplateManager ctm = instance;
+        if (ctm == null) {
+            synchronized (lock) {
+                ctm = instance;
+                if (ctm == null) {
+                    try {
+                        ctm = new CMSTemplateManager(null, DataManager.getInstance().getConfiguration().getThemeRootPath(), context);
+                        instance = ctm;
+                    } catch (NullPointerException e) {
+                        throw new IllegalStateException("Cannot access servlet context", e);
+                    } catch (PresentationException e) {
+                        throw new IllegalStateException(e);
+                    }
+                }
+            }
+        }
+        return ctm;
     }
 
     /**
@@ -144,14 +164,17 @@ public final class CMSTemplateManager {
      * @param themeRootPath If the theme contents are in an external folder, its root path must be provided here
      * @throws PresentationException
      */
-    private CMSTemplateManager(String filesystemPath, String themeRootPath) throws PresentationException {
-        ServletContext servletContext = null;
+    private CMSTemplateManager(String filesystemPath, String themeRootPath, ServletContext servletContext) throws PresentationException {
         String webContentRoot = "";
         if (filesystemPath == null) {
-            if (FacesContext.getCurrentInstance() == null) {
-                throw new PresentationException("No faces context found");
+            if(servletContext == null) {
+                if (FacesContext.getCurrentInstance() == null) {
+                    throw new PresentationException("No faces context found");
+                } else {                    
+                    servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+                }
+                
             }
-            servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
             webContentRoot = servletContext.getContextPath();
         }
 
@@ -505,11 +528,15 @@ public final class CMSTemplateManager {
     }
 
     public Optional<CMSComponent> getComponent(String templateFilename) {
-        Optional<CMSComponent> component = this.getContentManager().getComponent(templateFilename);
-        if(component.isEmpty()) {
-            return Optional.ofNullable(this.legacyTemplateComponents.get(templateFilename));
-        } else {
-            return component;
+        if(templateFilename == null) {
+            return Optional.empty();
+        } else {            
+            Optional<CMSComponent> component = this.getContentManager().getComponent(templateFilename);
+            if(component.isEmpty()) {
+                return this.legacyTemplateComponents.values().stream().filter(t -> templateFilename.equals(t.getTemplateFilename())).findAny();
+            } else {
+                return component;
+            }
         }
     }
 

@@ -43,6 +43,7 @@ import org.apache.logging.log4j.LogManager;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.clients.ClientApplication;
@@ -79,6 +80,8 @@ public class ContextListener implements ServletContextListener {
         ViewerResourceBundle.init(sce.getServletContext());
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         try {
+            //Initialize CMSTemplateManager with the exisitng ServletContext
+            CMSTemplateManager.getInstance(sce.getServletContext());
             // Add a "member" role, if not yet in the database
             if (DataManager.getInstance().getDao().getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");

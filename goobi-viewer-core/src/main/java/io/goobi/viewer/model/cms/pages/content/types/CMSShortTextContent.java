@@ -53,7 +53,7 @@ import jakarta.persistence.Table;
  *
  */
 @Entity
-@Table(name = "cms_content_text")
+@Table(name = "cms_content_text_short")
 public class CMSShortTextContent extends CMSContent implements TranslatableCMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "text";

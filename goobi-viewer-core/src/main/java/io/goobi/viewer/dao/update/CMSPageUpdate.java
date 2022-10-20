@@ -23,10 +23,12 @@ package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -51,17 +53,23 @@ import io.goobi.viewer.model.translations.TranslatedText;
 
 public class CMSPageUpdate implements IModelUpdate {
 
-    private static final Logger logger  = LogManager.getLogger(CMSPageUpdate.class);
+    private static final Logger logger = LogManager.getLogger(CMSPageUpdate.class);
     CMSContentConverter contentConverter;
     CMSTemplateManager templateManager;
 
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
 
-        
-        List<Map<String, Object>> pages = getTableData(dao, "cms_pages");
         List<Map<String, Object>> languageVersions = getTableData(dao, "cms_page_language_versions");
         List<Map<String, Object>> contentItems = getTableData(dao, "cms_content_items");
+
+        if(languageVersions.isEmpty() || contentItems.isEmpty()) {
+            return false;
+        }
+        
+        List<Map<String, Object>> pages = getTableData(dao, "cms_pages");
+        
+        
         contentConverter = new CMSContentConverter(dao);
         templateManager = CMSTemplateManager.getInstance();
 
@@ -78,48 +86,66 @@ public class CMSPageUpdate implements IModelUpdate {
         List<CMSPage> updatedPages = new ArrayList<>();
         for (Map<String, Object> pageValues : pages) {
             Long pageId = (Long) pageValues.get("cms_page_id");
-            Map<String, Map<String, Object>> pageLanguageVersions = languageVersionMap.get(pageId);
-            Map<String, List<Map<String, Object>>> contentItemsMap = getContentItemsForPage(pageLanguageVersions, contentItemMap);
-
-            TranslatedText title = getTranslatedText(pageLanguageVersions, "title");
-            TranslatedText menuTitle = getTranslatedText(pageLanguageVersions, "menu_title");
-            Long topbarSliderId = getTopbarSliderId(contentItemMap, pageLanguageVersions);
-
-            Map<String, Map<String, Object>> previewTexts = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "preview01");
-            Map<String, String> previewValues = previewTexts.entrySet()
-                    .stream()
-                    .filter(e -> StringUtils.isNotBlank((String) e.getValue().get("html_fragment")))
-                    .collect(Collectors.toMap(e -> e.getKey(), e -> (String) e.getValue().get("html_fragment")));
-            TranslatedText previewText = new TranslatedText(new MultiLanguageMetadataValue(previewValues), IPolyglott.getDefaultLocale());
-
-            Map<String, Object> previewImageItem = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "image01").get("global");
-            CMSMediaItem previewImage = null;
-            if(previewImageItem != null) {
-               Long previewImageId =  (Long) previewImageItem.get("media_item_id");
-               if(previewImageId != null) {
-                   previewImage = dao.getCMSMediaItem(previewImageId);
-               }
-            }
-            
             CMSPage page = dao.getCMSPage(pageId);
-            page.setTitle(title);
-            page.setMenuTitle(menuTitle);
-            page.setTopbarSliderId(topbarSliderId);
-            page.setPreviewText(previewText);
-            page.setPreviewImage(previewImage);
+            try {
+                Map<String, Map<String, Object>> pageLanguageVersions = languageVersionMap.get(pageId);
+                Map<String, List<Map<String, Object>>> pageContentItemsMap = getContentItemsForPage(pageLanguageVersions, contentItemMap);
 
+                TranslatedText title = getTranslatedText(pageLanguageVersions, "title");
+                TranslatedText menuTitle = getTranslatedText(pageLanguageVersions, "menu_title");
+                Long topbarSliderId = getTopbarSliderId(contentItemMap, pageLanguageVersions);
+
+                Map<String, Map<String, Object>> previewTexts = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "preview01");
+                Map<String, String> previewValues = previewTexts.entrySet()
+                        .stream()
+                        .filter(e -> StringUtils.isNotBlank((String) e.getValue().get("html_fragment")))
+                        .collect(Collectors.toMap(e -> e.getKey(), e -> (String) e.getValue().get("html_fragment")));
+                TranslatedText previewText = new TranslatedText(new MultiLanguageMetadataValue(previewValues), IPolyglott.getDefaultLocale());
+
+                Map<String, Object> previewImageItem = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "image01").get("global");
+                CMSMediaItem previewImage = null;
+                if (previewImageItem != null) {
+                    Long previewImageId = (Long) previewImageItem.get("media_item_id");
+                    if (previewImageId != null) {
+                        previewImage = dao.getCMSMediaItem(previewImageId);
+                    }
+                }
+
+                page.setTitle(title);
+                page.setMenuTitle(menuTitle);
+                page.setTopbarSliderId(topbarSliderId);
+                page.setPreviewText(previewText);
+                page.setPreviewImage(previewImage);
+
+                Map<String, CMSContent> contentMap = createContentObjects(pageContentItemsMap, dao);
+
+                String legacyPageTemplateId = (String) pageValues.get("template_id");
+                CMSComponent componentTemplate = templateManager.getLegacyComponent(legacyPageTemplateId);
+                if (componentTemplate != null) {
+                    PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());
+                    component.setOwnerPage(page);
+                    page.setPersistentComponents(Collections.singletonList(component));
+                } else {
+                    logger.warn("No legacy template found with id {}: Cannot update cmsPage {}", legacyPageTemplateId, page.getId());
+                }
+            } catch (Throwable e) {
+                logger.error("Error updating page {}", page.getId(), e);
+                throw e;
+            }
             updatedPages.add(page);
-
-            Map<String, CMSContent> contentMap = createContentObjects(contentItemsMap, dao);
-            
-            String legacyPageTemplateId = (String) pageValues.get("template_id");
-            CMSComponent componentTemplate = templateManager.getLegacyComponent(legacyPageTemplateId);
-            PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());
-            component.setOwnerPage(page);
-            
-            dao.updateCMSPage(page);
-
         }
+
+        for (CMSPage cmsPage : updatedPages) {
+            try {                
+                dao.updateCMSPage(cmsPage);
+            } catch (Throwable e) {
+                logger.error("Error updating page {}", cmsPage.getId(), e);
+                throw e;
+            }
+        }
+        dao.executeUpdate("DROP TABLE cms_content_item_cms_categories");
+        dao.executeUpdate("DROP TABLE cms_content_items");
+        dao.executeUpdate("DROP TABLE cms_page_language_versions");
 
         return true;
     }
@@ -131,10 +157,13 @@ public class CMSPageUpdate implements IModelUpdate {
             for (Map<String, Object> legacyItem : legacyItemEntry.getValue()) {
                 String type = (String) legacyItem.get("type");
                 String legacyItemId = (String) legacyItem.get("item_id");
-                try {                    
+                try {
                     CMSContent content = createContent(legacyItem, type, Optional.ofNullable(contentMap.get(legacyItemId)), language);
-                    contentMap.put(legacyItemId, content);
-                } catch(DAOException | IllegalArgumentException e) {
+                    if (content != null) {
+                        content.setComponentId(legacyItemId);
+                        contentMap.put(legacyItemId, content);
+                    }
+                } catch (DAOException | IllegalArgumentException e) {
                     logger.error("Error creating content from legacy item of tye {} with item-id {}", type, legacyItemId);
                 }
             }
@@ -142,7 +171,8 @@ public class CMSPageUpdate implements IModelUpdate {
         return contentMap;
     }
 
-    private CMSContent createContent(Map<String, Object> legacyItem, String type, Optional<CMSContent> existingContent, String language) throws DAOException{
+    private CMSContent createContent(Map<String, Object> legacyItem, String type, Optional<CMSContent> existingContent, String language)
+            throws DAOException {
         switch (type) {
             case "TEXT":
                 return contentConverter.createShortTextContent(language, legacyItem, existingContent);
@@ -173,10 +203,6 @@ public class CMSPageUpdate implements IModelUpdate {
         }
     }
 
-    private String getLegacyItemId(Long pageId, Map<String, Object> legacyItem) {
-        String itemId = (String) legacyItem.get("item_id");
-        return pageId + "__" + itemId;
-    }
 
     /**
      * 
@@ -191,7 +217,13 @@ public class CMSPageUpdate implements IModelUpdate {
             String langauge = langEntry.getKey();
             Long langVersionId = (Long) langEntry.getValue().get("cms_page_language_version_id");
             List<Map<String, Object>> contentItems = contentItemMap.get(langVersionId);
-            map.put(langauge, contentItems);
+            if (contentItems != null) {
+                contentItems = contentItems.stream().filter(i -> {
+                    String itemId = (String) i.get("item_id");
+                    return !"topbar_slider".equals(itemId) && !"preview01".equals(itemId);
+                }).collect(Collectors.toList());
+                map.put(langauge, contentItems);
+            }
         }
         return map;
     }
@@ -219,9 +251,11 @@ public class CMSPageUpdate implements IModelUpdate {
         for (Long langVersionId : languageVersionIdsAndLanguages.keySet()) {
             String language = languageVersionIdsAndLanguages.get(langVersionId);
             List<Map<String, Object>> items = contentItemMap.get(langVersionId);
-            Map<String, Object> item = items.stream().filter(map -> map.get("item_id").equals(itemId)).findAny().orElse(null);
-            if (item != null) {
-                pageContentItems.put(language, item);
+            if (items != null) {
+                Map<String, Object> item = items.stream().filter(map -> Objects.equals(map.get("item_id"), itemId)).findAny().orElse(null);
+                if (item != null) {
+                    pageContentItems.put(language, item);
+                }
             }
         }
         return pageContentItems;

@@ -32,7 +32,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
@@ -43,6 +42,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
@@ -50,13 +50,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.translations.TranslatedText;
-import jakarta.persistence.Column;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
@@ -122,7 +119,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     }
 
     public String getUrl(String width, String height) throws ViewerConfigurationException, UnsupportedEncodingException {
-
+        
         String contentString = "";
         String type = getMediaItem() != null ? getMediaItem().getContentType() : "";
         switch (type) {
@@ -197,6 +194,49 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
+        return null;
+    }
+    
+    /**
+     * <p>
+     * getMediaName.
+     * </p>
+     *
+     * @param contentId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMediaName() {
+        CMSMediaItemMetadata metadata = getMediaMetadata();
+        return metadata == null ? "" : metadata.getName();
+    }
+    /**
+     * <p>
+     * getMediaDescription.
+     * </p>
+     *
+     * @param contentId a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public String getMediaDescription() {
+        CMSMediaItemMetadata metadata = getMediaMetadata();
+        return metadata == null ? "" : metadata.getDescription();
+    }
+
+    
+    /**
+     * <p>
+     * getMediaMetadata.
+     * </p>
+     *
+     * @param itemId a {@link java.lang.String} object.
+     * @return The media item metadata object of the current language associated with the contentItem with the given itemId. May return null if no
+     *         such item exists
+     */
+    public CMSMediaItemMetadata getMediaMetadata() {
+
+        if (getMediaItem() != null) {
+            return getMediaItem().getCurrentLanguageMetadata();
+        }
         return null;
     }
 

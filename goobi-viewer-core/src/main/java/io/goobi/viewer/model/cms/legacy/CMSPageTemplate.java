@@ -206,7 +206,10 @@ public class CMSPageTemplate implements Serializable {
                 this.templateFileName, Collections.emptyMap());
         
         for (CMSContentItemTemplate itemTemplate : contentItems) {
-            component.addContentItem(itemTemplate.createCMSContentItem());
+            CMSContentItem item = itemTemplate.createCMSContentItem();
+            if(item != null) {                
+                component.addContentItem(item);
+            }
         }
         
         return component;
@@ -461,14 +464,7 @@ public class CMSPageTemplate implements Serializable {
      * @throws DAOException
      */
     public CMSPageTemplateEnabled getEnabled() throws DAOException {
-        if (enabled == null) {
-            enabled = DataManager.getInstance().getDao().getCMSPageTemplateEnabled(id);
-        }
-        if (enabled == null) {
-            enabled = new CMSPageTemplateEnabled(id);
-        }
-
-        return enabled;
+           return enabled = new CMSPageTemplateEnabled(id);
     }
 
     /**

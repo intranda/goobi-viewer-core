@@ -179,7 +179,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText menuTitle = new TranslatedText();
 
-    @Column(name = "preview_text", nullable = true)
+    @Column(name = "preview_text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText previewText = new TranslatedText();
     
@@ -1485,6 +1485,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Override
     public boolean hasMediaItem() {
         return this.previewImage != null;
+    }
+    
+    public void setPersistentComponents(List<PersistentCMSComponent> persistentComponents) {
+        this.persistentComponents = persistentComponents;
     }
 
     @Override

@@ -34,6 +34,7 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
@@ -263,9 +264,13 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     public CMSContentItem createCMSContentItem() {
         
         CMSContent content = createCMSContent(this.type);
-        JsfComponent component = new JsfComponent("cms/components/backend/content", content.getComponentId());
-        CMSContentItem item = new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, component, this.isMandatory());
-        return item;
+        if(content != null) {            
+            JsfComponent component = new JsfComponent("cms/components/backend/content", content.getBackendComponentName());
+            CMSContentItem item = new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, component, this.isMandatory());
+            return item;
+        } else {
+            return null;
+        }
     }
 
     private CMSContent createCMSContent(CMSContentItemType type) {
@@ -273,7 +278,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
             case "TEXT":
                 return new CMSShortTextContent();
             case "HTML":
-                return new CMSMediaContent();
+                return new CMSMediumTextContent();
             case "SOLRQUERY":
                 return new CMSRecordListContent();
             case "PAGELIST":

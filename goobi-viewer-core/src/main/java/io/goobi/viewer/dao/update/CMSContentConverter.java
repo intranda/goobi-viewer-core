@@ -77,9 +77,10 @@ public class CMSContentConverter {
             CMSMediaItem media = dao.getCMSMediaItem(mediaItemId);
             if(media != null) {
                 content.setMediaItem(media);                
+                return content;
             }
         }
-        return content;
+        return null;
     }
     
     public CMSBrowseContent createBrowseContent(Map<String, Object> legacyItem) {
@@ -104,7 +105,9 @@ public class CMSContentConverter {
         content.setGroupingField(groupByField);
         content.setIgnoreCollections(ignoreCollections);
         content.setOpenExpanded(openExpanded);
-        content.setSorting(Sorting.valueOf(sorting));
+        if(sorting != null) {            
+            content.setSorting(Sorting.valueOf(sorting));
+        }
 
         return content;
     }
