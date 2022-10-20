@@ -1939,10 +1939,10 @@ public class CmsBean implements Serializable {
             Stream<String> filteredLuceneFields = this.luceneFields.stream()
                     .filter(name -> !(name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_")));
             if (!includeUntokenized) {
-                filteredLuceneFields = filteredLuceneFields.filter(name -> !name.endsWith(SolrConstants._UNTOKENIZED));
+                filteredLuceneFields = filteredLuceneFields.filter(name -> !name.endsWith(SolrConstants.SUFFIX_UNTOKENIZED));
             }
             if (excludeTokenizedMetadataFields) {
-                filteredLuceneFields = filteredLuceneFields.filter(name -> !(name.startsWith("MD_") && !name.endsWith(SolrConstants._UNTOKENIZED)));
+                filteredLuceneFields = filteredLuceneFields.filter(name -> !(name.startsWith("MD_") && !name.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)));
             }
             filteredLuceneFields = filteredLuceneFields.sorted();
             return filteredLuceneFields.collect(Collectors.toList());

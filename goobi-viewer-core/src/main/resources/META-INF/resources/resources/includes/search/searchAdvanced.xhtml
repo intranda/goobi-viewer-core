@@ -178,11 +178,11 @@
 		                            <label for="sortSelect">#{msg.sortBy}:</label>
 		                        </div>
 		                        <div class="custom-control custom-control--select search-advanced__custom-control">
-		                            <h:selectOneMenu value="#{search.sortString}" id="sortSelect" styleClass="search-advanced__select-values">
+		                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect" converter="searchSortingOptionConverter">
 		                                <f:selectItems value="#{searchBean.searchSortingOptions}"
 		                                    var="option"
 		                                    itemLabel="#{option.label}"
-		                                    itemValue="#{option.sortString}"/>
+		                                    itemValue="#{option}"/>
 		                            </h:selectOneMenu>                                
 		                        </div>
 		                    </div>

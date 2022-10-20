@@ -27,14 +27,13 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -82,7 +81,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     /** Identifier of the partner institution to which this record belongs (top-level structure elements only). */
     protected String partnerId = null;
     /** Format of document format from which this record was indexed. */
-    protected String sourceDocFormat = SolrConstants._METS;
+    protected String sourceDocFormat = SolrConstants.SOURCEDOCFORMAT_METS;
     /** Content of the LABEL or MD_TITLE fields. Used to display the record label in the browser's title bar. */
     protected String label = null;
     /** Name of the data repository for this record. */
@@ -476,7 +475,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return a boolean.
      */
     public boolean isLidoRecord() {
-        return SolrConstants._LIDO.equals(sourceDocFormat);
+        return SolrConstants.SOURCEDOCFORMAT_LIDO.equals(sourceDocFormat);
     }
 
     /**
@@ -660,7 +659,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public String getMetadataValueForLanguage(String fieldName, String language) {
         if (StringUtils.isNotEmpty(language)) {
-            String value = getMetadataValue(fieldName + SolrConstants._LANG_ + language.toUpperCase());
+            String value = getMetadataValue(fieldName + SolrConstants.MIDFIX_LANG + language.toUpperCase());
             if (value != null) {
                 return value;
             }

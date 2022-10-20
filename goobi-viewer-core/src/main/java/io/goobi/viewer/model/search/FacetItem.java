@@ -252,10 +252,10 @@ public class FacetItem implements Serializable, IFacetItem {
             }
 
             if (StringUtils.isEmpty(field)) {
-                label = new StringBuilder(value).append(SolrConstants._FACETS_SUFFIX).toString();
+                label = new StringBuilder(value).append(SolrConstants.SUFFIX_DD).toString();
             }
             String linkValue = value;
-            if (field.endsWith(SolrConstants._UNTOKENIZED)) {
+            if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                 linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
             }
             String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
@@ -363,7 +363,7 @@ public class FacetItem implements Serializable, IFacetItem {
         for (Object value : keys) {
             String label = String.valueOf(value);
             if (StringUtils.isEmpty(field)) {
-                label += SolrConstants._FACETS_SUFFIX;
+                label += SolrConstants.SUFFIX_DD;
             }
             String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
             retList.add(new FacetItem(field, link, label, ViewerResourceBundle.getTranslation(label, locale), values.get(String.valueOf(value)),

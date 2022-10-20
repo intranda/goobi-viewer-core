@@ -189,7 +189,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
-    
+
     /** Reusable Random object. */
     private Random random = new SecureRandom();
 
@@ -480,6 +480,7 @@ public class SearchBean implements SearchInterface, Serializable {
             if (calendarBean != null) {
                 calendarBean.resetCurrentSelection();
             }
+            setSortString("");
         } else {
             switch (activeSearchType) {
                 case 0:
@@ -487,6 +488,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     if (calendarBean != null) {
                         calendarBean.resetCurrentSelection();
                     }
+                    setSortString("");
                     break;
                 case 1:
                     resetSimpleSearchParameters();
@@ -498,11 +500,11 @@ public class SearchBean implements SearchInterface, Serializable {
                 case 3:
                     resetSimpleSearchParameters();
                     resetAdvancedSearchParameters();
+                    setSortString("");
                     break;
                 default: // nothing
             }
         }
-        setSortString("");
     }
 
     /**
@@ -750,7 +752,6 @@ public class SearchBean implements SearchInterface, Serializable {
             logger.trace("{} + {}", facets.getCurrentFacetStringPrefix(), sbCurrentCollection);
             facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
-            logger.trace(facets.getCurrentFacetString());
             facets.setCurrentFacetString(facets.getCurrentFacetString());
         }
 
@@ -1373,12 +1374,15 @@ public class SearchBean implements SearchInterface, Serializable {
                 sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
             }
             setSearchSortingOption(new SearchSortingOption(sortString));
+        } else {
+            setSearchSortingOption(null);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public String getSortString() {
+        logger.trace("getSortString: {}", searchSortingOption);
         if (searchSortingOption == null) {
             setSortString("-");
         }
@@ -1403,6 +1407,10 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setSearchSortingOption(SearchSortingOption searchSortingOption) {
         logger.trace("setSearchSortingOption: {}", searchSortingOption);
         this.searchSortingOption = searchSortingOption;
+        // Sync with currentSearch, if available
+        if (currentSearch != null) {
+            currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
+        }
     }
 
     /**
@@ -1687,7 +1695,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         String termQuery = null;
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
         }
 
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
@@ -1722,7 +1730,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         String termQuery = null;
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
         }
 
         List<String> filterQueries = facets.generateFacetFilterQueries(true);
@@ -1995,7 +2003,7 @@ public class SearchBean implements SearchInterface, Serializable {
             List<AdvancedSearchFieldConfiguration> toRemove = new ArrayList<>();
             language = language.toUpperCase();
             for (AdvancedSearchFieldConfiguration field : fields) {
-                if (field.getField().contains(SolrConstants._LANG_) && !field.getField().endsWith(language)) {
+                if (field.getField().contains(SolrConstants.MIDFIX_LANG) && !field.getField().endsWith(language)) {
                     toRemove.add(field);
                 }
             }
@@ -2302,7 +2310,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             String termQuery = null;
             if (boostTopLevelDocstructs && searchTerms != null) {
-                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
+                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
             }
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
             SXSSFWorkbook wb = new SXSSFWorkbook(25); //NOSONAR try-with-resources in the calling method

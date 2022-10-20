@@ -498,8 +498,8 @@ public class SearchQueryItem implements Serializable {
                 // Use _UNTOKENIZED field for phrase searches if the field is configured for that. In that case, only complete field value
                 // matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
                 String useField = f;
-                if (isUntokenizeForPhraseSearch() && !f.endsWith(SolrConstants._UNTOKENIZED)) {
-                    useField = f += SolrConstants._UNTOKENIZED;
+                if (isUntokenizeForPhraseSearch() && !f.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                    useField = f += SolrConstants.SUFFIX_UNTOKENIZED;
                 }
                 sbItem.append(useField).append(':');
                 if (useValue.charAt(0) != '"') {

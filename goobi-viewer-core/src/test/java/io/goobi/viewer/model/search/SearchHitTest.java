@@ -141,7 +141,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", "Any title");
         doc.addField("MD_AUTHOR", "Doe, John");
-        doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
+        doc.addField("MD_AUTHOR" + SolrConstants.SUFFIX_UNTOKENIZED, "Doe, John");
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
@@ -169,7 +169,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
         doc.addField("MD_TITLE", "Any title");
         doc.addField("MD_AUTHOR", "Doe, John");
-        doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
+        doc.addField("MD_AUTHOR" + SolrConstants.SUFFIX_UNTOKENIZED, "Doe, John");
         doc.addField("T-1000", "Call to John now.");
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null,

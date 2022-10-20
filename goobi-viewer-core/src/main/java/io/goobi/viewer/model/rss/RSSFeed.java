@@ -124,7 +124,7 @@ public class RSSFeed {
         List<String> allFields = new ArrayList<>();
         for (String string : FIELDS) {
             allFields.add(string);
-            allFields.add(string + SolrConstants._LANG_ + locale.getLanguage().toUpperCase());
+            allFields.add(string + SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase());
         }
         return allFields;
     }

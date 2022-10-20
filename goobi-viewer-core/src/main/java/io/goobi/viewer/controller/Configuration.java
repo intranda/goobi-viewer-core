@@ -2768,7 +2768,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
+                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -2783,7 +2783,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants._UNTOKENIZED)
+                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -2804,7 +2804,7 @@ public class Configuration extends AbstractConfiguration {
      * @return List of facet fields to be used as range values
      */
     public List<String> getRangeFacetFields() {
-        return Collections.singletonList(SolrConstants._CALENDAR_YEAR);
+        return Collections.singletonList(SolrConstants.CALENDAR_YEAR);
     }
 
     /**
