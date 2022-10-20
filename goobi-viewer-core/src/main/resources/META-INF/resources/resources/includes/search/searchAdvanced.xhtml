@@ -93,11 +93,9 @@
                                         
                                         
                                     </c:otherwise>
-                                    
-                                    
+
                                     </c:choose>
                                     
-
                                         <!-- INPUT FIELD -->
                                         <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
                                             <div class="search-advanced__input-col">
@@ -145,11 +143,25 @@
                          </c:forEach>
                          
                         <!-- FUZZY SEARCH OPTION -->
-						<div class="search-advanced__fuzzy-search-option-wrapper"><span class="search-advanced__fuzzy-search-option-label">#{msg.search__fuzzy_search}:</span> <viewerComponent:toggleSwitch name="fuzzeSearchToggle" value="#{searchBean.fuzzySearchEnabled}"/></div> 
+						<div class="search-advanced__fuzzy-search-option-wrapper">
+							<span class="search-advanced__fuzzy-search-option-label">#{msg.search__fuzzy_search}:</span> 
+							
+							<div class="admin__radio-switch" id="abc">
+								<h:selectOneRadio group="fuzzeSearchToggle"
+									value="#{searchBean.fuzzySearchEnabled}" disabled="#{false}">
+									<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+								</h:selectOneRadio>
+								<h:selectOneRadio group="fuzzeSearchToggle"
+									value="#{searchBean.fuzzySearchEnabled}" disabled="#{false}">
+									<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+								</h:selectOneRadio>
+								<span class="toggle-outside"><span class="toggle-inside"></span></span>
+							</div>
+						
+						</div> 
 
                     </div>
 
-                
                 <!-- ADDITIONAL OPTIONS FOR ADV SEARCH -->
                 <div class="search-advanced__additional-options-area">
 	                <!-- SEARCH LIST SORTING -->
@@ -190,8 +202,6 @@
 	               </div>
                 </div>
 
-               
-
                 <!-- SEARCH ADVANCED ACTION -->
                 <div class="search-advanced__action">
                     <h:commandButton styleClass="btn btn--full search-advanced__action-search-button" value="#{msg.search}" action="#{search.searchAdvanced}">
@@ -204,7 +214,6 @@
 					</button>
                 </div>
 
-                
             </h:form>
         </h:panelGroup>
     </div>
