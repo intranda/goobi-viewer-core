@@ -2725,9 +2725,10 @@ public final class SearchHelper {
      *
      * @param groups a {@link java.util.List} object.
      * @param allowFuzzySearch
+     * @return a {@link java.lang.String} object.
      * @should generate query correctly
      * @should skip reserved fields
-     * @return a {@link java.lang.String} object.
+     * @should switch to OR operator on fulltext items
      */
     public static String generateAdvancedExpandQuery(SearchQueryGroup group, boolean allowFuzzySearch) {
         logger.trace("generateAdvancedExpandQuery");
@@ -2757,9 +2758,8 @@ public final class SearchHelper {
             if (item.getField() == null) {
                 continue;
             }
-            logger.trace("item field: {}", item.getField());
-            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
-            // return every single doc
+            // logger.trace("item field: {}", item.getField());
+            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
             switch (item.getField()) {
                 case SolrConstants.PI_TOPSTRUCT:
                 case SolrConstants.PI_ANCHOR:
@@ -2768,12 +2768,15 @@ public final class SearchHelper {
                 case SolrConstants.BOOKMARKS:
                     continue;
                 default:
-                        if (item.getField().startsWith(SolrConstants.PREFIX_GROUPID)) {
+                    if (item.getField().startsWith(SolrConstants.PREFIX_GROUPID)) {
                         continue;
                     }
             }
             String itemQuery = item.generateQuery(new HashSet<>(), false, allowFuzzySearch);
             if (StringUtils.isNotEmpty(itemQuery)) {
+                if (orMode && itemQuery.charAt(0) == '+') {
+                    itemQuery = itemQuery.substring(1);
+                }
                 if (sbGroup.length() > 0) {
                     sbGroup.append(' ');
                 }

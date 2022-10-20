@@ -1031,6 +1031,26 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String result = SearchHelper.generateAdvancedExpandQuery(group, false);
         Assert.assertEquals(" +(+(MD_FIELD:(val)))", result);
     }
+    
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup,boolean)
+     * @verifies switch to OR operator on fulltext items
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldSwitchToOROperatorOnFulltextItems() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField("MD_FIELD");
+        group.getQueryItems().get(0).setValue("val1");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.FULLTEXT);
+        group.getQueryItems().get(1).setValue("foo bar");
+
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assert.assertEquals(" +((MD_FIELD:(val1)) (FULLTEXT:(foo AND bar)))", result);
+    }
 
     /**
      * @see SearchHelper#exportSearchAsExcel(String,List,Map)

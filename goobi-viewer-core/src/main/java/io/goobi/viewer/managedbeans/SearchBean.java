@@ -1382,7 +1382,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public String getSortString() {
-        logger.trace("getSortString: {}", searchSortingOption);
+        // logger.trace("getSortString: {}", searchSortingOption);
         if (searchSortingOption == null) {
             setSortString("-");
         }
