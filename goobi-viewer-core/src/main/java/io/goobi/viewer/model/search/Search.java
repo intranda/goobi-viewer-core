@@ -354,6 +354,7 @@ public class Search implements Serializable {
         String termQuery = null;
         if (boostTopLevelDocstructs && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+            logger.trace("termQuery: {}", termQuery);
         }
 
         Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
