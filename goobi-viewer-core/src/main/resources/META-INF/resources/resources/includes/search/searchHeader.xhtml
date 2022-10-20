@@ -35,7 +35,8 @@
 	    <!-- ADVANCED SEARCH INFO -->
 	    <ui:fragment rendered="#{searchType == 1}">
 	        <div class="search-list__adv-search-info">
-	            <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+	            <ui:fragment rendered="#{searchBean.fuzzySearchEnabled}">#{msg.search__fuzzy_search}: </ui:fragment><h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+
 	
 	            <!-- ADVANCED SEARCH -->
 	            <div class="search-list__adv-search-info-back text-right">
