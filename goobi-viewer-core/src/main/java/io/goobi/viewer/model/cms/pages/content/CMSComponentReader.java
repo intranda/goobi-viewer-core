@@ -123,7 +123,7 @@ public class CMSComponentReader {
             } else {
                 throw new InstantiationException("Class '" + className + "' is not of type 'CMSContent'");
             }
-        } catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        } catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NullPointerException e) {
             throw new InstantiationException(e.toString());
         }
     }
