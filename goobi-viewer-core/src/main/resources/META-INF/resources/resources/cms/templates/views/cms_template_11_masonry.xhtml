@@ -21,6 +21,8 @@
 
 
     <composite:implementation>
+    
+    		<div class="tpl-masonry legacy-component">
 
                 <div class="tpl-masonry__text">
                     <h:outputText escape="false" value="#{cc.attrs.text.content.text.textOrDefault}"></h:outputText>
@@ -53,5 +55,6 @@
 						cmsJS.masonry.init( masonryConfig, data);
 					});
 				</script>
+			</div>
      </composite:implementation>
 </ui:composition>
