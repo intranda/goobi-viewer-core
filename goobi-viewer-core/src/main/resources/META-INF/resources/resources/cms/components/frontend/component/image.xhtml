@@ -24,22 +24,31 @@
 						-width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes}
 						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
 						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}">
-				 
-				<div class="content-component__image lightbox-test">
-<!-- 					<a href="https://picsum.photos/1400/800?random=1"><img src="https://picsum.photos/1400/800?random=1" alt="" title=""/></a> -->
-	        	
-	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image)}">
-					<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid" alt="#{cc.attrs.image.alternativeText}" title="#{cc.attrs.image.name}" />
+
+	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and cc.attrs.lightbox}">
+					<div class="content-component__image">
+						<a class="content-component__image-lightbox-link" aria-label="#{msg.open_as_lightbox} #{cc.attrs.image.alternativeText}" data-target="imageLightbox" href="#{cc.attrs.cmsContent.getUrl(1920, null)}" title="#{cc.attrs.image.name}">
+							<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid" alt="#{cc.attrs.image.alternativeText}" title="#{cc.attrs.image.name}" />
+						</a>
+					</div>
 	            </ui:fragment>
+	            
+	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and !cc.attrs.lightbox}">
+					<div class="content-component__image">
+						<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid" alt="#{cc.attrs.image.alternativeText}" title="#{cc.attrs.image.name}" />
+					</div>
+	            </ui:fragment>
+	            
+
 	            <ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.image)}">
-					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.image.name}">
-						<source src="#{cc.attrs.cmsContent.url}"/>
-					</video>
+					<div class="content-component__video">
+						<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.image.name}">
+							<source src="#{cc.attrs.cmsContent.url}"/>
+						</video>
+					</div>
 	            </ui:fragment>
 					
 				</div>
-				
-			</div>
 
 		</ui:fragment>
     </composite:implementation>

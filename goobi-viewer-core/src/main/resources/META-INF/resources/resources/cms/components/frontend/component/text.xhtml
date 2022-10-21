@@ -15,21 +15,28 @@
     </composite:interface>
 
     <composite:implementation>
+
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
+
 			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
 			<div class="content-component content-component__text
 						-width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes}
 						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
-						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}">
+						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}
+						#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
+
+				<!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
+				<ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+					<div class="content-component__not-published-info">#{msg.content_not_published_yet}</div>
+				</ui:fragment>
+
 
 				<!-- RENDER THE TEXT CONTENT -->
 				<h:outputText escape="false" value="#{cc.attrs.component.firstContentItem.content.text.textOrDefault}"></h:outputText>
+				
 			</div>
 
 		</ui:fragment>
-		<!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
-		<ui:fragment rendered="#{!cc.attrs.component.hasAccess(userBean.user)}">
-			<div class="content-component__not-published-info">#{msg.content_item_not_published_yet}</div>
-		</ui:fragment>
+
     </composite:implementation>
 </ui:composition>

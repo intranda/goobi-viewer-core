@@ -157,6 +157,10 @@
 
 /* CONTENT ITEMS LAYOUT FRONTEND */
 .content-component {
+	&__not-published-info {
+		margin-bottom: 10px;
+		font-weight: 700;
+	}
 	// WIDTH OPTIONS
 	&.-width-100 {
 		flex: 0 0 calc(~"100%");
@@ -178,6 +182,10 @@
 	&.-hiddenOnDesktop {
 		display: none;
 	}
+	&.-isPrivate {
+		border: 2px dashed rgba(255, 109, 109, 0.59) !important;
+		padding: 10px;
+	}
 	
 	&__heading {
 		h2 {
@@ -186,6 +194,9 @@
 		}
 	}
 	&__image {
+		&-lightbox-link {
+			display: block;
+		}
 		img {
 			max-width: 100%;
 		}
