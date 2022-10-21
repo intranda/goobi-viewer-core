@@ -303,7 +303,8 @@
                                         <label for="overridindlicense">#{msg.admin__licenses}:</label>
                                     </div>
                                     <div class="col-9 admin__form-input">
-                                        <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter" value="#{adminLicenseBean.currentLicenseType.overridingLicenseTypes}">
+                                        <h:selectManyListbox id="overriding" styleClass="form-control" converter="licenseTypeConverter"
+                                            value="#{adminLicenseBean.currentLicenseType.overriddenLicenseTypes}">
                                             <f:passThroughAttribute name="aria-label" value="overriding licenses" />
                                             <f:selectItems value="#{adminLicenseBean.otherLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                                             <f:ajax render="@none" />
