@@ -154,6 +154,7 @@ public class CMSPageUpdate implements IModelUpdate {
         dao.executeUpdate("DROP TABLE cms_content_item_cms_categories");
         dao.executeUpdate("DROP TABLE cms_content_items");
         dao.executeUpdate("DROP TABLE cms_page_language_versions");
+        dao.executeUpdate("ALTER TABLE cms_pages DROP COLUMN template_id;");
 
         return true;
     }
