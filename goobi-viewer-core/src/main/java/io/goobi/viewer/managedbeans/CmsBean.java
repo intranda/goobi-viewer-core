@@ -1485,16 +1485,12 @@ public class CmsBean implements Serializable {
                                 searchBean.setActiveSearchType(item.getSearchType());
                             }
                             if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
-                                searchBean.setShowReducedSearchOptions(true);
                                 return searchAction(item);
                             } else if (item.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
                                 String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
                                 //                        searchBean.setSearchString(item.getSolrQuery());
                                 searchBean.setExactSearchString(searchString);
-                                searchBean.setShowReducedSearchOptions(false);
                                 return searchAction(item);
-                            } else {
-                                searchBean.setShowReducedSearchOptions(false);
                             }
                         }
                         break;
@@ -1685,7 +1681,7 @@ public class CmsBean implements Serializable {
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, true,
+            search.execute(facets, null, searchBean.getHitsPerPage(), null, true,
                     DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(),
                     item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(search);

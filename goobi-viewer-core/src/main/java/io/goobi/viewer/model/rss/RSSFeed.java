@@ -428,8 +428,7 @@ public class RSSFeed {
      * @should produce feed correctly
      */
     public static Channel createRssFeed(String rootPath, String query, List<String> filterQueries, int rssFeedItems, String language,
-            String sortField, boolean sortDescending)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+            String sortField, boolean sortDescending) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         Locale locale = null;
         if (StringUtils.isNotBlank(language)) {
             locale = Locale.forLanguageTag(language);
@@ -675,7 +674,7 @@ public class RSSFeed {
      * @throws ContentLibException
      */
     public static Channel createRssResponse(String language, Integer maxHits, String subtheme, String query, String facets,
-            Integer facetQueryOperator, HttpServletRequest servletRequest, String sortField, boolean sortDescending)
+            HttpServletRequest servletRequest, String sortField, boolean sortDescending)
             throws ContentLibException {
         try {
             if (maxHits == null) {
@@ -695,7 +694,7 @@ public class RSSFeed {
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
                 searchFacets.setCurrentFacetString(facets);
-                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true, false);
+                filterQueries = searchFacets.generateFacetFilterQueries(true);
             }
 
             return RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
@@ -712,14 +711,13 @@ public class RSSFeed {
      * @param subtheme
      * @param query
      * @param facets
-     * @param facetQueryOperator
      * @param servletRequest
      * @param sortField
      * @param sortDescending
      * @return
      * @throws ContentLibException
      */
-    public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets, Integer facetQueryOperator,
+    public static String createRssFeed(String language, Integer maxHits, String subtheme, String query, String facets,
             HttpServletRequest servletRequest, String sortField, boolean sortDescending)
             throws ContentLibException {
         try {
@@ -740,7 +738,7 @@ public class RSSFeed {
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
                 searchFacets.setCurrentFacetString(facets);
-                filterQueries = searchFacets.generateFacetFilterQueries(facetQueryOperator != null ? facetQueryOperator : 0, true, false);
+                filterQueries = searchFacets.generateFacetFilterQueries(true);
             }
 
             SyndFeedOutput output = new SyndFeedOutput();
@@ -760,12 +758,11 @@ public class RSSFeed {
      * @param servletRequest
      * @param addSuffixes
      * @return
-     * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
     private static String createQuery(String query, Long bookshelfId, String partnerId, HttpServletRequest servletRequest, boolean addSuffixes)
-            throws IndexUnreachableException, PresentationException, DAOException {
+            throws PresentationException, DAOException {
         // Build query, if none given
         if (StringUtils.isEmpty(query)) {
             if (bookshelfId != null) {

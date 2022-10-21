@@ -442,8 +442,8 @@
 			<defaultItemNumber>3</defaultItemNumber>
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
-				<field hierarchical="true">DC</field>
-				<field untokenizeForPhraseSearch="true">MD_TITLE</field>
+				<field hierarchical="true" visible="true">DC</field>
+				<field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
 				<field>MD_CREATOR</field>
 				<field>MD_PUBLISHER</field>
 				<field>MD_PLACEPUBLISH</field>
@@ -526,9 +526,6 @@
 				<field>LABEL</field>
 			</excel>
 		</export>
-        
-        <!-- fuzzy/@enabled: If true, fuzzy search will be applied. Default is false. -->
-        <fuzzy enabled="false" />
         
         <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,
             even if no search terms were given. Default is false. -->

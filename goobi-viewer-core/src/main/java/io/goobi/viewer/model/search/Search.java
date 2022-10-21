@@ -302,7 +302,6 @@ public class Search implements Serializable {
      * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param hitsPerPage a int.
-     * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
      * @param boostTopLevelDocstructs
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -310,9 +309,9 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale,
             boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false,
+        execute(facets, searchTerms, hitsPerPage, locale, boostTopLevelDocstructs, false,
                 SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
@@ -324,7 +323,6 @@ public class Search implements Serializable {
      * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param hitsPerPage a int.
-     * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
      * @param boostTopLevelDocstructs
      * @param keepSolrDoc
@@ -333,7 +331,7 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale,
             boolean boostTopLevelDocstructs, boolean keepSolrDoc, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
@@ -354,13 +352,14 @@ public class Search implements Serializable {
         String termQuery = null;
         if (boostTopLevelDocstructs && searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+            logger.trace("termQuery: {}", termQuery);
         }
 
         Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
         QueryResponse resp = null;
 
         // Apply current facets
-        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
+        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(true);
         String subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
         if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
             subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
@@ -379,7 +378,7 @@ public class Search implements Serializable {
 
             // Search without range facet queries to determine absolute slider range
             List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
-            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false, true);
+            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(false);
 
             // Add custom filter query
             if (StringUtils.isNotEmpty(customFilterQuery)) {
@@ -913,8 +912,34 @@ public class Search implements Serializable {
      * @param sortString the sortString to set
      */
     public void setSortString(String sortString) {
+        logger.trace("setSortString: {}", sortString);
         this.sortString = sortString;
         sortFields = SearchHelper.parseSortString(this.sortString, null);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public SearchSortingOption getSearchSortingOption() {
+        logger.trace("getSearchSortingOption");
+        if (sortFields != null && !sortFields.isEmpty()) {
+            logger.trace("getSearchSortingOption: {}", new SearchSortingOption(sortFields.get(0).getOne(), "asc".equals(sortFields.get(0).getTwo())));
+            return new SearchSortingOption(sortFields.get(0).getOne(), "asc".equals(sortFields.get(0).getTwo()));
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param option
+     */
+    public void setSearchSortingOption(SearchSortingOption option) {
+        logger.trace("setSearchSortingOption: {}", option);
+        if (option != null) {
+            setSortString((option.isDescending() ? "!" : "") + option.getField());
+        }
     }
 
     /**
@@ -1080,7 +1105,7 @@ public class Search implements Serializable {
      * @return the hits
      */
     public List<SearchHit> getHits() {
-        logger.trace("hits: {}", hits.size());
+        // logger.trace("hits: {}", hits.size());
         return hits;
     }
 

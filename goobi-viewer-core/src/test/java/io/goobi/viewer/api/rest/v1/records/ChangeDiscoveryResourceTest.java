@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -43,10 +42,7 @@ import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
-import io.goobi.viewer.api.rest.v1.ApiUrlManagerTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 
 /**
  * @author florian
@@ -71,8 +67,9 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetChanges() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_CHANGES).build())
+        try (Response response = target(urls.path(RECORDS_CHANGES).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -89,8 +86,9 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetChangesPage() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build())
+        try (Response response = target(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -103,14 +101,16 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             Assert.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build(), activities.getId().toString());
             Assert.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(1).build(), activities.getNext().getId().toString());
             Assert.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getPartOf().getId().toString());
-            Assert.assertEquals(DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage(), activities.getOrderedItems().size());
+            Assert.assertEquals(DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage(),
+                    activities.getOrderedItems().size());
 
         }
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGetChangePageCount() throws JsonMappingException, JsonProcessingException {
-        try(Response response = target(urls.path(RECORDS_CHANGES).build())
+        try (Response response = target(urls.path(RECORDS_CHANGES).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -124,11 +124,10 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             int numPages = (int) (itemCount / itemsPerPage) + 1;
 
             String lastPageUrl = activities.getLast().getId().toString();
-            lastPageUrl = lastPageUrl.substring(0, lastPageUrl.length()-1);
+            lastPageUrl = lastPageUrl.substring(0, lastPageUrl.length() - 1);
             String pageNo = lastPageUrl.substring(lastPageUrl.lastIndexOf("/") + 1);
             Assert.assertEquals(numPages - 1, Integer.parseInt(pageNo), 0);
         }
     }
-
 
 }

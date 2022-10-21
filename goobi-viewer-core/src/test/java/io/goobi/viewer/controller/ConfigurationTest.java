@@ -1511,15 +1511,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getAdvancedSearchDefaultItemNumber()
-     * @verifies return correct value
-     */
-    @Test
-    public void getAdvancedSearchDefaultItemNumber_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
-    }
-
-    /**
      * @see Configuration#getAdvancedSearchFields()
      * @verifies return all values
      */
@@ -1528,6 +1519,7 @@ public class ConfigurationTest extends AbstractTest {
         List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
         Assert.assertEquals(11, result.size());
         Assert.assertTrue(result.get(0).isHierarchical());
+        Assert.assertTrue(result.get(0).isVisible());
         Assert.assertTrue(result.get(5).isRange());
         Assert.assertTrue(result.get(1).isUntokenizeForPhraseSearch());
         Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
@@ -3016,16 +3008,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
-    }
-
-    /**
-     * @see Configuration#isFuzzySearchEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
     }
 
     /**

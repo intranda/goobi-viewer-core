@@ -33,9 +33,9 @@ import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.util.ClientUtils;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -61,13 +61,10 @@ public class SearchQueryItem implements Serializable {
     public enum SearchItemOperator {
         AND,
         OR,
-        IS,
-        PHRASE,
-        // AUTO operator will become PHRASE if value is in quotation marks; AND otherwise
-        AUTO;
+        NOT;
 
         public String getLabel() {
-            return ViewerResourceBundle.getTranslation("searchQueryItemOperator_" + this.name(), null);
+            return ViewerResourceBundle.getTranslation("searchOperator_" + this.name(), null);
         }
     }
 
@@ -75,6 +72,7 @@ public class SearchQueryItem implements Serializable {
 
     private SearchBean searchBean;
     private String field;
+    /** This operator now describes the relation of this item with the other items rather than between terms within this item's query! */
     private SearchItemOperator operator = SearchItemOperator.AND;
     private String value;
     private String value2;
@@ -144,16 +142,10 @@ public class SearchQueryItem implements Serializable {
      * getAvailableOperators.
      * </p>
      *
-     * @should return IS if displaySelectItems true
-     * @should return AND, OR, PHRASE if displaySelectItems false
      * @return a {@link java.util.List} object.
      */
     public List<SearchItemOperator> getAvailableOperators() {
-        if (displaySelectItems) {
-            return Collections.singletonList(SearchItemOperator.IS);
-        }
-
-        return Arrays.asList(SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.PHRASE);
+        return Arrays.asList(SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.NOT);
     }
 
     /**
@@ -246,6 +238,14 @@ public class SearchQueryItem implements Serializable {
     public boolean isUntokenizeForPhraseSearch() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field);
     }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean isAllFields() {
+        return ADVANCED_SEARCH_ALL_FIELDS.equals(field);
+    }
 
     /**
      *
@@ -286,25 +286,7 @@ public class SearchQueryItem implements Serializable {
      * @return the operator
      */
     public SearchItemOperator getOperator() {
-        checkAutoOperator();
         return operator;
-    }
-
-    /**
-     * If value is set and operator is AUTO, set it to PHRASE if the value is in quotation marks and to AND otherwise.
-     *
-     * @should set operator correctly
-     * @should do nothing if no value set
-     */
-    void checkAutoOperator() {
-        if (SearchItemOperator.AUTO.equals(operator) && value != null) {
-            if (value.startsWith("\"") && value.endsWith("\"")) {
-                operator = SearchItemOperator.PHRASE;
-            } else {
-                operator = SearchItemOperator.AND;
-            }
-            logger.trace("AUTO operator automatically set to {}.", operator);
-        }
     }
 
     /**
@@ -411,12 +393,12 @@ public class SearchQueryItem implements Serializable {
                     // Fields containing less values than the threshold for this field should be displayed as a drop-down
                     String facetField = SearchHelper.facetifyField(field); // use FACET_ to exclude reversed values from the count
                     String suffix = SearchHelper.getAllSuffixes();
-                    
+
                     // Via unique()
                     Map<String, String> params = Collections.singletonMap("json.facet", "{uniqueCount : \"unique(" + facetField + ")\"}");
                     List<String> values = SearchHelper.getFacetValues(facetField + ":[* TO *]" + suffix, "json:uniqueCount", null, 1, params);
                     int size = !values.isEmpty() ? Integer.valueOf(values.get(0)) : 0;
-                    
+
                     if (size < getDisplaySelectItemsThreshold()) {
                         displaySelectItems = true;
                     } else {
@@ -445,7 +427,6 @@ public class SearchQueryItem implements Serializable {
      * @should add proximity search token correctly
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits, boolean allowFuzzySearch) {
-        checkAutoOperator();
         StringBuilder sbItem = new StringBuilder();
 
         if (StringUtils.isBlank(value)) {
@@ -486,67 +467,66 @@ public class SearchQueryItem implements Serializable {
         }
 
         // Detect implicit phrase search
+        boolean phrase = false;
         if (SearchHelper.isPhrase(value.trim())) {
             logger.trace("Phrase detected, changing operator.");
-            operator = SearchItemOperator.PHRASE;
+            phrase = true;
         }
 
         switch (operator) {
-            case IS:
-            case PHRASE:
-            // Phrase search operator: just the whole value in quotation marks
-            {
-                if (fields.size() > 1) {
-                    sbItem.append('(');
-                }
-                String useValue = value.trim();
-                int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
-                logger.trace("proximity distance: {}", proximitySearchDistance);
-                boolean additionalField = false;
-                for (String f : fields) {
-                    if (additionalField) {
-                        sbItem.append(" OR ");
-                    }
-                    // Use _UNTOKENIZED field for phrase searches if the field is configured for that. In that case, only complete field value
-                    // matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
-                    String useField = f;
-                    if (isUntokenizeForPhraseSearch() && !f.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                        useField = f += SolrConstants.SUFFIX_UNTOKENIZED;
-                    }
-                    sbItem.append(useField).append(':');
-                    if (useValue.charAt(0) != '"') {
-                        sbItem.append('"');
-                    }
-                    sbItem.append(useValue);
-                    if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
-                        sbItem.append('"');
-                    }
-                    if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
-                        // Remove quotation marks to add to search terms
-                        String val = useValue.replace("\"", "");
-                        if (val.length() > 0) {
-                            searchTerms.add(val);
-                        }
-                    }
-                    additionalField = true;
-                }
-                if (fields.size() > 1) {
-                    sbItem.append(')');
-                }
-            }
-                break;
             case AND:
-            case OR:
-            // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
-            {
-                if (value.trim().isEmpty()) {
-                    break;
+                sbItem.append('+');
+                break;
+            case NOT:
+                sbItem.append('-');
+                break;
+            default:
+                break;
+        }
+        sbItem.append('(');
+
+        // Phrase search operator: just the whole value in quotation marks
+        if (phrase) {
+            String useValue = value.trim();
+            int proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
+            logger.trace("proximity distance: {}", proximitySearchDistance);
+            boolean additionalField = false;
+            for (String f : fields) {
+                if (additionalField) {
+                    sbItem.append(" ");
                 }
+                // Use _UNTOKENIZED field for phrase searches if the field is configured for that. In that case, only complete field value
+                // matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
+                String useField = f;
+                if (isUntokenizeForPhraseSearch() && !f.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                    useField = f += SolrConstants.SUFFIX_UNTOKENIZED;
+                }
+                sbItem.append(useField).append(':');
+                if (useValue.charAt(0) != '"') {
+                    sbItem.append('"');
+                }
+                sbItem.append(useValue);
+                if (useValue.charAt(useValue.length() - 1) != '"' && proximitySearchDistance == 0) {
+                    sbItem.append('"');
+                }
+                if (SolrConstants.FULLTEXT.equals(f) || SolrConstants.SUPERFULLTEXT.equals(f)) {
+                    // Remove quotation marks to add to search terms
+                    String val = useValue.replace("\"", "");
+                    if (val.length() > 0) {
+                        searchTerms.add(val);
+                    }
+                }
+                additionalField = true;
+            }
+        }
+        // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
+        else {
+            if (!value.trim().isEmpty()) {
                 String[] valueSplit = value.trim().split(" ");
                 boolean moreThanOneField = false;
                 for (String f : fields) {
                     if (moreThanOneField) {
-                        sbItem.append(" OR ");
+                        sbItem.append(" ");
                     }
                     String useField = f;
                     sbItem.append(useField).append(':');
@@ -569,10 +549,6 @@ public class SearchQueryItem implements Serializable {
 
                         if (val.charAt(0) == '-' && val.length() > 1) {
                             // negation
-                            //                            if (!"*".equals(value)) {
-                            //                                // Unless user searches for "contains not *", make sure only documents that actually have the field are found
-                            //                                sbItem.append(useField).append(":* ");
-                            //                            }
                             sbItem.append(" -");
                             val = val.substring(1);
                         } else if (moreThanOneValue) {
@@ -581,10 +557,10 @@ public class SearchQueryItem implements Serializable {
                                 //                                case SolrConstants.FULLTEXT:
                                 //                                case SolrConstants.UGCTERMS:
                                 case ADVANCED_SEARCH_ALL_FIELDS:
-                                    sbItem.append(" OR ");
+                                    sbItem.append(' ');
                                     break;
                                 default:
-                                    sbItem.append(' ').append(operator.name()).append(' ');
+                                    sbItem.append(SolrConstants.SOLR_QUERY_AND);
                                     break;
                             }
                         }
@@ -664,10 +640,9 @@ public class SearchQueryItem implements Serializable {
                     moreThanOneField = true;
                 }
             }
-                break;
-            default:
-                break;
         }
+
+        sbItem.append(')');
 
         String item = sbItem.toString();
         item = item.replace("\\~", "~");

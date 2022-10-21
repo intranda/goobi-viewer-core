@@ -989,13 +989,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals("license type 1 desc", licenseType.getDescription());
             Assert.assertEquals(false, licenseType.isOpenAccess());
             Assert.assertEquals(1, licenseType.getPrivileges().size());
-            Assert.assertEquals(1, licenseType.getOverridingLicenseTypes().size());
+            Assert.assertEquals(1, licenseType.getOverriddenLicenseTypes().size());
         }
         {
             LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(4);
             Assert.assertNotNull(licenseType);
             Assert.assertEquals(Long.valueOf(4), licenseType.getId());
-            Assert.assertEquals(1, licenseType.getOverridingLicenseTypes().size());
+            Assert.assertEquals(1, licenseType.getOverriddenLicenseTypes().size());
         }
     }
 
@@ -1022,6 +1022,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("license type 1 name", result.get(0).getName());
         Assert.assertEquals("license type 2 name", result.get(1).getName());
+    }
+    
+
+    /**
+     * @see JPADAO#getOverridingLicenseType(LicenseType)
+     * @verifies return all matching rows
+     */
+    @Test
+    public void getOverridingLicenseType_shouldReturnAllMatchingRows() throws Exception {
+        LicenseType lt = DataManager.getInstance().getDao().getLicenseType(1);
+        Assert.assertNotNull(lt);
+        List<LicenseType> overriding = DataManager.getInstance().getDao().getOverridingLicenseType(lt);
+        Assert.assertEquals(1, overriding.size());
+        Assert.assertEquals(Long.valueOf(4), overriding.get(0).getId());
     }
 
     @Test
