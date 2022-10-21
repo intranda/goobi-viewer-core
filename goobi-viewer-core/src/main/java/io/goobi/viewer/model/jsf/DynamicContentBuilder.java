@@ -37,6 +37,7 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -72,8 +73,10 @@ public class DynamicContentBuilder {
                 }
             }
             return composite;
+        } catch(FaceletException e) {
+            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+".\nCause: " + e.getMessage());
         } catch(Throwable e) {
-            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component");
+            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component", e);
         }
     }
 

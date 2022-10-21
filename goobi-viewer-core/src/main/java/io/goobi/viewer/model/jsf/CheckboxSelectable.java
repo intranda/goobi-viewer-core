@@ -46,16 +46,15 @@ public class CheckboxSelectable<T> {
         return this.dataSet.contains(value);
     }
     
-    public boolean setSelected(boolean selected) {
+    public void setSelected(boolean selected) {
         if(selected) {
             if(!this.dataSet.contains(this.value)) {
-                return this.dataSet.add(this.value);
+                this.dataSet.add(this.value);
             } else {
                 //already selected
-                return false;
             }
         } else {
-            return this.dataSet.remove(this.value);
+            this.dataSet.remove(this.value);
         }
     }
     
