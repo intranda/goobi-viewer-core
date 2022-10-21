@@ -64,7 +64,7 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     private TranslatedText text = new TranslatedText();
 
     public CMSShortTextContent() {
-        //empty
+        super();
     }
     
     public CMSShortTextContent(CMSShortTextContent orig) {

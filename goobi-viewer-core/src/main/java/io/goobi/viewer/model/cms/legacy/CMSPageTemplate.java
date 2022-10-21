@@ -128,7 +128,7 @@ public class CMSPageTemplate implements Serializable {
                     
                     CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
                     CMSContentItemTemplate item = new CMSContentItemTemplate(type);
-                    item.setItemId(eleContentItem.getAttributeValue("id"));
+                    item.setItemId(itemId);
                     item.setItemLabel(eleContentItem.getAttributeValue("label"));
                     item.setMandatory(Boolean.valueOf(eleContentItem.getAttributeValue("mandatory")));
                     item.setMode(ContentItemMode.get(eleContentItem.getAttributeValue("mode")));

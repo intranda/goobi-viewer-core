@@ -57,11 +57,11 @@ public abstract class CMSContent {
     private Long id;
     
     /**
-     * Mirrors the {@link CMSContentItem#getComponentId()} of the enclosing {@link CMSContentItem}
+     * Mirrors the {@link CMSContentItem#getItemId()} of the enclosing {@link CMSContentItem}
      * Used to identify the persistent content with the configuration from the xml component file
      */
     @Column(name = "component_id")
-    private String componentId;
+    private String itemId;
 
     /** Reference to the owning <code>PersistentCMSComponent</code>. */
     @ManyToOne
@@ -76,7 +76,7 @@ public abstract class CMSContent {
     
     protected CMSContent(CMSContent orig) {
         this.setId(orig.getId());
-        this.componentId = orig.componentId;
+        this.itemId = orig.itemId;
         this.owningComponent = orig.owningComponent;
     }
     
@@ -84,12 +84,12 @@ public abstract class CMSContent {
         return "cms/backend/components/content";
     }
     
-    public String getComponentId() {
-        return componentId;
+    public String getItemId() {
+        return itemId;
     }
     
-    public void setComponentId(String componentId) {
-        this.componentId = componentId;
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
     
     public PersistentCMSComponent getOwningComponent() {

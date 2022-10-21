@@ -93,14 +93,14 @@ public class CollectionViewBean implements Serializable {
                 collection = initializeCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy);
                 collections.put(myId, collection);
             } catch(CmsElementNotFoundException e) {
-                logger.debug("Not matching collection element for id {} on page {}", content.getComponentId(), content.getOwningPage().getId());
+                logger.debug("Not matching collection element for id {} on page {}", content.getItemId(), content.getOwningPage().getId());
             }
         }
         return collection;
     }
 
     public static String getCollectionId(CMSCollectionContent content) {
-        return content.getOwningComponent().getOwnerPage().getId() + "_" + content.getComponentId();
+        return content.getOwningComponent().getOwnerPage().getId() + "_" + content.getItemId();
     }
 
     public Optional<CollectionView> getCollectionIfStored(CMSCollectionContent content) {

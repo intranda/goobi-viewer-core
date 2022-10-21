@@ -43,10 +43,11 @@ public class CMSGlossaryContent extends CMSContent {
     private String glossaryName;
     
     public CMSGlossaryContent() {
-        
+        super();
     }
     
     private CMSGlossaryContent(CMSGlossaryContent orig) {
+        super(orig);
         this.glossaryName = orig.glossaryName;
     }
     

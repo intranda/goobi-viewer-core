@@ -61,6 +61,7 @@ public class CMSBrowseContent extends CMSContent {
     }
     
     public CMSBrowseContent() {
+        super();
         this.browse = this.initBrowse();
     }
     

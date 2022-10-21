@@ -48,10 +48,11 @@ public class CMSGeomapContent extends CMSContent {
     public GeoMap map;
     
     public CMSGeomapContent() {
-        
+        super();
     }
     
     public CMSGeomapContent(CMSGeomapContent orig) {
+        super(orig);
         this.map = orig.map;
     }
     

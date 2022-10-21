@@ -1143,7 +1143,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             for (PersistentCMSComponent component : persistentComponents) {
                 for (CMSContent content : component.getContentItems()) {
                     if(content instanceof CMSShortTextContent || content instanceof CMSLongTextContent || content instanceof CMSMediaContent) {
-                        String baseFileName = id + "-" + content.getComponentId() + ".";
+                        String baseFileName = id + "-" + content.getItemId() + ".";
                         for (Path file : cmsPageFiles) {
                             if (file.getFileName().toString().startsWith(baseFileName)) {
                                 filesToDelete.add(file);

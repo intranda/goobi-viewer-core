@@ -68,7 +68,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     private CMSMediaItem mediaItem;
 
     public CMSMediaContent() {
-        //empty
+        super();
     }
 
     public CMSMediaContent(CMSMediaContent orig) {

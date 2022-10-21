@@ -79,11 +79,13 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     private int nestedPagesCount = 0;
     
     public CMSPageListContent() {
+        super();
         this.categories = new ArrayList<>();
         this.itemsPerView = DEFAULT_ITEMS_PER_VIEW;
     }
     
     private CMSPageListContent(CMSPageListContent orig) {
+        super(orig);
         this.categories = orig.categories;
         this.itemsPerView = orig.itemsPerView;
     }

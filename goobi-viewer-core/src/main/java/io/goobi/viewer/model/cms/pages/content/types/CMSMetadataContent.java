@@ -49,10 +49,11 @@ public class CMSMetadataContent extends CMSContent {
     private String metadataFields = DEFAULT_METADATA_FIELD_SELECTION;
     
     public CMSMetadataContent() {
-        
+        super();
     }
     
     private CMSMetadataContent(CMSMetadataContent orig) {
+        super(orig);
         this.metadataFields = orig.metadataFields;
     }
     

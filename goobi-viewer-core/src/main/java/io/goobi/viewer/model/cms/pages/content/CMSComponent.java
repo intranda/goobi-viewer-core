@@ -29,12 +29,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.el.ELException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import io.goobi.viewer.model.security.user.User;
@@ -65,18 +67,12 @@ public class CMSComponent implements Comparable<CMSComponent> {
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), 
                 CMSComponent.initializeAttributes(template.getAttributes(), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())), jpa);
-        
-        List<CMSContentItem> items = template.getContentItems().stream().map(item -> {
-            CMSContent content = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList()).stream().filter(i -> i.getComponentId().equals(item.getComponentId()))
-                    .findAny().orElse(null);
-            if(content != null) {                
-                return new CMSContentItem(item.getComponentId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), item.isRequired());
-            } else {
-                return new CMSContentItem(item);
-            }
-        }).collect(Collectors.toList());
+        List<CMSContent> contentData = jpa.map(j -> j.getContentItems()).orElse(Collections.emptyList());
+        List<CMSContentItem> items = template.getContentItems().stream().map(item -> populateContentItem(item, contentData)).collect(Collectors.toList());
         this.contentItems.addAll(items);
     }
+
+
     
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Map<String, CMSComponentAttribute> attributes) {
         this(jsfComponent, label, description, iconPath, templateFilename, attributes, Optional.empty());
@@ -145,7 +141,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     public CMSContentItem getContentItem(String componentId) {
         return this.contentItems.stream()
-                .filter(item -> item.getComponentId().equals(componentId))
+                .filter(item -> item.getItemId().equals(componentId))
                 .findAny().orElse(null);
     }
     
@@ -188,7 +184,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
         return Integer.compare(this.getOrder(), o.getOrder());
     }
     
-    public UIComponent getUiComponent() {
+    public UIComponent getUiComponent() throws PresentationException {
 
         if(this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
@@ -201,6 +197,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
                 component.getAttributes().put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
             }
             component.setId(id + "_component");
+
         }
         return uiComponent;
     }
@@ -209,7 +206,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
         this.uiComponent = uiComponent;
     }
     
-    public UIComponent getBackendUiComponent() {
+    public UIComponent getBackendUiComponent() throws PresentationException {
         if(this.backendUiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             String id = FilenameUtils.getBaseName("component_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
@@ -283,6 +280,24 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     public void togglePublished() {
         setPublished(!isPublished());
+    }
+    
+    /**
+     * Create a new CMSContentItem based on the given item and populated with a CMSContent from the given contentData list 
+     * with a {@link CMSContent#getItemId()} equals to the item's {@link CMSContentItem#getItemId()}
+     * @param item
+     * @param contentData
+     * @return
+     */
+    private CMSContentItem populateContentItem(CMSContentItem item, List<CMSContent> contentData) {
+        CMSContent content = contentData
+                .stream().filter(i -> i.getItemId().equals(item.getItemId()))
+                .findAny().orElse(null);
+        if(content != null) {                
+            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), item.isRequired());
+        } else {
+            return new CMSContentItem(item);
+        }
     }
     
     private static Map<String, CMSComponentAttribute> initializeAttributes(Map<String, CMSComponentAttribute> attrs,

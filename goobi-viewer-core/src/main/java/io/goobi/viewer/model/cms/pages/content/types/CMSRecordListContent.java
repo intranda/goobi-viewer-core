@@ -72,6 +72,7 @@ public class CMSRecordListContent extends CMSContent {
     private final SearchFunctionality search;
     
     public CMSRecordListContent() {
+        super();
         this.search = initSearch();
     }
     

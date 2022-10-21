@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
@@ -48,7 +49,7 @@ public class CMSContentItem {
     /**
      * Local identifier within the component. Used to reference this item within the component xhtml
      */
-    private final String componentId;
+    private final String itemId;
     
     /**
      * The actual {@link CMSContent} wrapped in this item
@@ -66,7 +67,7 @@ public class CMSContentItem {
     private UIComponent uiComponent;
     
     public CMSContentItem(CMSContentItem orig) {
-        this.componentId = orig.componentId;
+        this.itemId = orig.itemId;
         this.content = orig.content.copy();
         this.label = orig.label;
         this.description = orig.description;
@@ -76,18 +77,18 @@ public class CMSContentItem {
     
     /**
      * 
-     * @param componentId
+     * @param itemId
      * @param content
      */
-    public CMSContentItem(String componentId, CMSContent content, String label, String description, JsfComponent jsfComponent, boolean required) {
-        if(StringUtils.isNotBlank(componentId)) {
-            this.componentId = componentId;            
+    public CMSContentItem(String itemId, CMSContent content, String label, String description, JsfComponent jsfComponent, boolean required) {
+        if(StringUtils.isNotBlank(itemId)) {
+            this.itemId = itemId;            
         } else {
-            throw new IllegalArgumentException("ComponentId of CMSContentItem may not be blank");
+            throw new IllegalArgumentException("ItemId of CMSContentItem may not be blank");
         }
         if(content != null) {            
             this.content = content;
-            this.content.setComponentId(this.getComponentId());
+            this.content.setItemId(this.getItemId());
         } else {
             throw new IllegalArgumentException("CMSContent of COMSContentItem may not be null");
         }
@@ -101,8 +102,8 @@ public class CMSContentItem {
         return required;
     }
 
-    public String getComponentId() {
-        return componentId;
+    public String getItemId() {
+        return itemId;
     }
     
     public CMSContent getContent() {
@@ -127,7 +128,7 @@ public class CMSContentItem {
     
     @Override
     public int hashCode() {
-        return componentId.hashCode();
+        return itemId.hashCode();
     }
     
     public boolean isMandatory() {
@@ -135,18 +136,18 @@ public class CMSContentItem {
     }
 
     /**
-     * Two CMSContentItems are equal if their {@link #componentId}s are equal
+     * Two CMSContentItems are equal if their {@link #itemId}s are equal
      */
     @Override
     public boolean equals(Object obj) {
         if(obj != null && obj.getClass().equals(this.getClass())) {
-            return ((CMSContentItem)obj).componentId.equals(this.componentId);
+            return ((CMSContentItem)obj).itemId.equals(this.itemId);
         } else {
             return false;
         }
     }
     
-    public UIComponent getUiComponent() {
+    public UIComponent getUiComponent() throws PresentationException {
         
         if(this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();

@@ -81,7 +81,7 @@ public class CMSCollectionContent extends CMSContent {
     private Map<String, CollectionResult> dcStrings = null;
     
     public CMSCollectionContent() {
-        
+        super();
     }
     
     private CMSCollectionContent(CMSCollectionContent orig) {

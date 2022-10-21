@@ -80,12 +80,14 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     @Transient List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
     
     public CMSImageListContent() {
+        super();
         this.categories = new ArrayList<>();
         imagesPerView = DEFAULT_IMAGES_PER_VIEW;
         importantImagesPerView = DEFAULT_IMPORTANT_IMAGES_PER_VIEW;
     }
     
     private CMSImageListContent(CMSImageListContent orig) {
+        super(orig);
         this.categories = orig.categories;
         this.imagesPerView = orig.imagesPerView;
         this.importantImagesPerView = orig.importantImagesPerView;

@@ -49,10 +49,11 @@ public class CMSSliderContent extends CMSContent {
     private CMSSlider slider;
     
     public CMSSliderContent() {
-        
+        super();
     }
     
     private CMSSliderContent(CMSSliderContent orig) {
+        super(orig);
         this.slider = orig.slider;
     }
     

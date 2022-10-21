@@ -67,7 +67,7 @@ public class CMSLongTextContent extends CMSContent implements TranslatableCMSCon
     private TranslatedText text = new TranslatedText();
 
     public CMSLongTextContent() {
-        //empty
+        super();
     }
     
     public CMSLongTextContent(CMSLongTextContent orig) {

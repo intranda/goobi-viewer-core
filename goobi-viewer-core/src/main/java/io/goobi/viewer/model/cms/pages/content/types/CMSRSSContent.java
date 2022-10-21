@@ -45,10 +45,11 @@ public class CMSRSSContent extends CMSContent {
     private String filterQuery = "";
 
     public CMSRSSContent() {
-        
+        super();
     }
     
     private CMSRSSContent(CMSRSSContent orig) {
+        super(orig);
         this.itemsPerView = orig.itemsPerView;
         this.filterQuery = orig.filterQuery;
     }

@@ -69,6 +69,7 @@ public class CMSSearchContent extends CMSContent {
     private final SearchFunctionality search;
 
     public CMSSearchContent() {
+        super();
         this.search = initSearch();
     }
 

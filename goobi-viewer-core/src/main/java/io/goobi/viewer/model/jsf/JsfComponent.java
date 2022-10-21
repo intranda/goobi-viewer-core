@@ -47,5 +47,8 @@ public class JsfComponent {
         }
     }
     
-    
+    @Override
+    public String toString() {
+        return this.library + "/" + this.name;
+    }
 }

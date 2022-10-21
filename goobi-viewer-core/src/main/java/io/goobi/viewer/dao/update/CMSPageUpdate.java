@@ -168,7 +168,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 try {
                     CMSContent content = createContent(legacyItem, type, Optional.ofNullable(contentMap.get(legacyItemId)), language);
                     if (content != null) {
-                        content.setComponentId(legacyItemId);
+                        content.setItemId(legacyItemId);
                         contentMap.put(legacyItemId, content);
                     }
                 } catch (DAOException | IllegalArgumentException e) {

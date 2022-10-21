@@ -67,7 +67,7 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
     private TranslatedText text = new TranslatedText();
 
     public CMSMediumTextContent() {
-        //empty
+        super();
     }
     
     public CMSMediumTextContent(CMSMediumTextContent orig) {

@@ -44,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
@@ -62,14 +63,18 @@ public class DynamicContentBuilder {
     private Application application = context.getApplication();
     private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
     
-    public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) {
-        UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
-        if(composite != null && attributes != null) {
-            for(Entry<String, Object> entry : attributes.entrySet()) {
-                composite.getAttributes().put(entry.getKey(), entry.getValue());
+    public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) throws PresentationException {
+        try {
+            UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
+            if(composite != null && attributes != null) {
+                for(Entry<String, Object> entry : attributes.entrySet()) {
+                    composite.getAttributes().put(entry.getKey(), entry.getValue());
+                }
             }
+            return composite;
+        } catch(Throwable e) {
+            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component");
         }
-        return composite;
     }
 
     public UIComponent build(DynamicContent content, UIComponent parent) {
