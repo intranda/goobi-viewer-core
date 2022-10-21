@@ -13,10 +13,8 @@
 		<composite:attribute name="content" required="false" default="#{cc.attrs.contentItem.content}"/>
 	</composite:interface>
 
-
 	<composite:implementation>
 
-		
 		<viewerForms:inputFormField 
 	       label="#{msg.admin__category_select}" 
 	       helpText="#{msg.inline_help__cms_content_type_tile_grid_categories}">
@@ -26,8 +24,7 @@
            <div class="cms-module__option-dropdown">
            
 			<div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">Choose category</div>
-           
-           
+
                <ul>
                    <ui:repeat var="selectable" value="#{cc.attrs.content.selectableCategories}">
                        <li>
@@ -43,7 +40,7 @@
            </div>
            
            </div>
-	       
+
 		</viewerForms:inputFormField>
   
   		<viewerForms:inputFormField 

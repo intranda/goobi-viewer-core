@@ -11,8 +11,8 @@
 
 
 	<composite:interface>
-		<composite:attribute name="cmsComponent" required="true" />
-		<composite:attribute name="pageListItem" required="false" default="#{cc.attrs.cmsComponent.firstContentItem}" />
+		<composite:attribute name="component" required="true" />
+		<composite:attribute name="pageListItem" required="false" default="#{cc.attrs.component.firstContentItem}" />
 	</composite:interface>
 
 	<composite:implementation>

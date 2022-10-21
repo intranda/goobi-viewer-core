@@ -11,11 +11,11 @@
 
 
     <composite:interface>
-		<composite:attribute name="cmsComponent" required="true"/>
+		<composite:attribute name="component" required="true"/>
     </composite:interface>
 
     <composite:implementation>
-		<ui:fragment rendered="#{cc.attrs.cmsComponent.hasAccess(userBean.user)}">
+		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
 			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
 			<div class="content-component content-component__text
 						-width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes}
@@ -23,12 +23,12 @@
 						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}">
 
 				<!-- RENDER THE TEXT CONTENT -->
-				<h:outputText escape="false" value="#{cc.attrs.cmsComponent.firstContentItem.content.text.textOrDefault}"></h:outputText>
+				<h:outputText escape="false" value="#{cc.attrs.component.firstContentItem.content.text.textOrDefault}"></h:outputText>
 			</div>
 
 		</ui:fragment>
 		<!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
-		<ui:fragment rendered="#{cc.attrs.cmsComponent.private and cc.attrs.cmsComponent.hasAccess(userBean.user)}">
+		<ui:fragment rendered="#{!cc.attrs.component.hasAccess(userBean.user)}">
 			<div class="content-component__not-published-info">#{msg.content_item_not_published_yet}</div>
 		</ui:fragment>
     </composite:implementation>
