@@ -196,12 +196,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             }
         }
 
-        CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
         for (PersistentCMSComponent component : original.getPersistentComponents()) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwnerTemplate(this);
             this.persistentComponents.add(copy);
-            CMSComponent comp = contentManager.getComponent(copy.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(copy))).orElse(null);
+            CMSComponent comp = CMSTemplateManager.getInstance().getComponent(copy.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(copy))).orElse(null);
             if(comp != null) {                
                 this.cmsComponents.add(comp);
             }

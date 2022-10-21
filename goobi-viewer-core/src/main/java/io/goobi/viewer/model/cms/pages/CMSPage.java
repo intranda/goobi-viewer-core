@@ -1336,8 +1336,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
     
     public PersistentCMSComponent addComponent(String filename) throws IllegalArgumentException {
-        CMSPageContentManager contentManager = CMSTemplateManager.getInstance().getContentManager();
-        return addComponent(contentManager.getComponent(filename).orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
+        return addComponent(CMSTemplateManager.getInstance().getComponent(filename).orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
     }
 
     PersistentCMSComponent addComponent(CMSComponent template) {

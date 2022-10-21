@@ -365,10 +365,6 @@ public class CmsBean implements Serializable {
         CMSTemplateManager.getInstance().reloadContentManager();
     }
     
-    public List<CMSComponent> getConfiguredCMSComponents() {
-        return CMSTemplateManager.getInstance().getContentManager().getComponents();
-    }
-    
     /**
      * <p>
      * getTemplates.

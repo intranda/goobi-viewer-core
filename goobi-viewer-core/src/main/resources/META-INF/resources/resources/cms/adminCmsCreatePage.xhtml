@@ -153,17 +153,11 @@
 																
 																<c:forEach var="cmsComponent" items="#{page.components}">
 
-
-																
-
 																		<div class="admin__content-component">
-																		
-
 
 																			<!-- CONTENT COMPONENT INNER -->
 																			<div class="admin__content-component-inner">
 																	
-
 																				<!-- CONTENT HEADER + TOOLBAR -->
 																				<div class="admin__content-component-header">
 																				
@@ -209,33 +203,12 @@
 																	
 																			</div>
 
-
-																
-
-																			
-
-
-																			
-
-
-																		
 																		<div class="admin__content-component-content-items-wrapper">
-
-																			<c:forEach var="contentItem" items="#{cmsComponent.contentItems}">
-																				<h:panelGroup layout="block" binding="#{contentItem.uiComponent}"></h:panelGroup>																			
-																			</c:forEach>
-
+																			<h:panelGroup binding="#{cmsComponent.backendUiComponent}"></h:panelGroup>
 																		</div>
 																	
-																	
-																	
-																	
 																	</div>
-																	
-																	
-
-																	
-																	
+									
 																</c:forEach>
 															</h:panelGroup>
 															
