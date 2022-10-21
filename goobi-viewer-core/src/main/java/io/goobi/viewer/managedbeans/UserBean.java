@@ -372,7 +372,7 @@ public class UserBean implements Serializable {
                     }
 
                     // Update personal filter query suffix
-                    SearchHelper.updateFilterQuerySuffix(request);
+                    SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
 
                     // Reset loaded user-generated content lists
                     BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
@@ -430,7 +430,7 @@ public class UserBean implements Serializable {
         }
         try {
             wipeSession(request);
-            SearchHelper.updateFilterQuerySuffix(request);
+            SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
             // Reset loaded user-generated content lists
             BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
