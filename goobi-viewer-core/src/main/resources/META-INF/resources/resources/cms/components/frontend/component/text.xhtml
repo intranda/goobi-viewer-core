@@ -28,7 +28,7 @@
 
 		</ui:fragment>
 		<!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
-		<ui:fragment rendered="#{!cc.attrs.cmsComponent.hasAccess(userBean.user)}">
+		<ui:fragment rendered="#{cc.attrs.cmsComponent.private and cc.attrs.cmsComponent.hasAccess(userBean.user)}">
 			<div class="content-component__not-published-info">#{msg.content_item_not_published_yet}</div>
 		</ui:fragment>
     </composite:implementation>

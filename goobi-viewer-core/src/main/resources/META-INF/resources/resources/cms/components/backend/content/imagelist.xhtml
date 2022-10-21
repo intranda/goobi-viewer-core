@@ -21,7 +21,13 @@
 	       label="#{msg.admin__category_select}" 
 	       helpText="#{msg.inline_help__cms_content_type_tile_grid_categories}">
 
-<!--            <div class="cms-module__option-dropdown"> -->
+			<div class="cms-module__option-group">
+
+           <div class="cms-module__option-dropdown">
+           
+			<div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">Choose category</div>
+           
+           
                <ul>
                    <ui:repeat var="selectable" value="#{cc.attrs.content.selectableCategories}">
                        <li>
@@ -34,7 +40,9 @@
                        </li>
                    </ui:repeat>
                </ul>
-<!--            </div> -->
+           </div>
+           
+           </div>
 	       
 		</viewerForms:inputFormField>
   
