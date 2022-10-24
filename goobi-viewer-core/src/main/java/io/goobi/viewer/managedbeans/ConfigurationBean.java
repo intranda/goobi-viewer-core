@@ -33,10 +33,10 @@ import javax.faces.annotation.FacesConfig;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -44,7 +44,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -1281,11 +1280,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
 
-    @Deprecated
-    public boolean isAggregateSearchHits() {
-        return true;
-    }
-
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
     }
@@ -1304,14 +1298,6 @@ public class ConfigurationBean implements Serializable {
      */
     public List<Integer> getSearchHitsPerPageValues() {
         return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
-    }
-
-    /**
-     *
-     * @return true if user.anonymousUserEmailAddress is configured and valid; false otherwise
-     */
-    public boolean isAnonymousUserEmailAddressValid() {
-        return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
     }
 
     /**
