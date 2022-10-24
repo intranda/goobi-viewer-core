@@ -2914,6 +2914,23 @@ public class ConfigurationTest extends AbstractTest {
     public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
     }
+    
+
+    /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean,int)
+     * @verifies load metadata config attributes correctly
+     */
+    @Test
+    public void getMetadataFromSubnodeConfig_shouldLoadMetadataConfigAttributesCorrectly() throws Exception {
+        HierarchicalConfiguration<ImmutableNode> metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(0).template(0).metadata(4)");
+        Assert.assertNotNull(metadataConfig);
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false, 0);
+        Assert.assertNotNull(md);
+        Assert.assertEquals("MD_CATALOGIDSOURCE", md.getLabel());
+        Assert.assertEquals("LINK_CATALOGIDSOURCE", md.getMasterValue());
+        Assert.assertTrue(md.isTopstructOnly());
+    }
 
     /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)

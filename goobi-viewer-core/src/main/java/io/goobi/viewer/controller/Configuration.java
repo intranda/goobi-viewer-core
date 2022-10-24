@@ -550,6 +550,7 @@ public class Configuration extends AbstractConfiguration {
      * @param topstructValueFallbackDefaultValue
      * @param indentation
      * @return the resulting {@link Metadata} instance
+     * @should load metadata config attributes correctly
      * @should load parameters correctly
      * @should load replace rules correctly
      * @should load child metadata configurations recursively
@@ -565,6 +566,7 @@ public class Configuration extends AbstractConfiguration {
         String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
         boolean singleString = sub.getBoolean("[@singleString]", true);
+        boolean topstructOnly = sub.getBoolean("[@topstructOnly]", false);
         int number = sub.getInt("[@number]", -1);
         int type = sub.getInt(XML_PATH_ATTRIBUTE_TYPE, 0);
         boolean hideIfOnlyMetadataField = sub.getBoolean("[@hideIfOnlyMetadataField]", false);
@@ -586,6 +588,7 @@ public class Configuration extends AbstractConfiguration {
                 .setNumber(number)
                 .setSingleString(singleString)
                 .setHideIfOnlyMetadataField(hideIfOnlyMetadataField)
+                .setTopstructOnly(topstructOnly)
                 .setCitationTemplate(citationTemplate)
                 .setLabelField(labelField)
                 .setSortField(sortField)

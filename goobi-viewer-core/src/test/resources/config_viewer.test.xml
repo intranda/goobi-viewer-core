@@ -626,7 +626,7 @@
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
 				</metadata>
-				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE">
+				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" topstructOnly="true">
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 				</metadata>
