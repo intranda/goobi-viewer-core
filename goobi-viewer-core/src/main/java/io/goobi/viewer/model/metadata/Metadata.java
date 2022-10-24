@@ -459,7 +459,6 @@ public class Metadata implements Serializable {
                     break;
                 case NORMDATAURI:
                     if (StringUtils.isNotEmpty(value)) {
-                        NavigationHelper nh = BeanUtils.getNavigationHelper();
                         String normDataType = MetadataGroupType.OTHER.name();
                         // Use the last part of NORM_URI_* field name as the normdata type
                         if (param.getKey() != null) {
@@ -486,14 +485,17 @@ public class Metadata implements Serializable {
                             }
                         }
                         // Popup button
-                        String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
-                        html = html.replace("{0}", nh.getApplicationUrl())
-                                .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
-                                .replace("{2}", normDataType == null ? MetadataGroupType.OTHER.name() : normDataType)
-                                .replace("{3}", nh.getLocaleString())
-                                .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
-                                .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
-                        value = html;
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        if (nh != null) {
+                            String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
+                            html = html.replace("{0}", nh.getApplicationUrl())
+                                    .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
+                                    .replace("{2}", normDataType == null ? MetadataGroupType.OTHER.name() : normDataType)
+                                    .replace("{3}", nh.getLocaleString())
+                                    .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
+                                    .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
+                            value = html;
+                        }
                     }
                     break;
                 case NORMDATASEARCH:
