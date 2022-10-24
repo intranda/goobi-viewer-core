@@ -944,11 +944,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(10, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
-    @Test
-    public void getThumbnailsCompressionTest() throws Exception {
-        Assert.assertEquals(30, DataManager.getInstance().getConfiguration().getThumbnailsCompression());
-    }
-
     /**
      * @see Configuration#getUnconditionalImageAccessMaxWidth()
      * @verifies return correct value
@@ -2914,7 +2909,6 @@ public class ConfigurationTest extends AbstractTest {
     public void isPageBrowseEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isPageBrowseEnabled());
     }
-    
 
     /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean,int)

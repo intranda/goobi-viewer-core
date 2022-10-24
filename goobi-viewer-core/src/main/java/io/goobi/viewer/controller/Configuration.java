@@ -3116,17 +3116,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * getThumbnailsCompression.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getThumbnailsCompression() {
-        return getLocalInt("viewer.thumbnailsCompression", 85);
-    }
-
-    /**
-     * <p>
      * getAnchorThumbnailMode.
      * </p>
      *
