@@ -2138,15 +2138,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isBoostTopLevelDocstructs()
-     * @verifies return correct value
-     */
-    @Test
-    public void isBoostTopLevelDocstructs_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
-    }
-
-    /**
      * @see Configuration#getRecordGroupIdentifierFields()
      * @verifies return all configured values
      */

@@ -473,11 +473,6 @@
 			for later re-use. Default is true. -->
 		<searchSaving enabled="false" />
         
-		<!-- boostTopLevelDocstructs: If true, anchors receive a factor 10 boost, 
-			volumes and standalone records a factor 5 boost. This results in anchors 
-			appearing on top, followed by other records, followed by lower level docstructs, 
-			when sorting by relevance. Default is true. -->
-		<boostTopLevelDocstructs>false</boostTopLevelDocstructs>
 		<!-- displayAdditionalMetadata: Add relevant metadata fields and values 
 			to the search hits if they contain requested search terms. Default is enabled=true. -->
 		<displayAdditionalMetadata enabled="false">

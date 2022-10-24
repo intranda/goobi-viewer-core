@@ -4040,18 +4040,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isBoostTopLevelDocstructs.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isBoostTopLevelDocstructs() {
-        return getLocalBoolean("search.boostTopLevelDocstructs", true);
-    }
-
-    /**
-     * <p>
      * getRecordGroupIdentifierFields.
      * </p>
      *

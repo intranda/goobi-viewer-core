@@ -66,7 +66,7 @@ public class SearchHitsNotifier {
             for (Search search : searches) {
                 // TODO access condition filters for each user
                 List<SearchHit> newHits = getNewHits(search);
-                if (newHits.size() > 0) {
+                if (!newHits.isEmpty()) {
                     String email = search.getOwner().getEmail();
                     sendEmailNotification(newHits, search.getName(), email);
                     DataManager.getInstance().getDao().updateSearch(search);
@@ -130,7 +130,7 @@ public class SearchHitsNotifier {
         Search tempSearch = new Search(search);
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString(tempSearch.getFacetString());
-        tempSearch.execute(facets, null, 0, null, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+        tempSearch.execute(facets, null, 0, null);
         // TODO what if there're >100 new hits?
         if (tempSearch.getHitsCount() > tempSearch.getLastHitsCount()) {
             int newHitsCount = (int) (tempSearch.getHitsCount() - tempSearch.getLastHitsCount());
@@ -141,7 +141,7 @@ public class SearchHitsNotifier {
             tempSearch.setPage(1);
             //reset hits count to 0 to actually perform search
             tempSearch.setHitsCount(0);
-            tempSearch.execute(facets, null, newHitsCount, null, DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+            tempSearch.execute(facets, null, newHitsCount, null);
             List<SearchHit> newHits = tempSearch.getHits();
 
             // Update last count

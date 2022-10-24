@@ -505,7 +505,6 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
      * @param aggregateHits a boolean.
-     * @param boostTopLevelDocstructs
      * @param proximitySearchDistance
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
@@ -518,15 +517,11 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, boolean boostTopLevelDocstructs,
-            int proximitySearchDistance) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query);
-        String termQuery = null;
-        if (boostTopLevelDocstructs) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
-        }
-        finalQuery = buildFinalQuery(finalQuery, termQuery, boostTopLevelDocstructs,
-                aggregateHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
+        // String termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+        finalQuery = buildFinalQuery(finalQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale,
@@ -1879,7 +1874,7 @@ public final class SearchHelper {
         }
 
         // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
-        String query = buildFinalQuery(sbQuery.toString(), null, false, SearchAggregationType.NO_AGGREGATION);
+        String query = buildFinalQuery(sbQuery.toString(), false, SearchAggregationType.NO_AGGREGATION);
         logger.trace("getFilteredTermsFromIndex query: {}", query);
         if (logger.isTraceEnabled()) {
             for (String fq : filterQueries) {
@@ -2418,20 +2413,18 @@ public final class SearchHelper {
      * generateQueryParams.
      * </p>
      *
+     * @param termQuery
      * @return a {@link java.util.Map} object.
-     * @should return empty map if search hit aggregation on
      */
     public static Map<String, String> generateQueryParams(String termQuery) {
         Map<String, String> params = new HashMap<>();
-        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
-            // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
-            params.put("defType", "edismax");
-            params.put("uf", "* _query_");
-            String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
-            if (bq != null) {
-                params.put("bq", bq);
-                logger.trace("bq: {}", bq);
-            }
+        // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
+        params.put("defType", "edismax");
+        params.put("uf", "* _query_");
+        String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
+        if (bq != null) {
+            params.put("bq", bq);
+            logger.trace("bq: {}", bq);
         }
 
         return params;
@@ -2977,24 +2970,23 @@ public final class SearchHelper {
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
      * @param rawQuery a {@link java.lang.String} object.
-     * @param aggregateHits a boolean.
-     * @param boostTopLevelDocstructs
+     * @param boostTopLevelDocstructs If true, query elements for boosting will be added
+     * @param aggregationType {@link SearchAggregationType}
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      *
      */
-    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType) {
-        return buildFinalQuery(rawQuery, termQuery, boostTopLevelDocstructs, null, aggregationType);
+    public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType) {
+        return buildFinalQuery(rawQuery, boostTopLevelDocstructs, null, aggregationType);
     }
 
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
      * @param rawQuery a {@link java.lang.String} object.
-     * @param termQuery
-     * @param aggregateHits If true, a join parser query part will be added
      * @param boostTopLevelDocstructs If true, query elements for boosting will be added
      * @param request
+     * @param aggregationType {@link SearchAggregationType}
      * @return a {@link java.lang.String} object.
      * @should add embedded query template if boostTopLevelDocstructs true
      * @should add query prefix if boostTopLevelDocstructs true and termQuery not empty
@@ -3003,14 +2995,13 @@ public final class SearchHelper {
      * @should not add join statement if aggregateHits false
      * @should remove existing join statement
      */
-    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs,
-            HttpServletRequest request, SearchAggregationType aggregationType) {
+    public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, HttpServletRequest request,
+            SearchAggregationType aggregationType) {
         if (rawQuery == null) {
             throw new IllegalArgumentException("rawQuery may not be null");
         }
 
         // logger.trace("rawQuery: {}", rawQuery);
-        // logger.trace("termQuery: {}", termQuery);
         StringBuilder sbQuery = new StringBuilder();
         if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
             rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");

@@ -303,8 +303,7 @@ public class RecordResource {
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalRequestException, IOException {
         IIIFPresentation2ResourceBuilder b = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
-        BuildMode buildMode = getBuildeMode(mode);
-        return b.getLayer(pi, layerName, buildMode);
+        return b.getLayer(pi, layerName);
     }
 
     @GET
