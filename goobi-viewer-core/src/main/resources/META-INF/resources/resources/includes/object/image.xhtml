@@ -62,6 +62,7 @@
         var access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
         var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         var page = "#{navigationHelper.currentPage}";
+        var allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
 
         var configViewer = {
         	global: {
@@ -72,7 +73,8 @@
         		persistRotation: #{configurationBean.rememberImageRotation},
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
         		maxZoomLevel: 5,
-        		zoomSpeed: #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom ? 1.25 : 1},
+        		zoomSpeed: allowZoom ? 1.25 : 1,
+        		zoomSlider: allowZoom ? '.zoom-slider' : '',
         		controls : {
         		    rotateLeft: '.rotate-left',
         		    rotateRight: '.rotate-right',
