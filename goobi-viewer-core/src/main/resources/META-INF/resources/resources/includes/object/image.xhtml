@@ -197,7 +197,9 @@
            		shareImageFragment.initImageFragmentLinks();
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
-           		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
+           		if(imageMap.lenth > 0) {           		    
+           			imageMap.get(0).innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
+           		}
            		
            		// reload image footer in fullscreen
            		if ( page === "fullscreen" ) {
