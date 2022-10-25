@@ -552,6 +552,9 @@ public class AdminLicenseBean implements Serializable {
         } else if (license.getIpRange() != null) {
             license.getIpRange().removeLicense(license);
             success = DataManager.getInstance().getDao().updateIpRange(license.getIpRange());
+        } else if(license.getClient() != null) {
+            license.getClient().removeLicense(license);
+            success = DataManager.getInstance().getDao().saveClientApplication(license.getClient());
         }
 
         if (success) {
