@@ -214,7 +214,7 @@ public class ExcelRenderer {
      * @param workbook
      * @return
      */
-    private static XSSFCellStyle getDataCellStyle(XSSFWorkbook wb) {
+    private XSSFCellStyle getDataCellStyle(XSSFWorkbook wb) {
         XSSFCellStyle style = wb.createCellStyle();
         //        style.setAlignment(HorizontalAlignment.RIGHT);
         XSSFFont font = wb.createFont();
