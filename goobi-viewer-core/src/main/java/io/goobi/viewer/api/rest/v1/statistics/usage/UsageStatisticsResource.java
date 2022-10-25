@@ -41,6 +41,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,19 +79,34 @@ public class UsageStatisticsResource {
     
     @GET
     @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE)
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" })
-    public StatisticsSummary getStatisticsForDay(
+    public Response getStatisticsForDay(
             @Parameter(description = "date to observe, in format yyyy-mm-dd") @PathParam("date") String date,
             @Parameter(description = "additional SOLR query to filter records which should be counted. "
-                    + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery) throws DAOException, IndexUnreachableException, PresentationException {
-        return new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(getLocalDate(date), getLocalDate(date), recordFilterQuery));
+                    + "Only requests to records matching the query will be counted") @QueryParam("recordFilterQuery") String recordFilterQuery,
+            @Parameter(description="the format in which to return the data. May be json, text or csv. Default is json")@QueryParam("format") String format) throws DAOException, IndexUnreachableException, PresentationException {
+        
+        if(StringUtils.isBlank(format)) {
+            format = servletRequest.getHeader("Accept");
+        }
+
+        
+        StatisticsSummary summary = new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(getLocalDate(date), getLocalDate(date), recordFilterQuery));
+        if("text/csv".equals(format) || "csv".equals(format)) {
+            return Response.status(Response.Status.OK).entity(summary.getAsCsv(servletRequest.getLocale(), SCV_VALUE_SEPARATOR)).type("text/csv").build();
+        } else if("text/plain".equals(format) || "text".equals(format)) {
+            return Response.status(Response.Status.OK).entity(summary.getAsCsv(servletRequest.getLocale(), SCV_VALUE_SEPARATOR)).type("text/plain").build();
+        } else {
+            this.servletResponse.setContentType("application/json");
+            return Response.status(Response.Status.OK).entity(summary).type(MediaType.APPLICATION_JSON).build();
+        }
     }
 
 
     @GET
     @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_RANGE)
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @Operation(summary = "Get combined usage statistics for a range of days", tags = { "statistics" })
     public Response getStatisticsForDays(
             @Parameter(description = "first date to observer, in format yyyy-mm-dd") @PathParam("startDate") String start,
@@ -100,6 +116,10 @@ public class UsageStatisticsResource {
             @Parameter(description="the format in which to return the data. May be json, text or csv. Default is json")@QueryParam("format") String format) 
                     throws DAOException, IndexUnreachableException, PresentationException, JsonProcessingException {
         
+        if(StringUtils.isBlank(format)) {
+            format = servletRequest.getHeader("Accept");
+        }
+        
         StatisticsSummary summary = new StatisticsSummaryBuilder().loadSummary(StatisticsSummaryFilter.of(getLocalDate(start), getLocalDate(end), recordFilterQuery));        
         if("text/csv".equals(format) || "csv".equals(format)) {
             return Response.status(Response.Status.OK).entity(summary.getAsCsv(servletRequest.getLocale(), SCV_VALUE_SEPARATOR)).type("text/csv").build();
@@ -108,13 +128,12 @@ public class UsageStatisticsResource {
         } else {
             this.servletResponse.setContentType("application/json");
             return Response.status(Response.Status.OK).entity(summary).type(MediaType.APPLICATION_JSON).build();
-
         }
     }
     
     @GET
     @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_LIST)
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @Operation(summary = "Get a list of usage statistics for a time frame", tags = { "statistics" })
     public Response getStatisticsListForDates(
             @Parameter(description = "first date to observer, in format yyyy-mm-dd") @PathParam("startDate") String start,
@@ -125,6 +144,10 @@ public class UsageStatisticsResource {
             @Parameter(description="the number of time units (default: days) each statistics should span")@QueryParam("step") Integer step,
             @Parameter(description="The time unit to use for 'step' paramter. May be years, months, weeks or days")@QueryParam("stepUnit") String stepUnit) 
                     throws DAOException, IndexUnreachableException, PresentationException, JsonProcessingException {
+        
+        if(StringUtils.isBlank(format)) {
+            format = servletRequest.getHeader("Accept");
+        }
         
         step = step != null ? step : 1;
         Period stepPeriod = getPeriod(step, stepUnit);
