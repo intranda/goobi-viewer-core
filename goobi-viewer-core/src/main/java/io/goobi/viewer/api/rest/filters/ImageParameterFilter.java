@@ -45,6 +45,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapp
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
@@ -104,7 +105,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             addRepositoryParameter("param:altoSource", repositoryRoot, DataManager.getInstance().getConfiguration().getAltoFolder(), request);
             addRepositoryParameter("param:metsSource", repositoryRoot, DataManager.getInstance().getConfiguration().getIndexedMetsFolder(), request);
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             throw e;
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());

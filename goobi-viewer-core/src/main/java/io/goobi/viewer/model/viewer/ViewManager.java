@@ -72,6 +72,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -213,7 +214,6 @@ public class ViewManager implements Serializable {
         }
 
         currentThumbnailPage = 1;
-        //        annotationManager = new AnnotationManager(topDocument);
         pi = topDocument.getPi();
 
         if (!topDocument.isAnchor()) {
@@ -728,10 +728,8 @@ public class ViewManager implements Serializable {
                     Scale scale = new Scale.ScaleToBox(maxSize);
                     Dimension size = scale.scale(origImageSize);
                     options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
-                } else if (dim.width * dim.height == 0) {
-                    continue;
-                } else if ((maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
-                    continue;
+                } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
+                    // nothing
                 } else {
                     Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
                     Dimension size = scale.scale(origImageSize);
@@ -823,11 +821,12 @@ public class ViewManager implements Serializable {
     public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<List<String>> coords = new ArrayList<>();
         List<String> coordStrings = getSearchResultCoords(getCurrentPage());
-        if (coordStrings != null) {
+        if (coordStrings != null && !coordStrings.isEmpty()) {
             for (String string : coordStrings) {
                 coords.add(Arrays.asList(string.split(",")));
             }
         }
+
         return coords;
     }
 
@@ -839,16 +838,17 @@ public class ViewManager implements Serializable {
      */
     private List<String> getSearchResultCoords(PhysicalElement currentImg) throws ViewerConfigurationException {
         if (currentImg == null) {
-            return null;
+            return Collections.emptyList();
         }
         List<String> coords = null;
         SearchBean searchBean = BeanUtils.getSearchBean();
         if (searchBean != null && (searchBean.getCurrentSearchFilterString() == null
                 || searchBean.getCurrentSearchFilterString().equals(SearchHelper.SEARCH_FILTER_ALL.getLabel())
                 || searchBean.getCurrentSearchFilterString().equals("filter_" + SolrConstants.FULLTEXT))) {
-            logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms().toString());
+            logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms());
             coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), rotate);
         }
+
         return coords;
     }
 
@@ -954,7 +954,6 @@ public class ViewManager implements Serializable {
             return null;
         }
 
-        //      Dimension imageSize = new Dimension(representativePage.getImageWidth(), representativePage.getImageHeight());
         return imageDeliveryBean.getThumbs().getThumbnailUrl(representativePage, width, height);
     }
 
@@ -1147,8 +1146,8 @@ public class ViewManager implements Serializable {
         boolean childIsFilesOnly = false;
         if (currentStructElement != null && (currentStructElement.isAnchor() || currentStructElement.isGroup())) {
             try {
-                String mimeType = currentStructElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
-                if (BaseMimeType.APPLICATION.getName().equals(mimeType)) {
+                String localMimeType = currentStructElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
+                if (BaseMimeType.APPLICATION.getName().equals(localMimeType)) {
                     childIsFilesOnly = true;
                 }
             } catch (PresentationException e) {
@@ -1231,7 +1230,6 @@ public class ViewManager implements Serializable {
     public Optional<PhysicalElement> getPage(int order) {
         try {
             if (pageLoader != null && pageLoader.getPage(order) != null) {
-                // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
                 return Optional.ofNullable(pageLoader.getPage(order));
             }
         } catch (IndexUnreachableException e) {
@@ -1593,7 +1591,6 @@ public class ViewManager implements Serializable {
         if (pageLoader != null) {
             int i = getFirstDisplayedThumbnailIndex(thumbnailsPerPage);
             int end = getLastDisplayedThumbnailIndex(thumbnailsPerPage);
-            //        logger.debug(i + " - " + end);
             for (; i < end; i++) {
                 if (i > pageLoader.getLastPageOrder()) {
                     break;
@@ -1895,12 +1892,12 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getAltoUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
-        String pi = getPi();
-        if (pi != null) {
+        String localPi = getPi();
+        if (localPi != null) {
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
-                    .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(pi).build())
+                    .map(urls -> urls.path(RECORDS_RECORD, RECORDS_ALTO_ZIP).params(localPi).build())
                     .orElse("");
         }
 
@@ -1916,11 +1913,11 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getFulltextUrlForAllPages() throws ViewerConfigurationException, PresentationException, IndexUnreachableException {
-        String pi = getPi();
+        String localPi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
-                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(pi).build())
+                .map(urls -> urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT_ZIP).params(localPi).build())
                 .orElse("");
     }
 
@@ -1932,12 +1929,12 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getTeiUrlForAllPages() throws ViewerConfigurationException, IndexUnreachableException {
-        String pi = getPi();
+        String localPi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
                 .map(urls -> urls.path(RECORDS_RECORD, RECORDS_TEI_LANG)
-                        .params(pi, BeanUtils.getLocale().getLanguage())
+                        .params(localPi, BeanUtils.getLocale().getLanguage())
                         .build())
                 .orElse("");
     }
@@ -1968,12 +1965,12 @@ public class ViewManager implements Serializable {
             return "";
         }
 
-        String pi = getPi();
+        String localPi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
                 .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_TEI)
-                        .params(pi, filenameToUse)
+                        .params(localPi, filenameToUse)
                         .build())
                 .orElse("");
     }
@@ -1994,13 +1991,13 @@ public class ViewManager implements Serializable {
         } catch (FileNotFoundException | NullPointerException e) {
             return "";
         }
-        String pi = getPi();
+        String localPi = getPi();
         if (StringUtils.isNoneBlank(pi, filename)) {
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
                     .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
-                            .params(pi, filename)
+                            .params(localPi, filename)
                             .build())
                     .orElse("");
         }
@@ -2035,12 +2032,12 @@ public class ViewManager implements Serializable {
             return "";
         }
 
-        String pi = getPi();
+        String localPi = getPi();
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
                 .map(urls -> urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
-                        .params(pi, filenameToUse)
+                        .params(localPi, filenameToUse)
                         .build())
                 .orElse("");
     }
@@ -2112,12 +2109,10 @@ public class ViewManager implements Serializable {
             lastPdfPage = firstPdfPage;
         }
 
-        //        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&images=");
         List<PhysicalElement> pages = new ArrayList<>();
         for (int i = firstPdfPage; i <= lastPdfPage; ++i) {
             PhysicalElement page = pageLoader.getPage(i);
             pages.add(page);
-            //            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
         }
         PhysicalElement[] pageArr = new PhysicalElement[pages.size()];
         return imageDeliveryBean.getPdf().getPdfUrl(getTopStructElement(), pages.toArray(pageArr));
@@ -2238,25 +2233,6 @@ public class ViewManager implements Serializable {
     public boolean isDisplayMetadataPdfLink() {
         return topStructElement != null && topStructElement.isWork() && DataManager.getInstance().getConfiguration().isMetadataPdfEnabled()
                 && isAccessPermissionPdf();
-    }
-
-    /**
-     * <p>
-     * isDisplayPagePdfLink.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public boolean isDisplayPagePdfLink() throws IndexUnreachableException, DAOException {
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage != null) {
-            return currentPage.isDisplayPagePdfLink();
-        }
-
-        return false;
     }
 
     /**
@@ -2457,7 +2433,7 @@ public class ViewManager implements Serializable {
                     opacUrl = topStruct.getMetadataValue(SolrConstants.OPACURL);
                 }
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             }
@@ -2874,12 +2850,12 @@ public class ViewManager implements Serializable {
 
     private LabeledLink getLinkToDownloadFile(String filename) {
         try {
-            String thisPi = getPi();
+            String localPi = getPi();
             String filenameEncoded = URLEncoder.encode(filename, StringTools.DEFAULT_ENCODING);
             return DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
-                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(thisPi, filenameEncoded).build())
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_SOURCE).params(localPi, filenameEncoded).build())
                     .map(url -> new LabeledLink(filename, url, 0))
                     .orElse(LabeledLink.EMPTY);
         } catch (UnsupportedEncodingException | IndexUnreachableException e) {
@@ -3210,7 +3186,7 @@ public class ViewManager implements Serializable {
                         currentStructElement.generateContextObject(BeanUtils.getNavigationHelper().getCurrentUrl(),
                                 currentStructElement.getTopStruct());
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             }
@@ -3837,7 +3813,7 @@ public class ViewManager implements Serializable {
      * @throws RecordNotFoundException
      */
     public static ViewManager createViewManager(String pi)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException {
+            throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }

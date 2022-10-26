@@ -6,6 +6,8 @@ public class StringConstants {
 
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
 
+    public static final String LOG_PRESENTATION_EXCEPTION_THROWN_HERE = "PresentationException thrown here: {}";
+
     public static final String MSG_ADMIN_ADDED_SUCCESSFULLY = "addedSuccessfully";
     public static final String MSG_ADMIN_DELETE_FAILURE = "deleteFailure";
     public static final String MSG_ADMIN_DELETED_SUCCESSFULLY = "deletedSuccessfully";
