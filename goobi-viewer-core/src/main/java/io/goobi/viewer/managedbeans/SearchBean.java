@@ -841,8 +841,7 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setExpandQuery(expandQuery);
         }
 
-        currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale(),
-                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
+        currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
     }
 
     /**
@@ -1694,7 +1693,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         String termQuery = null;
-        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
+        if (searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
         }
 
@@ -1705,12 +1704,10 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         if (currentHitIndex < currentSearch.getHitsCount() - 1) {
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex + 1, currentSearch.getAllSortFields(), filterQueries,
-                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
+                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         }
         return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
-                SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
+                SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
     }
 
     /**
@@ -1729,7 +1726,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         String termQuery = null;
-        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs() && searchTerms != null) {
+        if (searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
         }
 
@@ -1740,12 +1737,10 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         if (currentHitIndex > 0) {
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex - 1, currentSearch.getAllSortFields(), filterQueries,
-                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
+                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         } else if (currentSearch.getHitsCount() > 0) {
             return SearchHelper.getBrowseElement(searchStringInternal, currentHitIndex, currentSearch.getAllSortFields(), filterQueries,
-                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance);
+                    SearchHelper.generateQueryParams(termQuery), searchTerms, BeanUtils.getLocale(), proximitySearchDistance);
         }
 
         return null;
@@ -2205,15 +2200,13 @@ public class SearchBean implements SearchInterface, Serializable {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
 
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
-        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, searchString,
-                DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Locale locale = navigationHelper.getLocale();
         int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
-                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery,
-                        DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), proximitySearchDistance, locale)) {
+                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, proximitySearchDistance, locale)) {
                     if (wb == null) {
                         job.setError("Failed to create excel sheet");
                     } else if (Thread.interrupted()) {
@@ -2291,7 +2284,6 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param facesContext
      * @param finalQuery Complete query with suffixes.
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
-     * @param boostTopLevelDocstructs
      * @param proximitySearchDistance
      * @param locale
      * @return
@@ -2301,15 +2293,15 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws DAOException
      * @throws PresentationException
      */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, boolean boostTopLevelDocstructs,
-            int proximitySearchDistance, Locale locale) throws InterruptedException, ViewerConfigurationException {
+    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, int proximitySearchDistance,
+            Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
             HttpServletRequest request = BeanUtils.getRequest(facesContext);
             if (request == null) {
                 request = BeanUtils.getRequest();
             }
             String termQuery = null;
-            if (boostTopLevelDocstructs && searchTerms != null) {
+            if (searchTerms != null) {
                 termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
             }
             Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
@@ -2415,7 +2407,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
-        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        String query = SearchHelper.buildFinalQuery(SearchHelper.ALL_RECORDS_QUERY, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         return DataManager.getInstance().getSearchIndex().getHitCount(query);
     }
 
@@ -2853,15 +2845,31 @@ public class SearchBean implements SearchInterface, Serializable {
         return ret;
     }
 
+    /**
+     * 
+     * @param query
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public long getQueryResultCount(String query) throws IndexUnreachableException, PresentationException {
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         return DataManager.getInstance().getSearchIndex().getHitCount(finalQuery);
     }
 
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
     public String getFinalSolrQueryEscaped() throws IndexUnreachableException {
         return StringTools.encodeUrl(getFinalSolrQuery());
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getCombinedFilterQueryEscaped() {
         return StringTools.encodeUrl(getCombinedFilterQuery());
     }

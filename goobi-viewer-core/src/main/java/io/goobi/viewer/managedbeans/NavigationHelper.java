@@ -1049,27 +1049,6 @@ public class NavigationHelper implements Serializable {
 
     /**
      * <p>
-     * isHtmlHeadDCMetadata.
-     * </p>
-     *
-     * @deprecated Use ConfigurationBean.isAddDublinCoreTags()
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isHtmlHeadDCMetadata() {
-        return DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags();
-    }
-
-    //    public String getOverviewUrl() {
-    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewOverview.getName();
-    //    }
-    //
-    //    public String getOverviewActiveUrl() {
-    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewOverview.getName();
-    //    }
-
-    /**
-     * <p>
      * getObjectUrl.
      * </p>
      *

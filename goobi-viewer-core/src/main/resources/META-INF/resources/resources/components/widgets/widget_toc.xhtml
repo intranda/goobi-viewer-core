@@ -12,7 +12,7 @@
 
     <composite:implementation>
 		<ui:fragment
-		    rendered="#{cc.attrs.visible and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
+		    rendered="#{cc.attrs.visible and (activeDocumentBean.toc.hasChildren)}">
 			<div id="widgetToc" class="widget widget-toc">
                 <!-- OVERLAY -->
                 <div class="widget-toc__overlay"></div>

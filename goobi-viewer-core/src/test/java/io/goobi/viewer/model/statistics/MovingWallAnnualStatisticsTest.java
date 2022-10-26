@@ -19,45 +19,20 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller;
+package io.goobi.viewer.model.statistics;
 
-/**
- * @author florian
- *
- *         Contains descriptive information, like a label and an icon toa license type url
- *
- */
-public class LicenseDescription {
+import org.junit.Assert;
+import org.junit.Test;
 
-    private final String url;
-    private String label;
+public class MovingWallAnnualStatisticsTest {
 
     /**
-     *
+     * @see MovingWallAnnualStatistics#getQuery()
+     * @verifies build query correctly
      */
-    public LicenseDescription(String url) {
-        this.url = url;
+    @Test
+    public void getQuery_shouldBuildQueryCorrectly() throws Exception {
+        Assert.assertEquals("+ISWORK:true +DATE_PUBLICRELEASEDATE:[2022-01-01T00:00:00.000Z TO 2022-12-31T23:59:59.999Z]",
+                new MovingWallAnnualStatistics(2022).getQuery());
     }
-
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    /**
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
 }

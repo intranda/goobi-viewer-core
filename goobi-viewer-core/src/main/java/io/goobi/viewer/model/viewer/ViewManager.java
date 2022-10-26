@@ -299,9 +299,6 @@ public class ViewManager implements Serializable {
             return "";
         }
         return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
-        //        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-        //        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
-        //        return urlBuilder.toString();
     }
 
     /**
@@ -363,10 +360,8 @@ public class ViewManager implements Serializable {
     /**
      * @param currentPage
      * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
      */
-    public Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
+    public Optional<PhysicalElement> getCurrentLeftPage() {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? getFirstPageOrientation().opposite() : getFirstPageOrientation();
         if (topStructElement != null && topStructElement.isRtl()) {
@@ -385,10 +380,8 @@ public class ViewManager implements Serializable {
     /**
      * @param currentPage
      * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
      */
-    public Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
+    public Optional<PhysicalElement> getCurrentRightPage() {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? getFirstPageOrientation().opposite() : getFirstPageOrientation();
         if (topStructElement != null && topStructElement.isRtl()) {
@@ -428,8 +421,7 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return "";
         }
-        String url = getImageInfo(currentPage, PageType.viewFullscreen);
-        return url;
+        return getImageInfo(currentPage, PageType.viewFullscreen);
     }
 
     /**
@@ -446,8 +438,7 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return "";
         }
-        String url = getImageInfo(currentPage, PageType.editOcr);
-        return url;
+        return getImageInfo(currentPage, PageType.editOcr);
     }
 
     /**
@@ -640,10 +631,8 @@ public class ViewManager implements Serializable {
      * @param view
      * @param size
      * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
      */
-    private String getCurrentImageUrl(PageType view, int size) throws IndexUnreachableException, DAOException {
+    private String getCurrentImageUrl(PageType view, int size) {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
@@ -702,6 +691,14 @@ public class ViewManager implements Serializable {
 
     }
 
+    /**
+     * 
+     * @param configuredOptions
+     * @param origImageSize
+     * @param configuredMaxSize
+     * @param imageFilename
+     * @return
+     */
     public static List<DownloadOption> getDownloadOptionsForImage(
             List<DownloadOption> configuredOptions,
             Dimension origImageSize,
@@ -746,6 +743,12 @@ public class ViewManager implements Serializable {
         return options;
     }
 
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     public List<DownloadOption> getDownloadOptionsForCurrentImage() throws IndexUnreachableException, DAOException {
         PhysicalElement page = getCurrentPage();
         if (page != null && page.isHasImage()) {
@@ -827,6 +830,12 @@ public class ViewManager implements Serializable {
         return coords;
     }
 
+    /**
+     * 
+     * @param currentImg
+     * @return
+     * @throws ViewerConfigurationException
+     */
     private List<String> getSearchResultCoords(PhysicalElement currentImg) throws ViewerConfigurationException {
         if (currentImg == null) {
             return null;
@@ -1225,7 +1234,7 @@ public class ViewManager implements Serializable {
                 return Optional.ofNullable(pageLoader.getPage(order));
             }
         } catch (IndexUnreachableException e) {
-            logger.error("Error getting current page " + e.toString());
+            logger.error("Error getting current page {}", e.toString());
         }
 
         return Optional.empty();
@@ -1543,7 +1552,6 @@ public class ViewManager implements Serializable {
      */
     public void setDropdownSelected(String dropdownSelected) {
         this.dropdownSelected = dropdownSelected;
-        //        logger.debug("dropdownSelected: " + dropdownSelected);
     }
 
     /**
@@ -1604,8 +1612,7 @@ public class ViewManager implements Serializable {
      * @return
      */
     private int getLastDisplayedThumbnailIndex(int thumbnailsPerPage) {
-        int end = getFirstDisplayedThumbnailIndex(thumbnailsPerPage) + thumbnailsPerPage;
-        return end;
+        return getFirstDisplayedThumbnailIndex(thumbnailsPerPage) + thumbnailsPerPage;
     }
 
     /**
@@ -1704,7 +1711,7 @@ public class ViewManager implements Serializable {
      */
     public void updateDropdownSelected() {
         if (doublePageMode) {
-            setDropdownSelected(String.valueOf(currentImageOrder) + "-" + String.valueOf(currentImageOrder));
+            setDropdownSelected(String.valueOf(currentImageOrder) + "-" + currentImageOrder);
         } else {
             setDropdownSelected(String.valueOf(currentImageOrder));
         }
@@ -2263,12 +2270,6 @@ public class ViewManager implements Serializable {
      */
     public boolean isMetadataViewOnly() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         if (metadataViewOnly == null) {
-            // Check whether this mode is enabled first to avoid all the other checks
-            if (!DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews()) {
-                metadataViewOnly = false;
-                return metadataViewOnly;
-            }
-
             // Display object view criteria
             if (isDisplayObjectViewLink()) {
                 metadataViewOnly = false;
@@ -2323,10 +2324,9 @@ public class ViewManager implements Serializable {
      *
      * @return true if calendar view link may be displayed; false otherwise
      * @throws IndexUnreachableException
-     * @throws DAOException
      * @throws PresentationException
      */
-    public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible() && calendarView != null && calendarView.isDisplay();
     }
 
@@ -2335,12 +2335,11 @@ public class ViewManager implements Serializable {
      * @return true if TOC view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws PresentationException
      */
-    public boolean isDisplayTocViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayTocViewLink() throws IndexUnreachableException, DAOException {
         return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible() && !isFilesOnly() && topStructElement != null
                 && !topStructElement.isLidoRecord() && toc != null
-                && (toc.isHasChildren() || DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
+                && toc.isHasChildren();
     }
 
     /**
@@ -2348,9 +2347,8 @@ public class ViewManager implements Serializable {
      * @return true if thumbnail view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws PresentationException
      */
-    public boolean isDisplayThumbnailViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayThumbnailViewLink() throws IndexUnreachableException, DAOException {
         return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible()
                 && pageLoader != null && pageLoader.getNumPages() > 1 && !isFilesOnly();
     }
@@ -2358,11 +2356,8 @@ public class ViewManager implements Serializable {
     /**
      *
      * @return true if metadata view link may be displayed; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
      */
-    public boolean isDisplayMetadataViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayMetadataViewLink() {
         return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible() && topStructElement != null
                 && !topStructElement.isGroup();
     }
@@ -2372,10 +2367,8 @@ public class ViewManager implements Serializable {
      * @return true if full-text view link may be displayed; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
      */
-    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException {
         return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topStructElement != null
                 && topStructElement.isFulltextAvailable()
                 && !isFilesOnly()
@@ -2386,13 +2379,8 @@ public class ViewManager implements Serializable {
     /**
      *
      * @return true if external full-text link may be displayed; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws ViewerConfigurationException
      */
-    public boolean isDisplayExternalFulltextLink()
-            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    public boolean isDisplayExternalFulltextLink() {
         return topStructElement != null
                 && topStructElement.getMetadataValue("MD_LOCATION_URL_EXTERNALFULLTEXT") != null && getCurrentPage() != null
                 && getCurrentPage().isFulltextAccessPermission();
@@ -2402,21 +2390,17 @@ public class ViewManager implements Serializable {
      *
      * @return true if NER view link may be displayed; false otherwise
      * @throws IndexUnreachableException
-     * @throws DAOException
      * @throws PresentationException
      */
-    public boolean isDisplayNerViewLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayNerViewLink() throws IndexUnreachableException,  PresentationException {
         return topStructElement != null && topStructElement.isNerAvailable();
     }
 
     /**
      *
      * @return true if NER view link may be displayed; false otherwise
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
      */
-    public boolean isDisplayExternalResolverLink() throws IndexUnreachableException, DAOException, PresentationException {
+    public boolean isDisplayExternalResolverLink() {
         return topStructElement != null
                 && topStructElement.getMetadataValue("MD_LOCATION_URL_EXTERNALRESOLVER") != null;
     }

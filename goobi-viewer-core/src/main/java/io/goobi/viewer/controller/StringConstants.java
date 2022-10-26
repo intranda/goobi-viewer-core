@@ -3,10 +3,11 @@ package io.goobi.viewer.controller;
 public class StringConstants {
 
     public static final String DEFAULT = "default";
-    
+
     public static final String MIMETYPE_TEXT_PLAIN = "text/plain";
-    
+
     public static final String MSG_ADMIN_ADDED_SUCCESSFULLY = "addedSuccessfully";
+    public static final String MSG_ADMIN_DELETE_FAILURE = "deleteFailure";
     public static final String MSG_ADMIN_DELETED_SUCCESSFULLY = "deletedSuccessfully";
     public static final String MSG_ADMIN_SAVE_ERROR = "errSave";
     public static final String MSG_ADMIN_UPDATED_SUCCESSFULLY = "updatedSuccessfully";
