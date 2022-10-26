@@ -42,10 +42,10 @@
                 <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
                     <li class="numeric-paginator__navigate navigate_prev">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_previous}">
-                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                 <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
                             </ui:fragment>
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                 <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
                             </ui:fragment>
                         </a>
@@ -125,10 +125,10 @@
                 <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.lastItem }">
                     <li class="numeric-paginator__navigate navigate_next">
                         <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria_label__pagination_next}">
-                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                 <i class="fa #{msg.numericPaginator_next}" aria-hidden="true"></i>
                             </ui:fragment>
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                 <i class="fa #{msg.numericPaginator_prev}" aria-hidden="true"></i>
                             </ui:fragment>
                         </a>
@@ -148,7 +148,7 @@
                	        next: () => doClick(".numeric-paginator__navigate.navigate_next a"),
                	        first: () => doClick(".numeric-paginator .navigate_first a"),
                	        last: () => doClick(".numeric-paginator .navigate_last a"),
-               	        rightToLeft: "#{activeDocumentBean.viewManager.topDocument.rtl}"
+               	        rightToLeft: "#{activeDocumentBean.viewManager.topStructElement.rtl}"
                	}
                	function doClick(selector) {
                	    let query = $(selector);

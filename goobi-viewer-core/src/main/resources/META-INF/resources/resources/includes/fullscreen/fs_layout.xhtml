@@ -52,10 +52,10 @@
 
                 <!-- THUMBNAILS -->
                 <h:panelGroup layout="block">
-	                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+	                <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
 	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -ltr"/>
 	                </c:if>
-	                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+	                <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
 	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -rtl"/>
 	                </c:if>
                     <fsThumbnails></fsThumbnails>
@@ -139,7 +139,7 @@
                     </ui:fragment>
 
                     <!-- FULLTEXT -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.fulltextAvailable}">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
                         <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.fulltext}</span>

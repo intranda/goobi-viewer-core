@@ -7,19 +7,19 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMember or activeDocumentBean.viewManager.topDocument.anchorChild}">
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild}">
         
             <div id="widgetRelatedGroups" class="widget-related-groups">
 	         
 	             <!-- Group (convolutes, etc.) listing -->
-	             <h:outputText rendered="#{activeDocumentBean.viewManager.topDocument.groupMemberships.size() gt 1}">
+	             <h:outputText rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() gt 1}">
 					<div class="widget widget-related-groups__list">
 						<h2 >#{msg.recordGroupMemberships}</h2>
 						<ul>
-							<ui:repeat var="groupMembership" value="#{activeDocumentBean.viewManager.topDocument.groupMemberships.entrySet().toArray()}">
+							<ui:repeat var="groupMembership" value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().toArray()}">
 								<li>
 									<a href="#{navigationHelper.tocUrl}/#{groupMembership.value}/1/" target="_blank">
-									<h:outputText value="#{msg[activeDocumentBean.viewManager.topDocument.getGroupLabel(groupMembership.value, 'label__related_groups')]}" />
+									<h:outputText value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership.value, 'label__related_groups')]}" />
 									</a>
 								</li>
 							</ui:repeat>
@@ -28,19 +28,19 @@
 				</h:outputText>
 
                 <!-- Group (convolutes, etc.) listing -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMemberships.size() eq 1}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() eq 1}">
 					<div class="widget widget-related-groups__series">
-					<ui:param name="groupMembership" value="#{activeDocumentBean.viewManager.topDocument.groupMemberships.entrySet().iterator().next().value}" />
+					<ui:param name="groupMembership" value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().iterator().next().value}" />
 						<h2 >
 							<a href="#{navigationHelper.tocUrl}/#{groupMembership}/1/" target="_blank"> 
-							<h:outputText value="#{msg[activeDocumentBean.viewManager.topDocument.getGroupLabel(groupMembership, 'label__related_groups')]}" />
+							<h:outputText value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership, 'label__related_groups')]}" />
 							</a>
 						</h2>
 					</div>
 				</h:panelGroup>
                  
                 <!-- Extra link to the anchor, if this is a volume -->
-               <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.anchorChild}">
+               <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild}">
                    	<div class="widget widget-related-groups__anchor">
                    		<h2 >
                        		<a href="#{navigationHelper.tocUrl}/#{activeDocumentBean.viewManager.anchorPi}/1/" target="_blank">
