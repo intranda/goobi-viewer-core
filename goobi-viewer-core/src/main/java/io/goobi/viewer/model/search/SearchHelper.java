@@ -72,6 +72,7 @@ import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -932,7 +933,7 @@ public final class SearchHelper {
                     .collect(Collectors.toList());
 
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return ret;

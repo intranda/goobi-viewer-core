@@ -27,7 +27,7 @@
                                 <c:choose>
                                 	<c:when test="#{activeDocumentBean.group}">
 	                                	<button class="btn" aria-label="#{msg.search}"
-	                               			 jsf:action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.topDocument.groupIdField, activeDocumentBean.persistentIdentifier)}">
+	                               			 jsf:action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.topStructElement.groupIdField, activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
 		                                    <i class="fa fa-search"/>
 	                                	</button>

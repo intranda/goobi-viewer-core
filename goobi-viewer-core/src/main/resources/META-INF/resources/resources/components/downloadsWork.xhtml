@@ -15,10 +15,10 @@
                     <div class="widget-usage__work-downloads">     
                     
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.accessPermissionDownloadMetadata}">           
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
                         
                             <!-- METS -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.metsResolverUrl}"
                                     id="lidomets" 
@@ -28,7 +28,7 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
                                     #{msg.downloadMetsButtonLabel}
                                 </a>
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
@@ -41,14 +41,14 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
                                     #{msg.downloadAnchorMetsButtonLabel}
                                 </a>
                             </ui:fragment>
                             </ui:fragment>
                         
                             <!-- LIDO -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'LIDO'}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
                                     id="lidomets" 
@@ -58,13 +58,13 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
                                     #{msg.downloadLidoButtonLabel}
                                 </a>
                             </ui:fragment>
                             
                             <!-- DENKXWEB -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DENKXWEB'}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'DENKXWEB'}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
                                     id="denkxweb"
@@ -74,13 +74,13 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
                                     #{msg.downloadDenkxwebButtonLabel}
                                 </a>
                             </ui:fragment>
      
                             <!-- DUBLINCORE -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'DUBLINCORE'}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'DUBLINCORE'}">
                                 <a 
                                     href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
                                     id="dublincorexml"
@@ -90,13 +90,13 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
                                     #{msg.downloadDublinCoreButtonLabel}
                                 </a>
                             </ui:fragment>
 
                             <!-- MARCXML -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and activeDocumentBean.viewManager.topDocument.sourceDocFormat != 'DUBLINCORE'}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and activeDocumentBean.viewManager.topStructElement.sourceDocFormat != 'DUBLINCORE'}">
                                 <a
                                     id="marc"
                                     href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
@@ -106,7 +106,7 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.marcLink}">
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.marcLink}">
                                     #{msg.marcLink}
                                 </a>
                             </ui:fragment>
@@ -122,7 +122,7 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dcLink}"> 
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dcLink}"> 
                                     #{msg.dcLink} 
                                 </a>
                             </ui:fragment>
@@ -137,7 +137,7 @@
 									data-placement="top"
 									data-trigger="hover"
                                     rel="nofollow"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.risLinkTopstruct}"> 
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.risLinkTopstruct}"> 
                                     #{msg.risLinkTopstruct} 
                                 </a>
                             </ui:fragment>
@@ -145,7 +145,7 @@
                         </ui:fragment>
                         
                         <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.accessPermissionGenerateIiifManifest}">   
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">   
                         
                             <!-- IIIF MANIFEST -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
@@ -156,7 +156,7 @@
 	                               data-clipboard-text="#{imageDelivery.iiifManifest}" 
 	                               data-copy-done="#{msg.copyUrlDone}"
                                    title="#{msg.copyUrl}"
-                                   aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.iiif}"
+                                   aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
                                    tabindex="0"> 
 	                               #{msg.iiif}
 	                           </button> 
@@ -174,7 +174,7 @@
 										data-placement="top"
 										data-trigger="hover"
                                         target="_blank" rel="nofollow noopener"
-                                        aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.action__view_in_mirador}"> 
+                                        aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
                                         #{msg.action__view_in_mirador}
                                     </a>
                             </ui:fragment>
@@ -194,7 +194,7 @@
 								data-toggle="tooltip"
 								data-placement="top"
 								data-trigger="hover" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.downloadAltoWorkButtonLabel}"> 
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAltoWorkButtonLabel}"> 
                                 #{msg.downloadAltoWorkButtonLabel}
                             </a>
                         </ui:fragment>
@@ -210,7 +210,7 @@
 								data-placement="top"
 								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.TEI}">
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
                                 #{msg.TEI}
                             </a>
                         </ui:fragment>
@@ -226,7 +226,7 @@
 								data-placement="top"
 								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.fulltext}">
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.fulltext}">
                                 #{msg.fulltext}
                             </a>
                         </ui:fragment>
@@ -246,7 +246,7 @@
 									data-placement="top"
 									data-trigger="hover"
                                     target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                     #{msg.label__pdf_download}</a>
                             </ui:fragment>
@@ -263,7 +263,7 @@
 									data-toggle="tooltip"
 									data-placement="top"
 									data-trigger="hover"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.label__pdf_download}">
+                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                     #{msg.label__pdf_download}
                                 </a>    
@@ -283,7 +283,7 @@
 								data-toggle="tooltip"
 								data-placement="top"
 								data-trigger="hover"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.epub}">
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.epub}">
                                 #{msg.epub}
                             </a>
                         </ui:fragment>
@@ -300,7 +300,7 @@
 								data-placement="top"
 								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.dfgViewerLink}"> 
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dfgViewerLink}"> 
                                #{msg.dfgViewerLink}
                             </a>
                         </ui:fragment>
@@ -315,7 +315,7 @@
 								data-placement="top"
 								data-trigger="hover"
                                 target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}: #{msg.opacLink}">
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.opacLink}">
                                 #{msg.opacLink} 
                             </a>
                         </ui:fragment>

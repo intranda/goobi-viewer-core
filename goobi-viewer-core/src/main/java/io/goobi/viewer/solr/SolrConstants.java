@@ -210,6 +210,8 @@ public class SolrConstants {
     public static final String LANGUAGE = "LANGUAGE";
     /** Constant <code>LOGID="LOGID"</code> */
     public static final String LOGID = "LOGID";
+    /** Constant <code>MD_YEARPUBLISH="MD_YEARPUBLISH"</code> */
+    public static final String MD_YEARPUBLISH = "MD_YEARPUBLISH";
     /** Constant <code>METADATATYPE="METADATATYPE"</code> */
     public static final String METADATATYPE = "METADATATYPE";
     /** Constant <code>MONTHDAY="MONTHDAY"</code> */

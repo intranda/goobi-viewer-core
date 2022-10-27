@@ -13,12 +13,12 @@
     <composite:implementation>
 	    <ui:fragment rendered="#{configurationBean.displayCopyrightInfo}">
 	        <div id="widgetCopyright" class="widget widget--white">
-								<ui:fragment rendered="#{configurationBean.accessConditionDisplayField != null and activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.accessConditionDisplayField) != null}">
+								<ui:fragment rendered="#{configurationBean.accessConditionDisplayField != null and activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.accessConditionDisplayField) != null}">
 									<div class="custom-title__copy-sign">
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.accessConditionDisplayField) == ''}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.accessConditionDisplayField) == ''}">
 											<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/title_sign_neutral.png" alt="neutral title sign" />
 										</ui:fragment>
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.accessConditionDisplayField) == 'Freier Zugang'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.accessConditionDisplayField) == 'Freier Zugang'}">
 											<img 
 												src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/title_sign_green.png" 
 												alt="free access title sign"
@@ -28,7 +28,7 @@
                                                 data-container="body"
 												data-content="Freier Zugang" />
 										</ui:fragment>
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.accessConditionDisplayField) == 'Eingeschränkter Zugang'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.accessConditionDisplayField) == 'Eingeschränkter Zugang'}">
 											<img 
 												src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/title_sign_yellow.png" 
 												alt="restricted access title sign"
@@ -38,7 +38,7 @@
                                                 data-container="body"
 												data-content="Eingeschränkter Zugang" />
 										</ui:fragment>
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.accessConditionDisplayField) == 'Kein Zugang'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.accessConditionDisplayField) == 'Kein Zugang'}">
 											<img 
 												src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/title_sign_red.png" 
 												alt="no access title sign"
@@ -51,9 +51,9 @@
 									</div>
 								</ui:fragment>
 								
-								<ui:fragment rendered="#{configurationBean.copyrightDisplayField != null and activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) != null}">
+								<ui:fragment rendered="#{configurationBean.copyrightDisplayField != null and activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) != null}">
 									<div  class="custom-title__copy-info">							
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'Rights reserved'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'Rights reserved'}">
 											<a data-content="Keine Nutzungslizenz vergeben - es gilt das deutsche Urheberrecht &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#rr' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"
@@ -65,7 +65,7 @@
 												<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/cc-icons/urhg_logo.png" alt="rights reserved icon" />
 											</a>
 										</ui:fragment>
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'Rights reserved - Rights managed by VG Wort (§ 51 VGG)'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'Rights reserved - Rights managed by VG Wort (§ 51 VGG)'}">
 											<a data-content="Rechte vorbehalten - Wahrnehmung der Rechte durch die VG Wort (§ 51 VGG) &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#rr' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;"
 											   data-placement="top"
 											   data-toggle="popover"
@@ -77,7 +77,7 @@
 												<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/cc-icons/urhg_logo.png" alt="rights reserved icon" />
 											</a>
 										</ui:fragment>
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'Public Domain'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'Public Domain'}">
 											<a data-content="Public Domain &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#publicdomain' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"
@@ -90,7 +90,7 @@
 											</a>
 										</ui:fragment>
 										
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-SA'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-SA'}">
 											<a data-content="Namensnennung, Weitergabe unter gleichen Bedingungen &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#cc-by-sa' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"
@@ -103,7 +103,7 @@
 											</a>
 										</ui:fragment>
 										
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-SA-NC'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-SA-NC'}">
 											<a data-content="Namensnennung, Weitergabe unter gleichen Bedingungen, nicht kommerziell &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#cc-weitere' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"
@@ -116,7 +116,7 @@
 											</a>
 										</ui:fragment>
 										
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY'}">
 											<a data-content="Namensnennung &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#cc-by' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"
@@ -129,7 +129,7 @@
 											</a>
 										</ui:fragment>
 										
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-NC-ND'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-NC-ND'}">
 											<a data-content="Namensnennung, nicht kommerziell, keine Bearbeitung &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#cc-weitere' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"
@@ -142,7 +142,7 @@
 											</a>
 										</ui:fragment>
 										
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-NC'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-NC'}">
 											<a data-content="Namensnennung, nicht kommerziell &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#cc-weitere' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"
@@ -155,7 +155,7 @@
 											</a>
 										</ui:fragment>
 										
-										<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-ND'}">
+										<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.copyrightDisplayField) == 'CC BY-ND'}">
 											<a data-content="Namensnennung, keine Bearbeitung &lt;br/&gt; &lt;a href='#{request.contextPath}/cms/85#cc-weitere' class='arrow' &gt;Weitere Informationen...&lt;/a&gt;" 
 											   data-placement="top" 
 											   data-toggle="popover"

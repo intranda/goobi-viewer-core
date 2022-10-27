@@ -21,13 +21,15 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
  */
-public class CopyrightIndicatorLicense {
+public class CopyrightIndicatorLicense implements Serializable {
+
+    private static final long serialVersionUID = -4163068583648929435L;
 
     private final String description;
     private final List<String> icons;

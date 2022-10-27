@@ -37,7 +37,7 @@
 				            <ui:fragment 
 				                rendered="#{activeDocumentBean.viewManager.displayCiteLinkWork and fn:length(configurationBean.getSidebarWidgetUsageCitationLinksForLevel('record')) > 0}">
 				            	<div class="widget-usage__citelinks-block">
-				                <h3 id="titleWorkLinks" class="widget-usage__citelinks-subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h3>
+				                <h3 id="titleWorkLinks" class="widget-usage__citelinks-subtitle">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
 				                <h:outputText rendered="#{fn:length(msg['label__citation_link_record_introduction_text']) > 0}">
 				                   <div class="widget-usage__citelinks-info-text">#{msg['label__citation_link_record_introduction_text']}:</div>
 				                </h:outputText>

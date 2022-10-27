@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
@@ -59,7 +59,6 @@ import io.goobi.viewer.model.search.SearchHitsNotifier;
 import io.goobi.viewer.model.security.DownloadTicket;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
-import io.goobi.viewer.model.statistics.usage.StatisticsIndexer;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 
 /**
@@ -180,7 +179,7 @@ public class TaskManager {
                     }
                     try {
                         new SitemapBuilder(request).updateSitemap(outputPath, viewerRootUrl);
-                    } catch (IllegalRequestException | AccessDeniedException | JSONException | PresentationException e) {
+                    } catch (AccessDeniedException | JSONException | PresentationException e) {
                         logger.error("Error in job {}: {}", job.id, e.toString());
                         job.setError(e.getMessage());
                     }

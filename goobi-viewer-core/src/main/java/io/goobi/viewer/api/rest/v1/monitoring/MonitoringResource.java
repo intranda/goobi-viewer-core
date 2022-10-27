@@ -100,7 +100,7 @@ public class MonitoringResource {
     @GET
     @Path(ApiUrls.MONITORING_CORE_VERSION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Reports the Goobi viewer core version", tags = { "monitoring", "version" })
+    @Operation(summary = "Reports the Goobi viewer core version", tags = { "monitoring" })
     public String getCoreVersion() {
         return JsonTools.formatVersionString(Version.asJSON());
     }

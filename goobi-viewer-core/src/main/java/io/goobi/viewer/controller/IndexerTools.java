@@ -141,7 +141,7 @@ public class IndexerTools {
             dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
             recordType = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             return false;
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());

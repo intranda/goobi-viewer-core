@@ -57,10 +57,10 @@
 			</div>
 
             <h:panelGroup layout="block">
-                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                     <f:attribute name="styleClass" value="view-thumbs__thumbnails -ltr"/>
                 </c:if>
-                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                     <f:attribute name="styleClass" value="view-thumbs__thumbnails -rtl"/>
                 </c:if>
                 <ui:repeat var="image" value="#{activeDocumentBean.viewManager.imagesSection}">

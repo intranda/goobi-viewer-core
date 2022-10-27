@@ -184,7 +184,7 @@
 						<h:panelGroup rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}">
 							<c:set var="indent" value="#{configurationBean.tocIndentation}" scope="request" />
 							<!-- EXPANDABLE TREEVIEW -->
-							<h:panelGroup rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topDocument.docStructType)}">
+							<h:panelGroup rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
 								<!-- EXPAND ALL -->
 								<div class="toc__list-expandable-all clearfix">
 									<ul>
@@ -304,7 +304,7 @@
 							</h:panelGroup>
 
 							<!-- FULL TREEVIEW -->
-							<h:panelGroup rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topDocument.docStructType)}">
+							<h:panelGroup rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topStructElement.docStructType)}">
 								<nav class="toc__list-full clearfix">
 									<ul>
 										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">

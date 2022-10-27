@@ -21,10 +21,14 @@
  */
 package io.goobi.viewer.model.security;
 
+import java.io.Serializable;
+
 /**
  * 
  */
-public class CopyrightIndicatorStatus {
+public class CopyrightIndicatorStatus implements Serializable {
+
+    private static final long serialVersionUID = -9046091644794397616L;
 
     public enum Status {
         OPEN,

@@ -62,6 +62,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
@@ -287,7 +288,7 @@ public class ActiveDocumentBean implements Serializable {
                     reload(lastReceivedIdentifier);
                 }
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
                 if (e.getMessage() != null && !"null".equals(e.getMessage()) && !"???".equals(e.getMessage())) {
                     logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
@@ -631,13 +632,13 @@ public class ActiveDocumentBean implements Serializable {
                     breadcrumbBean.addRecordBreadcrumbs(viewManager, name, url);
                 }
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
                 Messages.error(e.getMessage());
             } catch (IDDOCNotFoundException e) {
                 try {
                     return reload(lastReceivedIdentifier);
                 } catch (PresentationException e1) {
-                    logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                    logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
                 }
             }
 
@@ -2486,7 +2487,7 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 return false;
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
                 return false;
             }
         }

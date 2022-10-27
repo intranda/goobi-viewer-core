@@ -40,16 +40,17 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.contexts.ContextNotActiveException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -374,7 +375,7 @@ public class AccessConditionUtils {
 
             return checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             return AccessPermission.denied();
         }
     }
@@ -421,7 +422,7 @@ public class AccessConditionUtils {
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return AccessPermission.denied();
@@ -504,7 +505,7 @@ public class AccessConditionUtils {
                 }
 
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
         }
 
@@ -565,7 +566,7 @@ public class AccessConditionUtils {
                 ret = checkAccessPermission(requiredAccessConditions, IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, query, request);
 
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
         }
         if (request != null && request.getSession() != null) {
@@ -623,7 +624,7 @@ public class AccessConditionUtils {
             return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             return AccessPermission.denied();
         }
     }
