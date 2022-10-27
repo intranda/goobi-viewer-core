@@ -232,7 +232,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String STATISTICS_USAGE = "/statistics/usage";
     public static final String STATISTICS_USAGE_DATE = "/{date}";
     public static final String STATISTICS_USAGE_DATE_RANGE = "/{startDate}/{endDate}";
-    public static final String STATISTICS_USAGE_DATE_LIST = "/list/{startDate}/{endDate}";
 
     private final String apiUrl;
 

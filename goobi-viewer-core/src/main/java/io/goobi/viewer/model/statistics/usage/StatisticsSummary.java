@@ -39,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
+import io.goobi.viewer.api.rest.model.statistics.usage.UsageStatisticsInformation;
 import io.goobi.viewer.api.rest.v1.statistics.usage.UsageStatisticsResource;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -56,6 +57,8 @@ public class StatisticsSummary {
      * Request counts sorted by {@link RequestType}
      */
     private final Map<RequestType, RequestTypeSummary> types;
+    
+    private UsageStatisticsInformation info = null;
     
     /**
      * Default constructor
@@ -191,23 +194,31 @@ public class StatisticsSummary {
         }
     }
     
-    public String getStartDate() {
+    public String calculateStartDate() {
         return this.types.values().stream().reduce((s1,s2) -> s1.getStartDate().isBefore(s2.getStartDate()) ? s1:s2)
-                .map(s -> s.getStartDate())
+                .map(RequestTypeSummary::getStartDate)
                 .map(d -> DateTimeFormatter.ofPattern(UsageStatisticsResource.DATE_FORMAT).format(d))
                 .orElse(null);
     }
     
-    public String getEndDate() {
+    public String calculateEndDate() {
         return this.types.values().stream().reduce((s1,s2) -> s1.getEndDate().isAfter(s2.getEndDate()) ? s1:s2)
-                .map(s -> s.getEndDate())
+                .map(RequestTypeSummary::getEndDate)
                 .map(d -> DateTimeFormatter.ofPattern(UsageStatisticsResource.DATE_FORMAT).format(d))
                 .orElse(null);
     }
 
     @JsonIgnore
     public boolean isEmpty() {
-        return this.types.values().stream().allMatch(s -> s.isEmtpy());
+        return this.types.values().stream().allMatch(RequestTypeSummary::isEmtpy);
+    }
+
+    public void setInformation(UsageStatisticsInformation info) {
+        this.info = info;
+    }
+    
+    public UsageStatisticsInformation getInformation() {
+        return info;
     }
 }
 
