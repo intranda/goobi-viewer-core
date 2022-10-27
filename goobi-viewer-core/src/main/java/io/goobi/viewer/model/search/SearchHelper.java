@@ -2154,15 +2154,15 @@ public final class SearchHelper {
 
         // [+-]*\((\w+:\"[\wäáàâöóòôüúùûëéèêßñ ]+\" *)+\)|[+-]*\(((\w+:\([\wäáàâöóòôüúùûëéèêßñ ]+\)) *)+\)|[+-]*\((\w+:\(\[[\wäáàâöóòôüúùûëéèêßñ]+ TO [\wäáàâöóòôüúùûëéèêßñ]+\]\) *)\)
         final String patternAllItems =
-                "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)";
+                "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)+\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)";   //NOSONAR no backtracking detected
 
-        final String patternRegularItems = "([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"; 
+        final String patternRegularItems = "([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)+\\)";   //NOSONAR no backtracking detected
         final String patternRegularPairs = "(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))";
 
-        final String patternPhraseItems = "([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)";
+        final String patternPhraseItems = "([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)";   //NOSONAR no backtracking detected
         final String patternPhrasePairs = "(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")";
 
-        final String patternRangeItems = "([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)";
+        final String patternRangeItems = "([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)";   //NOSONAR no backtracking detected
         final String patternRangePairs = "(\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\))";
 
         final String patternFacetString = "(\\w+:\\w+);;";
@@ -2186,20 +2186,20 @@ public final class SearchHelper {
         }
 
         String queryRemainder = query;
-        Pattern pAllItems = Pattern.compile(patternAllItems);
+        Pattern pAllItems = Pattern.compile(patternAllItems); //NOSONAR no backtracking detected
         Matcher mAllItems = pAllItems.matcher(query);
         while (mAllItems.find()) {
             String itemQuery = mAllItems.group();
             logger.trace("item query: {}", itemQuery);
             queryRemainder = queryRemainder.replace(itemQuery, "");
 
-            Pattern pPhraseItem = Pattern.compile(patternPhraseItems);
+            Pattern pPhraseItem = Pattern.compile(patternPhraseItems);  //NOSONAR no backtracking detected
             Matcher mPhraseItem = pPhraseItem.matcher(itemQuery);
 
-            Pattern pRegularItem = Pattern.compile(patternRegularItems);
+            Pattern pRegularItem = Pattern.compile(patternRegularItems);  //NOSONAR no backtracking detected
             Matcher mRegularItem = pRegularItem.matcher(itemQuery);
 
-            Pattern pRangeItem = Pattern.compile(patternRangeItems);
+            Pattern pRangeItem = Pattern.compile(patternRangeItems);   //NOSONAR no backtracking detected
             Matcher mRangeItem = pRangeItem.matcher(itemQuery);
 
             if (mPhraseItem.find()) {
@@ -2220,7 +2220,7 @@ public final class SearchHelper {
                     }
                 }
 
-                Pattern pPairs = Pattern.compile(patternPhrasePairs);
+                Pattern pPairs = Pattern.compile(patternPhrasePairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2256,7 +2256,7 @@ public final class SearchHelper {
                     }
                 }
 
-                Pattern pPairs = Pattern.compile(patternRangePairs);
+                Pattern pPairs = Pattern.compile(patternRangePairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2293,7 +2293,7 @@ public final class SearchHelper {
                     }
                 }
 
-                Pattern pPairs = Pattern.compile(patternRegularPairs);
+                Pattern pPairs = Pattern.compile(patternRegularPairs); //NOSONAR no backtracking detected
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2322,7 +2322,7 @@ public final class SearchHelper {
 
         // Parse facet string
         if (StringUtils.isNotEmpty(facetString)) {
-            Pattern pFacetString = Pattern.compile(patternFacetString);
+            Pattern pFacetString = Pattern.compile(patternFacetString); //NOSONAR no backtracking detected
             Matcher mFacetString = pFacetString.matcher(facetString);
             Set<String> fieldNames = new HashSet<>();
             while (mFacetString.find()) {
