@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -47,7 +48,8 @@ public class MovingWallStatisticsResource {
     @GET
     @javax.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
-    @Operation(summary = "Get moving wall unlocked record identfiers for the given year", tags = { "statistics" })
+    @AuthorizationBinding
+    @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identfiers for the given year", tags = { "statistics" })
     public Response getStatisticsForYear(@Parameter(description = "statistics year") @PathParam("year") int year)
             throws PresentationException, IndexUnreachableException {
         logger.trace("getStatisticsForYear: {}", year);
