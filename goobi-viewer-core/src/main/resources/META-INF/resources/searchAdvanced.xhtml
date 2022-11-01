@@ -27,7 +27,7 @@
 			<div id="searchAdvanced">
 				<h1 >#{msg.searchAdvanced}</h1>
 
-                <!-- SEARCH STANDARD -->
+                <!-- SEARCH ADVANCED -->
                 <ui:include src="/resources/includes/search/searchAdvanced.xhtml" />
 			</div>
 		</f:view>
@@ -35,12 +35,6 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_searchAdvancedHelp />
-    </ui:define>
-
-    <ui:define name="rssFeed">
-        <h:panelGroup rendered="#{configurationBean.displaySidebarRssFeed}">
-            <ui:include src="resources/includes/rssFeed.xhtml" />
-        </h:panelGroup>
     </ui:define>
 
 </ui:composition>
