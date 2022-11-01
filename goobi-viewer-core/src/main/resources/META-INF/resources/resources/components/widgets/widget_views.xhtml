@@ -71,7 +71,7 @@
 					<!-- Metadata -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink}">
                         <ui:repeat var="metadataView" value="#{metadataBean.metadataViews}">
-                            <ui:fragment rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topDocument)}">
+                            <ui:fragment rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topStructElement)}">
                                 <li class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
                                     <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}#{activeDocumentBean.logPart}">
                                         <h:outputText rendered="#{metadataView.label != null}" value="#{msg[metadataView.label]}" />
