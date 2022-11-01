@@ -128,6 +128,7 @@
                                                     <div class="custom-control custom-control--select">
                                                         <h:selectOneMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
                                                             value="#{queryItem.value}">
+                                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                                             <c:forEach var="item" items="#{queryItem.selectItems}">
                                                                 <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
                                                             </c:forEach>
