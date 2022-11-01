@@ -367,7 +367,6 @@ public class Metadata implements Serializable {
      * @param options a {@link java.util.Map} object.
      * @param groupType value of METADATATYPE, if available
      * @param locale a {@link java.util.Locale} object.
-     * @return this
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
@@ -509,9 +508,9 @@ public class Metadata implements Serializable {
                                         new StringBuilder().append(nh.getSearchUrl())
                                                 .append("/-/")
                                                 .append(param.getKey())
-                                                .append(':')
+                                                .append(":\"")
                                                 .append(value)
-                                                .append("/1/-/-/-/")
+                                                .append("\"/1/-/-/-/")
                                                 .toString())
                                 .replace("{1}", ViewerResourceBundle.getTranslation("search", locale));
                         value = html;
