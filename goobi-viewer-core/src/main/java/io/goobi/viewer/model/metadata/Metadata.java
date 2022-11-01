@@ -508,9 +508,9 @@ public class Metadata implements Serializable {
                                         new StringBuilder().append(nh.getSearchUrl())
                                                 .append("/-/")
                                                 .append(param.getKey())
-                                                .append(":\"")
+                                                .append(":%22")
                                                 .append(value)
-                                                .append("\"/1/-/-/-/")
+                                                .append("%22/1/-/-/-/")
                                                 .toString())
                                 .replace("{1}", ViewerResourceBundle.getTranslation("search", locale));
                         value = html;
