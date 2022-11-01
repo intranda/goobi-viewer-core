@@ -3023,7 +3023,7 @@ public final class SearchHelper {
         }
 
         // Suffixes
-        String suffixes = getAllSuffixes(request, true, true, null);
+        String suffixes = getAllSuffixes(request, true, true, IPrivilegeHolder.PRIV_LIST);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
