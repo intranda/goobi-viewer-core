@@ -1426,8 +1426,8 @@ public class SearchBean implements SearchInterface, Serializable {
         if (facets.getCurrentFacets().isEmpty()) {
             for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
                 if (item.isHierarchical()) {
-                    logger.trace("resetting current field in advanced search: {}", item.getField());
-                    item.reset();
+                    logger.trace("resetting current field value in advanced search: {}", item.getField());
+                    item.setValue(null);
                 }
             }
             return;
@@ -1467,15 +1467,12 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             }
         }
-        // Reset any hierarchical query items that could not be used for existing facets
-        //        for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
-        //            if (queryItem.isHierarchical() && !populatedQueryItems.contains(queryItem)) {
-        //                // logger.trace("Resetting advanced query item {}", queryItem);
-        //                queryItem.reset();
-        //            }
-        //        }
     }
 
+    /**
+     * 
+     * @return
+     */
     public String removeChronologyFacetAction() {
         String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
         facets.setTempValue("");
@@ -1983,7 +1980,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Returns index field names allowed for advanced search use. If language-specific index fields are used, those that don't match the current
      * locale are omitted.
      *
-     * @param language a {@link java.lang.String} object.
+     * @param language Optional language code for filtering language-specific fields
      * @return List of allowed advanced search fields
      * @should omit languaged fields for other languages
      */
