@@ -147,7 +147,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("a", item.getValue());
         sb.getFacets().setCurrentFacetString("-");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertNull(item.getField());
+        Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertNull(item.getValue());
     }
 
