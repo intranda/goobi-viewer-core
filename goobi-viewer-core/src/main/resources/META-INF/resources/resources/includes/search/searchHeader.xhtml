@@ -32,23 +32,17 @@
 	        </ui:include>
 	    </ui:fragment>
 	
-	    <!-- SEARCH ADVANCED -->
-	    <ui:fragment rendered="#{searchType == 1 and !searchBean.showReducedSearchOptions}">
-	        <ui:include src="/resources/includes/search/searchAdvanced.xhtml">
-	            <ui:param name="searchParam" value="#{search}" />
-	        </ui:include>
-	    </ui:fragment>
-	
 	    <!-- ADVANCED SEARCH INFO -->
-	    <ui:fragment rendered="#{searchType == 1 and searchBean.showReducedSearchOptions}">
+	    <ui:fragment rendered="#{searchType == 1}">
 	        <div class="search-list__adv-search-info">
-	            <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+	            <ui:fragment rendered="#{searchBean.fuzzySearchEnabled}">#{msg.search__fuzzy_search}: </ui:fragment><h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+
 	
 	            <!-- ADVANCED SEARCH -->
 	            <div class="search-list__adv-search-info-back text-right">
-	                <h:commandLink value="#{msg.searchAdvancedBack}" action="#{searchBean.setShowReducedSearchOptions(false)}">
-	                    <f:ajax render="searchArea" />
-	                </h:commandLink>
+                    <h:outputLink value="#{navigationHelper.applicationUrl}searchadvanced/">
+                        #{msg.searchAdvancedBack}
+                    </h:outputLink>
 	            </div>
 	        </div>
 	    </ui:fragment>

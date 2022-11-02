@@ -116,11 +116,11 @@ public class SearchFacets implements Serializable {
      * @param includeRangeFacets a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets, boolean includeGeoFacet) {
+    public List<String> generateFacetFilterQueries(boolean includeRangeFacets) {
         List<String> ret = new ArrayList<>(2);
 
         // Add hierarchical facets
-        String hierarchicalQuery = generateHierarchicalFacetFilterQuery(advancedSearchGroupOperator);
+        String hierarchicalQuery = generateHierarchicalFacetFilterQuery();
         if (StringUtils.isNotEmpty(hierarchicalQuery)) {
             ret.add(hierarchicalQuery);
         }
@@ -142,7 +142,7 @@ public class SearchFacets implements Serializable {
      * @should generate query correctly
      * @should return null if facet list is empty
      */
-    String generateHierarchicalFacetFilterQuery(int advancedSearchGroupOperator) {
+    String generateHierarchicalFacetFilterQuery() {
         if (currentFacets.isEmpty()) {
             return null;
         }
@@ -154,18 +154,14 @@ public class SearchFacets implements Serializable {
                 continue;
             }
             if (count > 0) {
-                if (advancedSearchGroupOperator == 1) {
-                    sbQuery.append(" OR ");
-                } else {
-                    sbQuery.append(SolrConstants.SOLR_QUERY_AND);
-                }
+                sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             String field = SearchHelper.facetifyField(facetItem.getField());
             sbQuery.append('(')
                     .append(field)
                     .append(':')
                     .append("\"" + facetItem.getValue() + "\"")
-                    .append(" OR ")
+                    .append(SolrConstants.SOLR_QUERY_OR)
                     .append(field)
                     .append(':')
                     .append(facetItem.getValue())
@@ -193,17 +189,12 @@ public class SearchFacets implements Serializable {
 
         StringBuilder sbQuery = new StringBuilder();
         for (IFacetItem facetItem : currentFacets) {
-            if (facetItem.isHierarchial()) {
-                continue;
-            }
-            if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
-                continue;
-            }
-            if (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField())) {
+            if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
+                    || (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField()))) {
                 continue;
             }
             if (sbQuery.length() > 0) {
-                sbQuery.append(" AND ");
+                sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
             logger.trace("Added facet: {}", facetItem.getQueryEscapedLink());
@@ -413,7 +404,7 @@ public class SearchFacets implements Serializable {
     public boolean isDisplayFacetExpandLink(String field) {
         List<IFacetItem> facetItems = availableFacets.get(field);
         int expandSize = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
-        
+
         return facetItems != null && !isFacetExpanded(field) && expandSize > 0 && facetItems.size() > expandSize;
     }
 
@@ -469,18 +460,6 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentHierarchicalFacetString.
-     * </p>
-     *
-     * @return the currentCollection
-     */
-    @Deprecated
-    public String getCurrentHierarchicalFacetString() {
-        return "-";
-    }
-
-    /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
      * @param currentFacetString a {@link java.lang.String} object.
@@ -491,17 +470,6 @@ public class SearchFacets implements Serializable {
      */
     public void setCurrentFacetString(String currentFacetString) {
         parseFacetString(currentFacetString, currentFacets, labelMap);
-    }
-
-    /**
-     * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for
-     * currentHierarchicalFacets.
-     *
-     * @param currentHierarchicalFacetString a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public void setCurrentHierarchicalFacetString(String currentHierarchicalFacetString) {
-        //
     }
 
     /**
@@ -642,7 +610,7 @@ public class SearchFacets implements Serializable {
 
         for (String facetField : facetFields) {
             String matchingFacet = facets.stream()
-                    .filter(facet -> facet.replace(SolrConstants._UNTOKENIZED, "").startsWith(facetField + ":"))
+                    .filter(facet -> facet.replace(SolrConstants.SUFFIX_UNTOKENIZED, "").startsWith(facetField + ":"))
                     .findFirst()
                     .orElse("");
             if (StringUtils.isNotBlank(matchingFacet)) {
@@ -783,7 +751,7 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        if (!SolrConstants._CALENDAR_YEAR.equals(field) && !field.startsWith("MDNUM_")) {
+        if (!SolrConstants.CALENDAR_YEAR.equals(field) && !field.startsWith("MDNUM_")) {
             logger.info("{} is not an integer type field, cannot use with a range query", field);
             return;
         }
@@ -931,7 +899,7 @@ public class SearchFacets implements Serializable {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        
+
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field)) {
                 ret.put(field, availableFacets.get(field));
@@ -1035,8 +1003,8 @@ public class SearchFacets implements Serializable {
         if (language == null) {
             throw new IllegalArgumentException("language may not be null");
         }
-        
-        return field.contains(SolrConstants._LANG_) && !field.endsWith(SolrConstants._LANG_ + language.toUpperCase());
+
+        return field.contains(SolrConstants.MIDFIX_LANG) && !field.endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase());
     }
 
     /**

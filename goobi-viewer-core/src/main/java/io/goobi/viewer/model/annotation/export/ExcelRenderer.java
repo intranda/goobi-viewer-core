@@ -30,19 +30,19 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.Dataset;
@@ -65,10 +65,10 @@ public class ExcelRenderer {
      * @param annotationBuilder
      */
     public ExcelRenderer(AnnotationConverter annotationConverter) {
-       this.annotationConverter = annotationConverter;
+        this.annotationConverter = annotationConverter;
     }
 
-    public HSSFWorkbook render(Map<String, List<CrowdsourcingAnnotation>> annotationMap) {
+    public XSSFWorkbook render(Map<String, List<CrowdsourcingAnnotation>> annotationMap) {
         if (annotationMap == null) {
             throw new IllegalArgumentException("No annotations given");
         }
@@ -77,15 +77,15 @@ public class ExcelRenderer {
             throw new IllegalArgumentException("Empty annotations map");
         }
 
-        HSSFWorkbook wb = new HSSFWorkbook();
+        XSSFWorkbook wb = new XSSFWorkbook();
 
-        for (String type : annotationMap.keySet()) {
-            HSSFSheet sheet = wb.createSheet(type);
+        for (Entry<String, List<CrowdsourcingAnnotation>> entry : annotationMap.entrySet()) {
+            XSSFSheet sheet = wb.createSheet(entry.getKey());
             sheet.setDefaultColumnWidth(30);
             short height = 300;
             sheet.setDefaultRowHeight(height);
             createHeaderRow(sheet);
-            List<CrowdsourcingAnnotation> annotations = annotationMap.get(type);
+            List<CrowdsourcingAnnotation> annotations = entry.getValue();
             createDataRows(sheet, annotations);
         }
 
@@ -96,13 +96,13 @@ public class ExcelRenderer {
      * @param sheet
      * @param annotations
      */
-    public void createDataRows(HSSFSheet sheet, List<CrowdsourcingAnnotation> annotations) {
+    public void createDataRows(XSSFSheet sheet, List<CrowdsourcingAnnotation> annotations) {
         int rowCounter = 1;
         for (CrowdsourcingAnnotation annotation : annotations) {
             try {
                 createDataRow(annotation, sheet, rowCounter);
             } catch (DAOException e) {
-                logger.error("Error creating data row for annotation " + annotation);
+                logger.error("Error creating data row for annotation {}", annotation);
             }
             rowCounter++;
         }
@@ -114,47 +114,45 @@ public class ExcelRenderer {
      * @param rowCounter
      * @throws DAOException
      */
-    public void createDataRow(CrowdsourcingAnnotation annotation, HSSFSheet sheet, int rowCounter) throws DAOException {
-        HSSFRow row = sheet.createRow(rowCounter);
+    public void createDataRow(CrowdsourcingAnnotation annotation, XSSFSheet sheet, int rowCounter) throws DAOException {
+        XSSFRow row = sheet.createRow(rowCounter);
         row.setRowStyle(getDataCellStyle(sheet.getWorkbook()));
-        HSSFCell idCell = row.createCell(0, CellType.STRING);
+        XSSFCell idCell = row.createCell(0, CellType.STRING);
         idCell.setCellValue(annotation.getId().toString());
-        HSSFCell recordCell = row.createCell(1, CellType.STRING);
+        XSSFCell recordCell = row.createCell(1, CellType.STRING);
         recordCell.setCellValue(annotation.getTargetPI());
-        HSSFCell pageCell = row.createCell(2, CellType.STRING);
+        XSSFCell pageCell = row.createCell(2, CellType.STRING);
         String pageOrder = Optional.ofNullable(annotation.getTargetPageOrder()).map(i -> i.toString()).orElse("");
         pageCell.setCellValue(pageOrder);
-        HSSFCell campaignCell = row.createCell(3, CellType.STRING);
+        XSSFCell campaignCell = row.createCell(3, CellType.STRING);
         campaignCell.setCellValue(Optional.ofNullable(annotation.getGenerator()).map(Question::getOwner).map(Campaign::getTitle).orElse(""));
-        HSSFCell authorCell = row.createCell(4, CellType.STRING);
+        XSSFCell authorCell = row.createCell(4, CellType.STRING);
         authorCell.setCellValue(Optional.ofNullable(annotation.getCreator()).map(User::getDisplayName).orElse(""));
-        HSSFCell bodyCell = row.createCell(5, CellType.STRING);
+        XSSFCell bodyCell = row.createCell(5, CellType.STRING);
         bodyCell.setCellValue(getBodyValues(annotation).get(0));
 
         setCellStyles(row, getDataCellStyle(sheet.getWorkbook()));
 
     }
 
-
-
     /**
      * @param sheet
      */
-    public void createHeaderRow(HSSFSheet sheet) {
-        HSSFRow titleRow = sheet.createRow(0);
+    public void createHeaderRow(XSSFSheet sheet) {
+        XSSFRow titleRow = sheet.createRow(0);
         titleRow.setRowStyle(getHeaderCellStyle(sheet.getWorkbook()));
-        HSSFCell idCell = titleRow.createCell(0, CellType.STRING);
+        XSSFCell idCell = titleRow.createCell(0, CellType.STRING);
         idCell.setCellStyle(getHeaderCellStyle(sheet.getWorkbook()));
         idCell.setCellValue("ID");
-        HSSFCell recordCell = titleRow.createCell(1, CellType.STRING);
+        XSSFCell recordCell = titleRow.createCell(1, CellType.STRING);
         recordCell.setCellValue("in");
-        HSSFCell pageCell = titleRow.createCell(2, CellType.STRING);
+        XSSFCell pageCell = titleRow.createCell(2, CellType.STRING);
         pageCell.setCellValue("on page");
-        HSSFCell campaignCell = titleRow.createCell(3, CellType.STRING);
+        XSSFCell campaignCell = titleRow.createCell(3, CellType.STRING);
         campaignCell.setCellValue("Campaign");
-        HSSFCell authorCell = titleRow.createCell(4, CellType.STRING);
+        XSSFCell authorCell = titleRow.createCell(4, CellType.STRING);
         authorCell.setCellValue("Author");
-        HSSFCell bodyCell = titleRow.createCell(5, CellType.STRING);
+        XSSFCell bodyCell = titleRow.createCell(5, CellType.STRING);
         bodyCell.setCellValue("values");
 
         setCellStyles(titleRow, getHeaderCellStyle(sheet.getWorkbook()));
@@ -164,17 +162,17 @@ public class ExcelRenderer {
         try {
             IResource bodyResource = annotationConverter.getBodyAsResource(anno);
             String type = "unknown";
-            if(bodyResource instanceof TypedResource) {
+            if (bodyResource instanceof TypedResource) {
                 type = ((TypedResource) bodyResource).getType();
             }
-            switch(type) {
+            switch (type) {
                 case "TextualBody":
-                    TextualResource res = (TextualResource)bodyResource;
+                    TextualResource res = (TextualResource) bodyResource;
                     return Collections.singletonList(res.getText());
                 case "AuthorityResource":
                     return Collections.singletonList(bodyResource.getId().toString());
                 case "Dataset":
-                    Dataset dataset = (Dataset)bodyResource;
+                    Dataset dataset = (Dataset) bodyResource;
                     StringBuilder sb = new StringBuilder();
                     for (Entry<String, List<String>> entry : dataset.getData().entrySet()) {
                         String label = entry.getKey();
@@ -186,7 +184,7 @@ public class ExcelRenderer {
                     return Collections.singletonList(anno.getBody());
 
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.error("Error writing body fields", e);
             return Collections.singletonList(anno.getBody());
         }
@@ -195,18 +193,18 @@ public class ExcelRenderer {
     /**
      *
      */
-    private void setCellStyles(Row row, CellStyle style) {
+    private static void setCellStyles(Row row, CellStyle style) {
         Iterator<Cell> cells = row.cellIterator();
-        while(cells.hasNext()) {
+        while (cells.hasNext()) {
             Cell cell = cells.next();
             cell.setCellStyle(style);
         }
     }
 
-    private CellStyle getHeaderCellStyle(HSSFWorkbook wb) {
-        HSSFCellStyle style = wb.createCellStyle();
+    private static CellStyle getHeaderCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle style = wb.createCellStyle();
         style.setAlignment(HorizontalAlignment.LEFT);
-        HSSFFont font = wb.createFont();
+        XSSFFont font = wb.createFont();
         font.setBold(true);
         style.setFont(font);
         return style;
@@ -216,10 +214,10 @@ public class ExcelRenderer {
      * @param workbook
      * @return
      */
-    private HSSFCellStyle getDataCellStyle(HSSFWorkbook wb) {
-        HSSFCellStyle style = wb.createCellStyle();
-//        style.setAlignment(HorizontalAlignment.RIGHT);
-        HSSFFont font = wb.createFont();
+    private XSSFCellStyle getDataCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle style = wb.createCellStyle();
+        //        style.setAlignment(HorizontalAlignment.RIGHT);
+        XSSFFont font = wb.createFont();
         style.setFont(font);
         return style;
     }

@@ -124,9 +124,9 @@ public class JPADAO implements IDAO {
     private static final String PARAM_STOREMODE = "jakarta.persistence.cache.storeMode";
     private static final String PARAM_STOREMODE_VALUE_REFRESH = "REFRESH";
 
-    private static final String QUERY_ELEMENT_AND = " AND ";
+    static final String QUERY_ELEMENT_AND = " AND ";
     private static final String QUERY_ELEMENT_DESC = " DESC";
-    private static final String QUERY_ELEMENT_WHERE = " WHERE ";
+    static final String QUERY_ELEMENT_WHERE = " WHERE ";
 
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
@@ -1503,6 +1503,33 @@ public class JPADAO implements IDAO {
             Query q = em.createQuery("SELECT a FROM LicenseType a WHERE a.name IN :names");
             q.setParameter("names", names);
             return q.getResultList();
+        } catch (NoResultException e) {
+            return Collections.emptyList();
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return Collections.emptyList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * @see io.goobi.viewer.dao.IDAO#getOverridingLicenseType(io.goobi.viewer.model.security.LicenseType)
+     * @should return all matching rows
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<LicenseType> getOverridingLicenseType(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return Collections.emptyList();
+        }
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT a FROM LicenseType a WHERE :lt MEMBER OF a.overriddenLicenseTypes")
+                    .setParameter("lt", licenseType)
+                    .getResultList();
         } catch (NoResultException e) {
             return Collections.emptyList();
         } catch (NonUniqueResultException e) {
@@ -6859,6 +6886,7 @@ public class JPADAO implements IDAO {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();

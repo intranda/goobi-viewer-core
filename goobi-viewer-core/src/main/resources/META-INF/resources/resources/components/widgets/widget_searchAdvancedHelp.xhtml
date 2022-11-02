@@ -1,0 +1,26 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <composite:interface>
+        <composite:attribute name="autocomplete" type="java.lang.Boolean" required="false" default="false"/>
+        <composite:attribute name="onlySearchIcon" required="false" default="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <div id="widgetSearchAdvancedHelp" class="widget widget-search-advanced-help">
+            <h2 class="widget-search-advanced-help__title">#{msg.searchAdvanced_widget_help_title}</h2>
+            
+            <div class="widget__body widget-search-advanced-help__body">
+            	<h:outputText value="#{msg.searchAdvanced_widget_help_text}" escape="false" />
+            </div>
+        </div>
+    </composite:implementation>
+</ui:composition>

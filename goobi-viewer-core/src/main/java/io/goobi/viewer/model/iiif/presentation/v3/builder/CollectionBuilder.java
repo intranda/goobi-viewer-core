@@ -135,7 +135,7 @@ public class CollectionBuilder extends AbstractBuilder {
 
         } else {
             collection.setLabel(ViewerResourceBundle.getTranslations(collectionName, false));
-            ImageResource thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
+            ImageResource thumb = new ImageResource(null);
             if (thumb != null) {
                 collection.addThumbnail(thumb);
             }
@@ -161,10 +161,10 @@ public class CollectionBuilder extends AbstractBuilder {
                 thumb = getThumbnail(pi);
             } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
                 logger.error("Error creating thumbnail for record " + collectionName, e);
-                thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
+                thumb = new ImageResource(null);
             }
         } else {
-            thumb = new ImageResource(CMSCollection.getDefaultIcon(collectionField));
+            thumb = new ImageResource(null);
         }
         return thumb;
     }

@@ -23,7 +23,6 @@ package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
@@ -135,34 +134,6 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
             assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
             String data = response.readEntity(String.class);
             assertTrue(StringUtils.isNotBlank(data));
-        }
-    }
-
-    @Test
-    public void testGetPdf() {
-        String url = urls.path(RECORDS_FILES, RECORDS_FILES_PDF).params(PI, FILENAME).build();
-        try (Response response = target(url)
-                .request()
-                .accept("application/pdf")
-                .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            byte[] entity = response.readEntity(byte[].class);
-            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
-        }
-    }
-
-    @Test
-    public void testGetImage() {
-        String url = urls.path(RECORDS_FILES, RECORDS_FILES_PDF).params(PI, FILENAME).build();
-        try (Response response = target(url)
-                .request()
-                .accept("application/pdf")
-                .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
-            byte[] entity = response.readEntity(byte[].class);
-            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
 

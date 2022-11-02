@@ -21,23 +21,13 @@
  */
 package io.goobi.viewer.model.cms;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
-import javax.faces.context.ExternalContext;
-
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 
 /**
@@ -47,22 +37,7 @@ import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
 public class CMSContentItemTest {
 
     /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    /**
-     * Test if the "cloning" constructor, which takes another CMSContentItem as argument,
-     * faithfully reproduces the argument as a deep copy
+     * Test if the "cloning" constructor, which takes another CMSContentItem as argument, faithfully reproduces the argument as a deep copy
      */
     @Test
     public void testClone() {
@@ -71,7 +46,7 @@ public class CMSContentItemTest {
 
         CMSContentItem original = new CMSContentItem(CMSContentItemType.HTML);
         original.setBaseCollection("base-collection");
-        original.setCategories(new ArrayList(Collections.singleton(new CMSCategory("category"))));
+        original.setCategories(new ArrayList<>(Collections.singleton(new CMSCategory("category"))));
         original.setCollectionBaseLevels(2);
         original.setCollectionDisplayParents(false);
         original.setCollectionField("collection-field");
@@ -129,7 +104,7 @@ public class CMSContentItemTest {
 
         Assert.assertEquals(original.getItemId(), copy.getItemId());
 
-        Assert.assertEquals(original.getMediaItem(), copy.getMediaItem());  //no deep copy for media items
+        Assert.assertEquals(original.getMediaItem(), copy.getMediaItem()); //no deep copy for media items
 
         Assert.assertEquals(original.getMetadataFields(), copy.getMetadataFields());
 
@@ -175,7 +150,6 @@ public class CMSContentItemTest {
         Assert.assertEquals(ContentItemMode.expanded, item.getMode());
         Assert.assertEquals(6, item.getOrder());
         Assert.assertEquals(true, item.isPreview());
-
 
     }
 

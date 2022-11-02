@@ -49,6 +49,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.streaming.SXSSFCell;
@@ -65,13 +67,12 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -84,7 +85,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.search.SearchHit.HitType;
-import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -134,7 +134,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL");
-    public static final String _TITLE_TERMS = "_TITLE_TERMS";
+    public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":{0})^20.0";
     public static final String EMBEDDED_QUERY_TEMPLATE = "_query_:\"{0}\"";
@@ -446,7 +446,7 @@ public final class SearchHelper {
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param addDiscriminatorValueSuffix a boolean.
-     * @param privilege Privilege to check
+     * @param privilege Privilege to check (Connector checks a different privilege)
      * @should add static suffix
      * @should not add static suffix if not requested
      * @should add collection blacklist suffix
@@ -506,7 +506,6 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param locale a {@link java.util.Locale} object.
      * @param aggregateHits a boolean.
-     * @param boostTopLevelDocstructs
      * @param proximitySearchDistance
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
@@ -519,15 +518,11 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, boolean boostTopLevelDocstructs,
-            int proximitySearchDistance) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query);
-        String termQuery = null;
-        if (boostTopLevelDocstructs) {
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
-        }
-        finalQuery = buildFinalQuery(finalQuery, termQuery, boostTopLevelDocstructs,
-                aggregateHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
+        // String termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+        finalQuery = buildFinalQuery(finalQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         logger.trace("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits =
                 SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale,
@@ -862,15 +857,15 @@ public final class SearchHelper {
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
         int[] ret = { -1, -1 };
 
-        String searchString = String.format("+%s:*", SolrConstants._CALENDAR_YEAR);
+        String searchString = String.format("+%s:*", SolrConstants.CALENDAR_YEAR);
         if (StringUtils.isNotBlank(subQuery)) {
             searchString += " " + subQuery;
         }
 
         // logger.debug("searchString: {}", searchString);
-        QueryResponse resp = searchCalendar(searchString, Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
+        QueryResponse resp = searchCalendar(searchString, Collections.singletonList(SolrConstants.CALENDAR_YEAR), 0, true);
 
-        FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
+        FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants.CALENDAR_YEAR);
         Object min = info.getMin();
         if (min instanceof Long || min instanceof Integer) {
             ret[0] = (int) min;
@@ -938,7 +933,7 @@ public final class SearchHelper {
                     .collect(Collectors.toList());
 
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return ret;
@@ -1018,7 +1013,7 @@ public final class SearchHelper {
      * Updates the calling agent's session with a personalized filter sub-query.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param privilege
+     * @param privilege Privilege to check (Connector checks a different privilege)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1026,7 +1021,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix((User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
+                getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
+                        (User) request.getSession().getAttribute("user"), NetTools.getIpAddress(request),
                         ClientApplicationManager.getClientFromRequest(request), privilege);
         logger.trace("New filter query suffix: {}", filterQuerySuffix);
         request.getSession().setAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX, filterQuerySuffix);
@@ -1035,10 +1031,11 @@ public final class SearchHelper {
     /**
      * Constructs a personal search query filter suffix for the given user and IP address.
      *
+     * @param licenseTypes
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @param ipAddress a {@link java.lang.String} object.
      * @param client
-     * @param privilege Privilege to check
+     * @param privilege Privilege to check (Connector checks a different privilege)
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1050,9 +1047,18 @@ public final class SearchHelper {
      * @should construct suffix correctly if moving wall license
      * @should construct suffix correctly for alternate privilege
      */
-    public static String getPersonalFilterQuerySuffix(User user, String ipAddress, Optional<ClientApplication> client, String privilege)
-            throws IndexUnreachableException, PresentationException, DAOException {
+    public static String getPersonalFilterQuerySuffix(List<LicenseType> licenseTypes, User user, String ipAddress, Optional<ClientApplication> client,
+            String privilege) throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("getPersonalFilterQuerySuffix: {}", ipAddress);
+        if (privilege == null) {
+            throw new IllegalArgumentException("privilege may not be null");
+        }
+
+        // No relevant LicenseTypes
+        if (licenseTypes == null || licenseTypes.isEmpty()) {
+            return "";
+        }
+
         // No restrictions for admins
         if (user != null && user.isSuperuser()) {
             return "";
@@ -1062,15 +1068,12 @@ public final class SearchHelper {
                 && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";
         }
-        if (privilege == null) {
-            privilege = IPrivilegeHolder.PRIV_LIST;
-        }
 
         StringBuilder query = new StringBuilder();
         query.append(" +(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(SolrConstants.OPEN_ACCESS_VALUE).append('"');
 
         Set<String> usedLicenseTypes = new HashSet<>();
-        for (LicenseType licenseType : DataManager.getInstance().getDao().getRecordLicenseTypes()) {
+        for (LicenseType licenseType : licenseTypes) {
             if (usedLicenseTypes.contains(licenseType.getName())) {
                 continue;
             }
@@ -1083,31 +1086,24 @@ public final class SearchHelper {
                 // in which case it should also be added without a date restriction
             }
 
-            // License type contains listing privilege
-            if (licenseType.isOpenAccess() || licenseType.getPrivileges().contains(privilege)) {
-                query.append(licenseType.getFilterQueryPart());
-                usedLicenseTypes.add(licenseType.getName());
-                continue;
-            }
-
-            if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType),
-                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress, client, null).isGranted()) {
-                // If the user has an explicit permission to list a certain license type, ignore all other license types
+            // Open access, license type privileges and explicit privileges
+            if (licenseType.isOpenAccess()
+                    || licenseType.getPrivileges().contains(privilege) || AccessConditionUtils
+                            .checkAccessPermission(Collections.singletonList(licenseType),
+                                    new HashSet<>(Collections.singletonList(licenseType.getName())), privilege, user, ipAddress,
+                                    client, null)
+                            .isGranted()) {
                 logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                 query.append(licenseType.getFilterQueryPart());
                 usedLicenseTypes.add(licenseType.getName());
-            } else if (!licenseType.getOverridingLicenseTypes().isEmpty()) {
-                // If there are overriding license types for which the user has listing permission, ignore the current license type
-                for (LicenseType overridingLicenseType : licenseType.getOverridingLicenseTypes()) {
-                    if (!usedLicenseTypes.contains(overridingLicenseType.getName())
-                            && AccessConditionUtils.checkAccessPermission(Collections.singletonList(overridingLicenseType),
-                                    new HashSet<>(Collections.singletonList(overridingLicenseType.getName())), privilege, user, ipAddress, client,
-                                    null).isGranted()) {
+
+                // If the current license type overrides other license types, add permissions for those as well
+                for (LicenseType overridingLicenseType : licenseType.getOverriddenLicenseTypes()) {
+                    if (!usedLicenseTypes.contains(overridingLicenseType.getName())) {
                         query.append(overridingLicenseType.getFilterQueryPart());
                         usedLicenseTypes.add(overridingLicenseType.getName());
-                        logger.trace("User has listing privilege for license type '{}', overriding the restriction of license type '{}'.",
+                        logger.trace("User has additional listing privilege for license type '{}' due to '{}' overriding it.",
                                 overridingLicenseType.getName(), licenseType.getName());
-                        break;
                     }
                 }
             }
@@ -1879,7 +1875,7 @@ public final class SearchHelper {
         }
 
         // logger.trace("getFilteredTermsFromIndex startsWith: {}", startsWith);
-        String query = buildFinalQuery(sbQuery.toString(), null, false, SearchAggregationType.NO_AGGREGATION);
+        String query = buildFinalQuery(sbQuery.toString(), false, SearchAggregationType.NO_AGGREGATION);
         logger.trace("getFilteredTermsFromIndex query: {}", query);
         if (logger.isTraceEnabled()) {
             for (String fq : filterQueries) {
@@ -1994,8 +1990,8 @@ public final class SearchHelper {
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
      * @should remove proximity search tokens
-     * @should remove plus characters
      * @should remove range values
+     * @should remove operators from field names
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
         logger.trace("extractSearchTermsFromQuery:{}", query);
@@ -2022,7 +2018,7 @@ public final class SearchHelper {
         query = query.replace("(", "").replace(")", "").replace(SolrConstants.SOLR_QUERY_AND, " ").replace(SolrConstants.SOLR_QUERY_OR, " ");
 
         Map<String, Set<String>> ret = new HashMap<>();
-        ret.put(_TITLE_TERMS, new HashSet<>());
+        ret.put(TITLE_TERMS, new HashSet<>());
 
         // Drop proximity search tokens
         query = query.replaceAll(patternProximitySearchToken.pattern(), "");
@@ -2045,8 +2041,8 @@ public final class SearchHelper {
                     field = SolrConstants.FULLTEXT;
                 } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
                     field = SolrConstants.UGCTERMS;
-                } else if (field.endsWith(SolrConstants._UNTOKENIZED)) {
-                    field = field.substring(0, field.length() - SolrConstants._UNTOKENIZED.length());
+                } else if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                    field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
                 }
                 String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
                 if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
@@ -2057,7 +2053,7 @@ public final class SearchHelper {
                     ret.get(field).add(phraseWithoutQuotation);
                 }
                 query = query.replace(phrase, "");
-                ret.get(_TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
+                ret.get(TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
             }
         }
 
@@ -2077,6 +2073,12 @@ public final class SearchHelper {
                         continue;
                     }
                     currentField = field;
+
+                    // Remove operators before field name
+                    if (currentField.charAt(0) == '+' || currentField.charAt(0) == '-') {
+                        currentField = currentField.substring(1);
+                    }
+
                     if (SolrConstants.SUPERDEFAULT.equals(currentField)) {
                         currentField = SolrConstants.DEFAULT;
                     } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {
@@ -2084,8 +2086,8 @@ public final class SearchHelper {
                     } else if (SolrConstants.SUPERUGCTERMS.equals(currentField)) {
                         currentField = SolrConstants.UGCTERMS;
                     }
-                    if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
-                        currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
+                    if (currentField.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                        currentField = currentField.substring(0, currentField.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
                     }
                     // Remove quotation marks from phrases
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
@@ -2106,7 +2108,7 @@ public final class SearchHelper {
                                 break;
                             default:
                                 if (!"true".equals(value.trim())) {
-                                    ret.get(_TITLE_TERMS).add("(" + value + ")");
+                                    ret.get(TITLE_TERMS).add("(" + value + ")");
                                 }
                                 break;
                         }
@@ -2119,14 +2121,14 @@ public final class SearchHelper {
                 }
                 if (currentField == null) {
                     currentField = SolrConstants.DEFAULT;
-                } else if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
-                    currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
+                } else if (currentField.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                    currentField = currentField.substring(0, currentField.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
                 }
                 if (ret.get(currentField) == null) {
                     ret.put(currentField, new HashSet<>());
                 }
                 ret.get(currentField).add(s);
-                ret.get(_TITLE_TERMS).add("(" + s + ")");
+                ret.get(TITLE_TERMS).add("(" + s + ")");
             }
         }
 
@@ -2148,33 +2150,31 @@ public final class SearchHelper {
      */
     public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString, Locale locale) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
-        SearchQueryGroup ret = new SearchQueryGroup(locale, 0);
+        SearchQueryGroup ret = new SearchQueryGroup(locale, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
 
-        // \((\w+:\"[\w ]+\"( AND | OR )*)+\)|\(+(\w+:\([\w ()]+\)( AND | OR )*)+\)|\((\w+:\(\[\w+ TO \w+\]\))\)
-        String patternAllItems =
-                "\\((\\w+:\\\"[\\w ]+\\\"( AND | OR )*)+\\)|\\(+(\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)|\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\))\\)";
+        // [+-]*\((\w+:\"[\wäáàâöóòôüúùûëéèêßñ ]+\" *)+\)|[+-]*\(((\w+:\([\wäáàâöóòôüúùûëéèêßñ ]+\)) *)+\)|[+-]*\((\w+:\(\[[\wäáàâöóòôüúùûëéèêßñ]+ TO [\wäáàâöóòôüúùûëéèêßñ]+\]\) *)\)
+        final String patternAllItems =
+                "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)";
 
-        String patternRegularItems = "\\((\\w+:\\([\\w ()]+\\)( AND | OR )*)+\\)";
-        String patternRegularPairs = "(\\w+:\\([\\w ()]+\\))( AND | OR )*";
+        final String patternRegularItems = "([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"; 
+        final String patternRegularPairs = "(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))";
 
-        String patternPhraseItems = "\\((\\w+:\"[\\w ]+\"( AND | OR )*)+\\)";
-        String patternPhrasePairs = "(\\w+:\"[\\w ]+\")( AND | OR )*";
+        final String patternPhraseItems = "([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)";
+        final String patternPhrasePairs = "(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")";
 
-        String patternRangeItems = "\\((\\w+:\\(\\[\\w+ TO \\w+\\]\\))\\)";
-        String patternRangePairs = "(\\w+:\\(\\[\\w+ TO \\w+\\]\\))";
+        final String patternRangeItems = "([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)";
+        final String patternRangePairs = "(\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\))";
 
-        String patternGroupOperator = "( AND | OR )";
-
-        String patternFacetString = "(\\w+:\\w+);;";
+        final String patternFacetString = "(\\w+:\\w+);;";
 
         // Regular query
-        // (((SUPERDEFAULT:((foo) OR (bar)) OR SUPERFULLTEXT:((foo) OR (bar)) OR SUPERUGCTERMS:((foo) OR (bar)) OR DEFAULT:((foo) OR (bar)) OR FULLTEXT:((foo) OR (bar)) OR NORMDATATERMS:((foo) OR (bar)) OR UGCTERMS:((foo) OR (bar)) OR CMS_TEXT_ALL:((foo) OR (bar))) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)))
+        // (+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) +(SUPERFULLTEXT:(bla AND blup) FULLTEXT:(bla AND blup)))
 
         // Phrase query
-        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND ((SUPERFULLTEXT:"bla" OR FULLTEXT:"bla")))
+        // (+(SUPERDEFAULT:"foo bar" SUPERFULLTEXT:"foo bar" SUPERUGCTERMS:"foo bar" DEFAULT:"foo bar" FULLTEXT:"foo bar" NORMDATATERMS:"foo bar" UGCTERMS:"foo bar" CMS_TEXT_ALL:"foo bar") +(SUPERFULLTEXT:"bla blup" FULLTEXT:"bla blup"))
 
         // Mixed query
-        // (((SUPERDEFAULT:"foo bar" OR SUPERFULLTEXT:"foo bar" OR SUPERUGCTERMS:"foo bar" OR DEFAULT:"foo bar" OR FULLTEXT:"foo bar" OR NORMDATATERMS:"foo bar" OR UGCTERMS:"foo bar" OR CMS_TEXT_ALL:"foo bar")) AND (SUPERFULLTEXT:(bla) OR FULLTEXT:(bla)) AND (DOCSTRCT_TOP:"monograph") AND (MD_YEARPUBLISH:[1900 TO 2000])))
+        // (+(SUPERDEFAULT:"foo bar" SUPERFULLTEXT:"foo bar" SUPERUGCTERMS:"foo bar" DEFAULT:"foo bar" FULLTEXT:"foo bar" NORMDATATERMS:"foo bar" UGCTERMS:"foo bar" CMS_TEXT_ALL:"foo bar") +(SUPERFULLTEXT:(bla) FULLTEXT:(bla)) +(DOCSTRCT_TOP:"monograph") +(MD_YEARPUBLISH:[1900 TO 2000]))
 
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
@@ -2186,7 +2186,7 @@ public final class SearchHelper {
         }
 
         String queryRemainder = query;
-        Pattern pAllItems = Pattern.compile(patternAllItems); //NOSONAR no backtracking detected
+        Pattern pAllItems = Pattern.compile(patternAllItems);
         Matcher mAllItems = pAllItems.matcher(query);
         while (mAllItems.find()) {
             String itemQuery = mAllItems.group();
@@ -2205,10 +2205,23 @@ public final class SearchHelper {
             if (mPhraseItem.find()) {
                 // Phrase search
                 logger.trace("phrase item: {}", itemQuery);
-                operators.add(SearchItemOperator.PHRASE);
-                Pattern pPairs = Pattern.compile(patternPhrasePairs); //NOSONAR no backtracking detected
-                Matcher mPairs = pPairs.matcher(itemQuery);
+                String op = mPhraseItem.group(1);
+                SearchItemOperator operator = SearchItemOperator.OR;
+                if (StringUtils.isNotEmpty(op)) {
+                    switch (op) {
+                        case "+":
+                            operator = SearchItemOperator.AND;
+                            break;
+                        case "-":
+                            operator = SearchItemOperator.NOT;
+                            break;
+                        default:
+                            break;
+                    }
+                }
 
+                Pattern pPairs = Pattern.compile(patternPhrasePairs);
+                Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
                 while (mPairs.find()) {
@@ -2223,11 +2236,27 @@ public final class SearchHelper {
                 if (!pairs.isEmpty()) {
                     allPairs.add(pairs);
                     allFieldNames.add(fieldNames);
+                    operators.add(operator);
                 }
             } else if (mRangeItem.find()) {
                 // Range search
                 logger.trace("range item: {}", itemQuery);
-                Pattern pPairs = Pattern.compile(patternRangePairs); //NOSONAR no backtracking detected
+                String op = mRangeItem.group(1);
+                SearchItemOperator operator = SearchItemOperator.OR;
+                if (StringUtils.isNotEmpty(op)) {
+                    switch (op) {
+                        case "+":
+                            operator = SearchItemOperator.AND;
+                            break;
+                        case "-":
+                            operator = SearchItemOperator.NOT;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                Pattern pPairs = Pattern.compile(patternRangePairs);
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
@@ -2244,27 +2273,35 @@ public final class SearchHelper {
                 if (!pairs.isEmpty()) {
                     allPairs.add(pairs);
                     allFieldNames.add(fieldNames);
-                    operators.add(SearchItemOperator.AND);
+                    operators.add(operator);
                 }
-
             } else if (mRegularItem.find()) {
                 // Regular search
                 logger.trace("regular item: {}", itemQuery);
-                Pattern pPairs = Pattern.compile(patternRegularPairs); //NOSONAR no backtracking detected
+                String op = mRegularItem.group(1);
+                SearchItemOperator operator = SearchItemOperator.OR;
+                if (StringUtils.isNotEmpty(op)) {
+                    switch (op) {
+                        case "+":
+                            operator = SearchItemOperator.AND;
+                            break;
+                        case "-":
+                            operator = SearchItemOperator.NOT;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                Pattern pPairs = Pattern.compile(patternRegularPairs);
                 Matcher mPairs = pPairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
-                SearchItemOperator operator = null;
                 while (mPairs.find()) {
                     String pair = mPairs.group(1);
                     logger.trace("pair: {}", pair);
                     String[] pairSplit = pair.split(":");
                     if (pairSplit.length == 2) {
-                        if (pairSplit[1].contains(" AND ")) {
-                            operator = SearchItemOperator.AND;
-                        } else if (pairSplit[1].contains(" OR ")) {
-                            operator = SearchItemOperator.OR;
-                        }
                         pairs.add(new StringPair(pairSplit[0],
                                 pairSplit[1]
                                         .replace("(", "")
@@ -2273,15 +2310,6 @@ public final class SearchHelper {
                                         .replace(" AND", "")
                                         .trim()));
                         fieldNames.add(pairSplit[0]);
-                    }
-                    if (operator == null) {
-                        String op = mPairs.group(2);
-                        logger.trace("op: {}", op);
-                        if (op != null && op.trim().equals("OR")) {
-                            operator = SearchItemOperator.OR;
-                        } else {
-                            operator = SearchItemOperator.AND;
-                        }
                     }
                 }
                 if (!pairs.isEmpty()) {
@@ -2292,53 +2320,45 @@ public final class SearchHelper {
             }
         }
 
-        // Parse query group operator
-        logger.trace("query remainder: {}", queryRemainder);
-        Pattern pOperator = Pattern.compile(patternGroupOperator);
-        Matcher mOperator = pOperator.matcher(queryRemainder);
-        if (mOperator.find()) {
-            String groupOperator = mOperator.group(1);
-            logger.trace("group op: {}", groupOperator);
-            ret.setOperator("OR".equals(groupOperator.trim()) ? SearchQueryGroupOperator.OR : SearchQueryGroupOperator.AND);
-        }
-
         // Parse facet string
         if (StringUtils.isNotEmpty(facetString)) {
-            Pattern pFacetString = Pattern.compile(patternFacetString); //NOSONAR no backtracking detected
+            Pattern pFacetString = Pattern.compile(patternFacetString);
             Matcher mFacetString = pFacetString.matcher(facetString);
             Set<String> fieldNames = new HashSet<>();
-            List<StringPair> pairs = new ArrayList<>();
             while (mFacetString.find()) {
                 String pair = mFacetString.group(1);
                 logger.trace("pair: {}", pair);
                 String[] pairSplit = pair.split(":");
                 if (pairSplit.length == 2) {
-                    pairs.add(new StringPair(pairSplit[0],
-                            pairSplit[1].replace("(", "").replace(")", "").replace(" OR", "").replace(" AND", "").trim()));
                     fieldNames.add(pairSplit[0]);
+                    allPairs.add(Collections.singletonList(new StringPair(pairSplit[0],
+                            pairSplit[1].replace("(", "").replace(")", "").trim())));
+                    allFieldNames.add(fieldNames);
+                    operators.add(SearchItemOperator.AND);
                 }
-            }
-            if (!pairs.isEmpty()) {
-                allPairs.add(pairs);
-                allFieldNames.add(fieldNames);
-                operators.add(SearchItemOperator.IS);
             }
         }
 
-        // Build query items out of collected fields
+        // Add/reassign query items out of collected fields
         for (int i = 0; i < allPairs.size(); ++i) {
             List<StringPair> pairs = allPairs.get(i);
             Set<String> fieldNames = allFieldNames.get(i);
             SearchItemOperator operator = operators.get(i);
+            SearchQueryItem item;
+            if (ret.getQueryItems().size() > i) {
+                // Re-use existing all-fields item, if available
+                item = ret.getQueryItems().get(i);
+            } else {
+                item = new SearchQueryItem(locale);
+                ret.getQueryItems().add(item);
+            }
             if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
                     && fieldNames.contains(SolrConstants.NORMDATATERMS)
                     && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
-                SearchQueryItem item = new SearchQueryItem(locale);
                 item.setOperator(operator);
                 item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
                 item.setValue(pairs.get(0).getTwo());
-                ret.getQueryItems().add(item);
                 logger.trace("added item: {}:{}", SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, pairs.get(0).getTwo());
             } else {
                 for (StringPair pair : pairs) {
@@ -2348,7 +2368,6 @@ public final class SearchHelper {
                         case SolrConstants.SUPERUGCTERMS:
                             break;
                         default:
-                            SearchQueryItem item = new SearchQueryItem(locale);
                             item.setOperator(operator);
                             item.setField(pair.getOne());
                             if (DataManager.getInstance().getConfiguration().isAdvancedSearchFieldRange(pair.getOne())) {
@@ -2358,8 +2377,7 @@ public final class SearchHelper {
                             } else {
                                 item.setValue(pair.getTwo());
                             }
-                            ret.getQueryItems().add(item);
-                            logger.trace("added item: {}:{}", pair.getOne(), pair.getTwo());
+                            logger.trace("added item: {}", pair);
                     }
                 }
             }
@@ -2396,19 +2414,18 @@ public final class SearchHelper {
      * generateQueryParams.
      * </p>
      *
+     * @param termQuery
      * @return a {@link java.util.Map} object.
-     * @should return empty map if search hit aggregation on
      */
     public static Map<String, String> generateQueryParams(String termQuery) {
         Map<String, String> params = new HashMap<>();
-        if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
-            // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
-            params.put("defType", "edismax");
-            params.put("uf", "* _query_");
-            String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
-            if (bq != null) {
-                params.put("bq", bq);
-            }
+        // Add a boost query to promote anchors and works to the top of the list (Extended DisMax query parser is required for this)
+        params.put("defType", "edismax");
+        params.put("uf", "* _query_");
+        String bq = StringUtils.isNotEmpty(termQuery) ? BOOSTING_QUERY_TEMPLATE.replace("{0}", termQuery) : null;
+        if (bq != null) {
+            params.put("bq", bq);
+            logger.trace("bq: {}", bq);
         }
 
         return params;
@@ -2450,8 +2467,8 @@ public final class SearchHelper {
      * @should leave year month day fields unaltered
      */
     public static String facetifyField(String fieldName) {
-        if (fieldName != null && (fieldName.startsWith("BOOL_") || fieldName.equals(SolrConstants._CALENDAR_YEAR)
-                || fieldName.equals(SolrConstants._CALENDAR_MONTH) || fieldName.equals(SolrConstants._CALENDAR_DAY))) {
+        if (fieldName != null && (fieldName.startsWith("BOOL_") || fieldName.equals(SolrConstants.CALENDAR_YEAR)
+                || fieldName.equals(SolrConstants.CALENDAR_MONTH) || fieldName.equals(SolrConstants.CALENDAR_DAY))) {
             return fieldName;
         }
         return adaptField(fieldName, SolrConstants.PREFIX_FACET);
@@ -2515,18 +2532,18 @@ public final class SearchHelper {
             case SolrConstants.DOCSTRCT_SUB:
             case SolrConstants.DOCSTRCT_TOP:
                 return prefix + fieldName;
-            case SolrConstants._CALENDAR_YEAR:
-            case SolrConstants._CALENDAR_MONTH:
-            case SolrConstants._CALENDAR_DAY:
+            case SolrConstants.CALENDAR_YEAR:
+            case SolrConstants.CALENDAR_MONTH:
+            case SolrConstants.CALENDAR_DAY:
                 if ("SORT_".equals(prefix)) {
                     return "SORTNUM_" + fieldName;
                 }
                 fieldName = applyPrefix(fieldName, prefix);
-                fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                fieldName = fieldName.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
                 return fieldName;
             default:
                 fieldName = applyPrefix(fieldName, prefix);
-                fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                fieldName = fieldName.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
                 return fieldName;
         }
     }
@@ -2596,9 +2613,9 @@ public final class SearchHelper {
             case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT:
             case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT_SUB:
             case SolrConstants.PREFIX_FACET + SolrConstants.DOCSTRCT_TOP:
-            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_YEAR:
-            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_MONTH:
-            case SolrConstants.PREFIX_FACET + SolrConstants._CALENDAR_DAY:
+            case SolrConstants.PREFIX_FACET + SolrConstants.CALENDAR_YEAR:
+            case SolrConstants.PREFIX_FACET + SolrConstants.CALENDAR_MONTH:
+            case SolrConstants.PREFIX_FACET + SolrConstants.CALENDAR_DAY:
                 return fieldName.substring(6);
             default:
                 if (fieldName.startsWith(SolrConstants.PREFIX_FACET)) {
@@ -2645,7 +2662,7 @@ public final class SearchHelper {
                 case SolrConstants.DOCSTRCT:
                     continue;
                 default:
-                    if (field.startsWith(SolrConstants.GROUPID_)) {
+                    if (field.startsWith(SolrConstants.PREFIX_GROUPID)) {
                         continue;
                     }
             }
@@ -2709,90 +2726,67 @@ public final class SearchHelper {
      * Creates a Solr expand query string out of advanced search query item groups.
      *
      * @param groups a {@link java.util.List} object.
-     * @param advancedSearchGroupOperator a int.
      * @param allowFuzzySearch
+     * @return a {@link java.lang.String} object.
      * @should generate query correctly
      * @should skip reserved fields
-     * @return a {@link java.lang.String} object.
+     * @should switch to OR operator on fulltext items
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator, boolean allowFuzzySearch) {
+    public static String generateAdvancedExpandQuery(SearchQueryGroup group, boolean allowFuzzySearch) {
         logger.trace("generateAdvancedExpandQuery");
-        if (groups == null || groups.isEmpty()) {
+        if (group == null) {
             return "";
         }
-        StringBuilder sbOuter = new StringBuilder();
+        StringBuilder sbGroup = new StringBuilder();
 
-        for (SearchQueryGroup group : groups) {
-            StringBuilder sbGroup = new StringBuilder();
-
-            // Identify any fields that only exist in page or UGC docs and enable the page search mode
-            boolean orMode = false;
-            for (SearchQueryItem item : group.getQueryItems()) {
-                if (item.getField() == null) {
-                    continue;
-                }
-                switch (item.getField()) {
-                    case SolrConstants.FULLTEXT:
-                    case SolrConstants.UGCTERMS:
-                    case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
-                        orMode = true;
-                        break;
-                    default:
-                        break;
-                }
+        // Identify any fields that only exist in page or UGC docs and enable the page search mode
+        boolean orMode = false;
+        for (SearchQueryItem item : group.getQueryItems()) {
+            if (item.getField() == null) {
+                continue;
             }
-
-            for (SearchQueryItem item : group.getQueryItems()) {
-                if (item.getField() == null) {
-                    continue;
-                }
-                logger.trace("item field: {}", item.getField());
-                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
-                // return every single doc
-                switch (item.getField()) {
-                    case SolrConstants.PI_TOPSTRUCT:
-                    case SolrConstants.PI_ANCHOR:
-                    case SolrConstants.DC:
-                    case SolrConstants.DOCSTRCT:
-                    case SolrConstants.BOOKMARKS:
-                        continue;
-                    default:
-                        if (item.getField().startsWith(SolrConstants.GROUPID_)) {
-                            continue;
-                        }
-                }
-                String itemQuery = item.generateQuery(new HashSet<>(), false, allowFuzzySearch);
-                if (StringUtils.isNotEmpty(itemQuery)) {
-                    if (sbGroup.length() > 0) {
-                        if (orMode) {
-                            // When also searching in page document fields, the operator must be 'OR'
-                            sbGroup.append(SolrConstants.SOLR_QUERY_OR);
-                        } else {
-                            sbGroup.append(' ').append(group.getOperator().name()).append(' ');
-                        }
-                    }
-                    sbGroup.append(itemQuery);
-                }
-            }
-            if (sbGroup.length() > 0) {
-                if (sbOuter.length() > 0) {
-                    switch (advancedSearchGroupOperator) {
-                        case 0:
-                            sbOuter.append(SolrConstants.SOLR_QUERY_AND);
-                            break;
-                        case 1:
-                            sbOuter.append(SolrConstants.SOLR_QUERY_OR);
-                            break;
-                        default:
-                            sbOuter.append(SolrConstants.SOLR_QUERY_OR);
-                            break;
-                    }
-                }
-                sbOuter.append('(').append(sbGroup).append(')');
+            switch (item.getField()) {
+                case SolrConstants.FULLTEXT:
+                case SolrConstants.UGCTERMS:
+                case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
+                    orMode = true;
+                    break;
+                default:
+                    break;
             }
         }
-        if (sbOuter.length() > 0) {
-            return " +(" + sbOuter.toString() + ')';
+
+        for (SearchQueryItem item : group.getQueryItems()) {
+            if (item.getField() == null) {
+                continue;
+            }
+            // logger.trace("item field: {}", item.getField());
+            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+            switch (item.getField()) {
+                case SolrConstants.PI_TOPSTRUCT:
+                case SolrConstants.PI_ANCHOR:
+                case SolrConstants.DC:
+                case SolrConstants.DOCSTRCT:
+                case SolrConstants.BOOKMARKS:
+                    continue;
+                default:
+                    if (item.getField().startsWith(SolrConstants.PREFIX_GROUPID)) {
+                        continue;
+                    }
+            }
+            String itemQuery = item.generateQuery(new HashSet<>(), false, allowFuzzySearch);
+            if (StringUtils.isNotEmpty(itemQuery)) {
+                if (orMode && itemQuery.charAt(0) == '+') {
+                    itemQuery = itemQuery.substring(1);
+                }
+                if (sbGroup.length() > 0) {
+                    sbGroup.append(' ');
+                }
+                sbGroup.append(itemQuery);
+            }
+        }
+        if (sbGroup.length() > 0) {
+            return " +(" + sbGroup.toString() + ')';
         }
 
         return "";
@@ -2805,49 +2799,47 @@ public final class SearchHelper {
      *
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
-     * @param queryGroups a {@link java.util.List} object.
+     * @param queryGroup a {@link SearchQueryGroup} object.
      * @param additionalFields Optinal additional fields to return
      * @return a {@link java.util.List} object.
      */
-    public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, List<SearchQueryGroup> queryGroups,
+    public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, SearchQueryGroup queryGroup,
             List<String> additionalFields) {
         List<String> ret = new ArrayList<>();
         // logger.trace("searchType: {}", searchType);
         switch (searchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
-                if (queryGroups != null && !queryGroups.isEmpty()) {
-                    for (SearchQueryGroup group : queryGroups) {
-                        for (SearchQueryItem item : group.getQueryItems()) {
-                            if (SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS.equals(item.getField())) {
-                                if (!ret.contains(SolrConstants.DEFAULT)) {
-                                    ret.add(SolrConstants.DEFAULT);
-                                }
-                                if (!ret.contains(SolrConstants.FULLTEXT)) {
-                                    ret.add(SolrConstants.FULLTEXT);
-                                }
-                                if (!ret.contains(SolrConstants.NORMDATATERMS)) {
-                                    ret.add(SolrConstants.NORMDATATERMS);
-                                }
-                                if (!ret.contains(SolrConstants.UGCTERMS)) {
-                                    ret.add(SolrConstants.UGCTERMS);
-                                }
-                                if (!ret.contains(SolrConstants.CMS_TEXT_ALL)) {
-                                    ret.add(SolrConstants.CMS_TEXT_ALL);
-                                }
-                            } else if (SolrConstants.DEFAULT.equals(item.getField())
-                                    || SolrConstants.SUPERDEFAULT.equals(item.getField()) && !ret.contains(SolrConstants.DEFAULT)) {
+                if (queryGroup != null) {
+                    for (SearchQueryItem item : queryGroup.getQueryItems()) {
+                        if (SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS.equals(item.getField())) {
+                            if (!ret.contains(SolrConstants.DEFAULT)) {
                                 ret.add(SolrConstants.DEFAULT);
-                            } else if (SolrConstants.FULLTEXT.equals(item.getField())
-                                    || SolrConstants.SUPERFULLTEXT.equals(item.getField()) && !ret.contains(SolrConstants.FULLTEXT)) {
-                                ret.add(SolrConstants.FULLTEXT);
-                            } else if (SolrConstants.UGCTERMS.equals(item.getField())
-                                    || SolrConstants.SUPERUGCTERMS.equals(item.getField()) && !ret.contains(SolrConstants.UGCTERMS)) {
-                                ret.add(SolrConstants.UGCTERMS);
-                            } else if (SolrConstants.CMS_TEXT_ALL.equals(item.getField()) && !ret.contains(SolrConstants.CMS_TEXT_ALL)) {
-                                ret.add(SolrConstants.CMS_TEXT_ALL);
-                            } else if (!ret.contains(item.getField())) {
-                                ret.add(item.getField());
                             }
+                            if (!ret.contains(SolrConstants.FULLTEXT)) {
+                                ret.add(SolrConstants.FULLTEXT);
+                            }
+                            if (!ret.contains(SolrConstants.NORMDATATERMS)) {
+                                ret.add(SolrConstants.NORMDATATERMS);
+                            }
+                            if (!ret.contains(SolrConstants.UGCTERMS)) {
+                                ret.add(SolrConstants.UGCTERMS);
+                            }
+                            if (!ret.contains(SolrConstants.CMS_TEXT_ALL)) {
+                                ret.add(SolrConstants.CMS_TEXT_ALL);
+                            }
+                        } else if (SolrConstants.DEFAULT.equals(item.getField())
+                                || SolrConstants.SUPERDEFAULT.equals(item.getField()) && !ret.contains(SolrConstants.DEFAULT)) {
+                            ret.add(SolrConstants.DEFAULT);
+                        } else if (SolrConstants.FULLTEXT.equals(item.getField())
+                                || SolrConstants.SUPERFULLTEXT.equals(item.getField()) && !ret.contains(SolrConstants.FULLTEXT)) {
+                            ret.add(SolrConstants.FULLTEXT);
+                        } else if (SolrConstants.UGCTERMS.equals(item.getField())
+                                || SolrConstants.SUPERUGCTERMS.equals(item.getField()) && !ret.contains(SolrConstants.UGCTERMS)) {
+                            ret.add(SolrConstants.UGCTERMS);
+                        } else if (SolrConstants.CMS_TEXT_ALL.equals(item.getField()) && !ret.contains(SolrConstants.CMS_TEXT_ALL)) {
+                            ret.add(SolrConstants.CMS_TEXT_ALL);
+                        } else if (!ret.contains(item.getField())) {
+                            ret.add(item.getField());
                         }
                     }
                 }
@@ -2857,9 +2849,9 @@ public final class SearchHelper {
                 // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                ret.add(SolrConstants._CALENDAR_DAY);
-                ret.add(SolrConstants._CALENDAR_MONTH);
-                ret.add(SolrConstants._CALENDAR_YEAR);
+                ret.add(SolrConstants.CALENDAR_DAY);
+                ret.add(SolrConstants.CALENDAR_MONTH);
+                ret.add(SolrConstants.CALENDAR_YEAR);
                 break;
             default:
                 if (searchFilter == null || searchFilter.equals(SEARCH_FILTER_ALL)) {
@@ -2869,7 +2861,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.NORMDATATERMS);
                     ret.add(SolrConstants.UGCTERMS);
                     ret.add(SolrConstants.CMS_TEXT_ALL);
-                    ret.add(SolrConstants._CALENDAR_DAY);
+                    ret.add(SolrConstants.CALENDAR_DAY);
                 } else {
                     ret.add(searchFilter.getField());
                 }
@@ -2979,25 +2971,23 @@ public final class SearchHelper {
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
      * @param rawQuery a {@link java.lang.String} object.
-     * @param aggregateHits a boolean.
-     * @param boostTopLevelDocstructs
+     * @param boostTopLevelDocstructs If true, query elements for boosting will be added
+     * @param aggregationType {@link SearchAggregationType}
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      *
      */
-    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType)
-            throws IndexUnreachableException {
-        return buildFinalQuery(rawQuery, termQuery, boostTopLevelDocstructs, null, aggregationType);
+    public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType) {
+        return buildFinalQuery(rawQuery, boostTopLevelDocstructs, null, aggregationType);
     }
 
     /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      *
      * @param rawQuery a {@link java.lang.String} object.
-     * @param termQuery
-     * @param aggregateHits If true, a join parser query part will be added
      * @param boostTopLevelDocstructs If true, query elements for boosting will be added
      * @param request
+     * @param aggregationType {@link SearchAggregationType}
      * @return a {@link java.lang.String} object.
      * @should add embedded query template if boostTopLevelDocstructs true
      * @should add query prefix if boostTopLevelDocstructs true and termQuery not empty
@@ -3006,14 +2996,13 @@ public final class SearchHelper {
      * @should not add join statement if aggregateHits false
      * @should remove existing join statement
      */
-    public static String buildFinalQuery(String rawQuery, String termQuery, boolean boostTopLevelDocstructs,
-            HttpServletRequest request, SearchAggregationType aggregationType) {
+    public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, HttpServletRequest request,
+            SearchAggregationType aggregationType) {
         if (rawQuery == null) {
             throw new IllegalArgumentException("rawQuery may not be null");
         }
 
         // logger.trace("rawQuery: {}", rawQuery);
-        // logger.trace("termQuery: {}", termQuery);
         StringBuilder sbQuery = new StringBuilder();
         if (rawQuery.contains(AGGREGATION_QUERY_PREFIX)) {
             rawQuery = rawQuery.replace(AGGREGATION_QUERY_PREFIX, "");
@@ -3029,14 +3018,12 @@ public final class SearchHelper {
 
         // Boosting
         if (boostTopLevelDocstructs) {
-            String prefix = "";
-            String template =
-                    "+(" + prefix + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
+            String template = "+(" + EMBEDDED_QUERY_TEMPLATE.replace("{0}", sbQuery.toString().replace("\"", "\\\"")) + ")";
             sbQuery = new StringBuilder(template);
         }
 
         // Suffixes
-        String suffixes = getAllSuffixes(request, true, true, null);
+        String suffixes = getAllSuffixes(request, true, true, IPrivilegeHolder.PRIV_LIST);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }
@@ -3046,7 +3033,7 @@ public final class SearchHelper {
 
     /**
      * @param request
-     * @param privilege
+     * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
      */
     static String getFilterQuerySuffix(HttpServletRequest request, String privilege) {
@@ -3200,7 +3187,7 @@ public final class SearchHelper {
         if (StringUtils.isEmpty(sortString)) {
             return Collections.emptyList();
         }
-        
+
         List<StringPair> ret = new ArrayList<>();
         String[] sortStringSplit = sortString.split(";");
         if (sortStringSplit.length > 0) {
@@ -3212,7 +3199,7 @@ public final class SearchHelper {
                     Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
                     StreamSupport.stream(locales.spliterator(), false)
                             .sorted(new LocaleComparator(BeanUtils.getLocale()))
-                            .map(locale -> field + SolrConstants._LANG_ + locale.getLanguage().toUpperCase())
+                            .map(locale -> field + SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase())
                             .peek(language -> logger.trace("Adding sort field: {}", language))
                             .forEach(language -> ret.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
                 }

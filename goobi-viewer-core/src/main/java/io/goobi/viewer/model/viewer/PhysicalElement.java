@@ -1429,18 +1429,15 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws DAOException
      */
     public boolean isAccessPermissionImageZoom() throws IndexUnreachableException, DAOException {
-        if (DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {
-            if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
-                        IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
-            }
-            logger.trace("FacesContext not found");
-
-            return false;
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
+                    IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
         }
+        logger.trace("FacesContext not found");
 
-        return true;
+        return false;
+
     }
 
     /**

@@ -24,9 +24,6 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_CMDI;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PDF;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
@@ -34,7 +31,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -48,26 +44,23 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.api.rest.v1.records.media.RecordsFilesImageResource;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -149,27 +142,6 @@ public class RecordFileResource {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
         return builder.getFulltextAsTEI(pi, filename);
-    }
-
-    /**
-     * @deprecated use {@link RecordsFilesImageResource#getPdf()} instead
-     */
-    @Deprecated
-    @GET
-    @javax.ws.rs.Path(RECORDS_FILES_PDF)
-    @Produces({ "application/pdf" })
-    @Operation(tags = { "records" }, summary = "Non-canonical URL to PDF file",
-            description = "This redirects to " + RECORDS_FILES_IMAGE + RECORDS_FILES_IMAGE_PDF + ", which should be used instead")
-    public Response getPDF(
-            @Parameter(description = "Filename containing the text") @PathParam("filename") String filename)
-            throws ContentLibException {
-        filename = StringTools.stripPatternBreakingChars(filename);
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(pi, filename).build();
-        try {
-            return Response.seeOther(PathConverter.toURI(url)).build();
-        } catch (URISyntaxException e) {
-            throw new ContentLibException("Cannot create redirect url to " + url);
-        }
     }
 
     @GET

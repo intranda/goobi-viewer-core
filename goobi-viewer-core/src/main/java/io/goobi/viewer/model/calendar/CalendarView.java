@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.calendar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +38,9 @@ import io.goobi.viewer.solr.SolrConstants;
 /**
  * Data for the calendar view of an individual record (e.g. newspaper).
  */
-public class CalendarView {
+public class CalendarView implements Serializable {
+
+    private static final long serialVersionUID = -8118596197858508038L;
 
     private static final Logger logger = LogManager.getLogger(CalendarView.class);
 
@@ -114,8 +117,8 @@ public class CalendarView {
             return Collections.emptyList();
         }
 
-        return SearchHelper.getFacetValues("+" + SolrConstants.PI_ANCHOR + ":" + anchorPi + " +" + SolrConstants._CALENDAR_DAY + ":*",
-                SolrConstants._CALENDAR_YEAR, 1);
+        return SearchHelper.getFacetValues("+" + SolrConstants.PI_ANCHOR + ":" + anchorPi + " +" + SolrConstants.CALENDAR_DAY + ":*",
+                SolrConstants.CALENDAR_YEAR, 1);
     }
 
     /**

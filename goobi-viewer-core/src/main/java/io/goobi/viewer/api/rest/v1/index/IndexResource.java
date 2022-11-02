@@ -184,12 +184,12 @@ public class IndexResource {
             return ret.toString();
         }
 
-        String termQuery = null;
-        if (params.boostTopLevelDocstructs) {
-            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
-        }
-        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.boostTopLevelDocstructs,
+        //        String termQuery = null;
+        //        if (params.boostTopLevelDocstructs) {
+        //            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
+        //            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+        //        }
+        String query = SearchHelper.buildFinalQuery(params.query, params.boostTopLevelDocstructs,
                 params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
         logger.trace("query: {}", query);
@@ -384,6 +384,16 @@ public class IndexResource {
         return Optional.empty();
     }
 
+    /**
+     * 
+     * @param params
+     * @param response
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
     private JSONArray getQueryResults(RecordsRequestParameters params, QueryResponse response)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         SolrDocumentList result = response.getResults();
@@ -391,13 +401,10 @@ public class IndexResource {
         logger.trace("hits: {}", result.size());
         JSONArray jsonArray = null;
         if (params.jsonFormat != null) {
-            switch (params.jsonFormat) {
-                case "datecentric":
-                    jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
-                    break;
-                default:
-                    jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
-                    break;
+            if ("datecentric".equals(params.jsonFormat)) {
+                jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
+            } else {
+                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
             }
         } else {
             jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
@@ -464,7 +471,7 @@ public class IndexResource {
      * @return
      */
     private static StreamingOutput executeStreamingExpression(String expr, String solrUrl) {
-        return (out) -> {
+        return out -> {
             ObjectMapper mapper = new ObjectMapper();
             ModifiableSolrParams paramsLoc = new ModifiableSolrParams();
             paramsLoc.set("expr", expr);

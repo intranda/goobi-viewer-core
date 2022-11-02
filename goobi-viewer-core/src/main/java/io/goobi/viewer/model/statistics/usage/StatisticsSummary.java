@@ -22,13 +22,26 @@
 package io.goobi.viewer.model.statistics.usage;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import de.intranda.api.iiif.presentation.v3.IPresentationModelElement3;
+import io.goobi.viewer.api.rest.model.statistics.usage.UsageStatisticsInformation;
+import io.goobi.viewer.api.rest.v1.statistics.usage.UsageStatisticsResource;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Summary of request counts for a certain date range. Used for delivering record counts to users
@@ -36,12 +49,16 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
  * @author florian
  *
  */
+@JsonInclude(Include.NON_NULL)
 public class StatisticsSummary {
 
+;
     /**
      * Request counts sorted by {@link RequestType}
      */
     private final Map<RequestType, RequestTypeSummary> types;
+    
+    private UsageStatisticsInformation info = null;
     
     /**
      * Default constructor
@@ -149,6 +166,59 @@ public class StatisticsSummary {
                 .filter(entry -> types == null || types.length == 0 || Arrays.asList(types).contains(entry.getKey()))
                 .map(entry -> entry.getValue().getEndDate())
                 .reduce(LocalDate.ofEpochDay(0), (d1,d2) -> d1.isAfter(d2) ? d1 : d2);
+    }
+
+    @JsonIgnore
+    public String getAsCsv(Locale locale, String separator) {
+        StringBuilder sb = new StringBuilder();
+        for (Entry<RequestType, RequestTypeSummary> entry : this.getTypes().entrySet()) {
+            RequestType type = entry.getKey();
+            RequestTypeSummary summary = entry.getValue();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern(UsageStatisticsResource.DATE_FORMAT);
+            String timeString = getAsString(entry.getValue().getStartDate(), entry.getValue().getEndDate(), format);
+            sb.append(timeString).append(separator).append(ViewerResourceBundle.getTranslation(type.getLabel(), locale)).append(separator).append(ViewerResourceBundle.getTranslation("statistics__total_requests", locale)).append(separator).append(summary.getTotalRequests()).append("\n");
+            sb.append(timeString).append(separator).append(ViewerResourceBundle.getTranslation(type.getLabel(), locale)).append(separator).append(ViewerResourceBundle.getTranslation("statistics__unique_requests", locale)).append(separator).append(summary.getUniqueRequests()).append("\n");
+        }
+        if(sb.length() > 0) {
+            sb.deleteCharAt(sb.length()-1);
+        }
+        return sb.toString();
+    }
+
+    private String getAsString(LocalDate start, LocalDate end, DateTimeFormatter format) {
+        if(end.isAfter(start)) {            
+            String timeString =  format.format(start) + " - " + format.format(end);
+            return timeString;
+        } else {
+            return format.format(start);
+        }
+    }
+    
+    public String calculateStartDate() {
+        return this.types.values().stream().reduce((s1,s2) -> s1.getStartDate().isBefore(s2.getStartDate()) ? s1:s2)
+                .map(RequestTypeSummary::getStartDate)
+                .map(d -> DateTimeFormatter.ofPattern(UsageStatisticsResource.DATE_FORMAT).format(d))
+                .orElse(null);
+    }
+    
+    public String calculateEndDate() {
+        return this.types.values().stream().reduce((s1,s2) -> s1.getEndDate().isAfter(s2.getEndDate()) ? s1:s2)
+                .map(RequestTypeSummary::getEndDate)
+                .map(d -> DateTimeFormatter.ofPattern(UsageStatisticsResource.DATE_FORMAT).format(d))
+                .orElse(null);
+    }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        return this.types.values().stream().allMatch(RequestTypeSummary::isEmtpy);
+    }
+
+    public void setInformation(UsageStatisticsInformation info) {
+        this.info = info;
+    }
+    
+    public UsageStatisticsInformation getInformation() {
+        return info;
     }
 }
 

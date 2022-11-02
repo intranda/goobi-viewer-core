@@ -37,23 +37,34 @@ public enum RequestType {
     /**
      * Call of a viewer html page belonging to a record
      */
-    RECORD_VIEW(0,1),
+    RECORD_VIEW(0,1, "statistics__views"),
     /**
      * Download of a file (pdf, epub) belonging to a record
      */
-    FILE_DOWNLOAD(2,3),
+    FILE_DOWNLOAD(2,3, "statistics__downloads"),
     /**
      * REST-call to an image or other media resource of a record
      */
-    MEDIA_RESOURCE(4,5);
+    MEDIA_RESOURCE(4,5, "statistics__media_requests");
     
     private final int totalCountIndex;
     private final int uniqueCountIndex;
+    private final String label;
     
-    private RequestType(int totalCountIndex, int uniqueCountIndex) {
+    private RequestType(int totalCountIndex, int uniqueCountIndex, String label) {
         this.totalCountIndex = totalCountIndex;
         this.uniqueCountIndex = uniqueCountIndex;
+        this.label = label;
     }
+    
+    /**
+     * Get a message key serving as label to this type
+     * @return a message key
+     */
+    public String getLabel() {
+        return label;
+    }
+    
     /**
      * Index of the total request count within the array of values of the SOLR-field recording requests for a record
      * @return the totalCountIndex

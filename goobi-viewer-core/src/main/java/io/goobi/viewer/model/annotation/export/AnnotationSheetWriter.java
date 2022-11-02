@@ -27,13 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.wa.TypedResource;
-import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 
@@ -61,7 +58,7 @@ public class AnnotationSheetWriter {
 
         Map<String, List<CrowdsourcingAnnotation>> annoMap = annotations.stream().collect(Collectors.groupingBy(this::getBodyType));
 
-        HSSFWorkbook wb = excelRenderer.render(annoMap);
+        XSSFWorkbook wb = excelRenderer.render(annoMap);
         wb.write(os);
         os.flush();
     }

@@ -71,4 +71,8 @@ public class RequestTypeSummary {
         return endDate;
     }
     
+    @JsonIgnore
+    public boolean isEmtpy() {
+        return totalRequests == 0;
+    }
 }

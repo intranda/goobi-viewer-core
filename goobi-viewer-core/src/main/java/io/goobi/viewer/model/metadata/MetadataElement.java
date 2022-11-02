@@ -100,10 +100,8 @@ public class MetadataElement {
                 // TODO does this break anything?
                 return false;
             }
-            if (type != other.type) {
-                return false;
-            }
-            return true;
+
+            return type == other.type;
         }
 
         /*
@@ -121,11 +119,6 @@ public class MetadataElement {
             }
 
             return 0;
-        }
-
-        @Deprecated
-        public String getTabName() {
-            return KEY_ROOT + type;
         }
 
         /**
@@ -229,8 +222,8 @@ public class MetadataElement {
                 } else {
                     metadataList.add(metadata);
                 }
-            } catch (Throwable e) {
-                logger.error("Error populating " + metadata.getLabel(), e);
+            } catch (Exception e) {
+                logger.error("Error populating {}", metadata.getLabel(), e);
             }
         }
 
@@ -341,8 +334,7 @@ public class MetadataElement {
      * @return a {@link io.goobi.viewer.model.metadata.Metadata} object.
      */
     public Metadata getMetadata(String name) {
-        Metadata md = getMetadata(name, null);
-        return md;
+        return getMetadata(name, null);
     }
 
     /**
@@ -361,10 +353,10 @@ public class MetadataElement {
         }
 
         String fullFieldName = name;
-        String fullFieldNameDe = name + SolrConstants._LANG_ + "DE";
-        String fullFieldNameEn = name + SolrConstants._LANG_ + "EN";
+        String fullFieldNameDe = name + SolrConstants.MIDFIX_LANG + "DE";
+        String fullFieldNameEn = name + SolrConstants.MIDFIX_LANG + "EN";
         if (StringUtils.isNotEmpty(language)) {
-            fullFieldName += SolrConstants._LANG_ + language.toUpperCase();
+            fullFieldName += SolrConstants.MIDFIX_LANG + language.toUpperCase();
         }
         Metadata fallback = null;
         Metadata fallbackDe = null;

@@ -71,7 +71,7 @@
 					<!-- Metadata -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.displayMetadataViewLink}">
                         <ui:repeat var="metadataView" value="#{metadataBean.metadataViews}">
-                            <ui:fragment rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topDocument)}">
+                            <ui:fragment rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topStructElement)}">
                                 <li class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
                                     <h:outputLink value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}#{activeDocumentBean.logPart}">
                                         <h:outputText rendered="#{metadataView.label != null}" value="#{msg[metadataView.label]}" />
@@ -99,7 +99,7 @@
 					<!-- External full-text URL -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayExternalFulltextLink}">
 						<li ><h:outputLink
-								value="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
+								value="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
 								target="_blank">
 								<h:outputText value="#{msg.fulltextExternal}" />
 								<f:passThroughAttribute name="aria-label" value="#{msg.view}: #{msg.fulltextExternal}"/>
@@ -121,7 +121,7 @@
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayExternalResolverLink}">
 						<li> 
                             <a 
-                                href="#{activeDocumentBean.viewManager.topDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
+                                href="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
                                 target="_blank"
 								rel="noopner"
 								aria-label="#{msg.view}: #{msg.externalRepository}">

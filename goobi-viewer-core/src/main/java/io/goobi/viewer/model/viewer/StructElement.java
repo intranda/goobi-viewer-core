@@ -35,14 +35,15 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -263,7 +264,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 if (!shapeDocs.isEmpty()) {
                     this.shapeMetadata = new ArrayList<>(shapeDocs.size());
                     for (SolrDocument shapeDoc : shapeDocs) {
-                        String label = getLabel();// (String) shapeDoc.getFieldValue(SolrConstants.LABEL);
+                        String label = getLabel();
                         String shape = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
                         String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
                         this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(), getImageNumber(), this.logid));
@@ -272,7 +273,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             }
         } catch (PresentationException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
     }
 
@@ -292,7 +293,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             exists = true;
             return doc;
         }
-        logger.warn("Document not found in index: {}", luceneId);
+        logger.warn(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, luceneId);
         throw new PresentationException("errDocNotFound");
     }
 
@@ -320,13 +321,14 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return getMetadataValue(SolrConstants.IDDOC_PARENT) != null;
     }
 
+    @Override
     public int getNumPages() {
         String numPages = getMetadataValue(SolrConstants.NUMPAGES);
         if (StringUtils.isNotBlank(numPages)) {
             try {
                 return Integer.parseInt(numPages);
             } catch (NumberFormatException e) {
-                logger.error("Invalid NUMPAGES value: " + numPages);
+                logger.error("Invalid NUMPAGES value: {}", numPages);
             }
         }
         try {
@@ -473,7 +475,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     }
                 }
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
             // If label doesn't exist or there has been an error while retrieving it, use the given alternative value
             if (groupLabels.get(groupIdentifier) == null && StringUtils.isNotEmpty(altValue)) {
@@ -599,7 +601,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             }
             return ret;
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return Collections.emptyList();
@@ -616,11 +618,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean isAnchorChild() throws IndexUnreachableException {
-        if (isWork() && isHasParent()) {
-            return true;
-        }
-
-        return false;
+        return isWork() && isHasParent();
     }
 
     /**
@@ -653,7 +651,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return the fulltextAvailable
      */
     public boolean isFulltextAvailable() {
-        // logger.debug("fulltext available: " + fulltextAvailable);
         return fulltextAvailable;
     }
 
@@ -696,8 +693,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (nerAvailable == null) {
             nerAvailable = DataManager.getInstance()
                     .getSearchIndex()
-                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_PERSON" + SolrConstants._UNTOKENIZED + ":* OR NE_LOCATION"
-                            + SolrConstants._UNTOKENIZED + ":* OR NE_CORPORATION" + SolrConstants._UNTOKENIZED + ":*)") > 0;
+                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_PERSON" + SolrConstants.SUFFIX_UNTOKENIZED + ":* OR NE_LOCATION"
+                            + SolrConstants.SUFFIX_UNTOKENIZED + ":* OR NE_CORPORATION" + SolrConstants.SUFFIX_UNTOKENIZED + ":*)") > 0;
         }
 
         return nerAvailable;
@@ -710,7 +707,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws DAOException
      * @throws RecordNotFoundException
      */
-    public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException, RecordNotFoundException {
+    public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException {
         return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
     }
 
@@ -721,7 +718,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws DAOException
      * @throws RecordNotFoundException
      */
-    public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException, RecordNotFoundException {
+    public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException {
         return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
     }
 
@@ -888,8 +885,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
-                    StructElement volume = new StructElement(Long.parseLong(iddoc), docVolume);
-                    return volume;
+                    return new StructElement(Long.parseLong(iddoc), docVolume);
                 }
             }
         }
@@ -945,16 +941,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
 
         return null;
-    }
-
-    /**
-     * If the given StructElement contains access conditions, the logged in user must satisfy these conditions to be allowed to view the thumbnail.
-     *
-     * @return a boolean.
-     */
-    public boolean mayShowThumbnail() {
-        // TODO why does this always return true?
-        return true;
     }
 
     /**

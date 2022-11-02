@@ -56,10 +56,10 @@
 				</div>
 				
 				<!-- LIDO -->
-				<ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.lidoRecord}">
+				<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.lidoRecord}">
                 
                     <!-- LIDO event sidebar metadata (event metadata explicitly configured in the sidebar metadata list) -->
-                    <ui:fragment rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
+                    <ui:fragment rendered="#{fn:length(metadataBean.events) > 0}">
                         <div id="widgetMetadata" class="widget widget-metadata">
                             <ui:repeat value="#{metadataBean.events}" var="event">
                                 <ui:fragment rendered="#{event.hasSidebarMetadata}">

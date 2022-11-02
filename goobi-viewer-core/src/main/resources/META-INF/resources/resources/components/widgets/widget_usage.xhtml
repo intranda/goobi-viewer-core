@@ -30,14 +30,14 @@
                 <!-- WIDGET BODY -->
 				<div class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group ? '' : 'collapseable'}">
                     <!-- INTRODUCTION TEXT -->
-                    <ui:fragment rendered="#{fn:length(configurationBean.sidebarWidgetUsageIntroductionText) > 0}">
+                    <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']) > 0}">
                         <p id="introductionText" class="widget-usage__license-text">
-                            <h:outputText value="#{msg[configurationBean.sidebarWidgetUsageIntroductionText]}" escape="false" />
+                            <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_USAGE']}" escape="false" />
                         </p>
                     </ui:fragment>
 
                     <!-- WORK -->
-                    <h3 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topDocument.docStructType]}</h3>
+                    <h3 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
 
                     <viewerComponent:downloadsWork/>
 

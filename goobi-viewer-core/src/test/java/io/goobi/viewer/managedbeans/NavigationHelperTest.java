@@ -29,17 +29,6 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @see NavigationHelper#getCurrentPartnerPage()
-     * @verifies return value correctly
-     */
-    @Test
-    public void getCurrentPartnerPage_shouldReturnValueCorrectly() throws Exception {
-        NavigationHelper nh = new NavigationHelper();
-        nh.statusMap.put(NavigationHelper.KEY_CURRENT_PARTNER_PAGE, NavigationHelper.KEY_CURRENT_PARTNER_PAGE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_CURRENT_PARTNER_PAGE + "_value", nh.getCurrentPartnerPage());
-    }
-
-    /**
      * @see NavigationHelper#getCurrentView()
      * @verifies return value correctly
      */
@@ -92,17 +81,6 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         NavigationHelper nh = new NavigationHelper();
         nh.statusMap.put("new_key", "new_value");
         Assert.assertEquals("new_value", nh.getStatusMapValue("new_key"));
-    }
-
-    /**
-     * @see NavigationHelper#setCurrentPartnerPage(String)
-     * @verifies set value correctly
-     */
-    @Test
-    public void setCurrentPartnerPage_shouldSetValueCorrectly() throws Exception {
-        NavigationHelper nh = new NavigationHelper();
-        nh.setCurrentPartnerPage(NavigationHelper.KEY_CURRENT_PARTNER_PAGE + "_value");
-        Assert.assertEquals(NavigationHelper.KEY_CURRENT_PARTNER_PAGE + "_value", nh.statusMap.get(NavigationHelper.KEY_CURRENT_PARTNER_PAGE));
     }
 
     /**

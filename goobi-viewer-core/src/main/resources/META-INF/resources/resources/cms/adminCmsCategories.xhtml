@@ -50,13 +50,22 @@
                                                 <a href="#{navigationHelper.applicationUrl}admin/cms/categories/edit/#{category.id}/"
                                                    class="admin__table-action-link"
                                                    aria-label="#{msg.edit}: #{category.name}">#{msg.edit}</a>
-                                                <button
-                                                	type="button"
-                                                	class="admin__table-action-link -redlink"
-                                                	jsf:rendered="#{!category.inUse}"
-                                                    jsf:action="#{cmsCategoriesBean.deleteCategoryAction(category)}">#{msg.button__delete}
-                                                    <f:ajax render="@all" />
-                                                </button>
+
+	                                           <!-- DELETE -->
+	                                           <button
+	                                           	   type="button"
+	                                               class="admin__table-action-link -redlink"
+	                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__categories_delete_confirmation, category.name)}"
+	                                               data-require-confirmation="true"
+	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__categories_delete_confirmation, category.name)}"
+	                                               jsf:rendered="#{!category.inUse}"
+	                                               jsf:action="#{cmsCategoriesBean.deleteCategoryAction(category)}"
+	                                               aria-label="#{msg.delete}" >
+	                                               #{msg.delete}
+	                                                <f:ajax render="@all" />
+	                                           </button>
+                                                
+                                                
                                             </div>
                                         </div>
                                     </div>
