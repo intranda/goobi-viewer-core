@@ -207,6 +207,8 @@ public class CMSPageUpdate implements IModelUpdate {
                 return contentConverter.createGeomapContent(legacyItem);
             case "SLIDER":
                 return contentConverter.createSliderContent(legacyItem);
+            case "METADATA":
+                return contentConverter.createMetadataContent(legacyItem);
             default:
                 return null;
         }

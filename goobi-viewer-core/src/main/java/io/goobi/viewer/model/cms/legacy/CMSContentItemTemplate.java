@@ -35,6 +35,7 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
@@ -295,6 +296,8 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
                 return new CMSGlossaryContent();
             case "MEDIA":
                 return new CMSMediaContent();
+            case "METADATA":
+                return new CMSMetadataContent();
             case "GEOMAP":
                 return new CMSGeomapContent();
             case "SLIDER":

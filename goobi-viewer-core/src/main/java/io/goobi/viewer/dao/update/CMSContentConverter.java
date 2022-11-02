@@ -39,6 +39,7 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
@@ -218,6 +219,13 @@ public class CMSContentConverter {
             categories.add(category);
         }
         return categories;
+    }
+
+    public CMSContent createMetadataContent(Map<String, Object> legacyItem) {
+        String metadataFields = (String) legacyItem.get("metadataFields");
+        CMSMetadataContent content = new CMSMetadataContent();
+        content.setMetadataFields(metadataFields);
+        return content;
     }
 
     
