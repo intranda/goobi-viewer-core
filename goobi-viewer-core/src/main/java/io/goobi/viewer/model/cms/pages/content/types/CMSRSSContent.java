@@ -94,4 +94,12 @@ public class CMSRSSContent extends CMSContent {
     public String getData() {
         return "";
     }
+    
+    /**
+     * Alias for {@link #getItemsPerView()}. Used in legacy cms-templates
+     * @return
+     */
+    public int getElementsPerPage() {
+        return getItemsPerView();
+    }
 }
