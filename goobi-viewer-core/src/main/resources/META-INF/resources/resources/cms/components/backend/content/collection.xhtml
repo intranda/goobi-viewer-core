@@ -146,11 +146,11 @@
                         id="ignoreCollection" 
                         styleClass="form-control" 
                         value="#{cc.attrs.contentItem.content.ignoreCollectionsAsList}"
-                        disabled="#{empty contentItem.collectionField}">
+                        disabled="#{empty cc.attrs.contentItem.content.solrField}">
                         <f:selectItem  
                             itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
                         <f:selectItems 
-                            value="#{cc.attrs.contentItem.content.possibleIgnoreCollectionList}" 
+                            value="#{collectionViewBean.getPossibleIgnoreCollectionList(cc.attrs.contentItem.content, false)}" 
                             var="field" 
                             itemValue="#{field}" 
                             itemLabel="#{msg[field]}" />
@@ -223,7 +223,7 @@
 	                    <h:selectOneMenu
 	                        id="sortingSelect"
 	                        styleClass="form-control" 
-	                        value="#{groupingField.sorting}">
+	                        value="#{cc.attrs.contentItem.content.sorting}">
 	                        <f:selectItems 
 	                            value="#{cmsBean.sortingModes}"
 	                            var="mode"

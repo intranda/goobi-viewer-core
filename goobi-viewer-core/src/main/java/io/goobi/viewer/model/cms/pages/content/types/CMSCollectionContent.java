@@ -301,4 +301,5 @@ public class CMSCollectionContent extends CMSContent {
     public String getData(Integer w, Integer h) {
         return "";
     }
+
 }

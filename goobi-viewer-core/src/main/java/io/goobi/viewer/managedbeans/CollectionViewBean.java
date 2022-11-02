@@ -78,8 +78,11 @@ public class CollectionViewBean implements Serializable {
      * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been initialized
      * yet, do so and add it to the Bean's CollectionView map
      *
-     * @param id The ContentItemId of the ContentItem to look for
-     * @param page The page containing the collection ContentItem
+     * @param content   a {@link CMSCollectionContent} instance providing the base data for this collection
+     * @param collectionBaseLevels  The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a view of the clicked collection alone
+     * @param openExpanded  whether to open the page with all collections expanded. 
+     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels > 0 to navigate back out of the current collection
+     * @param ignoreHierarchy
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

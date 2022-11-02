@@ -158,14 +158,12 @@ public class CMSContentItem {
             this.uiComponent = new HtmlPanelGroup();
             this.uiComponent.setId(id);
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
-            wrapper.setId(id + "_wrapper");
             this.uiComponent.getChildren().add(wrapper);
             if(StringUtils.isBlank(this.getJsfComponent().getFilename())) {
                 logger.warn("No backend component available for contentItem {}" + this.getContent().getBackendComponentName());
             } else {                
                 UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.emptyMap());
                 component.getAttributes().put("contentItem", this);
-                component.setId(id + "_content");
             }
         }
         return uiComponent;
