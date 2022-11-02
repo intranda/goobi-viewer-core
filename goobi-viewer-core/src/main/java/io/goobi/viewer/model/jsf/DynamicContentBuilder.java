@@ -76,7 +76,7 @@ public class DynamicContentBuilder {
         } catch(FaceletException e) {
             throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+".\nCause: " + e.getMessage());
         } catch(Throwable e) {
-            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component", e);
+            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component");
         }
     }
 
