@@ -36,6 +36,9 @@ import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -61,6 +64,8 @@ import jakarta.persistence.Table;
 @Table(name = "cms_content_media")
 public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
 
+    private static final Logger logger = LogManager.getLogger(CMSMediaContent.class);
+    
     private static final String BACKEND_COMPONENT_NAME = "media";
 
     
@@ -238,6 +243,17 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
             return getMediaItem().getCurrentLanguageMetadata();
         }
         return null;
+    }
+    
+
+    @Override
+    public String getData() {
+        try {
+            return getUrl();
+        } catch (UnsupportedEncodingException | ViewerConfigurationException e) {
+            logger.error("Error loading media item url for media item {}. Reason: {}", this.mediaItem, e.toString());
+            return "";
+        }
     }
 
 }

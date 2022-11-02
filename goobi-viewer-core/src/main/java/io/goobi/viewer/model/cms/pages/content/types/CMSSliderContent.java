@@ -85,4 +85,8 @@ public class CMSSliderContent extends CMSContent {
         return null;
     }
 
+    @Override
+    public String getData() {
+        return "";
+    }
 }

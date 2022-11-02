@@ -26,9 +26,14 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.glossary.GlossaryManager;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -37,6 +42,8 @@ import jakarta.persistence.Table;
 @Table(name = "cms_content_geomap")
 public class CMSGlossaryContent extends CMSContent {
 
+    private static final Logger logger = LogManager.getLogger(CMSGlossaryContent.class);
+    
     private static final String COMPONENT_NAME = "glossary";
     
     @Column(name="glossary")
@@ -80,4 +87,14 @@ public class CMSGlossaryContent extends CMSContent {
         return "";
     }
 
+    @Override
+    public String getData() {
+        try {
+            return new GlossaryManager().getGlossaryAsJson(getGlossaryName());
+        } catch (ContentNotFoundException | IOException e) {
+            logger.error("Failed to load glossary {}", getGlossaryName(), e);
+            return "";
+        }
+
+    }
 }

@@ -100,5 +100,10 @@ public class CMSMetadataContent extends CMSContent {
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return "";
     }
+    
+    @Override
+    public String getData() {
+        return "";
+    }
 
 }

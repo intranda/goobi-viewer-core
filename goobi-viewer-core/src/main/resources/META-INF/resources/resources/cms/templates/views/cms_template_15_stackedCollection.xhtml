@@ -11,6 +11,8 @@
 
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
+		<composite:attribute name="textItem" required="false" default="#{cc.attrs.component.getContentItem('text')}"/> 
+		<composite:attribute name="collectionItem" required="false" default="#{cc.attrs.component.getContentItem('collection')}"/> 
 	</composite:interface>
 
 
@@ -19,21 +21,20 @@
 				<div>
 				
 				<div class="tpl-stacked-collection__text">
-                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
+                    <h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
                 </div>
 
 				<div class="tpl-stacked-collection__collections">
 					<collectionView 
-					url='#{request.contextPath}/api/v1/collections/#{cmsPage.getContentItem("collection").collectionField}/'
+					url='#{request.contextPath}/api/v1/collections/#{cc.attrs.collectionItem.content.collectionField}/'
 					restapi = "#{configurationBean.restApiUrl}"
-					baseCollection="#{cmsPage.getContentItem('collection').baseCollection}"
-					grouping="#{cmsPage.getContentItem('collection').groupBy}"
+					baseCollection="#{cc.attrs.collectionItem.content.baseCollection}"
+					grouping="#{cc.attrs.collectionItem.content.groupBy}"
 					language="#{navigationHelper.localeString}"
 					defaultlanguage="#{navigationHelper.defaultLocale.language}"
-					blacklist="#{cmsPage.getContentItem('collection').ignoreCollections}"
-					sorting="#{cmsPage.getContentItem('collection').sorting}"
-					depth="2"
-					></collectionView>
+					blacklist="#{cc.attrs.collectionItem.content.ignoreCollections}"
+					sorting="#{cc.attrs.collectionItem.content.sorting}"
+					depth="2"></collectionView>
 				</div>
 								
 				<script type="text/javascript">

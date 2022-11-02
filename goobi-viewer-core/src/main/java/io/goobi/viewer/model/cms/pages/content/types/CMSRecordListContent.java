@@ -187,5 +187,8 @@ public class CMSRecordListContent extends CMSContent {
         }
     }
 
-
+    @Override
+    public String getData() {
+        return "";
+    }
 }

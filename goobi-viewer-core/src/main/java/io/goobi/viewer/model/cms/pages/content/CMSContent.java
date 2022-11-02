@@ -139,4 +139,11 @@ public abstract class CMSContent {
     public void setId(Long id) {
         this.id = id;
     }
+    
+    /**
+     * 
+     * @return a string representing this contentItem for use in frontend-components. May be an empty string for
+     * content with no clear String representation
+     */
+    public abstract String getData();
 }

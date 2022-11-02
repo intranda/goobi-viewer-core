@@ -272,5 +272,33 @@ public class CMSCollectionContent extends CMSContent {
         }
         return dcStrings;
     }
+    
+    /**
+     * Alias for {@link #getCollectionName()}. Used in legacy templates
+     * @return
+     */
+    public String getBaseCollection() {
+        return getCollectionName();
+    }
 
+    /**
+     * Alias for {@link #getSolrField()}. Used in legacy templates
+     * @return
+     */
+    public String getCollectionField() {
+        return getSolrField();
+    }
+    
+    /**
+     * Alias for {@link #getGroupingField()}. Used in legacy templates
+     * @return
+     */
+    public String getGroupBy() {
+        return getGroupingField();
+    }
+    
+    @Override
+    public String getData() {
+        return "";
+    }
 }

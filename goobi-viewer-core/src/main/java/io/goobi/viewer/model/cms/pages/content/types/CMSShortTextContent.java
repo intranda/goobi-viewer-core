@@ -151,4 +151,9 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
+    
+    @Override
+    public String getData() {
+        return getText().getTextOrDefault();
+    }
 }

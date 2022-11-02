@@ -121,6 +121,11 @@ public class CMSBrowseContent extends CMSContent {
         }
         return "";
     }
+
+    @Override
+    public String getData() {
+        return "";
+    }
     
 
 

@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -318,5 +319,10 @@ public class CMSComponent implements Comparable<CMSComponent> {
         } else {
             return user != null && user.isCmsAdmin();
         }
+    }
+    
+    public String getContentData(String itemId) {
+        return this.contentItems.stream().filter(item -> Objects.equals(item.getItemId(), itemId))
+        .findAny().map(CMSContentItem::getContent).map(CMSContent::getData).orElse("");
     }
 }

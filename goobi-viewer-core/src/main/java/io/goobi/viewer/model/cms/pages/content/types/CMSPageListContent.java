@@ -252,4 +252,9 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     public boolean isGroupByCategory() {
         return groupByCategory;
     }
+    
+    @Override
+    public String getData() {
+        return "";
+    }
 }

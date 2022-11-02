@@ -180,4 +180,8 @@ public class CMSSearchContent extends CMSContent {
         return "";
     }
 
+    @Override
+    public String getData() {
+        return "";
+    }
 }

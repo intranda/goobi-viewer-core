@@ -154,5 +154,11 @@ public class CMSLongTextContent extends CMSContent implements TranslatableCMSCon
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
+    
+
+    @Override
+    public String getData() {
+        return getText().getTextOrDefault();
+    }
 
 }

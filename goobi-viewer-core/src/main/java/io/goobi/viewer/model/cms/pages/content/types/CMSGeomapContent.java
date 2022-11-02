@@ -83,5 +83,9 @@ public class CMSGeomapContent extends CMSContent {
     public void setMap(GeoMap map) {
         this.map = map;
     }
-
+    
+    @Override
+    public String getData() {
+        return "";
+    }
 }

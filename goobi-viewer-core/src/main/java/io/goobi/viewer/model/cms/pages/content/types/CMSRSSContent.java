@@ -90,4 +90,8 @@ public class CMSRSSContent extends CMSContent {
         return "";
     }
 
+    @Override
+    public String getData() {
+        return "";
+    }
 }

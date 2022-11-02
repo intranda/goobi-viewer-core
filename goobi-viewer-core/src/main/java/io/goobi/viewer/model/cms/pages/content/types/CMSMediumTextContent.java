@@ -154,5 +154,10 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
+    
+    @Override
+    public String getData() {
+        return getText().getTextOrDefault();
+    }
 
 }
