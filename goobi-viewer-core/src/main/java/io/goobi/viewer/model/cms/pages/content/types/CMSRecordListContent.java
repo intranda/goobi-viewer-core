@@ -35,6 +35,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.search.Search;
@@ -190,5 +191,13 @@ public class CMSRecordListContent extends CMSContent {
     @Override
     public String getData() {
         return "";
+    }
+    
+    /**
+     * Alias for {@link #getSearch()}. Used in legacy templates
+     * @return
+     */
+    public Functionality getFunctionality() {
+        return getSearch();
     }
 }

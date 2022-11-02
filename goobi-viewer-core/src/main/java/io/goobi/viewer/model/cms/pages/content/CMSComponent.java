@@ -325,4 +325,8 @@ public class CMSComponent implements Comparable<CMSComponent> {
         return this.contentItems.stream().filter(item -> Objects.equals(item.getItemId(), itemId))
         .findAny().map(CMSContentItem::getContent).map(CMSContent::getData).orElse("");
     }
+    
+    public boolean hasContent(String itemId) {
+        return this.contentItems.stream().anyMatch(item -> Objects.equals(item.getItemId(), itemId));
+    }
 }

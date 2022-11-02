@@ -34,6 +34,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
+import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -127,6 +128,16 @@ public class CMSBrowseContent extends CMSContent {
         return "";
     }
     
-
+    public BrowseFunctionality getBrowse() {
+        return browse;
+    }
+    
+    /**
+     * Alias for {@link #getBrowse()}. Used in legacy templates
+     * @return
+     */
+    public Functionality getFunctionality() {
+        return getBrowse();
+    }
 
 }
