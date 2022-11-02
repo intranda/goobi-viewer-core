@@ -88,7 +88,7 @@ public class CMSGlossaryContent extends CMSContent {
     }
 
     @Override
-    public String getData() {
+    public String getData(Integer w, Integer h) {
         try {
             return new GlossaryManager().getGlossaryAsJson(getGlossaryName());
         } catch (ContentNotFoundException | IOException e) {

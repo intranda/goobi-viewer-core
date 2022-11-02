@@ -33,9 +33,12 @@ import org.apache.logging.log4j.Logger;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Wraps a {@link CMSContent} within a {@link CMSPage}
@@ -170,6 +173,27 @@ public class CMSContentItem {
     
     public void setUiComponent(UIComponent uiComponent) {
         this.uiComponent = uiComponent;
+    }
+    
+    /**
+     * Check if the {@link #content} attribute exists (i.e. database data is present). 
+     * If so, and it is textual or media content, also check if text is empty or the media item exists
+     * @return true if no database entry exists or if it doesn't contain data which can be presented
+     */
+    public boolean isEmpty() {
+        if(this.content != null) {
+            if(this.content instanceof TranslatableCMSContent) {
+                TranslatedText text = ((TranslatableCMSContent) this.content).getText();
+                return text == null || text.isEmpty();
+            } else if(this.content instanceof CMSMediaHolder) {
+                CMSMediaItem media = ((CMSMediaHolder) this.content).getMediaItem();
+                return media == null || StringUtils.isBlank(media.getFileName());
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 
 }

@@ -156,7 +156,7 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
     }
     
     @Override
-    public String getData() {
+    public String getData(Integer w, Integer h) {
         return getText().getTextOrDefault();
     }
 

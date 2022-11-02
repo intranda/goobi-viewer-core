@@ -213,7 +213,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     }
 
     @Override
-    public String getData() {
+    public String getData(Integer w, Integer h) {
         return "";
     }
 

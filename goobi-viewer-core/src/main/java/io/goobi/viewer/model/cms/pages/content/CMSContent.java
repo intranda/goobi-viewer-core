@@ -24,6 +24,7 @@ package io.goobi.viewer.model.cms.pages.content;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -145,5 +146,10 @@ public abstract class CMSContent {
      * @return a string representing this contentItem for use in frontend-components. May be an empty string for
      * content with no clear String representation
      */
-    public abstract String getData();
+    public abstract String getData(Integer width, Integer height);
+    
+    public String getData() {
+        return this.getData((Integer)null, (Integer)null);
+    }
+
 }

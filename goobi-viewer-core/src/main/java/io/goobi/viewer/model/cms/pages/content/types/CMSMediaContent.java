@@ -247,9 +247,9 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     
 
     @Override
-    public String getData() {
+    public String getData(Integer w, Integer h) {
         try {
-            return getUrl();
+            return getUrl(Optional.ofNullable(w).map(i -> i.toString()).orElse(null), Optional.ofNullable(h).map(i -> i.toString()).orElse(null));
         } catch (UnsupportedEncodingException | ViewerConfigurationException e) {
             logger.error("Error loading media item url for media item {}. Reason: {}", this.mediaItem, e.toString());
             return "";

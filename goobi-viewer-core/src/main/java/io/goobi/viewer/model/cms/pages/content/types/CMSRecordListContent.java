@@ -189,7 +189,7 @@ public class CMSRecordListContent extends CMSContent {
     }
 
     @Override
-    public String getData() {
+    public String getData(Integer w, Integer h) {
         return "";
     }
     

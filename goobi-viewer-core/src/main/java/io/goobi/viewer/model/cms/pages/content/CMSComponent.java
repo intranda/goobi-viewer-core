@@ -322,11 +322,20 @@ public class CMSComponent implements Comparable<CMSComponent> {
     }
     
     public String getContentData(String itemId) {
-        return this.contentItems.stream().filter(item -> Objects.equals(item.getItemId(), itemId))
-        .findAny().map(CMSContentItem::getContent).map(CMSContent::getData).orElse("");
+        return getContentData(itemId, null, null);
     }
     
+    public String getContentData(String itemId, Integer width, Integer height) {
+        return this.contentItems.stream().filter(item -> Objects.equals(item.getItemId(), itemId))
+        .findAny().map(CMSContentItem::getContent).map(c -> c.getData(width, height)).orElse("");
+    }
+    
+    /**
+     * Check whether a contentItem with the given itemId exists and is not empty
+     * @param itemId
+     * @return  true if the contentItem with the given itemId exists and its {@link CMSContent#isEmpty()} method returns false
+     */
     public boolean hasContent(String itemId) {
-        return this.contentItems.stream().anyMatch(item -> Objects.equals(item.getItemId(), itemId));
+        return this.contentItems.stream().anyMatch(item -> Objects.equals(item.getItemId(), itemId) && !item.isEmpty());
     }
 }

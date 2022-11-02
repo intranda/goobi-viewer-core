@@ -153,7 +153,7 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     }
     
     @Override
-    public String getData() {
+    public String getData(Integer w, Integer h) {
         return getText().getTextOrDefault();
     }
 }
