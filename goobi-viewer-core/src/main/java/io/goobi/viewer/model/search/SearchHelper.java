@@ -172,6 +172,21 @@ public final class SearchHelper {
     /** Constant <code>patternHyperlink</code> */
     public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
 
+
+    public static final Pattern patternAllItems =Pattern.compile(
+            "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
+
+    public static final Pattern patternRegularItems = Pattern.compile("([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)");
+    public static final Pattern patternRegularPairs = Pattern.compile("(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))");
+
+    public static final Pattern patternPhraseItems = Pattern.compile("([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)");
+    public static final Pattern patternPhrasePairs = Pattern.compile("(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")");
+
+    public static final Pattern patternRangeItems = Pattern.compile("([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)");
+    public static final Pattern patternRangePairs = Pattern.compile("(\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\))");
+
+    public static final Pattern patternFacetString = Pattern.compile("(\\w+:\\w+);;");
+    
     /**
      * 
      */
@@ -2152,30 +2167,6 @@ public final class SearchHelper {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
         SearchQueryGroup ret = new SearchQueryGroup(locale, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
 
-        // [+-]*\((\w+:\"[\wäáàâöóòôüúùûëéèêßñ ]+\" *)+\)|[+-]*\(((\w+:\([\wäáàâöóòôüúùûëéèêßñ ]+\)) *)+\)|[+-]*\((\w+:\(\[[\wäáàâöóòôüúùûëéèêßñ]+ TO [\wäáàâöóòôüúùûëéèêßñ]+\]\) *)\)
-        final String patternAllItems =
-                "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)";
-
-        final String patternRegularItems = "([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"; 
-        final String patternRegularPairs = "(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))";
-
-        final String patternPhraseItems = "([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)";
-        final String patternPhrasePairs = "(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")";
-
-        final String patternRangeItems = "([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)";
-        final String patternRangePairs = "(\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\))";
-
-        final String patternFacetString = "(\\w+:\\w+);;";
-
-        // Regular query
-        // (+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) +(SUPERFULLTEXT:(bla AND blup) FULLTEXT:(bla AND blup)))
-
-        // Phrase query
-        // (+(SUPERDEFAULT:"foo bar" SUPERFULLTEXT:"foo bar" SUPERUGCTERMS:"foo bar" DEFAULT:"foo bar" FULLTEXT:"foo bar" NORMDATATERMS:"foo bar" UGCTERMS:"foo bar" CMS_TEXT_ALL:"foo bar") +(SUPERFULLTEXT:"bla blup" FULLTEXT:"bla blup"))
-
-        // Mixed query
-        // (+(SUPERDEFAULT:"foo bar" SUPERFULLTEXT:"foo bar" SUPERUGCTERMS:"foo bar" DEFAULT:"foo bar" FULLTEXT:"foo bar" NORMDATATERMS:"foo bar" UGCTERMS:"foo bar" CMS_TEXT_ALL:"foo bar") +(SUPERFULLTEXT:(bla) FULLTEXT:(bla)) +(DOCSTRCT_TOP:"monograph") +(MD_YEARPUBLISH:[1900 TO 2000]))
-
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
         List<SearchItemOperator> operators = new ArrayList<>();
@@ -2186,21 +2177,17 @@ public final class SearchHelper {
         }
 
         String queryRemainder = query;
-        Pattern pAllItems = Pattern.compile(patternAllItems);
-        Matcher mAllItems = pAllItems.matcher(query);
+        Matcher mAllItems = patternAllItems.matcher(query);
         while (mAllItems.find()) {
             String itemQuery = mAllItems.group();
             logger.trace("item query: {}", itemQuery);
             queryRemainder = queryRemainder.replace(itemQuery, "");
 
-            Pattern pPhraseItem = Pattern.compile(patternPhraseItems);
-            Matcher mPhraseItem = pPhraseItem.matcher(itemQuery);
+            Matcher mPhraseItem = patternPhraseItems.matcher(itemQuery);
 
-            Pattern pRegularItem = Pattern.compile(patternRegularItems);
-            Matcher mRegularItem = pRegularItem.matcher(itemQuery);
+            Matcher mRegularItem = patternRegularItems.matcher(itemQuery);
 
-            Pattern pRangeItem = Pattern.compile(patternRangeItems);
-            Matcher mRangeItem = pRangeItem.matcher(itemQuery);
+            Matcher mRangeItem = patternRangeItems.matcher(itemQuery);
 
             if (mPhraseItem.find()) {
                 // Phrase search
@@ -2220,8 +2207,7 @@ public final class SearchHelper {
                     }
                 }
 
-                Pattern pPairs = Pattern.compile(patternPhrasePairs);
-                Matcher mPairs = pPairs.matcher(itemQuery);
+                Matcher mPairs = patternPhrasePairs.matcher(itemQuery);
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
                 while (mPairs.find()) {
@@ -2256,8 +2242,8 @@ public final class SearchHelper {
                     }
                 }
 
-                Pattern pPairs = Pattern.compile(patternRangePairs);
-                Matcher mPairs = pPairs.matcher(itemQuery);
+                Matcher mPairs = patternRangePairs.matcher(itemQuery);
+
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
                 while (mPairs.find()) {
@@ -2293,8 +2279,8 @@ public final class SearchHelper {
                     }
                 }
 
-                Pattern pPairs = Pattern.compile(patternRegularPairs);
-                Matcher mPairs = pPairs.matcher(itemQuery);
+                Matcher mPairs = patternRegularPairs.matcher(itemQuery);
+
                 Set<String> fieldNames = new HashSet<>();
                 List<StringPair> pairs = new ArrayList<>();
                 while (mPairs.find()) {
@@ -2322,8 +2308,9 @@ public final class SearchHelper {
 
         // Parse facet string
         if (StringUtils.isNotEmpty(facetString)) {
-            Pattern pFacetString = Pattern.compile(patternFacetString);
-            Matcher mFacetString = pFacetString.matcher(facetString);
+
+            Matcher mFacetString = patternFacetString.matcher(facetString);
+
             Set<String> fieldNames = new HashSet<>();
             while (mFacetString.find()) {
                 String pair = mFacetString.group(1);
