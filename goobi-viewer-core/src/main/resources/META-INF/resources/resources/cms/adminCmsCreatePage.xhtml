@@ -229,7 +229,7 @@
 							                                                <f:ajax event="valueChange" execute="@this" render="componentSelectionWrapper"></f:ajax>
 							                                            </h:selectOneMenu>
 							                                            
-																		<button class="btn btn--default admin__content-component-add-area-button" jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}">
+																		<button class="btn btn--full admin__content-component-add-area-button" jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}">
 																			#{msg.cms__page_add_component}
 																			<f:ajax execute="@this" render="@all" ></f:ajax>
 																		</button>
@@ -238,12 +238,46 @@
 														</div>
 
                                                        </div>
+                                                       
+                                                       
+                                                       
+                                                       
                                                     </div>
+                                                    
                                                 </h:panelGroup>
 
                                                 <!-- SIDEBAR EDITOR TAB -->
                                                 <cmsComponent:cms_createPageSidebarEditorTab id="sidebar_editor_component" />
                                             </div>
+                                            
+                                                    <div class="admin__content-component-additional-save-option" data-target="revealOnScroll">
+                                                 	<div class="admin__content-component-additional-save-option-wrapper">
+                                                 
+												<div class="admin__content-component-additional-save-option-inner admin__default-block">
+													 <!-- Cancel and go back to page overview -->
+													<button class="btn btn--clean admin__content-component-additional-save-option-cancel-button">#{msg.cancel}</button>
+							                        <!-- Save page -->
+							                        <h:commandButton type="submit" action="#{cmsBean.saveSelectedPage}" id="save-button" styleClass="btn btn--success" value="#{msg.cms_pageMetadata_save}"
+							                            onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
+							                        </h:commandButton>
+												</div>
+											
+											</div>
+											
+											</div>
+											
+											<script>
+
+												$(document).ready(function() {
+												  if ($('.admin__content-main').height() > 1400) {
+													    $('[data-target="revealOnScroll"]').show();
+														$('.-refreshHCsticky').hcSticky('refresh', {});
+													}
+												});
+											
+											</script>
+                                            
+                                            
                                         </div>
                                     </div>
                                 </div>
