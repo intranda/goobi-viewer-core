@@ -99,7 +99,8 @@ public class CMSPageUpdate implements IModelUpdate {
                 TranslatedText menuTitle = getTranslatedText(pageLanguageVersions, "menu_title");
                 Boolean published = (Boolean) pageValues.get("published");
                 Long topbarSliderId = getTopbarSliderId(contentItemMap, pageLanguageVersions);
-                
+                String legacyPageTemplateId = (String) pageValues.get("template_id");
+
                 
                 Map<String, Map<String, Object>> previewTexts = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "preview01");
                 Map<String, String> previewValues = previewTexts.entrySet()
@@ -116,7 +117,10 @@ public class CMSPageUpdate implements IModelUpdate {
                         previewImage = dao.getCMSMediaItem(previewImageId);
                     }
                 }
-
+                
+                if(title.isEmpty()) {
+                    title.setText(legacyPageTemplateId, IPolyglott.getDefaultLocale());
+                }
                 page.setTitle(title);
                 page.setMenuTitle(menuTitle);
                 page.setTopbarSliderId(topbarSliderId);
@@ -126,7 +130,6 @@ public class CMSPageUpdate implements IModelUpdate {
 
                 Map<String, CMSContent> contentMap = createContentObjects(pageContentItemsMap, dao);
 
-                String legacyPageTemplateId = (String) pageValues.get("template_id");
                 CMSComponent componentTemplate = templateManager.getLegacyComponent(legacyPageTemplateId);
                 if (componentTemplate != null) {
                     PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());

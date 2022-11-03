@@ -28,20 +28,15 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.faces.component.UIComponent;
-import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSTemplateManager;
-import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
-import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 
 @Named
 @ViewScoped
@@ -87,4 +82,22 @@ public class CmsPageEditBean implements Serializable {
         return CMSTemplateManager.getInstance().getContentManager().getComponents();
     }
 
+    /**
+     * Get the list of metadata fields which may be displayed. This is the main metadata list
+     *
+     * @return the main metadata list
+     */
+    public List<String> getAvailableMetadataFields() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getMainMetadataForTemplate(0, null)
+                .stream()
+                .map(md -> md.getLabel())
+                .map(md -> md.replaceAll("_LANG_.*", ""))
+                .distinct()
+                .collect(Collectors.toList());
+
+    }
+
+    
 }
