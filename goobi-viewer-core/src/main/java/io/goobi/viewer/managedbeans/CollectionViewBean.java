@@ -176,8 +176,8 @@ public class CollectionViewBean implements Serializable {
                         .getDao()
                         .getCMSPagesForSubtheme(subtheme)
                         .stream()
-                        .filter(p -> p.isPublished())
-                        .filter(p -> p.hasSearchFunctionality())
+                        .filter(CMSPage::isPublished)
+                        .filter(CMSPage::hasSearchFunctionality)
                         .findFirst();
                 searchPage.ifPresent(p -> {
                     collection.setSearchUrl(p.getPageUrl());

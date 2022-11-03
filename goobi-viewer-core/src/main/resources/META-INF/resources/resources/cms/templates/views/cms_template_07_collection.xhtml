@@ -11,16 +11,21 @@
 
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
+		<composite:attribute name="collectionBaseLevels" required="false" default="0" type="java.lang.Integer"/>
+		<composite:attribute name="openExpanded" required="false" default="false" type="java.lang.Boolean"/>
+		<composite:attribute name="displayParents" required="false" default="false" type="java.lang.Boolean"/>
+		<composite:attribute name="ignoreHierarchy" required="false" default="false" type="java.lang.Boolean"/>
 	</composite:interface>
     
 	<composite:implementation>              
-				
-				<div class="tpl-collection__text">
-					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
-				</div>
+		<div id="templateCollection" class="tpl-collection">
+			<div class="tpl-collection__text">
+				<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
+			</div>
 
-				<div class="tpl-collection__wrapper">
-					<viewerComponent:collectionView id="collection" collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection01').content, 0, false, false, false)}" />
-				</div>
+			<div class="tpl-collection__wrapper">
+				<viewerComponent:collectionView id="collection" collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection01').content, cc.attrs.collectionBaseLevels, cc.attrs.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy)}" />
+			</div>
+		</div>
 	</composite:implementation>
 </ui:composition>
