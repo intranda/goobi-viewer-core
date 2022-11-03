@@ -161,6 +161,9 @@
 																				<!-- CONTENT HEADER + TOOLBAR -->
 																				<div class="admin__content-component-header">
 																				
+																					<!-- CONTENT COMPONENT ORDER FUNCTIONS -->
+																					<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+																				
 																					<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
 
 																					<div class="admin__content-component-options">
@@ -193,9 +196,6 @@
 																						<button jsf:action="#{cmsComponent.togglePrivate()}" class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">Private
 																							<f:ajax render="pageComponents"/>
 																						</button>
-																						
-																						<!-- CONTENT COMPONENT ORDER + DELETE FUNCTIONS -->
-																						<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
 
 																					</div>
 																	
@@ -206,6 +206,12 @@
 																		<div class="admin__content-component-content-items-wrapper">
 																			<h:panelGroup binding="#{cmsComponent.backendUiComponent}"></h:panelGroup>
 																		</div>
+																		
+																		<!-- DELETE THIS CONTENT ITEM -->
+																		<button class="admin__content-component-delete" jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
+																			#{msg.delete}
+																			<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																		</button>
 																	
 																	</div>
 									
