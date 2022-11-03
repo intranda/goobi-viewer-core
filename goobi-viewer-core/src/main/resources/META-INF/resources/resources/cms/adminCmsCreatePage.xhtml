@@ -208,7 +208,10 @@
 																		</div>
 																		
 																		<!-- DELETE THIS CONTENT ITEM -->
-																		<button class="admin__content-component-delete" jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
+																		<button class="admin__content-component-delete" 
+								                                            data-require-confirmation="true"
+								                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
+								                                            jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
 																			#{msg.delete}
 																			<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 																		</button>
