@@ -60,6 +60,10 @@ public class CMSPageUpdate implements IModelUpdate {
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
 
+        if (!dao.tableExists("cms_content_items")){
+            return false;
+        }
+        
         List<Map<String, Object>> languageVersions = getTableData(dao, "cms_page_language_versions");
         List<Map<String, Object>> contentItems = getTableData(dao, "cms_content_items");
 
@@ -151,9 +155,9 @@ public class CMSPageUpdate implements IModelUpdate {
             }
         }
         
-        dao.executeUpdate("DROP TABLE cms_content_item_cms_categories");
-        dao.executeUpdate("DROP TABLE cms_content_items");
-        dao.executeUpdate("DROP TABLE cms_page_language_versions");
+        dao.executeUpdate("DROP TABLE cms_content_item_cms_categories;");
+        dao.executeUpdate("DROP TABLE cms_content_items;");
+        dao.executeUpdate("DROP TABLE cms_page_language_versions;");
         dao.executeUpdate("ALTER TABLE cms_pages DROP COLUMN template_id;");
 
         return true;
