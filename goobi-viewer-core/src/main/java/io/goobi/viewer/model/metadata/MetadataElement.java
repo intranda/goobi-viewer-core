@@ -100,10 +100,8 @@ public class MetadataElement {
                 // TODO does this break anything?
                 return false;
             }
-            if (type != other.type) {
-                return false;
-            }
-            return true;
+
+            return type == other.type;
         }
 
         /*
@@ -121,11 +119,6 @@ public class MetadataElement {
             }
 
             return 0;
-        }
-
-        @Deprecated
-        public String getTabName() {
-            return KEY_ROOT + type;
         }
 
         /**

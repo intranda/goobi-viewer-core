@@ -19,7 +19,7 @@
                     <div class="form-group">
                         <label for="searchInCurrentItemInput" id="searchInLabel" class="sr-only">#{msg.searchIn}</label>
                         <div class="input-group">
-                            <h:inputText value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" id="searchInCurrentItemInput" styleClass="form-control">
+                            <h:inputText value="#{searchBean.advancedSearchQueryGroup.queryItems[1].value}" id="searchInCurrentItemInput" styleClass="form-control">
                                 <f:passThroughAttribute name="placeholder" value="#{msg.searchIn}: #{msg[activeDocumentBean.topDocument.label]}" />
                                 <f:passThroughAttribute name="aria-labelledby" value="searchInLabel"/>
                             </h:inputText>
@@ -27,7 +27,7 @@
                                 <c:choose>
                                 	<c:when test="#{activeDocumentBean.group}">
 	                                	<button class="btn" aria-label="#{msg.search}"
-	                               			 jsf:action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.topDocument.groupIdField, activeDocumentBean.persistentIdentifier)}">
+	                               			 jsf:action="#{searchBean.searchInRecord(activeDocumentBean.viewManager.topStructElement.groupIdField, activeDocumentBean.persistentIdentifier)}">
 		                                	<f:passThroughAttribute name="aria-label" value="#{msg.search}" />
 		                                    <i class="fa fa-search"/>
 	                                	</button>

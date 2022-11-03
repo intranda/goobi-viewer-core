@@ -178,8 +178,7 @@ public class CMSRecordListContent extends CMSContent {
         search.setPage(searchBean.getCurrentPage());
         searchBean.setHitsPerPage(this.getElementsPerPage());
         searchBean.setLastUsedSearchPage();
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+            search.execute(facets, null, searchBean.getHitsPerPage(), BeanUtils.getLocale(), false, this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         searchBean.setCurrentSearch(search);
         searchBean.setHitsPerPageSetterCalled(false);
         return null;

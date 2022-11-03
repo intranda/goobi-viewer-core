@@ -20,7 +20,7 @@
         <ui:param name="lastPageOrder" value="#{activeDocumentBean.viewManager.lastPageOrder}"></ui:param>
         <ui:param name="pageCount" value="#{activeDocumentBean.viewManager.imagesCount}"></ui:param>
 
-		<nav id="imageControls" aria-label="#{msg.aria_label__nav_image_controls}" class="#{activeDocumentBean.viewManager.topDocument.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
+		<nav id="imageControls" aria-label="#{msg.aria_label__nav_image_controls}" class="#{activeDocumentBean.viewManager.topStructElement.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
             <!-- FORM -->
             <h:form id="imageControlsForm" prependId="false">
                 <!-- ACTIONS -->
@@ -33,13 +33,13 @@
 
                             <!-- FIRST PAGE -->
                             <ui:fragment rendered="#{pageCount gt 2 and !(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-                                <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'end' : 'start'} #{currentPageOrder == firstPageOrder ? 'inactive' : ''}">
+                                <li class="image-controls__action #{activeDocumentBean.viewManager.topStructElement.rtl ? 'end' : 'start'} #{currentPageOrder == firstPageOrder ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{currentPageOrder gt firstPageOrder}">
                                         <h:outputLink value="#{activeDocumentBean.firstPageUrl}" title="#{msg.firstImage}">
-                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
                                             </ui:fragment>
                                             <span id="firstImageLabel" class="labeltext">#{msg.firstImage}</span>
@@ -50,10 +50,10 @@
                                     </ui:fragment>
                                     <ui:fragment rendered="#{currentPageOrder eq firstPageOrder}">
                                         <span>
-                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}" />
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
                                             </ui:fragment>
                                         </span>
@@ -109,13 +109,13 @@
 
                             <!-- PREVIOUS PAGE -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-                                <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'forward' : 'back'} #{currentPageOrder == firstPageOrder ? 'inactive' : ''}">
+                                <li class="image-controls__action #{activeDocumentBean.viewManager.topStructElement.rtl ? 'forward' : 'back'} #{currentPageOrder == firstPageOrder ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{currentPageOrder gt firstPageOrder}">
                                         <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(1)}" title="#{msg.prevImage}">
-                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
                                             </ui:fragment>
                                             <span id="prevImageLabel" class="labeltext">#{msg.prevImage}</span>
@@ -126,10 +126,10 @@
                                     </ui:fragment>
                                     <ui:fragment rendered="#{currentPageOrder == firstPageOrder}">
 										<span>
-	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
 	                                        </ui:fragment>
-	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
 	                                        </ui:fragment>
 										</span>
@@ -175,13 +175,13 @@
 
                             <!-- NEXT PAGE -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-                                <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'back' : 'forward'} #{currentPageOrder ge lastPageOrder ? 'inactive' : ''}">
+                                <li class="image-controls__action #{activeDocumentBean.viewManager.topStructElement.rtl ? 'back' : 'forward'} #{currentPageOrder ge lastPageOrder ? 'inactive' : ''}">
                                     <ui:fragment rendered="#{currentPageOrder lt lastPageOrder}">
                                         <h:outputLink value="#{activeDocumentBean.getNextPageUrl(1)}" title="#{msg.nextImage}">
-                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                             	<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
                                             </ui:fragment>
                                             <span id="nextImgLabel" class="labeltext">#{msg.nextImage}</span>
@@ -192,10 +192,10 @@
                                     </ui:fragment>
                                     <ui:fragment rendered="#{currentPageOrder ge lastPageOrder}">
                                    		<span>
-	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+	                                        <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}" />
 	                                        </ui:fragment>
-	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+	                                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
 	                                            <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}" />
 	                                        </ui:fragment>
                                     	</span>
@@ -251,13 +251,13 @@
 
 	                        <!-- LAST PAGE -->
 	                        <ui:fragment rendered="#{pageCount gt 2 and !(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-	                            <li class="image-controls__action #{activeDocumentBean.viewManager.topDocument.rtl ? 'start' : 'end'} #{currentPageOrder == lastPageOrder ? 'inactive' : ''}">
+	                            <li class="image-controls__action #{activeDocumentBean.viewManager.topStructElement.rtl ? 'start' : 'end'} #{currentPageOrder == lastPageOrder ? 'inactive' : ''}">
 	                                <ui:fragment rendered="#{currentPageOrder != lastPageOrder}">
 	                                    <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}">
-                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}" />
                                             </ui:fragment>
 	                                        <span id="lastImgLabel" class="labeltext">#{msg.lastImage}</span>
@@ -268,10 +268,10 @@
 	                                </ui:fragment>
 	                                <ui:fragment rendered="#{currentPageOrder == lastPageOrder}">
 	                                    <span>
-                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
                                             </ui:fragment>
-                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}" />
                                             </ui:fragment>
 	                                    </span>

@@ -26,9 +26,9 @@
 					<ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">		
 						<div class="copyright-indicator__hidden-information">
 							<div id="copyrightInformation">
-								<h3>#{msg.access_licence}</h3>
+								<h3>#{msg.copyright_indicator__access_restriction}</h3>
 								<div class="copyright-indicator__hidden-information-element mb-3"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" /></div>			   
-								<h3>#{msg.copyright__licence}</h3>
+								<h3>#{msg.copyright_indicator__copyright_licence}</h3>
 								<div class="copyright-indicator__hidden-information-element"><h:outputText escape="false" value="#{msg.copyright__information_unclear}" /></div>
 							</div>
 						</div>
@@ -37,10 +37,10 @@
 					<ui:fragment rendered="#{not empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">			
 						<div class="copyright-indicator__hidden-information">
 							<div id="copyrightInformation">
-								<h3>#{msg.access_licence}</h3>
-								<div class="copyright-indicator__hidden-information-element mb-3"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" /></div>
-								<h3>#{msg.copyright__licence}</h3>
-								<div class="copyright-indicator__hidden-information-element"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" /></div>	
+								<h3>#{msg.copyright_indicator__access_restriction}</h3>
+								<div class="copyright-indicator__hidden-information-element mb-3"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" /></div>
+								<h3>#{msg.copyright_indicator__copyright_licence}</h3>
+								<div class="copyright-indicator__hidden-information-element"><h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" /></div>	
 							</div>			   
 						</div>
 					</ui:fragment>							

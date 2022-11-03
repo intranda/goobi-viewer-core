@@ -660,7 +660,7 @@ public class SolrTools {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
 
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, null, false, SearchAggregationType.NO_AGGREGATION);
+        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
                 DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
         if (qr != null) {

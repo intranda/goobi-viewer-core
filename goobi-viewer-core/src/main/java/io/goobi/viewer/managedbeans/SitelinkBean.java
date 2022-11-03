@@ -58,7 +58,6 @@ public class SitelinkBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(SitelinkBean.class);
 
     private String value;
-    //    private List<SearchHit> hits;
     private List<StringPair> hits;
 
     /**
@@ -97,7 +96,8 @@ public class SitelinkBean implements Serializable {
         String[] fields = { SolrConstants.PI, SolrConstants.PI_PARENT, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                 SolrConstants.MIMETYPE, SolrConstants.CURRENTNO };
         String[] anchorFields = { SolrConstants.LABEL, SolrConstants.TITLE };
-        String query = SearchHelper.buildFinalQuery(field + ":\"" + value + '"' + (filterQuery != null ? " AND " + filterQuery : ""), null, false, SearchAggregationType.NO_AGGREGATION);
+        String query = SearchHelper.buildFinalQuery(field + ":\"" + value + '"' + (filterQuery != null ? " AND " + filterQuery : ""), false,
+                SearchAggregationType.NO_AGGREGATION);
         logger.trace("q: {}", query);
 
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));

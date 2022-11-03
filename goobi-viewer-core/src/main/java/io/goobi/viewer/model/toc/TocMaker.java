@@ -86,6 +86,9 @@ public class TocMaker {
             SolrConstants.LABEL, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBNAIL,
             SolrConstants.THUMBPAGENO, SolrConstants.THUMBPAGENOLABEL, SolrConstants.TITLE };
 
+    private static final int ANCHOR_THUMBNAIL_HEIGHT = 60;
+    private static final int ANCHOR_THUMBNAIL_WIDTH = 50;
+
     private static Pattern patternVolumeLabel = Pattern.compile(StringTools.REGEX_BRACES);
 
     /**
@@ -377,13 +380,11 @@ public class TocMaker {
             }
 
             String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-            int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
-            int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
             String thumbnailUrl = null;
             if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                 StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
-                thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
+                thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
             }
             label.mapEach(value -> StringEscapeUtils.unescapeHtml4(value));
             boolean accessPermissionPdf;
@@ -533,12 +534,9 @@ public class TocMaker {
                 String volumeMimeType = (String) volumeDoc.getFieldValue(SolrConstants.MIMETYPE);
                 logger.trace("volume mime type: {}", volumeMimeType);
 
-                int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
-                int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
-
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                 StructElement struct = new StructElement(Long.valueOf(volumeIddoc), volumeDoc);
-                thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
+                thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
                 String docStructType = (String) volumeDoc.getFieldValue(SolrConstants.DOCSTRCT);

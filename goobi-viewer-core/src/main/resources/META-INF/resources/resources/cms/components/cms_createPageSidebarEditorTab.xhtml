@@ -38,14 +38,14 @@
 													<i class="fa fa-chevron-up" aria-hidden="true"></i>
 												</button>
 
-												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms_pageSidebar_widget_tooltip_up}"
+												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}"
 													class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
 													jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
 													<i class="fa fa-chevron-up" aria-hidden="true"></i>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 
-												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms_pageSidebar_widget_tooltip_down}" 
+												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}" 
 													class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
 													jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
 													<i class="fa fa-chevron-down " aria-hidden="true"></i>

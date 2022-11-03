@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.citation;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,7 +30,9 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import de.undercouch.citeproc.CSL;
 
-public class CitationProcessorWrapper {
+public class CitationProcessorWrapper implements Serializable {
+
+    private static final long serialVersionUID = 1599943007739055358L;
 
     /** Processors for each used style. */
     private final Map<String, CSL> citationProcessors = new ConcurrentHashMap<>();
@@ -54,7 +57,6 @@ public class CitationProcessorWrapper {
 
         return citationProcessors.get(style);
     }
-
 
     /**
      * @return the citationItemDataProvider

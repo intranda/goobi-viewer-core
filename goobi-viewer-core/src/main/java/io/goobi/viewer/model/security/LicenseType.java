@@ -24,6 +24,7 @@ package io.goobi.viewer.model.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -116,11 +117,11 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     @Column(name = "privilege_name")
     private Set<String> privileges = new HashSet<>();
 
-    /** Other license types for which a user may have privileges that this license type does not grant. */
+    /** Other license types for which this license type can substitute privileges. */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "license_types_overriding", joinColumns = @JoinColumn(name = "license_type_id"),
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
-    private Set<LicenseType> overridingLicenseTypes = new HashSet<>();
+    private Set<LicenseType> overriddenLicenseTypes = new HashSet<>();
 
     @Transient
     private Set<String> privilegesCopy = new HashSet<>();
@@ -450,7 +451,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         if (redirect) {
             privilegesCopy.clear();
             privilegesCopy.add(PRIV_LIST);
-        } else if(this.redirect){
+        } else if (this.redirect) {
             //only remove LIST if redirect is changed from true to false. 
             //Otherwise LIST is removed each time the form is submitted
             privilegesCopy.remove(PRIV_LIST);
@@ -850,21 +851,31 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * Getter for the field <code>overridingLicenseTypes</code>.
      * </p>
      *
-     * @return the overridingLicenseTypes
+     * @return the overridsenLicenseTypes
      */
-    public Set<LicenseType> getOverridingLicenseTypes() {
-        return overridingLicenseTypes;
+    public Set<LicenseType> getOverriddenLicenseTypes() {
+        return overriddenLicenseTypes;
     }
 
     /**
      * <p>
-     * Setter for the field <code>overridingLicenseTypes</code>.
+     * Setter for the field <code>overriddenLicenseTypes</code>.
      * </p>
      *
-     * @param overridingLicenseTypes the overridingLicenseTypes to set
+     * @param overriddenLicenseTypes the overriddenLicenseTypes to set
      */
-    public void setOverridingLicenseTypes(Set<LicenseType> overridingLicenseTypes) {
-        this.overridingLicenseTypes = overridingLicenseTypes;
+    public void setOverriddenLicenseTypes(Set<LicenseType> overriddenLicenseTypes) {
+        this.overriddenLicenseTypes = overriddenLicenseTypes;
+    }
+
+    /**
+     * Returns list of {@link LicenseType}s that contain this object in their overridden LicenseTypes.
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<LicenseType> getLicenseTypesOverridingThis() throws DAOException {
+        return DataManager.getInstance().getDao().getOverridingLicenseType(this);
     }
 
     /**

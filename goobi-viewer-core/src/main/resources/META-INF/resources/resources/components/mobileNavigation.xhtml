@@ -20,6 +20,7 @@
                 prependId="false">
                 <ul>
                     <!-- CUSTOM CMS NAVIGATION -->
+                    <!--
                     <h:panelGroup rendered="#{configurationBean.useCustomNavBar}">
                         <ui:repeat
                             var="navItem"
@@ -39,8 +40,9 @@
                             </h:panelGroup>
                         </ui:repeat>
                     </h:panelGroup>
+                    -->
                     <!-- STANDARD NAVIGATION -->
-                    <h:panelGroup rendered="#{!configurationBean.useCustomNavBar}">
+                    <h:panelGroup>
                         <li>
                             <h:outputLink
                                 value="#{navigationHelper.applicationUrl}"

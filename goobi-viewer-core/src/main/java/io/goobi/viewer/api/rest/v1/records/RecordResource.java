@@ -64,10 +64,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
@@ -98,6 +98,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -303,8 +304,7 @@ public class RecordResource {
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalRequestException, IOException {
         IIIFPresentation2ResourceBuilder b = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
-        BuildMode buildMode = getBuildeMode(mode);
-        return b.getLayer(pi, layerName, buildMode);
+        return b.getLayer(pi, layerName);
     }
 
     @GET
@@ -583,7 +583,7 @@ public class RecordResource {
                         ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                         ret.put("message", e.getMessage());
                     } catch (PresentationException e) {
-                        logger.debug("PresentationException thrown here: {}", e.getMessage());
+                        logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
                         ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                         ret.put("message", e.getMessage());
                     }

@@ -289,7 +289,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateHierarchicalFacetFilterQuery_shouldReturnNullIfFacetListIsEmpty() throws Exception {
         SearchFacets facets = new SearchFacets();
-        Assert.assertNull(facets.generateHierarchicalFacetFilterQuery(1));
+        Assert.assertNull(facets.generateHierarchicalFacetFilterQuery());
     }
 
     /**
@@ -415,7 +415,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         //facet string set from url
         facets.setCurrentFacetString(browserFacetString);
 
-        String filterQueryString = facets.generateFacetFilterQueries(0, true, true).get(0);
+        String filterQueryString = facets.generateFacetFilterQueries(true).get(0);
         List<SearchHit> hits = SearchHelper.searchWithAggregation("BOOL_WKT_COORDS:*", 0, 100, null, null,
                 Collections.singletonList(filterQueryString), null, null, null, Locale.GERMANY, 0);
         assertEquals(2, hits.size());

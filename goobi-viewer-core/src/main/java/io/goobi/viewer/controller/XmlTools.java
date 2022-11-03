@@ -24,7 +24,6 @@ package io.goobi.viewer.controller;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -72,6 +71,9 @@ import io.goobi.viewer.model.xml.XMLError;
 public class XmlTools {
 
     private static final Logger logger = LogManager.getLogger(XmlTools.class);
+    
+    private XmlTools() {
+    }
 
     public static SAXBuilder getSAXBuilder() {
         SAXBuilder builder = new SAXBuilder();
@@ -96,7 +98,7 @@ public class XmlTools {
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
      */
-    public static Document readXmlFile(String filePath) throws FileNotFoundException, IOException, JDOMException {
+    public static Document readXmlFile(String filePath) throws IOException, JDOMException {
         try (FileInputStream fis = new FileInputStream(new File(filePath))) {
             return getSAXBuilder().build(fis);
         }
@@ -112,7 +114,7 @@ public class XmlTools {
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
      */
-    public static Document readXmlFile(URL url) throws FileNotFoundException, IOException, JDOMException {
+    public static Document readXmlFile(URL url) throws IOException, JDOMException {
         try (InputStream is = url.openStream()) {
             return getSAXBuilder().build(is);
         }
@@ -130,7 +132,7 @@ public class XmlTools {
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
      */
-    public static Document readXmlFile(Path path) throws FileNotFoundException, IOException, JDOMException {
+    public static Document readXmlFile(Path path) throws IOException, JDOMException {
         try (InputStream is = Files.newInputStream(path)) {
             return getSAXBuilder().build(is);
         }
@@ -149,7 +151,7 @@ public class XmlTools {
      * @should write file correctly
      * @should throw FileSystemException if file is directory
      */
-    public static File writeXmlFile(Document doc, String filePath) throws FileNotFoundException, IOException {
+    public static File writeXmlFile(Document doc, String filePath) throws IOException {
         return FileTools.getFileFromString(getStringFromElement(doc, StringTools.DEFAULT_ENCODING), filePath, StringTools.DEFAULT_ENCODING, false);
     }
 
@@ -219,16 +221,16 @@ public class XmlTools {
      * Evaluates the given XPath expression to a list of elements.
      *
      * @param expr XPath expression to evaluate.
+     * @param element a {@link org.jdom2.Element} object.
      * @param namespaces a {@link java.util.List} object.
      * @return {@link java.util.ArrayList} or null
      * @should return all values
-     * @param element a {@link org.jdom2.Element} object.
      */
     public static List<Element> evaluateToElements(String expr, Element element, List<Namespace> namespaces) {
         List<Element> retList = new ArrayList<>();
 
         List<Object> list = evaluate(expr, element, Filters.element(), namespaces);
-        if (list == null) {
+        if (list == null || list.isEmpty()) {
             return Collections.emptyList();
         }
         for (Object object : list) {
@@ -236,6 +238,7 @@ public class XmlTools {
                 retList.add((Element) object);
             }
         }
+
         return retList;
     }
     

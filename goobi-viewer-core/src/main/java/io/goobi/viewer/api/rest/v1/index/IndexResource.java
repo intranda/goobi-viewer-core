@@ -184,12 +184,12 @@ public class IndexResource {
             return ret.toString();
         }
 
-        String termQuery = null;
-        if (params.boostTopLevelDocstructs) {
-            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
-        }
-        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.boostTopLevelDocstructs,
+        //        String termQuery = null;
+        //        if (params.boostTopLevelDocstructs) {
+        //            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
+        //            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+        //        }
+        String query = SearchHelper.buildFinalQuery(params.query, params.boostTopLevelDocstructs,
                 params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
         logger.trace("query: {}", query);

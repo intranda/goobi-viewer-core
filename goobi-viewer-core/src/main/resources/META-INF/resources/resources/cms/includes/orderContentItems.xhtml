@@ -23,16 +23,16 @@
 	    	<div class="admin__content-component-order-inner-wrapper">
 	
 				<!-- UP IN ORDER BUTTON -->
-				<button jsf:disabled="#{page.isFirstComponent(cmsComponent)}" class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}">
-					<i class="fa fa-angle-up" aria-hidden="true"></i>
+				<button jsf:disabled="#{page.isFirstComponent(cmsComponent)}" class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}">
+					<i class="fa fa-chevron-up" aria-hidden="true"></i>
 					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 				</button>
 	
 <!-- 			    <div class="admin__content-component-order-number">#{cmsComponent.order}</div> -->
 	
 			    <!-- DOWN IN ORDER BUTTON -->
-				<button jsf:disabled="#{page.isLastComponent(cmsComponent)}" class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}">
-					<i class="fa fa-angle-down" aria-hidden="true"></i>
+				<button jsf:disabled="#{page.isLastComponent(cmsComponent)}" class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}">
+					<i class="fa fa-chevron-down" aria-hidden="true"></i>
 					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 				</button>
 

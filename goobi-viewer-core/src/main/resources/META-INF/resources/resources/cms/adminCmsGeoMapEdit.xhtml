@@ -278,7 +278,7 @@
 					            	    mapEditor.geoMap.config.popover = "#geoMapPopoverTemplate";
 					            	    
 					            	    mapEditor.config.heatmap = {
-					    		          	showSearchResultsHeatmap: #{geoMapBean.currentMap.type == 'SOLR_QUERY'},
+					    		          	showSearchResultsHeatmap: #{geoMapBean.currentMap.type == 'SOLR_QUERY' and configurationBean.useHeatmapForCMSMaps()},
 					    		          	heatmapUrl: "#{geoMapBean.heatmapUrl}",
 					    		          	featureUrl: "#{geoMapBean.featureUrl}",
 					    		      	    filterQuery: "#{geoMapBean.currentMap.solrQueryEncoded}",
