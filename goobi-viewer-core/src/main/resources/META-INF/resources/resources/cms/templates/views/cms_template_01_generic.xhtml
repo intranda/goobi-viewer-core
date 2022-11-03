@@ -47,11 +47,11 @@
 					<ui:fragment rendered="#{cc.attrs.component.hasContent('image01')}">
 	                    <figure class="tpl-generic__media">
 	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" />
+		    					<img src="#{cc.attrs.component.getContentData('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" />
 	                    	</ui:fragment>
 	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
 		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}">
-		    						<source src="#{cmsPage.getContent('image01')}"/>
+		    						<source src="#{cc.attrs.component.getContentData('image01')}"/>
 		    					</video>
 	                    	</ui:fragment>
 	                        <figcaption>
@@ -62,7 +62,7 @@
 
 					<!-- TEXT -->
 					<div class="tpl-generic__text">
-						<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
+						<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
 					</div>
 				</div>
 
@@ -72,11 +72,11 @@
 					<ui:fragment rendered="#{cc.attrs.component.hasContent('image02')}">
 	                    <figure class="tpl-generic__media">
 	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image02').content.mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image02').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}" />
+		    					<img src="#{cc.attrs.component.getContentData('image02')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image02').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}" />
 	                    	</ui:fragment>
 	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image02').content.mediaItem)}">
 		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}">
-		    						<source src="#{cmsPage.getContent('image02')}"/>
+		    						<source src="#{cc.attrs.component.getContentData('image02')}"/>
 		    					</video>
 	                    	</ui:fragment>
 	                        <figcaption>
@@ -87,7 +87,7 @@
 
 					<!-- TEXT -->
 					<div class="tpl-generic__text">
-						<h:outputText escape="false" value="#{cmsPage.getContent('text02')}"></h:outputText>
+						<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text02')}"></h:outputText>
 					</div>
 				</div>
 
@@ -97,11 +97,11 @@
 					<ui:fragment rendered="#{cc.attrs.component.hasContent('image03')}">
 	                    <figure class="tpl-generic__media">
 	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image03').content.mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image03').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}" />
+		    					<img src="#{cc.attrs.component.getContentData('image03')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image03').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}" />
 	                    	</ui:fragment>
 	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image03').content.mediaItem)}">
 		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}">
-		    						<source src="#{cmsPage.getContent('image03')}"/>
+		    						<source src="#{cc.attrs.component.getContentData('image03')}"/>
 		    					</video>
 	                    	</ui:fragment>
 	                        <figcaption>
@@ -112,7 +112,7 @@
 
 					<!-- TEXT -->
 					<div class="tpl-generic__text">
-						<h:outputText escape="false" value="#{cmsPage.getContent('text03')}"></h:outputText>
+						<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text03')}"></h:outputText>
 					</div>
 				</div>
 
@@ -122,11 +122,11 @@
 					<ui:fragment rendered="#{cc.attrs.component.hasContent('image04')}">
 	                    <figure class="tpl-generic__media">
 	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image04').content.mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image04').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}" />
+		    					<img src="#{cc.attrs.component.getContentData('image04')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image04').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}" />
 	                    	</ui:fragment>
 	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image04').content.mediaItem)}">
 		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}">
-		    						<source src="#{cmsPage.getContent('image04')}"/>
+		    						<source src="#{cc.attrs.component.getContentData('image04')}"/>
 		    					</video>
 	                    	</ui:fragment>
 	                        <figcaption>
@@ -137,7 +137,7 @@
 
 					<!-- TEXT -->
 					<div class="tpl-generic__text">
-						<h:outputText escape="false" value="#{cmsPage.getContent('text04')}"></h:outputText>
+						<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text04')}"></h:outputText>
 					</div>
 				</div>
 

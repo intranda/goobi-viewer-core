@@ -41,7 +41,7 @@
 				<h1 >#{cmsPage.title}</h1>                
 				
 				<div class="tpl-collection__text">
-					<h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
+					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('description')}"></h:outputText>
 				</div>
 				
 				<div class="tpl-collection__wrapper">

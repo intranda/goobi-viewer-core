@@ -41,15 +41,15 @@
 				<!-- DATE -->
                 <h:panelGroup rendered="#{cc.attrs.component.hasContent('A0')}">
                     <div class="tpl-news-detail__date">
-    					<h:outputText value="#{cmsPage.getContent('A0')}" />
+    					<h:outputText value="#{cc.attrs.component.getContentData('A0')}" />
                     </div>
                 </h:panelGroup>
 				
 				<div class="tpl-news__content">
 				<h:panelGroup rendered="#{cc.attrs.component.hasContent('A1')}">
-					<h1 >#{cmsPage.getContent('A1')}</h1>
+					<h1 >#{cc.attrs.component.getContentData('A1')}</h1>
 				</h:panelGroup>
-					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
+					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
 				</div>
 			</div>
         </f:view>

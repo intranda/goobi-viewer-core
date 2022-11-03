@@ -42,23 +42,23 @@
 				<h1 >#{cmsPage.title}</h1>
 				
 				<!-- DATE -->
-                <h:panelGroup rendered="#{cmsPage.getContent('A0') != ''}">
+                <h:panelGroup rendered="#{cc.attrs.component.getContentData('A0') != ''}">
                     <div class="tpl-news-detail__date">
-    					<h:outputText value="#{cmsPage.getContent('A0')}" />
+    					<h:outputText value="#{cc.attrs.component.getContentData('A0')}" />
                     </div>
                 </h:panelGroup>
 				
 				<!-- NEWS DETAIL CONTENT 1 -->
 				<h:panelGroup rendered="#{cc.attrs.component.hasContent('A2')}">
 					<div class="tpl-news-detail__content">
-						<h1>#{cmsPage.getContent('A1')}</h1>
+						<h1>#{cc.attrs.component.getContentData('A1')}</h1>
 						
 						<div class="row">
                             <div class="col-12 col-sm-3">
 								<!-- IMAGE -->
-			                    <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
+			                    <h:panelGroup rendered="#{cc.attrs.component.getContentData('image01') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" />
+			                            <img title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image01')}
 			                            </figcaption>
@@ -68,7 +68,7 @@
 							<div class="col-12 col-sm-9">	                    
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
-			    					<h:outputText escape="false" value="#{cmsPage.getContent('A2')}"></h:outputText>
+			    					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('A2')}"></h:outputText>
 			                    </div>
 	                    	</div>
 	                    </div>
@@ -78,14 +78,14 @@
                 <!-- NEWS DETAIL CONTENT 2 -->
                 <h:panelGroup rendered="#{cc.attrs.component.hasContent('B2')}">
 	                <div class="tpl-news-detail__content">
-	                    <h1>#{cmsPage.getContent('B1')}</h1>
+	                    <h1>#{cc.attrs.component.getContentData('B1')}</h1>
 						
 						<div class="row">
 							<div class="col-12 col-sm-3">
 								<!-- IMAGE -->
-								<h:panelGroup rendered="#{cmsPage.getContent('image02') != ''}">
+								<h:panelGroup rendered="#{cc.attrs.component.getContentData('image02') != ''}">
 									<figure class="tpl-news-detail__image">
-										<img title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}" src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image02').content.mediaItem.alternativeText}" />
+										<img title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image02')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image02').content.mediaItem.alternativeText}" />
 										<figcaption>#{cmsPage.getMediaDescription('image02')}</figcaption>
 									</figure>
 								</h:panelGroup>
@@ -93,7 +93,7 @@
 							<div class="col-12 col-sm-9">
 								<!-- TEXT -->
 								<div class="tpl-news-detail__text">
-									<h:outputText escape="false" value="#{cmsPage.getContent('B2')}"></h:outputText>
+									<h:outputText escape="false" value="#{cc.attrs.component.getContentData('B2')}"></h:outputText>
 								</div>
 							</div>
 						</div>
@@ -103,14 +103,14 @@
                 <!-- NEWS DETAIL CONTENT 3 -->
                 <h:panelGroup rendered="#{cc.attrs.component.hasContent('C2')}">
 	                <div class="tpl-news-detail__content">
-	                    <h1>#{cmsPage.getContent('C1')}</h1>
+	                    <h1>#{cc.attrs.component.getContentData('C1')}</h1>
 	                    
 	                    <div class="row">
 							<div class="col-12 col-sm-3">
 			                    <!-- IMAGE -->
-			                    <h:panelGroup rendered="#{cmsPage.getContent('image03') != ''}">
+			                    <h:panelGroup rendered="#{cc.attrs.component.getContentData('image03') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}" src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image03').content.mediaItem.alternativeText}" />
+			                            <img title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image03')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image03').content.mediaItem.alternativeText}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image03')}
 			                            </figcaption>
@@ -120,7 +120,7 @@
 							<div class="col-12 col-sm-9">
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
-			                        <h:outputText escape="false" value="#{cmsPage.getContent('C2')}"></h:outputText>
+			                        <h:outputText escape="false" value="#{cc.attrs.component.getContentData('C2')}"></h:outputText>
 			                    </div>
 							</div>
 						</div>
@@ -130,14 +130,14 @@
                 <!-- NEWS DETAIL CONTENT 4 -->
                 <h:panelGroup rendered="#{cc.attrs.component.hasContent('D2')}">
 	                <div class="tpl-news-detail__content">
-	                    <h1>#{cmsPage.getContent('D1')}</h1>
+	                    <h1>#{cc.attrs.component.getContentData('D1')}</h1>
 	                    
 	                    <div class="row">
 							<div class="col-12 col-sm-3">
 			                    <!-- IMAGE -->
-			                    <h:panelGroup rendered="#{cmsPage.getContent('image04') != ''}">
+			                    <h:panelGroup rendered="#{cc.attrs.component.getContentData('image04') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}" src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image04').content.mediaItem.alternativeText}" />
+			                            <img title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image04')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image04').content.mediaItem.alternativeText}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image04')}
 			                            </figcaption>
@@ -147,7 +147,7 @@
 							<div class="col-12 col-sm-9">
 			                    <!-- TEXT -->
 			                    <div class="tpl-news-detail__text">
-			                        <h:outputText escape="false" value="#{cmsPage.getContent('D2')}"></h:outputText>
+			                        <h:outputText escape="false" value="#{cc.attrs.component.getContentData('D2')}"></h:outputText>
 			                    </div>
 							</div>
 						</div>

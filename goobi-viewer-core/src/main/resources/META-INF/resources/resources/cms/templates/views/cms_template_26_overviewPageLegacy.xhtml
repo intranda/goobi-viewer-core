@@ -121,7 +121,7 @@
                     </div>
 
                     <div class="tpl-overviewpage-legacy__description-text">
-                        <h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
+                        <h:outputText escape="false" value="#{cc.attrs.component.getContentData('description')}"></h:outputText>
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@
                     </div>
 
                     <div class="tpl-overviewpage-legacy__literature-text">
-                        <h:outputText escape="false" value="#{cmsPage.getContent('literature')}"></h:outputText>
+                        <h:outputText escape="false" value="#{cc.attrs.component.getContentData('literature')}"></h:outputText>
                     </div>
                 </div>
                 
@@ -140,7 +140,7 @@
                 <ui:fragment rendered="#{userBean.admin}">
                     <div class="tpl-overviewpage-legacy__history">
                         <h1 >>#{msg.viewOverviewHistory_heading}</h1>
-                        <h:outputText escape="false" value="#{cmsPage.getContent('history')}"></h:outputText>
+                        <h:outputText escape="false" value="#{cc.attrs.component.getContentData('history')}"></h:outputText>
                     </div>
                 </ui:fragment>
             </div>
