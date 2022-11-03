@@ -309,7 +309,7 @@ public class StatisticsBean implements Serializable {
      * @return goobi-viewer-connector version
      */
     public String getConnectorVersion() {
-        return DataManager.getInstance().getConnectorVersion();
+        return JsonTools.shortFormatVersionString(DataManager.getInstance().getConnectorVersion());
     }
 
     /**
