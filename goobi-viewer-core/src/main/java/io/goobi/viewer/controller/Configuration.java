@@ -372,15 +372,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     *
-     * @should return correct value
-     * @return Connector URL
-     */
-    public String getConnectorVersionUrl() {
-        return getLocalString("urls.connectorVersion", "http://localhost:8080/viewer/oai/tools?action=getVersion");
-    }
-
-    /**
      * Returns the list of configured metadata for search hit elements.
      *
      * @param template a {@link java.lang.String} object.

@@ -309,13 +309,7 @@ public class StatisticsBean implements Serializable {
      * @return goobi-viewer-connector version
      */
     public String getConnectorVersion() {
-        try {
-            String json = NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
-            return JsonTools.shortFormatVersionString(json);
-        } catch (IOException | HTTPException e) {
-            logger.error(e.getMessage());
-            return e.getMessage();
-        }
+        return JsonTools.shortFormatVersionString(DataManager.getInstance().getConnectorVersion());
     }
 
     /**
@@ -326,8 +320,6 @@ public class StatisticsBean implements Serializable {
             ApplicationInfo info = new ApplicationResource().getApplicationInfo();
             String json = new ObjectMapper().writeValueAsString(info);
             return JsonTools.shortFormatVersionString(json);
-            //            String output = String.format("%s (%s)", info.getVersion(), info.getGitRevision());
-            //            return output;
         } catch (ContentNotFoundException | IOException e) {
             logger.error(e.getMessage());
             return "";
@@ -343,8 +335,7 @@ public class StatisticsBean implements Serializable {
 
     public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
         StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
-        StatisticsSummary summary = new StatisticsSummaryBuilder().loadSummary(filter);
-        return summary;
+        return new StatisticsSummaryBuilder().loadSummary(filter);
     }
 
     public LocalDate getLastUsageStatisticsCheck() throws IndexUnreachableException {
