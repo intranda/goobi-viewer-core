@@ -30,10 +30,9 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 
 /**
@@ -122,7 +121,6 @@ public class MetadataParameter implements Serializable {
     private String condition = "";
     private boolean addUrl = false;
     private boolean topstructValueFallback = false;
-    private boolean topstructOnly = false;
     private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
 
     /*
@@ -405,26 +403,6 @@ public class MetadataParameter implements Serializable {
 
     /**
      * <p>
-     * isTopstructOnly.
-     * </p>
-     *
-     * @return the topstructOnly
-     */
-    public boolean isTopstructOnly() {
-        return topstructOnly;
-    }
-
-    /**
-     * @param topstructOnly the topstructOnly to set
-     * @return this
-     */
-    public MetadataParameter setTopstructOnly(boolean topstructOnly) {
-        this.topstructOnly = topstructOnly;
-        return this;
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>replaceRules</code>.
      * </p>
      *
@@ -471,7 +449,6 @@ public class MetadataParameter implements Serializable {
         String condition = config.getString(XML_PATH_ATTRIBUTE_CONDITION);
         boolean addUrl = config.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
         boolean topstructValueFallback = config.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
-        boolean topstructOnly = config.getBoolean("[@topstructOnly]", false);
         List<MetadataReplaceRule> replaceRules = Collections.emptyList();
         List<HierarchicalConfiguration<ImmutableNode>> replaceRuleElements = config.configurationsAt("replace");
         if (replaceRuleElements != null) {
@@ -525,7 +502,6 @@ public class MetadataParameter implements Serializable {
                 .setCondition(condition)
                 .setAddUrl(addUrl)
                 .setTopstructValueFallback(topstructValueFallback)
-                .setTopstructOnly(topstructOnly)
                 .setReplaceRules(replaceRules);
     }
 }

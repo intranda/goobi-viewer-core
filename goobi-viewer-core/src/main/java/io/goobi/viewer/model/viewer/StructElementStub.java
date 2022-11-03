@@ -39,6 +39,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -133,18 +134,18 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return a {@link java.lang.String} object.
      */
     public String getDisplayLabel() {
-        String label = getMetadataValue(SolrConstants.LABEL);
-        if (StringUtils.isEmpty(label)) {
-            label = getMetadataValue(SolrConstants.TITLE);
-            if (StringUtils.isEmpty(label)) {
-                label = getDocStructType();
+        String localLabel = getMetadataValue(SolrConstants.LABEL);
+        if (StringUtils.isEmpty(localLabel)) {
+            localLabel = getMetadataValue(SolrConstants.TITLE);
+            if (StringUtils.isEmpty(localLabel)) {
+                localLabel = getDocStructType();
             }
-            if (StringUtils.isEmpty(label)) {
-                label = "doctype_" + docType.name();
+            if (StringUtils.isEmpty(localLabel)) {
+                localLabel = "doctype_" + docType.name();
             }
         }
 
-        return label;
+        return localLabel;
     }
 
     /**
@@ -456,19 +457,6 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
     /**
      * <p>
-     * isMuseumType.
-     * </p>
-     *
-     * @deprecated Use StructElementStub.isLidoRecord()
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isMuseumType() {
-        return isLidoRecord();
-    }
-
-    /**
-     * <p>
      * isLidoRecord.
      * </p>
      *
@@ -484,11 +472,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public boolean isHasImages() {
         String imageAvailable = getMetadataValue(SolrConstants.BOOL_IMAGEAVAILABLE);
-        if (imageAvailable == null || !Boolean.valueOf(imageAvailable)) {
-            return false;
-        }
-
-        return true;
+        return imageAvailable != null && Boolean.valueOf(imageAvailable);
     }
 
     /**
@@ -511,7 +495,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
                     DataManager.getInstance().getSearchIndex().search(query, 0, null, Collections.singletonList(SolrConstants.ORDER));
             return (int) result.getNumFound();
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return 0;
@@ -584,10 +568,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public String getLabel(String language) {
         if (language != null) {
-            String mdField = SolrConstants.TITLE + "_LANG_" + language.toUpperCase();
-            String label = getMetadataValue(mdField);
-            if (StringUtils.isNotEmpty(label)) {
-                return label;
+            String mdField = SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + language.toUpperCase();
+            String localLabel = getMetadataValue(mdField);
+            if (StringUtils.isNotEmpty(localLabel)) {
+                return localLabel;
             }
         }
 
@@ -748,8 +732,6 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         }
         sb.append(format);
 
-        //        StructElement topStruct = getTopStruct();
-
         // Topstruct metadata
         sb.append(getKEVForField(topStruct, SolrConstants.TITLE, "rft.title", "&"));
         sb.append(getKEVForField(topStruct, "MD_CREATOR", "rft.au", "&"));
@@ -764,23 +746,6 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         sb.append(getKEVForField(topStruct, "MD_SUBJECT", "rft.subject", "&"));
         sb.append(getKEVForField(topStruct, "MD_LANGUAGE", "rft.language", "&"));
         sb.append(getKEVForField(topStruct, "NUMPAGES", "rft.tpages", "&"));
-
-        //        // Chapter metadata
-        //        if (!this.equals(topStruct)) {
-        //            sb.append(getKEVForField(this, LuceneConstants.TITLE, "rft.btitle", "&"));
-        //            //            sb.append(getKEVForField(this, LuceneConstants.TITLE, "rft.atitle", "&"));
-        //            String firstPage = getMetadataValue("ORDERLABELFIRST");
-        //            String lastPage = getMetadataValue("ORDERLABELLAST");
-        //            if (firstPage != null && lastPage != null) {
-        //                try {
-        //                    sb.append("&rft.pages=").append(URLEncoder.encode(new StringBuilder(firstPage).append('-').append(lastPage).toString(), "UTF-8"));
-        //                } catch (UnsupportedEncodingException e) {
-        //                    logger.error(e.getMessage());
-        //                }
-        //            }
-        //        } else {
-        //        sb.append(getKEVForField(topStruct, LuceneConstants.TITLE, "rft.title", "&"));
-        //        }
 
         if (StringUtils.isNotEmpty(currentUrl)) {
             try {

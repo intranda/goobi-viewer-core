@@ -13,7 +13,7 @@
  
                     <!-- STRUCT ELEMENT -->
 					<ui:fragment
-						rendered="#{activeDocumentBean.viewManager.currentStructElementIddoc != activeDocumentBean.viewManager.topDocumentIddoc}">
+						rendered="#{activeDocumentBean.viewManager.currentStructElementIddoc != activeDocumentBean.viewManager.topStructElementIddoc}">
 						<h3 id="titlePage" class="widget-usage__subtitle" title="#{activeDocumentBean.viewManager.currentStructElement.label}">#{msg[activeDocumentBean.viewManager.currentStructElement.docStructType]}</h3>
 
 						<!-- STRUCT ELEMENT DOWNLOADS -->

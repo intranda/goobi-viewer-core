@@ -12,7 +12,7 @@
 
     <composite:implementation>
 		<ui:fragment
-		    rendered="#{cc.attrs.visible and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
+		    rendered="#{cc.attrs.visible and (activeDocumentBean.toc.hasChildren)}">
 			<div id="widgetToc" class="widget widget-toc">
                 <!-- OVERLAY -->
                 <div class="widget-toc__overlay"></div>
@@ -58,7 +58,7 @@
 							    <ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
     								<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
     									<ui:fragment rendered="#{tocElement.visible}">
-    										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' } #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}" data-iddoc="iddoc_#{tocElement.iddoc}" style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
+    										<li class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' } #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}" data-iddoc="iddoc_#{tocElement.iddoc}" style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
     											<ui:fragment rendered="#{tocElement.visible}">
     												<!-- EXPAND -->
     												<ui:fragment rendered="#{tocElement.hasChild == true}">
@@ -80,12 +80,12 @@
 
     												<!-- FULLSCREEN LINK -->
                                                     <ui:fragment rendered="#{navigationHelper.currentView == 'fullscreen'}">
-        												<div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+        												<div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
         													<h:outputLink
         														rendered="#{tocElement.label != null and tocElement.visible}"
         														title="#{tocElement.label}"
         														value="#{tocElement.getUrl('fullscreen')}"
-																styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+																styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
 																<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}"/>
         														#{tocElement.label}
         													</h:outputLink>
@@ -94,7 +94,7 @@
 
                                                     <!-- LINK -->
                                                     <ui:fragment rendered="#{navigationHelper.currentView != 'fullscreen'}">
-                                                        <div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+                                                        <div class="widget-toc__element-link #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''} #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
                                                             <h:outputLink
                                                                 rendered="#{tocElement.label != null and tocElement.visible}"
                                                                 title="#{tocElement.label}"
@@ -127,7 +127,7 @@
 											<div class="widget-toc__element-link #{!configurationBean.sidebarTocTreeView ? 'non-tree-view' : ''} #{configurationBean.sidebarTocPageNumbersVisible ? 'has-pagenumber' : ''}">
 												<h:outputLink rendered="#{tocElement.label != null}"
 													title="#{tocElement.label}" value="#{tocElement.url}"
-													styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
+													styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''}">
 													<h:outputText value="#{tocElement.label}" />
 													<f:passThroughAttribute name="aria-label" value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
 												</h:outputLink>

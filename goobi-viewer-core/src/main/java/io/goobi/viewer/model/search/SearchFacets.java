@@ -116,11 +116,11 @@ public class SearchFacets implements Serializable {
      * @param includeRangeFacets a boolean.
      * @return a {@link java.util.List} object.
      */
-    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets, boolean includeGeoFacet) {
+    public List<String> generateFacetFilterQueries(boolean includeRangeFacets) {
         List<String> ret = new ArrayList<>(2);
 
         // Add hierarchical facets
-        String hierarchicalQuery = generateHierarchicalFacetFilterQuery(advancedSearchGroupOperator);
+        String hierarchicalQuery = generateHierarchicalFacetFilterQuery();
         if (StringUtils.isNotEmpty(hierarchicalQuery)) {
             ret.add(hierarchicalQuery);
         }
@@ -142,7 +142,7 @@ public class SearchFacets implements Serializable {
      * @should generate query correctly
      * @should return null if facet list is empty
      */
-    String generateHierarchicalFacetFilterQuery(int advancedSearchGroupOperator) {
+    String generateHierarchicalFacetFilterQuery() {
         if (currentFacets.isEmpty()) {
             return null;
         }
@@ -154,18 +154,14 @@ public class SearchFacets implements Serializable {
                 continue;
             }
             if (count > 0) {
-                if (advancedSearchGroupOperator == 1) {
-                    sbQuery.append(" OR ");
-                } else {
-                    sbQuery.append(SolrConstants.SOLR_QUERY_AND);
-                }
+                sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             String field = SearchHelper.facetifyField(facetItem.getField());
             sbQuery.append('(')
                     .append(field)
                     .append(':')
                     .append("\"" + facetItem.getValue() + "\"")
-                    .append(" OR ")
+                    .append(SolrConstants.SOLR_QUERY_OR)
                     .append(field)
                     .append(':')
                     .append(facetItem.getValue())
@@ -193,17 +189,12 @@ public class SearchFacets implements Serializable {
 
         StringBuilder sbQuery = new StringBuilder();
         for (IFacetItem facetItem : currentFacets) {
-            if (facetItem.isHierarchial()) {
-                continue;
-            }
-            if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
-                continue;
-            }
-            if (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField())) {
+            if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
+                    || (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField()))) {
                 continue;
             }
             if (sbQuery.length() > 0) {
-                sbQuery.append(" AND ");
+                sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
             logger.trace("Added facet: {}", facetItem.getQueryEscapedLink());

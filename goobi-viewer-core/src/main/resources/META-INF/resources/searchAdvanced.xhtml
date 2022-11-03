@@ -27,22 +27,14 @@
 			<div id="searchAdvanced">
 				<h1 >#{msg.searchAdvanced}</h1>
 
-                <!-- SEARCH STANDARD -->
+                <!-- SEARCH ADVANCED -->
                 <ui:include src="/resources/includes/search/searchAdvanced.xhtml" />
 			</div>
 		</f:view>
 	</ui:define>
 
     <ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-            <widgetComponent:widget_browsing />
-        </h:panelGroup>
-    </ui:define>
-
-    <ui:define name="rssFeed">
-        <h:panelGroup rendered="#{configurationBean.displaySidebarRssFeed}">
-            <ui:include src="resources/includes/rssFeed.xhtml" />
-        </h:panelGroup>
+        <widgetComponent:widget_searchAdvancedHelp />
     </ui:define>
 
 </ui:composition>

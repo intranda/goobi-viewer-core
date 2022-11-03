@@ -21,9 +21,7 @@
  */
 package io.goobi.viewer.model.archives;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.time.Instant;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -31,7 +29,9 @@ import java.time.format.DateTimeFormatter;
  * @author florian
  *
  */
-public class ArchiveResource {
+public class ArchiveResource implements Serializable {
+
+    private static final long serialVersionUID = -234029216818092944L;
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
@@ -89,20 +89,20 @@ public class ArchiveResource {
 
     public String getDatabaseId() {
         return databaseName;
-//        try {
-//            return URLEncoder.encode(databaseName, "utf-8");
-//        } catch (UnsupportedEncodingException e) {
-//            throw new IllegalStateException("'utf-8' is unsupported encoding");
-//        }
+        //        try {
+        //            return URLEncoder.encode(databaseName, "utf-8");
+        //        } catch (UnsupportedEncodingException e) {
+        //            throw new IllegalStateException("'utf-8' is unsupported encoding");
+        //        }
     }
 
     public String getResourceId() {
-//        try {
-            String id = resourceName.replaceAll("(?i)\\.xml", "");
-            return id;
-//        } catch (UnsupportedEncodingException e) {
-//            throw new IllegalStateException("'utf-8' is unsupported encoding");
-//        }
+        //        try {
+        String id = resourceName.replaceAll("(?i)\\.xml", "");
+        return id;
+        //        } catch (UnsupportedEncodingException e) {
+        //            throw new IllegalStateException("'utf-8' is unsupported encoding");
+        //        }
     }
 
     @Override

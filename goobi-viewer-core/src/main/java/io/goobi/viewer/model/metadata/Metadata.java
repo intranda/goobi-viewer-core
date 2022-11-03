@@ -39,16 +39,17 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -91,6 +92,7 @@ public class Metadata implements Serializable {
     private boolean group = false;
     private boolean singleString = true;
     private boolean hideIfOnlyMetadataField = false;
+    private boolean topstructOnly = false;
 
     // Data
 
@@ -219,10 +221,8 @@ public class Metadata implements Serializable {
         } else if (!masterValue.equals(other.masterValue)) {
             return false;
         }
-        if (type != other.type) {
-            return false;
-        }
-        return true;
+
+        return type == other.type;
     }
 
     /**
@@ -367,7 +367,6 @@ public class Metadata implements Serializable {
      * @param options a {@link java.util.Map} object.
      * @param groupType value of METADATATYPE, if available
      * @param locale a {@link java.util.Locale} object.
-     * @return this
      * @should add multivalued param values correctly
      * @should set group type correctly
      */
@@ -460,7 +459,6 @@ public class Metadata implements Serializable {
                     break;
                 case NORMDATAURI:
                     if (StringUtils.isNotEmpty(value)) {
-                        NavigationHelper nh = BeanUtils.getNavigationHelper();
                         String normDataType = MetadataGroupType.OTHER.name();
                         // Use the last part of NORM_URI_* field name as the normdata type
                         if (param.getKey() != null) {
@@ -487,14 +485,17 @@ public class Metadata implements Serializable {
                             }
                         }
                         // Popup button
-                        String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
-                        html = html.replace("{0}", nh.getApplicationUrl())
-                                .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
-                                .replace("{2}", normDataType == null ? MetadataGroupType.OTHER.name() : normDataType)
-                                .replace("{3}", nh.getLocaleString())
-                                .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
-                                .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
-                        value = html;
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        if (nh != null) {
+                            String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
+                            html = html.replace("{0}", nh.getApplicationUrl())
+                                    .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
+                                    .replace("{2}", normDataType == null ? MetadataGroupType.OTHER.name() : normDataType)
+                                    .replace("{3}", nh.getLocaleString())
+                                    .replace("{4}", ViewerResourceBundle.getTranslation("normdataExpand", locale))
+                                    .replace("{5}", ViewerResourceBundle.getTranslation("normdataPopoverCloseAll", locale));
+                            value = html;
+                        }
                     }
                     break;
                 case NORMDATASEARCH:
@@ -507,9 +508,9 @@ public class Metadata implements Serializable {
                                         new StringBuilder().append(nh.getSearchUrl())
                                                 .append("/-/")
                                                 .append(param.getKey())
-                                                .append(':')
+                                                .append(":%22")
                                                 .append(value)
-                                                .append("/1/-/-/-/")
+                                                .append("%22/1/-/-/-/")
                                                 .toString())
                                 .replace("{1}", ViewerResourceBundle.getTranslation("search", locale));
                         value = html;
@@ -519,12 +520,12 @@ public class Metadata implements Serializable {
                     // Use original param index to retrieve the correct destination
                     String citationKey = param.getDestination();
                     if (StringUtils.isNotEmpty(citationKey)) {
-                        List<String> values = mdValue.getCitationValues().get(citationKey);
-                        if (values == null) {
-                            values = new ArrayList<>();
-                            mdValue.getCitationValues().put(citationKey, values);
+                        List<String> citationValues = mdValue.getCitationValues().get(citationKey);
+                        if (citationValues == null) {
+                            citationValues = new ArrayList<>();
+                            mdValue.getCitationValues().put(citationKey, citationValues);
                         }
-                        values.add(value);
+                        citationValues.add(value);
                     }
                     value = MetadataParameterType.CITEPROC.getKey();
                     break;
@@ -681,7 +682,7 @@ public class Metadata implements Serializable {
      * @should return true if at least one value has same ownerIddoc
      */
     public boolean isBlank(String ownerIddoc) {
-        if (values == null || values.isEmpty()) {
+        if (values.isEmpty()) {
             return true;
         }
 
@@ -718,6 +719,12 @@ public class Metadata implements Serializable {
         if (se == null) {
             return false;
         }
+
+        // Skip topstruct-only parameters, if this is not a topstruct or anchor/group
+        if (topstructOnly && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
+            return false;
+        }
+
         this.ownerStructElementIddoc = ownerIddoc;
         ownerDocstrctType = se.getDocStructType();
 
@@ -748,10 +755,6 @@ public class Metadata implements Serializable {
         // Regular, atomic metadata
         boolean found = false;
         for (MetadataParameter param : params) {
-            // Skip topstruct-only parameters, if this is not a topstruct or anchr/group
-            if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
-                continue;
-            }
 
             int count = 0;
             int indexOfParam = params.indexOf(param);
@@ -848,7 +851,6 @@ public class Metadata implements Serializable {
         }
 
         boolean found = false;
-
         try {
             SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + label, sortFields);
             if (groupedMdList == null || groupedMdList.isEmpty()) {
@@ -886,14 +888,10 @@ public class Metadata implements Serializable {
                     MetadataParameter param = params.get(i);
                     // logger.trace("param: {}", param.getKey());
 
-                    // Skip topstruct-only parameters, if this is not a topstruct or anchor/group
-                    if (param.isTopstructOnly() && !se.isWork() && !se.isAnchor() && !se.isGroup()) {
-                        continue;
-                    }
                     if (groupFieldMap.get(param.getKey()) != null) {
                         found = true;
                         Map<String, String> options = new HashMap<>();
-                        List<String> values = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
+                        List<String> paramValues = new ArrayList<>(groupFieldMap.get(param.getKey()).size());
                         for (String value : groupFieldMap.get(param.getKey())) {
                             // If a conditional query is configured, check for match first
                             if (StringUtils.isNotEmpty(param.getCondition())) {
@@ -903,14 +901,12 @@ public class Metadata implements Serializable {
                                 }
                                 logger.trace("conditional value added: {}", value);
                             }
-                            values.add(value);
+                            paramValues.add(value);
                         }
-                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI)) {
-                            if (doc.getFieldValue("NORM_TYPE") != null) {
-                                options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
-                            }
+                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue("NORM_TYPE") != null) {
+                            options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
                         }
-                        setParamValue(count, i, values, param.getKey(), null, options, groupType, locale);
+                        setParamValue(count, i, paramValues, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
                         logger.debug("No value found for {}, using default value", param.getKey());
                         setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
@@ -937,7 +933,7 @@ public class Metadata implements Serializable {
             }
             // logger.trace("GROUP QUERY END");
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return found;
@@ -1055,6 +1051,22 @@ public class Metadata implements Serializable {
      */
     public Metadata setHideIfOnlyMetadataField(boolean hideIfOnlyMetadataField) {
         this.hideIfOnlyMetadataField = hideIfOnlyMetadataField;
+        return this;
+    }
+
+    /**
+     * @return the topstructOnly
+     */
+    public boolean isTopstructOnly() {
+        return topstructOnly;
+    }
+
+    /**
+     * @param topstructOnly the topstructOnly to set
+     * @return this
+     */
+    public Metadata setTopstructOnly(boolean topstructOnly) {
+        this.topstructOnly = topstructOnly;
         return this;
     }
 
@@ -1227,13 +1239,13 @@ public class Metadata implements Serializable {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        if (values != null) {
+        if (!values.isEmpty()) {
             return "Label: " + label + " MasterValue: " + masterValue + " paramValues: " + values.get(0).getParamValues() + " ### ";
 
         }
         return "Label: " + label + " MasterValue: " + masterValue + " ### ";
     }
-    
+
     public String getCombinedValue(String separator) {
         return this.getValues().stream().map(MetadataValue::getCombinedValue).collect(Collectors.joining(separator));
     }

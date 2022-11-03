@@ -104,7 +104,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES_COMMENTS_COMMENT = "/{pageNo}/comments/{id}";
     public static final String RECORDS_PAGES_TEXT = "/{pageNo}/text";
 
-
     public static final String RECORDS_FILES = "/records/{pi}/files";
     public static final String RECORDS_FILES_PLAINTEXT = "/plaintext/{filename}";
     public static final String RECORDS_FILES_ALTO = "/alto/{filename}";
@@ -129,7 +128,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT = "/{subfolder}//{auxfilename}";
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2 = "/{subfolder}/{subsubfolder}/{auxfilename}";
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT = "//{subfolder}/{subsubfolder}/{auxfilename}";
-
 
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
@@ -178,7 +176,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String TASKS_TASK = "/{id}";
 
     public static final String CONTEXT = "/context";
-
 
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";
@@ -229,12 +226,12 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CLIENTS_CLIENT = "/{id}";
     public static final String CLIENTS_REGISTER = "/register";
     public static final String CLIENTS_REQUEST = "/request";
-    
+
+    public static final String STATISTICS_MOVING_WALL = "statistics/movingwall";
+    public static final String STATISTICS_MOVING_WALL_YEAR = "/{year}";
     public static final String STATISTICS_USAGE = "/statistics/usage";
     public static final String STATISTICS_USAGE_DATE = "/{date}";
     public static final String STATISTICS_USAGE_DATE_RANGE = "/{startDate}/{endDate}";
-
-
 
     private final String apiUrl;
 

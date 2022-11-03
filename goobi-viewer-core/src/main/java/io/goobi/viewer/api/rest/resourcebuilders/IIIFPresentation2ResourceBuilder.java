@@ -124,13 +124,11 @@ public class IIIFPresentation2ResourceBuilder {
             getSequenceBuilder().addBaseSequence((Manifest2) manifest, mainDoc, manifest.getId().toString(), request);
 
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
-            if (StringUtils.isNotBlank(topLogId)) {
-                if (BuildMode.IIIF.equals(mode)) {
-                    List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-                    ranges.forEach(range -> {
-                        ((Manifest2) manifest).addStructure(range);
-                    });
-                }
+            if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode)) {
+                List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
+                ranges.forEach(range -> {
+                    ((Manifest2) manifest).addStructure(range);
+                });
             }
         }
 
@@ -185,7 +183,21 @@ public class IIIFPresentation2ResourceBuilder {
         return preferedView;
     }
 
-    public Layer getLayer(String pi, String typeName, BuildMode buildMode) throws PresentationException, IndexUnreachableException,
+    /**
+     * 
+     * @param pi
+     * @param typeName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException
+     * @throws IllegalRequestException
+     * @throws IOException
+     */
+    public Layer getLayer(String pi, String typeName) throws PresentationException, IndexUnreachableException,
             URISyntaxException, ViewerConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException, IOException {
         StructElement doc = getStructureBuilder().getDocument(pi);
         AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
@@ -203,8 +215,7 @@ public class IIIFPresentation2ResourceBuilder {
 
         } else {
             Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "", request);
-            Layer layer = getLayerBuilder().generateLayer(pi, annoLists, type);
-            return layer;
+            return getLayerBuilder().generateLayer(pi, annoLists, type);
         }
     }
 
@@ -300,12 +311,8 @@ public class IIIFPresentation2ResourceBuilder {
      */
     public Collection2 getCollections(String collectionField, List<String> ignore)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException, IllegalRequestException {
-
-        Collection2 collection = getCollectionBuilder().generateCollection(collectionField, null, null,
+        return getCollectionBuilder().generateCollection(collectionField, null, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
-
-        return collection;
-
     }
 
     /**
@@ -349,18 +356,14 @@ public class IIIFPresentation2ResourceBuilder {
      */
     public Collection2 getCollection(String collectionField, String topElement, List<String> ignore)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
-
-        Collection2 collection = getCollectionBuilder().generateCollection(collectionField, topElement, null,
+        return getCollectionBuilder().generateCollection(collectionField, topElement, null,
                 DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField), ignore);
-
-        return collection;
-
     }
 
     public List<IPresentationModelElement> getManifestsForQuery(String query, String sortFields, int first, int rows)
             throws DAOException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException {
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, request, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, request, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         logger.trace("getManifestForQuery: {}", finalQuery);
 
         List<StringPair> sortFieldList = SolrTools.getSolrSortFieldsAsList(sortFields == null ? "" : sortFields, ",", " ");
@@ -393,7 +396,7 @@ public class IIIFPresentation2ResourceBuilder {
 
     }
 
-    private List<String> getContainedRecordsFieldList() {
+    private static List<String> getContainedRecordsFieldList() {
         List<String> list = new ArrayList<>(Arrays.asList(CollectionBuilder.CONTAINED_WORKS_QUERY_FIELDS));
         list.add(SolrConstants.BOOL_IMAGEAVAILABLE);
         return list;

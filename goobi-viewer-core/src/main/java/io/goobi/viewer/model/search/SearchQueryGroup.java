@@ -60,13 +60,44 @@ public class SearchQueryGroup implements Serializable {
      * </p>
      *
      * @param locale a {@link java.util.Locale} object.
-     * @param initSize a int.
+     * @param fieldConfigs
      */
-    public SearchQueryGroup(Locale locale, int initSize) {
+    public SearchQueryGroup(Locale locale, List<AdvancedSearchFieldConfiguration> fieldConfigs) {
         this.locale = locale;
-        for (int i = 0; i < initSize; ++i) {
-            queryItems.add(new SearchQueryItem(locale));
+        init(fieldConfigs);
+    }
+
+    /**
+     * 
+     * @param fieldConfigs
+     * @should create and preselect visible fields
+     */
+    public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs) {
+        queryItems.clear();
+        operator = SearchQueryGroupOperator.AND;
+
+        SearchQueryItem firstItem = new SearchQueryItem(locale);
+        firstItem.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+        queryItems.add(firstItem);
+        if (fieldConfigs != null) {
+            for (AdvancedSearchFieldConfiguration fieldConfig : fieldConfigs) {
+                if (fieldConfig.isVisible()) {
+                    SearchQueryItem item = new SearchQueryItem(locale);
+                    item.setField(fieldConfig.getField());
+                    queryItems.add(item);
+                }
+            }
         }
+    }
+
+    /**
+     * Replaces query items in this group with the given list.
+     * 
+     * @param items
+     */
+    public void injectItems(List<SearchQueryItem> items) {
+        queryItems.clear();
+        queryItems.addAll(items);
     }
 
     /**

@@ -68,6 +68,7 @@ import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileResourceManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -1026,7 +1027,7 @@ public class NavigationHelper implements Serializable {
                 try {
                     calendarBean.resetYears();
                 } catch (PresentationException e) {
-                    logger.debug("PresentationException thrown here: {}", e.getMessage());
+                    logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
                 } catch (IndexUnreachableException e) {
                     logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 }
@@ -1046,27 +1047,6 @@ public class NavigationHelper implements Serializable {
         setCmsPage(false);
         setSubThemeDiscriminatorValue("");
     }
-
-    /**
-     * <p>
-     * isHtmlHeadDCMetadata.
-     * </p>
-     *
-     * @deprecated Use ConfigurationBean.isAddDublinCoreTags()
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isHtmlHeadDCMetadata() {
-        return DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags();
-    }
-
-    //    public String getOverviewUrl() {
-    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewOverview.getName();
-    //    }
-    //
-    //    public String getOverviewActiveUrl() {
-    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewOverview.getName();
-    //    }
 
     /**
      * <p>

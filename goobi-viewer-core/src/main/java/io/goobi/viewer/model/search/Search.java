@@ -275,12 +275,9 @@ public class Search implements Serializable {
      * @return
      * @throws IndexUnreachableException
      */
-    public String generateFinalSolrQuery(SearchFacets facets, SearchAggregationType aggregationType)
-            throws IndexUnreachableException {
+    public String generateFinalSolrQuery(SearchFacets facets, SearchAggregationType aggregationType) {
         String currentQuery = SearchHelper.prepareQuery(this.query);
-        String termQuery = null;
-
-        String q = SearchHelper.buildFinalQuery(currentQuery, termQuery, false, aggregationType);
+        String q = SearchHelper.buildFinalQuery(currentQuery, false, aggregationType);
 
         // Apply current facets
         String subElementQueryFilterSuffix = "";
@@ -302,18 +299,15 @@ public class Search implements Serializable {
      * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param hitsPerPage a int.
-     * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @param boostTopLevelDocstructs
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean boostTopLevelDocstructs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, locale, boostTopLevelDocstructs, false,
-                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        execute(facets, searchTerms, hitsPerPage, locale, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
     /**
@@ -324,17 +318,15 @@ public class Search implements Serializable {
      * @param facets a {@link io.goobi.viewer.model.search.SearchFacets} object.
      * @param searchTerms a {@link java.util.Map} object.
      * @param hitsPerPage a int.
-     * @param advancedSearchGroupOperator a int.
      * @param locale Selected locale
-     * @param boostTopLevelDocstructs
      * @param keepSolrDoc
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator, Locale locale,
-            boolean boostTopLevelDocstructs, boolean keepSolrDoc, SearchAggregationType aggregationType)
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale, boolean keepSolrDoc,
+            SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -352,15 +344,16 @@ public class Search implements Serializable {
         }
 
         String termQuery = null;
-        if (boostTopLevelDocstructs && searchTerms != null) {
+        if (searchTerms != null) {
             termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+            logger.trace("termQuery: {}", termQuery);
         }
 
         Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
         QueryResponse resp = null;
 
         // Apply current facets
-        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true, true);
+        List<String> activeFacetFilterQueries = facets.generateFacetFilterQueries(true);
         String subElementQueryFilterSuffix = facets.generateSubElementFacetFilterQuery();
         if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
             subElementQueryFilterSuffix = " +(" + subElementQueryFilterSuffix + ")";
@@ -373,13 +366,13 @@ public class Search implements Serializable {
         }
 
         String finalQuery =
-                SearchHelper.buildFinalQuery(currentQuery, termQuery, boostTopLevelDocstructs, aggregationType) + subElementQueryFilterSuffix;
+                SearchHelper.buildFinalQuery(currentQuery, true, aggregationType) + subElementQueryFilterSuffix;
         if (hitsCount == 0) {
             logger.debug("Final main query: {}", finalQuery);
 
             // Search without range facet queries to determine absolute slider range
             List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
-            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false, true);
+            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(false);
 
             // Add custom filter query
             if (StringUtils.isNotEmpty(customFilterQuery)) {
@@ -412,7 +405,7 @@ public class Search implements Serializable {
             // Extra search for child element facet values
             if (!facets.getConfiguredSubelementFacetFields().isEmpty()) {
                 String extraQuery =
-                        new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, null, false, SearchAggregationType.NO_AGGREGATION))
+                        new StringBuilder().append(SearchHelper.buildFinalQuery(currentQuery, false, SearchAggregationType.NO_AGGREGATION))
                                 .append(subElementQueryFilterSuffix)
                                 .toString();
                 logger.trace("extra query: {}", extraQuery);
@@ -421,7 +414,7 @@ public class Search implements Serializable {
                         .search(extraQuery, 0, 0, null, facets.getConfiguredSubelementFacetFields(), Collections.singletonList(SolrConstants.IDDOC),
                                 activeFacetFilterQueries, params);
                 if (resp != null && resp.getFacetFields() != null) {
-                    //                    logger.trace("hits: {}", resp.getResults().getNumFound());
+                    // logger.trace("hits: {}", resp.getResults().getNumFound());
                     for (FacetField facetField : resp.getFacetFields()) {
                         Map<String, Long> facetResult = new TreeMap<>();
                         for (Count count : facetField.getValues()) {
@@ -913,8 +906,34 @@ public class Search implements Serializable {
      * @param sortString the sortString to set
      */
     public void setSortString(String sortString) {
+        logger.trace("setSortString: {}", sortString);
         this.sortString = sortString;
         sortFields = SearchHelper.parseSortString(this.sortString, null);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public SearchSortingOption getSearchSortingOption() {
+        logger.trace("getSearchSortingOption");
+        if (sortFields != null && !sortFields.isEmpty()) {
+            logger.trace("getSearchSortingOption: {}", new SearchSortingOption(sortFields.get(0).getOne(), "asc".equals(sortFields.get(0).getTwo())));
+            return new SearchSortingOption(sortFields.get(0).getOne(), "asc".equals(sortFields.get(0).getTwo()));
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param option
+     */
+    public void setSearchSortingOption(SearchSortingOption option) {
+        logger.trace("setSearchSortingOption: {}", option);
+        if (option != null) {
+            setSortString((option.isDescending() ? "!" : "") + option.getField());
+        }
     }
 
     /**
@@ -1080,7 +1099,7 @@ public class Search implements Serializable {
      * @return the hits
      */
     public List<SearchHit> getHits() {
-        logger.trace("hits: {}", hits.size());
+        // logger.trace("hits: {}", hits.size());
         return hits;
     }
 

@@ -143,21 +143,16 @@ public class CMSSearchContent extends CMSContent {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
                 if (resetResults) {
-                    //TODO: perform searchBean.resetSearchFilter hre instead of in pretty-config. Needs testing
                     searchBean.resetSearchAction();
                     searchBean.setActiveSearchType(this.getSearchType());
                 }
                 if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
-                    searchBean.setShowReducedSearchOptions(true);
                     return searchAction();
                 } else if (this.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
                     String searchString = StringUtils.isNotBlank(this.search.getQueryString().replace("-", "")) ? this.search.getQueryString() : "";
                     searchBean.setExactSearchString(searchString);
-                    searchBean.setShowReducedSearchOptions(false);
                     return searchAction();
-                } else {
-                    searchBean.setShowReducedSearchOptions(false);
-                }
+                } 
             }
         } catch (ViewerConfigurationException | IndexUnreachableException | DAOException e) {
             throw new PresentationException("Error setting up search on page load", e);

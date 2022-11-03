@@ -22,7 +22,6 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Priority;
@@ -36,25 +35,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.text.StringTokenizer;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.AbsoluteScale;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.AccessConditionUtils;
 
 /**
  * <p>
@@ -108,8 +98,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      * @param request
      */
     public static void addThumbnailCompression(ContainerRequestContext request) {
-        Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
-        request.setProperty("param:compression", compression.toString());
+        request.setProperty("param:compression", "85");
     }
 
     /**
@@ -149,8 +138,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
      */
     private static void setRequestParameter(ContainerRequestContext request, boolean isThumb) {
         if (isThumb) {
-            Integer compression = DataManager.getInstance().getConfiguration().getThumbnailsCompression();
-            request.setProperty("param:compression", compression.toString());
+            request.setProperty("param:compression", "85");
         }
         Integer maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
         request.setProperty("param:maxWidth", maxWidth.toString());
@@ -164,6 +152,5 @@ public class ImageRequestFilter implements ContainerRequestFilter {
         }
 
     }
-
 
 }

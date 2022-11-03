@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,8 @@ import javax.inject.Named;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -47,8 +50,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.controller.BCrypt;
@@ -57,7 +58,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
@@ -117,8 +117,7 @@ public class AdminBean implements Serializable {
     /** New password confirmation */
     private String passwordTwo = "";
     private String emailConfirmation = "";
-    private boolean deleteUserContributions =
-            !EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
+    private boolean deleteUserContributions = false;
 
     private Role memberRole;
 
@@ -145,41 +144,40 @@ public class AdminBean implements Serializable {
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
-        {
-            lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
 
-                @Override
-                public List<User> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                    logger.trace("getEntries<User>, {}-{}", first, first + pageSize);
-                    try {
-                        if (StringUtils.isEmpty(sortField)) {
-                            sortField = "id";
-                        }
-                        return DataManager.getInstance().getDao().getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage());
+        lazyModelUsers = new TableDataProvider<>(new TableDataSource<User>() {
+
+            @Override
+            public List<User> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                logger.trace("getEntries<User>, {}-{}", first, first + pageSize);
+                try {
+                    if (StringUtils.isEmpty(sortField)) {
+                        sortField = "id";
                     }
-                    return Collections.emptyList();
+                    return DataManager.getInstance().getDao().getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage());
                 }
+                return Collections.emptyList();
+            }
 
-                @Override
-                public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    try {
-                        return DataManager.getInstance().getDao().getUserCount(filters);
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                        return 0;
-                    }
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                try {
+                    return DataManager.getInstance().getDao().getUserCount(filters);
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                    return 0;
                 }
+            }
 
-                @Override
-                public void resetTotalNumberOfRecords() {
-                    // 
-                }
-            });
-            lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelUsers.setFilters("firstName_lastName_nickName_email");
-        }
+            @Override
+            public void resetTotalNumberOfRecords() {
+                // 
+            }
+        });
+        lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        lazyModelUsers.setFilters("firstName_lastName_nickName_email");
     }
 
     // User
@@ -245,8 +243,8 @@ public class AdminBean implements Serializable {
 
         //first check if current user has the right to edit the given user
         User activeUser = BeanUtils.getUserBean().getUser();
-        if (user == null || (!activeUser.isSuperuser() && !activeUser.getId().equals(user.getId()))) {
-            Messages.error("errSave");
+        if (user == null || activeUser == null || (!activeUser.isSuperuser() && !activeUser.getId().equals(user.getId()))) {
+            Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
             return false;
         }
 
@@ -278,7 +276,7 @@ public class AdminBean implements Serializable {
             if (DataManager.getInstance().getDao().updateUser(user)) {
                 Messages.info("user_saveSuccess");
             } else {
-                Messages.error("errSave");
+                Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return false;
             }
         } else {
@@ -286,7 +284,7 @@ public class AdminBean implements Serializable {
             if (DataManager.getInstance().getDao().getUserByEmail(user.getEmail()) != null) {
                 // Do not allow the same email address being used for multiple users
                 Messages.error("newUserExist");
-                logger.debug("User account already exists for '" + user.getEmail() + "'.");
+                logger.debug("User account already exists for '{}'.", user.getEmail());
                 return false;
             }
             if (StringUtils.isEmpty(passwordOne) || StringUtils.isEmpty(passwordTwo)) {
@@ -305,13 +303,13 @@ public class AdminBean implements Serializable {
                 passwordOne = "";
                 passwordTwo = "";
             } else {
-                Messages.error("errSave");
+                Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return false;
             }
         }
 
         //update changes to current user in userBean
-        if (user != null && activeUser != null && activeUser.getId().equals(user.getId())) {
+        if (activeUser.getId().equals(user.getId())) {
             User newUser = DataManager.getInstance().getDao().getUser(activeUser.getId());
             newUser.backupFields();
             BeanUtils.getUserBean().setUser(newUser);
@@ -350,15 +348,9 @@ public class AdminBean implements Serializable {
         if (deleteContributions) {
             // Delete all public content created by this user
             UserTools.deleteUserPublicContributions(user);
-        } else if (EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress())) {
+        } else if (!UserTools.anonymizeUserPublicContributions(user)) {
             // Move all public content to an anonymous user
-            if (!UserTools.anonymizeUserPublicContributions(user)) {
-                Messages.error("deleteFailure");
-                return "";
-            }
-        } else {
-            logger.error("Anonymous user e-mail address not configured.");
-            Messages.error("deleteFailure");
+            Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
             return "";
         }
 
@@ -368,7 +360,7 @@ public class AdminBean implements Serializable {
             return "pretty:adminUsers";
         }
 
-        Messages.error("deleteFailure");
+        Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
         return "";
     }
 
@@ -410,16 +402,16 @@ public class AdminBean implements Serializable {
 
         if (getCurrentUserGroup().getId() != null) {
             if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
-                Messages.info("updatedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminGroupEdit";
             }
         } else {
             if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
-                Messages.info("addedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminGroupNew";
             }
         }
@@ -438,9 +430,9 @@ public class AdminBean implements Serializable {
      */
     public void deleteUserGroupAction(UserGroup userGroup) throws DAOException {
         if (DataManager.getInstance().getDao().deleteUserGroup(userGroup)) {
-            Messages.info("deletedSuccessfully");
+            Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
         } else {
-            Messages.error("deleteFailure");
+            Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
         }
     }
 
@@ -473,18 +465,17 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveRoleAction() throws DAOException {
-        // String name = getCurrentRole().getName();
         if (getCurrentRole().getId() != null) {
             if (DataManager.getInstance().getDao().updateRole(getCurrentRole())) {
-                Messages.info("updatedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             }
         } else {
             if (DataManager.getInstance().getDao().addRole(getCurrentRole())) {
-                Messages.info("addedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             }
         }
         setCurrentRole(null);
@@ -500,9 +491,9 @@ public class AdminBean implements Serializable {
      */
     public void deleteRoleAction(Role role) throws DAOException {
         if (DataManager.getInstance().getDao().deleteRole(role)) {
-            Messages.info("deletedSuccessfully");
+            Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
         } else {
-            Messages.error("deleteFailure");
+            Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
         }
     }
 
@@ -547,12 +538,12 @@ public class AdminBean implements Serializable {
         logger.trace("addUserRoleAction: {}", currentUserRole);
         if (currentUserRole == null) {
             logger.trace("currentUserRole not set");
-            Messages.info("errSave");
+            Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             return;
         }
         if (currentUserRole.getUser() == null) {
             logger.trace("currentUserRole: User not set");
-            Messages.info("errSave");
+            Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             return;
         }
 
@@ -598,9 +589,9 @@ public class AdminBean implements Serializable {
             //the userRoles don't match the keys of dirtyUserRoles after saving (dirtyUserRoles.get(userRole) returns null for the second entry),
             //so dirty status for each user role is matched by the user behind the userGroup
             Map<User, String> dirtyUsers = dirtyUserRoles.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getUser(), e -> e.getValue()));
-            for (User user : dirtyUsers.keySet()) {
-                String dirty = dirtyUsers.get(user);
-                UserRole userRole = dirtyUserRoles.keySet().stream().filter(r -> r.getUser().equals(user)).findFirst().orElse(null);
+            for (Entry<User, String> entry : dirtyUsers.entrySet()) {
+                String dirty = entry.getValue();
+                UserRole userRole = dirtyUserRoles.keySet().stream().filter(r -> r.getUser().equals(entry.getKey())).findFirst().orElse(null);
                 if (userRole == null) {
                     logger.warn("userRole not found");
                     return;
@@ -614,7 +605,7 @@ public class AdminBean implements Serializable {
                             logger.trace("adding new user group: {}", userRole.getUserGroup());
                             if (!DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup())) {
                                 logger.error("Could not save UserRole: {}", userRole);
-                                Messages.info("errSave");
+                                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                                 continue;
                             }
                         }
@@ -638,9 +629,9 @@ public class AdminBean implements Serializable {
                         logger.trace("Deleting UserRole: {}", userRole);
                         if (userRole.getId() != null) {
                             if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
-                                Messages.info("deletedSuccessfully");
+                                Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
                             } else {
-                                Messages.error("deleteFailure");
+                                Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
                             }
                         }
                         break;
@@ -673,19 +664,18 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveIpRangeAction() throws DAOException {
-        // String name = getCurrentIpRange().getName();
         if (getCurrentIpRange().getId() != null) {
             if (DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange())) {
-                Messages.info("updatedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminIpRangeEdit";
             }
         } else {
             if (DataManager.getInstance().getDao().addIpRange(getCurrentIpRange())) {
-                Messages.info("addedSuccessfully");
+                Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
-                Messages.info("errSave");
+                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminIpRangeNew";
             }
         }
@@ -704,9 +694,9 @@ public class AdminBean implements Serializable {
      */
     public void deleteIpRangeAction(IpRange ipRange) throws DAOException {
         if (DataManager.getInstance().getDao().deleteIpRange(ipRange)) {
-            Messages.info("deletedSuccessfully");
+            Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
         } else {
-            Messages.error("deleteFailure");
+            Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
         }
     }
 
@@ -1098,7 +1088,7 @@ public class AdminBean implements Serializable {
                             Attribute attrUse = eleFile.getAttribute("USE");
                             if (attrUse != null) {
                                 eleFile.removeAttribute(attrUse);
-                                logger.debug("Atribute 'USE' removed from '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
+                                logger.debug("Atribute 'USE' removed from '{}' file ID: {}", pi, eleFile.getAttributeValue("ID"));
                             }
                         } else {
                             Attribute attrUse = eleFile.getAttribute("USE");
@@ -1106,15 +1096,15 @@ public class AdminBean implements Serializable {
                                 // Add the USE='banner' attribute
                                 eleFile.setAttribute("USE", "banner");
                                 eleFile.removeAttribute(attrUse);
-                                logger.debug("Atribute 'USE=\"banner\"' set in '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
+                                logger.debug("Atribute 'USE=\"banner\"' set in '{}' file ID: {}", pi, eleFile.getAttributeValue("ID"));
                             } else {
                                 // If the correct image already has a USE attribute, make sure its value is 'banner'
                                 attrUse.setValue("banner");
-                                logger.debug("Atribute 'USE' already exists in '" + pi + "' file ID: " + eleFile.getAttributeValue("ID"));
+                                logger.debug("Atribute 'USE' already exists in '{}' file ID: {}", pi, eleFile.getAttributeValue("ID"));
                             }
                         }
                     } else {
-                        logger.warn("METS document for '" + pi + "' contains no file ID in some file group.");
+                        logger.warn("METS document for '{}' contains no file ID in some file group.", pi);
                     }
                 }
                 // Write altered file into hotfolder
@@ -1123,13 +1113,11 @@ public class AdminBean implements Serializable {
 
                 Messages.info("admin_recordReExported");
             } else {
-                logger.warn("METS document for '" + pi + "' contains no mets:file elements for file ID root: " + fileIdRoot);
+                logger.warn("METS document for '{}' contains no mets:file elements for file ID root: {}", pi, fileIdRoot);
             }
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (JDOMException e) {
+        } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
     }

@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -39,7 +38,6 @@ import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -66,12 +64,10 @@ public class RSSResource {
             @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
             @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets,
-            @Parameter(description = "Facet query operator. '0' (default) means that facet queries are chained using logical 'AND', '1' means that they are chained using logical 'OR' (optional)" )
-            @QueryParam("facetQueryOperator") Integer facetQueryOperator,
             @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)" )@QueryParam("sortField") String sortField,
             @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)" )@QueryParam("sortDescending") Boolean sortDescending) throws ContentLibException {
 
-        return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest, sortField, sortDescending == null ? true : sortDescending);
+        return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, servletRequest, sortField, sortDescending == null || sortDescending);
     }
 
 
@@ -87,12 +83,10 @@ public class RSSResource {
             @Parameter(description = "Limit for results to return (optional)") @QueryParam("max") Integer maxHits,
             @Parameter(description = "Search query to filter results (optional)") @QueryParam("query") String query,
             @Parameter(description = "Facet query. Several queries may be entered as ';;' separated list (optional)" )@QueryParam("facets") String facets,
-            @Parameter(description = "Facet query operator. '0' (default) means that facet queries are chained using logical 'AND', '1' means that they are chained using logical 'OR' (optional)" )
-            @QueryParam("facetQueryOperator") Integer facetQueryOperator,
             @Parameter(description = "The solr field to sort the results by. Default is 'DATECERATED' (optional)" )@QueryParam("sortField") String sortField,
             @Parameter(description = "Set to 'false' to sort entries in ascending order. Default is 'true' (optional)" )@QueryParam("sortDescending") Boolean sortDescending) throws ContentLibException {
 
-        return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, facetQueryOperator, servletRequest, sortField, sortDescending == null ? true : sortDescending);
+        return RSSFeed.createRssResponse(language, maxHits, subtheme, query, facets, servletRequest, sortField, sortDescending == null || sortDescending);
     }
 
 }

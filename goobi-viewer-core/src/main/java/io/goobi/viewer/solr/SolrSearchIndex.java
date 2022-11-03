@@ -326,6 +326,14 @@ public class SolrSearchIndex {
         }
     }
 
+    /**
+     * 
+     * @param query
+     * @param accuracy
+     * @param build
+     * @return
+     * @throws IndexUnreachableException
+     */
     public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.set(CommonParams.QT, "/spell");
@@ -405,7 +413,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * Diese Methode führt eine Suche im Lucene durch.
+     * 
      *
      * @param query a {@link java.lang.String} object.
      * @return {@link Hits}

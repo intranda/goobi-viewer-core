@@ -26,7 +26,6 @@ package io.goobi.viewer.model.search;
  */
 public class AdvancedSearchFieldConfiguration {
 
-
     public static final int DEFAULT_THRESHOLD = 10;
 
     private final String field;
@@ -35,6 +34,7 @@ public class AdvancedSearchFieldConfiguration {
     private boolean range;
     private boolean untokenizeForPhraseSearch;
     private boolean disabled;
+    private boolean visible = false;
     private int displaySelectItemsThreshold = DEFAULT_THRESHOLD;
 
     /**
@@ -133,6 +133,22 @@ public class AdvancedSearchFieldConfiguration {
      */
     public AdvancedSearchFieldConfiguration setDisabled(boolean disabled) {
         this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * @return the visible
+     */
+    public boolean isVisible() {
+        return visible;
+    }
+
+    /**
+     * @param visible the visible to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setVisible(boolean visible) {
+        this.visible = visible;
         return this;
     }
 

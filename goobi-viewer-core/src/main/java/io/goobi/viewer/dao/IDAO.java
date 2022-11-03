@@ -108,7 +108,7 @@ public interface IDAO {
      * @return a boolean.
      * @throws java.sql.SQLException if any.
      */
-    boolean columnsExists( String tableName, String columnName) throws DAOException, SQLException;
+    boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
 
     // User
 
@@ -712,6 +712,14 @@ public interface IDAO {
     public List<LicenseType> getLicenseTypes(List<String> names) throws DAOException;
 
     /**
+     * 
+     * @param licenseType
+     * @return
+     * @throws DAOException
+     */
+    public List<LicenseType> getOverridingLicenseType(LicenseType licenseType) throws DAOException;
+
+    /**
      * <p>
      * addLicenseType.
      * </p>
@@ -783,9 +791,9 @@ public interface IDAO {
      * @throws DAOException
      */
     public long getLicenseCount(LicenseType licenseType) throws DAOException;
-    
+
     // DownloadTicket
-    
+
     /**
      * 
      * @param id
@@ -793,7 +801,7 @@ public interface IDAO {
      * @throws DAOException
      */
     public DownloadTicket getDownloadTicket(Long id) throws DAOException;
-    
+
     /**
      * 
      * @param passwordHash
@@ -801,7 +809,7 @@ public interface IDAO {
      * @throws DAOException
      */
     public DownloadTicket getDownloadTicketByPasswordHash(String passwordHash) throws DAOException;
-    
+
     /**
      * <p>
      * getActiveDownloadTicketCount.
@@ -812,7 +820,7 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public long getActiveDownloadTicketCount(Map<String, String> filters) throws DAOException;
-    
+
     /**
      * <p>
      * getActiveDownloadTickets.
@@ -826,15 +834,16 @@ public interface IDAO {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
-    
+    public List<DownloadTicket> getActiveDownloadTickets(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+
     /**
      * 
      * @return
      * @throws DAOException
      */
     public List<DownloadTicket> getDownloadTicketRequests() throws DAOException;
-    
+
     /**
      * <p>
      * addDownloadTicket.
@@ -2562,29 +2571,28 @@ public interface IDAO {
 
     public int executeUpdate(String string) throws DAOException;
 
-    
     public List<ClientApplication> getAllClientApplications() throws DAOException;
-    
+
     public ClientApplication getClientApplication(long id) throws DAOException;
-    
+
     public boolean saveClientApplication(ClientApplication client) throws DAOException;
-    
+
     public boolean deleteClientApplication(long id) throws DAOException;
 
     public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException;
-    
+
     public List<DailySessionUsageStatistics> getAllUsageStatistics() throws DAOException;
-    
-    public DailySessionUsageStatistics getUsageStatistics(LocalDate date)  throws DAOException; 
-    
+
+    public DailySessionUsageStatistics getUsageStatistics(LocalDate date) throws DAOException;
+
     public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException;
-    
+
     public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
-    
+
     public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
-    
+
     public boolean deleteUsageStatistics(long id) throws DAOException;
-    
+
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *
@@ -2651,8 +2659,5 @@ public interface IDAO {
     void handleException(EntityManager em);
 
     boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
-
-
-
 
 }
