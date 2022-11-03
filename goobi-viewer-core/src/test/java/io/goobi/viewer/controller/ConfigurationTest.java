@@ -2692,16 +2692,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getConnectorVersionUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getConnectorVersionUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("http://localhost:8081/M2M/oai/tools?action=getVersion",
-                DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
-    }
-
-    /**
      * @see Configuration#isDisplaySidebarBrowsingTerms()
      * @verifies return correct value
      */
