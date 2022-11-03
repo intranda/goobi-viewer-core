@@ -47,7 +47,7 @@
 	                     src="//#{configurationBean.piwikBaseURL}/index.php?module=CoreAdminHome&amp;action=optOut&amp;language=#{navigationHelper.localeString}"></iframe>	
 				    </ui:fragment>
 				    
-					<ui:fragment rendered="#{cmsPage.hasContent('text02')}">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('text02')}">
 						<div class="tpl-privacy__text-bottom">
 								<h:outputText escape="false" value="#{cmsPage.getContent('text02')}"></h:outputText>
 						</div>

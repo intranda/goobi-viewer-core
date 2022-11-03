@@ -49,7 +49,7 @@
                 </h:panelGroup>
 				
 				<!-- NEWS DETAIL CONTENT 1 -->
-				<h:panelGroup rendered="#{cmsPage.hasContent('A2')}">
+				<h:panelGroup rendered="#{cc.attrs.component.hasContent('A2')}">
 					<div class="tpl-news-detail__content">
 						<h1>#{cmsPage.getContent('A1')}</h1>
 						
@@ -58,7 +58,7 @@
 								<!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" />
+			                            <img title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image01')}
 			                            </figcaption>
@@ -76,7 +76,7 @@
 				</h:panelGroup>
                 
                 <!-- NEWS DETAIL CONTENT 2 -->
-                <h:panelGroup rendered="#{cmsPage.hasContent('B2')}">
+                <h:panelGroup rendered="#{cc.attrs.component.hasContent('B2')}">
 	                <div class="tpl-news-detail__content">
 	                    <h1>#{cmsPage.getContent('B1')}</h1>
 						
@@ -85,7 +85,7 @@
 								<!-- IMAGE -->
 								<h:panelGroup rendered="#{cmsPage.getContent('image02') != ''}">
 									<figure class="tpl-news-detail__image">
-										<img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cmsPage.getMedia('image02').alternativeText}" />
+										<img title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}" src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image02').content.mediaItem.alternativeText}" />
 										<figcaption>#{cmsPage.getMediaDescription('image02')}</figcaption>
 									</figure>
 								</h:panelGroup>
@@ -101,7 +101,7 @@
                 </h:panelGroup>
                 
                 <!-- NEWS DETAIL CONTENT 3 -->
-                <h:panelGroup rendered="#{cmsPage.hasContent('C2')}">
+                <h:panelGroup rendered="#{cc.attrs.component.hasContent('C2')}">
 	                <div class="tpl-news-detail__content">
 	                    <h1>#{cmsPage.getContent('C1')}</h1>
 	                    
@@ -110,7 +110,7 @@
 			                    <!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image03') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cmsPage.getMedia('image03').alternativeText}" />
+			                            <img title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}" src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image03').content.mediaItem.alternativeText}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image03')}
 			                            </figcaption>
@@ -128,7 +128,7 @@
                 </h:panelGroup>
                 
                 <!-- NEWS DETAIL CONTENT 4 -->
-                <h:panelGroup rendered="#{cmsPage.hasContent('D2')}">
+                <h:panelGroup rendered="#{cc.attrs.component.hasContent('D2')}">
 	                <div class="tpl-news-detail__content">
 	                    <h1>#{cmsPage.getContent('D1')}</h1>
 	                    
@@ -137,7 +137,7 @@
 			                    <!-- IMAGE -->
 			                    <h:panelGroup rendered="#{cmsPage.getContent('image04') != ''}">
 			                        <figure class="tpl-news-detail__image">
-			                            <img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cmsPage.getMedia('image04').alternativeText}" />
+			                            <img title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}" src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image04').content.mediaItem.alternativeText}" />
 			                            <figcaption>
 			                                #{cmsPage.getMediaDescription('image04')}
 			                            </figcaption>

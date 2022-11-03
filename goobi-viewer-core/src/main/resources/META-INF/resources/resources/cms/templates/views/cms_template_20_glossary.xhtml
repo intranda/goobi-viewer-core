@@ -46,7 +46,7 @@
                 <!-- GLOSSARY -->
                 <div class="tpl-glossary__glossary">
                     <dl>
-                        <ui:repeat var="record" varStatus="counter" value="#{cmsPage.getContentItem('glossary').glossary.records}">
+                        <ui:repeat var="record" varStatus="counter" value="#{cc.attrs.component.getContentItem('glossary').content.glossary.records}">
                             <dt>
                                 <!-- TITLE -->
                                 <ui:fragment rendered="#{record.title != ''}">

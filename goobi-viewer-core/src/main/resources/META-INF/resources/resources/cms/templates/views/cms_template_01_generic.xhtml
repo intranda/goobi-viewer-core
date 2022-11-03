@@ -44,13 +44,13 @@
 				<!-- GENERIC CONTENT 1 -->
 				<div class="tpl-generic__content clearfix">
 					<!-- MEDIA -->
-					<ui:fragment rendered="#{cmsPage.hasContent('image01')}">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('image01')}">
 	                    <figure class="tpl-generic__media">
-	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cmsPage.getContentItem('image01').mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" title="#{cmsPage.getMediaName('image01')}" />
+	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
+		    					<img src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" />
 	                    	</ui:fragment>
-	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cmsPage.getContentItem('image01').mediaItem)}">
-		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cmsPage.getMediaName('image01')}">
+	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
+		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}">
 		    						<source src="#{cmsPage.getContent('image01')}"/>
 		    					</video>
 	                    	</ui:fragment>
@@ -69,13 +69,13 @@
 				<!-- GENERIC CONTENT 2 -->
 				<div class="tpl-generic__content clearfix">
 					<!-- MEDIA -->
-					<ui:fragment rendered="#{cmsPage.hasContent('image02')}">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('image02')}">
 	                    <figure class="tpl-generic__media">
-	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cmsPage.getContentItem('image02').mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cmsPage.getMedia('image02').alternativeText}" title="#{cmsPage.getMediaName('image02')}" />
+	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image02').content.mediaItem)}">
+		    					<img src="#{cmsPage.getContent('image02')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image02').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}" />
 	                    	</ui:fragment>
-	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cmsPage.getContentItem('image02').mediaItem)}">
-		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cmsPage.getMediaName('image02')}">
+	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image02').content.mediaItem)}">
+		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}">
 		    						<source src="#{cmsPage.getContent('image02')}"/>
 		    					</video>
 	                    	</ui:fragment>
@@ -94,13 +94,13 @@
 				<!-- GENERIC CONTENT 3 -->
 				<div class="tpl-generic__content clearfix">
 					<!-- MEDIA -->
-					<ui:fragment rendered="#{cmsPage.hasContent('image03')}">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('image03')}">
 	                    <figure class="tpl-generic__media">
-	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cmsPage.getContentItem('image03').mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cmsPage.getMedia('image03').alternativeText}" title="#{cmsPage.getMediaName('image03')}" />
+	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image03').content.mediaItem)}">
+		    					<img src="#{cmsPage.getContent('image03')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image03').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}" />
 	                    	</ui:fragment>
-	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cmsPage.getContentItem('image03').mediaItem)}">
-		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cmsPage.getMediaName('image03')}">
+	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image03').content.mediaItem)}">
+		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}">
 		    						<source src="#{cmsPage.getContent('image03')}"/>
 		    					</video>
 	                    	</ui:fragment>
@@ -119,13 +119,13 @@
 				<!-- GENERIC CONTENT 4 -->
 				<div class="tpl-generic__content clearfix">
 					<!-- MEDIA -->
-					<ui:fragment rendered="#{cmsPage.hasContent('image04')}">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('image04')}">
 	                    <figure class="tpl-generic__media">
-	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cmsPage.getContentItem('image04').mediaItem)}">
-		    					<img src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cmsPage.getMedia('image04').alternativeText}" title="#{cmsPage.getMediaName('image04')}" />
+	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image04').content.mediaItem)}">
+		    					<img src="#{cmsPage.getContent('image04')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image04').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}" />
 	                    	</ui:fragment>
-	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cmsPage.getContentItem('image04').mediaItem)}">
-		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cmsPage.getMediaName('image04')}">
+	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image04').content.mediaItem)}">
+		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}">
 		    						<source src="#{cmsPage.getContent('image04')}"/>
 		    					</video>
 	                    	</ui:fragment>
