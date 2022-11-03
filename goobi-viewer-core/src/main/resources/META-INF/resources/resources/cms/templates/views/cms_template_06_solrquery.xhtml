@@ -48,7 +48,7 @@
 				<h:panelGroup rendered="#{cmsBean.hasSearchResults()}">
 	                <div class="solr-query-collection">
 	                    	                    
-	                    <ui:fragment rendered="#{!cmsPage.getContentItem('queryList01').isGroupBySelected()}">
+	                    <ui:fragment rendered="#{!cc.attrs.component.getContentItem('queryList01').content.isGroupBySelected()}">
 		                    <div class="solr-query-collection__thumbs">
 		                        <div class="row">
 		                            <ui:repeat var="hit" value="#{cmsBean.queryResults}">
@@ -75,9 +75,9 @@
 		                    </div>
 	                    </ui:fragment>
 	                    
-	                    <ui:fragment rendered="#{cmsPage.getContentItem('queryList01').isGroupBySelected()}">
+	                    <ui:fragment rendered="#{cc.attrs.component.getContentItem('queryList01').content.isGroupBySelected()}">
 	                    
-		                	<ui:repeat var="hitSet" value="#{cmsBean.getGroupedQueryResults(cmsBean.queryResults, cmsPage.getContentItem('queryList01').groupBy)}">
+		                	<ui:repeat var="hitSet" value="#{cmsBean.getGroupedQueryResults(cmsBean.queryResults, cc.attrs.component.getContentItem('queryList01').content.groupBy)}">
 	                    		<div class="solr-query-collection__thumbs">
 			                        <h1 >#{msg[hitSet.key]}</h1>
 			                        <div class="row">

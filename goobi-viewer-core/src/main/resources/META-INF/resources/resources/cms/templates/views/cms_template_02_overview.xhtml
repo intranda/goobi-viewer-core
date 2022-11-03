@@ -44,7 +44,7 @@
                     <!-- IMAGE -->
                     <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
                         <figure class="tpl-news-overview__image">
-                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" />
+                            <img title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" />
                             <figcaption>
                                 #{cmsPage.getMediaDescription('image01')}
                             </figcaption>
@@ -60,7 +60,7 @@
                 <!-- OVERVIEW LIST -->
                 <div class="tpl-news-overview__list">
                     <div class="row">
-                        <c:forEach var="subPage" items="#{cmsPage.getContentItem('list01').nestedPages}">
+                        <c:forEach var="subPage" items="#{cc.attrs.component.getContentItem('list01').content.nestedPages}">
                             <div class="tpl-news-overview__list-item clearfix">
                                 <!-- IMAGE -->
                                 <div class="col-12 col-sm-4">
@@ -93,7 +93,7 @@
                         </c:forEach>
                         <!-- PAGINATOR -->
 						<viewerComponent:simplePaginator 
-							itemCount="#{cmsPage.getContentItem('list01').nestedPagesCount}" 
+							itemCount="#{cc.attrs.component.getContentItem('list01').content.nestedPagesCount}" 
 							itemActive="#{cmsPage.listPage}"
 							urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
                     </div>

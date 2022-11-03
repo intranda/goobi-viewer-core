@@ -39,14 +39,14 @@
 				<h1 >#{cmsPage.title}</h1>				
 				
 				<!-- DATE -->
-                <h:panelGroup rendered="#{cmsPage.hasContent('A0')}">
+                <h:panelGroup rendered="#{cc.attrs.component.hasContent('A0')}">
                     <div class="tpl-news-detail__date">
     					<h:outputText value="#{cmsPage.getContent('A0')}" />
                     </div>
                 </h:panelGroup>
 				
 				<div class="tpl-news__content">
-				<h:panelGroup rendered="#{cmsPage.hasContent('A1')}">
+				<h:panelGroup rendered="#{cc.attrs.component.hasContent('A1')}">
 					<h1 >#{cmsPage.getContent('A1')}</h1>
 				</h:panelGroup>
 					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>

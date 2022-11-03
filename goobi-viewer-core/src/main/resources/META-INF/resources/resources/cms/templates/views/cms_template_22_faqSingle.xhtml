@@ -39,23 +39,23 @@
 				<h1 class="tpl-faq-single__title">#{cmsPage.title}</h1>
                 <div class="tpl-faq-single__content">
 					
-					<ui:fragment rendered="#{cmsPage.hasContent('text')}">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('text')}">
 						<div class="tpl-faq-single__text">
 						<h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
 		                </div>
 	                </ui:fragment>
                     <!-- IMAGE -->
-                    <ui:fragment rendered="#{cmsPage.hasContent('image')}">
+                    <ui:fragment rendered="#{cc.attrs.component.hasContent('image')}">
 	                    <div class="tpl-faq-single__image" >
 	                        <figure class="tpl-faq-single__image">
-	                            <img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMedia('image').alternativeText}" />
+	                            <img title="#{cc.attrs.component.getContentItem('image').content.mediaItem.name}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cc.attrs.component.getContentItem('image').content.mediaItem.alternativeText}" />
 	                            <figcaption>
 	                                #{cmsPage.getMediaDescription('image')}
 	                            </figcaption>
 	                        </figure>
 						</div>
 					</ui:fragment>
-					<ui:fragment rendered="#{cmsPage.hasContent('text2')}">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('text2')}">
 						<div class="tpl-faq-single__text">
 						<h:outputText escape="false" value="#{cmsPage.getContent('text2')}"></h:outputText>
 						</div>

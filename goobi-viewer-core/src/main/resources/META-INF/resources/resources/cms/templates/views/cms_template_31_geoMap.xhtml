@@ -37,14 +37,14 @@
 
 				<h1 >#{cmsPage.title}</h1>                
 				
-				<ui:fragment rendered="#{cmsPage.hasContent('text01')}">
+				<ui:fragment rendered="#{cc.attrs.component.hasContent('text01')}">
                     <div class="tpl-geomap__text">
     					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
     				</div>
                 </ui:fragment>
 				
-				<ui:fragment rendered="#{cmsPage.hasContent('geomap')}">
-					<viewerComponent:geoMap geoMap="#{cmsPage.getContentItem('geomap').geoMap}">
+				<ui:fragment rendered="#{cc.attrs.component.hasContent('geomap')}">
+					<viewerComponent:geoMap geoMap="#{cc.attrs.component.getContentItem('geomap').content.geoMap}">
 					</viewerComponent:geoMap>
                 </ui:fragment>
                 

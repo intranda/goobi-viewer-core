@@ -37,7 +37,7 @@ import jakarta.persistence.Table;
 @Table(name = "cms_content_rss")
 public class CMSRSSContent extends CMSContent {
 
-    private static final String COMPONENT_NAME = "rss";
+    private static final String COMPONENT_NAME = "rssfeed";
     
     @Column(name="items_per_view")
     private int itemsPerView = 10;

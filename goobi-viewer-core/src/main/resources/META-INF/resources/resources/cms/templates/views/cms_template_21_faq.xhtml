@@ -39,7 +39,7 @@
 				<h1 >#{cmsBean.getPage(cmsPage).title}</h1>                
                 
                 <!-- FAQ DESCRIPTION -->
-                <ui:fragment rendered="#{cmsPage.hasContent('description')}">
+                <ui:fragment rendered="#{cc.attrs.component.hasContent('description')}">
                     <div class="tpl-faq__description">
                         <h:outputText escape="false" value="#{cmsPage.getContent('description')}"></h:outputText>
                     </div>
@@ -50,7 +50,7 @@
 					<ui:fragment rendered="#{!cmsPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').booleanValue}">
                         <div class="accordion tpl-faq__list" id="faqAccordion" role="tablist" aria-multiselectable="true">
     						<!-- FAQ ITEMS -->
-    						<c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').nestedPages}" varStatus="status">
+    						<c:forEach var="faqItem" items="#{cc.attrs.component.getContentItem('faqList').content.nestedPages}" varStatus="status">
                                 <div class="card" id="card-#{faqItem.id}">
     								<div class="card-header" role="tab" id="heading-#{faqItem.id}">
     									<h2 class="card-title">
@@ -114,12 +114,12 @@
 
                     <ui:fragment rendered="#{cmsPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').booleanValue}">
                             <!-- CLASSIFICATIONS -->
-                            <c:forEach var="category" items="#{cmsPage.getContentItem('faqList').sortedCategories}" varStatus="classification_status">
+                            <c:forEach var="category" items="#{cc.attrs.component.getContentItem('faqList').content.sortedCategories}" varStatus="classification_status">
                                 <h1 class="tpl-faq__subheader">#{msg[category]}</h1>
 		                        <div class="accordion tpl-faq__list" id="faqAccordion" role="tablist" aria-multiselectable="true">
                                 
 	                                <!-- FAQ ITEMS -->
-	                                <c:forEach var="faqItem" items="#{cmsPage.getContentItem('faqList').getNestedPages(category)}" varStatus="status">
+	                                <c:forEach var="faqItem" items="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(category)}" varStatus="status">
 	                                    <div class="card" id="card-#{faqItem.id}-#{category.id}">
 	                                        <div class="card-header" role="tab" id="heading-#{faqItem.id}-#{category.id}">
 	                                            <h2 class="card-title">
@@ -180,10 +180,10 @@
                             </c:forEach>
                     </ui:fragment>
 
-					<ui:fragment rendered="#{cmsPage.getContentItem('faqList').paginated}">
+					<ui:fragment rendered="#{cc.attrs.component.getContentItem('faqList').content.paginated}">
                     <!-- PAGINATOR -->
 						<viewerComponent:simplePaginator 
-							itemCount="#{cmsPage.getContentItem('faqList').nestedPagesCount}" 
+							itemCount="#{cc.attrs.component.getContentItem('faqList').content.nestedPagesCount}" 
 							itemActive="#{cmsPage.listPage}"
 							urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
 					</ui:fragment>
