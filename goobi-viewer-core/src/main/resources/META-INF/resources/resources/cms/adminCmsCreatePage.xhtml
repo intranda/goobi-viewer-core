@@ -36,6 +36,9 @@
 		                    <ui:fragment rendered="#{!cmsBean.editMode and page.template.isPresent()}">
 		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.get().name]}
 		                    </ui:fragment>
+		                    <ui:fragment rendered="#{!cmsBean.editMode and page.template.isEmpty()}">
+		                    #{msg.cms_createPage}
+		                    </ui:fragment>
 	                    </h1>
 	                    <!-- EXIT -->
                         <a 
@@ -62,15 +65,25 @@
                                         <div>
                                             <!-- NAV TABS -->
                                             <ul class="nav nav-tabs">
-                                                <c:forEach var="locale" items="#{page.getLocales()}">
-                                                    <li class="#{cmsBean.pageEditState == 'CONTENT' and page.selectedLocale == locale ? 'active':''}">
-                                                        <h:commandLink role="button" value="#{locale}"  immediate="false" 
-                                                        action="#{page.setSelectedLocale(locale)}"
-                                                        actionListener="#{cmsBean.setPageEditState('CONTENT')}" />
-                                                    </li>
-                                                </c:forEach>
+                                                <ui:repeat var="locale" value="#{page.getLocales()}">
+													<li role="tab"
+														class="admin__language-tab
+															#{page.isSelected(locale) and cmsBean.pageEditState == 'CONTENT' ? 'active':''}
+															#{page.isEmpty(locale) ? '' : (page.isComplete(locale) ? '-already-translated' : '-partly-translated')}
+															#{page.isDefaultLocaleSelected() ? '-default-language':''}">
+														<h:commandLink
+															role="button"
+															value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
+															action="#{page.setSelectedLocale(locale)}"
+															actionListener="#{cmsBean.setPageEditState('CONTENT')}">
+															<f:ajax render="@form" execute="@form"></f:ajax>
+														</h:commandLink>
+													</li>
+												</ui:repeat>
                                                 <li class="#{cmsBean.pageEditState == 'SIDEBAR' ? 'active':''} nav-tabs__sidebar-button">
-                                                    <h:commandLink role="button" value="#{msg.cms_pageSidebar}" action="#{cmsBean.setPageEditState('SIDEBAR')}" />
+                                                    <h:commandLink role="button" value="#{msg.cms_pageSidebar}" action="#{cmsBean.setPageEditState('SIDEBAR')}">
+                                                    	<f:ajax render="@form" execute="@form"></f:ajax>
+                                                    </h:commandLink>
                                                 </li>
                                             </ul>
 
@@ -148,7 +161,7 @@
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
 															<!-- CONTENT COMPONENTS ON THIS PAGE -->
-															<h:commandScript name="refreshComponents" render="pageComponents"></h:commandScript>
+															<h:commandScript name="refreshComponents" execute="pageComponents" render="pageComponents"></h:commandScript>
 															
 															<h:panelGroup layout="block" id="pageComponents" class="page-component-list admin__content-components-wrapper" >
 																
