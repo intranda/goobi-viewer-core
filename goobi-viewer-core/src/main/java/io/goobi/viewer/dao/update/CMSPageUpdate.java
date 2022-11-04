@@ -250,7 +250,7 @@ public class CMSPageUpdate implements IModelUpdate {
         Map<String, Map<String, Object>> topbarSliderItems = getContentItemsOfItemId(pageLanguageVersions, contentItemMap, "topbar_slider");
         if (!topbarSliderItems.isEmpty()) {
             Map<String, Object> sliderItem = topbarSliderItems.values().iterator().next();
-            Long sliderId = (Long) sliderItem.get("cms_content_item_id");
+            Long sliderId = (Long) sliderItem.get("slider_id");
             return sliderId;
         } else {
             return null;
