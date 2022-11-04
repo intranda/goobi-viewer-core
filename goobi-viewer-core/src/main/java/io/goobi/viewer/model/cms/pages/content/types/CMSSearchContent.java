@@ -42,6 +42,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -187,5 +188,10 @@ public class CMSSearchContent extends CMSContent {
      */
     public Functionality getFunctionality() {
         return getSearch();
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return false;
     }
 }

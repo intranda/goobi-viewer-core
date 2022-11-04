@@ -88,4 +88,10 @@ public class CMSGeomapContent extends CMSContent {
     public String getData(Integer w, Integer h) {
         return "";
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return this.map == null;
+    }
 }
+

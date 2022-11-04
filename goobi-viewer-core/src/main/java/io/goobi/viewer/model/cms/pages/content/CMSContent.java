@@ -129,6 +129,8 @@ public abstract class CMSContent {
      */
     public abstract String handlePageLoad(boolean resetResults) throws PresentationException;
     
+    public abstract boolean isEmpty();
+    
     boolean isTranslatable() {
         return this instanceof TranslatableCMSContent;
     }

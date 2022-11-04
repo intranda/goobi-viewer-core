@@ -255,5 +255,10 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
             return "";
         }
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return Optional.ofNullable(mediaItem).map(media -> StringUtils.isBlank(media.getFileName())).orElse(true);
+    }
 
 }

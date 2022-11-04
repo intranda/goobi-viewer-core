@@ -25,10 +25,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -101,5 +103,10 @@ public class CMSRSSContent extends CMSContent {
      */
     public int getElementsPerPage() {
         return getItemsPerView();
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return false;
     }
 }

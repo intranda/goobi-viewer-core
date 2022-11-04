@@ -140,4 +140,9 @@ public class CMSBrowseContent extends CMSContent {
         return getBrowse();
     }
 
+    @Override
+    public boolean isEmpty() {
+        return StringUtils.isBlank(solrField);
+    }
+
 }

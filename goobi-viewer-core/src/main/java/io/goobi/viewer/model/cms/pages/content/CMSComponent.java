@@ -208,7 +208,6 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     public UIComponent getBackendUiComponent() throws PresentationException {
         if(this.backendUiComponent == null) {
-            DynamicContentBuilder builder = new DynamicContentBuilder();
             String id = FilenameUtils.getBaseName("component_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.backendUiComponent = new HtmlPanelGroup();
             this.backendUiComponent.setId(id);

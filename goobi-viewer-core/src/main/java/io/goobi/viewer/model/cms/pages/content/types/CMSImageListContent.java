@@ -216,5 +216,10 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     public String getData(Integer w, Integer h) {
         return "";
     }
+    
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
 }

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -158,6 +159,11 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
     @Override
     public String getData(Integer w, Integer h) {
         return getText().getTextOrDefault();
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return Optional.ofNullable(text).map(TranslatedText::isEmpty).orElse(true);
     }
 
 }

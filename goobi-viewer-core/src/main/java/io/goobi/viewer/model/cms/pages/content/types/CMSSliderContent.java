@@ -27,10 +27,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -75,6 +78,10 @@ public class CMSSliderContent extends CMSContent {
         return Optional.ofNullable(this.slider).map(CMSSlider::getId).orElse(null);
     }
     
+    public void setSliderId(Long id) throws DAOException {
+        setSlider(DataManager.getInstance().getDao().getSlider(id));
+    }
+    
     @Override
     public CMSContent copy() {
         return new CMSSliderContent(this);
@@ -93,5 +100,10 @@ public class CMSSliderContent extends CMSContent {
     @Override
     public String getData(Integer w, Integer h) {
         return "";
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return slider == null;
     }
 }

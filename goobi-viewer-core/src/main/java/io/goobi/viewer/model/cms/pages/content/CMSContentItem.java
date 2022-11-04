@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.pages.content;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
@@ -156,7 +157,7 @@ public class CMSContentItem {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             String id = FilenameUtils.getBaseName("content_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.uiComponent = new HtmlPanelGroup();
-            this.uiComponent.setId(id);
+//            this.uiComponent.setId(id);
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
             this.uiComponent.getChildren().add(wrapper);
             if(StringUtils.isBlank(this.getJsfComponent().getFilename())) {
@@ -183,19 +184,7 @@ public class CMSContentItem {
      * @return true if no database entry exists or if it doesn't contain data which can be presented
      */
     public boolean isEmpty() {
-        if(this.content != null) {
-            if(this.content instanceof TranslatableCMSContent) {
-                TranslatedText text = ((TranslatableCMSContent) this.content).getText();
-                return text == null || text.isEmpty();
-            } else if(this.content instanceof CMSMediaHolder) {
-                CMSMediaItem media = ((CMSMediaHolder) this.content).getMediaItem();
-                return media == null || StringUtils.isBlank(media.getFileName());
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
+        return Optional.ofNullable(this.content).map(CMSContent::isEmpty).orElse(true);
     }
 
 }

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -85,8 +86,12 @@ public class CMSGlossaryContent extends CMSContent {
      * @throws org.json.JSONException if any.
      */
     public Glossary getGlossary() throws ContentNotFoundException, IOException, JSONException {
-        Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
-        return g;
+        try {            
+            return new GlossaryManager().getGlossary(getGlossaryName());
+        } catch(ContentNotFoundException | IOException | JSONException e) {
+            logger.error("Error loading glossary {}. Reason: {}", this.glossaryName, e.toString());
+            return null;
+        }
     }
 
     
@@ -114,5 +119,10 @@ public class CMSGlossaryContent extends CMSContent {
             return "";
         }
 
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return StringUtils.isEmpty(glossaryName);
     }
 }

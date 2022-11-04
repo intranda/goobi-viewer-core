@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -104,6 +106,11 @@ public class CMSMetadataContent extends CMSContent {
     @Override
     public String getData(Integer w, Integer h) {
         return "";
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return StringUtils.isBlank(metadataFields);
     }
 
 }

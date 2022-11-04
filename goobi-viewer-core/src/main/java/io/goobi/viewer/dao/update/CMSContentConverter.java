@@ -178,7 +178,7 @@ public class CMSContentConverter {
         if(sliderId != null) {
             CMSSlider slider = dao.getSlider(sliderId);
             if(slider != null) {                
-                content.setSlider(null);
+                content.setSlider(slider);
             }
         }
         return content;
