@@ -43,8 +43,7 @@
 											class="#{status.count eq 1 ? '' : 'collapsed'}"
 											data-toggle="collapse"
 											aria-expanded="#{status.count eq 1 ? 'true' : 'false'}"
-											aria-controls="collapse-#{faqItem.id}"> <!-- 	<i class="fa fa-chevron-down" aria-hidden="true"></i>
-    											<i class="fa fa-chevron-up" aria-hidden="true"></i> -->
+											aria-controls="collapse-#{faqItem.id}">
 											#{faqItem.title}
 										</a> <a class="fa fa-link card-header__fragment-link"
 											href="#card-#{faqItem.id}"
@@ -165,15 +164,6 @@
 							</c:forEach>
 						</div>
 					</c:forEach>
-				</ui:fragment>
-
-				<ui:fragment
-					rendered="#{cc.attrs.component.getContentItem('faqList').content.paginated}">
-					<!-- PAGINATOR -->
-					<viewerComponent:simplePaginator
-						itemCount="#{cc.attrs.component.getContentItem('faqList').content.nestedPagesCount}"
-						itemActive="#{cmsPage.listPage}"
-						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
 				</ui:fragment>
 			</div>
 		</div>

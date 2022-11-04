@@ -39,7 +39,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_content_geomap")
+@Table(name = "cms_content_glossary")
 public class CMSGlossaryContent extends CMSContent {
 
     private static final Logger logger = LogManager.getLogger(CMSGlossaryContent.class);
