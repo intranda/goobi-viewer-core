@@ -20,11 +20,13 @@
     					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
     				</div>
                 </ui:fragment>
+                
 			    <h:form class="tpl-bookmarklists__lists">    	
 		          	<ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
                            <ui:param name="source" value="#{cc.attrs.component.getContentItem('bookmarklists').content.functionality.bookmarkLists}" />
                     </ui:include>
 				</h:form>
+				
 			</div>
 	</composite:implementation>
 </ui:composition>
