@@ -15,9 +15,8 @@
 
 	<composite:implementation>
 
-		<div class="admin__content-component-description">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</div>
+		<div class="admin__content-component-description">ata sanctus est Lorem ipsum dolor sit amet.</div>
 
-    <h:panelGroup id="contentSliderGroup" styleClass="cms-module__option-group" rendered="#{contentItem.type == 'SLIDER'}" layout="block">
         <div class="cms-module__option-label">
             <label for="sliderSelect">#{msg[cc.attrs.contentItem.itemLabel]}#{cc.attrs.contentItem.mandatory?'*':''}:</label>
         </div>
@@ -42,7 +41,7 @@
                     <h:selectOneMenu 
                         id="sliderSelect" 
                         styleClass="form-control" 
-                        value="#{contentItem.sliderId}">
+                        value="#{cc.attrs.contentItem.content.sliderId}">
                         <f:selectItem itemValue="#{null}" itemLabel="#{msg.action__select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
                         <f:selectItems 
                             value="#{cmsSliderBean.allSliders}"
@@ -53,8 +52,6 @@
                     </h:selectOneMenu>
                 </div>
             </h:panelGroup>
-            <!-- INLINE HELP -->
-            <span class="cms-module__option-control-helptext">#{msg.cc.attrs.cms_page_slider_help}</span>
         </div>
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
@@ -62,8 +59,6 @@
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
             </button>
         </div>
-    </h:panelGroup>
-		
 
 	</composite:implementation>
 </ui:composition>

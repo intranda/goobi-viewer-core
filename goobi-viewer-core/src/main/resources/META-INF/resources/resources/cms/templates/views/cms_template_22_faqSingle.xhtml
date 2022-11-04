@@ -16,18 +16,7 @@
 	<composite:implementation>
 		<div id="templateFaqSingle"
 			class="tpl-faq-single content-component__legacy-full-width">
-			<!-- EDIT PAGE -->
-			<ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-				<ui:include src="/resources/cms/includes/editPage.xhtml" />
-			</ui:fragment>
 
-			<!-- PAGE UNPUBLISHED -->
-			<h:panelGroup rendered="#{!cmsPage.published}">
-				<div class="alert alert-warning" role="alert">
-					#{msg.cms_pagePreviewNotPublished}</div>
-			</h:panelGroup>
-
-			<h1 class="tpl-faq-single__title">#{cmsPage.title}</h1>
 			<div class="tpl-faq-single__content">
 
 				<ui:fragment rendered="#{cc.attrs.component.hasContent('text')}">
