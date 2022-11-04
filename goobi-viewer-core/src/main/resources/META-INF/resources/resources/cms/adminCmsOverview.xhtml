@@ -16,7 +16,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <div id="cmsOverview">
+        <div id="cmsOverview" class="cms-pages-overview">
             <h:panelGroup id="cmsOverviewAccessControl" rendered="#{userBean.user.cmsAdmin}">
                 <h:form id="cmsOverviewForm" prependId="false">
 
@@ -38,6 +38,7 @@
                             <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
                             </div>
+                            
                             <!-- FILTER -->
                             <!-- TODO add categories and subtheme to this filter, too -->
                             <div class="admin__table-filter">
@@ -67,13 +68,15 @@
                                 <!-- TRANSLATIONS COL -->
                                 <div class="col-2">
 	                                <div class="row no-gutters" role="columnheader" aria-label="Shows available language versions of a page">
-	                                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-	                                        <div class="col-2 d-flex">#{locale.language}</div>
-	                                    </c:forEach>
+
+	                                        <div class=" d-flex">#{msg.admin__translations}</div>
+	                                    
+	                                    
+	                                    
+	                                    
 	                                </div>
                                 </div>
                             </div>
-
 
                             <!-- INDIVIDUAL PAGE ROWS -->
                             <ui:repeat var="page" value="#{cmsBean.displayedPages}">
@@ -133,19 +136,11 @@
                                     </div>
                                     <div class="col-2 d-flex flex-column justify-content-center" role="gridcell" aria-label="#{cmsBean.getAllLocales()}">
 	                                    <div class="row no-gutters" role="presentation">
-	                                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-	                                            <div class="col-2">
-	                                                <!-- LANGUAGE COMPLETE -->
-	                                                <ui:fragment rendered="#{page.isComplete(locale)}">
-	                                                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
-	                                                </ui:fragment>
+	                                    
+	                                    <div class="cms-pages-overview__single-row-translation-indicator">
+	                                    	<viewerComponent:translationState object="#{page}" styleClass="nav nav-tabs admin__translation-indicator-list" />
+	                                    </div>
 
-	                                                <!-- LANGUAGE INCOMPLETE -->
-	                                                <ui:fragment rendered="#{!page.isComplete(locale)}">
-	                                                    <i class="fa fa-square-o" aria-hidden="true"></i>
-	                                                </ui:fragment>
-	                                            </div>
-	                                        </c:forEach>
 	                                    </div>
                                     </div>
                                 </div>
