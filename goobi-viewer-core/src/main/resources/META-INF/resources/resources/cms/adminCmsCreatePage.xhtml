@@ -36,6 +36,9 @@
 		                    <ui:fragment rendered="#{!cmsBean.editMode and page.template.isPresent()}">
 		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.get().name]}
 		                    </ui:fragment>
+		                    <ui:fragment rendered="#{!cmsBean.editMode and page.template.isEmpty()}">
+		                    #{msg.cms_createPage}
+		                    </ui:fragment>
 	                    </h1>
 	                    <!-- EXIT -->
                         <a 
