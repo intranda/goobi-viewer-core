@@ -672,9 +672,12 @@ public class CmsBean implements Serializable {
             return;
         }
         
-        for (PersistentCMSComponent persistentCMSComponent : componentsToDelete) {
+        List<PersistentCMSComponent> tempComponentsToDelete = new ArrayList<>(componentsToDelete);
+        for (PersistentCMSComponent persistentCMSComponent : tempComponentsToDelete) {
             if(persistentCMSComponent.getId() != null) {                
-                DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent);
+                if(DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent)) {
+                    componentsToDelete.remove(persistentCMSComponent);
+                }
             }
         }
         
