@@ -12,33 +12,41 @@
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
 	</composite:interface>
-    
+
 	<composite:implementation>
-					
-					<!-- TEXT -->
-					<h:panelGroup id="cmsTextContent">
-                        <ui:fragment rendered="#{cc.attrs.component.hasContent('text') and searchBean.activeSearchType != 0}">
-                        	<div class="tpl-search__text">
-	    	                    <h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
-                        	</div>
-    					</ui:fragment>
-					</h:panelGroup>
-                    
-                    <!-- SEARCH HEADER -->
-                     <ui:include src="/resources/includes/search/searchHeader.xhtml">
-                        <ui:param name="search" value="#{cc.attrs.component.getContentItem('search').content.functionality}"/>
-                        <ui:param name="searchType" value="0"></ui:param>
 
-				    	<ui:param name="renderOnSearchTypeChange" value="#{cmsTextContent}"></ui:param> 
-				 		<ui:param name="title" value="#{cc.attrs.component.getContentData('text')}"></ui:param>
-                     </ui:include>
+		<div id="templateSearch" class="tpl-search content-component__legacy-full-width">
 
-                    <!-- SEARCH LIST -->
-                    <div class="search-list">
-                        <ui:include src="/resources/includes/search/searchHitList.xhtml">
-                            <ui:param name="searchParam" value="#{cc.attrs.component.getContentItem('search').content.functionality}"/>
-                        </ui:include>
-                    </div>
+			<!-- TEXT -->
+			<h:panelGroup id="cmsTextContent">
+				<ui:fragment
+					rendered="#{cc.attrs.component.hasContent('text') and searchBean.activeSearchType != 0}">
+					<div class="tpl-search__text">
+						<h:outputText escape="false"
+							value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
+					</div>
+				</ui:fragment>
+			</h:panelGroup>
 
+			<!-- SEARCH HEADER -->
+			<ui:include src="/resources/includes/search/searchHeader.xhtml">
+				<ui:param name="search"
+					value="#{cc.attrs.component.getContentItem('search').content.functionality}" />
+				<ui:param name="searchType" value="0"></ui:param>
+
+				<ui:param name="renderOnSearchTypeChange" value="#{cmsTextContent}"></ui:param>
+				<ui:param name="title"
+					value="#{cc.attrs.component.getContentData('text')}"></ui:param>
+			</ui:include>
+
+			<!-- SEARCH LIST -->
+			<div class="search-list">
+				<ui:include src="/resources/includes/search/searchHitList.xhtml">
+					<ui:param name="searchParam"
+						value="#{cc.attrs.component.getContentItem('search').content.functionality}" />
+				</ui:include>
+			</div>
+
+		</div>
 	</composite:implementation>
 </ui:composition>

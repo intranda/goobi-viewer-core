@@ -60,7 +60,7 @@
 			                        <figure class="tpl-news-detail__image">
 			                            <img title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" />
 			                            <figcaption>
-			                                #{cmsPage.getMediaDescription('image01')}
+			                                #{cc.attrs.component.getContentItem('image01').content.mediaItem.description}
 			                            </figcaption>
 			                        </figure>
 								</h:panelGroup>
@@ -86,7 +86,7 @@
 								<h:panelGroup rendered="#{cc.attrs.component.getContentData('image02') != ''}">
 									<figure class="tpl-news-detail__image">
 										<img title="#{cc.attrs.component.getContentItem('image02').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image02')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image02').content.mediaItem.alternativeText}" />
-										<figcaption>#{cmsPage.getMediaDescription('image02')}</figcaption>
+										<figcaption>#{cc.attrs.component.getContentItem('image02').content.mediaItem.description}</figcaption>
 									</figure>
 								</h:panelGroup>
 							</div>
@@ -112,7 +112,7 @@
 			                        <figure class="tpl-news-detail__image">
 			                            <img title="#{cc.attrs.component.getContentItem('image03').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image03')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image03').content.mediaItem.alternativeText}" />
 			                            <figcaption>
-			                                #{cmsPage.getMediaDescription('image03')}
+			                                #{cc.attrs.component.getContentItem('image03').content.mediaItem.description}
 			                            </figcaption>
 			                        </figure>
 			                    </h:panelGroup>
@@ -139,7 +139,7 @@
 			                        <figure class="tpl-news-detail__image">
 			                            <img title="#{cc.attrs.component.getContentItem('image04').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image04')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image04').content.mediaItem.alternativeText}" />
 			                            <figcaption>
-			                                #{cmsPage.getMediaDescription('image04')}
+			                                #{cc.attrs.component.getContentItem('image04').content.mediaItem.description}
 			                            </figcaption>
 			                        </figure>
 			                    </h:panelGroup>

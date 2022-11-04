@@ -13,34 +13,36 @@
 		<composite:attribute name="component" required="true" />
 	</composite:interface>
     
-	<composite:implementation>               
-
-				<ui:fragment rendered="#{cc.attrs.component.hasContent('text01')}">
-                    <div class="tpl-simple__text">
-    					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
-    				</div>
-                </ui:fragment>
-             
-				<ui:fragment rendered="#{cc.attrs.component.hasContent('image01')}">
-                    <figure class="tpl-simple__media">
-                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
-	    					<img src="#{cc.attrs.component.getContentData('image01', 1920, null)}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" />
-                    	</ui:fragment>
-                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
-	    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}">
-	    						<source src="#{cc.attrs.component.getContentData('image01')}"/>
-	    					</video>
-                    	</ui:fragment>
-                        <figcaption>
-                            #{cc.attrs.component.getContentItem('image01').content.mediaItem.description}
-                        </figcaption>
-    				</figure>
-                </ui:fragment>
-				
-				<ui:fragment rendered="#{cc.attrs.component.hasContent('text02')}">
-				    <div class="tpl-simple__text">
-    					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text02')}"></h:outputText>
-    				</div>
-                </ui:fragment>
+	<composite:implementation>
+	
+				<div id="templateSimple" class="tpl-simple content-component__legacy-full-width">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('text01')}">
+	                    <div class="tpl-simple__text">
+	    					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
+	    				</div>
+	                </ui:fragment>
+	             
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('image01')}">
+	                    <figure class="tpl-simple__media">
+	                    	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
+		    					<img src="#{cc.attrs.component.getContentData('image01', 1920, null)}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" />
+	                    	</ui:fragment>
+	                    	<ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.component.getContentItem('image01').content.mediaItem)}">
+		    					<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}">
+		    						<source src="#{cc.attrs.component.getContentData('image01')}"/>
+		    					</video>
+	                    	</ui:fragment>
+	                        <figcaption>
+	                            #{cc.attrs.component.getContentItem('image01').content.mediaItem.description}
+	                        </figcaption>
+	    				</figure>
+	                </ui:fragment>
+					
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('text02')}">
+					    <div class="tpl-simple__text">
+	    					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text02')}"></h:outputText>
+	    				</div>
+	                </ui:fragment>
+                </div>
 	</composite:implementation>
 </ui:composition>

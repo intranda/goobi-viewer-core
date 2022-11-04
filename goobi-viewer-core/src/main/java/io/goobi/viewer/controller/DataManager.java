@@ -93,6 +93,8 @@ public final class DataManager {
 
     private String indexerVersion = "";
 
+    private String connectorVersion = "";
+
     private int hotfolderFileCount = 0;
 
     private RestApiManager restApiManager;
@@ -104,11 +106,11 @@ public final class DataManager {
     private final TaskManager restApiJobManager;
 
     private ArchiveManager archiveManager = null;
-    
+
     private ClientApplicationManager clientManager = null;
 
     private SecurityManager securityManager = null;
-    
+
     private UsageStatisticsRecorder usageStatisticsRecorder = null;
 
     /**
@@ -456,6 +458,20 @@ public final class DataManager {
     }
 
     /**
+     * @return the connectorVersion
+     */
+    public String getConnectorVersion() {
+        return connectorVersion;
+    }
+
+    /**
+     * @param connectorVersion the connectorVersion to set
+     */
+    public void setConnectorVersion(String connectorVersion) {
+        this.connectorVersion = connectorVersion;
+    }
+
+    /**
      * @return the hotfolderFileCount
      */
     public int getHotfolderFileCount() {
@@ -542,15 +558,16 @@ public final class DataManager {
         }
         return archiveManager;
     }
-    
+
     public ClientApplicationManager getClientManager() throws DAOException {
-        if(this.clientManager == null) {
+        if (this.clientManager == null) {
             synchronized (lock) {
                 this.clientManager = new ClientApplicationManager(getDao());
             }
         }
         return this.clientManager;
     }
+
     /**
      * 
      * @return
@@ -564,11 +581,11 @@ public final class DataManager {
 
         return securityManager;
     }
-    
+
     public void setClientManager(ClientApplicationManager manager) {
         this.clientManager = manager;
     }
-    
+
     public UsageStatisticsRecorder getUsageStatisticsRecorder() throws DAOException {
         if (usageStatisticsRecorder == null) {
             synchronized (lock) {
