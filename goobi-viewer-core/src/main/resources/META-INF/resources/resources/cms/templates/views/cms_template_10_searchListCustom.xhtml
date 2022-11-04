@@ -41,7 +41,7 @@
 				<h1 >#{cmsPage.title}</h1>                
                 
                 <div class="tpl-search-list-custom__list">
-                    <ui:repeat var="hit" value="#{cmsBean.getQueryResults(cc.attrs.component.getContentItem('queryList01').content)}">
+                    <ui:repeat var="hit" value="#{cmsBean.getQueryResults()}">
                         <div class="row">
                             <div class="tpl-search-list-custom__list-element clearfix">
                                 <div class="col-4 col-sm-2">

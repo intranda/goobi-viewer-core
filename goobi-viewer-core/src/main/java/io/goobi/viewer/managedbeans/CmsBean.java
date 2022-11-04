@@ -1232,21 +1232,6 @@ public class CmsBean implements Serializable {
         return "";
     }
 
-    /**
-     * <p>
-     * getQueryResults.
-     * </p>
-     *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    @Deprecated
-    public List<SearchHit> getQueryResults(CMSContentItem item) throws IndexUnreachableException, PresentationException, DAOException {
-        return getQueryResults();
-    }
 
     /**
      * <p>
