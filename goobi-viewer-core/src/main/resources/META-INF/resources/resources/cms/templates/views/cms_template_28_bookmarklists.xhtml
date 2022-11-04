@@ -23,7 +23,7 @@
                 
 			    <h:form class="tpl-bookmarklists__lists">    	
 		          	<ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
-                           <ui:param name="source" value="#{cc.attrs.component.getContentItem('bookmarklists').content.functionality.bookmarkLists}" />
+                           <ui:param name="source" value="#{bookmarkBean.publicBookmarkLists}" />
                     </ui:include>
 				</h:form>
 				
