@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -68,6 +69,10 @@ public class CMSSliderContent extends CMSContent {
     
     public void setSlider(CMSSlider slider) {
         this.slider = slider;
+    }
+    
+    public Long getSliderId() {
+        return Optional.ofNullable(this.slider).map(CMSSlider::getId).orElse(null);
     }
     
     @Override
