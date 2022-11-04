@@ -155,33 +155,35 @@ var viewerJS = ( function( viewer ) {
     }
     
     	
-	function showJsfMessagesAsSweetAlert() {
-		let $messages = $(".messages #messages");
-		//handle error messages
-		$messages.children(".alert.alert-danger").each((index, child) => {
-			//show error message
-			let text = $(child).text();
-			if(text && text.trim().length > 0) {
-				viewerJS.swaltoasts.error(text);
-				//scroll to first validation message
-				let $elementsWithValidationError = $(".-validation-message.-danger");
-				if($elementsWithValidationError.length > 0) {
-					$elementsWithValidationError.get(0).scrollIntoView({block: "center"});
+	function showJsfMessagesAsSweetAlert(e) {
+		if(e == undefined || (e.responseText && e.responseText.includes("<ul id=\"messages\">"))) {	//only apply if messages div has been updated
+			let $messages = $(".messages #messages");
+			//handle error messages
+			$messages.children(".alert.alert-danger").each((index, child) => {
+				//show error message
+				let text = $(child).text();
+				if(text && text.trim().length > 0) {
+					viewerJS.swaltoasts.error(text);
+					//scroll to first validation message
+					let $elementsWithValidationError = $(".-validation-message.-danger");
+					if($elementsWithValidationError.length > 0) {
+						$elementsWithValidationError.get(0).scrollIntoView({block: "center"});
+					}
 				}
-			}
-		});
-		//show success message
-		$messages.children(".alert.alert-success").each((index, child) => {
-			let text = $(child).text();
-			if(text && text.trim().length > 0) {
-				viewerJS.swaltoasts.success(text);
-			}
-		});
+			});
+			//show success message
+			$messages.children(".alert.alert-success").each((index, child) => {
+				let text = $(child).text();
+				if(text && text.trim().length > 0) {
+					viewerJS.swaltoasts.success(text);
+				}
+			});
+		}
 	}
 
 	//post notification on ajax/success
 	viewer.jsfAjax.success.subscribe(e => {
-		showJsfMessagesAsSweetAlert();
+		showJsfMessagesAsSweetAlert(e);
 	});
 	$(document).ready(() => showJsfMessagesAsSweetAlert());
 
