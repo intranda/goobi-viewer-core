@@ -28,11 +28,13 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -71,6 +73,22 @@ public class CMSGlossaryContent extends CMSContent {
     public void setGlossaryName(String glossaryName) {
         this.glossaryName = glossaryName;
     }
+    
+    /**
+     * <p>
+     * getGlossary.
+     * </p>
+     *
+     * @return a {@link io.goobi.viewer.model.glossary.Glossary} object.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws java.io.IOException if any.
+     * @throws org.json.JSONException if any.
+     */
+    public Glossary getGlossary() throws ContentNotFoundException, IOException, JSONException {
+        Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
+        return g;
+    }
+
     
     @Override
     public CMSContent copy() {

@@ -31,6 +31,15 @@
 								<f:setPropertyActionListener value="#{false}"
 									target="#{cmsBean.editMode}" />
 							</h:commandLink>
+							</div>
+						<div
+							class="admin__boxed-entry row no-gutters -std-bottom-pad -w100">
+							<h:commandLink action="pretty:adminCmsNewTemplate"
+								value="#{msg.cms__create_page_template}"
+								styleClass="btn btn--full">
+								<f:setPropertyActionListener value="#{false}"
+									target="#{cmsBean.editMode}" />
+							</h:commandLink>
 						</div>
 
 						<div id="cmsSelectTemplateWrapper"
