@@ -1,0 +1,61 @@
+<ui:composition xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+
+	<composite:interface>
+		<composite:attribute name="contentItem" required="true"/>
+			
+	</composite:interface>
+
+	<composite:implementation>
+
+    <div class="cms-module__option-group">
+        <!-- LABEL -->
+        <div class="cms-module__option-label">
+            <label for="emptySearchResults">#{msg[cc.attrs.contentItem.itemLabel]}#{cc.attrs.contentItem.mandatory?'*':''}:</label>
+        </div>
+        
+        <div class="cms-module__option-control">
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup id="emptySearchResultsGroup" layout="block" styleClass="cms-module__option-checkbox">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="emptySearchResults" 
+                        infoClass="cms-module__option-message-status success" 
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
+
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- CHECKBOX -->
+                <h:selectBooleanCheckbox 
+                    id="emptySearchResults" 
+                    value="#{cc.attrs.contentItem.content.displayEmptySearchResults}" 
+                    onclick="cmsJS.createPage.disablePreview();">
+                    <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.contentItem.itemLabel]}" />
+				</h:selectBooleanCheckbox>
+            </h:panelGroup>
+            
+            <!-- INLINE HELP -->
+            <span class="cms-module__option-control-helptext">#{msg.cms_page_emptySearch_help}</span>
+        </div>
+        
+        <!-- TOGGLE INLINE HELP -->
+        <div class="cms-module__option-help">
+            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+	</composite:implementation>
+</ui:composition>

@@ -1,0 +1,34 @@
+<ui:composition xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+
+
+	<composite:interface>
+		<composite:attribute name="component" required="true" />
+	</composite:interface>
+
+	<composite:implementation>
+
+		<!-- SEARCH HEADER -->
+		<ui:include src="/resources/includes/search/searchHeader.xhtml">
+			<ui:param name="search"
+				value="#{cc.attrs.component.getContentItem('search').content.search}" />
+			<ui:param name="searchType" value="0"></ui:param>
+		</ui:include>
+
+		<!-- SEARCH LIST -->
+		<div class="search-list">
+			<ui:include src="/resources/includes/search/searchHitList.xhtml">
+				<ui:param name="searchParam"
+					value="#{cc.attrs.component.getContentItem('search').content.search}" />
+			</ui:include>
+		</div>
+
+	</composite:implementation>
+</ui:composition>
