@@ -379,8 +379,8 @@ public class GeoMap {
                         //No features required since they will be loaded dynamically with the heatmap
                         return "[]";
                     } else {
-                        Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
-                        String ret = features.stream()
+                        Collection<GeoMapFeature> featuresFromSolr = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
+                        String ret = featuresFromSolr.stream()
                                 .distinct()
                                 .map(GeoMapFeature::getJsonObject)
                                 .map(Object::toString)
@@ -404,7 +404,8 @@ public class GeoMap {
         fieldList.add(markerTitleField);
         String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
         String filterQuery = SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
-        String finalQuery = String.format("+(%s) +(%s) +(%s)", query, coordinateFieldsQuery, filterQuery);
+
+        String finalQuery = String.format("+(%s) +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null,fieldList, filterQueries, null).getResults();
         List<GeoMapFeature> features = new ArrayList<>();
         for (SolrDocument doc : docs) {
