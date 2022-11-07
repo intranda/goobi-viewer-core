@@ -21,30 +21,53 @@
  */
 package io.goobi.viewer.api.rest.v1.authentication;
 
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
+import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
+import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
+import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * <p>
  * AuthenticationEndpoint class.
  * </p>
  */
-@Path("/auth")
+@Path(ApiUrls.AUTH)
 public class AuthenticationEndpoint {
 
     private static final Logger logger = LogManager.getLogger(AuthenticationEndpoint.class);
+
+    @Context
+    private HttpServletRequest servletRequest;
+    @Context
+    private HttpServletResponse servletResponse;
 
     /**
      * <p>
@@ -103,5 +126,47 @@ public class AuthenticationEndpoint {
         // Return the issued token
 
         return email;
+    }
+
+    @GET
+    @Path("/header")
+    @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "500", description = "Internal error")
+    public String apacheHeaderLogin() throws IOException {
+        HttpHeaderProvider provider = null;
+        try {
+            for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
+                if (p instanceof HttpHeaderProvider) {
+                    provider = (HttpHeaderProvider) p;
+                    break;
+                }
+            }
+            if (provider == null) {
+                logger.warn("No appropriate authentication provider configured.");
+                return "";
+            }
+
+            //the header we read the ssoID from is configurable
+            String ssoId = null;
+            if (HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType())) {
+                ssoId = servletRequest.getHeader(provider.getParameterName());
+            } else {
+                ssoId = (String) servletRequest.getAttribute(provider.getParameterName());
+            }
+            UserBean userBean = BeanUtils.getUserBean();
+            CompletableFuture<LoginResult> result = provider.login(ssoId, null);
+            if (!result.get().isRefused() && result.get().getUser().isPresent()) {
+                userBean.setUser(result.get().getUser().get());
+            }
+
+            servletResponse.sendRedirect("/TODO");
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
+        } catch (ExecutionException | AuthenticationProviderException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return "";
     }
 }

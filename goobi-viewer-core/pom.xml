@@ -149,6 +149,7 @@
 		<rome.version>1.18.0</rome.version>
 		<log4j.version>2.19.0</log4j.version>
 		<solr.version>8.11.2</solr.version>
+		<!-- DEPRECATED -->
 		<saml-client.version>4.0.3</saml-client.version>
 		<swagger.version>2.2.6</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
@@ -639,6 +640,7 @@
 			<artifactId>weld-servlet-shaded</artifactId>
 			<version>${weld-servlet-shaded.version}</version>
 		</dependency>
+		<!-- DEPRECATED -->
 		<dependency>
 			<groupId>com.coveo</groupId>
 			<artifactId>saml-client</artifactId>

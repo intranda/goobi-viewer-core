@@ -121,6 +121,7 @@ public class AuthorityResource {
 
         Record rec = NormDataImporter.getSingleRecord(url);
         if (rec == null) {
+            logger.trace("Record not found");
             throw new ContentNotFoundException("Resource not found");
         }
 
@@ -132,6 +133,7 @@ public class AuthorityResource {
 
         // Add link elements for Viaf and authority entries
         if (url.contains("viaf.org")) {
+            logger.trace("URL is Viaf: {}", url);
             // Viaf cluster URL
             if (secondUrl != null) {
                 normDataList.add(

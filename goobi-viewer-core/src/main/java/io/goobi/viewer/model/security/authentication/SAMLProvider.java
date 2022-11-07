@@ -56,6 +56,7 @@ import io.goobi.viewer.servlets.saml.SAMLAssertionServlet;
  * @author Oliver Paetzel
  *
  */
+@Deprecated
 public class SAMLProvider implements IAuthenticationProvider, Serializable {
 
     private static final long serialVersionUID = -7433420581168842304L;

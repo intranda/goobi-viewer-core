@@ -82,7 +82,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * @param type a {@link java.lang.String} object.
      * @param timeoutMillis a long.
      */
-    public HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
+    protected HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
         super();
         this.name = name;
         this.label = label;
@@ -161,10 +161,10 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         } catch (NullPointerException | URISyntaxException e) {
             //construct viewer path uri
         }
-        StringBuilder url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-        url.append("/resources/themes/").append(BeanUtils.getNavigationHelper().getTheme()).append("/images/openid/");
-        url.append(image);
-        return url.toString();
+        StringBuilder sbUrl = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        sbUrl.append("/resources/themes/").append(BeanUtils.getNavigationHelper().getTheme()).append("/images/openid/");
+        sbUrl.append(image);
+        return sbUrl.toString();
     }
 
     /** {@inheritDoc} */
