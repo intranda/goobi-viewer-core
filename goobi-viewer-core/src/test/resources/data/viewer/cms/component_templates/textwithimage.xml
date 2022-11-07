@@ -11,7 +11,7 @@
 		<item id="text">
 			<label>cms_content__htmltext__label</label>
 			<description>cms_content__htmltext__desc</description>
-			<className>io.goobi.viewer.model.cms.pages.content.types.CMSHtmlTextContent</className>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
 				<name>htmltext</name>
@@ -23,10 +23,10 @@
 		<item id="image" required="false">
 			<label>cms_content__image__label</label>
 			<description>cms_content__image__desc</description>
-			<className>io.goobi.viewer.model.cms.pages.content.types.CMSImageContent</className>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
-				<name>image</name>
+				<name>media</name>
 			</jsfComponent>
 		</item>
 	</content>

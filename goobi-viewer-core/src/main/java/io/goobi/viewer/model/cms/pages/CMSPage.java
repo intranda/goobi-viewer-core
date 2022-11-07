@@ -69,7 +69,6 @@ import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSLongTextContent;
@@ -111,7 +110,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable, CMSMediaHolder{
+public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable, CMSMediaHolder {
 
     private static final long serialVersionUID = -3601192218326197746L;
 
@@ -182,20 +181,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Column(name = "preview_text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText previewText = new TranslatedText();
-    
+
     @JoinColumn(name = "preview_image_id")
     private CMSMediaItem previewImage;
- 
+
     @JoinColumn(name = "slider_id")
     private CMSSlider topbarSlider = null;
-    
+
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.REMOVE })
     @PrivateOwned
     private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
-    
+
     /**
-     * A {@link CMSPageTemplate} used to create this page. Must be null if the page hasn't been created using a template.
-     * Used to apply user privileges for templates to pages derived from that template as well as determining if a page may be edited by a user 
+     * A {@link CMSPageTemplate} used to create this page. Must be null if the page hasn't been created using a template. Used to apply user
+     * privileges for templates to pages derived from that template as well as determining if a page may be edited by a user
      */
     @JoinColumn(name = "page_template_id")
     private CMSPageTemplate template = null;
@@ -227,13 +226,16 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     @Transient
     private List<Selectable<CMSCategory>> selectableCategories = null;
-    
+
     @Transient
     private Locale selectedLocale = IPolyglott.getCurrentLocale();
 
     @Transient
     private List<CMSComponent> cmsComponents = new ArrayList<>();
-    
+
+    @Transient
+    private final CMSTemplateManager templateManager;
+
     /**
      * <p>
      * Constructor for CMSPage.
@@ -241,6 +243,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public CMSPage() {
         this.dateCreated = LocalDateTime.now();
+        templateManager = null;
+    }
+
+    CMSPage(CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
+
     }
 
     /**
@@ -249,10 +257,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSPage(CMSPage original) {
+        this(original, CMSTemplateManager.getInstance());
+    }
+
+    CMSPage(CMSPage original, CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
         if (original.id != null) {
             this.id = original.id;
         }
-        
+
         this.title = new TranslatedText(original.title);
         this.menuTitle = new TranslatedText(original.menuTitle);
         this.previewText = new TranslatedText(original.previewText);
@@ -298,15 +311,18 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         }
         initialiseCMSComponents();
     }
-    
 
-    
     /**
      * creates a CMSPage from a {@link CMSPageTemplate}. Only copies persisted properties and performs initialization for them
      *
      * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
      */
     public CMSPage(CMSPageTemplate original) {
+        this(original, CMSTemplateManager.getInstance());
+    }
+
+    CMSPage(CMSPageTemplate original, CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
 
         this.dateCreated = LocalDateTime.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
@@ -325,7 +341,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             }
         }
 
-        
         for (PersistentCMSComponent component : original.getPersistentComponents()) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwnerPage(this);
@@ -333,22 +348,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         }
         initialiseCMSComponents();
     }
-    
+
     private void initialiseCMSComponents() {
-        this.cmsComponents = new ArrayList<>();
-        for (PersistentCMSComponent component : this.persistentComponents) {
-            CMSComponent comp = CMSTemplateManager.getInstance().getComponent(component.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(component))).orElse(null);
-            if(comp != null) {                
-                this.cmsComponents.add(comp);
+        if (this.templateManager != null) {
+            this.cmsComponents = new ArrayList<>();
+            for (PersistentCMSComponent component : this.persistentComponents) {
+                CMSComponent comp = templateManager
+                        .getComponent(component.getTemplateFilename())
+                        .map(c -> new CMSComponent(c, Optional.of(component)))
+                        .orElse(null);
+                if (comp != null) {
+                    this.cmsComponents.add(comp);
+                }
             }
         }
         sortComponents();
     }
-    
+
     private void sortComponents() {
         Collections.sort(this.cmsComponents);
         for (int i = 0; i < this.cmsComponents.size(); i++) {
-            this.cmsComponents.get(i).setOrder(i+1);
+            this.cmsComponents.get(i).setOrder(i + 1);
         }
     }
 
@@ -759,7 +779,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getMenuTitleOrTitle(Locale locale) {
         return this.menuTitle.getValue(locale).orElse(this.title.getText(locale));
     }
-    
+
     public TranslatedText getMenuTitleTranslations() {
         return this.menuTitle;
     }
@@ -895,7 +915,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         }
 
     }
-
 
     /**
      * <p>
@@ -1080,7 +1099,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return title;
     }
 
-
     /**
      * <p>
      * Getter for the field <code>wrapperElementClass</code>.
@@ -1102,7 +1120,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void setWrapperElementClass(String wrapperElementClass) {
         this.wrapperElementClass = wrapperElementClass;
     }
-
 
     /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
@@ -1142,7 +1159,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
             for (PersistentCMSComponent component : persistentComponents) {
                 for (CMSContent content : component.getContentItems()) {
-                    if(content instanceof CMSShortTextContent || content instanceof CMSLongTextContent || content instanceof CMSMediaContent) {
+                    if (content instanceof CMSShortTextContent || content instanceof CMSLongTextContent || content instanceof CMSMediaContent) {
                         String baseFileName = id + "-" + content.getItemId() + ".";
                         for (Path file : cmsPageFiles) {
                             if (file.getFileName().toString().startsWith(baseFileName)) {
@@ -1192,11 +1209,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @throws java.io.IOException if any.
      */
     public List<File> exportTexts(String outputFolderPath, String namingScheme) throws IOException {
-        
+
         List<CMSContent> contents = this.persistentComponents.stream()
-        .flatMap(p -> p.getContentItems().stream())
-        .collect(Collectors.toList());
-        
+                .flatMap(p -> p.getContentItems().stream())
+                .collect(Collectors.toList());
+
         List<File> ret = new ArrayList<>();
         for (CMSContent cmsContent : contents) {
             try {
@@ -1273,22 +1290,22 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void setTopbarSlider(CMSSlider topbarSlider) {
         this.topbarSlider = topbarSlider;
     }
-    
+
     public Long getTopbarSliderId() {
         return Optional.ofNullable(this.topbarSlider).map(CMSSlider::getId).orElse(null);
     }
-    
+
     /**
      * 
      * @param topbarSlider
-     * @throws DAOException 
+     * @throws DAOException
      * @deprecated only used for backward compatibility with older themes
      */
     @Deprecated
     public void setTopBarSliderId(Long id) throws DAOException {
         this.setTopbarSliderId(id);
     }
-    
+
     /**
      * 
      * @param topbarSlider
@@ -1296,8 +1313,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public Long getTopBarSliderId() {
         return getTopbarSliderId();
-    } 
-    
+    }
+
     public void setTopbarSliderId(Long id) throws DAOException {
         setTopbarSlider(DataManager.getInstance().getDao().getSlider(id));
     }
@@ -1310,14 +1327,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public List<PersistentCMSComponent> getPersistentComponents() {
         return persistentComponents;
     }
-    
+
     public List<CMSComponent> getComponents() {
-        if(this.cmsComponents.size() != this.persistentComponents.size()) {
+        if (this.cmsComponents.size() != this.persistentComponents.size()) {
             initialiseCMSComponents();
         }
         return this.cmsComponents;
     }
-    
 
     public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {
         return this.cmsComponents.stream()
@@ -1325,18 +1341,23 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Component " + p.getId() + " is not registered in page"));
     }
-    
+
     public boolean removeComponent(CMSComponent component) {
         this.persistentComponents.remove(component.getPersistentComponent());
         boolean success = this.cmsComponents.remove(component);
-        if(success) {            
+        if (success) {
             sortComponents();
         }
         return success;
     }
-    
-    public PersistentCMSComponent addComponent(String filename) throws IllegalArgumentException {
-        return addComponent(CMSTemplateManager.getInstance().getComponent(filename).orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
+
+    public PersistentCMSComponent addComponent(String filename) throws IllegalArgumentException, IllegalStateException {
+        if(this.templateManager == null) {
+            throw new IllegalStateException("Components can only be added if cmsPage was created by a non-default constructor");
+        }
+        return addComponent(templateManager
+                .getComponent(filename)
+                .orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
     }
 
     PersistentCMSComponent addComponent(CMSComponent template) {
@@ -1352,7 +1373,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private int getHighestComponentOrder() {
         return this.persistentComponents.stream()
                 .mapToInt(PersistentCMSComponent::getOrder)
-                .max().orElse(0);
+                .max()
+                .orElse(0);
     }
 
     @Override
@@ -1362,17 +1384,18 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 this.previewText.isComplete(locale, defaultLocale, false) &&
                 this.menuTitle.isComplete(locale, defaultLocale, false) &&
                 this.cmsComponents.stream()
-                .flatMap(comp -> comp.getTranslatableContentItems().stream())
-                .allMatch(content -> ((TranslatableCMSContent)content.getContent()).getText().isComplete(locale, defaultLocale, content.isRequired()));
+                        .flatMap(comp -> comp.getTranslatableContentItems().stream())
+                        .allMatch(content -> ((TranslatableCMSContent) content.getContent()).getText()
+                                .isComplete(locale, defaultLocale, content.isRequired()));
     }
 
     @Override
     public boolean isValid(Locale locale) {
         return this.title.isValid(locale) &&
                 this.cmsComponents.stream()
-                .flatMap(comp -> comp.getTranslatableContentItems().stream())
-                .filter(content -> content.isRequired())
-                .allMatch(content -> ((TranslatableCMSContent)content.getContent()).getText().isValid(locale));
+                        .flatMap(comp -> comp.getTranslatableContentItems().stream())
+                        .filter(content -> content.isRequired())
+                        .allMatch(content -> ((TranslatableCMSContent) content.getContent()).getText().isValid(locale));
 
     }
 
@@ -1395,25 +1418,27 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean hasSearchFunctionality() {
-        return this.persistentComponents.stream().flatMap(c -> c.getContentItems().stream())
+        return this.persistentComponents.stream()
+                .flatMap(c -> c.getContentItems().stream())
                 .anyMatch(content -> content instanceof CMSSearchContent);
     }
 
     public Optional<SearchFunctionality> getSearch() {
-        return this.persistentComponents.stream().flatMap(c -> c.getContentItems().stream())
+        return this.persistentComponents.stream()
+                .flatMap(c -> c.getContentItems().stream())
                 .filter(content -> content instanceof CMSSearchContent)
-                .map(content -> ((CMSSearchContent)content).getSearch())
+                .map(content -> ((CMSSearchContent) content).getSearch())
                 .findAny();
     }
 
     public Optional<CMSPageTemplate> getTemplate() {
         return Optional.ofNullable(this.template);
     }
-    
+
     /**
-     * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent}
-     * to the given order value. Also, sets the order value of all Components which previously had the given order
-     * to the order value of the given component
+     * Set the order attribute of the {@link PersistentCMSComponent} belonging to the given {@link CMSComponent} to the given order value. Also, sets
+     * the order value of all Components which previously had the given order to the order value of the given component
+     * 
      * @param component
      * @param order
      * @return
@@ -1421,38 +1446,40 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void setComponentOrder(CMSComponent component, int order) {
         PersistentCMSComponent persistentComponent = component.getPersistentComponent();
         Integer currentOrder = persistentComponent.getOrder();
-        this.getComponents().stream().filter(c -> Integer.compare(c.getOrder(), order) == 0)
-        .forEach(comp -> {
-            comp.setOrder(currentOrder);
-        });
+        this.getComponents()
+                .stream()
+                .filter(c -> Integer.compare(c.getOrder(), order) == 0)
+                .forEach(comp -> {
+                    comp.setOrder(currentOrder);
+                });
         persistentComponent.setOrder(order);
         Collections.sort(this.cmsComponents);
     }
-    
+
     public void incrementOrder(CMSComponent component) {
-        this.setComponentOrder(component, component.getOrder()+1);
+        this.setComponentOrder(component, component.getOrder() + 1);
     }
-    
+
     public void decrementOrder(CMSComponent component) {
-        this.setComponentOrder(component, component.getOrder()-1);
+        this.setComponentOrder(component, component.getOrder() - 1);
     }
-    
+
     public boolean isFirstComponent(CMSComponent component) {
         return this.cmsComponents.indexOf(component) == 0;
     }
-    
+
     public boolean isLastComponent(CMSComponent component) {
-        return this.cmsComponents.indexOf(component) == this.cmsComponents.size()-1;
+        return this.cmsComponents.indexOf(component) == this.cmsComponents.size() - 1;
     }
-    
+
     public void setTitle(TranslatedText title) {
         this.title = title;
     }
-    
+
     public void setMenuTitle(TranslatedText menuTitle) {
         this.menuTitle = menuTitle;
     }
-    
+
     public void setPreviewText(TranslatedText previewText) {
         this.previewText = previewText;
     }
@@ -1460,11 +1487,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public CMSMediaItem getPreviewImage() {
         return previewImage;
     }
-    
+
     public void setPreviewImage(CMSMediaItem previewImage) {
         this.previewImage = previewImage;
     }
-    
+
     @Override
     public void setMediaItem(CMSMediaItem item) {
         this.previewImage = item;
@@ -1485,7 +1512,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public boolean hasMediaItem() {
         return this.previewImage != null;
     }
-    
+
     public void setPersistentComponents(List<PersistentCMSComponent> persistentComponents) {
         this.persistentComponents = persistentComponents;
     }

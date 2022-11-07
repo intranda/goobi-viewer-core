@@ -295,6 +295,7 @@ public class CMSPageUpdate implements IModelUpdate {
         return union;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Map<String, Object>> getTableData(IDAO dao, String tableName) throws DAOException {
         List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM " + tableName);
 

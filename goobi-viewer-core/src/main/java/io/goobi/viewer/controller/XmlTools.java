@@ -268,6 +268,7 @@ public class XmlTools {
 
     }
 
+    @SuppressWarnings("unchecked")
     public static List<String> evaluateString(String expr, Object parent, List<Namespace> namespaces) {
         XPathBuilder<Object> builder = new XPathBuilder(expr.trim().replace("\n", ""), Filters.element().or(Filters.attribute()));
 

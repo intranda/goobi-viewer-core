@@ -59,14 +59,14 @@ public class CMSContentConverter {
     
     public CMSShortTextContent createShortTextContent(String language, Map<String, Object> legacyItem, Optional<CMSContent> orig) {
         String text = (String) legacyItem.get("html_fragment");
-        CMSShortTextContent content = orig.filter(o -> o instanceof CMSShortTextContent).map(o -> (CMSShortTextContent)o).orElse(new CMSShortTextContent());
+        CMSShortTextContent content = orig.filter(CMSShortTextContent.class::isInstance).map(o -> (CMSShortTextContent)o).orElse(new CMSShortTextContent());
         content.getText().setValue(text, language);
         return content;
     }
     
     public CMSMediumTextContent createMediumTextContent(String language, Map<String, Object> legacyItem, Optional<CMSContent> orig) {
         String text = (String) legacyItem.get("html_fragment");
-        CMSMediumTextContent content = orig.filter(o -> o instanceof CMSMediumTextContent).map(o -> (CMSMediumTextContent)o).orElse(new CMSMediumTextContent());
+        CMSMediumTextContent content = orig.filter(CMSMediumTextContent.class::isInstance).map(o -> (CMSMediumTextContent)o).orElse(new CMSMediumTextContent());
         content.getText().setValue(text, language);
         return content;
     }
@@ -210,7 +210,7 @@ public class CMSContentConverter {
     }
     
     
-    
+    @SuppressWarnings("unchecked")
     private List<CMSCategory> getCategories(Long itemId) throws DAOException {
         List<Long> categoryIds = dao.getNativeQueryResults("SELECT category_id FROM cms_content_item_cms_categories WHERE content_item_id = " + itemId );
         List<CMSCategory> categories = new ArrayList<>(categoryIds.size());

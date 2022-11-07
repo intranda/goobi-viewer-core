@@ -36,6 +36,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
@@ -44,6 +45,7 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
     Path componentTemplatesPath = Paths.get("src/test/resources/data/viewer/cms/component_templates");
+    CMSTemplateManager templateManager;
     CMSPageContentManager contentManager;
     IDAO dao;
     
@@ -51,7 +53,8 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     public void setup() throws Exception { 
         super.setUp();
         dao = DataManager.getInstance().getDao();
-        contentManager = new CMSPageContentManager(componentTemplatesPath);
+        templateManager = CMSTemplateManager.getInstance(componentTemplatesPath.toString(), null);
+        contentManager = templateManager.getContentManager();// new CMSPageContentManager(componentTemplatesPath);
     }
     
     @Test
@@ -88,7 +91,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         assertTrue(page.removeComponent(page.getAsCMSComponent(textComponentInPage)));
         
         CMSPage loaded = dao.getCMSPage(page.getId());
-        CMSPage cloned = new CMSPage(loaded);
+        CMSPage cloned = new CMSPage(loaded, templateManager);
         
         CMSShortTextContent clonedTextContent = (CMSShortTextContent)cloned.getPersistentComponents().get(0).getContentItems().get(0);
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));

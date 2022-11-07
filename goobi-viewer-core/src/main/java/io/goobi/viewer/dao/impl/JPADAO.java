@@ -6903,6 +6903,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<CMSPageTemplate> getAllCMSPageTemplates() throws DAOException {
             preQuery();
@@ -6911,7 +6912,7 @@ public class JPADAO implements IDAO {
                 Query q = em.createQuery("SELECT o FROM CMSPageTemplate o");
                 return q.getResultList();
             } catch (PersistenceException e) {
-                logger.error("Exception \"" + e.toString() + "\" when trying to get cms page templates. Returning empty list");
+                logger.error("Exception \"{}\" when trying to get cms page templates. Returning empty list", e.toString());
                 return new ArrayList<>();
             } finally {
                 close(em);
