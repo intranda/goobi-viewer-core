@@ -68,7 +68,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), 
                 CMSComponent.initializeAttributes(template.getAttributes(), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())), jpa);
-        List<CMSContent> contentData = jpa.map(j -> j.getContentItems()).orElse(Collections.emptyList());
+        List<CMSContent> contentData = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList());
         List<CMSContentItem> items = template.getContentItems().stream().map(item -> populateContentItem(item, contentData)).collect(Collectors.toList());
         this.contentItems.addAll(items);
     }

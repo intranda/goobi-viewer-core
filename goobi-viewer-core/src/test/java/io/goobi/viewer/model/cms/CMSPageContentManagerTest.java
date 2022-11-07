@@ -52,8 +52,6 @@ public class CMSPageContentManagerTest {
         assertEquals("htmltext", htmlComponent.getJsfComponent().getName());
         assertEquals("cms_component__htmltext__desc", htmlComponent.getDescription());
         assertEquals("cms/components/frontend/component/icon/htmltext.png", htmlComponent.getIconPath());
-        CMSContentItem item = htmlComponent.getContentItem("text");
-        assertNotNull(item);
         
         CMSComponent imageComponent = components.stream().filter(c -> c.getLabel().equals("cms_component__image__label")).findAny().orElse(null);
         assertNotNull(imageComponent);
@@ -63,12 +61,7 @@ public class CMSPageContentManagerTest {
         assertNotNull(widthAttribute);
         assertEquals("cms__component_attribute__width", widthAttribute.getLabel());
         assertEquals(4, widthAttribute.getOptions().size());
-        assertTrue(widthAttribute.getOptions().contains("50"));
         assertEquals("100", widthAttribute.getValue());
-        
-        CMSComponentAttribute lightboxAttribute = imageComponent.getAttribute("lightbox");
-        assertNotNull(lightboxAttribute);
-        assertEquals("boolean", lightboxAttribute.getType());
     }
 
 }
