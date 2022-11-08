@@ -15,16 +15,7 @@
     
 	<composite:implementation>
    
-            <div id="templateOverviewPageLegacy" class="tpl-overviewpage-legacy">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
-                </ui:fragment>
-            
-                <!-- PAGE UNPUBLISHED -->
-                <ui:fragment rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
-                </ui:fragment>
+            <div id="templateOverviewPageLegacy" class="tpl-overviewpage-legacy content-component__legacy-full-width">
 
                 <!-- OVERVIEW METADATA -->
                 <div class="tpl-overviewpage-legacy__overview">
