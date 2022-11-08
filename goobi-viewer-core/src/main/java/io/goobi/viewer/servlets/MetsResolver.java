@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -55,7 +55,7 @@ public class MetsResolver extends HttpServlet {
 
     private static final long serialVersionUID = 1663103361341321142L;
 
-    private static final Logger logger = LoggerFactory.getLogger(MetsResolver.class);
+    private static final Logger logger = LogManager.getLogger(MetsResolver.class);
 
     private static final String ERRTXT_DOC_NOT_FOUND = "No matching document could be found. ";
     private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
@@ -151,7 +151,7 @@ public class MetsResolver extends HttpServlet {
         String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
 
         String filePath =
-                DataFileTools.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants._METS);
+                DataFileTools.getSourceFilePath(id + ".xml", dataRepository, format != null ? format.toUpperCase() : SolrConstants.SOURCEDOCFORMAT_METS);
 
         response.setContentType("text/xml");
         File file = new File(filePath);

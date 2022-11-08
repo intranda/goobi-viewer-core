@@ -25,9 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -40,7 +40,10 @@ import io.goobi.viewer.modules.IModule;
 public class UserTools {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(UserTools.class);
+    private static final Logger logger = LogManager.getLogger(UserTools.class);
+    
+    private UserTools() {
+    }
 
     /**
      * Deletes given user from the database and removes any database rows that reference this user (only those that are of use to this user - public
@@ -232,25 +235,24 @@ public class UserTools {
      * @throws DAOException
      */
     public static User checkAndCreateAnonymousUser() throws DAOException {
-        String email = DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress();
-        if (!EmailValidator.validateEmailAddress(email)) {
+        if (!EmailValidator.validateEmailAddress(User.EMAIL_ADDRESS_ANONYMOUS)) {
             logger.warn("'anonymousUserEmailAddress' not configured or contains an invalid address"
                     + " - unable to keep anonymous contributions of deleted users.");
             return null;
         }
 
-        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        User user = DataManager.getInstance().getDao().getUserByEmail(User.EMAIL_ADDRESS_ANONYMOUS);
         if (user == null) {
             user = new User();
-            user.setEmail(email);
+            user.setEmail(User.EMAIL_ADDRESS_ANONYMOUS);
             user.setNickName("Anonymous");
             user.setSuperuser(false);
             user.setSuspended(true);
             if (DataManager.getInstance().getDao().addUser(user)) {
-                logger.info("Added anonymous user '{}'.", email);
+                logger.info("Added anonymous user '{}'.", User.EMAIL_ADDRESS_ANONYMOUS);
             }
         } else {
-            logger.trace("Anonymous user '{}' already exists.", email);
+            logger.trace("Anonymous user '{}' already exists.", User.EMAIL_ADDRESS_ANONYMOUS);
         }
 
         return user;

@@ -28,11 +28,11 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.viewer.PageType;
  */
 public class CMSNavigationManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSNavigationManager.class);
+    private static final Logger logger = LogManager.getLogger(CMSNavigationManager.class);
     private AtomicInteger visibleItemIdCounter = new AtomicInteger(0);
 
     private final String associatedTheme;

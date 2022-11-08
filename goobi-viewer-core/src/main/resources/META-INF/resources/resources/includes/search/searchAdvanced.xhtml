@@ -16,6 +16,7 @@
 
     <!-- SEARCH ADVANCED -->
     <div class="search-advanced">
+    
         <!-- MESSAGE -->
         <h:panelGroup rendered="#{!configurationBean.advancedSearchEnabled}">
             <div class="alert alert-warning" role="alert">
@@ -24,105 +25,110 @@
         </h:panelGroup>
 
         <h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
-<!--             <ui:fragment rendered="#{search.searchPerformed}"> -->
-<!--                <ui:include src="/resources/includes/search/searchListOptions.xhtml" />                 -->
-<!--            </ui:fragment> -->
-            <h:form id="searchAdvancedForm" prependId="false">
-                <c:forEach var="queryGroup" items="#{searchBean.advancedQueryGroups}" varStatus="statusGroup">
-                    <div class="search-advanced__group">
+            
+            <h:form id="searchAdvancedForm" prependId="false" styleClass="search-advanced__form">
+           			<h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
+                    <div class="search-advanced__entry-area">
                         <!-- AJAX LOADER -->
                         <div class="search-advanced__loader"></div>
 
-                        <button
-							class="remove btn btn--clean"
-							title="#{msg.searchAdvanved_deleteSearchGroup}"
-                            jsf:action="#{searchBean.removeAdvancedQueryGroup(queryGroup)}"
-							jsf:disabled="#{fn:length(searchBean.advancedQueryGroups) == 1}">
-                            <i class="fa fa-times-circle" aria-hidden="true"></i>
-                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                            <f:passThroughAttribute name="data-placement" value="top" />
-                            <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSearchGroup}"/>
-                            <f:ajax render="@form" />
-                        </button>
-
-                        <!-- SEARCH ADVANCED CONNECTOR -->
-                        <div class="search-advanced__connector">
-                            #{msg.searchAdvanced_operatorItems}:
-                            <div class="custom-control custom-control--select">
-                                <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="value-text" value="#{queryGroup.operator}">
-                                	<f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanced_operatorItems}"/>
-                                	<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
-                                    <f:selectItems value="#{queryGroup.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
-                                </h:selectOneMenu>
-                            </div>
-                        </div>
-
-                        <hr />
-
                         <!-- SEARCH ADVANCED INPUT GROUP -->
-                        <c:forEach var="queryItem" items="#{queryGroup.queryItems}" varStatus="status">
-                            <div id="searchAdvancedInputGroup-#{statusGroup.count}-#{status.count}" class="search-advanced__input-group">
-                                <div class="row mx-0">
-                                    <div class="col-12 col-sm-3 mb-3">
-                                        <!-- SELECT -->
-                                        <div class="search-advanced__input-col">
-                                            <div class="custom-control custom-control--select">
-                                                <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="value-text" value="#{queryItem.field}"
-                                                    valueChangeListener="#{queryItem.selectOneMenuListener}">
-                                                    <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
-                                                    	<f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
-														<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
-                                                        <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
-                                                    </c:forEach>
-                                                    <f:ajax
-                                                        render=":advsearch_item_operator_#{statusGroup.count}-#{status.count} :advsearch_value_group_#{statusGroup.count}-#{status.count}" />
-                                                </h:selectOneMenu>
+                        <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
+                            <div id="searchAdvancedInputGroup-0-#{status.count}" class="search-advanced__input-group">
+                                    
+                                    <c:choose>
+                                    <c:when test="#{status.count == 1}">
+
+                                            <!-- FIELD SELECT -->
+                                            <div class="search-advanced__input-col">
+                                                <div class="search-advanced__select custom-control custom-control--select">
+                                                    <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="value-text" value="#{queryItem.field}" valueChangeListener="#{queryItem.selectOneMenuListener}">
+                                                        
+                                                        <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
+                                                    	   <f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
+														  <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
+                                                            <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
+                                                        </c:forEach>
+                                                        
+                                                        <f:ajax render=":searchAdvancedInputGroup-0-#{status.count} :advsearch_value_group_0-#{status.count}" />
+                                                    </h:selectOneMenu>
+                                                </div>
                                             </div>
+
+                                    </c:when>
+                                    <c:otherwise>
+                                    
+                                    <div class="search-advanced__operator-field-pair-wrapper">
+                                    
+	                                        <!-- OPERATOR SELECT -->
+	                                        <div id="advsearch_operator_0-#{status.count}" class="search-advanced__input-col">
+	                                            <div class="custom-control custom-control--select search-advanced__custom-control">
+	                                                <h:selectOneMenu id="advsearch_item_operator_0-#{status.count}" styleClass="search-advanced__select-values"
+	                                                    value="#{queryItem.operator}">
+	                                                    <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_adv_search_link_search_terms}"/>
+	                                                    <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
+	                                                    <f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
+	                                                </h:selectOneMenu>
+	                                            </div>
+	                                        </div>
+	
+	
+	
+	                                        <!-- FIELD SELECT -->
+	                                        <div class="search-advanced__input-col">
+	                                            <div class="custom-control custom-control--select search-advanced__custom-control">
+	                                                <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="search-advanced__select-values" value="#{queryItem.field}"
+	                                                    valueChangeListener="#{queryItem.selectOneMenuListener}">
+	                                                    <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
+	                                                        <f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
+	                                                        <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
+	                                                        <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
+	                                                    </c:forEach>
+	                                                    <f:ajax render=":searchAdvancedInputGroup-0-#{status.count} :advsearch_value_group_0-#{status.count}" />
+	                                                </h:selectOneMenu>
+	                                            </div>
+	                                        </div>
+                                        
                                         </div>
-                                    </div>
-                                    <div class="col-12 col-sm-5 mb-3">
+                                        
+                                        
+                                    </c:otherwise>
+
+                                    </c:choose>
+                                    
                                         <!-- INPUT FIELD -->
-                                        <h:panelGroup id="advsearch_value_group_#{statusGroup.count}-#{status.count}">
+                                        <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
                                             <div class="search-advanced__input-col">
                                                 <h:panelGroup rendered="#{!queryItem.displaySelectItems}">
-                                                    <div class="form-group">
-                                                        <label class="sr-only" for="advsearchValueText_#{statusGroup.count}-#{status.count}"></label>
-                                                        <div class="input-group">
+                                                        <label class="sr-only" for="advsearchValueText_0-#{status.count}"></label>
+                                                        <div class="search-advanced__input-group-field">
                                                             <ui:fragment rendered="#{queryItem.range}">
                                                             	<div class="search-advanced__year-span-from d-none d-lg-inline-block">#{msg.searchAdvanced_range_value1}</div>
-                                                                <h:inputText id="advsearchValue1Text_#{statusGroup.count}-#{status.count}"
-                                                                    styleClass="form-control value-text -with-right-border" value="#{queryItem.value}">
+                                                                <h:inputText id="advsearchValue1Text_0-#{status.count}"
+                                                                    styleClass="form-control value-text -with-right-border search-advanced__input-value" value="#{queryItem.value}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
                                                                 </h:inputText>
                                                                 <i class="fa fa-arrows-h search-advanced__between-arrow d-lg-none" aria-hidden="true"></i>
                                                                 <div class="search-advanced__year-span-to d-none d-lg-inline-block">#{msg.searchAdvanced_range_value2}</div>
-                                                                <h:inputText id="advsearchValue2Text_#{statusGroup.count}-#{status.count}"
-                                                                    styleClass="form-control value-text -with-right-border" value="#{queryItem.value2}">
+                                                                <h:inputText id="advsearchValue2Text_0-#{status.count}"
+                                                                    styleClass="form-control value-text -with-right-border search-advanced__input-value" value="#{queryItem.value2}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.year}" />
                                                                 </h:inputText>
                                                             </ui:fragment>
                                                             <ui:fragment rendered="#{!queryItem.range}">
-                                                                <h:inputText id="advsearchValueText_#{statusGroup.count}-#{status.count}"
-                                                                    styleClass="form-control value-text" value="#{queryItem.value}">
+                                                                <h:inputText id="advsearchValueText_0-#{status.count}"
+                                                                    styleClass="form-control value-text search-advanced__input-value" value="#{queryItem.value}">
                                                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                                                     <f:passThroughAttribute name="aria-label" value="#{msg.searchFieldDemoText}" />
                                                                 </h:inputText>
-                                                                <div class="input-group-append">
-                                                                    <button type="button" class="btn btn--clean reset"
-                                                                        data-toggle="tooltip" data-placement="top"
-                                                                        title="#{msg.searchAdvanved_resetCurrentValue}"
-                                                                        aria-label="#{msg.searchAdvanved_resetCurrentValue}">
-                                                                        <i class="fa fa-times-circle" aria-hidden="true"></i>
-                                                                    </button>
-                                                            </div>
                                                             </ui:fragment>
                                                         </div>
-                                                    </div>
                                                 </h:panelGroup>
                                                 <h:panelGroup rendered="#{queryItem.displaySelectItems}">
                                                     <div class="custom-control custom-control--select">
-                                                        <h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" styleClass="value-text"
+                                                        <h:selectOneMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
                                                             value="#{queryItem.value}">
+                                                            <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
                                                             <c:forEach var="item" items="#{queryItem.selectItems}">
                                                                 <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
                                                             </c:forEach>
@@ -132,92 +138,105 @@
                                                 </h:panelGroup>
                                             </div>
                                         </h:panelGroup>
-                                    </div>
-                                    <div class="col-6 col-sm-3 mb-3">
-                                        <!-- OPERATOR -->
-                                        <div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
-                                            <div class="custom-control custom-control--select">
-                                                <h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" styleClass="value-text"
-                                                    value="#{queryItem.operator}" disabled="#{queryItem.displaySelectItems or queryItem.range}">
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_adv_search_link_search_terms}"/>
-													<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
-                                                    <f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
-                                                </h:selectOneMenu>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-sm-1 mb-3 d-flex align-items-center">
-                                        <!-- ADD / REMOVE -->
-                                        <div class="search-advanced__input-col search-advanced__additional-wrapper">
-                                            <button
-												class="btn btn--link search-advanced__additional-action"
-												title="#{msg.searchAdvanved_deleteSelection}"
-												jsf:action="#{queryGroup.removeQueryItem(queryItem)}">
-                                                <i class="fa fa-times-circle" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="top" />
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_deleteSelection}" />
-                                                <f:ajax render="@form" />
-                                            </button>
-                                            <button
-												class="btn btn--link"
-												title="#{msg.searchAdvanved_addSelection}"
-												jsf:action="#{queryGroup.addNewQueryItem}" styleClass="search-advanced__additional-action"
-                                                jsf:disabled="#{fn:length(queryGroup.queryItems) != status.count}">
-                                                <i class="fa fa-plus-square-o" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="top" />
-                                                <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_addSelection}" />
-                                                <f:ajax render="@form" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+
+
                             </div>
-                        </c:forEach>
-                    </div>
-                </c:forEach>
+                         </c:forEach>
+                         
+                        <!-- FUZZY SEARCH OPTION -->
+						<div class="search-advanced__fuzzy-search-option-wrapper">
+							<span class="search-advanced__fuzzy-search-option-label">#{msg.search__fuzzy_search}:</span> 
+							
+							<div class="admin__radio-switch" id="abc">
+								<h:selectOneRadio group="fuzzeSearchToggle"
+									value="#{searchBean.fuzzySearchEnabled}" disabled="#{false}">
+									<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+								</h:selectOneRadio>
+								<h:selectOneRadio group="fuzzeSearchToggle"
+									value="#{searchBean.fuzzySearchEnabled}" disabled="#{false}">
+									<f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+								</h:selectOneRadio>
+								<span class="toggle-outside"><span class="toggle-inside"></span></span>
+							</div>
+						
+						</div> 
 
-                <!-- SEARCH ADVANCED CONNECT GROUP -->
-                <h:panelGroup rendered="#{fn:length(searchBean.advancedQueryGroups) > 1}">
-                    <div class="search-advanced__connect-group pull-left">
-                        #{msg.searchAdvanced_connectGroups}:
-                        <div class="custom-control custom-control--select">
-                            <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" styleClass="custom-control custom-control--select value-text"
-                                value="#{searchBean.advancedSearchGroupOperator}">
-                                <f:passThroughAttribute name="aria-label" value="#{msg.searchAdvanved_operatorGroups}"/>
-								<f:passThroughAttribute name="aria-haspopup" value="listbox"/>
-                                <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsAND}" itemValue="0" />
-                                <f:selectItem itemLabel="#{msg.searchAdvanced_connectGroupsOR}" itemValue="1" />
-                            </h:selectOneMenu>
-                        </div>
                     </div>
-                </h:panelGroup>
 
-                <!-- SEARCH ADVANCED ADD GROUP -->
-                <div class="search-advanced__add-group pull-right">
-                    <button
-						class="btn btn--link"
-						jsf:action="#{searchBean.addNewAdvancedQueryGroup}">
-                        <f:ajax render="@form" />
-						#{msg.searchAdvanved_addSearchGroup}
-						<i class="fa fa-plus-square-o" aria-hidden="true"></i>
-                    </button>
+                <!-- ADDITIONAL OPTIONS FOR ADV SEARCH -->
+                <div class="search-advanced__additional-options-area">
+	                <!-- SEARCH LIST SORTING -->
+	                <h2 class="search-advanced__additional-options-title">#{msg.search__search_output}</h2>
+	                <div class="search-advanced__nav-helper-box">
+		                    <div class="search-advanced__nav-helper-item">
+		                        <div class="search-advanced__nav-helper-label">
+		                            <label for="hitsPerPageSelect" id="searchListSortingLabel">#{msg.search__hits_per_page}:</label>
+		                        </div>
+		                        <div class="custom-control custom-control--select search-advanced__custom-control">
+		                             <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}">
+		                                 <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}" styleClass="search-advanced__select-values"
+		                                     itemLabel="#{value}" itemValue="#{value}" />
+		                                 <f:passThroughAttribute name="aria-labelledby" value="searchListSortingLabel"/>
+		                                 <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
+		                             </h:selectOneMenu>
+		                             <h:commandButton style="display: none" action="#{search.search(cmsBean.currentPage.subThemeDiscriminatorValue)}">
+		                                 <f:passThroughAttribute name="data-hits-per-page" value="reload"/>
+		                                 <f:passThroughAttribute name="type" value="button"/>
+		                             </h:commandButton>
+		                        </div>
+		                    </div>
+		
+		                    <div class="search-advanced__nav-helper-item" >
+		                        <div class="search-advanced__nav-helper-label">
+		                            <label for="sortSelect">#{msg.sortBy}:</label>
+		                        </div>
+		                        <div class="custom-control custom-control--select search-advanced__custom-control">
+		                            <h:selectOneMenu value="#{searchBean.searchSortingOption}" id="sortSelect" converter="searchSortingOptionConverter">
+		                                <f:selectItems value="#{searchBean.searchSortingOptions}"
+		                                    var="option"
+		                                    itemLabel="#{option.label}"
+		                                    itemValue="#{option}"/>
+		                            </h:selectOneMenu>                                
+		                        </div>
+		                    </div>
+
+	               </div>
                 </div>
-
-                <div class="clearfix"></div>
 
                 <!-- SEARCH ADVANCED ACTION -->
                 <div class="search-advanced__action">
-                    <h:commandButton styleClass="btn btn--full" value="#{msg.search}" action="#{search.searchAdvanced}">
-                        <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
-                    </h:commandButton>
+                	<div class="search-advanced__action-submit-button-wrapper small-button-loader__wrapper">
+                
+	                    <h:commandButton styleClass="btn btn--full search-advanced__action-search-button" value="#{msg.search}" action="#{search.searchAdvanced}">
+	                        <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
+	                        <f:passThroughAttribute name="data-target" value="buttonLoaderClickEvent" />
+	                    </h:commandButton>
+	                    
+	                    <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+                    
+                    </div>
+                    
                     <button
-						class="btn btn--default"
+						class="btn btn--default search-advanced__action-reset-button"
 						jsf:action="#{search.resetSearch}">
 						#{msg.reset}
 					</button>
                 </div>
+
+                <script>
+                
+                window.addEventListener("unload", (event) => {
+    					$('[data-target="buttonLoader"]').hide();
+    					$('[data-target="buttonLoaderClickEvent').css('opacity', '1');
+                  });
+                
+    				$('[data-target="buttonLoaderClickEvent"]').on('click', function(e) {
+    					$('[data-target="buttonLoader"]').fadeIn('fast');
+    					$('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
+    				});
+                
+				</script>
+
             </h:form>
         </h:panelGroup>
     </div>

@@ -27,8 +27,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -43,7 +43,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
 
     private static final long serialVersionUID = -4369053276327316515L;
 
-    private static final Logger logger = LoggerFactory.getLogger(HierarchicalBrowseDcElement.class);
+    private static final Logger logger = LogManager.getLogger(HierarchicalBrowseDcElement.class);
 
     private List<HierarchicalBrowseDcElement> children = new ArrayList<>();
     private HierarchicalBrowseDcElement parent = null;
@@ -204,7 +204,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      * @param checkAllDescendents a boolean.
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<? extends HierarchicalBrowseDcElement> getAllVisibleDescendents(boolean checkAllDescendents) {
+    public Collection<HierarchicalBrowseDcElement> getAllVisibleDescendents(boolean checkAllDescendents) {
         List<HierarchicalBrowseDcElement> list = new ArrayList<>();
         if (checkAllDescendents || isShowSubElements()) {
             for (HierarchicalBrowseDcElement child : children) {

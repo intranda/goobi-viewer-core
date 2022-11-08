@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
@@ -40,8 +41,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -79,7 +80,7 @@ public class BrowseBean implements Serializable {
 
     private static final long serialVersionUID = 7613678633319477862L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BrowseBean.class);
+    private static final Logger logger = LogManager.getLogger(BrowseBean.class);
 
     @Inject
     private BreadcrumbBean breadcrumbBean;
@@ -161,8 +162,8 @@ public class BrowseBean implements Serializable {
      * </p>
      */
     public void resetAllLists() {
-        for (String field : collections.keySet()) {
-            collections.get(field).resetCollectionList();
+        for (Entry<String, CollectionView> entry : collections.entrySet()) {
+            entry.getValue().resetCollectionList();
         }
     }
 
@@ -199,9 +200,8 @@ public class BrowseBean implements Serializable {
      *
      * @return the dcList (Collections)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
      */
-    public List<BrowseDcElement> getDcList() throws IndexUnreachableException, IllegalRequestException {
+    public List<BrowseDcElement> getDcList() throws IndexUnreachableException {
         return getList(SolrConstants.DC);
     }
 
@@ -213,9 +213,8 @@ public class BrowseBean implements Serializable {
      * @param field a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
      */
-    public List<BrowseDcElement> getList(String field) throws IndexUnreachableException, IllegalRequestException {
+    public List<BrowseDcElement> getList(String field) throws IndexUnreachableException {
         return getList(field, -1);
     }
 
@@ -421,7 +420,7 @@ public class BrowseBean implements Serializable {
                 terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale));
                 if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
                     logger.trace("Populating search term filters for field '{}'...", browsingMenuField);
-                    availableStringFilters.put(browsingMenuField, new ArrayList<String>());
+                    availableStringFilters.put(browsingMenuField, new ArrayList<>());
                     for (BrowseTerm term : terms) {
                         String rawTerm;
                         if (StringUtils.isNotEmpty(term.getSortTerm())) {
@@ -823,7 +822,8 @@ public class BrowseBean implements Serializable {
         }
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
-            if (bmfc.getField().contains(SolrConstants._LANG_) && (language == null || !bmfc.getField().contains(SolrConstants._LANG_ + language))) {
+            if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
+                    && (language == null || !bmfc.getField().contains(SolrConstants.MIDFIX_LANG + language))) {
                 logger.trace("Skipped {}", bmfc.getField());
                 continue;
             }
@@ -888,7 +888,6 @@ public class BrowseBean implements Serializable {
                 adb.open(); // open to persist PI on ViewManager
             }
 
-            //            return BeanUtils.getNavigationHelper().getApplicationUrl() + result.getTwo();
             PageType pageType = PageType.getByName(result.getTwo());
             switch (pageType) {
                 case viewToc:
@@ -928,6 +927,11 @@ public class BrowseBean implements Serializable {
         return collections.get(field);
     }
 
+    /**
+     * 
+     * @param field
+     * @return
+     */
     public CollectionView getOrCreateCollection(String field) {
         CollectionView collection = getCollection(field);
         if (collection == null) {
@@ -972,9 +976,8 @@ public class BrowseBean implements Serializable {
 
             @Override
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
-                Map<String, CollectionResult> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, groupingField, null, true, true,
+                return SearchHelper.findAllCollectionsFromField(collectionField, groupingField, null, true, true,
                         DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-                return dcStrings;
             }
         }));
     }
@@ -1024,14 +1027,14 @@ public class BrowseBean implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder();
-        String collectionName = "";
+        StringBuilder sbCollectionName = new StringBuilder();
         for (String value : valueSplit) {
             if (sb.length() > 0) {
                 sb.append(" / ");
-                collectionName += ".";
+                sbCollectionName.append('.');
             }
-            collectionName += value;
-            sb.append(ViewerResourceBundle.getTranslation(collectionName, null));
+            sbCollectionName.append(value);
+            sb.append(ViewerResourceBundle.getTranslation(sbCollectionName.toString(), null));
         }
 
         return sb.toString();
@@ -1042,11 +1045,8 @@ public class BrowseBean implements Serializable {
      * @param field Collection field name
      * @param value Collection raw name
      * @return
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws IllegalRequestException
      */
-    public String getTranslationForCollectionName(String field, String value) throws DAOException {
+    public String getTranslationForCollectionName(String field, String value) {
         logger.trace("getTranslationForCollectionName: {}:{}", field, value);
         if (field == null || value == null) {
             return null;
@@ -1062,7 +1062,7 @@ public class BrowseBean implements Serializable {
     public long getRecordCount(String collectionField, String collectionName) {
         CollectionView view = this.getOrCreateCollection(collectionField);
         return Optional.ofNullable(view.getCollectionElement(collectionName))
-        .map(e -> e.getNumberOfVolumes())
-        .orElse(0l);
+                .map(e -> e.getNumberOfVolumes())
+                .orElse(0l);
     }
 }

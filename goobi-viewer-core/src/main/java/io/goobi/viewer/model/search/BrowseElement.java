@@ -35,8 +35,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -46,6 +46,7 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -78,7 +79,7 @@ public class BrowseElement implements Serializable {
 
     private static final long serialVersionUID = 6621169815560734613L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BrowseElement.class);
+    private static final Logger logger = LogManager.getLogger(BrowseElement.class);
 
     @JsonIgnore
     private String fulltext;
@@ -599,7 +600,7 @@ public class BrowseElement implements Serializable {
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
                             continue;
                         }
-                        if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                        if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                             continue;
                         }
                         // Skip fields that are already in the list
@@ -1469,7 +1470,7 @@ public class BrowseElement implements Serializable {
             try {
                 contextObject = structElements.get(0).generateContextObject(getUrl(), topStruct);
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
         }
 

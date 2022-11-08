@@ -30,8 +30,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -50,7 +50,7 @@ import io.goobi.viewer.solr.SolrTools;
 
 public class FilterTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(FilterTools.class);
+    private static final Logger logger = LogManager.getLogger(FilterTools.class);
 
     public static final String ATTRIBUTE_PI = "pi";
     public static final String ATTRIBUTE_FILENAME = "filename";

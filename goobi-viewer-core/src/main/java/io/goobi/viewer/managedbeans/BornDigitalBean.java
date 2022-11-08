@@ -29,11 +29,10 @@ import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
@@ -47,6 +46,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.DownloadTicket;
+import jakarta.mail.MessagingException;
 
 /**
  * Handles download ticket checks and requests for born-digital files.
@@ -57,7 +57,7 @@ public class BornDigitalBean implements Serializable {
 
     private static final long serialVersionUID = -371794671604543166L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BornDigitalBean.class);
+    private static final Logger logger = LogManager.getLogger(BornDigitalBean.class);
 
     @Inject
     private ActiveDocumentBean activeDocumentBean;

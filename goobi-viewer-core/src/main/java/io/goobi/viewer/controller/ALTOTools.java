@@ -46,8 +46,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
@@ -69,7 +69,7 @@ import io.goobi.viewer.api.rest.model.ner.TagCount;
  */
 public class ALTOTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(ALTOTools.class);
+    private static final Logger logger = LogManager.getLogger(ALTOTools.class);
 
     private static final String STRING = "String";
     private static final String CONTENT = "CONTENT";

@@ -28,24 +28,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -64,7 +64,7 @@ import io.goobi.viewer.model.viewer.PageType;
 public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSNavigationItem.class);
+    private static final Logger logger = LogManager.getLogger(CMSNavigationItem.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

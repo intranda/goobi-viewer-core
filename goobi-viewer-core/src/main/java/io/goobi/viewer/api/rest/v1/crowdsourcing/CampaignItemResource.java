@@ -46,8 +46,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.wa.WebAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -96,7 +96,7 @@ import io.goobi.viewer.solr.SolrTools;
 @CrowdsourcingCampaignBinding
 public class CampaignItemResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(CampaignItemResource.class);
+    private static final Logger logger = LogManager.getLogger(CampaignItemResource.class);
 
     protected AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
 
@@ -263,11 +263,18 @@ public class CampaignItemResource {
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, pi, page);
         for (CrowdsourcingAnnotation anno : annotations) {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
-            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
-                anno.setReviewer(user.get());
+            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
+                anno.setAccessCondition(getPublishedAccessCondition(campaign));
+                if(campaign.isReviewModeActive() && user.isPresent()) {
+                    anno.setReviewer(user.get());
+                }
             }
             DataManager.getInstance().getDao().updateAnnotation(anno);
         }
+    }
+
+    private static String getPublishedAccessCondition(Campaign campaign) {
+        return campaign.isRestrictAnnotationAccess() ? campaign.getAccessConditionValue() : SolrConstants.OPEN_ACCESS_VALUE;
     }
 
     /**
@@ -283,8 +290,11 @@ public class CampaignItemResource {
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
         for (CrowdsourcingAnnotation anno : annotations) {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
-            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus) && user.isPresent()) {
-                anno.setReviewer(user.get());
+            if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
+                anno.setAccessCondition(getPublishedAccessCondition(campaign));
+                if(campaign.isReviewModeActive() && user.isPresent()) {
+                    anno.setReviewer(user.get());
+                }
             }
             DataManager.getInstance().getDao().updateAnnotation(anno);
         }

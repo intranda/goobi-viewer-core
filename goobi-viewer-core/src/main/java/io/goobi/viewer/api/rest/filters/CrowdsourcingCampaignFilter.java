@@ -34,8 +34,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
@@ -60,7 +60,7 @@ import io.goobi.viewer.model.security.user.User;
 @CrowdsourcingCampaignBinding
 public class CrowdsourcingCampaignFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(CrowdsourcingCampaignFilter.class);
+    private static final Logger logger = LogManager.getLogger(CrowdsourcingCampaignFilter.class);
 
     public static final String CAMPAIGN_ID_REQUEST_ATTRIBUTE = "CampaignId";
 

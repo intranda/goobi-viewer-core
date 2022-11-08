@@ -36,8 +36,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -45,6 +45,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -72,7 +73,7 @@ public class BreadcrumbBean implements Serializable {
     private static final long serialVersionUID = -7671680493703878185L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(BreadcrumbBean.class);
+    private static final Logger logger = LogManager.getLogger(BreadcrumbBean.class);
 
     /** Constant <code>WEIGHT_TAG_MAIN_MENU=1</code> */
     public static final int WEIGHT_TAG_MAIN_MENU = 1;
@@ -198,7 +199,7 @@ public class BreadcrumbBean implements Serializable {
                         adb.setPersistentIdentifier(cmsPage.getRelatedPI());
                         adb.open();
                     } catch (PresentationException e) {
-                        logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                        logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
                         Messages.error(e.getMessage());
                     }
                 }

@@ -28,21 +28,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.apache.commons.net.util.SubnetUtils.SubnetInfo;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -65,7 +65,7 @@ public class IpRange extends AbstractLicensee implements  Serializable {
     private static final long serialVersionUID = 2221051822633497315L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(IpRange.class);
+    private static final Logger logger = LogManager.getLogger(IpRange.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

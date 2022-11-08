@@ -32,8 +32,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.rometools.rome.io.SyndFeedOutput;
 
@@ -52,7 +52,7 @@ public class DynamicBean implements Serializable {
 
     private static final long serialVersionUID = -6628922677497179970L;
 
-    private final static Logger logger = LoggerFactory.getLogger(DynamicBean.class);
+    private final static Logger logger = LogManager.getLogger(DynamicBean.class);
 
     private List<DynamicContent> components = new ArrayList<>();
     private HtmlPanelGroup formGroup = null;

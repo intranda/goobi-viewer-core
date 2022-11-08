@@ -31,8 +31,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +58,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class AnnotationUpdate implements IModelUpdate {
 
-    private static final Logger logger = LoggerFactory.getLogger(AnnotationUpdate.class);
+    private static final Logger logger = LogManager.getLogger(AnnotationUpdate.class);
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
@@ -68,11 +68,11 @@ public class AnnotationUpdate implements IModelUpdate {
 
         int updates = 0;
 
-        if(dao.tableExists("annotations")) {
+        if (dao.tableExists("annotations")) {
             updateCrowdsourcingAnnotations(dao);
             updates++;
         }
-        if(dao.tableExists("comments")) {
+        if (dao.tableExists("comments")) {
             updateComments(dao);
             updates++;
         }
@@ -84,37 +84,48 @@ public class AnnotationUpdate implements IModelUpdate {
      * @param dao
      * @throws DAOException
      */
-    private void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
+    @SuppressWarnings("unchecked")
+    private static void updateCrowdsourcingAnnotations(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
 
         List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM annotations");
 
         List<Object[]> annotations = dao.getNativeQueryResults("SELECT * FROM annotations");
 
-        List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
+        List<String> columnNames = info.stream().map(o -> (String) o[0]).collect(Collectors.toList());
 
         for (Object[] annotation : annotations) {
-            Map<String, Object> columns = IntStream.range(0, columnNames.size()).boxed().filter(i -> annotation[i] != null).collect(Collectors.toMap(i -> columnNames.get(i), i -> annotation[i]));
+            Map<String, Object> columns = IntStream.range(0, columnNames.size())
+                    .boxed()
+                    .filter(i -> annotation[i] != null)
+                    .collect(Collectors.toMap(i -> columnNames.get(i), i -> annotation[i]));
             try {
-                Long annotationId = (Long)columns.get("annotation_id");
+                // Long annotationId = (Long) columns.get("annotation_id");
                 String body = Optional.ofNullable(columns.get("body")).map(o -> (String) o).orElse(null);
-                User owner = Optional.ofNullable(columns.get("creator_id")).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
-                User reviewer = Optional.ofNullable(columns.get("reviewer_id")).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
-                Question generator = Optional.ofNullable(columns.get("generator_id")).map(o -> (Long) o).flatMap(id -> getCampaignQuestion(id, dao)).orElse(null);
-                LocalDateTime dateCreated = Optional.ofNullable(columns.get("date_created")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                LocalDateTime dateUpdated = Optional.ofNullable(columns.get("date_modified")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                String motivation = Optional.ofNullable(columns.get("motivation")).map(o -> (String)o).orElse(Motivation.DESCRIBING);
+                User owner = Optional.ofNullable(columns.get("creator_id")).map(o -> (Long) o).flatMap(id -> getUser(id, dao)).orElse(null);
+                User reviewer = Optional.ofNullable(columns.get("reviewer_id")).map(o -> (Long) o).flatMap(id -> getUser(id, dao)).orElse(null);
+                Question generator =
+                        Optional.ofNullable(columns.get("generator_id")).map(o -> (Long) o).flatMap(id -> getCampaignQuestion(id, dao)).orElse(null);
+                LocalDateTime dateCreated =
+                        Optional.ofNullable(columns.get("date_created")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                LocalDateTime dateUpdated =
+                        Optional.ofNullable(columns.get("date_modified")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                String motivation = Optional.ofNullable(columns.get("motivation")).map(o -> (String) o).orElse(Motivation.DESCRIBING);
                 String target = Optional.ofNullable(columns.get("target")).map(o -> (String) o).orElse(null);
                 String pi = Optional.ofNullable(columns.get("target_pi")).map(o -> (String) o).orElse(null);
                 Integer page = Optional.ofNullable(columns.get("target_page")).map(o -> (Integer) o).orElse(null);
-                String accessCondition = Optional.ofNullable(columns.get("access_condition")).map(o -> (String) o).orElse(SolrConstants.OPEN_ACCESS_VALUE);
-                PublicationStatus status = Optional.ofNullable(columns.get("publication_status")).map(o -> (Integer)o).map(i -> PublicationStatus.values()[i]).orElse(null);
-                if(status == null) {
+                String accessCondition =
+                        Optional.ofNullable(columns.get("access_condition")).map(o -> (String) o).orElse(SolrConstants.OPEN_ACCESS_VALUE);
+                PublicationStatus status = Optional.ofNullable(columns.get("publication_status"))
+                        .map(o -> (Integer) o)
+                        .map(i -> PublicationStatus.values()[i])
+                        .orElse(null);
+                if (status == null) {
                     //status is encoded in access_condition
-                    if("ANNOTATE".equals(accessCondition)) {
+                    if ("ANNOTATE".equals(accessCondition)) {
                         accessCondition = getAccessConditionForAnnotation(generator);
                         status = PublicationStatus.CREATING;
-                    } else if("REVIEW".equals(accessCondition)) {
+                    } else if ("REVIEW".equals(accessCondition)) {
                         accessCondition = getAccessConditionForAnnotation(generator);
                         status = PublicationStatus.REVIEW;
                     } else {
@@ -150,21 +161,27 @@ public class AnnotationUpdate implements IModelUpdate {
      * @param dao
      * @throws DAOException
      */
-    private void updateComments(IDAO dao) throws DAOException {
+    @SuppressWarnings("unchecked")
+    private static void updateComments(IDAO dao) throws DAOException {
         AnnotationSaver saver = new SqlAnnotationSaver(dao);
         List<Object[]> comments = dao.getNativeQueryResults("SELECT * FROM comments");
         List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM comments");
-        List<String> columnNames = info.stream().map(o -> (String)o[0]).collect(Collectors.toList());
+        List<String> columnNames = info.stream().map(o -> (String) o[0]).collect(Collectors.toList());
         for (Object[] comment : comments) {
-            Map<String, Object> columns = IntStream.range(0, columnNames.size()).boxed().filter(i -> comment[i] != null).collect(Collectors.toMap(i -> columnNames.get(i), i -> comment[i]));
+            Map<String, Object> columns = IntStream.range(0, columnNames.size())
+                    .boxed()
+                    .filter(i -> comment[i] != null)
+                    .collect(Collectors.toMap(i -> columnNames.get(i), i -> comment[i]));
 
             try {
-                LocalDateTime dateCreated = Optional.ofNullable(columns.get("date_created")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
-                LocalDateTime dateUpdated = Optional.ofNullable(columns.get("date_updated")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                LocalDateTime dateCreated =
+                        Optional.ofNullable(columns.get("date_created")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
+                LocalDateTime dateUpdated =
+                        Optional.ofNullable(columns.get("date_updated")).map(o -> (Timestamp) o).map(Timestamp::toLocalDateTime).orElse(null);
                 Integer page = Optional.ofNullable(columns.get("page")).map(o -> (Integer) o).orElse(null);
                 String pi = Optional.ofNullable(columns.get("pi")).map(o -> (String) o).orElse(null);
                 String text = Optional.ofNullable(columns.get("text")).map(o -> (String) o).orElse(null);
-                User owner = Optional.ofNullable(columns.get("owner_id")).map(o -> (Long) o).flatMap(id -> this.getUser(id, dao)).orElse(null);
+                User owner = Optional.ofNullable(columns.get("owner_id")).map(o -> (Long) o).flatMap(id -> getUser(id, dao)).orElse(null);
 
                 Comment anno = new Comment();
                 anno.setDateCreated(dateCreated);
@@ -191,7 +208,7 @@ public class AnnotationUpdate implements IModelUpdate {
      * @param dao
      * @return
      */
-    private Optional<Question> getCampaignQuestion(Long id, IDAO dao) {
+    private static Optional<Question> getCampaignQuestion(Long id, IDAO dao) {
         try {
             return Optional.ofNullable(dao.getQuestion(id));
         } catch (DAOException e) {
@@ -204,12 +221,18 @@ public class AnnotationUpdate implements IModelUpdate {
      * @return
      * @throws JsonProcessingException
      */
-    private String getAsJson(String text) throws JsonProcessingException {
+    private static String getAsJson(String text) throws JsonProcessingException {
         IResource body = new TextualResource(text);
         return new ObjectMapper().writeValueAsString(body);
     }
 
-    private Optional<User> getUser(Long id, IDAO dao) {
+    /**
+     * 
+     * @param id
+     * @param dao
+     * @return
+     */
+    private static Optional<User> getUser(Long id, IDAO dao) {
         try {
             return Optional.ofNullable(dao.getUser(id));
         } catch (DAOException e) {
@@ -217,13 +240,17 @@ public class AnnotationUpdate implements IModelUpdate {
         }
     }
 
-    private String getAccessConditionForAnnotation(Question generator) throws DAOException {
-        String access = Optional.ofNullable(generator)
+    /**
+     * 
+     * @param generator
+     * @return
+     */
+    private static String getAccessConditionForAnnotation(Question generator) {
+        return Optional.ofNullable(generator)
                 .map(Question::getOwner)
                 .filter(Campaign::isRestrictAnnotationAccess)
                 .map(Campaign::getAccessConditionValue)
                 .orElse(SolrConstants.OPEN_ACCESS_VALUE);
-        return access;
     }
 
 }

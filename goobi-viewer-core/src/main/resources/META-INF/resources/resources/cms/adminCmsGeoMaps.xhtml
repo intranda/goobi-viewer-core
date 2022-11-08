@@ -102,7 +102,7 @@
                                                     layer: {
 	                                                    popover: undefined,
 	                                                    clusterMarkers: "#{map.type}" == "SOLR_QUERY",
-                                                        markerIcon: #{map.markerAsJSON}
+                                                        markerIcon: (icon => icon)(#{map.markerAsJSON})
                                                     }
                                                 });
                                                 let view = #{map.initialView};

@@ -38,8 +38,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -58,7 +58,7 @@ import io.goobi.viewer.solr.SolrConstants;
 
 public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsBeanTest.class);
+    private static final Logger logger = LogManager.getLogger(CmsBeanTest.class);
 
     /**
      * @throws java.lang.Exception
@@ -206,23 +206,5 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         for (int i = 0; i < pageTypes.size(); ++i) {
             Assert.assertEquals(pageTypes.get(i).getName(), pages.get(i).getPageName());
         }
-    }
-
-    @Test
-    public void testGetNestedPages() throws DAOException {
-        List<CMSPage> pages = Arrays.asList(new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage(), new CMSPage());
-        pages.forEach(page -> page.setPublished(true));
-        CmsBean bean = Mockito.spy(CmsBean.class);
-        Mockito.when(bean.getAllCMSPages()).thenReturn(pages);
-        CMSContentItem item = Mockito.mock(CMSContentItem.class);
-        Mockito.when(item.getElementsPerPage()).thenReturn(3);
-        Mockito.when(item.getListPage()).thenReturn(3);
-        Mockito.when(item.getListOffset()).thenCallRealMethod();
-
-        assertEquals(6, item.getListOffset());
-
-        List<CMSPage> children = bean.getNestedPages(item);
-        assertEquals(1, children.size());
-        assertEquals(3, item.getListPage());
     }
 }

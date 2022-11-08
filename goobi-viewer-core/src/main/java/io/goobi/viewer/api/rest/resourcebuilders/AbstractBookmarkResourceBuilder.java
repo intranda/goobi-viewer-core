@@ -28,8 +28,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
@@ -57,39 +57,35 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
  */
 public abstract class AbstractBookmarkResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractBookmarkResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(AbstractBookmarkResourceBuilder.class);
 
     public abstract List<BookmarkList> getAllBookmarkLists() throws DAOException, IOException, RestApiException;
+
     public abstract SuccessMessage addBookmarkList() throws DAOException, IOException, RestApiException, IllegalRequestException;
+
     public abstract SuccessMessage addBookmarkList(String name) throws DAOException, IOException, RestApiException, IllegalRequestException;
+
     public abstract BookmarkList getBookmarkListById(Long id) throws DAOException, IOException, RestApiException;
+
     public abstract SuccessMessage deleteBookmarkList(Long id) throws DAOException, IOException, RestApiException, IllegalRequestException;
+
     public abstract Collection2 getAsCollection(Long id, AbstractApiUrlManager urls) throws DAOException, RestApiException, IOException;
+
     public abstract String getBookmarkListForMirador(Long id, AbstractApiUrlManager urls)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException;
 
-    public abstract SuccessMessage addBookmarkToBookmarkList(Long id,String pi, String logId,
+    public abstract SuccessMessage addBookmarkToBookmarkList(Long id, String pi, String logId,
             String pageString) throws DAOException, IOException, RestApiException;
-    public abstract SuccessMessage addBookmarkToBookmarkList(Long id,String pi) throws DAOException, IOException, RestApiException;
 
-    public abstract SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi,  String logId,
+    public abstract SuccessMessage addBookmarkToBookmarkList(Long id, String pi) throws DAOException, IOException, RestApiException;
+
+    public abstract SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi, String logId,
             String pageString) throws DAOException, IOException, RestApiException;
+
     public abstract SuccessMessage deleteBookmarkFromBookmarkList(Long id, String pi)
             throws DAOException, IOException, RestApiException;
 
-    /**
-     *
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     * @throws RestApiException
-     * @throws IllegalRequestException
-     * @deprecated not used anymore. Replaced by assigning share key
-     */
-    public abstract List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException, IllegalRequestException;
-
     public abstract Collection2 createCollection(BookmarkList list, AbstractApiUrlManager urls);
-
 
     /**
      * <p>
@@ -110,7 +106,6 @@ public abstract class AbstractBookmarkResourceBuilder {
         }
         return order;
     }
-
 
     public String getSharedBookmarkListForMirador(String key, AbstractApiUrlManager urls)
             throws DAOException, PresentationException, ContentNotFoundException, ViewerConfigurationException, IndexUnreachableException {
@@ -156,8 +151,6 @@ public abstract class AbstractBookmarkResourceBuilder {
         }
     }
 
-
-
     /**
      * @param list
      * @return
@@ -168,25 +161,24 @@ public abstract class AbstractBookmarkResourceBuilder {
         collection.setLabel(new SimpleMetadataValue(list.getName()));
         collection.setDescription(new SimpleMetadataValue(list.getDescription()));
         list.getItems().forEach(item -> {
-                try {
-                    URI manifestURI = builder.getManifestURI(item.getPi());
-                    Manifest2 manifest = new Manifest2(manifestURI);
-                    manifest.setLabel(new SimpleMetadataValue(item.getName()));
-                    manifest.addThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
-                    collection.addManifest(manifest);
-                    if(item.getOrder() != null) {
-                        Canvas2 canvas = new Canvas2(builder.getCanvasURI(item.getPi(), item.getOrder()));
-                        Sequence sequence = new Sequence(builder.getSequenceURI(item.getPi(), ""));
-                        sequence.setStartCanvas(canvas);
-                        manifest.setSequence(sequence);
-                    }
-                } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
-                    logger.error("Failed to add item " + item.getId() + " to manifest");
+            try {
+                URI manifestURI = builder.getManifestURI(item.getPi());
+                Manifest2 manifest = new Manifest2(manifestURI);
+                manifest.setLabel(new SimpleMetadataValue(item.getName()));
+                manifest.addThumbnail(new ImageContent(URI.create(item.getRepresentativeImageUrl())));
+                collection.addManifest(manifest);
+                if (item.getOrder() != null) {
+                    Canvas2 canvas = new Canvas2(builder.getCanvasURI(item.getPi(), item.getOrder()));
+                    Sequence sequence = new Sequence(builder.getSequenceURI(item.getPi(), ""));
+                    sequence.setStartCanvas(canvas);
+                    manifest.setSequence(sequence);
                 }
+            } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+                logger.error("Failed to add item " + item.getId() + " to manifest");
+            }
         });
         return collection;
     }
-
 
     /**
      * @param shareKey

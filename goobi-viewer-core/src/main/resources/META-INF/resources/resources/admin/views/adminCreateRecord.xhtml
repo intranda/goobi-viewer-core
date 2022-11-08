@@ -148,11 +148,8 @@
                                         <div class="col-9 admin__form-input">
                                             <h:selectOneMenu id="createDCLicense" styleClass="form-control" value="#{createRecordBean.license}">
                                                 <f:selectItem itemLabel="#{msg.select}" itemValue=""/>
-                                                <f:selectItems
-                                                value="#{createRecordBean.possibleLicenses}"
-                                                var="license"
-                                                itemLabel="#{license.label}"
-                                                itemValue="#{license.url}"/>
+                                                <f:selectItems value="#{createRecordBean.possibleLicenses}" var="license"
+                                                    itemLabel="#{license.label}" itemValue="#{license.url}"/>
                                             </h:selectOneMenu>
                                             <span class="admin__form-help-text">#{msg.admin__create_record__metadata_license__help}</span>
                                         </div>

@@ -33,10 +33,10 @@ import java.util.Set;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -53,6 +53,7 @@ import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleTyp
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.SecurityQuestion;
@@ -69,7 +70,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class ConfigurationTest extends AbstractTest {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
+    private static final Logger logger = LogManager.getLogger(ConfigurationTest.class);
 
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
@@ -156,25 +157,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getContentServerRealUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getContentServerRealUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("contentServer_value", DataManager.getInstance().getConfiguration().getContentServerRealUrl());
-    }
-
-    /**
-     * @see Configuration#getContentServerWrapperUrl()
-     * @verifies return correct value
-     */
-    @Deprecated
-    @Test
-    public void getContentServerWrapperUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("contentServerWrapper_value", DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-    }
-
-    /**
      * @see Configuration#getDownloadUrl()
      * @verifies return correct value
      */
@@ -188,7 +170,6 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    @Deprecated
     public void getDataRepositoriesHome_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("src/test/resources/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
     }
@@ -455,24 +436,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSourceFileUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("sourcefile_value", DataManager.getInstance().getConfiguration().getSourceFileUrl());
-    }
-
-    /**
-     * @see Configuration#getMultivolumeThumbnailHeight()
-     * @verifies return correct value
-     */
-    @Test
-    public void getMultivolumeThumbnailHeight_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(13, DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight());
-    }
-
-    /**
-     * @see Configuration#getMultivolumeThumbnailWidth()
-     * @verifies return correct value
-     */
-    @Test
-    public void getMultivolumeThumbnailWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(12, DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth());
     }
 
     /**
@@ -785,15 +748,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getAnonymousUserEmailAddress()
-     * @verifies return correct value
-     */
-    @Test
-    public void getAnonymousUserEmailAddress_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("we.are@anonymous.lulz", DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
-    }
-
-    /**
      * @see Configuration#getSolrUrl()
      * @verifies return correct value
      */
@@ -981,11 +935,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(10, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
-    @Test
-    public void getThumbnailsCompressionTest() throws Exception {
-        Assert.assertEquals(30, DataManager.getInstance().getConfiguration().getThumbnailsCompression());
-    }
-
     /**
      * @see Configuration#getUnconditionalImageAccessMaxWidth()
      * @verifies return correct value
@@ -1127,24 +1076,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isAddDublinCoreMetaTags()
-     * @verifies return correct value
-     */
-    @Test
-    public void isAddDublinCoreMetaTags_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags());
-    }
-
-    /**
-     * @see Configuration#isAddHighwirePressMetaTags()
-     * @verifies return correct value
-     */
-    @Test
-    public void isAddHighwirePressMetaTags_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags());
-    }
-
-    /**
      * @see Configuration#isMetadataPdfEnabled()
      * @verifies return correct value
      */
@@ -1160,15 +1091,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isDisplaySidebarWidgetDownloads_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloads());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetDownloadsIntroductionText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetDownloadsIntroductionText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("MASTERVALUE_DOWNLOADS_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText());
     }
 
     @Test
@@ -1312,24 +1234,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isShowSidebarEventMetadata()
-     * @verifies return correct value
-     */
-    @Test
-    public void isShowSidebarEventMetadata_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isShowSidebarEventMetadata());
-    }
-
-    /**
-     * @see Configuration#isShowRecordLabelIfNoOtherViews()
-     * @verifies return correct value
-     */
-    @Test
-    public void isShowRecordLabelIfNoOtherViews_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isShowRecordLabelIfNoOtherViews());
-    }
-
-    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -1429,6 +1333,50 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSearchSortingOptions()
+     * @verifies place default sorting field on top
+     */
+    @Test
+    public void getSearchSortingOptions_shouldPlaceDefaultSortingFieldOnTop() throws Exception {
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Assert.assertEquals(10, result.size());
+        Assert.assertEquals(SolrConstants.SORT_RANDOM, result.get(0).getField());
+    }
+
+    /**
+     * @see Configuration#getSearchSortingOptions()
+     * @verifies handle descending configurations correctly
+     */
+    @Test
+    public void getSearchSortingOptions_shouldHandleDescendingConfigurationsCorrectly() throws Exception {
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Assert.assertEquals(10, result.size());
+        Assert.assertEquals(SolrConstants.DATECREATED, result.get(6).getField());
+        Assert.assertEquals(SolrConstants.DATECREATED, result.get(7).getField());
+    }
+
+    /**
+     * @see Configuration#getSearchSortingOptions()
+     * @verifies ignore secondary fields from default config
+     */
+    @Test
+    public void getSearchSortingOptions_shouldIgnoreSecondaryFieldsFromDefaultConfig() throws Exception {
+        List<SearchSortingOption> result = DataManager.getInstance().getConfiguration().getSearchSortingOptions();
+        Assert.assertEquals(10, result.size());
+        Assert.assertEquals("SORT_YEARPUBLISH", result.get(8).getField());
+        Assert.assertEquals("SORT_YEARPUBLISH", result.get(9).getField());
+    }
+
+    /**
+     * @see Configuration#getUrnResolverFields()
+     * @verifies return all configured elements
+     */
+    @Test
+    public void getUrnResolverFields_shouldReturnAllConfiguredElements() throws Exception {
+        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getUrnResolverFields().size());
+    }
+
+    /**
      * @see Configuration#isUrnDoRedirect()
      * @verifies return correct value
      */
@@ -1481,6 +1429,7 @@ public class ConfigurationTest extends AbstractTest {
     public void getSortFields_shouldReturnReturnAllConfiguredElements() throws Exception {
         List<String> fields = DataManager.getInstance().getConfiguration().getSortFields();
         Assert.assertEquals(6, fields.size());
+        Assert.assertEquals("!" + SolrConstants.DATECREATED, fields.get(4));
         Assert.assertEquals("SORT_YEARPUBLISH;SORT_TITLE", fields.get(5));
     }
 
@@ -1548,15 +1497,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getAdvancedSearchDefaultItemNumber()
-     * @verifies return correct value
-     */
-    @Test
-    public void getAdvancedSearchDefaultItemNumber_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
-    }
-
-    /**
      * @see Configuration#getAdvancedSearchFields()
      * @verifies return all values
      */
@@ -1565,6 +1505,7 @@ public class ConfigurationTest extends AbstractTest {
         List<AdvancedSearchFieldConfiguration> result = DataManager.getInstance().getConfiguration().getAdvancedSearchFields();
         Assert.assertEquals(11, result.size());
         Assert.assertTrue(result.get(0).isHierarchical());
+        Assert.assertTrue(result.get(0).isVisible());
         Assert.assertTrue(result.get(5).isRange());
         Assert.assertTrue(result.get(1).isUntokenizeForPhraseSearch());
         Assert.assertEquals("#SEPARATOR1#", result.get(7).getField());
@@ -1863,15 +1804,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isForceJpegConversion()
-     * @verifies return correct value
-     */
-    @Test
-    public void isForceJpegConversion_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isForceJpegConversion());
-    }
-
-    /**
      * @see Configuration#getAltoFolder()
      * @verifies return correct value
      */
@@ -1980,15 +1912,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#showThumbnailsInToc()
-     * @verifies return correct value
-     */
-    @Test
-    public void showThumbnailsInToc_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().showThumbnailsInToc());
-    }
-
-    /**
      * @see Configuration#getPiwikBaseURL()
      * @verifies return correct value
      */
@@ -2075,43 +1998,12 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#useCustomNavBar()
-     * @verifies return correct value
-     */
-    @Test
-    public void useCustomNavBar_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().useCustomNavBar());
-    }
-
-    /**
      * @see Configuration#getCmsMediaFolder()
      * @verifies return correct value
      */
     @Test
     public void getCmsMediaFolder_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("cmsMediaFolder_value", DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-    }
-
-    /**
-     * @see Configuration#getCmsMediaFolder()
-     * @verifies return correct value
-     */
-    @Test
-    public void getCmsTemplateFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("cmsTemplateFolder_value", DataManager.getInstance().getConfiguration().getCmsTemplateFolder());
-    }
-
-    /**
-     * @see Configuration#getCmsClassifications()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getCmsClassifications_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getCmsClassifications().size());
-        Assert.assertEquals("classification1", DataManager.getInstance().getConfiguration().getCmsClassifications().get(0));
-        Assert.assertEquals("classification2", DataManager.getInstance().getConfiguration().getCmsClassifications().get(1));
-        Assert.assertEquals("classification3", DataManager.getInstance().getConfiguration().getCmsClassifications().get(2));
-        Assert.assertEquals("classification4", DataManager.getInstance().getConfiguration().getCmsClassifications().get(3));
     }
 
     @Test
@@ -2237,15 +2129,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isBoostTopLevelDocstructs()
-     * @verifies return correct value
-     */
-    @Test
-    public void isBoostTopLevelDocstructs_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs());
-    }
-
-    /**
      * @see Configuration#getRecordGroupIdentifierFields()
      * @verifies return all configured values
      */
@@ -2334,12 +2217,9 @@ public class ConfigurationTest extends AbstractTest {
     public void testBrokenConfig() {
         DataManager.getInstance()
                 .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
-        String localConfig = DataManager.getInstance().getConfiguration().getConfigLocalPath();
-        Assert.assertEquals(localConfig, "src/test/resources/localConfig/");
-        String viewerHome = DataManager.getInstance().getConfiguration().getViewerHome();
-        Assert.assertEquals(viewerHome, "src/test/resources/data/viewer/");
-        String dataRepositories = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-        Assert.assertEquals(dataRepositories, "src/test/resources/data/viewer/data/");
+        Assert.assertEquals("src/test/resources/localConfig/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+        Assert.assertEquals("src/test/resources/data/viewer/", DataManager.getInstance().getConfiguration().getViewerHome());
+        Assert.assertEquals("src/test/resources/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
 
     }
 
@@ -2380,21 +2260,21 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getDocstructTargetPageType(String)
+     * @see Configuration#getRecordTargetPageType(String)
      * @verifies return correct value
      */
     @Test
-    public void getDocstructTargetPageType_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("toc", DataManager.getInstance().getConfiguration().getDocstructTargetPageType("Catalogue"));
+    public void getRecordTargetPageType_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("toc", DataManager.getInstance().getConfiguration().getRecordTargetPageType("Catalogue"));
     }
 
     /**
-     * @see Configuration#getDocstructTargetPageType(String)
+     * @see Configuration#getRecordTargetPageType(String)
      * @verifies return null if docstruct not found
      */
     @Test
-    public void getDocstructTargetPageType_shouldReturnNullIfDocstructNotFound() throws Exception {
-        Assert.assertNull(DataManager.getInstance().getConfiguration().getDocstructTargetPageType("notfound"));
+    public void getRecordTargetPageType_shouldReturnNullIfDocstructNotFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getConfiguration().getRecordTargetPageType("notfound"));
     }
 
     /**
@@ -2495,15 +2375,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals("MD_ACCESSLOCATIONS", results.get(0));
     }
 
-    /**
-     * @see Configuration#isDisplayEmptyTocInSidebar()
-     * @verifies return correct value
-     */
-    @Test
-    public void isDisplayEmptyTocInSidebar_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
-    }
-
     @Test
     public void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled());
@@ -2533,13 +2404,13 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getSitelinksField_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
     }
 
     @Test
     public void getGetConfiguredCollections() {
         List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollections();
-        Assert.assertEquals(fields.size(), 3);
+        Assert.assertEquals(3, fields.size());
         Assert.assertTrue(fields.contains("DC"));
         Assert.assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
         Assert.assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
@@ -2792,7 +2663,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(2, licenses.size());
         Assert.assertEquals("CC0 1.0", licenses.get(0).getLabel());
         Assert.assertEquals("http://rightsstatements.org/vocab/InC/1.0/", licenses.get(1).getUrl());
-        Assert.assertEquals("", licenses.get(0).getIcon());
     }
 
     @Test
@@ -2819,16 +2689,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertNotNull(marker);
         Assert.assertEquals("maps__marker_2", marker.getName());
         Assert.assertEquals("fa-search", marker.getIcon());
-    }
-
-    /**
-     * @see Configuration#getConnectorVersionUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getConnectorVersionUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("http://localhost:8081/M2M/oai/tools?action=getVersion",
-                DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
     }
 
     /**
@@ -2859,15 +2719,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageIntroductionText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageIntroductionText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("MASTERVALUE_USAGE_INTRO", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText());
-    }
-
-    /**
      * @see Configuration#isDisplayWidgetUsageDownloadOptions()
      * @verifies return correct value
      */
@@ -2892,34 +2743,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinksDocstructIntroText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageCitationLinksDocstructIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("record intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinksImageIntroText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageCitationLinksImageIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("docstruct intro text",
-                DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinksRecordIntroText()
-     * @verifies return correct value
-     */
-    @Test
-    public void getSidebarWidgetUsageCitationLinksRecordIntroText_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("image intro text", DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText());
     }
 
     /**
@@ -3060,6 +2883,22 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean,int)
+     * @verifies load metadata config attributes correctly
+     */
+    @Test
+    public void getMetadataFromSubnodeConfig_shouldLoadMetadataConfigAttributesCorrectly() throws Exception {
+        HierarchicalConfiguration<ImmutableNode> metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(0).template(0).metadata(4)");
+        Assert.assertNotNull(metadataConfig);
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false, 0);
+        Assert.assertNotNull(md);
+        Assert.assertEquals("MD_CATALOGIDSOURCE", md.getLabel());
+        Assert.assertEquals("LINK_CATALOGIDSOURCE", md.getMasterValue());
+        Assert.assertTrue(md.isTopstructOnly());
+    }
+
+    /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
      * @verifies load parameters correctly
      */
@@ -3152,16 +2991,6 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isRememberImageZoom_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isRememberImageZoom());
-    }
-
-    /**
-     * @see Configuration#isFuzzySearchEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    public void isFuzzySearchEnabled_shouldReturnCorrectValue() throws Exception {
-        DataManager.getInstance().getConfiguration().overrideValue("search.fuzzy[@enabled]", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFuzzySearchEnabled());
     }
 
     /**

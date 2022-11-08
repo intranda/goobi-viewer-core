@@ -30,18 +30,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -74,11 +65,21 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.HTTPException;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
 /**
  * Utility methods for HTTP operations, mail, etc.
@@ -86,21 +87,28 @@ import io.goobi.viewer.exceptions.HTTPException;
  */
 public class NetTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(NetTools.class);
+    private static final Logger logger = LogManager.getLogger(NetTools.class);
 
     private static final int HTTP_TIMEOUT = 30000;
     /** Constant <code>ADDRESS_LOCALHOST_IPV4="127.0.0.1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV4 = "127.0.0.1";
     /** Constant <code>ADDRESS_LOCALHOST_IPV6="0:0:0:0:0:0:0:1"</code> */
     public static final String ADDRESS_LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
-    
-    public static final String HTTP_HEADER_CONTENT_DISPOSITION ="Content-Disposition";
+
+    public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
     public static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
+    private static final String HTTP_METHOD_DELETE = "DELETE";
 
     public static final String PARAM_CLEAR_CACHE_ALL = "all";
     public static final String PARAM_CLEAR_CACHE_CONTENT = "content";
     public static final String PARAM_CLEAR_CACHE_THUMBS = "thumbs";
     public static final String PARAM_CLEAR_CACHE_PDF = "pdf";
+
+    /**
+     * Hiding public constructor.
+     */
+    private NetTools() {
+    }
 
     /**
      * <p>
@@ -150,7 +158,7 @@ public class NetTools {
      * @throws IOException
      * @throws HTTPException
      */
-    public static String getWebContentGET(String url) throws ClientProtocolException, IOException, HTTPException {
+    public static String getWebContentGET(String url) throws IOException, HTTPException {
         return getWebContentGET(url, HTTP_TIMEOUT);
     }
 
@@ -166,7 +174,7 @@ public class NetTools {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    public static String getWebContentGET(String url, int timeout) throws ClientProtocolException, IOException, HTTPException {
+    public static String getWebContentGET(String url, int timeout) throws IOException, HTTPException {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setSocketTimeout(timeout)
                 .setConnectTimeout(timeout)
@@ -204,7 +212,7 @@ public class NetTools {
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
     public static String getWebContentPOST(String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
-            String contentType, String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
+            String contentType, String stringBody, File file) throws IOException, HTTPException {
         return getWebContent("POST", url, headers, params, cookies, contentType, stringBody, file);
     }
 
@@ -224,8 +232,8 @@ public class NetTools {
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
     public static String getWebContentDELETE(String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
-            String stringBody) throws ClientProtocolException, IOException, HTTPException {
-        return getWebContent("DELETE", url, headers, params, cookies, null, stringBody, null);
+            String stringBody) throws IOException {
+        return getWebContent(HTTP_METHOD_DELETE, url, headers, params, cookies, null, stringBody, null);
     }
 
     /**
@@ -247,8 +255,8 @@ public class NetTools {
      * @throws io.goobi.viewer.exceptions.HTTPException if return code is not 200
      */
     static String getWebContent(String method, String url, Map<String, String> headers, Map<String, String> params, Map<String, String> cookies,
-            String contentType, String stringBody, File file) throws ClientProtocolException, IOException, HTTPException {
-        if (method == null || !("POST".equals(method.toUpperCase()) || "PUT".equals(method.toUpperCase()) || "DELETE".equals(method.toUpperCase()))) {
+            String contentType, String stringBody, File file) throws IOException {
+        if (method == null || !("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method) || HTTP_METHOD_DELETE.equalsIgnoreCase(method))) {
             throw new IllegalArgumentException("Illegal method: " + method);
         }
         if (url == null) {
@@ -261,16 +269,16 @@ public class NetTools {
             nameValuePairs = new ArrayList<>(0);
         } else {
             nameValuePairs = new ArrayList<>(params.size());
-            for (String key : params.keySet()) {
-                nameValuePairs.add(new BasicNameValuePair(key, params.get(key)));
+            for (Entry<String, String> entry : params.entrySet()) {
+                nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
             }
         }
         HttpClientContext context = null;
         CookieStore cookieStore = new BasicCookieStore();
         if (cookies != null && !cookies.isEmpty()) {
             context = HttpClientContext.create();
-            for (String key : cookies.keySet()) {
-                BasicClientCookie cookie = new BasicClientCookie(key, cookies.get(key));
+            for (Entry<String, String> entry : cookies.entrySet()) {
+                BasicClientCookie cookie = new BasicClientCookie(entry.getKey(), entry.getValue());
                 cookie.setPath("/");
                 cookie.setDomain("0.0.0.0");
                 cookieStore.addCookie(cookie);
@@ -381,8 +389,7 @@ public class NetTools {
      * @throws UnsupportedEncodingException
      */
     private static boolean postMail(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body, String smtpServer,
-            final String smtpUser,
-            final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity, Integer smtpPort)
+            final String smtpUser, final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity, Integer smtpPort)
             throws MessagingException, UnsupportedEncodingException {
         if (recipients == null) {
             throw new IllegalArgumentException("recipients may not be null");
@@ -453,8 +460,8 @@ public class NetTools {
         props.setProperty("mail.smtp.connectiontimeout", "30000");
         props.setProperty("mail.smtp.timeout", "30000");
         props.setProperty("mail.smtp.auth", String.valueOf(auth));
-        logger.debug("Connecting to email server " + smtpServer + " on port " + String.valueOf(smtpPort) + " via SMTP security "
-                + smtpSecurity.toUpperCase());
+        logger.debug("Connecting to email server {} on port {} via SMTP security {}", smtpServer, String.valueOf(smtpPort),
+                smtpSecurity.toUpperCase());
         // logger.trace(props.toString());
 
         Session session;
@@ -462,7 +469,7 @@ public class NetTools {
             //            props.setProperty("mail.smtp.user", smtpUser);
             //            props.setProperty("mail.smtp.password", smtpPassword);
             // with authentication
-            session = Session.getInstance(props, new javax.mail.Authenticator() {
+            session = Session.getInstance(props, new jakarta.mail.Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(smtpUser, smtpPassword);
@@ -498,8 +505,7 @@ public class NetTools {
             // Message body
             MimeBodyPart messagePart = new MimeBodyPart();
             messagePart.setText(body, "utf-8");
-            // messagePart.setHeader("Content-Type", "text/plain; charset=\"utf-8\"");
-            messagePart.setHeader("Content-Type", "text/html; charset=\"utf-8\"");
+            messagePart.setHeader(HTTP_HEADER_CONTENT_TYPE, "text/html; charset=\"utf-8\"");
             MimeMultipart multipart = new MimeMultipart();
             multipart.addBodyPart(messagePart);
             msg.setContent(multipart);
@@ -704,13 +710,29 @@ public class NetTools {
             return false;
         }
     }
-    
+
     public static boolean isValidSubnetMask(String subnetMask) {
-        try {            
+        try {
             new SubnetUtils(subnetMask);
             return true;
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    /**
+     * Check if the request Contains a 'User-Agent' header matching the regex configured in {@link Configuration#getCrawlerDetectionRegex()}. If it
+     * matches, the request is assumed be be from a web-crawler bot and not from a human. Identifying a web-crawler request via the
+     * {@link org.apache.catalina.valves.CrawlerSessionManagerValve} session attribute does not work for this purpose since it is only applied to the
+     * session after the first request
+     * 
+     * @param request
+     * @return true if the request is made by a web crawler
+     */
+    public static boolean isCrawlerBotRequest(HttpServletRequest request) {
+        String userAgent = request != null ? request.getHeader("User-Agent") : "";
+        return StringUtils.isNotBlank(userAgent) &&
+                userAgent.matches(DataManager.getInstance().getConfiguration().getCrawlerDetectionRegex());
+
     }
 }

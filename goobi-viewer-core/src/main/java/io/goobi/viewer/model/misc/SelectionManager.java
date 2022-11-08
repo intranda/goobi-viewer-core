@@ -74,13 +74,13 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     }
 
     public Boolean get(Object item) {
-        if(isSelectAll()) {
+        if (isSelectAll()) {
             return Boolean.TRUE;
-        } else {
-            return Optional.ofNullable(selectionMap.get(item)).orElse(Boolean.FALSE);
         }
+        return Optional.ofNullable(selectionMap.get(item)).orElse(Boolean.FALSE);
     }
 
+    @SuppressWarnings("unchecked")
     public Boolean put(Object item, Boolean selected) {
         try {
             return setSelected((T) item, selected);
@@ -93,8 +93,8 @@ public class SelectionManager<T> implements Map<T, Boolean> {
         return get(item);
     }
 
-    public Boolean setSelected(T item, Boolean selected) {
-        if(!selected) {
+    public Boolean setSelected(T item, boolean selected) {
+        if (!selected) {
             setSelectAll(false);
         }
         return selectionMap.put(item, selected);
@@ -104,13 +104,11 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      *
      */
     public List<T> getAllSelected() {
-        if(isSelectAll()) {
+        if (isSelectAll()) {
             return new ArrayList<>(selectionMap.keySet());
-        } else {
-            return selectionMap.entrySet().stream().filter(e -> Boolean.TRUE.equals(e.getValue())).map(e -> e.getKey()).collect(Collectors.toList());
         }
+        return selectionMap.entrySet().stream().filter(e -> Boolean.TRUE.equals(e.getValue())).map(e -> e.getKey()).collect(Collectors.toList());
     }
-
 
     /* (non-Javadoc)
      * @see java.util.Map#clear()
@@ -166,7 +164,7 @@ public class SelectionManager<T> implements Map<T, Boolean> {
      */
     @Override
     public void putAll(Map<? extends T, ? extends Boolean> m) {
-        if(m.containsValue(Boolean.FALSE)) {
+        if (m.containsValue(Boolean.FALSE)) {
             setSelectAll(false);
         }
         selectionMap.putAll(m);
@@ -195,7 +193,5 @@ public class SelectionManager<T> implements Map<T, Boolean> {
     public Collection<Boolean> values() {
         return selectionMap.values();
     }
-
-
 
 }

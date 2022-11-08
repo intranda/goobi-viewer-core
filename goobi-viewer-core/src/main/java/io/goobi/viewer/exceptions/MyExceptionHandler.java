@@ -43,8 +43,8 @@ import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.PrettyException;
@@ -66,7 +66,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyExceptionHandler.class);
+    private static final Logger logger = LogManager.getLogger(MyExceptionHandler.class);
 
     /**
      * <p>
@@ -77,12 +77,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      */
     public MyExceptionHandler(ExceptionHandler wrapped) {
         super(wrapped);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ExceptionHandler getWrapped() {
-        return super.getWrapped();
     }
 
     /** {@inheritDoc} */
@@ -281,6 +275,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      * @param fc
      * @return
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public String getSessionDetails(FacesContext fc) {
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
         if (session == null) {

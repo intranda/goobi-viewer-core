@@ -53,7 +53,7 @@ var Statistics = ( function() {
                 // will be our tooltip
                 var mouseY = ev.pageY - 20 - top;
                 
-                $( '#chartpseudotooltip' ).html( Statistics.chartLabel );
+                document.getElementById('chartpseudotooltip' ).innerHTML = Statistics.chartLabel;
                 var cssObj = {
                     'position': 'fixed',
                     'left': mouseX + 'px', // usually needs more offset here

@@ -17,8 +17,8 @@
 
     <ui:define name="head">
         <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"  rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
         </f:view>
     </ui:define>
 
@@ -55,7 +55,7 @@
 							<!-- NAME OF THE RECORD -->
 							<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 		
-		                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+		                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 								<viewerComponent:copyrightIndicator />
 							</ui:fragment>
 		
@@ -116,7 +116,7 @@
                     lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
                     urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
                     urlSuffix="#topDocAnchor"
-                    rtl="#{activeDocumentBean.viewManager.topDocument.rtl}" />
+                    rtl="#{activeDocumentBean.viewManager.topStructElement.rtl}" />
 
 
 				<!-- MODULE CONTRIBUTIONS -->
@@ -186,6 +186,8 @@
 		<widgetComponent:widget_geoportail/>
 
         <widgetComponent:widget_searchInCurrentItem />
+
+        <widgetComponent:widget_statistics_usage />
 
         <widgetComponent:widget_archives />
 

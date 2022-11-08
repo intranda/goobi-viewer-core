@@ -33,12 +33,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -60,7 +61,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class MetadataBean {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(MetadataBean.class);
+    private static final Logger logger = LogManager.getLogger(MetadataBean.class);
 
     @Inject
     private ActiveDocumentBean activeDocumentBean;
@@ -141,7 +142,7 @@ public class MetadataBean {
             logger.error(e.getMessage());
             Messages.error(e.getMessage());
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             Messages.error(e.getMessage());
         }
 
@@ -236,7 +237,7 @@ public class MetadataBean {
 
             return allMetadataElementsforPage.get(order);
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
 
         }
 

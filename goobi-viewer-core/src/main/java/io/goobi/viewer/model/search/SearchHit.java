@@ -45,8 +45,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.jsoup.Jsoup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -133,7 +133,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(SearchHit.class);
+    private static final Logger logger = LogManager.getLogger(SearchHit.class);
 
     private static final String SEARCH_HIT_TYPE_PREFIX = "searchHitType_";
 
@@ -507,7 +507,7 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         // Check whether TEI is available at all
-        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase());
+        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
         if (StringUtils.isEmpty(teiFilename)) {
             teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI);
         }
@@ -755,7 +755,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
                         if (!(docFieldName.startsWith("MD_") || docFieldName.startsWith("NORM_"))
-                                || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                                || docFieldName.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                             continue;
                         }
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {

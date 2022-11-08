@@ -42,16 +42,15 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -82,6 +81,7 @@ import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.viewer.Feedback;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.mail.MessagingException;
 
 /**
  * Primarily for user authentication.
@@ -92,7 +92,7 @@ public class UserBean implements Serializable {
 
     private static final long serialVersionUID = 5917173704087714181L;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserBean.class);
+    private static final Logger logger = LogManager.getLogger(UserBean.class);
 
     @Inject
     private CaptchaBean captchaBean;
@@ -372,7 +372,7 @@ public class UserBean implements Serializable {
                     }
 
                     // Update personal filter query suffix
-                    SearchHelper.updateFilterQuerySuffix(request, null);
+                    SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
 
                     // Reset loaded user-generated content lists
                     BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
@@ -430,7 +430,7 @@ public class UserBean implements Serializable {
         }
         try {
             wipeSession(request);
-            SearchHelper.updateFilterQuerySuffix(request, null);
+            SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
             // Reset loaded user-generated content lists
             BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {

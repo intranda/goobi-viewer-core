@@ -16,8 +16,8 @@
 
     <ui:define name="head">
         <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
         </f:view>
     </ui:define>
 
@@ -48,7 +48,7 @@
 						<!-- NAME OF THE RECORD -->
 						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 	
-	                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+	                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 							<viewerComponent:copyrightIndicator />
 						</ui:fragment>
 	
@@ -57,10 +57,10 @@
 			</div>
 
             <h:panelGroup layout="block">
-                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+                <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
                     <f:attribute name="styleClass" value="view-thumbs__thumbnails -ltr"/>
                 </c:if>
-                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+                <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                     <f:attribute name="styleClass" value="view-thumbs__thumbnails -rtl"/>
                 </c:if>
                 <ui:repeat var="image" value="#{activeDocumentBean.viewManager.imagesSection}">
@@ -135,8 +135,14 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="thumbs" />
+        
+        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+        	<widgetComponent:widget_copyrightInfo />
+        </ui:fragment>
 
         <widgetComponent:widget_searchInCurrentItem />
+        
+        <widgetComponent:widget_statistics_usage />
 
         <widgetComponent:widget_archives />
 

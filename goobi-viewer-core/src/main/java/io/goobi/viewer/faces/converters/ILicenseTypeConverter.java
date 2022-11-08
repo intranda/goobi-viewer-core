@@ -26,8 +26,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -44,7 +44,7 @@ import io.goobi.viewer.model.security.LicenseType;
 public class ILicenseTypeConverter implements Converter<ILicenseType> {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(ILicenseTypeConverter.class);
+    private static final Logger logger = LogManager.getLogger(ILicenseTypeConverter.class);
 
     /** {@inheritDoc} */
     @Override

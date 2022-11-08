@@ -25,7 +25,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
@@ -62,12 +61,12 @@ import org.apache.commons.configuration2.convert.DisabledListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.io.FileHandler;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -83,7 +82,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class ViewerResourceBundle extends ResourceBundle {
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
+    private static final Logger logger = LogManager.getLogger(ViewerResourceBundle.class);
 
     private static final Object lock = new Object();
 
@@ -125,24 +124,23 @@ public class ViewerResourceBundle extends ResourceBundle {
             @Override
             public void run() {
                 try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
-                    final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                    path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                     while (true) {
                         final WatchKey wk = watchService.take();
                         for (WatchEvent<?> event : wk.pollEvents()) {
                             final Path changed = (Path) event.context();
                             final String fileName = changed.getFileName().toString();
-                            logger.trace("File has been modified: {}", fileName);
                             if (fileName.startsWith("messages_")) {
+                                logger.trace("File has been modified: {}", fileName);
                                 final String language = fileName.substring(9, 11);
                                 reloadNeededMap.put(language, true);
                                 logger.debug("File '{}' (language: {}) has been modified, triggering bundle reload...",
-                                        changed.getFileName().toString(), language);
+                                        changed.getFileName(), language);
                             }
                         }
                         if (!wk.reset()) {
                             break;
                         }
-                        // Thread.sleep(100);
                     }
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
@@ -478,13 +476,13 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
 
         // Remove leading _LANG_XX
-        if (key.contains(SolrConstants._LANG_)) {
+        if (key.contains(SolrConstants.MIDFIX_LANG)) {
             String translation = getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
             if (translation != null) {
                 return translation;
             }
             // Fall back to translations without the language part
-            key = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
+            key = key.replaceAll(SolrConstants.MIDFIX_LANG + "[A-Z][A-Z]", "");
         }
 
         return getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
@@ -503,15 +501,15 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
 
         // Remove trailing _DD (collection names for drill-down)
-        if (key.endsWith(SolrConstants._FACETS_SUFFIX)) {
-            String newKey = key.replace(SolrConstants._FACETS_SUFFIX, "");
+        if (key.endsWith(SolrConstants.SUFFIX_DD)) {
+            String newKey = key.replace(SolrConstants.SUFFIX_DD, "");
             if (bundle.containsKey(newKey)) {
                 return bundle.getString(newKey);
             }
         }
         // Remove trailing _UNTOKENIZED
-        if (key.endsWith(SolrConstants._UNTOKENIZED)) {
-            String newKey = key.replace(SolrConstants._UNTOKENIZED, "");
+        if (key.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+            String newKey = key.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
             if (bundle.containsKey(newKey)) {
                 return bundle.getString(newKey);
             }
@@ -519,8 +517,8 @@ public class ViewerResourceBundle extends ResourceBundle {
         // Remove leading MD_ (metadata fields)
         if (key.startsWith("MD_")) {
             String newKey = key.substring(3);
-            if (newKey.endsWith(SolrConstants._UNTOKENIZED)) {
-                newKey = newKey.replace(SolrConstants._UNTOKENIZED, "");
+            if (newKey.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                newKey = newKey.replace(SolrConstants.SUFFIX_UNTOKENIZED, "");
             }
             if (bundle.containsKey(newKey)) {
                 return bundle.getString(newKey);
@@ -613,7 +611,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return getAllLocales(servletContext);
             } catch (NullPointerException e) {
                 logger.warn("No faces context instance available");
-                allLocales = Arrays.asList( Locale.ENGLISH, Locale.GERMAN);
+                allLocales = Arrays.asList(Locale.ENGLISH, Locale.GERMAN);
             }
         }
         return allLocales;
@@ -668,10 +666,8 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (locales != null) {
             for (Locale locale : locales) {
                 String translation = ViewerResourceBundle.getTranslation(key, locale, false, true);
-                if (key != null && StringUtils.isNotBlank(translation)) {
-                    if (allowKeyAsTranslation || !key.equals(translation)) {
-                        translations.put(locale.getLanguage(), translation);
-                    }
+                if (key != null && StringUtils.isNotBlank(translation) && (allowKeyAsTranslation || !key.equals(translation))) {
+                    translations.put(locale.getLanguage(), translation);
                 }
             }
         }
@@ -699,12 +695,17 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return getLocalesFromFile(facesConfigPath);
             }
             throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Error getting locales from faces-config", e);
             return getFacesLocales();
         }
     }
 
+    /**
+     * 
+     * @param servletContext
+     * @return
+     */
     public static Locale getDefaultLocaleFromFacesConfig(ServletContext servletContext) {
         if (servletContext == null) {
             return getDefaultLocale();
@@ -717,7 +718,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return getDefaultLocaleFromFile(facesConfigPath);
             }
             throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Error getting locales from faces-config", e);
             return getDefaultLocale();
         }
@@ -745,7 +746,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             Path path =
                     Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(), "messages_" + locale.getLanguage() + ".properties");
             if (Files.exists(path)) {
-                logger.trace("Local message file already exists: {}", path.toAbsolutePath().toString());
+                logger.trace("Local message file already exists: {}", path.toAbsolutePath());
                 continue;
             }
             try {
@@ -754,7 +755,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 try (BufferedWriter writer = Files.newBufferedWriter(path)) {
                     writer.write("");
                 }
-                logger.info("Created local message file: {}", path.toAbsolutePath().toString());
+                logger.info("Created local message file: {}", path.toAbsolutePath());
             } catch (IOException e) {
                 logger.error("Could not create local message file: {}", e.getMessage());
             }

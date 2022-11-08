@@ -30,8 +30,8 @@ import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -54,7 +54,7 @@ import io.goobi.viewer.model.security.user.User;
  */
 public class LitteraProvider extends HttpAuthenticationProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(LitteraProvider.class);
+    private static final Logger logger = LogManager.getLogger(LitteraProvider.class);
     /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
     /** Constant <code>TYPE_USER_PASSWORD="userPassword"</code> */

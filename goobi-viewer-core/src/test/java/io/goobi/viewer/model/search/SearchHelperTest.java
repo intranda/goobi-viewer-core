@@ -58,6 +58,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
@@ -124,68 +125,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, CollectionResult> collections =
                 SearchHelper.findAllCollectionsFromField(SolrConstants.DC, null, null, true, true, ".");
         Assert.assertTrue(collections.size() > 40);
-        //        List<String> keys = new ArrayList<>(collections.keySet());
-        // Collections.sort(keys);
-        //        for (String key : keys) {
-        //            switch (key) {
-        //                case ("dc3d"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition"):
-        //                    Assert.assertEquals(Long.valueOf(6), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition.fulltextlocked"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition.movingwall"):
-        //                    Assert.assertEquals(Long.valueOf(1), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcaccesscondition.pdflocked"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcannotations"):
-        //                    Assert.assertEquals(Long.valueOf(15), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcannotations.generated"):
-        //                    Assert.assertEquals(Long.valueOf(15), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcannotations.geocoordinates"):
-        //                    Assert.assertEquals(Long.valueOf(3), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata"):
-        //                    Assert.assertEquals(Long.valueOf(12), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata.gnd"):
-        //                    Assert.assertEquals(Long.valueOf(5), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata.provenance"):
-        //                    Assert.assertEquals(Long.valueOf(1), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcauthoritydata.viaf"):
-        //                    Assert.assertEquals(Long.valueOf(4), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcboarndigital"):
-        //                    Assert.assertEquals(Long.valueOf(2), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcconvolute"):
-        //                    Assert.assertEquals(Long.valueOf(6), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcdownload"):
-        //                    Assert.assertEquals(Long.valueOf(3), collections.get(key).getCount());
-        //                    break;
-        //                // TODO others
-        //                case ("dcnewspaper"):
-        //                    Assert.assertEquals(Long.valueOf(18), collections.get(key).getCount());
-        //                    break;
-        //                case ("dcrelations"):
-        //                    Assert.assertEquals(Long.valueOf(120), collections.get(key).getCount());
-        //                    break;
-        //                default:
-        //                    //                    Assert.fail("Unknown collection name: " + key);
-        //                    break;
-        //            }
-        //    }
-
     }
 
     @Test
@@ -211,7 +150,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null, Optional.empty(), null);
+        String suffix =
+                SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, null, Optional.empty(),
+                        IPrivilegeHolder.PRIV_LIST);
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
@@ -226,20 +167,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasLicensePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null, Optional.empty(), null);
+        String suffix =
+                SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
+                        IPrivilegeHolder.PRIV_LIST);
         // User has listing privilege for 'license type 1 name'
         Assert.assertTrue(suffix, suffix.contains("ACCESSCONDITION:\"license type 1 name\""));
-    }
-
-    /**
-     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String)
-     * @verifies construct suffix correctly if user has overriding license privilege
-     */
-    @Test
-    public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasOverridingLicensePrivilege() throws Exception {
-        User user = DataManager.getInstance().getDao().getUser(2);
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null, Optional.empty(), null);
-        Assert.assertTrue(!suffix.contains("license type 4 name"));
     }
 
     /**
@@ -250,12 +182,14 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfIpRangeHasLicensePrivilege() throws Exception {
         {
             // Localhost with full access enabled
-            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "127.0.0.1", Optional.empty(), null);
+            String suffix = SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, "127.0.0.1",
+                    Optional.empty(), IPrivilegeHolder.PRIV_LIST);
             Assert.assertEquals("", suffix);
         }
         {
             // Regular IP address (has listing privilege for 'restriction on access')
-            String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, "1.2.3.4", Optional.empty(), null);
+            String suffix = SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, "1.2.3.4",
+                    Optional.empty(), IPrivilegeHolder.PRIV_LIST);
             Assert.assertEquals(
                     " +(ACCESSCONDITION:\"OPENACCESS\""
                             + " ACCESSCONDITION:\"license type 2 name\""
@@ -271,12 +205,73 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfMovingWallLicense() throws Exception {
-        String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null, Optional.empty(), null);
+        String suffix =
+                SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), null, null, Optional.empty(),
+                        IPrivilegeHolder.PRIV_LIST);
         Assert.assertEquals(
                 " +(ACCESSCONDITION:\"OPENACCESS\""
                         + " ACCESSCONDITION:\"license type 2 name\""
                         + " (+ACCESSCONDITION:\"restriction on access\" +" + SearchHelper.getMovingWallQuery() + "))",
                 suffix);
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,Optional,String)
+     * @verifies add overridden license types from user privilege
+     */
+    @Test
+    public void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromUserPrivilege() throws Exception {
+        User user = DataManager.getInstance().getDao().getUser(2);
+        String suffix =
+                SearchHelper.getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
+                        IPrivilegeHolder.PRIV_LIST);
+        Assert.assertTrue(suffix.contains("license type 1 name"));
+        Assert.assertTrue(suffix.contains("license type 4 name"));
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,Optional,String)
+     * @verifies add overridden license types from license type privilege
+     */
+    @Test
+    public void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromLicenseTypePrivilege() throws Exception {
+        List<LicenseType> licenseTypes = new ArrayList<>(3);
+        LicenseType lt = new LicenseType("lt1");
+        Assert.assertTrue(lt.getPrivileges().add(IPrivilegeHolder.PRIV_LIST));
+        licenseTypes.add(lt);
+        for (int i = 2; i <= 3; ++i) {
+            LicenseType lt2 = new LicenseType("lt" + i);
+            licenseTypes.add(lt2);
+            lt.getOverriddenLicenseTypes().add(lt2);
+        }
+
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(licenseTypes, null, null, Optional.empty(), IPrivilegeHolder.PRIV_LIST);
+        Assert.assertTrue(suffix.contains("ACCESSCONDITION:\"lt1\""));
+        Assert.assertTrue(suffix.contains("ACCESSCONDITION:\"lt2\""));
+        Assert.assertTrue(suffix.contains("ACCESSCONDITION:\"lt3\""));
+    }
+
+    /**
+     * @see SearchHelper#getPersonalFilterQuerySuffix(User,String,Optional,String)
+     * @verifies add overridden license types from open access license
+     */
+    @Test
+    public void getPersonalFilterQuerySuffix_shouldAddOverriddenLicenseTypesFromOpenAccessLicense() throws Exception {
+        List<LicenseType> licenseTypes = new ArrayList<>(3);
+        LicenseType lt = new LicenseType("lt1");
+        lt.setOpenAccess(true);
+        Assert.assertTrue(lt.isOpenAccess());
+        licenseTypes.add(lt);
+        for (int i = 2; i <= 3; ++i) {
+            LicenseType lt2 = new LicenseType("lt" + i);
+            licenseTypes.add(lt2);
+            lt.getOverriddenLicenseTypes().add(lt2);
+        }
+
+        String suffix = SearchHelper.getPersonalFilterQuerySuffix(licenseTypes, null, null, Optional.empty(), IPrivilegeHolder.PRIV_LIST);
+        Assert.assertTrue(suffix.contains("ACCESSCONDITION:\"lt1\""));
+        Assert.assertTrue(suffix.contains("ACCESSCONDITION:\"lt2\""));
+        Assert.assertTrue(suffix.contains("ACCESSCONDITION:\"lt3\""));
     }
 
     /**
@@ -287,9 +282,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyForAlternatePrivilege() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(2);
         // User has metadata download privilege for 'license type 3 name', but not listing
-        Assert.assertFalse(SearchHelper.getPersonalFilterQuerySuffix(user, null, Optional.empty(), null)
+        Assert.assertFalse(SearchHelper
+                .getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
+                        IPrivilegeHolder.PRIV_LIST)
                 .contains("ACCESSCONDITION:\"license type 3 name\""));
-        Assert.assertTrue(SearchHelper.getPersonalFilterQuerySuffix(user, null, Optional.empty(), IPrivilegeHolder.PRIV_DOWNLOAD_METADATA)
+        Assert.assertTrue(SearchHelper
+                .getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(), user, null, Optional.empty(),
+                        IPrivilegeHolder.PRIV_DOWNLOAD_METADATA)
                 .contains("ACCESSCONDITION:\"license type 3 name\""));
     }
 
@@ -546,7 +545,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
                 "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
-        Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
+        Set<String> terms = result.get(SearchHelper.TITLE_TERMS);
         Assert.assertNotNull(terms);
         Assert.assertEquals(6, terms.size());
         Assert.assertTrue(terms.contains("(value1)"));
@@ -590,28 +589,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
-     * @verifies remove plus characters
-     */
-    @Test
-    public void extractSearchTermsFromQuery_shouldRemovePlusCharacters() throws Exception {
-        Map<String, Set<String>> result =
-                SearchHelper.extractSearchTermsFromQuery("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +ACCESSCONDITION:\"foo\"", null);
-        {
-            Set<String> terms = result.get(SolrConstants.DOCTYPE);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("UGC"));
-        }
-        {
-            Set<String> terms = result.get(SearchHelper._TITLE_TERMS);
-            Assert.assertNotNull(terms);
-            Assert.assertEquals(1, terms.size());
-            Assert.assertTrue(terms.contains("\"foo\""));
-        }
-    }
-
-    /**
-     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
      * @verifies remove range values
      */
     @Test
@@ -622,6 +599,20 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Set<String> terms = result.get("MD_YEARPUBLISH");
             Assert.assertNull(terms);
         }
+    }
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove operators from field names
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveOperatorsFromFieldNames() throws Exception {
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery(
+                        " (+(SUPERDEFAULT:(berlin) SUPERFULLTEXT:(berlin) SUPERUGCTERMS:(berlin)) +(MD_AUTHOR:(karl)))",
+                        null);
+        Assert.assertTrue(result.containsKey("MD_AUTHOR"));
+
     }
 
     /**
@@ -712,9 +703,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void defacetifyField_shouldDefacetifyCorrectly() throws Exception {
         Assert.assertEquals(SolrConstants.DC, SearchHelper.defacetifyField(SolrConstants.FACET_DC));
         Assert.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_DOCSTRCT"));
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.defacetifyField("FACET_YEAR"));
-        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.defacetifyField("FACET_YEARMONTH"));
-        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.defacetifyField("FACET_YEARMONTHDAY"));
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.defacetifyField("FACET_YEAR"));
+        Assert.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.defacetifyField("FACET_YEARMONTH"));
+        Assert.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.defacetifyField("FACET_YEARMONTHDAY"));
         Assert.assertEquals("MD_TITLE", SearchHelper.defacetifyField("FACET_TITLE"));
     }
 
@@ -746,9 +737,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void facetifyField_shouldLeaveYearMonthDayFieldsUnaltered() throws Exception {
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.facetifyField(SolrConstants._CALENDAR_YEAR));
-        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.facetifyField(SolrConstants._CALENDAR_MONTH));
-        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.facetifyField(SolrConstants._CALENDAR_DAY));
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.facetifyField(SolrConstants.CALENDAR_YEAR));
+        Assert.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.facetifyField(SolrConstants.CALENDAR_MONTH));
+        Assert.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.facetifyField(SolrConstants.CALENDAR_DAY));
     }
 
     /**
@@ -823,9 +814,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void adaptField_shouldNotApplyFacetPrefixToCalendarFields() throws Exception {
-        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, SearchHelper.adaptField(SolrConstants._CALENDAR_YEAR, "FACET_"));
-        Assert.assertEquals(SolrConstants._CALENDAR_MONTH, SearchHelper.adaptField(SolrConstants._CALENDAR_MONTH, "FACET_"));
-        Assert.assertEquals(SolrConstants._CALENDAR_DAY, SearchHelper.adaptField(SolrConstants._CALENDAR_DAY, "FACET_"));
+        Assert.assertEquals(SolrConstants.CALENDAR_YEAR, SearchHelper.adaptField(SolrConstants.CALENDAR_YEAR, "FACET_"));
+        Assert.assertEquals(SolrConstants.CALENDAR_MONTH, SearchHelper.adaptField(SolrConstants.CALENDAR_MONTH, "FACET_"));
+        Assert.assertEquals(SolrConstants.CALENDAR_DAY, SearchHelper.adaptField(SolrConstants.CALENDAR_DAY, "FACET_"));
     }
 
     /**
@@ -955,9 +946,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateExpandQuery_shouldNotEscapeAsterisks() throws Exception {
-        List<String> fields = Arrays.asList(new String[] { SolrConstants._CALENDAR_DAY });
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.CALENDAR_DAY });
         Map<String, Set<String>> searchTerms = new HashMap<>();
-        searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
+        searchTerms.put(SolrConstants.CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
         Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false, 0));
     }
 
@@ -1032,62 +1023,30 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
-        List<SearchQueryGroup> groups = new ArrayList<>(2);
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.AND);
-            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val1");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
-            group.getQueryItems().get(1).setValue("foo bar");
-            groups.add(group);
-        }
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.OR);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val2");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
-            group.getQueryItems().get(1).setField("MD_SHELFMARK");
-            group.getQueryItems().get(1).setValue("bla blup");
-            groups.add(group);
-        }
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField("MD_FIELD");
+        group.getQueryItems().get(0).setValue("val1");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+        group.getQueryItems().get(1).setValue("foo bar");
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
-        Assert.assertEquals(" +((MD_FIELD:val1 AND MD_TITLE:(foo AND bar)) AND (MD_FIELD:val2 OR MD_SHELFMARK:(bla OR blup)))", result);
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assert.assertEquals(" +(+(MD_FIELD:(val1)) +(MD_TITLE:(foo AND bar)))", result);
     }
 
     @Test
     public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly_fuzzySearch() throws Exception {
-        List<SearchQueryGroup> groups = new ArrayList<>(2);
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.AND);
-            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val1");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
-            group.getQueryItems().get(1).setValue("foo bar");
-            groups.add(group);
-        }
-        {
-            SearchQueryGroup group = new SearchQueryGroup(null, 2);
-            group.setOperator(SearchQueryGroupOperator.OR);
-            group.getQueryItems().get(0).setField("MD_FIELD");
-            group.getQueryItems().get(0).setValue("val2");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
-            group.getQueryItems().get(1).setField("MD_SHELFMARK");
-            group.getQueryItems().get(1).setValue("bla blup");
-            groups.add(group);
-        }
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        group.getQueryItems().get(0).setField("MD_FIELD");
+        group.getQueryItems().get(0).setValue("val2");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+        group.getQueryItems().get(1).setField("MD_SHELFMARK");
+        group.getQueryItems().get(1).setValue("bla blup");
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, true);
-        Assert.assertEquals(
-                " +((MD_FIELD:(val1 val1~1) AND MD_TITLE:((foo) AND (bar))) AND (MD_FIELD:(val2 val2~1) OR MD_SHELFMARK:((bla) OR (blup blup~1))))",
-                result);
+        String result = SearchHelper.generateAdvancedExpandQuery(group, true);
+        Assert.assertEquals(" +(+(MD_FIELD:((val2 val2~1))) (MD_SHELFMARK:((bla) AND (blup blup~1))))", result);
     }
 
     /**
@@ -1096,9 +1055,12 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
-        List<SearchQueryGroup> groups = new ArrayList<>(1);
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        group.getQueryItems().add(new SearchQueryItem(null));
+        group.getQueryItems().add(new SearchQueryItem(null));
+        group.getQueryItems().add(new SearchQueryItem(null));
+        Assert.assertEquals(6, group.getQueryItems().size());
 
-        SearchQueryGroup group = new SearchQueryGroup(null, 6);
         group.setOperator(SearchQueryGroupOperator.AND);
         group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
@@ -1118,10 +1080,28 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         group.getQueryItems().get(5).setOperator(SearchItemOperator.AND);
         group.getQueryItems().get(5).setField(SolrConstants.PI_ANCHOR);
         group.getQueryItems().get(5).setValue("PPN000");
-        groups.add(group);
 
-        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0, false);
-        Assert.assertEquals(" +((MD_FIELD:val))", result);
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assert.assertEquals(" +(+(MD_FIELD:(val)))", result);
+    }
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(SearchQueryGroup,boolean)
+     * @verifies switch to OR operator on fulltext items
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldSwitchToOROperatorOnFulltextItems() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField("MD_FIELD");
+        group.getQueryItems().get(0).setValue("val1");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.FULLTEXT);
+        group.getQueryItems().get(1).setValue("foo bar");
+
+        String result = SearchHelper.generateAdvancedExpandQuery(group, false);
+        Assert.assertEquals(" +((MD_FIELD:(val1)) (FULLTEXT:(foo AND bar)))", result);
     }
 
     /**
@@ -1185,13 +1165,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits =
-                SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT),
+                SearchHelper.searchWithAggregation(SearchHelper.buildFinalQuery(rawQuery, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT),
                         0, 10, null, null, null, null, null,
                         null, Locale.ENGLISH, 0);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, false, 0);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, 0);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -1440,11 +1420,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testBuildFinalQuery() throws IndexUnreachableException, PresentationException {
         String query = "DC:dctei";
 
-        String finalQuery = SearchHelper.buildFinalQuery(query, null, false, SearchAggregationType.NO_AGGREGATION);
+        String finalQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.NO_AGGREGATION);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
 
-        finalQuery = SearchHelper.buildFinalQuery(query, null, false, SearchAggregationType.NO_AGGREGATION);
+        finalQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.NO_AGGREGATION);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
         Assert.assertEquals(65, docs.size());
     }
@@ -1474,17 +1454,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 previousCounts.put(term.getTerm(), term.getHitCount());
             }
         }
-    }
-
-    /**
-     * @see SearchHelper#generateQueryParams()
-     * @verifies return empty map if search hit aggregation on
-     */
-    @Test
-    public void generateQueryParams_shouldReturnEmptyMapIfSearchHitAggregationOn() throws Exception {
-        Map<String, String> params = SearchHelper.generateQueryParams(null);
-        Assert.assertNotNull(params);
-        Assert.assertEquals(0, params.size());
     }
 
     /**
@@ -1526,7 +1495,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldAddJoinStatementIfAggregateHitsTrue() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, false, null, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1536,7 +1505,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldNotAddJoinStatementIfAggregateHitsFalse() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", null, false, null, SearchAggregationType.NO_AGGREGATION);
+        String finalQuery = SearchHelper.buildFinalQuery("DEFAULT:*", false, null, SearchAggregationType.NO_AGGREGATION);
         Assert.assertEquals("+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
 
@@ -1546,7 +1515,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void buildFinalQuery_shouldRemoveExistingJoinStatement() throws Exception {
-        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", null, false, null,
+        String finalQuery = SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:*", false, null,
                 SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals(SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:*) -BOOL_HIDE:true -DC:collection1 -DC:collection2", finalQuery);
     }
@@ -1558,28 +1527,13 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void buildFinalQuery_shouldAddEmbeddedQueryTemplateIfBoostTopLevelDocstructsTrue() throws Exception {
         String finalQuery =
-                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", null, true, null,
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", true, null,
                         SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals("+("
                 + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
                 + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
                 finalQuery);
     }
-
-    //    /**
-    //     * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
-    //     * @verifies add query prefix if boostTopLevelDocstructs true and termQuery not empty
-    //     */
-    //    @Test
-    //    public void buildFinalQuery_shouldAddQueryPrefixIfBoostTopLevelDocstructsTrueAndTermQueryNotEmpty() throws Exception {
-    //        String finalQuery =
-    //                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(foo bar)", "(foo AND bar)", true, true, null);
-    //        Assert.assertEquals("+(" +
-    //                SearchHelper.BOOSTING_QUERY_TEMPLATE.replace("{0}", "(foo AND bar)") + " "
-    //                + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(foo bar))")
-    //                + ") -BOOL_HIDE:true -DC:collection1 -DC:collection2",
-    //                finalQuery);
-    //    }
 
     /**
      * @see SearchHelper#buildFinalQuery(String,String,boolean,boolean,HttpServletRequest)
@@ -1588,7 +1542,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void buildFinalQuery_shouldEscapeQuotationMarksInEmbeddedQuery() throws Exception {
         String finalQuery =
-                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(\"foo bar\")", null, true, null,
+                SearchHelper.buildFinalQuery(SearchHelper.AGGREGATION_QUERY_PREFIX + "DEFAULT:(\"foo bar\")", true, null,
                         SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals("+("
                 + SearchHelper.EMBEDDED_QUERY_TEMPLATE.replace("{0}", SearchHelper.AGGREGATION_QUERY_PREFIX + "+(DEFAULT:(\\\"foo bar\\\"))")
@@ -1777,7 +1731,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
         Assert.assertEquals("+FOO:bar +DOCTYPE:DOCSTRCT",
                 SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("FOO:bar")));
-        
+
         // Via regex
         String regex = "\\(FACET_DC:\"a.b[\\.\\w]*\" OR FACET_DC:a.b[\\.\\w]*\\.\\*\\)";
 
@@ -1805,5 +1759,124 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.add("(FACET_DC:\"foo.bar\" OR FACET_DC:foo.bar.*)");
         Assert.assertTrue("+FOO:bar +DOCTYPE:DOCSTRCT",
                 SearchHelper.buildExpandQueryFromFacets(facets, Collections.singletonList("YARGLE:bargle")).isEmpty());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
+     * @verifies parse phrase search query correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
+                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") +(SUPERFULLTEXT:\"bla blüp\" FULLTEXT:\"bla blüp\"))",
+                null, null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(3, group.getQueryItems().size());
+
+        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
+
+        Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bla blüp", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(1).getOperator());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
+     * @verifies parse regular search query correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
+                "(+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) -(SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)))",
+                null, null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(3, group.getQueryItems().size());
+
+        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
+
+        Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bla blüp", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals(SearchItemOperator.NOT, group.getQueryItems().get(1).getOperator());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
+     * @verifies parse range items correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseRangeItemsCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("(MD_YEARPUBLISH:([1900 TO 2000]))", null, null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(3, group.getQueryItems().size());
+
+        Assert.assertEquals("MD_YEARPUBLISH", group.getQueryItems().get(0).getField());
+        Assert.assertEquals("1900", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals("2000", group.getQueryItems().get(0).getValue2());
+        Assert.assertEquals(SearchItemOperator.OR, group.getQueryItems().get(0).getOperator());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,String,Locale)
+     * @verifies parse items from facet string correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseItemsFromFacetStringCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery("", "DC:varia;;MD_CREATOR:bar;;", null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
+        Assert.assertEquals(3, group.getQueryItems().size());
+
+        Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("varia", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
+
+        Assert.assertEquals("MD_CREATOR", group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bar", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(1).getOperator());
+    }
+
+    /**
+     * @see SearchHelper#parseSearchQueryGroupFromQuery(String,Locale)
+     * @verifies parse mixed search query correctly
+     */
+    @Test
+    public void parseSearchQueryGroupFromQuery_shouldParseMixedSearchQueryCorrectly() throws Exception {
+        SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
+                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") (SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)) +(DOCSTRCT_TOP:\"monograph\") -(MD_YEARPUBLISH:([1900 TO 2000])))",
+                "DC:varia;;MD_CREATOR:bar;;", null);
+        Assert.assertNotNull(group);
+        Assert.assertEquals(6, group.getQueryItems().size());
+
+        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assert.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
+
+        Assert.assertEquals(SolrConstants.FULLTEXT, group.getQueryItems().get(1).getField());
+        Assert.assertEquals("bla blüp", group.getQueryItems().get(1).getValue());
+        Assert.assertEquals(SearchItemOperator.OR, group.getQueryItems().get(1).getOperator());
+
+        Assert.assertEquals(SolrConstants.DOCSTRCT_TOP, group.getQueryItems().get(2).getField());
+        Assert.assertEquals("monograph", group.getQueryItems().get(2).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(2).getOperator());
+
+        Assert.assertEquals("MD_YEARPUBLISH", group.getQueryItems().get(3).getField());
+        Assert.assertEquals("1900", group.getQueryItems().get(3).getValue());
+        Assert.assertEquals("2000", group.getQueryItems().get(3).getValue2());
+        Assert.assertEquals(SearchItemOperator.NOT, group.getQueryItems().get(3).getOperator());
+
+        Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(4).getField());
+        Assert.assertEquals("varia", group.getQueryItems().get(4).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(4).getOperator());
+
+        Assert.assertEquals("MD_CREATOR", group.getQueryItems().get(5).getField());
+        Assert.assertEquals("bar", group.getQueryItems().get(5).getValue());
+        Assert.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(5).getOperator());
     }
 }

@@ -30,8 +30,8 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
@@ -47,7 +47,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 public class PdfInformationFilter implements ContainerResponseFilter {
 
     @SuppressWarnings("unused")
-    private static final Logger logger = LoggerFactory.getLogger(PdfInformationFilter.class);
+    private static final Logger logger = LogManager.getLogger(PdfInformationFilter.class);
 
     @Context
     private HttpServletRequest servletRequest;

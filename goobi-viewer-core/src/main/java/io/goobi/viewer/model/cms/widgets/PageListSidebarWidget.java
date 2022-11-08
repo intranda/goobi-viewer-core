@@ -24,10 +24,10 @@ package io.goobi.viewer.model.cms.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import io.goobi.viewer.dao.converter.NumberListConverter;
 import io.goobi.viewer.model.cms.CMSPage;

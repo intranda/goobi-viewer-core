@@ -66,8 +66,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -106,7 +106,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @ViewerRestServiceBinding
 public class IndexResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexResource.class);
+    private static final Logger logger = LogManager.getLogger(IndexResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -146,6 +146,8 @@ public class IndexResource {
 
         if (query == null) {
             query = "+(ISWORK:*) ";
+        } else {
+            query = String.format("+(%s)", query);
         }
 
         String finalQuery =
@@ -182,12 +184,12 @@ public class IndexResource {
             return ret.toString();
         }
 
-        String termQuery = null;
-        if (params.boostTopLevelDocstructs) {
-            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
-            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper._TITLE_TERMS));
-        }
-        String query = SearchHelper.buildFinalQuery(params.query, termQuery, params.boostTopLevelDocstructs,
+        //        String termQuery = null;
+        //        if (params.boostTopLevelDocstructs) {
+        //            Map<String, Set<String>> searchTerms = SearchHelper.extractSearchTermsFromQuery(params.query.replace("\\", ""), null);
+        //            termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
+        //        }
+        String query = SearchHelper.buildFinalQuery(params.query, params.boostTopLevelDocstructs,
                 params.includeChildHits ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION);
 
         logger.trace("query: {}", query);
@@ -294,7 +296,7 @@ public class IndexResource {
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-
+        
         String finalQuery = filterQuery;
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
@@ -382,6 +384,16 @@ public class IndexResource {
         return Optional.empty();
     }
 
+    /**
+     * 
+     * @param params
+     * @param response
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
     private JSONArray getQueryResults(RecordsRequestParameters params, QueryResponse response)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         SolrDocumentList result = response.getResults();
@@ -389,13 +401,10 @@ public class IndexResource {
         logger.trace("hits: {}", result.size());
         JSONArray jsonArray = null;
         if (params.jsonFormat != null) {
-            switch (params.jsonFormat) {
-                case "datecentric":
-                    jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
-                    break;
-                default:
-                    jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
-                    break;
+            if ("datecentric".equals(params.jsonFormat)) {
+                jsonArray = JsonTools.getDateCentricRecordJsonArray(result, servletRequest);
+            } else {
+                jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
             }
         } else {
             jsonArray = JsonTools.getRecordJsonArray(result, expanded, servletRequest, params.language);
@@ -462,7 +471,7 @@ public class IndexResource {
      * @return
      */
     private static StreamingOutput executeStreamingExpression(String expr, String solrUrl) {
-        return (out) -> {
+        return out -> {
             ObjectMapper mapper = new ObjectMapper();
             ModifiableSolrParams paramsLoc = new ModifiableSolrParams();
             paramsLoc.set("expr", expr);

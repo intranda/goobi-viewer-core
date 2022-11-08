@@ -68,8 +68,8 @@ import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.SpellingParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -88,7 +88,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  */
 public class SolrSearchIndex {
 
-    private static final Logger logger = LoggerFactory.getLogger(SolrSearchIndex.class);
+    private static final Logger logger = LogManager.getLogger(SolrSearchIndex.class);
 
     /** Constant <code>MAX_HITS=1000000</code> */
     public static final int MAX_HITS = 1000000;
@@ -326,6 +326,14 @@ public class SolrSearchIndex {
         }
     }
 
+    /**
+     * 
+     * @param query
+     * @param accuracy
+     * @param build
+     * @return
+     * @throws IndexUnreachableException
+     */
     public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.set(CommonParams.QT, "/spell");
@@ -405,7 +413,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * Diese Methode führt eine Suche im Lucene durch.
+     * 
      *
      * @param query a {@link java.lang.String} object.
      * @return {@link Hits}

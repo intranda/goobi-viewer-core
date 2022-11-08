@@ -28,8 +28,8 @@ import java.util.function.BiConsumer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -55,7 +55,7 @@ import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 @JsonInclude(Include.NON_EMPTY)
 public class Task {
 
-    private static final Logger logger = LoggerFactory.getLogger(Task.class);
+    private static final Logger logger = LogManager.getLogger(Task.class);
     private static final AtomicLong idCounter = new AtomicLong(0);
 
     public enum Accessibility {
@@ -89,7 +89,9 @@ public class Task {
         /** Update data repository names of a record */
         UPDATE_DATA_REPOSITORY_NAMES,
         /** Update uploaded processes status. */
-        UPDATE_UPLOAD_JOBS;
+        UPDATE_UPLOAD_JOBS,
+        /** Move daily usage statistics to SOLR */
+        INDEX_USAGE_STATISTICS;
     }
 
     public enum TaskStatus {
@@ -151,6 +153,7 @@ public class Task {
             case UPDATE_SITEMAP:
             case UPDATE_DATA_REPOSITORY_NAMES:
             case UPDATE_UPLOAD_JOBS:
+            case INDEX_USAGE_STATISTICS:
                 return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;

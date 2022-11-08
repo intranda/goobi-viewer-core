@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -54,9 +53,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.config.mapping.PathParameter;
@@ -69,6 +68,7 @@ import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileResourceManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -102,7 +102,7 @@ public class NavigationHelper implements Serializable {
 
     private static final long serialVersionUID = 4171362984701032679L;
 
-    private static final Logger logger = LoggerFactory.getLogger(NavigationHelper.class);
+    private static final Logger logger = LogManager.getLogger(NavigationHelper.class);
 
     private static final String URL_RSS = "rss";
 
@@ -114,8 +114,6 @@ public class NavigationHelper implements Serializable {
     /** Constant <code>KEY_PREFERRED_VIEW="preferredView"</code> */
     protected static final String KEY_PREFERRED_VIEW = "preferredView";
     /** Constant <code>KEY_CURRENT_PARTNER_PAGE="preferredView"</code> */
-    @Deprecated
-    protected static final String KEY_CURRENT_PARTNER_PAGE = "preferredView";
     /** Constant <code>KEY_SELECTED_NEWS_ARTICLE="selectedNewsArticle"</code> */
     protected static final String KEY_SELECTED_NEWS_ARTICLE = "selectedNewsArticle";
     /** Constant <code>KEY_MENU_PAGE="menuPage"</code> */
@@ -155,12 +153,11 @@ public class NavigationHelper implements Serializable {
      */
     @PostConstruct
     public void init() {
-        try {            
+        try {
             locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             locale = ViewerResourceBundle.getFallbackLocale();
         }
-        statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
     }
@@ -318,8 +315,6 @@ public class NavigationHelper implements Serializable {
         setSubThemeDiscriminatorValue();
     }
 
-
-
     /**
      * <p>
      * setCurrentBreadcrumbPage.
@@ -339,33 +334,6 @@ public class NavigationHelper implements Serializable {
                 new LabeledLink(pageName, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + pageURL, Integer.valueOf(pageWeight)));
         this.currentPage = pageName;
 
-    }
-
-    /**
-     * <p>
-     * setCurrentPartnerPage.
-     * </p>
-     *
-     * @param currentPartnerPage a {@link java.lang.String} object.
-     * @should set value correctly
-     * @deprecated replaced by subTheme mechanism
-     */
-    public void setCurrentPartnerPage(String currentPartnerPage) {
-        statusMap.put(KEY_CURRENT_PARTNER_PAGE, currentPartnerPage);
-        logger.trace("current Partner Page: {}", currentPartnerPage);
-    }
-
-    /**
-     * <p>
-     * getCurrentPartnerPage.
-     * </p>
-     *
-     * @should return value correctly
-     * @return a {@link java.lang.String} object.
-     * @deprecated replaced by subTheme mechanism
-     */
-    public String getCurrentPartnerPage() {
-        return statusMap.get(KEY_CURRENT_PARTNER_PAGE);
     }
 
     /**
@@ -501,7 +469,7 @@ public class NavigationHelper implements Serializable {
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
             PageType pageType = PageType.getByName(pageName);
-            if(pageType== null || PageType.other == pageType) {
+            if (pageType == null || PageType.other == pageType) {
                 this.currentPage = PageType.admin.name();
             } else {
                 this.currentPage = pageType.name();
@@ -590,9 +558,10 @@ public class NavigationHelper implements Serializable {
      * Sets the currently selected content view name.
      *
      * @param currentView a {@link java.lang.String} object.
+     * @throws DAOException
      * @should set value correctly
      */
-    public void setCurrentView(String currentView) {
+    public void setCurrentView(String currentView) throws DAOException {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
         statusMap.put(KEY_CURRENT_VIEW, currentView);
         setCurrentPage(currentView);
@@ -975,37 +944,6 @@ public class NavigationHelper implements Serializable {
 
     /**
      * <p>
-     * getActivePartnerId.
-     * </p>
-     *
-     * @return the activePartnerId
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public String getActivePartnerId() {
-        return statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE);
-    }
-
-    /**
-     * <p>
-     * setActivePartnerId.
-     * </p>
-     *
-     * @param activePartnerId the activePartnerId to set
-     * @deprecated Use <code>BreadcrumbBean</code> directly.
-     */
-    @Deprecated
-    public void setActivePartnerId(String activePartnerId) {
-        statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
-        if ("-".equals(activePartnerId)) {
-            activePartnerId = "";
-        }
-        logger.trace("setActivePartnerId: {}", activePartnerId);
-        statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, activePartnerId);
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>theme</code>.
      * </p>
      *
@@ -1089,7 +1027,7 @@ public class NavigationHelper implements Serializable {
                 try {
                     calendarBean.resetYears();
                 } catch (PresentationException e) {
-                    logger.debug("PresentationException thrown here: {}", e.getMessage());
+                    logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
                 } catch (IndexUnreachableException e) {
                     logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 }
@@ -1109,27 +1047,6 @@ public class NavigationHelper implements Serializable {
         setCmsPage(false);
         setSubThemeDiscriminatorValue("");
     }
-
-    /**
-     * <p>
-     * isHtmlHeadDCMetadata.
-     * </p>
-     *
-     * @deprecated Use ConfigurationBean.isAddDublinCoreTags()
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isHtmlHeadDCMetadata() {
-        return DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags();
-    }
-
-    //    public String getOverviewUrl() {
-    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewOverview.getName();
-    //    }
-    //
-    //    public String getOverviewActiveUrl() {
-    //        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewOverview.getName();
-    //    }
 
     /**
      * <p>
@@ -1198,8 +1115,8 @@ public class NavigationHelper implements Serializable {
                     && BeanUtils.getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
                 String path =
                         "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + "/urlMappings/viewImageFullscreen.xhtml";
-                logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the "
-                        + DataManager.getInstance().getConfiguration().getTheme() + " theme.");
+                logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the '{}' theme.",
+                        DataManager.getInstance().getConfiguration().getTheme());
                 return path;
             }
             if (imageDisplayType.equalsIgnoreCase("classic")) {
@@ -1207,8 +1124,8 @@ public class NavigationHelper implements Serializable {
                 return "/viewImageFullscreen.xhtml";
             }
         }
-        logger.error("No correct configuration, use the standard Fullscreen Image view. Detected: " + imageDisplayType
-                + " from <zoomFullscreenView/> in the config_viewer.xml.");
+        logger.error("No correct configuration, use the standard Fullscreen Image view. Detected: {} from <zoomFullscreenView/> in the {}.",
+                imageDisplayType, Configuration.CONFIG_FILE_NAME);
 
         return "/viewImageFullscreen.xhtml";
     }
@@ -1476,35 +1393,6 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * <p>
-     * getCurrentPartnerUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated Use dedicated CMS pages instead of xhtml pages for subthemes
-     */
-    @Deprecated
-    public String getCurrentPartnerUrl() {
-        logger.trace("activePartnerId: {}", statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE));
-        logger.trace("currentPartnerPage: {}", statusMap.get(KEY_CURRENT_PARTNER_PAGE));
-        if (StringUtils.isEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE))) {
-            return "/index.xhtml";
-        }
-        if (StringUtils.isEmpty(statusMap.get(KEY_CURRENT_PARTNER_PAGE))
-                || statusMap.get(KEY_CURRENT_PARTNER_PAGE).equalsIgnoreCase("RES_NOT_FOUND")) {
-            return "/resources/themes/" + theme + "/" + statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) + "/index.xhtml";
-        }
-        if ("index".equals(statusMap.get(KEY_CURRENT_PARTNER_PAGE))) {
-            statusMap.put(statusMap.get(KEY_CURRENT_PARTNER_PAGE), "index.xhtml");
-        }
-        String tmp = statusMap.get(KEY_CURRENT_PARTNER_PAGE);
-        logger.trace("******************************** {} ", statusMap.get(KEY_CURRENT_PARTNER_PAGE));
-        statusMap.put(statusMap.get(KEY_CURRENT_PARTNER_PAGE), "index");
-        return "/resources/themes/" + theme + "/" + statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) + "/" + tmp;
-
-    }
-
-    /**
      * Returns the string representation of the given <code>Date</code> based on the current <code>locale</code>.
      *
      * @param date a {@link java.time.LocalDateTime} object.
@@ -1587,17 +1475,15 @@ public class NavigationHelper implements Serializable {
         return (String) BeanUtils.getRequest().getSession(false).getAttribute("lastRequest");
     }
 
-
     public String getSessionIPAddress() {
         String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
         return ipAddress;
     }
 
-
     public Optional<String> getSessionId() {
         return Optional.ofNullable(FacesContext.getCurrentInstance())
-        .map(FacesContext::getExternalContext)
-        .map(extCtx -> extCtx.getSessionId(false));
+                .map(FacesContext::getExternalContext)
+                .map(extCtx -> extCtx.getSessionId(false));
     }
 
     /**
@@ -1662,7 +1548,7 @@ public class NavigationHelper implements Serializable {
         // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
         return StringEscapeUtils.escapeJava(msg);
     }
-    
+
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
      * Does not carry out character escaping
@@ -2043,7 +1929,6 @@ public class NavigationHelper implements Serializable {
                 SearchBean sb = BeanUtils.getSearchBean();
                 if (sb != null) {
                     String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
-                            sb.getFacets().getCurrentHierarchicalFacetString(),
                             sb.getExactSearchString(),
                             sb.getCurrentPage(),
                             sb.getSortString(),
@@ -2081,7 +1966,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public List<Integer> getRange(long from, long to) {
-        List<Integer> range = IntStream.range((int)from, (int)to+1).boxed().collect(Collectors.toList());
+        List<Integer> range = IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
         return range;
     }
 }

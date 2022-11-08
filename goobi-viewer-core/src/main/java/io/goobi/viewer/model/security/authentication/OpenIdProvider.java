@@ -34,8 +34,8 @@ import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.ResponseType;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -50,7 +50,7 @@ import io.goobi.viewer.servlets.openid.OAuthServlet;
  */
 public class OpenIdProvider extends HttpAuthenticationProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(OpenIdProvider.class);
+    private static final Logger logger = LogManager.getLogger(OpenIdProvider.class);
 
     /** Constant <code>TYPE_OPENID="openId"</code> */
     public static final String TYPE_OPENID = "openId";

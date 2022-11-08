@@ -55,8 +55,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.wa.ImageResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
@@ -106,7 +106,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public abstract class AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
+    private static final Logger logger = LogManager.getLogger(AbstractBuilder.class);
 
     protected final AbstractApiUrlManager urls;
 
@@ -277,7 +277,7 @@ public abstract class AbstractBuilder {
         displayFields.addAll(eventFields);
 
         for (String field : getMetadataFields(ele)) {
-            if (contained(field, displayFields) && !field.endsWith(SolrConstants._UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
+            if (contained(field, displayFields) && !field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
                 String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);

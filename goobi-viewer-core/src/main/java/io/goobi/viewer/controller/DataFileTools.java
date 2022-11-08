@@ -33,8 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -53,7 +53,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class DataFileTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataFileTools.class);
+    private static final Logger logger = LogManager.getLogger(DataFileTools.class);
 
     /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.
@@ -276,11 +276,11 @@ public class DataFileTools {
             throw new IllegalArgumentException("format may not be null or empty (file name: " + fileName + ")");
         }
         switch (format) {
-            case SolrConstants._METS:
-            case SolrConstants._LIDO:
-            case SolrConstants._DENKXWEB:
-            case SolrConstants._WORLDVIEWS:
-            case SolrConstants._DUBLINCORE:
+            case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_LIDO:
+            case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
+            case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
+            case SolrConstants.SOURCEDOCFORMAT_DUBLINCORE:
                 break;
             default:
                 throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | DUBLINCORE | WORLDVIEWS");
@@ -288,19 +288,19 @@ public class DataFileTools {
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
-            case SolrConstants._METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
-            case SolrConstants._LIDO:
+            case SolrConstants.SOURCEDOCFORMAT_LIDO:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
                 break;
-            case SolrConstants._DENKXWEB:
+            case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedDenkxwebFolder());
                 break;
-            case SolrConstants._DUBLINCORE:
+            case SolrConstants.SOURCEDOCFORMAT_DUBLINCORE:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedDublinCoreFolder());
                 break;
-            case SolrConstants._WORLDVIEWS:
+            case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
         }

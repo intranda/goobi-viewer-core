@@ -47,12 +47,13 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
@@ -63,6 +64,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBind
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -82,7 +84,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class RecordsFilesImageResource extends ImageResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(RecordsFilesImageResource.class);
+    private static final Logger logger = LogManager.getLogger(RecordsFilesImageResource.class);
 
     /**
      * @param request
@@ -97,8 +99,12 @@ public class RecordsFilesImageResource extends ImageResource {
         super(context, request, response, pi, filename);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
-        // TODO Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, otherwise the check in AccessConditionRequestFilter will fail!
-        request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
+        if(ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
+            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+        } else {            
+            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        }
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
@@ -133,7 +139,8 @@ public class RecordsFilesImageResource extends ImageResource {
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @RecordFileDownloadBinding
+    @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();

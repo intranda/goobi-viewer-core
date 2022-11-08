@@ -34,7 +34,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_MI
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RSS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RSS_JSON;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_PUBLIC;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_SHARED;
 
 import java.io.IOException;
 import java.util.List;
@@ -295,7 +294,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ContentLibException {
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0, servletRequest, null, true);
+        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest, null, true);
     }
 
     @GET
@@ -313,7 +312,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ContentLibException {
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0, servletRequest, null, true);
+        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest, null, true);
     }
 
     @GET
@@ -326,15 +325,6 @@ public class BookmarkResource {
     public List<BookmarkList> getPublicBookmarkLists()
             throws DAOException, IOException, RestApiException {
         return builder.getAllPublicBookmarkLists();
-    }
-
-    @GET
-    @Path(USERS_BOOKMARKS_SHARED)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Deprecated
-    public List<BookmarkList> getSharedBookmarkLists()
-            throws DAOException, IOException, RestApiException, ContentLibException {
-        return builder.getAllSharedBookmarkLists();
     }
 
     @GET
@@ -395,7 +385,7 @@ public class BookmarkResource {
             throws DAOException, RestApiException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssResponse(language, maxHits, null, query, null, 0, servletRequest, null, true);
+        return RSSFeed.createRssResponse(language, maxHits, null, query, null, servletRequest, null, true);
     }
 
     @GET
@@ -413,6 +403,6 @@ public class BookmarkResource {
             throws DAOException, RestApiException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeed(language, maxHits, null, query, null, 0, servletRequest, null, true);
+        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest, null, true);
     }
 }

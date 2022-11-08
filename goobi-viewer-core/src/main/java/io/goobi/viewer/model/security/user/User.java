@@ -42,21 +42,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -65,8 +65,8 @@ import javax.servlet.http.Part;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
@@ -100,7 +100,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     private static final long serialVersionUID = 549769987121664488L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(User.class);
+    private static final Logger logger = LogManager.getLogger(User.class);
 
     /** Constant <code>ATTRIBUTE_LOGINS="logins"</code> */
     public static final String ATTRIBUTE_LOGINS = "logins";
@@ -110,6 +110,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
     private static final String URI_ID_REGEX = "/users/(\\d{1,19})/?$";
+
+    static final String EMAIL_ADDRESS_ANONYMOUS = "anonymous@goobi.io";
 
     @Transient
     private transient BCrypt bcrypt = new BCrypt();
@@ -1287,8 +1289,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @return true if user email address equals the configured anonymous user address; false otherwise
      */
     public boolean isAnonymous() {
-        String anonymousAddress = DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress();
-        return StringUtils.isNotEmpty(anonymousAddress) && anonymousAddress.equals(email);
+        return EMAIL_ADDRESS_ANONYMOUS.equals(email);
     }
 
     /**

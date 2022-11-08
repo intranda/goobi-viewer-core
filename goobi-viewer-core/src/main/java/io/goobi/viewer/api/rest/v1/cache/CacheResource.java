@@ -36,8 +36,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.solr.common.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentServerCacheException;
 import de.unigoettingen.sub.commons.util.CacheUtils;
@@ -55,7 +55,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @Path(ApiUrls.CACHE)
 public class CacheResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(CacheResource.class);
+    private static final Logger logger = LogManager.getLogger(CacheResource.class);
     @Context
     private HttpServletRequest servletRequest;
     @Context

@@ -25,11 +25,14 @@
             
                 <div class="search-standard__filter-select">
                     <h:inputHidden id="hiddenSearchFilterString" value="#{searchBean.currentSearchFilterString}" />
-	              		<select> 
+                    
+                     <div class="custom-control custom-control--select">
+	              		<select aria-label="#{msg.limitSearch}"> 
 	                   		<ui:repeat var="filter" value="#{search.searchFilters}">
 	                			<option id="#{filter.label}" name="searchStandardFilter" pt:name="searchStandardFilter" value="#{filter.label}" selected="#{filter.label eq search.currentSearchFilterString ? 'true' : null}">#{msg[filter.label]}</option>
 	              			</ui:repeat>
 	              		</select>
+	              	</div>
 
                     <script>
 						$('.search-standard__filter-select select').on("change", function() {

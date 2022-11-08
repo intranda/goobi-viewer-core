@@ -17,8 +17,8 @@
 
 	<ui:define name="head">
 		<f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
 		</f:view>
 	</ui:define>
 
@@ -125,6 +125,8 @@
         <widgetComponent:widget_views pageType="toc" />
 
         <widgetComponent:widget_searchInCurrentItem />
+
+        <widgetComponent:widget_statistics_usage />
 
         <widgetComponent:widget_archives />
 

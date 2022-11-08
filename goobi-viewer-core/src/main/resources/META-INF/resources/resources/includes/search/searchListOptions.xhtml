@@ -15,7 +15,7 @@
 
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
-    	<ui:fragment rendered="#{navigationHelper.currentPage == 'search'}">
+    	<ui:fragment rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist'}">
     		<h1 class="search-list__options-container-heading">#{msg.search}</h1>
     	</ui:fragment>
     
@@ -59,14 +59,12 @@
 	            </div>
 	        </h:panelGroup>
 	        
-	        <ui:fragment rendered="#{configurationBean.aggregateSearchHits}">
-		        <div class="search-list__toggle-thumbs">
-		       		<button type="button" class="btn btn--icon" data-title-inactive="#{msg.action__show_subhits_thumbnails}" data-title-active="#{msg.action__hide_subhits_thumbnails}" data-toggle="tooltip" data-placement="top" data-trigger="hover"
-		       			data-action="toggle-thumbs" aria-label="#{msg.action__show_subhits_thumbnails}" role="switch" aria-checked="false">
-		                <i class="fa fa-image" aria-hidden="true"></i>
-		            </button>
-		        </div>
-	        </ui:fragment>
+		    <div class="search-list__toggle-thumbs">
+		   		<button type="button" class="btn btn--icon" data-title-inactive="#{msg.action__show_subhits_thumbnails}" data-title-active="#{msg.action__hide_subhits_thumbnails}" data-toggle="tooltip" data-placement="top" data-trigger="hover"
+		   			data-action="toggle-thumbs" aria-label="#{msg.action__show_subhits_thumbnails}" role="switch" aria-checked="false">
+		            <i class="fa fa-image" aria-hidden="true"></i>
+		        </button>
+		    </div>
 	
 	        <!-- SEARCHLIST VIEWS -->
 	        <div class="search-list__views">
@@ -81,6 +79,15 @@
 	                <i class="fa fa-bars" aria-hidden="true"></i>
 	            </button>
 	        </div>
+	        
+	        <ui:fragment rendered="#{searchType != 1}">
+		        <div class="search-list__help">
+		            <button type="button" class="btn btn--clean" data-toggle="modal" data-target="#searchHelpModal" data-backdrop="false" aria-label="#{msg.search_helpModalTitle}">
+		                <span data-toggle="tooltip" data-trigger="hover" title="#{msg.search_options__tooltip_help}"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+		            </button>
+		        </div>
+		    </ui:fragment>
+	        
 	    </div>
     </div>
 

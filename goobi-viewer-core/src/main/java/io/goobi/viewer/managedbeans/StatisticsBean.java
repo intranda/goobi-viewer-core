@@ -23,10 +23,14 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -35,26 +39,34 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.solr.common.SolrDocumentList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.goobi.viewer.Version;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ApplicationInfo;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ApplicationResource;
+import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.statistics.usage.StatisticsLuceneFields;
+import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
+import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
+import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -67,7 +79,7 @@ public class StatisticsBean implements Serializable {
 
     private static final long serialVersionUID = -1530519697198096431L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
+    private static final Logger logger = LogManager.getLogger(ActiveDocumentBean.class);
 
     /** Constant <code>SEPARATOR="::"</code> */
     public static final String SEPARATOR = "::";
@@ -110,7 +122,7 @@ public class StatisticsBean implements Serializable {
                 }
             }
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             return null;
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -192,7 +204,7 @@ public class StatisticsBean implements Serializable {
                 return ret;
             }
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } finally {
@@ -230,7 +242,7 @@ public class StatisticsBean implements Serializable {
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         } finally {
             logger.debug("getImportedPages end");
         }
@@ -259,7 +271,7 @@ public class StatisticsBean implements Serializable {
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         } finally {
             logger.debug("getImportedFullTexts end");
         }
@@ -279,7 +291,7 @@ public class StatisticsBean implements Serializable {
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here: {}", e.getMessage());
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return true;
@@ -297,13 +309,7 @@ public class StatisticsBean implements Serializable {
      * @return goobi-viewer-connector version
      */
     public String getConnectorVersion() {
-        try {
-            String json = NetTools.getWebContentGET(DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
-            return JsonTools.shortFormatVersionString(json);
-        } catch (IOException | HTTPException e) {
-            logger.error(e.getMessage());
-            return e.getMessage();
-        }
+        return JsonTools.shortFormatVersionString(DataManager.getInstance().getConnectorVersion());
     }
 
     /**
@@ -314,8 +320,6 @@ public class StatisticsBean implements Serializable {
             ApplicationInfo info = new ApplicationResource().getApplicationInfo();
             String json = new ObjectMapper().writeValueAsString(info);
             return JsonTools.shortFormatVersionString(json);
-            //            String output = String.format("%s (%s)", info.getVersion(), info.getGitRevision());
-            //            return output;
         } catch (ContentNotFoundException | IOException e) {
             logger.error(e.getMessage());
             return "";
@@ -328,4 +332,34 @@ public class StatisticsBean implements Serializable {
     public String getIndexerVersion() {
         return JsonTools.shortFormatVersionString(DataManager.getInstance().getIndexerVersion());
     }
+
+    public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
+        StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
+        return new StatisticsSummaryBuilder().loadSummary(filter);
+    }
+
+    public LocalDate getLastUsageStatisticsCheck() throws IndexUnreachableException {
+        try {
+            SolrDocumentList docs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(
+                            "DOCTYPE:" + io.goobi.viewer.model.statistics.usage.StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
+                            1, Arrays.asList(new StringPair(StatisticsLuceneFields.DATE, "desc")),
+                            Arrays.asList(StatisticsLuceneFields.DATE));
+            if (docs.size() == 1) {
+                Date date = (Date) docs.get(0).getFieldValue(StatisticsLuceneFields.DATE);
+                return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            }
+            return LocalDate.MIN;
+        } catch (PresentationException e) {
+            logger.error("Error getting last usage statistics check from solr", e);
+            return null;
+        }
+
+    }
+
+    public boolean isUsageStatisticsActive() {
+        return DataManager.getInstance().getConfiguration().isStatisticsEnabled();
+    }
+
 }

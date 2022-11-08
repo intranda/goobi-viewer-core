@@ -24,12 +24,12 @@ package io.goobi.viewer.model.bookmark;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.security.user.User;
  */
 public class SessionStoreBookmarkManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionStoreBookmarkManager.class);
+    private static final Logger logger = LogManager.getLogger(SessionStoreBookmarkManager.class);
 
     /** Constant <code>BOOKMARK_LIST_ATTRIBUTE_NAME="bookmarkList"</code> */
     public static final String BOOKMARK_LIST_ATTRIBUTE_NAME = "bookmarkList";

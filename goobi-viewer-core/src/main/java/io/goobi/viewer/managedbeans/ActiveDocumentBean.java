@@ -47,10 +47,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -62,9 +62,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -94,6 +94,7 @@ import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.statistics.usage.RequestType;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.toc.export.pdf.TocWriter;
@@ -119,7 +120,7 @@ public class ActiveDocumentBean implements Serializable {
 
     private static final long serialVersionUID = -8686943862186336894L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
+    private static final Logger logger = LogManager.getLogger(ActiveDocumentBean.class);
 
     /**
      * Regex pattern 'imageToShow' matches if doublePageMode should be active
@@ -287,7 +288,7 @@ public class ActiveDocumentBean implements Serializable {
                     reload(lastReceivedIdentifier);
                 }
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             } catch (RecordNotFoundException | RecordDeletedException | RecordLimitExceededException e) {
                 if (e.getMessage() != null && !"null".equals(e.getMessage()) && !"???".equals(e.getMessage())) {
                     logger.warn("{}: {}", e.getClass().getName(), e.getMessage());
@@ -354,7 +355,6 @@ public class ActiveDocumentBean implements Serializable {
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();
-
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
             if (viewManager == null || viewManager.getTopStructElement() == null || viewManager.getTopStructElementIddoc() != topDocumentIddoc) {
@@ -449,6 +449,11 @@ public class ActiveDocumentBean implements Serializable {
                     }
                 }
             }
+
+            //update usage statistics
+            DataManager.getInstance()
+                    .getUsageStatisticsRecorder()
+                    .recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
 
             // If LOGID is set, update the current element
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
@@ -627,13 +632,13 @@ public class ActiveDocumentBean implements Serializable {
                     breadcrumbBean.addRecordBreadcrumbs(viewManager, name, url);
                 }
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
                 Messages.error(e.getMessage());
             } catch (IDDOCNotFoundException e) {
                 try {
                     return reload(lastReceivedIdentifier);
                 } catch (PresentationException e1) {
-                    logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                    logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage(), e);
                 }
             }
 
@@ -1853,10 +1858,6 @@ public class ActiveDocumentBean implements Serializable {
             } catch (IOException e) {
                 logger.error(e.getMessage());
                 Messages.error("cache_clear__failure");
-                ;
-            } catch (HTTPException e) {
-                logger.error(e.getMessage());
-                Messages.error("cache_clear__failure");
             }
         } finally {
             clearCacheMode = null;
@@ -2486,7 +2487,7 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 return false;
             } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
+                logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
                 return false;
             }
         }

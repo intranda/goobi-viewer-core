@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import io.goobi.viewer.dao.converter.SimpleMediaHolderConverter;
 import io.goobi.viewer.dao.converter.ThemeLinkConverter;
@@ -68,10 +68,10 @@ public class ThemeConfiguration {
     private SimpleMediaHolder icon;
     @Column(name = "stylesheet", nullable = true, columnDefinition = "LONGTEXT")
     private String styleSheet;
-    @Column(name = "social_media_link", nullable = true, columnDefinition = "TINYTEXT")
+    @Column(name = "social_media_link", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = ThemeLinkConverter.class)
     List<ThemeLink> socialMediaUrls = new ArrayList<>();
-    @Column(name = "footer_link", nullable = true, columnDefinition = "TINYTEXT")
+    @Column(name = "footer_link", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = ThemeLinkConverter.class)
     List<ThemeLink> footerLinks = new ArrayList<>();
 

@@ -43,8 +43,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -79,12 +79,15 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class TocMaker {
 
-    private static final Logger logger = LoggerFactory.getLogger(TocMaker.class);
+    private static final Logger logger = LogManager.getLogger(TocMaker.class);
 
     private static final String[] REQUIRED_FIELDS = { SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.DATAREPOSITORY,
             SolrConstants.DOCSTRCT, SolrConstants.IDDOC, SolrConstants.IDDOC_PARENT, SolrConstants.ISANCHOR, SolrConstants.ISWORK,
             SolrConstants.LABEL, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBNAIL,
             SolrConstants.THUMBPAGENO, SolrConstants.THUMBPAGENOLABEL, SolrConstants.TITLE };
+
+    private static final int ANCHOR_THUMBNAIL_HEIGHT = 60;
+    private static final int ANCHOR_THUMBNAIL_WIDTH = 50;
 
     private static Pattern patternVolumeLabel = Pattern.compile(StringTools.REGEX_BRACES);
 
@@ -161,7 +164,7 @@ public class TocMaker {
         ret.put(TOC.DEFAULT_GROUP, new ArrayList<TOCElement>());
 
         // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
-        boolean sourceFormatPdfAllowed = SolrConstants._METS.equals(structElement.getSourceDocFormat());
+        boolean sourceFormatPdfAllowed = SolrConstants.SOURCEDOCFORMAT_METS.equals(structElement.getSourceDocFormat());
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(new StringBuilder(SolrConstants.IDDOC).append(':').append(structElement.getLuceneId()).toString(),
@@ -335,7 +338,7 @@ public class TocMaker {
                     .append(':')
                     .append(groupIdValue);
 
-            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            String groupSortField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             sortFields.add(new StringPair(groupSortField, "asc"));
             returnFields.add(groupSortField); // add each sorting field to return list
         }
@@ -377,13 +380,11 @@ public class TocMaker {
             }
 
             String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-            int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
-            int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
             String thumbnailUrl = null;
             if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                 StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
-                thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
+                thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
             }
             label.mapEach(value -> StringEscapeUtils.unescapeHtml4(value));
             boolean accessPermissionPdf;
@@ -433,7 +434,7 @@ public class TocMaker {
                 logger.warn("Group ID field not found on IDDOC {}", doc.getFieldValue(SolrConstants.IDDOC));
                 continue;
             }
-            String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
+            String groupSortField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             Integer order = (Integer) doc.getFieldValue(groupSortField);
             if (order == null) {
                 logger.warn("No {} on group member {}", groupSortField, doc.getFieldValue("PI"));
@@ -533,12 +534,9 @@ public class TocMaker {
                 String volumeMimeType = (String) volumeDoc.getFieldValue(SolrConstants.MIMETYPE);
                 logger.trace("volume mime type: {}", volumeMimeType);
 
-                int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
-                int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
-
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                 StructElement struct = new StructElement(Long.valueOf(volumeIddoc), volumeDoc);
-                thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
+                thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
                 String docStructType = (String) volumeDoc.getFieldValue(SolrConstants.DOCSTRCT);
@@ -564,7 +562,7 @@ public class TocMaker {
                 // Collect group IDs to which this volume might belong
                 List<String> groupIds = new ArrayList<>();
                 for (String fieldName : volumeDoc.getFieldNames()) {
-                    if (fieldName.startsWith(SolrConstants.GROUPID_)) {
+                    if (fieldName.startsWith(SolrConstants.PREFIX_GROUPID)) {
                         for (Object objValue : volumeDoc.getFieldValues(fieldName)) {
                             groupIds.add((String) objValue);
                         }

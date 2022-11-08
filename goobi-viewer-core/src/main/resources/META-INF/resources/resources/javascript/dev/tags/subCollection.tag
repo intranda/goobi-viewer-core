@@ -7,7 +7,7 @@
 					<i class="fa fa-rss" aria-hidden="true"/>
 				</a> 
 			</div>
-			<subCollection if="{child.members && child.members.length > 0}" collection="{child}"/>
+			<subCollection if="{child.members && child.members.length > 0}" collection="{child}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"/>
 		</li>
 	</ul>
 

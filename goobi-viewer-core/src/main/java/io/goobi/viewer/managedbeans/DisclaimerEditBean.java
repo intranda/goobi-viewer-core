@@ -27,8 +27,8 @@ import java.time.LocalDateTime;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.administration.legal.Disclaimer;
 public class DisclaimerEditBean implements Serializable {
 
     private static final long serialVersionUID = -6562240290914952926L;
-    private static final Logger logger = LoggerFactory.getLogger(DisclaimerEditBean.class);
+    private static final Logger logger = LogManager.getLogger(DisclaimerEditBean.class);
 
     private final IDAO dao;
     private final Disclaimer disclaimerForEdit;

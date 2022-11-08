@@ -40,15 +40,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utility methods for date parsing, etc.
  */
 public class DateTools {
 
-    private static final Logger logger = LoggerFactory.getLogger(DateTools.class);
+    private static final Logger logger = LogManager.getLogger(DateTools.class);
 
     /** Constant <code>formatterISO8601Full</code> */
     public static final DateTimeFormatter formatterISO8601Full = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // yyyy-MM-dd'T'HH:mm:ss
@@ -104,7 +104,8 @@ public class DateTools {
     public static final DateTimeFormatter formatterYearOnly = DateTimeFormatter.ofPattern("yyyy");
 
     public static final DateTimeFormatter formatterMonthDayOnly = DateTimeFormatter.ofPattern("MMdd");
-
+    
+    public static final DateTimeFormatter formatterFileName = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmssSSS");
     /**
      * 
      */

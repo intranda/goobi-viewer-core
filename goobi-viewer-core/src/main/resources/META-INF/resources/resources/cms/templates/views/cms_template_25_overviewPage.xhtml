@@ -158,7 +158,7 @@
                             type: "GET",
                             datatype: "HTML"
                         } ).then( function( data ) {
-                            $( '#literature' ).html( data );
+                            document.getElementById('literature').innerHTML = data;
                             $( '#literatureLoader' ).hide();
                         } );
                     }

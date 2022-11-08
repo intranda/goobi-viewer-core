@@ -31,8 +31,8 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -71,7 +71,7 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class CollectionBuilder extends AbstractBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(CollectionBuilder.class);
+    private static final Logger logger = LogManager.getLogger(CollectionBuilder.class);
 
     /**
      * Required field to create manifest stubs for works in collection
@@ -263,14 +263,12 @@ public class CollectionBuilder extends AbstractBuilder {
             if (baseElement != null) {
 
                 BrowseElementInfo info = baseElement.getInfo();
-                if (info != null && (info instanceof SimpleBrowseElementInfo || info instanceof CMSCollection)) {
-                    collection.setLabel(info.getTranslationsForName());
+                if (info != null && info instanceof CMSCollection) {
                     if(info instanceof CMSCollection) {
                         collection.setDescription(info.getTranslationsForDescription());
                     }
-                } else {
-                    collection.setLabel(getLabel(baseElement.getName()));
                 }
+                collection.setLabel(getLabel(baseElement.getName()));
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if (thumbURI != null) {

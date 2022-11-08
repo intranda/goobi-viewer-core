@@ -21,17 +21,15 @@
  */
 package io.goobi.viewer.model.search;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
@@ -41,9 +39,9 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
     public void testParseSearchString() {
-        double[][] points = new double[][] {{1.1, 1.2}, {2.1, 2.2}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+        double[][] points = new double[][] { { 1.1, 1.2 }, { 2.1, 2.2 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
         String referencePointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
-        String referenceQuery = "IsWithin(POLYGON(("+referencePointsString+")))";
+        String referenceQuery = "IsWithin(POLYGON((" + referencePointsString + ")))";
         // System.out.println("query = " + referenceQuery);
         GeoCoordinateFeature feature = new GeoCoordinateFeature(points, "IsWithin", "POLYGON");
         String query = feature.getSearchString();
@@ -52,38 +50,38 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
     public void testParsePoints() {
-        double[][] referencePoints = new double[][] {{1.1, 1.2}, {2.1, -2.2}, {3.1, 3.2}, {-4.1, 4.2}, {1.1, 1.2}};
+        double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 2.1, -2.2 }, { 3.1, 3.2 }, { -4.1, 4.2 }, { 1.1, 1.2 } };
         String pointsString = "1.1 1.2, 2.1 -2.2, 3.1 3.2, -4.1 4.2, 1.1 1.2";
-        String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+        String query = "WKT_COORDS:\"Intersects(POLYGON((" + pointsString + ")))";
         // System.out.println("query = " + query);
         double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
         assertArrayEquals(referencePoints, points);
     }
-    
+
     @Test
     public void testParseIllegalPoints() {
         {
-            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 0, 0 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
             String pointsString = "1.1 1.2, 2.1 , 3.1 3.2, 4.1 4.2, 1.1 1.2";
-            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            String query = "WKT_COORDS:\"Intersects(POLYGON((" + pointsString + ")))";
             // System.out.println("query = " + query);
             double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
             assertArrayEquals(referencePoints, points);
 
         }
         {
-            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 0, 0 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
             String pointsString = "1.1 1.2, -2342- , 3.1 3.2, 4.1 4.2, 1.1 1.2";
-            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            String query = "WKT_COORDS:\"Intersects(POLYGON((" + pointsString + ")))";
             // System.out.println("query = " + query);
             double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
             assertArrayEquals(referencePoints, points);
 
         }
         {
-            double[][] referencePoints = new double[][] {{1.1, 1.2}, {0, 0}, {3.1, 3.2}, {4.1, 4.2}, {1.1, 1.2}};
+            double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 0, 0 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
             String pointsString = "1.1 1.2, sfs, 3.1 3.2, 4.1 4.2, 1.1 1.2";
-            String query = "WKT_COORDS:\"Intersects(POLYGON(("+pointsString+")))";
+            String query = "WKT_COORDS:\"Intersects(POLYGON((" + pointsString + ")))";
             // System.out.println("query = " + query);
             double[][] points = GeoCoordinateFeature.getGeoSearchPoints(query);
             assertEquals(0, points.length);
@@ -93,8 +91,10 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
     public void testFacetEscaping() throws UnsupportedEncodingException {
-        String origFacetString = "WKT_COORDS:\"IsWithin(POLYGON((11.83273903383027 51.94656677497078,11.83273903383027 53.48917317885388,13.855459790711027 53.48917317885388,13.855459790711027 51.94656677497078,11.83273903383027 51.94656677497078)))\"";
-        String geoJson = "{\"type\":\"rectangle\",\"vertices\":[[11.83273903383027,51.94656677497078],[11.83273903383027,53.48917317885388],[13.855459790711027,53.48917317885388],[13.855459790711027,51.94656677497078],[11.83273903383027,51.94656677497078]]}";
+        String origFacetString =
+                "WKT_COORDS:\"IsWithin(POLYGON((11.83273903383027 51.94656677497078,11.83273903383027 53.48917317885388,13.855459790711027 53.48917317885388,13.855459790711027 51.94656677497078,11.83273903383027 51.94656677497078)))\"";
+        String geoJson =
+                "{\"type\":\"rectangle\",\"vertices\":[[11.83273903383027,51.94656677497078],[11.83273903383027,53.48917317885388],[13.855459790711027,53.48917317885388],[13.855459790711027,51.94656677497078],[11.83273903383027,51.94656677497078]]}";
         GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
         SearchFacets facets = new SearchFacets();
         facets.getCurrentFacets().add(item);
@@ -105,8 +105,9 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
 
         facets.setCurrentFacetString(urlString);
 
-        String filterQueryString = facets.generateFacetFilterQueries(0, true, true).get(0);
-        String comparisonString = "WKT_COORDS:\"ISWITHIN\\(POLYGON\\(\\(51.94656677497078\\ 11.83273903383027,\\ 53.48917317885388\\ 11.83273903383027,\\ 53.48917317885388\\ 13.855459790711027,\\ 51.94656677497078\\ 13.855459790711027,\\ 51.94656677497078\\ 11.83273903383027\\)\\)\\)\"";
+        String filterQueryString = facets.generateFacetFilterQueries(true).get(0);
+        String comparisonString =
+                "WKT_COORDS:\"ISWITHIN\\(POLYGON\\(\\(51.94656677497078\\ 11.83273903383027,\\ 53.48917317885388\\ 11.83273903383027,\\ 53.48917317885388\\ 13.855459790711027,\\ 51.94656677497078\\ 13.855459790711027,\\ 51.94656677497078\\ 11.83273903383027\\)\\)\\)\"";
         assertEquals(comparisonString, filterQueryString);
     }
 

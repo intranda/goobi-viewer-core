@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.websockets;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,8 +35,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
@@ -48,7 +47,7 @@ import io.goobi.viewer.managedbeans.AdminBean;
 @ServerEndpoint(value = "/session.socket", configurator = GetHttpSessionConfigurator.class)
 public class UserEndpoint {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
+    private static final Logger logger = LogManager.getLogger(UserEndpoint.class);
 
     private static Map<String, Timer> sessionClearTimers = new ConcurrentHashMap<>();
 

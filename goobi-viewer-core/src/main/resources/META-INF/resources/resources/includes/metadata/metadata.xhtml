@@ -33,7 +33,7 @@
 	
 			            <!-- ADD TO BOOKMARK -->
 			            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
-			                    <button type="button" class="btn btn--icon metadata__bookmark-button"
+			                    <button type="button" class="btn btn--icon metadata__bookmark-button" aria-label="#{msg.bookmarkList_addToBookmarkList}"
 			                        data-bookmark-list-type="add" 
 			                        data-pi="#{activeDocumentBean.viewManager.pi}"
 			                        data-page="#{activeDocumentBean.viewManager.currentImageOrder}">
@@ -44,7 +44,7 @@
 			                    </button>
 			            </ui:fragment>
 	
-	                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+	                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 							<viewerComponent:copyrightIndicator />
 						</ui:fragment>
 	

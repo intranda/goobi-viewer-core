@@ -45,21 +45,19 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.IndexerTools;
-import io.goobi.viewer.controller.RandomComparator;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.CmsElementNotFoundException;
@@ -128,7 +126,7 @@ public class CmsBean implements Serializable {
 
     private static final long serialVersionUID = -2021732230593473827L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
@@ -152,7 +150,6 @@ public class CmsBean implements Serializable {
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
     private boolean displaySidebarEditor = false;
-    private int nestedPagesCount = 0;
     private boolean editMode = false;
     private Map<String, CollectionView> collections = new HashMap<>();
     private List<CMSStaticPage> staticPages = null;
@@ -754,37 +751,6 @@ public class CmsBean implements Serializable {
     public String getIconUrlByTemplateId(String templateId) {
         String iconUrl = CMSTemplateManager.getInstance().getTemplateIconUrl(templateId);
         return iconUrl;
-    }
-
-    /**
-     * <p>
-     * getNestedPages.
-     * </p>
-     *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated use {@link CMSContentItem#getNestedPages()}
-     */
-    @Deprecated
-    public List<CMSPage> getNestedPages(CMSContentItem item) throws DAOException {
-        int size = item.getElementsPerPage();
-        int offset = item.getListOffset();
-
-        Stream<CMSPage> nestedPagesStream = getAllCMSPages().stream()
-                .filter(CMSPage::isPublished)
-                .filter(child -> item.getCategories().isEmpty()
-                        || !CollectionUtils.intersection(item.getCategories(), child.getCategories()).isEmpty());
-
-        if (item.isRandomizeItems()) {
-            nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
-        }
-
-        nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
-        List<CMSPage> nestedPages = nestedPagesStream.collect(Collectors.toList());
-        setNestedPagesCount((int) Math.ceil((offset + nestedPages.size()) / (double) size));
-
-        return nestedPages;
     }
 
     /**
@@ -1519,16 +1485,12 @@ public class CmsBean implements Serializable {
                                 searchBean.setActiveSearchType(item.getSearchType());
                             }
                             if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
-                                searchBean.setShowReducedSearchOptions(true);
                                 return searchAction(item);
                             } else if (item.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
                                 String searchString = StringUtils.isNotBlank(item.getSolrQuery().replace("-", "")) ? item.getSolrQuery() : "";
                                 //                        searchBean.setSearchString(item.getSolrQuery());
                                 searchBean.setExactSearchString(searchString);
-                                searchBean.setShowReducedSearchOptions(false);
                                 return searchAction(item);
-                            } else {
-                                searchBean.setShowReducedSearchOptions(false);
                             }
                         }
                         break;
@@ -1719,9 +1681,10 @@ public class CmsBean implements Serializable {
             search.setPage(searchBean.getCurrentPage());
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
-            search.execute(facets, null, searchBean.getHitsPerPage(), 0, null, true,
-                    DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs(), item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+            search.execute(facets, null, searchBean.getHitsPerPage(), null, true,
+                    item.isNoSearchAggregation() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(search);
+            searchBean.setHitsPerPageSetterCalled(false);
             return null;
         } else if (item == null) {
             logger.error("Cannot search: item is null");
@@ -1828,28 +1791,6 @@ public class CmsBean implements Serializable {
 
     /**
      * <p>
-     * Getter for the field <code>nestedPagesCount</code>.
-     * </p>
-     *
-     * @return a int.
-     */
-    public int getNestedPagesCount() {
-        return nestedPagesCount;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>nestedPagesCount</code>.
-     * </p>
-     *
-     * @param nestedPages a int.
-     */
-    public void setNestedPagesCount(int nestedPages) {
-        this.nestedPagesCount = nestedPages;
-    }
-
-    /**
-     * <p>
      * isEditMode.
      * </p>
      *
@@ -1883,8 +1824,8 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been initialized
-     * yet, do so and add it to the Bean's CollectionView map
+     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
+     * initialized yet, do so and add it to the Bean's CollectionView map
      *
      * @param id The ContentItemId of the ContentItem to look for
      * @param page The page containing the collection ContentItem
@@ -1901,7 +1842,7 @@ public class CmsBean implements Serializable {
                 CMSContentItem contentItem = page.getContentItemOrThrowException(id);
                 collection = contentItem.initializeCollection(page.getSubThemeDiscriminatorValue());
                 collections.put(myId, collection);
-            } catch(CmsElementNotFoundException e) {
+            } catch (CmsElementNotFoundException e) {
                 logger.debug("Not matching collection element for id {} on page {}", id, page.getId());
             }
         }
@@ -1926,8 +1867,9 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * Get the first available {@link io.goobi.viewer.model.viewer.collections.CollectionView} from any {@link io.goobi.viewer.model.cms.CMSContentItem} of the
-     * given {@link CMSPage page}. The CollectionView is added to the Bean's internal collection map
+     * Get the first available {@link io.goobi.viewer.model.viewer.collections.CollectionView} from any
+     * {@link io.goobi.viewer.model.cms.CMSContentItem} of the given {@link CMSPage page}. The CollectionView is added to the Bean's internal
+     * collection map
      *
      * @param page The CMSPage to provide the collection
      * @return The CollectionView or null if none was found
@@ -1996,10 +1938,10 @@ public class CmsBean implements Serializable {
             Stream<String> filteredLuceneFields = this.luceneFields.stream()
                     .filter(name -> !(name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_")));
             if (!includeUntokenized) {
-                filteredLuceneFields = filteredLuceneFields.filter(name -> !name.endsWith(SolrConstants._UNTOKENIZED));
+                filteredLuceneFields = filteredLuceneFields.filter(name -> !name.endsWith(SolrConstants.SUFFIX_UNTOKENIZED));
             }
             if (excludeTokenizedMetadataFields) {
-                filteredLuceneFields = filteredLuceneFields.filter(name -> !(name.startsWith("MD_") && !name.endsWith(SolrConstants._UNTOKENIZED)));
+                filteredLuceneFields = filteredLuceneFields.filter(name -> !(name.startsWith("MD_") && !name.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)));
             }
             filteredLuceneFields = filteredLuceneFields.sorted();
             return filteredLuceneFields.collect(Collectors.toList());

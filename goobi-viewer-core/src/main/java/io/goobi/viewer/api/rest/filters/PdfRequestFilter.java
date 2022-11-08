@@ -45,8 +45,8 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
@@ -79,7 +79,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 @ContentServerPdfBinding
 public class PdfRequestFilter implements ContainerRequestFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(PdfRequestFilter.class);
+    private static final Logger logger = LogManager.getLogger(PdfRequestFilter.class);
 
     private static final String ATTRIBUTE_PDF_QUOTA = "pdf_quota";
     private static final String INSUFFICIENT_QUOTA_PREFIX = "Insufficient download quota for record '";
@@ -159,7 +159,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
                                 Path indexedSourceFile = Paths.get(DataFileTools.getSourceFilePath(p.getPi() + ".xml", p.getDataRepository(),
                                         (actualImageName != null && topDocument.getSourceDocFormat() != null) ? topDocument.getSourceDocFormat()
-                                                : SolrConstants._METS));
+                                                : SolrConstants.SOURCEDOCFORMAT_METS));
                                 if (Files.exists(indexedSourceFile)) {
                                     request.setProperty("param:metsFile", indexedSourceFile.toUri());
                                 }

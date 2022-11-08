@@ -34,7 +34,6 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -43,9 +42,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.weld.serialization.spi.helpers.SerializableContextualInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -74,7 +73,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  */
 public class BeanUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(BeanUtils.class);
+    private static final Logger logger = LogManager.getLogger(BeanUtils.class);
 
     private static Locale defaultLocale = null;
 
@@ -86,9 +85,7 @@ public class BeanUtils {
     public static HttpServletRequest getRequest() {
         SessionBean sb = getSessionBean();
         try {
-            if (sb != null) {
                 return sb.getRequest();
-            }
         } catch (ContextNotActiveException | IllegalStateException e) {
             // logger.trace(e.getMessage());
         }
@@ -107,8 +104,7 @@ public class BeanUtils {
      */
     public static HttpServletRequest getRequest(FacesContext context) {
         if (context != null && context.getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-            return request;
+            return (HttpServletRequest) context.getExternalContext().getRequest();
         }
 
         return null;
@@ -327,11 +323,9 @@ public class BeanUtils {
         //Don't attempt to get navigationHelper outside of faces context. Otherwise a new navigationHelper entity will be constructed
         //with false assumptions on current locale
         if(FacesContext.getCurrentInstance() != null) {            
-            NavigationHelper navigationHelper = (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
-            return navigationHelper;
-        } else {
-            return null;
+            return (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
         }
+        return null;
     }
 
     /**
@@ -560,6 +554,7 @@ public class BeanUtils {
         return StringTools.escapeCriticalUrlChracters(value, false);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Optional<T> findInstanceInSessionAttributes(HttpServletRequest request, Class<T> clazz) {
         Enumeration<String> attributeNames = request.getSession().getAttributeNames();
         while (attributeNames.hasMoreElements()) {
@@ -567,7 +562,7 @@ public class BeanUtils {
             Object attributeValue = request.getSession().getAttribute(attributeName);
             if (attributeValue != null && attributeValue.getClass().equals(clazz)) {
                 return Optional.of(attributeValue).map(o -> (T) o);
-            } else if (attributeValue != null && attributeValue instanceof SerializableContextualInstance) {
+            } else if (attributeValue instanceof SerializableContextualInstance) {
                 Object instance = ((SerializableContextualInstance) attributeValue).getInstance();
                 if (instance != null && instance.getClass().equals(clazz)) {
                     return Optional.of(instance).map(o -> (T) o);
@@ -587,8 +582,7 @@ public class BeanUtils {
     public static HttpServletResponse getResponse() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context != null && context.getExternalContext() != null) {
-            HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-            return response;
+            return (HttpServletResponse) context.getExternalContext().getResponse();
         }
 
         return null;
@@ -608,7 +602,7 @@ public class BeanUtils {
                 try {
                     value = vb.getValue(context.getELContext());
                 } catch (Exception e) {
-                    logger.error("Error getting the object " + expr + " from context: " + e.getMessage());
+                    logger.error("Error getting the object {} from context: {}", expr, e.getMessage());
                 }
             }
         }

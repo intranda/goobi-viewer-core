@@ -29,8 +29,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
@@ -43,7 +43,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
 
     private static final long serialVersionUID = 8047374873015931547L;
 
-    private static final Logger logger = LoggerFactory.getLogger(BrowseTermComparator.class);
+    private static final Logger logger = LogManager.getLogger(BrowseTermComparator.class);
 
     private final Locale locale;
     private AlphanumCollatorComparator comparator;

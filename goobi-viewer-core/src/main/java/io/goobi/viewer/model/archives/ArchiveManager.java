@@ -46,8 +46,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -69,7 +69,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class ArchiveManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ArchiveManager.class);
+    private static final Logger logger = LogManager.getLogger(ArchiveManager.class);
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
@@ -79,7 +79,7 @@ public class ArchiveManager {
 
     private final BasexEADParser eadParser;
 
-    public static enum DatabaseState {
+    public enum DatabaseState {
         /**
          * State before the first query to the basex server
          */
@@ -149,11 +149,11 @@ public class ArchiveManager {
      * @throws IOException
      * @throws HTTPException
      */
-    private boolean initArchivesFromBaseXServer(BasexEADParser eadParser) throws ClientProtocolException, IOException, HTTPException {
+    private boolean initArchivesFromBaseXServer(BasexEADParser eadParser) throws IOException, HTTPException {
         //initialize archives with 'null' archive tree values
         List<ArchiveResource> databases = eadParser.getPossibleDatabases();
         Map<ArchiveResource, ArchiveTree> cachedDatabases = this.archives;
-        this.archives = new HashMap<ArchiveResource, ArchiveTree>();
+        this.archives = new HashMap<>();
         boolean updated = false;
         for (ArchiveResource db : databases) {
             ArchiveResource cachedResource =
@@ -190,8 +190,7 @@ public class ArchiveManager {
     }
 
     public ArchiveResource getArchiveResource(String archiveName) {
-        ArchiveResource database = this.archives.keySet().stream().filter(db -> db.getCombinedId().equals(archiveName)).findAny().orElse(null);
-        return database;
+        return this.archives.keySet().stream().filter(db -> db.getCombinedId().equals(archiveName)).findAny().orElse(null);
     }
 
     public NodeType getNodeType(String name) {
@@ -308,14 +307,13 @@ public class ArchiveManager {
 
     public ArchiveResource getArchive(String databaseId, String resourceId) {
         if (StringUtils.isNoneBlank(databaseId, resourceId)) {
-            ArchiveResource archive = this.archives.keySet()
+            return this.archives.keySet()
                     .stream()
                     //                    .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
                     .filter(a -> a.getDatabaseId().equals(databaseId))
                     .filter(a -> a.getResourceId().equals(resourceId))
                     .findAny()
                     .orElse(null);
-            return archive;
         }
 
         return null;
@@ -334,15 +332,15 @@ public class ArchiveManager {
                     .map(d -> d.getAttributeValue("database"))
                     .orElse("");
             if (StringUtils.isBlank(database)) {
-                logger.warn("Error retrieving data base for " + identifier + ": empty or unexcepted response");
+                logger.warn("Error retrieving data base for {}: empty or unexcepted response", identifier);
                 return null;
             }
-            String filename = doc.getRootElement().getChild("record", null).getAttributeValue("filename");
+            String filename = doc != null ? doc.getRootElement().getChild("record", null).getAttributeValue("filename") : "notfound";
             String archiveId = BasexEADParser.getIdForName(database);
             String resourceId = BasexEADParser.getIdForName(filename);
             return getArchive(database, resourceId);
         } catch (IOException | HTTPException | JDOMException e) {
-            logger.error("Error retrieving data base for " + identifier, e);
+            logger.error("Error retrieving data base for {}", identifier, e);
             return null;
         }
     }
@@ -372,10 +370,7 @@ public class ArchiveManager {
             } catch (IOException | HTTPException e) {
                 logger.error("Error retrieving database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl());
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
-            } catch (JDOMException | ConfigurationException e) {
-                logger.error("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl());
-                this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
-            } catch (BaseXException e) {
+            } catch (JDOMException | ConfigurationException | BaseXException e) {
                 logger.error("Error reading database {} from {}", resource.getCombinedName(), eadParser.getBasexUrl());
                 this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
             }

@@ -32,8 +32,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
@@ -49,6 +49,7 @@ import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
+import io.goobi.viewer.model.statistics.usage.UsageStatisticsRecorder;
 import io.goobi.viewer.model.translations.language.LanguageHelper;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.DefaultURLBuilder;
@@ -62,7 +63,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public final class DataManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataManager.class);
+    private static final Logger logger = LogManager.getLogger(DataManager.class);
 
     private static final Object lock = new Object();
 
@@ -92,6 +93,8 @@ public final class DataManager {
 
     private String indexerVersion = "";
 
+    private String connectorVersion = "";
+
     private int hotfolderFileCount = 0;
 
     private RestApiManager restApiManager;
@@ -103,10 +106,12 @@ public final class DataManager {
     private final TaskManager restApiJobManager;
 
     private ArchiveManager archiveManager = null;
-    
+
     private ClientApplicationManager clientManager = null;
 
     private SecurityManager securityManager = null;
+
+    private UsageStatisticsRecorder usageStatisticsRecorder = null;
 
     /**
      * <p>
@@ -267,7 +272,7 @@ public final class DataManager {
     public Configuration getConfiguration() {
         if (configuration == null) {
             synchronized (lock) {
-                configuration = new Configuration("config_viewer.xml");
+                configuration = new Configuration(Configuration.CONFIG_FILE_NAME);
             }
         }
 
@@ -453,6 +458,20 @@ public final class DataManager {
     }
 
     /**
+     * @return the connectorVersion
+     */
+    public String getConnectorVersion() {
+        return connectorVersion;
+    }
+
+    /**
+     * @param connectorVersion the connectorVersion to set
+     */
+    public void setConnectorVersion(String connectorVersion) {
+        this.connectorVersion = connectorVersion;
+    }
+
+    /**
      * @return the hotfolderFileCount
      */
     public int getHotfolderFileCount() {
@@ -539,15 +558,16 @@ public final class DataManager {
         }
         return archiveManager;
     }
-    
+
     public ClientApplicationManager getClientManager() throws DAOException {
-        if(this.clientManager == null) {
+        if (this.clientManager == null) {
             synchronized (lock) {
                 this.clientManager = new ClientApplicationManager(dao);
             }
         }
         return this.clientManager;
     }
+
     /**
      * 
      * @return
@@ -561,8 +581,22 @@ public final class DataManager {
 
         return securityManager;
     }
-    
+
     public void setClientManager(ClientApplicationManager manager) {
         this.clientManager = manager;
+    }
+
+    public UsageStatisticsRecorder getUsageStatisticsRecorder() throws DAOException {
+        if (usageStatisticsRecorder == null) {
+            synchronized (lock) {
+                usageStatisticsRecorder = new UsageStatisticsRecorder(this.getDao(), this.getConfiguration(), this.getConfiguration().getTheme());
+            }
+        }
+
+        return usageStatisticsRecorder;
+    }
+
+    public void setUsageStatisticsRecorder(UsageStatisticsRecorder usageStatisticsRecorder) {
+        this.usageStatisticsRecorder = usageStatisticsRecorder;
     }
 }

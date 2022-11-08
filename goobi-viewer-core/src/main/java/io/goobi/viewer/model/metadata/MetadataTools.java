@@ -28,8 +28,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocumentList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -53,7 +53,7 @@ import io.goobi.viewer.solr.SolrTools;
 public class MetadataTools {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(MetadataTools.class);
+    private static final Logger logger = LogManager.getLogger(MetadataTools.class);
 
     /**
      * <p>
@@ -232,7 +232,7 @@ public class MetadataTools {
         // citation_publication_date
         if (structElement.getMetadataValue(SolrConstants.YEARPUBLISH) != null) {
             String value = structElement.getMetadataValue(SolrConstants.YEARPUBLISH);
-            List<String> normalizedValues = structElement.getMetadataValues(SolrConstants._CALENDAR_YEAR);
+            List<String> normalizedValues = structElement.getMetadataValues(SolrConstants.CALENDAR_YEAR);
             if (normalizedValues != null && !normalizedValues.isEmpty()) {
                 for (String normalizedValue : normalizedValues) {
                     if (value.contains(normalizedValue)) {

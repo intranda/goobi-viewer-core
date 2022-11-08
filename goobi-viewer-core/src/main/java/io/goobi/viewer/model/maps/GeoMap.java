@@ -38,28 +38,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -74,9 +62,23 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * @author florian
@@ -86,7 +88,7 @@ import io.goobi.viewer.solr.SolrTools;
 @Table(name = "cms_geomap")
 public class GeoMap {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeoMap.class);
+    private static final Logger logger = LogManager.getLogger(GeoMap.class);
 
     /**
      * Placeholder User if the actual creator could not be determined
@@ -377,8 +379,8 @@ public class GeoMap {
                         //No features required since they will be loaded dynamically with the heatmap
                         return "[]";
                     } else {
-                        Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
-                        String ret = features.stream()
+                        Collection<GeoMapFeature> featuresFromSolr = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
+                        String ret = featuresFromSolr.stream()
                                 .distinct()
                                 .map(GeoMapFeature::getJsonObject)
                                 .map(Object::toString)
@@ -400,11 +402,16 @@ public class GeoMap {
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         List<String> fieldList = new ArrayList<>(coordinateFields);
         fieldList.add(markerTitleField);
-        docs = DataManager.getInstance().getSearchIndex().search(query, 0, 10_000, null, null,fieldList, filterQueries, null).getResults();
+        String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
+        String filterQuery = SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
+
+        String finalQuery = String.format("+(%s) +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
+        docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null,fieldList, filterQueries, null).getResults();
         List<GeoMapFeature> features = new ArrayList<>();
         for (SolrDocument doc : docs) {
             for (String field : coordinateFields) {
-                features.addAll(getGeojsonPoints(doc, field, markerTitleField, null));
+                Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, field, markerTitleField, null);
+                features.addAll(tempFeatures);
             }
         }
 

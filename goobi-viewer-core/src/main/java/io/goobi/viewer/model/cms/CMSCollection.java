@@ -31,25 +31,25 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -76,7 +76,7 @@ import io.goobi.viewer.solr.SolrConstants;
 @Table(name = "cms_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "solrField", "solrFieldValue" }) })
 public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott {
 
-    private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
+    private static final Logger logger = LogManager.getLogger(CMSCollection.class);
 
     @Deprecated
     private static final String LABEL_TAG = "label";
@@ -557,30 +557,21 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     public URI getIconURI() {
         logger.trace("getIconURI for {}: {}", getSolrFieldValue(), getRepresentativeWork().isPresent() ? getRepresentativeWorkPI() : "-");
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(getDefaultIcon(getSolrFieldValue())));
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI()).orElse(null));
     }
 
     /** {@inheritDoc} */
     @Override
     public URI getIconURI(int width, int height) {
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work, width, height)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(width, height)).orElse(getDefaultIcon(getSolrFieldValue())));
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(width, height)).orElse(null));
     }
 
     /** {@inheritDoc} */
     @Override
     public URI getIconURI(int size) {
         return getRepresentativeWork().map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(work, size)))
-                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(size)).orElse(getDefaultIcon(getSolrFieldValue())));
-    }
-
-    /**
-     * @param solrFieldValue2
-     * @return
-     */
-    @Deprecated
-    public static URI getDefaultIcon(String collectionName) {
-        return null;
+                .orElse(Optional.ofNullable(getMediaItem()).map(item -> item.getIconURI(size)).orElse(null));
     }
 
     /**

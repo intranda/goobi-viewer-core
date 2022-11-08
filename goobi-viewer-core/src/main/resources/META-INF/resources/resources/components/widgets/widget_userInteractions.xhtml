@@ -9,13 +9,13 @@
 
     <composite:implementation>
         <h:panelGroup
-            rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded and (userBean.user.superuser or (configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS') or userBean.user.hasPrivilegesForTemplate('templateOverviewPage'))}">
+            rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded and (userBean.user.superuser or (configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS') or userBean.user.hasPrivilegesForTemplate('templateOverviewPage'))}">
             <div id="widgetUserInteractions" class="widget widget-user-interactions">
                 <h:form id="widgetUserInteractionsStandardForm" prependId="false">
                     <h2 >#{msg.menuUser_workInteractions}</h2>
                     <ul>
                         <h:panelGroup
-                            rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
+                            rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
                             <li>
                                 <h:commandLink
                                     action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}">
@@ -26,7 +26,7 @@
 
                         <!-- TODO rendered=#{docstruct in allowed doctypes} -->
                         <!-- TODO record already added to Transkribus -->
-                        <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topDocument.sourceDocFormat == 'METS'}">
+                        <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
                             <li>
                                 <a href="#" data-toggle="modal" data-target="#transkribusModal" data-backdrop="false"> #{msg.transkribus_add} </a>
 

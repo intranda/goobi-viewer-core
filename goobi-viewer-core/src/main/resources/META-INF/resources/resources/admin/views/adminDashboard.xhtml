@@ -110,7 +110,7 @@
                             </ui:fragment>
 
                             <!-- LICENSES -->
-                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty hasAccessPermissingForTranslationFilesnotConfiguredAccessConditions}">
+                            <ui:fragment rendered="#{userBean.admin and searchBean.solrIndexReachable and not empty adminLicenseBean.notConfiguredAccessConditions}">
                                 <h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 -danger">
                                     <div class="row">
                                         <h2 class="col-9">#{msg.admin__licenses}</h2>
@@ -124,11 +124,11 @@
                                             <ui:repeat var="accessCondition" value="#{adminLicenseBean.notConfiguredAccessConditions}">
                                                 <h:commandLink action="pretty:adminLicenseNew"
                                                     actionListener="#{adminLicenseBean.newCurrentLicenseTypeAction(accessCondition)}"
-                                                    styleClass="row admin__license-unconfigured-entry my-3">
-                                                    <div class="col-8 pl-5 -textlink">
+                                                    styleClass="row admin__license-unconfigured-entry my-3 pr-3">
+                                                    <div class="pl-5 -textlink">
                                                         #{accessCondition}
                                                     </div>
-                                                    <div class="col- d-flex justify-content-end">
+                                                    <div class="d-flex justify-content-end ml-2">
                                                         <span>#{msg.admin__licenses_configure_license_now}</span>
                                                     </div>
                                                 </h:commandLink>

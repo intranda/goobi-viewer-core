@@ -28,14 +28,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -47,8 +48,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  */
 public class SitemapBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(SitemapBuilder.class);
-
+    private static final Logger logger = LogManager.getLogger(SitemapBuilder.class);
 
     private static Thread workerThread = null;
 
@@ -58,7 +58,8 @@ public class SitemapBuilder {
         this.servletRequest = request;
     }
 
-    public void updateSitemap(SitemapRequestParameters params) throws AccessDeniedException, IllegalRequestException, JSONException, PresentationException {
+    public void updateSitemap(SitemapRequestParameters params)
+            throws AccessDeniedException, IllegalRequestException, JSONException, PresentationException {
 
         if (params == null) {
             throw new IllegalRequestException("Invalid JSON request object");
@@ -72,12 +73,11 @@ public class SitemapBuilder {
         updateSitemap(outputPath, rootUrl);
     }
 
-    public void updateSitemap(String outputPath, String viewerRootUrl) throws AccessDeniedException, IllegalRequestException, JSONException, PresentationException {
+    public void updateSitemap(String outputPath, String viewerRootUrl) throws AccessDeniedException, JSONException, PresentationException {
 
         JSONObject ret = new JSONObject();
 
         Sitemap sitemap = new Sitemap();
-
 
         if (workerThread == null || !workerThread.isAlive()) {
             workerThread = new Thread(new Runnable() {
@@ -101,7 +101,7 @@ public class SitemapBuilder {
                             ret.put("message", "Could not generate sitemap, please check logs");
                         }
                     } catch (PresentationException e) {
-                        logger.debug("PresentationException thrown here: {}", e.getMessage());
+                        logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
                         ret.put("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                         ret.put("message", e.getMessage());
                     } catch (IndexUnreachableException e) {
@@ -127,7 +127,7 @@ public class SitemapBuilder {
                 workerThread.interrupt();
                 throw new PresentationException("Processing interrupted");
             }
-            if(!Integer.valueOf(HttpServletResponse.SC_OK).equals(ret.getInt("status"))) {
+            if (!Integer.valueOf(HttpServletResponse.SC_OK).equals(ret.getInt("status"))) {
                 throw new PresentationException(ret.getString("message"));
             }
         } else {

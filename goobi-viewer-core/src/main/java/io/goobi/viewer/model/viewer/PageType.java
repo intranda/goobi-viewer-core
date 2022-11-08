@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -88,6 +88,7 @@ public enum PageType {
     adminCreateRecord("admin/record/new"),
     adminThemes("admin/themes"),
     adminClients("admin/clients"),
+    adminConfigEditor("admin/config"),
     // admin/translations
     adminTranslations("admin/translations"),
     adminTranslationsNew("admin/translations/new"),
@@ -119,7 +120,6 @@ public enum PageType {
     adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns"),
     adminUserActivity("admin/user/activity/"),
     annotations("annotations"),
-    // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
@@ -140,7 +140,7 @@ public enum PageType {
     other(""); //unknown page type name in Navigationhelper. Probably a cms-page
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(PageType.class);
+    private static final Logger logger = LogManager.getLogger(PageType.class);
 
     public final String path;
     private final String label;
@@ -352,14 +352,14 @@ public enum PageType {
      * @return a {@link io.goobi.viewer.model.viewer.PageType} object.
      */
     public static PageType getPageTypeForDocStructType(String docStructType) {
-        // First choice: Use preferred target page type for this docstruct type, if configured
-        String preferredPageTypeName = DataManager.getInstance().getConfiguration().getDocstructTargetPageType(docStructType);
+        // First choice: Use preferred target page type for this publication type, if configured
+        String preferredPageTypeName = DataManager.getInstance().getConfiguration().getRecordTargetPageType(docStructType);
         PageType preferredPageType = PageType.getByName(preferredPageTypeName);
         if (StringUtils.isNotEmpty(preferredPageTypeName) && preferredPageType == null) {
             logger.error("docstructTargetPageType configured for '{}' does not exist: {}", docStructType, preferredPageTypeName);
         }
         // Second choice: Use target page type configured as _DEFAULT, if available
-        String defaultPageTypeName = DataManager.getInstance().getConfiguration().getDocstructTargetPageType("_DEFAULT");
+        String defaultPageTypeName = DataManager.getInstance().getConfiguration().getRecordTargetPageType("_DEFAULT");
         PageType defaultPageType = PageType.getByName(defaultPageTypeName);
         if (StringUtils.isNotEmpty(defaultPageTypeName) && defaultPageType == null) {
             logger.error("docstructTargetPageType configured for '_DEFAULT' does not exist: {}", docStructType);

@@ -45,28 +45,28 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -114,7 +114,7 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(CMSPage.class);
+    private static final Logger logger = LogManager.getLogger(CMSPage.class);
 
     /** Constant <code>GLOBAL_LANGUAGE="global"</code> */
     public static final String GLOBAL_LANGUAGE = "global";
@@ -534,7 +534,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(displayWidget.getId());
                         element = new CMSSidebarElementAutomatic(map, this);
                     } catch (DAOException e) {
-                        logger.error("Unable to add widget: Cannot load geomap id=" + displayWidget.getId());
+                        logger.error("Unable to add widget: Cannot load geomap id={}", displayWidget.getId());
                     }
                     break;
                 case CUSTOM:
@@ -542,7 +542,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                         CustomSidebarWidget widget = DataManager.getInstance().getDao().getCustomWidget(displayWidget.getId());
                         element = new CMSSidebarElementCustom(widget, this);
                     } catch (DAOException e) {
-                        logger.error("Unable to add widget: Cannot load geomap id=" + displayWidget.getId());
+                        logger.error("Unable to add widget: Cannot load geomap id={}", displayWidget.getId());
                     }
                     break;
             }
@@ -556,7 +556,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         int currentIndex = this.sidebarElements.indexOf(element);
         if (currentIndex > 0) {
             int newIndex = currentIndex - 1;
-            CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
+            this.sidebarElements.remove(currentIndex);
             this.sidebarElements.add(newIndex, element);
         }
     }
@@ -565,7 +565,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         int currentIndex = this.sidebarElements.indexOf(element);
         if (currentIndex > -1 && currentIndex < this.sidebarElements.size() - 1) {
             int newIndex = currentIndex + 1;
-            CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
+            this.sidebarElements.remove(currentIndex);
             this.sidebarElements.add(newIndex, element);
         }
     }
@@ -1050,7 +1050,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public CMSContentItem getContentItem(String itemId) {
         try {
             return getContentItemOrThrowException(itemId);
-        } catch(CmsElementNotFoundException e) {
+        } catch (CmsElementNotFoundException e) {
             return null;
         }
     }
@@ -1072,7 +1072,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 }
             }
             return "";
-        } catch(CmsElementNotFoundException e) {
+        } catch (CmsElementNotFoundException e) {
             return "";
         }
 
@@ -1102,13 +1102,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      */
     private CMSPageLanguageVersion getBestLanguage(Locale locale) throws CmsElementNotFoundException {
         // logger.trace("getBestLanguage");
-        CMSPageLanguageVersion language = getLanguageVersions().stream()
+        return getLanguageVersions().stream()
                 .filter(l -> l.getStatus() != null && l.getStatus().equals(CMSPageStatus.FINISHED))
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
                 .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
                 .findFirst()
                 .orElseThrow(() -> new CmsElementNotFoundException("No finished language version exists for page " + this));
-        return language;
     }
 
     /**
@@ -1121,13 +1120,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @throws CmsElementNotFoundException
      */
     private CMSPageLanguageVersion getBestLanguageIncludeUnfinished(Locale locale) throws CmsElementNotFoundException {
-        CMSPageLanguageVersion language = getLanguageVersions().stream()
+        return getLanguageVersions().stream()
                 .filter(l -> !l.getLanguage().equals(GLOBAL_LANGUAGE))
                 .sorted(new CMSPageLanguageVersionComparator(locale, ViewerResourceBundle.getDefaultLocale()))
                 .sorted((p1, p2) -> ObjectUtils.compare(p2.getStatus(), p1.getStatus()))
                 .findFirst()
                 .orElseThrow(() -> new CmsElementNotFoundException("No language version exists for page " + this.getId()));
-        return language;
     }
 
     /**
@@ -1218,7 +1216,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         return getContentItems().stream()
                 .filter(CMSContentItem::isPreview)
                 .map(CMSContentItem::getItemId)
-                .map(id -> getContent(id))
+                .map(identifier -> getContent(identifier))
                 .findFirst()
                 .orElse("");
     }
@@ -1313,7 +1311,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                     try {
                         contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
                     } catch (ContentNotFoundException | IOException e) {
-                        logger.error("Failed to load glossary " + item.getGlossaryName(), e);
+                        logger.error("Failed to load glossary {}", item.getGlossaryName(), e);
                     }
                     break;
                 default:
@@ -1324,10 +1322,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             logger.error("No content item of id {} found in page {}", itemId, this.getId());
             return "";
         } catch (ViewerConfigurationException e1) {
-            logger.error("Error in viewer configuration: " + e1.toString());
+            logger.error("Error in viewer configuration: {}", e1.toString());
             return "";
         } catch (UnsupportedEncodingException e1) {
-            logger.error("Error trying to encode string: " + e1.toString());
+            logger.error("Error trying to encode string: {}", e1.toString());
             return "";
         }
     }
@@ -1346,8 +1344,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         } catch (CmsElementNotFoundException e) {
             return Collections.emptyList();
         }
-        List<CMSContentItem> items = defaultVersion.getContentItems();
-        return items;
+        return defaultVersion.getContentItems();
     }
 
     /**
@@ -1364,8 +1361,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         } catch (CmsElementNotFoundException e) {
             return new ArrayList<>();
         }
-        List<CMSContentItem> items = defaultVersion.getCompleteContentItemList();
-        return items;
+        return defaultVersion.getCompleteContentItemList();
     }
 
     /**
@@ -1384,8 +1380,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             } catch (CmsElementNotFoundException e) {
                 return new ArrayList<>();
             }
-            List<CMSContentItem> items = version.getCompleteContentItemList();
-            return items;
+            return version.getCompleteContentItemList();
         }
         return null;
     }
@@ -1436,7 +1431,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
     public String getPersistentUrl() {
         return persistentUrl;
     }
-    
+
     /**
      * <p>
      * Setter for the field <code>persistentUrl</code>.
@@ -1463,11 +1458,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static class PageComparator implements Comparator<CMSPage> {
         //null values are high
         NullComparator nullComparator = new NullComparator(true);
 
         @Override
+        @SuppressWarnings("unchecked")
         public int compare(CMSPage page1, CMSPage page2) {
             int value = nullComparator.compare(page1.getPageSorting(), page2.getPageSorting());
             if (value == 0) {
@@ -1518,7 +1515,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
 
                 String tags = item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
 
-                String url = DataManager.getInstance()
+                return DataManager.getInstance()
                         .getRestApiManager()
                         .getDataApiManager()
                         .map(urls -> urls.path(CMS_MEDIA)
@@ -1528,8 +1525,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                                 .query("random", "true")
                                 .build())
                         .orElse(getLegacyTileGridUrl(item));
-
-                return url;
             }
             throw new IllegalRequestException("Content item with id '" + itemId + "' is no tile grid item");
         } catch (CmsElementNotFoundException e) {
@@ -1541,8 +1536,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @return
      */
     private static String getLegacyTileGridUrl(CMSContentItem item) {
-        StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-        sb.append("/rest/tilegrid/")
+        return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                .append("/rest/tilegrid/")
                 .append(CmsBean.getCurrentLocale().getLanguage())
                 .append("/")
                 .append(item.getNumberOfTiles())
@@ -1550,8 +1545,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
                 .append(item.getNumberOfImportantTiles())
                 .append("/")
                 .append(item.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining("$")))
-                .append("/");
-        return sb.toString();
+                .append("/")
+                .toString();
     }
 
     /**
@@ -1647,7 +1642,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         if (searchItem.isPresent()) {
             return (SearchFunctionality) searchItem.get().getFunctionality();
         }
-        logger.warn("Did not find search functionality in page " + this);
+        logger.warn("Did not find search functionality in page {}", this);
         return new SearchFunctionality("", getPageUrl());
     }
 
@@ -1660,7 +1655,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         if (item.isPresent()) {
             return (BrowseFunctionality) item.get().getFunctionality();
         }
-        logger.warn("Did not find browse functionality in page " + this);
+        logger.warn("Did not find browse functionality in page {}", this);
         return new BrowseFunctionality("");
     }
 
@@ -1771,22 +1766,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
         this.mayContainUrlParameters = mayContainUrlParameters;
     }
 
-    //    /**
-    // * @return true if this page's template is configured to follow urls which
-    // contain additional parameters (e.g. search parameters)
-    //     */
-    //    public boolean mayContainURLParameters() {
-    //        try {
-    //            if (getTemplate() != null) {
-    //                return getTemplate().isAppliesToExpandedUrl();
-    //            }
-    //            return false;
-    //        } catch (IllegalStateException e) {
-    //            logger.warn("Unable to acquire template", e);
-    //            return false;
-    //        }
-    //    }
-
     /**
      * <p>
      * Getter for the field <code>relatedPI</code>.
@@ -1850,12 +1829,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
      * @throws java.lang.ClassCastException if the returned property has the wrong generic type.
      */
     public CMSProperty getProperty(String key) throws ClassCastException {
-        CMSProperty property = this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
+        return this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
             CMSProperty prop = new CMSProperty(key);
             this.properties.add(prop);
             return prop;
         });
-        return property;
     }
 
     /*
@@ -2038,9 +2016,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable {
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
-        } catch (PresentationException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IndexUnreachableException e) {
+        } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.getMessage(), e);
         }
 

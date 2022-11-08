@@ -24,6 +24,7 @@ package io.goobi.viewer.model.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,23 +33,23 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -69,7 +70,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private static final long serialVersionUID = 9206827867178660886L;
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(LicenseType.class);
+    private static final Logger logger = LogManager.getLogger(LicenseType.class);
 
     // When adding a new static license type name, update isStaticLicenseType()!
     /** Constant <code>LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE="licenseType_setRepresentativeImage"</code> */
@@ -116,11 +117,11 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     @Column(name = "privilege_name")
     private Set<String> privileges = new HashSet<>();
 
-    /** Other license types for which a user may have privileges that this license type does not grant. */
+    /** Other license types for which this license type can substitute privileges. */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "license_types_overriding", joinColumns = @JoinColumn(name = "license_type_id"),
             inverseJoinColumns = @JoinColumn(name = "overriding_license_type_id"))
-    private Set<LicenseType> overridingLicenseTypes = new HashSet<>();
+    private Set<LicenseType> overriddenLicenseTypes = new HashSet<>();
 
     @Transient
     private Set<String> privilegesCopy = new HashSet<>();
@@ -446,14 +447,16 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * @param redirect the redirect to set
      */
     public void setRedirect(boolean redirect) {
-        this.redirect = redirect;
         // Automatically remove any privileges except listing, if redirect mode is on
         if (redirect) {
             privilegesCopy.clear();
             privilegesCopy.add(PRIV_LIST);
-        } else {
+        } else if (this.redirect) {
+            //only remove LIST if redirect is changed from true to false. 
+            //Otherwise LIST is removed each time the form is submitted
             privilegesCopy.remove(PRIV_LIST);
         }
+        this.redirect = redirect;
     }
 
     /**
@@ -848,21 +851,31 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      * Getter for the field <code>overridingLicenseTypes</code>.
      * </p>
      *
-     * @return the overridingLicenseTypes
+     * @return the overridsenLicenseTypes
      */
-    public Set<LicenseType> getOverridingLicenseTypes() {
-        return overridingLicenseTypes;
+    public Set<LicenseType> getOverriddenLicenseTypes() {
+        return overriddenLicenseTypes;
     }
 
     /**
      * <p>
-     * Setter for the field <code>overridingLicenseTypes</code>.
+     * Setter for the field <code>overriddenLicenseTypes</code>.
      * </p>
      *
-     * @param overridingLicenseTypes the overridingLicenseTypes to set
+     * @param overriddenLicenseTypes the overriddenLicenseTypes to set
      */
-    public void setOverridingLicenseTypes(Set<LicenseType> overridingLicenseTypes) {
-        this.overridingLicenseTypes = overridingLicenseTypes;
+    public void setOverriddenLicenseTypes(Set<LicenseType> overriddenLicenseTypes) {
+        this.overriddenLicenseTypes = overriddenLicenseTypes;
+    }
+
+    /**
+     * Returns list of {@link LicenseType}s that contain this object in their overridden LicenseTypes.
+     * 
+     * @return
+     * @throws DAOException
+     */
+    public List<LicenseType> getLicenseTypesOverridingThis() throws DAOException {
+        return DataManager.getInstance().getDao().getOverridingLicenseType(this);
     }
 
     /**

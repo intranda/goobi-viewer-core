@@ -29,8 +29,8 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -42,7 +42,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public class GeoFacetItem implements IFacetItem {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeoFacetItem.class);
+    private static final Logger logger = LogManager.getLogger(GeoFacetItem.class);
     public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2], "", "");
 
 

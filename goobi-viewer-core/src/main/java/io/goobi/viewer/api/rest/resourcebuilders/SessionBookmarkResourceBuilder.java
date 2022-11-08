@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.PathParam;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -49,7 +49,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 
 public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionBookmarkResourceBuilder.class);
+    private static final Logger logger = LogManager.getLogger(SessionBookmarkResourceBuilder.class);
 
     private final HttpSession session;
 
@@ -66,8 +66,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     public List<BookmarkList> getAllBookmarkLists() throws DAOException, IOException, RestApiException {
-            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
-            return Collections.singletonList(bookmarkList);
+        BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
+        return Collections.singletonList(bookmarkList);
     }
 
     /**
@@ -83,11 +83,11 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      */
     public String getBookmarkListForMirador(Long id, AbstractApiUrlManager urls)
             throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
-            BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
-            if (bookmarkList != null) {
-                return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
-            }
-            return "";
+        BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
+        if (bookmarkList != null) {
+            return bookmarkList.getMiradorJsonObject(urls.getApplicationUrl(), urls.getApiUrl());
+        }
+        return "";
     }
 
     /**
@@ -178,8 +178,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     public SuccessMessage deleteSessionBookmarkList() throws RestApiException {
-            DataManager.getInstance().getBookmarkManager().deleteBookmarkList(session);
-            return new SuccessMessage(true);
+        DataManager.getInstance().getBookmarkManager().deleteBookmarkList(session);
+        return new SuccessMessage(true);
     }
 
     /**
@@ -230,11 +230,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     public Integer countSessionBookmarks() throws RestApiException {
-            int count = DataManager.getInstance().getBookmarkManager().getBookmarkList(session).map(bs -> bs.getItems().size()).orElse(0);
-            return count;
+        int count = DataManager.getInstance().getBookmarkManager().getBookmarkList(session).map(bs -> bs.getItems().size()).orElse(0);
+        return count;
     }
-
-
 
     /**
      * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him
@@ -252,9 +250,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
         if (bookmarkList.isIsPublic()) {
             logger.trace("Serving public bookmark list " + id);
             return bookmarkList;
-        } else {
-            throw new RestApiException("Bookmark list " + id + " is not publicly accessible", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("Bookmark list " + id + " is not publicly accessible", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
@@ -273,9 +270,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
         if (bookmarkList.hasShareKey()) {
             logger.trace("Serving shared bookmark list " + bookmarkList.getId());
             return bookmarkList;
-        } else {
-            throw new RestApiException("Bookmark list " + bookmarkList.getId() + " is not publicly accessible", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("Bookmark list " + bookmarkList.getId() + " is not publicly accessible", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /* (non-Javadoc)
@@ -336,15 +332,4 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
         BookmarkList list = getBookmarkListById(id);
         return createCollection(list, urls);
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder#getAllSharedBookmarkLists()
-     */
-    @Override
-    public List<BookmarkList> getAllSharedBookmarkLists() throws DAOException, IOException, RestApiException, IllegalRequestException {
-        throw new IllegalRequestException("Must be logged in to view shared bookmark lists");
-
-    }
-
-
 }

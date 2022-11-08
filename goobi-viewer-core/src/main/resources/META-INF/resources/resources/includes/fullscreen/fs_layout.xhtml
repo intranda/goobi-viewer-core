@@ -52,10 +52,10 @@
 
                 <!-- THUMBNAILS -->
                 <h:panelGroup layout="block">
-	                <c:if test="#{!activeDocumentBean.viewManager.topDocument.rtl}">
+	                <c:if test="#{!activeDocumentBean.viewManager.topStructElement.rtl}">
 	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -ltr"/>
 	                </c:if>
-	                <c:if test="#{activeDocumentBean.viewManager.topDocument.rtl}">
+	                <c:if test="#{activeDocumentBean.viewManager.topStructElement.rtl}">
 	                    <f:attribute name="styleClass" value="fullscreen__view-image-thumbs-wrapper -rtl"/>
 	                </c:if>
                     <fsThumbnails></fsThumbnails>
@@ -96,9 +96,14 @@
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
                     <h1 >#{activeDocumentBean.titleBarLabel}</h1>
-                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
+                    <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 						<viewerComponent:copyrightIndicator />
 					</ui:fragment>
+					
+			        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+			        	<widgetComponent:widget_copyrightInfo />
+			        </ui:fragment>
+					
                 </div>
 
                <!-- SEARCH IN CURRENT ITEM -->
@@ -121,7 +126,7 @@
                     </div>
 
                     <!-- TOC -->
-					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren or configurationBean.displayEmptyTocInSidebar)}">
+					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
                         <div id="panel-2" class="fullscreen__view-sidebar-accordeon-panel fs-toc">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.sidebarToc}</span>
@@ -134,7 +139,7 @@
                     </ui:fragment>
 
                     <!-- FULLTEXT -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.topDocument.fulltextAvailable}">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
                         <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.fulltext}</span>
@@ -258,6 +263,19 @@
                             <widgetComponent:widget_usage />
                         </div>
                     </div>
+                    
+                    <!-- STATISTICS -->
+					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive}">
+	                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
+	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+	                            <span>#{msg.widget_usage_statistics__title}</span>
+	                        </h3>
+	
+	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+	                            <widgetComponent:widget_statistics_usage />
+	                        </div>
+	                    </div>
+                    </ui:fragment>
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">

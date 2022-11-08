@@ -47,8 +47,8 @@ import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -72,7 +72,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 public class SolrTools {
 
     /** Logger for this class. */
-    private static final Logger logger = LoggerFactory.getLogger(SolrTools.class);
+    private static final Logger logger = LogManager.getLogger(SolrTools.class);
 
     private static final int MIN_SCHEMA_VERSION = 20190924;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
@@ -402,8 +402,8 @@ public class SolrTools {
         Map<String, List<String>> map = new HashMap<>(fieldNames.size());
         for (String languageField : fieldNames) {
             String locale = null;
-            if (languageField.startsWith(key + SolrConstants._LANG_)) {
-                locale = languageField.substring(languageField.lastIndexOf(SolrConstants._LANG_) + 6).toLowerCase();
+            if (languageField.startsWith(key + SolrConstants.MIDFIX_LANG)) {
+                locale = languageField.substring(languageField.lastIndexOf(SolrConstants.MIDFIX_LANG) + 6).toLowerCase();
             } else {
                 locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
             }
@@ -433,12 +433,12 @@ public class SolrTools {
             List<String> fieldNames = doc.getMetadataFields()
                     .keySet()
                     .stream()
-                    .filter(field -> field.equals(key) || field.startsWith(key + SolrConstants._LANG_))
+                    .filter(field -> field.equals(key) || field.startsWith(key + SolrConstants.MIDFIX_LANG))
                     .collect(Collectors.toList());
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.matches(key + "_LANG_\\w{2,3}")) {
-                    locale = languageField.substring(languageField.lastIndexOf(SolrConstants._LANG_) + 6).toLowerCase();
+                    locale = languageField.substring(languageField.lastIndexOf(SolrConstants.MIDFIX_LANG) + 6).toLowerCase();
                 } else {
                     locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
                 }
@@ -660,7 +660,7 @@ public class SolrTools {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
 
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, null, false, SearchAggregationType.NO_AGGREGATION);
+        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
                 DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
         if (qr != null) {

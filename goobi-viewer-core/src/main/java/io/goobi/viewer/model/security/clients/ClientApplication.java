@@ -26,17 +26,17 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
@@ -88,8 +88,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * The IP under which the client first requested registration
      */
-    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13",
-            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "The IP under which the client first requested registration", example = "192.168.172.13", //NOSONAR, the ip address here is an example for the documentation
+            accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "client_ip")
     private String clientIp;
 
@@ -128,8 +128,8 @@ public class ClientApplication implements ILicensee, Serializable {
     /**
      * An IP Subnet mask. If present, the client may only log in if its current IP matches the mask
      */
-    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16",
-            accessMode = Schema.AccessMode.READ_WRITE) //NOSONAR, the ip address here is an example for the documentation
+    @Schema(description = "An IP Subnet mask. If present, the client may only log in if its current IP matches the mask", example = "192.168.0.1/16", //NOSONAR, the ip address here is an example for the documentation
+            accessMode = Schema.AccessMode.READ_WRITE)
     @Column(name = "subnet_mask")
     private String subnetMask;
 
@@ -583,7 +583,8 @@ public class ClientApplication implements ILicensee, Serializable {
     public boolean mayLogIn(String remoteAddress) {
         return isAccessGranted() && matchIp(remoteAddress);
     }
-    
+
+    @JsonIgnore
     public boolean isAllClients() throws DAOException {
         return DataManager.getInstance().getClientManager().isAllClients(this);
     }

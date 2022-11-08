@@ -23,7 +23,6 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,12 +41,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
@@ -78,7 +77,7 @@ public class CalendarBean implements Serializable {
     private final static int MAX_ALLOWED_YEAR = LocalDateTime.now().getYear() + 1000;
     private final static int MIN_ALLOWED_YEAR = -10_000;
 
-    private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
+    private static final Logger logger = LogManager.getLogger(CalendarBean.class);
 
     @Inject
     private SearchBean searchBean;
@@ -179,7 +178,7 @@ public class CalendarBean implements Serializable {
         monthRow = new CalendarRow();
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR)
+            sbSearchString.append(SolrConstants.CALENDAR_YEAR)
                     .append(':')
                     .append(currentYear.getName())
                     .append(" AND ")
@@ -189,11 +188,11 @@ public class CalendarBean implements Serializable {
                     .append('*')
                     .append(docstructFilterQuery);
         } else {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(currentYear.getName()).append(docstructFilterQuery);
+            sbSearchString.append(SolrConstants.CALENDAR_YEAR).append(':').append(currentYear.getName()).append(docstructFilterQuery);
         }
         QueryResponse resp =
-                SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_MONTH), 0, false);
-        FacetField field = resp.getFacetField(SolrConstants._CALENDAR_MONTH);
+                SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants.CALENDAR_MONTH), 0, false);
+        FacetField field = resp.getFacetField(SolrConstants.CALENDAR_MONTH);
         List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
 
         Count jan = null;
@@ -342,7 +341,7 @@ public class CalendarBean implements Serializable {
         }
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_MONTH)
+            sbSearchString.append(SolrConstants.CALENDAR_MONTH)
                     .append(':')
                     .append(value)
                     .append(" AND ")
@@ -352,11 +351,11 @@ public class CalendarBean implements Serializable {
                     .append('*')
                     .append(docstructFilterQuery);
         } else {
-            sbSearchString.append(SolrConstants._CALENDAR_MONTH).append(':').append(value).append(docstructFilterQuery);
+            sbSearchString.append(SolrConstants.CALENDAR_MONTH).append(':').append(value).append(docstructFilterQuery);
         }
 
-        QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_DAY), 0, false);
-        FacetField field = resp.getFacetField(SolrConstants._CALENDAR_DAY);
+        QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants.CALENDAR_DAY), 0, false);
+        FacetField field = resp.getFacetField(SolrConstants.CALENDAR_DAY);
         List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
 
         LocalDate date = LocalDate.now().withYear(Integer.parseInt(value)).withMonth(currentMonth.getValue()).withDayOfMonth(1);
@@ -634,7 +633,7 @@ public class CalendarBean implements Serializable {
             builder.append(SolrConstants.DC).append(':').append(collection).append("* AND ");
         }
         if (currentDay != null) {
-            builder.append(SolrConstants._CALENDAR_DAY).append(':');
+            builder.append(SolrConstants.CALENDAR_DAY).append(':');
             builder.append(currentYear.getName());
             if (currentMonth.getValue() < 10) {
                 builder.append('0').append(currentMonth.getValue());
@@ -648,7 +647,7 @@ public class CalendarBean implements Serializable {
             }
 
         } else if (currentMonth != null) {
-            builder.append(SolrConstants._CALENDAR_MONTH).append(':');
+            builder.append(SolrConstants.CALENDAR_MONTH).append(':');
             builder.append(currentYear.getName());
             if (currentMonth.getValue() < 10) {
                 builder.append('0').append(currentMonth.getValue());
@@ -656,7 +655,7 @@ public class CalendarBean implements Serializable {
                 builder.append(currentMonth.getValue());
             }
         } else {
-            builder.append(SolrConstants._CALENDAR_YEAR).append(':');
+            builder.append(SolrConstants.CALENDAR_YEAR).append(':');
             builder.append(currentYear.getName());
         }
 
@@ -712,11 +711,11 @@ public class CalendarBean implements Serializable {
             try (Time time = DataManager.getInstance().getTiming().takeTime("getAllActiveYears")) {
                 allActiveYears = new ArrayList<>();
                 List<String> fields = new ArrayList<>();
-                fields.add(SolrConstants._CALENDAR_YEAR);
-                fields.add(SolrConstants._CALENDAR_DAY);
+                fields.add(SolrConstants.CALENDAR_YEAR);
+                fields.add(SolrConstants.CALENDAR_DAY);
                 StringBuilder sbSearchString = new StringBuilder();
                 if (collection != null && !collection.isEmpty()) {
-                    sbSearchString.append(SolrConstants._CALENDAR_DAY)
+                    sbSearchString.append(SolrConstants.CALENDAR_DAY)
                             .append(":* AND ")
                             .append(SolrConstants.DC)
                             .append(':')
@@ -724,14 +723,14 @@ public class CalendarBean implements Serializable {
                             .append('*')
                             .append(docstructFilterQuery);
                 } else {
-                    sbSearchString.append(SolrConstants._CALENDAR_DAY).append(":*").append(docstructFilterQuery);
+                    sbSearchString.append(SolrConstants.CALENDAR_DAY).append(":*").append(docstructFilterQuery);
                 }
                 sbSearchString.append(SearchHelper.getAllSuffixes());
 
                 logger.trace("getAllActiveYears query: {}", sbSearchString.toString());
                 QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
 
-                FacetField facetFieldDay = resp.getFacetField(SolrConstants._CALENDAR_DAY);
+                FacetField facetFieldDay = resp.getFacetField(SolrConstants.CALENDAR_DAY);
                 List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
                 Map<Integer, Integer> yearCountMap = new HashMap<>();
                 for (Count day : dayCounts) {
@@ -842,12 +841,12 @@ public class CalendarBean implements Serializable {
             return monthList;
         }
         List<String> facetFields = new ArrayList<>();
-        facetFields.add(SolrConstants._CALENDAR_DAY);
-        facetFields.add(SolrConstants._CALENDAR_MONTH);
+        facetFields.add(SolrConstants.CALENDAR_DAY);
+        facetFields.add(SolrConstants.CALENDAR_MONTH);
 
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR)
+            sbSearchString.append(SolrConstants.CALENDAR_YEAR)
                     .append(':')
                     .append(ClientUtils.escapeQueryChars(selectYear))
                     .append(" AND ")
@@ -857,15 +856,15 @@ public class CalendarBean implements Serializable {
                     .append('*')
                     .append(filterQuery);
         } else {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(filterQuery);
+            sbSearchString.append(SolrConstants.CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(filterQuery);
         }
 
         resp = SearchHelper.searchCalendar(sbSearchString.toString(), facetFields, 0, false);
 
-        List<Count> dayFacets = resp.getFacetField(SolrConstants._CALENDAR_DAY) != null ? resp.getFacetField(SolrConstants._CALENDAR_DAY).getValues()
+        List<Count> dayFacets = resp.getFacetField(SolrConstants.CALENDAR_DAY) != null ? resp.getFacetField(SolrConstants.CALENDAR_DAY).getValues()
                 : new ArrayList<>();
-        List<Count> monthFacets = resp.getFacetField(SolrConstants._CALENDAR_MONTH).getValues() != null
-                ? resp.getFacetField(SolrConstants._CALENDAR_MONTH).getValues() : new ArrayList<>();
+        List<Count> monthFacets = resp.getFacetField(SolrConstants.CALENDAR_MONTH).getValues() != null
+                ? resp.getFacetField(SolrConstants.CALENDAR_MONTH).getValues() : new ArrayList<>();
 
         CalendarItemMonth jan = new CalendarItemMonth("january", 1, 0);
         monthList.add(jan);
@@ -894,7 +893,7 @@ public class CalendarBean implements Serializable {
 
         for (Count monthCount : monthFacets) {
             if (monthCount.getName().length() < 6) {
-                logger.warn("{} facet name too short: {}", SolrConstants._CALENDAR_MONTH, monthCount.getName());
+                logger.warn("{} facet name too short: {}", SolrConstants.CALENDAR_MONTH, monthCount.getName());
                 continue;
             }
             int monthNumber = Integer.parseInt(monthCount.getName().substring(4));
@@ -968,7 +967,7 @@ public class CalendarBean implements Serializable {
                 for (Count count : dayFacets) {
                     if (count.getName().equals(facetName)) {
                         dayItem = new CalendarItemDay(String.valueOf(day), day, (int) count.getCount());
-                        String query = new StringBuilder().append(SolrConstants._CALENDAR_DAY)
+                        String query = new StringBuilder().append(SolrConstants.CALENDAR_DAY)
                                 .append(':')
                                 .append(selectYear)
                                 .append(monthItem.getFormattedValue())
@@ -1176,7 +1175,7 @@ public class CalendarBean implements Serializable {
         //            builder.append(SolrConstants.DC).append(':').append(collection).append("* AND ");
         //        }
         if (currentDay != null) {
-            builder.append(SolrConstants._CALENDAR_DAY).append(':');
+            builder.append(SolrConstants.CALENDAR_DAY).append(':');
             builder.append(selectYear);
             if (currentMonth.getValue() < 10) {
                 builder.append('0').append(currentMonth.getValue());
@@ -1190,7 +1189,7 @@ public class CalendarBean implements Serializable {
             }
 
         } else if (currentMonth != null) {
-            builder.append(SolrConstants._CALENDAR_MONTH).append(':');
+            builder.append(SolrConstants.CALENDAR_MONTH).append(':');
             builder.append(selectYear);
             if (currentMonth.getValue() < 10) {
                 builder.append('0').append(currentMonth.getValue());
@@ -1198,7 +1197,7 @@ public class CalendarBean implements Serializable {
                 builder.append(currentMonth.getValue());
             }
         } else {
-            builder.append(SolrConstants._CALENDAR_YEAR).append(':');
+            builder.append(SolrConstants.CALENDAR_YEAR).append(':');
             builder.append(selectYear);
         }
 
@@ -1224,8 +1223,8 @@ public class CalendarBean implements Serializable {
             searchString.append(SolrConstants.DC).append(':').append(collection).append("* AND ");
 
         }
-        searchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(date);
-        searchString.append(" AND -").append(SolrConstants._CALENDAR_DAY).append(":*");
+        searchString.append(SolrConstants.CALENDAR_YEAR).append(':').append(date);
+        searchString.append(" AND -").append(SolrConstants.CALENDAR_DAY).append(":*");
         searchString.append(docstructFilterQuery);
         return searchString.toString();
     }
@@ -1243,8 +1242,8 @@ public class CalendarBean implements Serializable {
             return 0;
         }
         String query = getQueryForIncompleteData(year);
-        QueryResponse resp = SearchHelper.searchCalendar(query, Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, false);
-        FacetField field = resp.getFacetField(SolrConstants._CALENDAR_YEAR);
+        QueryResponse resp = SearchHelper.searchCalendar(query, Collections.singletonList(SolrConstants.CALENDAR_YEAR), 0, false);
+        FacetField field = resp.getFacetField(SolrConstants.CALENDAR_YEAR);
         List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
         for (Count count : fieldValues) {
             if (count.getName().equals(year)) {

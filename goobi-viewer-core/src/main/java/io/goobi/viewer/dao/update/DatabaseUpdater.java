@@ -23,8 +23,8 @@ package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -38,7 +38,7 @@ import io.goobi.viewer.exceptions.DAOException;
  */
 public class DatabaseUpdater {
 
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
+    private static final Logger logger = LogManager.getLogger(DatabaseUpdater.class);
 
     private static final IModelUpdate[] updates = {
             new UserUpdate(),

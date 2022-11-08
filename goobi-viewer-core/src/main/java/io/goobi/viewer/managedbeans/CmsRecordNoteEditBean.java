@@ -30,8 +30,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -64,7 +64,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = -8850189223154382470L;
 
-    private static final Logger logger = LoggerFactory.getLogger(CmsRecordNotesBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsRecordNotesBean.class);
 
     private CMSRecordNote note = null;
     private Locale selectedLocale = BeanUtils.getLocale();

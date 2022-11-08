@@ -104,17 +104,12 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES_COMMENTS_COMMENT = "/{pageNo}/comments/{id}";
     public static final String RECORDS_PAGES_TEXT = "/{pageNo}/text";
 
-
     public static final String RECORDS_FILES = "/records/{pi}/files";
     public static final String RECORDS_FILES_PLAINTEXT = "/plaintext/{filename}";
     public static final String RECORDS_FILES_ALTO = "/alto/{filename}";
     public static final String RECORDS_FILES_CMDI = "/cmdi/{filename}";
     public static final String RECORDS_FILES_TEI = "/tei/{filename}";
-    /**
-     * @deprecated use {@link #RECORDS_FILES_IMAGE}{@link #RECORDS_FILES_IMAGE_PDF} instead
-     */
-    @Deprecated
-    public static final String RECORDS_FILES_PDF = "/pdf/{filename}";
+
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
     public static final String RECORDS_FILES_VIDEO = "/video/{mimetype}/{filename}";
@@ -133,7 +128,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT = "/{subfolder}//{auxfilename}";
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2 = "/{subfolder}/{subsubfolder}/{auxfilename}";
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT = "//{subfolder}/{subsubfolder}/{auxfilename}";
-
 
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
@@ -158,7 +152,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String USERS_BOOKMARKS_LIST_RSS = "/{listId}/rss.xml";
     public static final String USERS_BOOKMARKS_LIST_RSS_JSON = "/{listId}/rss.json";
     public static final String USERS_BOOKMARKS_LIST_STATISTICS = "/{listId}/statistics";
-    public static final String USERS_BOOKMARKS_SHARED = "/shared";
     public static final String USERS_BOOKMARKS_PUBLIC = "/public";
     public static final String USERS_BOOKMARKS_LIST_SHARED = "/shared/{key}";
     public static final String USERS_BOOKMARKS_LIST_SHARED_MIRADOR = "/shared/{key}/mirador.json";
@@ -183,7 +176,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String TASKS_TASK = "/{id}";
 
     public static final String CONTEXT = "/context";
-
 
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";
@@ -235,6 +227,11 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CLIENTS_REGISTER = "/register";
     public static final String CLIENTS_REQUEST = "/request";
 
+    public static final String STATISTICS_MOVING_WALL = "statistics/movingwall";
+    public static final String STATISTICS_MOVING_WALL_YEAR = "/{year}";
+    public static final String STATISTICS_USAGE = "/statistics/usage";
+    public static final String STATISTICS_USAGE_DATE = "/{date}";
+    public static final String STATISTICS_USAGE_DATE_RANGE = "/{startDate}/{endDate}";
 
     private final String apiUrl;
 

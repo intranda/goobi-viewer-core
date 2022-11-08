@@ -26,8 +26,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import javax.ws.rs.core.Response;
 
 import org.apache.http.client.ResponseHandler;
@@ -37,8 +37,8 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -62,7 +62,7 @@ public class EPUBDownloadJob extends DownloadJob {
     /** Constant <code>TYPE="epub"</code> */
     public static final String LOCAL_TYPE = "epub";
 
-    private static final Logger logger = LoggerFactory.getLogger(EPUBDownloadJob.class);
+    private static final Logger logger = LogManager.getLogger(EPUBDownloadJob.class);
 
     /**
      * <p>

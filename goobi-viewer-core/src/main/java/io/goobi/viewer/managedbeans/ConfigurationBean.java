@@ -33,10 +33,10 @@ import javax.faces.annotation.FacesConfig;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -44,7 +44,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -68,7 +67,7 @@ public class ConfigurationBean implements Serializable {
 
     private static final long serialVersionUID = -1371688138567741188L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationBean.class);
+    private static final Logger logger = LogManager.getLogger(ConfigurationBean.class);
 
     /**
      * Empty constructor.
@@ -90,18 +89,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * getContentServletUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getContentServletUrl() {
-        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-    }
-
-    /**
-     * <p>
      * getName.
      * </p>
      *
@@ -109,47 +96,6 @@ public class ConfigurationBean implements Serializable {
      */
     public String getName() {
         return DataManager.getInstance().getConfiguration().getName();
-    }
-
-    /**
-     * <p>
-     * isShowSidebarEventMetadata.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isShowSidebarEventMetadata() {
-        return DataManager.getInstance().getConfiguration().isShowSidebarEventMetadata();
-    }
-
-    /**
-     * <p>
-     * getContentServerWrapperUrl.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getContentServerWrapperUrl() {
-        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-    }
-
-    /**
-     * <p>
-     * getContentServerWrapperUrlWithoutLastSlash.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public String getContentServerWrapperUrlWithoutLastSlash() {
-        String csWrapperUrl = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-        if (csWrapperUrl != null) {
-            // delete the last /
-            int endIndex = csWrapperUrl.lastIndexOf('/');
-            csWrapperUrl = csWrapperUrl.substring(0, endIndex);
-        }
-        return csWrapperUrl;
     }
 
     /**
@@ -177,17 +123,6 @@ public class ConfigurationBean implements Serializable {
 
     public boolean isSearchSavingEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchSavingEnabled();
-    }
-
-    /**
-     * <p>
-     * isUseCustomNavBar.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isUseCustomNavBar() {
-        return DataManager.getInstance().getConfiguration().useCustomNavBar();
     }
 
     /**
@@ -373,17 +308,6 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isDisplaySearchRssLinks() {
         return DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks();
-    }
-
-    /**
-     * <p>
-     * showThumbnailsInToc.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean showThumbnailsInToc() {
-        return DataManager.getInstance().getConfiguration().showThumbnailsInToc();
     }
 
     /**
@@ -574,17 +498,6 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isSidebarOpacLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
-    }
-
-    /**
-     * <p>
-     * isDisplayEmptyTocInSidebar.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplayEmptyTocInSidebar() {
-        return DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar();
     }
 
     /**
@@ -1217,47 +1130,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isAddDublinCoreMetaTags.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isAddDublinCoreMetaTags() {
-        return DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags();
-    }
-
-    /**
-     * <p>
-     * isAddHighwirePressMetaTags.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isAddHighwirePressMetaTags() {
-        return DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags();
-    }
-
-    /**
-     *
-     * @return number of allowed metadata parameters for metadata configuration
-     */
-    @Deprecated
-    public int getMetadataParamNumber() {
-        return 20;
-    }
-
-    /**
-     *
-     * @return
-     * @should return correct list
-     */
-    @Deprecated
-    public List<Integer> getMetadataParamNumberList() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * <p>
      * isDisplaySidebarBrowsingTerms.
      * </p>
      *
@@ -1315,15 +1187,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarWidgetUsageIntroductionText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageIntroductionText();
-    }
-
-    /**
-     *
      * @return List of configured <code>DownloadOption</code> items
      */
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
@@ -1332,39 +1195,6 @@ public class ConfigurationBean implements Serializable {
 
     public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
         return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
-    }
-
-    /**
-     *
-     * @return
-     * @should return correct value
-     */
-    public String getSidebarWidgetDownloadsIntroductionText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsIntroductionText();
-    }
-
-    /**
-     *
-     * @return String
-     */
-    public String getSidebarWidgetUsageCitationLinksRecordIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksRecordIntroText();
-    }
-
-    /**
-     *
-     * @return String
-     */
-    public String getSidebarWidgetUsageCitationLinksDocstructIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksDocstructIntroText();
-    }
-
-    /**
-     *
-     * @return String
-     */
-    public String getSidebarWidgetUsageCitationLinksImageIntroText() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinksImageIntroText();
     }
 
     /**
@@ -1450,11 +1280,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
 
-    @Deprecated
-    public boolean isAggregateSearchHits() {
-        return true;
-    }
-
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
     }
@@ -1473,14 +1298,6 @@ public class ConfigurationBean implements Serializable {
      */
     public List<Integer> getSearchHitsPerPageValues() {
         return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
-    }
-
-    /**
-     *
-     * @return true if user.anonymousUserEmailAddress is configured and valid; false otherwise
-     */
-    public boolean isAnonymousUserEmailAddressValid() {
-        return EmailValidator.validateEmailAddress(DataManager.getInstance().getConfiguration().getAnonymousUserEmailAddress());
     }
 
     /**
@@ -1590,4 +1407,13 @@ public class ConfigurationBean implements Serializable {
     public String getCampaignGeomapTilesource() {
         return DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapTilesource();
     }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isConfigEditorEnabled() {
+        return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
+    }
+
 }

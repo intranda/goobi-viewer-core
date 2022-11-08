@@ -237,7 +237,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
     <url-mapping id="browse5">
-        <pattern value="/browse/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
+        <pattern value="/browse/-/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.search}</action>
@@ -282,7 +282,7 @@
         <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
     </url-mapping>
 	<url-mapping id="newSearch3">
-		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
+		<pattern value="/search/-/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
@@ -290,7 +290,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch4">
-		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+		<pattern value="/search/-/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
@@ -298,14 +298,14 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch5">
-		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+		<pattern value="/search/-/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="search6">
-		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
+		<pattern value="/search/-/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
@@ -321,20 +321,20 @@
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
     </url-mapping>
     <url-mapping id="searchAdvanced4">
-        <pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+        <pattern value="/searchadvanced/-/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
     <url-mapping id="searchAdvanced5">
-        <pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <pattern value="/searchadvanced/-/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
 	<url-mapping id="searchAdvanced6">
-		<pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
+		<pattern value="/searchadvanced/-/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 	</url-mapping>
@@ -923,6 +923,17 @@
         <view-id value="/resources/admin/views/adminThemesEdit.xhtml" />
         <action onPostback="false">#{adminThemeEditBean.setCurrentThemeName(themeName)}</action>
     </url-mapping>
+    
+    <!-- CONFIG EDITOR -->
+    <url-mapping id="adminConfigEditor">
+        <pattern value="/admin/config/" />
+        <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
+        <action onPostback="false">#{adminConfigEditorBean.closeCurrentFileAction}</action>
+    </url-mapping>
+    <url-mapping id="adminConfigEditorFilename">
+        <pattern value="/admin/config/edit/#{currentFileName:adminConfigEditorBean.currentFileName}/" />
+        <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
+    </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">
@@ -1139,7 +1150,7 @@
 	</url-mapping>
     <url-mapping id="cmsOpenPage3">
         <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/" />
+            value="/cms/#{page:cmsBean.currentPageId}/-/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
@@ -1153,13 +1164,13 @@
     </url-mapping>
     <url-mapping id="cmsOpenPage6">
         <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+            value="/cms/#{page:cmsBean.currentPageId}/-/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
     </url-mapping>
     <url-mapping id="cmsOpenPage7">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/-/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
