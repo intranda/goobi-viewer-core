@@ -165,16 +165,16 @@ public class ImageDeliveryBean implements Serializable {
         try {
             presentation = new IIIFPresentationAPIHandler(dataUrlManager, config);
         } catch (URISyntaxException e) {
-            logger.error("Failed to initalize presentation api handler", e.toString());
+            logger.error("Failed to initalize presentation api handler {}", e.toString());
         }
     }
 
     private static Optional<PhysicalElement> getCurrentPageIfExists() {
-        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(adb -> adb.getViewManager()).map(vm -> vm.getCurrentPage());
+        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(ActiveDocumentBean::getViewManager).map(vm -> vm.getCurrentPage());
     }
 
     private static Optional<StructElement> getTopDocumentIfExists() {
-        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(bean -> bean.getTopDocument());
+        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(ActiveDocumentBean::getTopDocument);
     }
 
     private static Optional<StructElement> getCurrentDocumentIfExists() {

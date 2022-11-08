@@ -18,10 +18,14 @@
 		        <div id="widgetGeoportail" class="widget widget-geoportail">
 		        	<h2>#{msg.location}</h2>
 		        	<div class="widget__body">
-		        		<div id="map_geoportail" style="width:500px;height:500px;"/>
+		        		<iframe id="iframe_geoportail" style="width:100%;height:400px;"/>
+		        		<div id="map_geoportail" style="width:100%;height:400px;"/>
 		        		<script>
-		        			let urlString = "https://map.geoportail.lu/theme/main?lang=en&amp;version=3&amp;zoom=18&amp;X=680232&amp;Y=6403801&amp;layers=152-320-199-359&amp;opacities=1-1-1-1&amp;bgLayer=blank&amp;crosshair=true";
-		        			let url = new URL(urlString);
+		        			let urlString = "#{activeDocumentBean.getSingleMetadataValue('MD_GML_POINT_UNTOKENIZED', activeDocumentBean.getTopDocument())}"
+		        			console.log("parse ", urlString, "for luxembourg geoportail map");
+			        		document.getElementById("iframe_geoportail").src = urlString;
+		        			
+			        		let url = new URL(urlString);
 		        			let zoom = url.searchParams.get('zoom');
 		        			let x = url.searchParams.get('X');
 		        			let y = url.searchParams.get('Y');
@@ -30,13 +34,22 @@
 		        			let bgLayer = url.searchParams.get('bgLayer');
 		        			let crosshair = url.searchParams.get('crosshair');
 		        			console.log("loading map at zoom=",zoom,"x=",x,"y=",y);
-		        			let map = new lux.Map({
+		        			
+		        			let geoportail_map = new lux.Map({
 		        			    target: 'map_geoportail',
-		        			    bgLayer: 'basemap_2015_global',
-		        			    zoom: zoom,
-		        			    position: [x, y],
+		        			    bgLayer: "basemap_2015_global",
+		        			    zoom: parseInt(zoom),
+		        			    position: [parseFloat(x), parseFloat(y)]
 		        			  });
-		        			console.log("loaded map", map);
+		        			console.log("loaded geoportail map", geoportail_map);
+		        			
+		        			let catalog_nr = "#{activeDocumentBean.getSingleMetadataValue('MD_KATALOGNUMMER_UNTOKENIZED', activeDocumentBean.getTopDocument())}"
+				        	console.log("Search location of ", catalog_nr);
+		        			lux.geocode({queryString: catalog_nr}, 
+	        			        (position)  => {
+	        			  	 		console.log (position);
+	        			  	 		geoportail_map.setCenter(position);
+	        			  		});
 		        		</script>
 		        	</div>
 
