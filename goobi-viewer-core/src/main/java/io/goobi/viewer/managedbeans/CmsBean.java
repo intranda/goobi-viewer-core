@@ -121,7 +121,7 @@ public class CmsBean implements Serializable {
     /**
      *
      */
-    public static final String CMSPAGES_FILTER = "languageVersions-title_languageVersions-menuTitle_categories-name";
+    public static final String CMSPAGES_FILTER = "title_menuTitle_categories-name";
 
     private static final long serialVersionUID = -2021732230593473827L;
 
