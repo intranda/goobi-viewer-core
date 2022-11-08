@@ -934,11 +934,13 @@ public class CmsBean implements Serializable {
      * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public void setCurrentPage(CMSPage currentPage) {
-        this.currentPage = currentPage;
         if (currentPage != null) {
+            this.currentPage = new CMSPage(currentPage);
             this.currentPage.setListPage(1);
             navigationHelper.setCmsPage(true);
             logger.trace("Set current cms page to {}", this.currentPage.getTitle());
+        } else {
+            this.currentPage = null;
         }
     }
 

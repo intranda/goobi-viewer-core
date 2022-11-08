@@ -70,12 +70,12 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
      * @param owner
      */
     public CMSSidebarElementCustom(CMSSidebarElementCustom orig, CMSPage owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
         this.widget = orig.widget;
     }
 
     public CMSSidebarElementCustom(CMSSidebarElementCustom orig, CMSPageTemplate owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
         this.widget = orig.widget;
     }
 

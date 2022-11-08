@@ -73,12 +73,12 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
      * @param owner
      */
     public CMSSidebarElementAutomatic(CMSSidebarElementAutomatic orig, CMSPage owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
         this.map = orig.map;
     }
 
     public CMSSidebarElementAutomatic(CMSSidebarElementAutomatic orig, CMSPageTemplate owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
         this.map = orig.map;
     }
 

@@ -65,11 +65,11 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
      * @param owner
      */
     public CMSSidebarElementDefault(CMSSidebarElementDefault orig, CMSPage owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
     }
 
     public CMSSidebarElementDefault(CMSSidebarElementDefault orig, CMSPageTemplate owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
     }
 
 

@@ -111,9 +111,9 @@ public class CMSSidebarElement {
         this.generationType = WidgetContentType.getGenerationType(type);
         this.contentType = type;
     }
-
+    
     /**
-     * Default constructor for a certain type of widget and owning CMSPage
+     * Default constructor for a certain type of widget
      * @param type
      */
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
@@ -122,11 +122,34 @@ public class CMSSidebarElement {
     }
     
     /**
-     * Default constructor for a certain type of widget and owning CMSPageTemplate
+     * Default constructor for a certain type of widget
      * @param type
      */
     public CMSSidebarElement(WidgetContentType type, CMSPageTemplate owner) {
         this(type);
+        this.ownerTemplate = owner;
+    }
+
+
+    /**
+     * Default constructor for a certain type of widget and owning CMSPage
+     * @param type
+     */
+    public CMSSidebarElement(CMSSidebarElement orig, CMSPage owner) {
+        this(orig.contentType);
+        this.id = orig.getId();
+        this.order = orig.getOrder();
+        this.ownerPage = owner;
+    }
+    
+    /**
+     * Default constructor for a certain type of widget and owning CMSPageTemplate
+     * @param type
+     */
+    public CMSSidebarElement(CMSSidebarElement orig, CMSPageTemplate owner) {
+        this(orig.contentType);
+        this.id = orig.getId();
+        this.order = orig.getOrder();
         this.ownerTemplate = owner;
     }
 
