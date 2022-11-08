@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.cms;
+package io.goobi.viewer.model.cms.pages;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -79,12 +79,6 @@ public final class CMSTemplateManager {
 
     private Map<String, CMSComponent> legacyTemplateComponents;
 
-    //    private String relativeTemplateBasePath;
-    //    private String absoluteTemplateBasePath;
-
-    //    private String templateFolderUrl = null;
-    //    private Path templateFolderPath = null;
-
     private Optional<String> coreTemplateFolderUrl = Optional.empty();
     private Optional<String> themeTemplateFolderUrl = Optional.empty();
     private Optional<Path> coreFolderPath = Optional.empty();
@@ -98,7 +92,7 @@ public final class CMSTemplateManager {
      * Getter for the field <code>instance</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSTemplateManager} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSTemplateManager} object.
      */
     public static CMSTemplateManager getInstance() {
         CMSTemplateManager ctm = instance;
@@ -127,7 +121,7 @@ public final class CMSTemplateManager {
      *
      * @param templateFolderPath a {@link java.lang.String} object.
      * @param themeRootPath a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSTemplateManager} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSTemplateManager} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public static CMSTemplateManager getInstance(String templateFolderPath, String themeRootPath) throws PresentationException {
@@ -385,13 +379,12 @@ public final class CMSTemplateManager {
      */
     public synchronized void updateTemplates(Optional<Path> corePath, Optional<Path> themePath) {
         legacyTemplateComponents = new HashMap<>();
-        //        logger.trace("themePath: {}", themePath.orElse(Paths.get("none")).toAbsolutePath().toString());
         try {
             //load theme templates
             if (themePath.isPresent()) {
                 logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
             }
-            themePath.map(path -> loadTemplates(path))
+            themePath.map(CMSTemplateManager::loadTemplates)
                     .ifPresent(map -> map.entrySet()
                             .stream()
                             .peek(entry -> entry.getValue().setThemeTemplate(true))

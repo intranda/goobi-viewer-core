@@ -25,6 +25,7 @@ package io.goobi.viewer.model.cms.legacy;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -120,12 +121,12 @@ public class CMSPageTemplate implements Serializable {
                 template.setIconFileName(root.getChildText("icon"));
                 template.setHtmlFileName(root.getChildText("html"));
                 for (Element eleContentItem : root.getChild("content").getChildren("item")) {
-                    
+
                     String itemId = eleContentItem.getAttributeValue("id");
-                    if("preview01".equals(itemId)) {
+                    if ("preview01".equals(itemId)) {
                         continue;//preview texts are directly in cmsPage. They should not be loaded as content item
                     }
-                    
+
                     CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
                     CMSContentItemTemplate item = new CMSContentItemTemplate(type);
                     item.setItemId(itemId);
@@ -207,20 +208,24 @@ public class CMSPageTemplate implements Serializable {
     }
 
     public CMSComponent createCMSComponent() {
-        JsfComponent jsfComponent = new JsfComponent(JSF_COMPONENT_PATH, this.htmlFileName);
-        CMSComponent component = new CMSComponent(jsfComponent, this.name, this.description, ICONS_PATH + this.iconFileName, 
+        String jsfLibraryPath = JSF_COMPONENT_PATH;
+        Path componentPath = Paths.get(this.htmlFileName);
+        if (componentPath.getNameCount() > 1) {
+            jsfLibraryPath = componentPath.getParent().toString();
+        }
+        JsfComponent jsfComponent = new JsfComponent(jsfLibraryPath, componentPath.getFileName().toString());
+        CMSComponent component = new CMSComponent(jsfComponent, this.name, this.description, ICONS_PATH + this.iconFileName,
                 this.templateFileName, Collections.emptyMap());
-        
+
         for (CMSContentItemTemplate itemTemplate : contentItems) {
             CMSContentItem item = itemTemplate.createCMSContentItem();
-            if(item != null) {                
+            if (item != null) {
                 component.addContentItem(item);
             }
         }
-        
+
         return component;
     }
-    
 
     /**
      * <p>
@@ -470,7 +475,7 @@ public class CMSPageTemplate implements Serializable {
      * @throws DAOException
      */
     public CMSPageTemplateEnabled getEnabled() throws DAOException {
-           return enabled = new CMSPageTemplateEnabled(id);
+        return enabled = new CMSPageTemplateEnabled(id);
     }
 
     /**
@@ -548,4 +553,3 @@ public class CMSPageTemplate implements Serializable {
     }
 
 }
-
