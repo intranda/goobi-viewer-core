@@ -136,6 +136,7 @@ public class AuthorityResource {
             logger.trace("URL is Viaf: {}", url);
             // Viaf cluster URL
             if (secondUrl != null) {
+                logger.trace("Viaf cluster URL: {}", secondUrl);
                 normDataList.add(
                         new NormData("NORM_VIAF_CLUSTER_URL", new NormDataValue(secondUrl, null, null, "resources/images/authority/Viaf_icon.png")));
             }
