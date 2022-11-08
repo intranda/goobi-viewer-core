@@ -857,6 +857,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getPreviewContent() {
         return this.previewText.getTextOrDefault();
     }
+    
+    public TranslatedText getPreviewText() {
+        return previewText;
+    }
 
     /**
      * Gets the pagination number for this page's main list if it contains one

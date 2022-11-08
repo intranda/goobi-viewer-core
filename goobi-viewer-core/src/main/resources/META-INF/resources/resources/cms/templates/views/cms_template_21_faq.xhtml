@@ -11,6 +11,8 @@
 
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
+		<composite:attribute name="random" required="false" default="false" type="java.lang.Boolean"/>
+		<composite:attribute name="paged" required="false" default="false" type="java.lang.Boolean" />
 	</composite:interface>
     
 	<composite:implementation>
@@ -29,74 +31,69 @@
 			<!-- FAQ LIST -->
 			<div>
 				<ui:fragment
-					rendered="#{!cmsPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').booleanValue}">
+					rendered="#{cc.attrs.component.hasContent('faqList') and !cc.attrs.component.getContentItem('faqList').content.groupByCategory}">
 					<div class="accordion tpl-faq__list" id="faqAccordion"
 						role="tablist" aria-multiselectable="true">
+						<c:set var="nestedPages" value="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}"/>
 						<!-- FAQ ITEMS -->
-						<c:forEach var="faqItem"
-							items="#{cc.attrs.component.getContentItem('faqList').content.nestedPages}"
+						<ui:repeat var="subPage"
+							value="#{nestedPages}"
 							varStatus="status">
-							<div class="card" id="card-#{faqItem.id}">
-								<div class="card-header" role="tab" id="heading-#{faqItem.id}">
+							<div class="card" id="card-#{subPage.id}">
+								<div class="card-header" role="tab" id="heading-#{subPage.id}">
 									<h2 class="card-title">
-										<a href="#collapse-#{faqItem.id}" role="button"
+										<a href="#collapse-#{subPage.id}" role="button"
 											class="#{status.count eq 1 ? '' : 'collapsed'}"
 											data-toggle="collapse"
 											aria-expanded="#{status.count eq 1 ? 'true' : 'false'}"
 											aria-controls="collapse-#{faqItem.id}">
-											#{faqItem.title}
+											#{subPage.title}
 										</a> <a class="fa fa-link card-header__fragment-link"
-											href="#card-#{faqItem.id}"
-											data-collapse-show="#collapse-#{faqItem.id}"
+											href="#card-#{subPage.id}"
+											data-collapse-show="#collapse-#{subPage.id}"
 											aria-label="#{msg.aria__label_faq_direct_link}"> </a>
 									</h2>
 								</div>
-								<div role="region" id="collapse-#{faqItem.id}"
+								<div role="region" id="collapse-#{subPage.id}"
 									class="card-collapse collapse #{status.count eq 1 ? 'in' : ''}"
 									data-parent="#faqAccordion"
 									aria-expanded="#{status.count eq 1 ? 'true' : 'false'}"
-									aria-labelledby="heading-#{faqItem.id}">
+									aria-labelledby="heading-#{subPage.id}">
 									<div class="card-body">
 										<div class="tpl-faq-single__content">
 
-											<ui:fragment rendered="#{faqItem.hasContent('text')}">
+											<ui:fragment rendered="#{!subPage.previewText.isEmpty()}">
 												<div class="tpl-faq-single__text">
 													<h:outputText escape="false"
-														value="#{faqItem.getContent('text')}"></h:outputText>
+														value="#{subPage.previewText}"></h:outputText>
 												</div>
 											</ui:fragment>
 											<!-- IMAGE -->
-											<ui:fragment rendered="#{faqItem.hasContent('image')}">
+											<ui:fragment rendered="#{subPage.previewImage != null}">
 												<div class="tpl-faq-single__image">
 													<figure class="tpl-faq-single__image">
-														<img title="#{faqItem.getMediaName('image')}"
-															src="#{faqItem.getContent('image')}"
+														<img title="#{subPage.previewImage.name}"
+															src="#{subPage.previewImage.iconURI}"
 															class="img-responsive"
-															alt="#{faqItem.getMediaName('image')}" />
+															alt="#{subPage.previewImage.name}" />
 														<figcaption>
-															#{faqItem.getMediaDescription('image')}</figcaption>
+															#{subPage.previewImage.description}</figcaption>
 													</figure>
-												</div>
-											</ui:fragment>
-											<ui:fragment rendered="#{faqItem.hasContent('text2')}">
-												<div class="tpl-faq-single__text">
-													<h:outputText escape="false"
-														value="#{faqItem.getContent('text2')}"></h:outputText>
 												</div>
 											</ui:fragment>
 										</div>
 									</div>
 								</div>
 							</div>
-						</c:forEach>
+						</ui:repeat>
 					</div>
 				</ui:fragment>
 
 				<ui:fragment
-					rendered="#{cmsPage.getProperty('DISPLAY_CHILD_TAGS_AS_HEADERS').booleanValue}">
+					rendered="#{cc.attrs.component.hasContent('faqList') and cc.attrs.component.getContentItem('faqList').content.groupByCategory}">
 					<!-- CLASSIFICATIONS -->
 					<c:forEach var="category"
-						items="#{cc.attrs.component.getContentItem('faqList').content.sortedCategories}"
+						items="#{cc.attrs.component.getContentItem('faqList').content.getSortedCategories(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}"
 						varStatus="classification_status">
 						<h1 class="tpl-faq__subheader">#{msg[category]}</h1>
 						<div class="accordion tpl-faq__list" id="faqAccordion"
@@ -104,7 +101,7 @@
 
 							<!-- FAQ ITEMS -->
 							<c:forEach var="faqItem"
-								items="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(category)}"
+								items="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged, category)}"
 								varStatus="status">
 								<div class="card" id="card-#{faqItem.id}-#{category.id}">
 									<div class="card-header" role="tab"

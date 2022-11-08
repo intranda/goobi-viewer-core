@@ -275,7 +275,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
      */
     @Override
     public String toString() {
-        return getText();
+        return getTextOrDefault();
     }
 
     @Override

@@ -157,7 +157,7 @@ public class CMSContentItem {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             String id = FilenameUtils.getBaseName("content_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.uiComponent = new HtmlPanelGroup();
-//            this.uiComponent.setId(id);
+            this.uiComponent.setId(id);
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
             this.uiComponent.getChildren().add(wrapper);
             if(StringUtils.isBlank(this.getJsfComponent().getFilename())) {
