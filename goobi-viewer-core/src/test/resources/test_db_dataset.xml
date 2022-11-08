@@ -12,6 +12,11 @@
         active="true" suspended="true" superuser="false" last_name="last 3"
         first_name="first 3" comments="no comments 3" score="-1"
         avatar_type="DEFAULT" />
+        
+    <user_properties user_id="1" key="sso_id" value="1234" />
+    <user_properties user_id="2" key="sso_id" value="5678" />
+    <user_properties user_id="2" key="foo" value="bar" />
+    <user_properties user_id="3" key="foo" value="bar" />
 
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_1" />
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_2" />

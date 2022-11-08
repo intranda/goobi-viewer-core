@@ -74,9 +74,11 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
         HttpServletResponse response = BeanUtils.getResponse();
 
         try {
-            User user = DataManager.getInstance().getDao().getUserByNickname(ssoId); // TODO find a good way to attach sso id to user
-            if (user != null) {
-                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.of(user), false));
+            List<User> users = DataManager.getInstance().getDao().getUsersByPropertyValue(User.USER_PROPERTY_SSO_ID, ssoId);
+            if (users.size() == 1) {
+                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.of(users.get(0)), false));
+            } else if (users.size() > 1) {
+                logger.error("SSO ID found on multiple users: {}", ssoId);
             }
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);

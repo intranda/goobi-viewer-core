@@ -42,31 +42,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
@@ -87,6 +72,22 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * <p>
@@ -110,6 +111,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
     private static final String URI_ID_REGEX = "/users/(\\d{1,19})/?$";
+
+    public static final String USER_PROPERTY_SSO_ID = "sso_id";
 
     static final String EMAIL_ADDRESS_ANONYMOUS = "anonymous@goobi.io";
 
@@ -177,6 +180,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     @CollectionTable(name = "openid_accounts", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "claimed_identifier")
     private List<String> openIdAccounts = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "user_properties", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyColumn(name = "key")
+    @Column(name = "value")
+    @PrivateOwned
+    private Map<String, String> userProperties = new HashMap<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @PrivateOwned
@@ -1341,6 +1351,20 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      */
     public void setLicenses(List<License> licenses) {
         this.licenses = licenses;
+    }
+
+    /**
+     * @return the userProperties
+     */
+    public Map<String, String> getUserProperties() {
+        return userProperties;
+    }
+
+    /**
+     * @param userProperties the userProperties to set
+     */
+    public void setUserProperties(Map<String, String> userProperties) {
+        this.userProperties = userProperties;
     }
 
     /**
