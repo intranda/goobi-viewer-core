@@ -163,8 +163,8 @@ public class AuthenticationEndpoint {
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
             servletResponse.sendRedirect(redirectUrl);
-        } else {
-            servletResponse.sendRedirect("/TODO");
+        } else if(BeanUtils.getNavigationHelper() != null) {
+            servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
         }
 
         return "";
