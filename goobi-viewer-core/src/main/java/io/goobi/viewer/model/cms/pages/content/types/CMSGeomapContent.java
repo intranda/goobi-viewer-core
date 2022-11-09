@@ -25,16 +25,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.maps.GeoMap;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
@@ -42,15 +44,17 @@ import jakarta.persistence.Table;
 @Table(name = "cms_content_geomap")
 public class CMSGeomapContent extends CMSContent {
 
+    private static final Logger logger  = LogManager.getLogger(CMSGeomapContent.class);
+    
     private static final String COMPONENT_NAME = "geomap";
     
     @JoinColumn(name="geomap_id")
-    public GeoMap map;
+    private GeoMap map;
     
     public CMSGeomapContent() {
         super();
     }
-    
+
     public CMSGeomapContent(CMSGeomapContent orig) {
         super(orig);
         this.map = orig.map;
@@ -82,6 +86,22 @@ public class CMSGeomapContent extends CMSContent {
     
     public void setMap(GeoMap map) {
         this.map = map;
+    }
+    
+    public Long getMapId() {
+        return Optional.ofNullable(this.map).map(GeoMap::getId).orElse(null);
+    }
+    
+    public void setMapId(Long id) {
+        if(id != null) {
+            try {
+                this.map = DataManager.getInstance().getDao().getGeoMap(id);
+            } catch (DAOException e) {
+                logger.error("Error loading map with id {} from database. Error description: {}", id, e.toString());
+            }
+        } else {
+            this.map = null;
+        }
     }
     
     @Override
