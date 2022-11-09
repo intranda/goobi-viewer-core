@@ -84,7 +84,6 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LitteraProvider;
 import io.goobi.viewer.model.security.authentication.LocalAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
-import io.goobi.viewer.model.security.authentication.SAMLProvider;
 import io.goobi.viewer.model.security.authentication.VuFindProvider;
 import io.goobi.viewer.model.security.authentication.XServiceProvider;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
@@ -1978,13 +1977,8 @@ public class Configuration extends AbstractConfiguration {
             boolean enabled = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
             String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
-            String idpMetadataUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@idpMetadataUrl]", null);
-            String relyingPartyIdentifier =
-                    myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@relyingPartyIdentifier]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
-            String samlPublicKeyPath = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@publicKeyPath]", null);
-            String samlPrivateKeyPath = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@privateKeyPath]", null);
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -1992,10 +1986,6 @@ public class Configuration extends AbstractConfiguration {
                 switch (type.toLowerCase()) {
                     case "httpheader":
                         providers.add(new HttpHeaderProvider(name, label, endpoint, image, timeoutMillis, parameterType, parameterName));
-                        break;
-                    case "saml":
-                        providers.add(
-                                new SAMLProvider(name, idpMetadataUrl, relyingPartyIdentifier, samlPublicKeyPath, samlPrivateKeyPath, timeoutMillis));
                         break;
                     case "openid":
                         providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
