@@ -14,13 +14,12 @@
 	</composite:interface>
 
 	<composite:implementation>
+
+		<div class="admin__content-item-text">
 		
-		<div class="admin__content-component-input-group admin__content-component-text">
-		
-			<div class="admin__content-component-input-label">#{msg.text}:</div>
+			<div class="admin__content-component-content-item-start">Text:</div>
 			
-			<h:panelGroup layout="block" id="inputGroup" styleClass="admin__content-component-input-field">
-				
+			<h:panelGroup layout="block" id="inputGroup" styleClass="admin__content-component-content-item-end">
 				<h:inputText 
 					value="#{cc.attrs.contentItem.content.text.text}" 
 					id="inputFieldContentItemText"
@@ -28,7 +27,6 @@
 					styleClass="form-control" >
 					<f:passThroughAttribute name="aria-label" value="text box" />
 				</h:inputText>
-
 			</h:panelGroup>
 
 		</div>

@@ -142,7 +142,9 @@
 	&.multiple {
 		height: 125px;
 		padding: 0;
-		overflow-y: auto;
+		// Property was "auto" before, check if it breaks something
+		overflow-y: hidden;
+//		overflow-y: auto;
 		&:after {
 			display: none;
 		}
