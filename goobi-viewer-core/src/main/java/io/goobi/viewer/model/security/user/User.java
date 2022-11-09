@@ -112,8 +112,6 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     private static final String URI_ID_TEMPLATE = DataManager.getInstance().getConfiguration().getRestApiUrl() + "users/{id}";
     private static final String URI_ID_REGEX = "/users/(\\d{1,19})/?$";
 
-    public static final String USER_PROPERTY_SSO_ID = "sso_id";
-
     static final String EMAIL_ADDRESS_ANONYMOUS = "anonymous@goobi.io";
 
     @Transient
@@ -181,10 +179,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     @Column(name = "claimed_identifier")
     private List<String> openIdAccounts = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_properties", joinColumns = @JoinColumn(name = "user_id"))
-    @MapKeyColumn(name = "key")
-    @Column(name = "value")
+    @MapKeyColumn(name = "property_name")
+    @Column(name = "property_value")
     @PrivateOwned
     private Map<String, String> userProperties = new HashMap<>();
 

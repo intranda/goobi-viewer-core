@@ -1990,7 +1990,7 @@ public class Configuration extends AbstractConfiguration {
             if (enabled) {
                 IAuthenticationProvider provider = null;
                 switch (type.toLowerCase()) {
-                    case "httpHeader":
+                    case "httpheader":
                         providers.add(new HttpHeaderProvider(name, label, endpoint, image, timeoutMillis, parameterType, parameterName));
                         break;
                     case "saml":
@@ -2023,7 +2023,7 @@ public class Configuration extends AbstractConfiguration {
                         provider = new LocalAuthenticationProvider(name);
                         break;
                     default:
-                        logger.error("Cannot add authentification provider with name {} and type {}. No implementation found", name, type);
+                        logger.error("Cannot add authentification provider with name '{}' and type '{}'. No implementation found", name, type);
                 }
                 if (provider != null) {
                     // Look for user group configurations to which users shall be automatically added when logging in

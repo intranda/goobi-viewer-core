@@ -363,7 +363,6 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             String query = "SELECT a FROM User a JOIN a.userProperties p WHERE KEY(p) = :key AND VALUE(p) = :value";
-            logger.trace(query);
             return em.createQuery(query)
                     .setParameter("key", propertyName)
                     .setParameter("value", propertyValue)
