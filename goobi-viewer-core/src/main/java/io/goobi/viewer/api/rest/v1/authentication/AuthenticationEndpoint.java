@@ -33,10 +33,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -133,38 +135,36 @@ public class AuthenticationEndpoint {
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "500", description = "Internal error")
-    public String apacheHeaderLogin() throws IOException {
+    public String headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) throws IOException {
         HttpHeaderProvider provider = null;
-        try {
-            for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
-                if (p instanceof HttpHeaderProvider) {
-                    provider = (HttpHeaderProvider) p;
-                    break;
-                }
+        for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
+            if (p instanceof HttpHeaderProvider) {
+                provider = (HttpHeaderProvider) p;
+                break;
             }
-            if (provider == null) {
-                logger.warn("No appropriate authentication provider configured.");
-                return "";
-            }
+        }
+        if (provider == null) {
+            logger.warn("No appropriate authentication provider configured.");
+            return "";
+        }
 
-            //the header we read the ssoID from is configurable
-            String ssoId = null;
-            if (HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType())) {
-                ssoId = servletRequest.getHeader(provider.getParameterName());
-            } else {
-                ssoId = (String) servletRequest.getAttribute(provider.getParameterName());
-            }
-            UserBean userBean = BeanUtils.getUserBean();
-            CompletableFuture<LoginResult> result = provider.login(ssoId, null);
-            if (!result.get().isRefused() && result.get().getUser().isPresent()) {
-                userBean.setUser(result.get().getUser().get());
-            }
+        //the header we read the ssoID from is configurable
+        String ssoId = null;
+        if (HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType())) {
+            ssoId = servletRequest.getHeader(provider.getParameterName());
+        } else {
+            ssoId = (String) servletRequest.getAttribute(provider.getParameterName());
+        }
+        UserBean userBean = BeanUtils.getUserBean();
+        User user = provider.loadUser(ssoId);
+        if (user != null) {
+            userBean.setUser(user);
+        }
 
+        if (StringUtils.isNotEmpty(redirectUrl)) {
+            servletResponse.sendRedirect(redirectUrl);
+        } else {
             servletResponse.sendRedirect("/TODO");
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage());
-        } catch (ExecutionException | AuthenticationProviderException e) {
-            logger.error(e.getMessage(), e);
         }
 
         return "";

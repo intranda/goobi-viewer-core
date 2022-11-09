@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,6 +50,13 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
 
     private final String parameterType;
     private final String parameterName;
+
+    private volatile LoginResult loginResult = null; //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
+
+    /**
+     * Lock to be opened once login is completed
+     */
+    private Object responseLock = new Object();
 
     /**
      * 
@@ -70,23 +79,52 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
      */
     @Override
     public CompletableFuture<LoginResult> login(String ssoId, String password) throws AuthenticationProviderException {
-        HttpServletRequest request = BeanUtils.getRequest();
-        HttpServletResponse response = BeanUtils.getResponse();
-
-        try {
-            List<User> users = DataManager.getInstance().getDao().getUsersByPropertyValue(parameterName, ssoId);
-            if (users.size() == 1) {
-                return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.of(users.get(0)), false));
-            } else if (users.size() > 1) {
-                logger.error("SSO ID found on multiple users: {}", ssoId);
+        if (StringUtils.isNotEmpty(url)) {
+            try {
+                logger.trace("Redirecting to: {}", url);
+                BeanUtils.getResponse().sendRedirect(url);
+            } catch (IOException e) {
+                throw new AuthenticationProviderException(e);
             }
-            logger.trace("No user found for {}={}", parameterName, ssoId);
+        }
+
+        return CompletableFuture.supplyAsync(() -> {
+            synchronized (responseLock) {
+                try {
+                    long startTime = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
+                        responseLock.wait(getTimeoutMillis());
+                    }
+                    return this.loginResult;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
+                }
+            }
+        });
+    }
+
+    /**
+     * 
+     * @param parameterValue
+     * @return {@link User} if found; otherwise null
+     */
+    public User loadUser(String parameterValue) {
+        try {
+            List<User> users = DataManager.getInstance().getDao().getUsersByPropertyValue(parameterName, parameterValue);
+            if (users.size() == 1) {
+                logger.trace("User found: {}", users.get(0).getId());
+                return users.get(0);
+            } else if (users.size() > 1) {
+                logger.error("{} found on multiple users: {}", parameterName, parameterValue);
+            }
+            logger.trace("No user found for {}={}", parameterName, parameterValue);
             // TODO add user to db?
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
 
-        return CompletableFuture.completedFuture(new LoginResult(request, response, Optional.empty(), true));
+        return null;
     }
 
     /* (non-Javadoc)
