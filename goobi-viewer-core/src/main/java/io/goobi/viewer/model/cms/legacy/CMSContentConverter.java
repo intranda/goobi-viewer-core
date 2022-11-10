@@ -156,13 +156,11 @@ public class CMSContentConverter {
     
     public CMSSearchContent createSearchContent(Map<String, Object> legacyItem) {
         Boolean displayEmptySearchResults = (Boolean) legacyItem.get("displayEmptySearchResults");
-        Integer searchType = (Integer) legacyItem.get("searchType");
         String solrQuery = (String) legacyItem.get("search_prefix");
         
         CMSSearchContent content = new CMSSearchContent();
         content.setDisplayEmptySearchResults(displayEmptySearchResults);
         content.setSearchPrefix(solrQuery);
-        content.setSearchType(searchType);
         
         return content;
     }
