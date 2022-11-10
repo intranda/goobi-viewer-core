@@ -92,6 +92,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.PageValidityStatus;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
@@ -492,7 +493,7 @@ public class CmsBean implements Serializable {
      * @throws PresentationException 
      */
     public String createAndOpenNewPage(String title, String relatedPI) throws PresentationException, IndexUnreachableException, DAOException {
-        CMSPage page = new CMSPage();
+        CMSPage page = new CMSPage(CMSTemplateManager.getInstance());
         page.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
         page.setRelatedPI(relatedPI);
         setUserRestrictedValues(page, userBean.getUser());
@@ -921,7 +922,7 @@ public class CmsBean implements Serializable {
      */
     public CMSPage getCurrentPage() {
         if (currentPage == null) {
-            return new CMSPage();
+            return new CMSPage(CMSTemplateManager.getInstance());
         }
         return currentPage;
     }
@@ -2193,7 +2194,7 @@ public class CmsBean implements Serializable {
     }
     
     public void setNewSelectedPage() {
-        this.selectedPage = new CMSPage();
+        this.selectedPage = new CMSPage(CMSTemplateManager.getInstance());
     }
     
     public CMSPageEditState getPageEditState() {

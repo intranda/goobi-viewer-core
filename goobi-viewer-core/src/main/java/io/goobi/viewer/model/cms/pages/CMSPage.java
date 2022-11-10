@@ -245,7 +245,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         templateManager = null;
     }
 
-    CMSPage(CMSTemplateManager templateManager) {
+    public CMSPage(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
 
     }
