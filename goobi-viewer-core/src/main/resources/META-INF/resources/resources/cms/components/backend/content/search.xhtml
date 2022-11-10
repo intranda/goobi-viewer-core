@@ -15,13 +15,11 @@
 
 	<composite:implementation>
 
-    <div class="cms-module__option-group">
+    <div class="admin__content-component-input-group">
         <!-- LABEL -->
-        <div class="cms-module__option-label">
-            <label for="emptySearchResults">#{msg[cc.attrs.contentItem.itemLabel]}#{cc.attrs.contentItem.mandatory?'*':''}:</label>
-        </div>
+        <div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.itemLabel]}</div>
         
-        <div class="cms-module__option-control">
+        <div class="admin__content-component-input-field">
             <!-- AREA FOR AJAX REFRESH -->
             <h:panelGroup id="emptySearchResultsGroup" layout="block" styleClass="cms-module__option-checkbox">
                 <!-- VALIDATION MESSAGE -->
@@ -37,6 +35,8 @@
                     </div>
                 </div>
                 
+                
+                
                 <!-- CHECKBOX -->
                 <h:selectBooleanCheckbox 
                     id="emptySearchResults" 
@@ -45,17 +45,8 @@
                     <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.contentItem.itemLabel]}" />
 				</h:selectBooleanCheckbox>
             </h:panelGroup>
-            
-            <!-- INLINE HELP -->
-            <span class="cms-module__option-control-helptext">#{msg.cms_page_emptySearch_help}</span>
         </div>
         
-        <!-- TOGGLE INLINE HELP -->
-        <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                <i class="fa fa-question-circle" aria-hidden="true"></i>
-            </button>
-        </div>
     </div>
 	</composite:implementation>
 </ui:composition>

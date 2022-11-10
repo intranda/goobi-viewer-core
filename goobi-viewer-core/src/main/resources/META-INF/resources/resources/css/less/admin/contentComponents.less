@@ -67,15 +67,8 @@
 		font-size: 15px;
 		color: #555;
 	}
-	&-order-number {
-
-	}
-	&-order-arrow-up {
-
-	}
-	&-order-arrow-down {
-
-	}
+	&-order-arrow-up {}
+	&-order-arrow-down {}
 	&-delete {
 		background: transparent;
 		padding: 0;
@@ -126,6 +119,36 @@
 		font-style: italic;
 		color: #666;
 	}
+	&-input-group {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 10px;
+		margin-bottom: 10px;
+	}
+	&-input-label {
+		flex: 0 0 200px;
+		word-break: break-word;
+	}
+	&-input-field {
+		position: relative;
+		flex-grow: 1;
+	}
+	&__input-dropdown {
+		position: relative;
+		width: 100%;
+	    height: 34px;
+	    font-size: 1.4rem;
+	    color: @black;
+		border: 1px solid @middlegray;
+	    background-color: @white;
+	}
+	
+	
+	
+	
+	
+	// ADD COMPONENT SECTION (BELOW EXISTING CONTENT COMPONENTS)
 	&-add-area {
 		margin-top: 25px;
 		display: grid;
@@ -149,6 +172,9 @@
 	}
 }
 
+
+
+
 .admin .admin__content-item {
 	&-text {
 		display: grid;
@@ -165,7 +191,6 @@
 
 
 // CHANGES TO EXISTING STYLES CREATE PAGE
-
 .cms-create-page{
 	.admin-cms-media__file {
 		border: none;
@@ -271,7 +296,6 @@
 }
 
 
-
 .fixedFont(@line-height-base: 1.5){
 	@line-height-target: (1 - @line-height-base);
 	  	&::before {
@@ -283,7 +307,6 @@
 	    margin-top: calc( unit(@line-height-target, ) ~"* 0.5em");
 	  }
 }
-
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {

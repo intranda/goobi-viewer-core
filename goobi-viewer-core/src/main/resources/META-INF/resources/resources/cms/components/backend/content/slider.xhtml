@@ -9,56 +9,48 @@
 	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
 
 	<composite:interface>
-		<composite:attribute name="contentItem" required="true"/>
-			
+		<composite:attribute name="contentItem" required="true" />
+
 	</composite:interface>
 
 	<composite:implementation>
 
-		<div class="admin__content-component-description">ata sanctus est Lorem ipsum dolor sit amet.</div>
+		<div class="admin__content-component-input-group">
 
-        <div class="cms-module__option-label">
-            <label for="sliderSelect">#{msg[cc.attrs.contentItem.itemLabel]}#{cc.attrs.contentItem.mandatory?'*':''}:</label>
-        </div>
-        <div class="cms-module__option-control">
-            <!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup id="sliderGroup">
-                <!-- VALIDATION MESSAGE -->
-                <div class="cms-module__option-message">
-                    <h:messages for="sliderSelect" 
-                        infoClass="cms-module__option-message-status success" 
-                        warnClass="cms-module__option-message-status warning"
-                        errorClass="cms-module__option-message-status danger" />
+			<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.itemLabel]}:</div>
 
-                    <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-                    </div>
-                </div>
-                
-                <!-- SELECT MENU -->
-                <div class="custom-control custom-control--select">
-                    <h:selectOneMenu 
-                        id="sliderSelect" 
-                        styleClass="form-control" 
-                        value="#{cc.attrs.contentItem.content.sliderId}">
-                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.action__select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
-                        <f:selectItems 
-                            value="#{cmsSliderBean.allSliders}"
-                            var="slider"
-                            itemValue="#{slider.id}"
-                            itemLabel="#{slider.name}" />
-                        <f:ajax event="change" render="sliderGroup" />
-                    </h:selectOneMenu>
-                </div>
-            </h:panelGroup>
-        </div>
-        <!-- TOGGLE INLINE HELP -->
-        <div class="cms-module__option-help">
-            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                <i class="fa fa-question-circle" aria-hidden="true"></i>
-            </button>
-        </div>
+			<div class="admin__content-component-input-field">
+				<!-- AREA FOR AJAX REFRESH -->
+				<h:panelGroup id="sliderGroup">
+					<!-- VALIDATION MESSAGE -->
+					<div class="cms-module__option-message">
+						<h:messages for="sliderSelect"
+							infoClass="cms-module__option-message-status success"
+							warnClass="cms-module__option-message-status warning"
+							errorClass="cms-module__option-message-status danger" />
+
+						<div class="cms-module__option-message-mark">
+							<i class="fa fa-check" aria-hidden="true"></i> <i
+								class="fa fa-exclamation" aria-hidden="true"></i>
+						</div>
+					</div>
+
+					<!-- SELECT MENU -->
+					<div class="custom-control custom-control--select">
+						<h:selectOneMenu id="sliderSelect" styleClass="form-control"
+							value="#{cc.attrs.contentItem.content.sliderId}">
+							<f:selectItem itemValue="#{null}"
+								itemLabel="#{msg.action__select}" itemDisabled="true"
+								noSelectionOption="true"></f:selectItem>
+							<f:selectItems value="#{cmsSliderBean.allSliders}" var="slider"
+								itemValue="#{slider.id}" itemLabel="#{slider.name}" />
+							<f:ajax event="change" render="sliderGroup" />
+						</h:selectOneMenu>
+					</div>
+				</h:panelGroup>
+			</div>
+
+		</div>
 
 	</composite:implementation>
 </ui:composition>
