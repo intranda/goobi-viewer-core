@@ -64,8 +64,6 @@ public class CMSSearchContent extends CMSContent {
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
 
-    @Column(name = "searchType")
-    private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
 
     @Transient
     private final SearchFunctionality search;
@@ -79,7 +77,6 @@ public class CMSSearchContent extends CMSContent {
         super(orig);
         this.searchPrefix = orig.searchPrefix;
         this.displayEmptySearchResults = orig.displayEmptySearchResults;
-        this.searchType = orig.searchType;
         this.search = initSearch();
     }
 
@@ -87,7 +84,7 @@ public class CMSSearchContent extends CMSContent {
         if(this.getOwningComponent() != null) {            
             SearchFunctionality func = new SearchFunctionality(this.searchPrefix, Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwnerPage()).map(p -> p.getPageUrl()).orElse(""));
             func.setPageNo(Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getListPage).orElse(1));
-            func.setActiveSearchType(this.searchType);
+            func.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             return func;
         } else {
             return new SearchFunctionality(this.searchPrefix, "");
@@ -108,14 +105,6 @@ public class CMSSearchContent extends CMSContent {
 
     public boolean isDisplayEmptySearchResults() {
         return displayEmptySearchResults;
-    }
-
-    public void setSearchType(int searchType) {
-        this.searchType = searchType;
-    }
-
-    public int getSearchType() {
-        return searchType;
     }
 
     public SearchFunctionality getSearch() {
@@ -145,7 +134,7 @@ public class CMSSearchContent extends CMSContent {
             if (searchBean != null) {
                 if (resetResults) {
                     searchBean.resetSearchAction();
-                    searchBean.setActiveSearchType(this.getSearchType());
+                    searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
                 }
                 if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                     return searchAction();
