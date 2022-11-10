@@ -34,9 +34,33 @@
                         <i class="fa fa-exclamation" aria-hidden="true"></i>
                     </div>
                 </div>
-                
-                
-                
+
+		        <div class="cms-module__option-control">
+		            <!-- AREA FOR AJAX REFRESH -->
+		            <h:panelGroup id="facettingGroup">
+		                <!-- VALIDATION MESSAGE -->
+		                <div class="cms-module__option-message">
+		                    <h:messages for="facetting" 
+		                        infoClass="cms-module__option-message-status success" 
+		                        warnClass="cms-module__option-message-status warning"
+		                        errorClass="cms-module__option-message-status danger" />
+		
+		                    <div class="cms-module__option-message-mark">
+		                        <i class="fa fa-check" aria-hidden="true"></i>
+		                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+		                    </div>
+		                </div>
+		                
+		                <!-- INPUT TEXT -->
+		                <h:inputText
+		                    id="facetting" 
+		                    styleClass="form-control" 
+		                    value="#{cc.attrs.contentItem.content.searchPrefix}">
+		                    <f:passThroughAttribute name="aria-label" value="#{msg.cms_collectionDisplayParents}" />
+						</h:inputText>
+		            </h:panelGroup>
+		        </div>
+
                 <!-- CHECKBOX -->
                 <h:selectBooleanCheckbox 
                     id="emptySearchResults" 
