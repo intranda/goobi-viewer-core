@@ -131,7 +131,7 @@ public class AuthenticationEndpoint {
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "500", description = "Internal error")
-    public String headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) throws IOException {
+    public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) throws IOException {
         HttpHeaderProvider provider = null;
         for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
             if (p instanceof HttpHeaderProvider) {
@@ -140,8 +140,7 @@ public class AuthenticationEndpoint {
             }
         }
         if (provider == null) {
-            logger.warn("No appropriate authentication provider configured.");
-            return "";
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No appropriate authentication provider configured.").build();
         }
 
         //the header we read the ssoID from is configurable
@@ -151,6 +150,10 @@ public class AuthenticationEndpoint {
         } else {
             ssoId = (String) servletRequest.getAttribute(provider.getParameterName());
         }
+        if (ssoId == null) {
+            logger.warn("Parameter not provided: {}", provider.getParameterName());
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Parameter not provided: " + provider.getParameterName()).build();
+        }
         UserBean userBean = BeanUtils.getUserBean();
         User user = provider.loadUser(ssoId);
         if (user != null) {
@@ -159,10 +162,10 @@ public class AuthenticationEndpoint {
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
             servletResponse.sendRedirect(redirectUrl);
-        } else if(BeanUtils.getNavigationHelper() != null) {
+        } else if (BeanUtils.getNavigationHelper() != null) {
             servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
         }
 
-        return "";
+        return Response.ok("").build();
     }
 }
