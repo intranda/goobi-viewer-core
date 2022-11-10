@@ -246,6 +246,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public CMSPage(CMSTemplateManager templateManager) {
+        this.dateCreated = LocalDateTime.now();
         this.templateManager = templateManager;
 
     }
@@ -260,7 +261,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     CMSPage(CMSPage original, CMSTemplateManager templateManager) {
-        this.templateManager = templateManager;
+        this(templateManager);
         if (original.id != null) {
             this.id = original.id;
         }
@@ -321,7 +322,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     CMSPage(CMSPageTemplate original, CMSTemplateManager templateManager) {
-        this.templateManager = templateManager;
+        this(templateManager);
 
         this.dateCreated = LocalDateTime.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
