@@ -180,10 +180,10 @@
     <cms_components component_id="4" publication_state="PUBLISHED" template_filename="textwithimage.xml" component_order="1" owning_page_id="3"/>        
     <cms_components component_id="5" publication_state="PUBLISHED" template_filename="sliderandmap.xml" component_order="1" owning_page_id="3"/>        
      		     
-    <cms_content content_type="mediumtext" cms_content_id="1" item_id="text" owning_component_id="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
+    <cms_content content_type="mediumtext" cms_content_id="1" item_id="text" owning_component_id="1" mediumtext_text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
     <cms_content content_type="media" cms_content_id="2" item_id="image" owning_component_id="2" media_item_id="1" />   
-    <cms_content content_type="shorttext" cms_content_id="3" item_id="text" owning_component_id="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
-    <cms_content content_type="mediumtext" cms_content_id="4" item_id="text" owning_component_id="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
+    <cms_content content_type="shorttext" cms_content_id="3" item_id="text" owning_component_id="3" shorttext_text="{&quot;en&quot;: &quot;Some text&quot;}" />   
+    <cms_content content_type="mediumtext" cms_content_id="4" item_id="text" owning_component_id="4" mediumtext_text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
     <cms_content content_type="media" cms_content_id="5" item_id="image" owning_component_id="4" media_item_id="4" />   
     <cms_content content_type="slider" cms_content_id="6" item_id="slider" owning_component_id="5" slider_id="1" />   
     <cms_content content_type="geomap" cms_content_id="7" item_id="map" owning_component_id="5" geomap_id="1" />   
