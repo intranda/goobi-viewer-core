@@ -22,6 +22,9 @@
 package io.goobi.viewer.api.rest.v1.authentication;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -132,30 +135,59 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) throws IOException {
-        HttpHeaderProvider provider = null;
+        List<HttpHeaderProvider> providers = new ArrayList<>();
         for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
             if (p instanceof HttpHeaderProvider) {
-                provider = (HttpHeaderProvider) p;
+                providers.add((HttpHeaderProvider) p);
                 break;
             }
         }
-        if (provider == null) {
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No appropriate authentication provider configured.").build();
+        if (providers.isEmpty()) {
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No authentication providers of type 'httpHeader' configured.").build();
         }
 
-        //the header we read the ssoID from is configurable
+        HttpHeaderProvider useProvider = null;
         String ssoId = null;
-        if (HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType())) {
-            ssoId = servletRequest.getHeader(provider.getParameterName());
-        } else {
-            ssoId = (String) servletRequest.getAttribute(provider.getParameterName());
+        for (HttpHeaderProvider provider : providers) {
+            if (HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType())) {
+                // Header
+                final Enumeration<String> headerNames = servletRequest.getHeaderNames();
+                while (headerNames.hasMoreElements()) {
+                    String headerName = headerNames.nextElement();
+                    if (headerName.equals(provider.getParameterName())) {
+                        useProvider = provider;
+                        ssoId = servletRequest.getHeader(headerName);
+                        break;
+                    }
+                }
+            } else {
+                // Attribute
+                final Enumeration<String> names = servletRequest.getAttributeNames();
+                while (names.hasMoreElements()) {
+                    String name = names.nextElement();
+                    if (name.equals(provider.getParameterName())) {
+                        useProvider = provider;
+                        ssoId = (String) servletRequest.getAttribute(name);
+                        break;
+                    }
+                }
+            }
+            if (useProvider != null) {
+                break;
+            }
         }
+
+        if (useProvider == null) {
+            logger.warn("No matching authentication provider found.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No matching provider found.").build();
+        }
+
         if (ssoId == null) {
-            logger.warn("Parameter not provided: {}", provider.getParameterName());
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Parameter not provided: " + provider.getParameterName()).build();
+            logger.warn("Parameter not provided: {}", useProvider.getParameterName());
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Parameter not provided: " + useProvider.getParameterName()).build();
         }
         UserBean userBean = BeanUtils.getUserBean();
-        User user = provider.loadUser(ssoId);
+        User user = useProvider.loadUser(ssoId);
         if (user != null) {
             userBean.setUser(user);
         }
