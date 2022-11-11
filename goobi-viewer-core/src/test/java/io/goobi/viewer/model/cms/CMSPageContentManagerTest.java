@@ -45,7 +45,7 @@ public class CMSPageContentManagerTest {
         
         CMSPageContentManager manager = new CMSPageContentManager(path);
         List<CMSComponent> components = manager.getComponents();
-        assertEquals(4, components.size());
+        assertEquals(5, components.size());
         CMSComponent htmlComponent = components.stream().filter(c -> c.getLabel().equals("cms_component__htmltext__label")).findAny().orElse(null);
         assertNotNull(htmlComponent);
         assertEquals("cms/components/frontend/component", htmlComponent.getJsfComponent().getLibrary());
