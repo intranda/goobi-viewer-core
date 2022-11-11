@@ -47,6 +47,7 @@ import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -61,6 +62,7 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_imagelist")
+@DiscriminatorValue("imagelist")
 public class CMSImageListContent extends CMSContent implements CMSCategoryHolder {
 
     private static final String COMPONENT_NAME = "imagelist";

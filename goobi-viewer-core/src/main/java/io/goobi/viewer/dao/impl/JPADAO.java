@@ -3400,8 +3400,66 @@ public class JPADAO implements IDAO {
                 commitTransaction(em);
                 return true;
             } catch (PersistenceException e) {
+                logger.error("Error deleting cms component", e);
                 handleException(em);
                 return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+    
+
+    @Override
+    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(persistentCMSComponent);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error adding cmsPage to database", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    @Override
+    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.merge(persistentCMSComponent);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException | NullPointerException e) {
+                logger.error("Error saving page ", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    @Override
+    public PersistentCMSComponent getCMSComponent(Long id) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                return em.getReference(PersistentCMSComponent.class, id);
+            } catch (EntityNotFoundException e) {
+                return null;
             } finally {
                 close(em);
             }
@@ -5591,7 +5649,7 @@ public class JPADAO implements IDAO {
 
             Stream<CMSPage> itemPages = itemList.stream()
                     .map(CMSContent::getOwningComponent)
-                    .map(PersistentCMSComponent::getOwnerPage);
+                    .map(PersistentCMSComponent::getOwningPage);
 
             Stream<CMSPage> widgetPages = widgetList.stream()
                     .map(CMSSidebarElement::getOwnerPage);
@@ -6000,7 +6058,7 @@ public class JPADAO implements IDAO {
 
             List<CMSPage> pageList = itemList.stream()
                     .map(CMSContent::getOwningComponent)
-                    .map(PersistentCMSComponent::getOwnerPage)
+                    .map(PersistentCMSComponent::getOwningPage)
                     .distinct()
                     .collect(Collectors.toList());
             return pageList;
@@ -6987,4 +7045,5 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+
 }

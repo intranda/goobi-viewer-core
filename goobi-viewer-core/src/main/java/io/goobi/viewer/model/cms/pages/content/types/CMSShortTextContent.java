@@ -45,6 +45,7 @@ import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -55,12 +56,13 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "cms_content_text_short")
+@DiscriminatorValue("shorttext")
 public class CMSShortTextContent extends CMSContent implements TranslatableCMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "text";
 
     
-    @Column(name = "text", nullable = true, columnDefinition = "TEXT")
+    @Column(name = "shorttext_text", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text = new TranslatedText();
 

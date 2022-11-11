@@ -2658,6 +2658,9 @@ public interface IDAO {
      */
     void handleException(EntityManager em);
 
-    boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
 
 }

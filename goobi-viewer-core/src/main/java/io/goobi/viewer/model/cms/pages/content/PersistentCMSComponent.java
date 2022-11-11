@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -42,7 +44,6 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -56,7 +57,9 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_components")
-public class PersistentCMSComponent implements IPolyglott, Comparable<PersistentCMSComponent> {
+public class PersistentCMSComponent implements IPolyglott, Serializable, Comparable<PersistentCMSComponent> {
+
+    private static final long serialVersionUID = 9073881774408347387L;
 
     /** Unique database ID. */
     @Id
@@ -64,8 +67,9 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
     @Column(name = "component_id")
     private Long id;
     
-    @OneToMany(mappedBy = "owningComponent", fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.REMOVE })
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval=true, mappedBy="owningComponent")
     @PrivateOwned
+    @CascadeOnDelete
     private final List<CMSContent> contentItems = new ArrayList<>();
     
     @Column(name="publication_state")
@@ -80,13 +84,13 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
     
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
-    @JoinColumn(name = "owner_page_id")
-    private CMSPage ownerPage;
+    @JoinColumn(name="owning_page_id", nullable=true)
+    private CMSPage owningPage;
     
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
-    @JoinColumn(name = "owner_template_id")
-    private CMSPageTemplate ownerTemplate;
+    @JoinColumn(name="owning_template_id", nullable=true)
+    private CMSPageTemplate owningTemplate;
     
     @ElementCollection
     @JoinTable(name="cms_component_attribute_map", joinColumns=@JoinColumn(name="attribute_id"))
@@ -129,8 +133,8 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
         this.order = orig.getOrder();
         this.publicationState = orig.publicationState;
         this.templateFilename = orig.templateFilename;
-        this.ownerPage = orig.ownerPage;
-        this.ownerTemplate = orig.ownerTemplate;
+        this.owningPage = orig.owningPage;
+        this.owningTemplate = orig.owningTemplate;
         this.contentItems.addAll(orig.getContentItems().stream().map(CMSContent::copy).collect(Collectors.toList()));
         this.contentItems.forEach(c -> c.setOwningComponent(this));
         this.attributes = new HashMap<>(orig.attributes);
@@ -180,20 +184,20 @@ public class PersistentCMSComponent implements IPolyglott, Comparable<Persistent
         return contentItems;
     }
     
-    public CMSPage getOwnerPage() {
-        return ownerPage;
+    public CMSPage getOwningPage() {
+        return owningPage;
     }
     
-    public void setOwnerPage(CMSPage ownerPage) {
-        this.ownerPage = ownerPage;
+    public void setOwningPage(CMSPage ownerPage) {
+        this.owningPage = ownerPage;
     }
     
-    public void setOwnerTemplate(CMSPageTemplate template) {
-        this.ownerTemplate = template;
+    public void setOwningTemplate(CMSPageTemplate template) {
+        this.owningTemplate = template;
     }
 
-    public CMSPageTemplate getOwnerTemplate() {
-        return ownerTemplate;
+    public CMSPageTemplate getOwningTemplate() {
+        return owningTemplate;
     }
     
     public String getTemplateFilename() {

@@ -36,12 +36,14 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.maps.GeoMap;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_geomap")
+@DiscriminatorValue("geomap")
 public class CMSGeomapContent extends CMSContent {
 
     private static final Logger logger  = LogManager.getLogger(CMSGeomapContent.class);

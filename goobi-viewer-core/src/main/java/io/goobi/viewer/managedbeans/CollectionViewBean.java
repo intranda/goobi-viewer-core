@@ -103,7 +103,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     public static String getCollectionId(CMSCollectionContent content) {
-        return content.getOwningComponent().getOwnerPage().getId() + "_" + content.getItemId();
+        return content.getOwningComponent().getOwningPage().getId() + "_" + content.getItemId();
     }
 
     public Optional<CollectionView> getCollectionIfStored(CMSCollectionContent content) {

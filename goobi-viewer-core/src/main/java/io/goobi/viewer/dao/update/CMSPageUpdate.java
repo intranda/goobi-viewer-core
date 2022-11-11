@@ -133,7 +133,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 CMSComponent componentTemplate = templateManager.getLegacyComponent(legacyPageTemplateId);
                 if (componentTemplate != null) {
                     PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());
-                    component.setOwnerPage(page);
+                    component.setOwningPage(page);
                     page.setPersistentComponents(Collections.singletonList(component));
                 } else {
                     logger.warn("No legacy template found with id {}: Cannot update cmsPage {}", legacyPageTemplateId, page.getId());

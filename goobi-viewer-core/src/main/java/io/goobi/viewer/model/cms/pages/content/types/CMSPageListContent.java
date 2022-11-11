@@ -45,6 +45,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -55,6 +56,7 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_pagelist")
+@DiscriminatorValue("pagelist")
 public class CMSPageListContent extends CMSContent implements CMSCategoryHolder {
 
     private static final String COMPONENT_NAME = "pagelist";

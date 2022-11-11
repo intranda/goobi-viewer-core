@@ -138,8 +138,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText description = new TranslatedText();
     
-    @OneToMany(mappedBy = "ownerTemplate", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @PrivateOwned
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval=true, mappedBy="owningTemplate")
     private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
 
     /**
@@ -197,7 +196,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
 
         for (PersistentCMSComponent component : original.getPersistentComponents()) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
-            copy.setOwnerTemplate(this);
+            copy.setOwningTemplate(this);
             this.persistentComponents.add(copy);
             CMSComponent comp = CMSTemplateManager.getInstance().getComponent(copy.getTemplateFilename()).map(c -> new CMSComponent(c, Optional.of(copy))).orElse(null);
             if(comp != null) {                
@@ -748,7 +747,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     public PersistentCMSComponent addComponent(CMSComponent template) {
         PersistentCMSComponent persistentComponent = new PersistentCMSComponent(template);
         persistentComponent.setOrder(getHighestComponentOrder() + 1);
-        persistentComponent.setOwnerTemplate(this);
+        persistentComponent.setOwningTemplate(this);
         this.persistentComponents.add(persistentComponent);
         CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
         this.cmsComponents.add(cmsComponent);

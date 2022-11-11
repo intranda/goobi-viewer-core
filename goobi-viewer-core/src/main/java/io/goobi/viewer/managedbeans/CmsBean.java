@@ -162,7 +162,7 @@ public class CmsBean implements Serializable {
     
     private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
     
-    private List<PersistentCMSComponent> componentsToDelete = new ArrayList<>();
+    private Map<CMSPage, List<PersistentCMSComponent>> componentsToDelete = new HashMap<>();
     
     private String selectedComponent = "";
     
@@ -673,14 +673,16 @@ public class CmsBean implements Serializable {
             return;
         }
         
-        List<PersistentCMSComponent> tempComponentsToDelete = new ArrayList<>(componentsToDelete);
-        for (PersistentCMSComponent persistentCMSComponent : tempComponentsToDelete) {
+        for (PersistentCMSComponent persistentCMSComponent : getComponentsToDelete()) {
             if(persistentCMSComponent.getId() != null) {                
-                if(DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent)) {
-                    componentsToDelete.remove(persistentCMSComponent);
+                if(!DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent)) {
+                    Messages.error("cms_pageSaveFailure");
+                    logger.error("Error deleting component {}", persistentCMSComponent.getId());
+                    return;
                 }
             }
         }
+        this.componentsToDelete = new HashMap<>();
         
         setSidebarElementOrder(selectedPage);
 
@@ -887,6 +889,8 @@ public class CmsBean implements Serializable {
         } else {
             this.selectedPage = null;
         }
+        //delete list of components to delete. Only the list for the selected page is needed
+        this.componentsToDelete = new HashMap<>();
 
     }
 
@@ -2215,10 +2219,17 @@ public class CmsBean implements Serializable {
 
     public boolean deleteComponent(CMSComponent component) {
        PersistentCMSComponent persistentComponent = component.getPersistentComponent();
-       if(persistentComponent.getId() != null) {           
-           this.componentsToDelete.add(persistentComponent);
+       if(persistentComponent.getId() != null) { 
+           List<PersistentCMSComponent> pageComponents = getComponentsToDelete();
+           pageComponents.add(persistentComponent);
        }
        return this.selectedPage.removeComponent(component);
+    }
+
+    private List<PersistentCMSComponent> getComponentsToDelete() {
+        List<PersistentCMSComponent> pageComponents = this.componentsToDelete.getOrDefault(getSelectedPage(), new ArrayList<>());
+           this.componentsToDelete.put(getSelectedPage(), pageComponents);
+        return pageComponents;
     }
     
     public String getSelectedComponent() {

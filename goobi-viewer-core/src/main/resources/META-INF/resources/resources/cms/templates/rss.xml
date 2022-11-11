@@ -2,24 +2,20 @@
 <component>
 	<jsfComponent>
 		<library>cms/components/frontend/component</library>
-		<name>text</name>
+		<name>rssfeed</name>
 	</jsfComponent>
 	<label>cms_component__rss_label</label>
-	<description>cms_component__text_desc</description>
-	<icon>cms/components/frontend/component/icon/text.png</icon>
+	<description>cms_component__rss_desc</description>
+	<icon>cms/components/frontend/component/icon/rss.png</icon>
 	<content>
-		<item id="text">
+		<item id="rss">
 			<label>cms_component__rss_label</label>
-			<description>cms_content__text_desc</description>
+			<description>cms_content__rss_desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
 				<name>rssfeed</name>
 			</jsfComponent>
-			<attributes>
-				<attribute name="type" value="heading"/>
-				<attribute name="level" value="h2"/>
-			</attributes>
 		</item>
 	</content>
 

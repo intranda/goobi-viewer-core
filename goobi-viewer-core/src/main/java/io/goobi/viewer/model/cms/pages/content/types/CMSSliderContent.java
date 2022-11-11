@@ -35,6 +35,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,6 +45,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_slider")
+@DiscriminatorValue("slider")
 public class CMSSliderContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "slider";

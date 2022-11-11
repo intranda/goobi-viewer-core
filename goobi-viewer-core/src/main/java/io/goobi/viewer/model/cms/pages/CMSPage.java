@@ -43,6 +43,7 @@ import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -70,7 +71,6 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSLongTextContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
@@ -187,8 +187,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @JoinColumn(name = "slider_id")
     private CMSSlider topbarSlider = null;
 
-    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.REMOVE })
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval=true, mappedBy="owningPage")
     @PrivateOwned
+    @CascadeOnDelete
     private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
 
     /**
@@ -235,6 +236,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Transient
     private final CMSTemplateManager templateManager;
 
+    
     /**
      * <p>
      * Constructor for CMSPage.
@@ -306,7 +308,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
         for (PersistentCMSComponent component : original.persistentComponents) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
-            copy.setOwnerPage(this);
+            copy.setOwningPage(this);
             this.persistentComponents.add(copy);
         }
         initialiseCMSComponents();
@@ -343,7 +345,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
         for (PersistentCMSComponent component : original.getPersistentComponents()) {
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
-            copy.setOwnerPage(this);
+            copy.setOwningPage(this);
             this.persistentComponents.add(copy);
         }
         initialiseCMSComponents();
@@ -1163,7 +1165,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
             for (PersistentCMSComponent component : persistentComponents) {
                 for (CMSContent content : component.getContentItems()) {
-                    if (content instanceof CMSShortTextContent || content instanceof CMSLongTextContent || content instanceof CMSMediaContent) {
+                    if (content instanceof CMSShortTextContent || content instanceof CMSMediaContent) {
                         String baseFileName = id + "-" + content.getItemId() + ".";
                         for (Path file : cmsPageFiles) {
                             if (file.getFileName().toString().startsWith(baseFileName)) {
@@ -1367,7 +1369,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     PersistentCMSComponent addComponent(CMSComponent template) {
         PersistentCMSComponent persistentComponent = new PersistentCMSComponent(template);
         persistentComponent.setOrder(getHighestComponentOrder() + 1);
-        persistentComponent.setOwnerPage(this);
+        persistentComponent.setOwningPage(this);
         this.persistentComponents.add(persistentComponent);
         CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
         this.cmsComponents.add(cmsComponent);

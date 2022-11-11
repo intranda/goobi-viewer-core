@@ -55,9 +55,9 @@
 				</c:forEach>
 				<!-- PAGINATOR -->
 				<viewerComponent:simplePaginator
-					itemCount="#{cmsPage.getContentItem('list01').nestedPagesCount}"
-					itemActive="#{cmsPage.listPage}"
-					urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
+					itemCount="#{cc.attrs.pageListItem.content.nestedPagesCount}"
+					itemActive="#{cc.attrs.component.listPage}"
+					urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
 			</div>
 		</div>
 

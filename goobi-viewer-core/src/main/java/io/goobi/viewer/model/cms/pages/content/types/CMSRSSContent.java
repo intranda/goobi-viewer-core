@@ -32,11 +32,13 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_rss")
+@DiscriminatorValue("rss")
 public class CMSRSSContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "rssfeed";
@@ -103,6 +105,10 @@ public class CMSRSSContent extends CMSContent {
      */
     public int getElementsPerPage() {
         return getItemsPerView();
+    }
+    
+    public void setElementsPerPage(int num) {
+        setItemsPerView(num);
     }
     
     @Override

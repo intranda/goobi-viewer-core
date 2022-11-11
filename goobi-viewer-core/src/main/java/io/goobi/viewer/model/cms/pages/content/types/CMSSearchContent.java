@@ -44,6 +44,7 @@ import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -53,6 +54,7 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_search")
+@DiscriminatorValue("search")
 public class CMSSearchContent extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "search";
@@ -82,7 +84,7 @@ public class CMSSearchContent extends CMSContent {
 
     private SearchFunctionality initSearch() {
         if(this.getOwningComponent() != null) {            
-            SearchFunctionality func = new SearchFunctionality(this.searchPrefix, Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwnerPage()).map(p -> p.getPageUrl()).orElse(""));
+            SearchFunctionality func = new SearchFunctionality(this.searchPrefix, Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwningPage()).map(p -> p.getPageUrl()).orElse(""));
             func.setPageNo(Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getListPage).orElse(1));
             func.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             return func;

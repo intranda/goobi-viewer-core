@@ -56,12 +56,14 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_media")
+@DiscriminatorValue("media")
 public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
 
     private static final Logger logger = LogManager.getLogger(CMSMediaContent.class);

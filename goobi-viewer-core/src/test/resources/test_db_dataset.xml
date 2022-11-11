@@ -174,19 +174,19 @@
         publication_status="PUBLISHED" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" 
         title="{&quot;en&quot;: &quot;title 3&quot;}"/>
 
-    <cms_components component_id="1" publication_state="PUBLISHED" template_filename="htmltext.xml" component_order="1" owner_page_id="1"/>
-    <cms_components component_id="2" publication_state="PUBLISHED" template_filename="image.xml" component_order="2" owner_page_id="1"/>
-    <cms_components component_id="3" publication_state="PUBLISHED" template_filename="text.xml" component_order="1" owner_page_id="2"/>
-    <cms_components component_id="4" publication_state="PUBLISHED" template_filename="textwithimage.xml" component_order="1" owner_page_id="3"/>        
-    <cms_components component_id="5" publication_state="PUBLISHED" template_filename="sliderandmap.xml" component_order="1" owner_page_id="3"/>        
+    <cms_components component_id="1" publication_state="PUBLISHED" template_filename="htmltext.xml" component_order="1" owning_page_id="1"/>
+    <cms_components component_id="2" publication_state="PUBLISHED" template_filename="image.xml" component_order="2" owning_page_id="1"/>
+    <cms_components component_id="3" publication_state="PUBLISHED" template_filename="text.xml" component_order="1" owning_page_id="2"/>
+    <cms_components component_id="4" publication_state="PUBLISHED" template_filename="textwithimage.xml" component_order="1" owning_page_id="3"/>        
+    <cms_components component_id="5" publication_state="PUBLISHED" template_filename="sliderandmap.xml" component_order="1" owning_page_id="3"/>        
      		     
-    <cms_content_text_medium cms_content_id="1" component_id="text" owning_component="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
-    <cms_content_media cms_content_id="1" component_id="image" owning_component="2" media_item_id="1" />   
-    <cms_content_text_short cms_content_id="1" component_id="text" owning_component="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
-    <cms_content_text_medium cms_content_id="2" component_id="text" owning_component="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
-    <cms_content_media cms_content_id="2" component_id="image" owning_component="4" media_item_id="4" />   
-    <cms_content_slider cms_content_id="1" component_id="slider" owning_component="5" slider_id="1" />   
-    <cms_content_geomap cms_content_id="1" component_id="map" owning_component="5" geomap_id="1" />   
+    <cms_content content_type="mediumtext" cms_content_id="1" item_id="text" owning_component_id="1" text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
+    <cms_content content_type="media" cms_content_id="2" item_id="image" owning_component_id="2" media_item_id="1" />   
+    <cms_content content_type="shorttext" cms_content_id="3" item_id="text" owning_component_id="3" text="{&quot;en&quot;: &quot;Some text&quot;}" />   
+    <cms_content content_type="mediumtext" cms_content_id="4" item_id="text" owning_component_id="4" text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
+    <cms_content content_type="media" cms_content_id="5" item_id="image" owning_component_id="4" media_item_id="4" />   
+    <cms_content content_type="slider" cms_content_id="6" item_id="slider" owning_component_id="5" slider_id="1" />   
+    <cms_content content_type="geomap" cms_content_id="7" item_id="map" owning_component_id="5" geomap_id="1" />   
 
 	<cms_page_sidebar_elements cms_sidebar_element_id="1" owner_page_id="2" sort_order="1" generation_type="AUTOMATIC" content_type="content_type" geomap_id="1"/>
 

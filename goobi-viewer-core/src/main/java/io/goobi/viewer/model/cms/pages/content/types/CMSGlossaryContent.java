@@ -38,11 +38,13 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_content_glossary")
+@DiscriminatorValue("glossary")
 public class CMSGlossaryContent extends CMSContent {
 
     private static final Logger logger = LogManager.getLogger(CMSGlossaryContent.class);

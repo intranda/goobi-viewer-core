@@ -45,6 +45,7 @@ import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -54,9 +55,10 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_content_record_list")
+@DiscriminatorValue("recordlist")
 public class CMSRecordListContent extends CMSContent {
 
-    private static final String COMPONENT_NAME = "recordlist";
+    private static final String COMPONENT_NAME = "searchhitlist";
 
     
     @Column(name = "solr_query")
@@ -91,7 +93,7 @@ public class CMSRecordListContent extends CMSContent {
     
     private SearchFunctionality initSearch() {
         if(this.getOwningComponent() != null) {            
-            SearchFunctionality func = new SearchFunctionality(this.solrQuery, this.getOwningComponent().getOwnerPage().getPageUrl());
+            SearchFunctionality func = new SearchFunctionality(this.solrQuery, this.getOwningComponent().getOwningPage().getPageUrl());
             func.setPageNo(this.getOwningComponent().getListPage());
             return func;
         } else {

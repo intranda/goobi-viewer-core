@@ -24,13 +24,12 @@ package io.goobi.viewer.model.cms.pages.content;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,7 +38,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
 
 /**
  * Interface for all classes containing a specific kind of content for a {@link CMSPage}. 
@@ -49,7 +48,9 @@ import jakarta.persistence.MappedSuperclass;
  *
  */
 @Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Table(name = "cms_content")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "content_type")
 public abstract class CMSContent {
     
     @Id
@@ -61,12 +62,12 @@ public abstract class CMSContent {
      * Mirrors the {@link CMSContentItem#getItemId()} of the enclosing {@link CMSContentItem}
      * Used to identify the persistent content with the configuration from the xml component file
      */
-    @Column(name = "component_id")
+    @Column(name = "item_id")
     private String itemId;
 
     /** Reference to the owning <code>PersistentCMSComponent</code>. */
     @ManyToOne
-    @JoinColumn(name = "owning_component")
+    @JoinColumn(name="owning_component_id")
     private PersistentCMSComponent owningComponent;
     
     public abstract String getBackendComponentName();
@@ -102,7 +103,7 @@ public abstract class CMSContent {
     }
 
     public CMSPage getOwningPage() {
-        return this.getOwningComponent().getOwnerPage();
+        return this.getOwningComponent().getOwningPage();
     }
     
     public abstract CMSContent copy();

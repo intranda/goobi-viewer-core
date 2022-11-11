@@ -163,7 +163,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         CMSPage page = new CMSPage();
         page.setId(1l);
         PersistentCMSComponent component = new PersistentCMSComponent();
-        component.setOwnerPage(page);
+        component.setOwningPage(page);
         CMSCollectionContent contentItem = new CMSCollectionContent();
         contentItem.setSolrField("DC");
         contentItem.setOwningComponent(component);
