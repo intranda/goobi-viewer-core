@@ -15,10 +15,6 @@
 
 	
     <composite:implementation>
-		<c:set scope="request" var="content"
-			val="#{cc.attrs.contentItem.content}" />
-		<c:set scope="request" var="image"
-			val="#{cc.attrs.contentItem.content.mediaItem}" />
 
         <!-- MEDIA FILE -->
         <ui:fragment rendered="#{cc.attrs.contentItem.content.mediaItem != null}">
