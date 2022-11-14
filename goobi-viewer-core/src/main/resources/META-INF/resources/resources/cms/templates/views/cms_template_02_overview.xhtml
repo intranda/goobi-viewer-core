@@ -10,16 +10,11 @@
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
 	<composite:interface>
-		<composite:attribute name="component" required="true" />
+		<composite:attribute name="component" required="true" type="io.goobi.viewer.model.cms.pages.content.CMSComponent" />
+		<composite:attribute name="random" required="false" default="false" type="java.lang.Boolean"/>
+		<composite:attribute name="paged" required="false" default="true" type="java.lang.Boolean" />
 	</composite:interface>
-	
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-		</f:metadata>
-	</ui:define>
+
     
 	<composite:implementation>
 
@@ -45,42 +40,22 @@
                 <!-- OVERVIEW LIST -->
                 <div class="tpl-news-overview__list">
                     <div class="row">
-                        <c:forEach var="subPage" items="#{cc.attrs.component.getContentItem('list01').content.nestedPages}">
+                    <c:set var="nestedPages" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}"/>
+						<!-- FAQ ITEMS -->
+						<ui:repeat var="subPage"
+							value="#{nestedPages}"
+							varStatus="status">
                             <div class="tpl-news-overview__list-item clearfix">
-                                <!-- IMAGE -->
-                                <div class="col-12 col-sm-4">
-                                    <figure class="tpl-news-overview__list-image">
-                                        <a href="#{cmsBean.getUrl(subPage)}">
-	                                        <img src="#{subPage.getContent('image01')}" class="img-fluid" title="#{subPage.getMediaName('image01')}" />
-                                        </a>
-                                        <figcaption></figcaption>
-                                    </figure>
-                                </div>
-    
-                                <!-- PREVIEW -->
-                                <div class="col-12 col-sm-8">
-                                    <div class="tpl-news-overview__list-preview">
-                                        <h1 >#{subPage.title}</h1>
-                                        
-                                        <h:panelGroup rendered="#{subPage.getContent('A0') != ''}">
-                                            <div class="tpl-news-overview__preview-date">
-                                                #{subPage.getContent('A0')}
-                                            </div>
-                                        </h:panelGroup>
-                                        
-                                        <div class="tpl-news-overview__preview-text">
-                                            <h:outputText escape="false" value="#{subPage.getContent('preview01')}"></h:outputText>
-                                            <a href="#{cmsBean.getUrl(subPage)}" class="tpl-news-overview__preview-continue">#{msg.more}</a>
-                                        </div>        
-                                    </div>
-                                </div>
+                            <ui:repeat var="previewComponent" value="#{subPage.components.stream().filter(c -> c.preview).toList()}">
+                            	PREVIEW COMPONENT: #{previewComponent.templateFilename}
+                            </ui:repeat>
                             </div>
-                        </c:forEach>
+                        </ui:repeat>
                         <!-- PAGINATOR -->
 						<viewerComponent:simplePaginator 
 							itemCount="#{cc.attrs.component.getContentItem('list01').content.nestedPagesCount}" 
-							itemActive="#{cmsPage.listPage}"
-							urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
+							itemActive="#{cc.attrs.component.listPage}"
+							urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
                     </div>
                 </div>
 			</div>

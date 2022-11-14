@@ -1519,8 +1519,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return this.previewImage != null;
     }
 
-    public void setPersistentComponents(List<PersistentCMSComponent> persistentComponents) {
-        this.persistentComponents = persistentComponents;
+    public void addPersistentComponent(PersistentCMSComponent persistentComponent) {
+        persistentComponent.setOwningPage(this);
+        this.persistentComponents.add(persistentComponent);
     }
 
     @Override

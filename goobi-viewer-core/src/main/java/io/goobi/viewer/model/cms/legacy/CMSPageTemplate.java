@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +46,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
+import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
 import io.goobi.viewer.model.jsf.JsfComponent;
@@ -210,12 +213,14 @@ public class CMSPageTemplate implements Serializable {
     public CMSComponent createCMSComponent() {
         String jsfLibraryPath = JSF_COMPONENT_PATH;
         Path componentPath = Paths.get(this.htmlFileName);
+        boolean allItemsArePreview = contentItems.stream().allMatch(i -> i.isPreview());
+        CMSComponentScope scope = allItemsArePreview ? CMSComponentScope.PREVIEW : CMSComponentScope.PAGEVIEW;
         if (componentPath.getNameCount() > 1) {
             jsfLibraryPath = componentPath.getParent().toString();
         }
         JsfComponent jsfComponent = new JsfComponent(jsfLibraryPath, componentPath.getFileName().toString());
         CMSComponent component = new CMSComponent(jsfComponent, this.name, this.description, ICONS_PATH + this.iconFileName,
-                this.templateFileName, Collections.emptyMap());
+                this.templateFileName, scope,  Collections.emptyMap());
 
         for (CMSContentItemTemplate itemTemplate : contentItems) {
             CMSContentItem item = itemTemplate.createCMSContentItem();
@@ -223,7 +228,7 @@ public class CMSPageTemplate implements Serializable {
                 component.addContentItem(item);
             }
         }
-
+        
         return component;
     }
 

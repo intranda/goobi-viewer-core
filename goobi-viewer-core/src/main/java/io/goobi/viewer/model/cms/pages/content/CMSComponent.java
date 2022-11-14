@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.el.ELException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 
@@ -38,6 +37,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import io.goobi.viewer.model.security.user.User;
@@ -64,28 +64,29 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     private UIComponent uiComponent;
     private UIComponent backendUiComponent;
+
+    private CMSComponentScope scope = CMSComponentScope.PAGEVIEW;
     
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
-        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), 
+        this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(), template.getScope(),
                 CMSComponent.initializeAttributes(template.getAttributes(), jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())), jpa);
         List<CMSContent> contentData = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList());
         List<CMSContentItem> items = template.getContentItems().stream().map(item -> populateContentItem(item, contentData)).collect(Collectors.toList());
         this.contentItems.addAll(items);
     }
 
-
-    
-    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Map<String, CMSComponentAttribute> attributes) {
-        this(jsfComponent, label, description, iconPath, templateFilename, attributes, Optional.empty());
+    public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes) {
+        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, Optional.empty());
     }
     
-    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, Map<String, CMSComponentAttribute> attributes, Optional<PersistentCMSComponent> jpa) {
+    private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename, CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Optional<PersistentCMSComponent> jpa) {
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
         this.iconPath = iconPath;
         this.templateFilename = templateFilename;
         this.attributes = attributes == null ? Collections.emptyMap() : attributes;
+        this.scope = scope;
         this.persistentComponent = jpa.orElse(null);
     }
     
@@ -192,10 +193,20 @@ public class CMSComponent implements Comparable<CMSComponent> {
             String id = FilenameUtils.getBaseName(this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.uiComponent = new HtmlPanelGroup();
             this.uiComponent.setId(id);
-            UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
-            component.getAttributes().put("component", this);
+            Map<String, Object> attrs = new HashMap<>();
+            attrs.put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
-                component.getAttributes().put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
+                attrs.put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
+            }
+            UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, attrs);
+            
+            CMSPageListContent subPagesContent = this.getContentItems().stream()
+                    .map(i -> i.getContent())
+                    .filter(c -> c instanceof CMSPageListContent)
+                    .map(CMSPageListContent.class::cast)
+                    .findAny().orElse(null);
+            if(subPagesContent != null) {
+                subPagesContent.getNestedPages(this.listPage, null, null)
             }
 
         }
@@ -335,5 +346,34 @@ public class CMSComponent implements Comparable<CMSComponent> {
      */
     public boolean hasContent(String itemId) {
         return this.contentItems.stream().anyMatch(item -> Objects.equals(item.getItemId(), itemId) && !item.isEmpty());
+    }
+    
+    public CMSContent getContent(String itemId) {
+        return Optional.ofNullable(this.getContentItem(itemId)).map(CMSContentItem::getContent).orElse(null);
+    }
+
+
+    /**
+     * Set wether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
+     * @param preview
+     */
+    public void setPreview(boolean preview) {
+        this.scope = preview ? CMSComponentScope.PREVIEW : CMSComponentScope.PAGEVIEW;
+    }
+    
+    /**
+     * wether this component should be displayed when the owning page is embedded in another page, rather than on the owning page itself
+     * @return
+     */
+    public boolean isPreview() {
+        return CMSComponentScope.PREVIEW.equals(this.scope);
+    }
+    
+    public CMSComponentScope getScope() {
+        return scope;
+    }
+    
+    public void setScope(CMSComponentScope scope) {
+        this.scope = scope;
     }
 }

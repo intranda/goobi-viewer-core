@@ -21,12 +21,14 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.TranslatedText;
+public enum CMSComponentScope {
 
-public interface TranslatableCMSContent extends IPolyglott {
-
-    public TranslatedText getText();
-    public void setText(TranslatedText text);
-
+    /**
+     * Component is visible when its owning page is displayed directly
+     */
+    PAGEVIEW,
+    /**
+     * Component is visible in a preview of its owning page embedded within another page
+     */
+    PREVIEW;
 }

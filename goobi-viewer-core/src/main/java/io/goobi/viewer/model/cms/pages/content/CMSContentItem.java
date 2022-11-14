@@ -163,12 +163,10 @@ public class CMSContentItem {
             if(StringUtils.isBlank(this.getJsfComponent().getFilename())) {
                 logger.warn("No backend component available for contentItem {}" + this.getContent().getBackendComponentName());
             } else {                
-                UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.emptyMap());
+                UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.singletonMap("contentItem", this));
                 if(component == null) {
                     throw new PresentationException("Error building jsf-component from " + this.getJsfComponent() + ". Please check that the file exists and is a valid jsf component file.");
-                } else {                    
-                    component.getAttributes().put("contentItem", this);
-                }
+                } 
             }
         }
         return uiComponent;
