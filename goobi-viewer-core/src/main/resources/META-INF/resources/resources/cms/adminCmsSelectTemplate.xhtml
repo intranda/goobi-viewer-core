@@ -23,24 +23,48 @@
 				<div class="admin__content-inner-content">
 					<h:form id="cmsSelectTemplateForm" prependId="false">
 
-						<div
-							class="admin__boxed-entry row no-gutters -std-bottom-pad -w100">
-							<h:commandLink action="pretty:adminCmsNewPage"
-								value="#{msg.cms__create_empty_page}"
-								styleClass="btn btn--full">
-								<f:setPropertyActionListener value="#{false}"
-									target="#{cmsBean.editMode}" />
-							</h:commandLink>
+						<div class="cms-create-page__choose-template-wrapper">
+						
+							<div class="cms-create-page__choose-template-box">
+								<div class="cms-create-page__choose-template-box-start">
+									<img src="#{request.contextPath}/resources/images/backend/empty_template.jpg" class="img-responsive" alt="Choose empty template" />
+								</div>
+
+								<div class="cms-create-page__choose-template-box-end">
+									<h2>#{msg.cms__create_empty_page_title}</h2>
+									<p>#{msg.lorem_ipsum__short}</p>
+									<h:commandLink action="pretty:adminCmsNewPage"
+										value="#{msg.cms__create_empty_page_button}"
+										styleClass="btn btn--full">
+										<f:setPropertyActionListener value="#{false}"
+											target="#{cmsBean.editMode}" />
+									</h:commandLink>
+								</div>
 							</div>
-						<div
-							class="admin__boxed-entry row no-gutters -std-bottom-pad -w100">
-							<h:commandLink action="pretty:adminCmsNewTemplate"
-								value="#{msg.cms__create_page_template}"
-								styleClass="btn btn--full">
-								<f:setPropertyActionListener value="#{false}"
-									target="#{cmsBean.editMode}" />
-							</h:commandLink>
+
+							<div
+								class="cms-create-page__choose-template-box">
+								
+								<div class="cms-create-page__choose-template-box-start">
+									<img src="#{request.contextPath}/resources/images/backend/predefined_template.jpg" class="img-responsive" alt="Choose prefined template" />
+								</div>
+
+								<div class="cms-create-page__choose-template-box-end">
+									<h2>#{msg.cms__create_page_template_title}</h2>
+									<p>#{msg.lorem_ipsum__short}</p>
+								
+									<h:commandLink action="pretty:adminCmsNewTemplate"
+										value="#{msg.cms__create_page_template_button}"
+										styleClass="btn btn--full">
+										<f:setPropertyActionListener value="#{false}"
+											target="#{cmsBean.editMode}" />
+									</h:commandLink>
+								</div>
+								
+							</div>
+						
 						</div>
+
 
 						<div id="cmsSelectTemplateWrapper"
 							class="cms-select-template__wrapper admin__entry-list">
@@ -85,15 +109,15 @@
 							</ui:repeat>
 
 							<!-- TODO INLINE CSS -->
-							<ui:fragment rendered="#{userBean.user.superuser}">
-								<div
-									class="row no-gutters justify-content-end admin__final-actions w-100"
-									style="margin-top: 2rem;">
-									<a
-										href="#{navigationHelper.applicationUrl}admin/cms/pages/templates/manage/"
-										class="-bluelink">#{msg.admin__cms_templates_manage_label}</a>
-								</div>
-							</ui:fragment>
+<!-- 							<ui:fragment rendered="#{userBean.user.superuser}"> -->
+<!-- 								<div -->
+<!-- 									class="row no-gutters justify-content-end admin__final-actions w-100" -->
+<!-- 									style="margin-top: 2rem;"> -->
+<!-- 									<a -->
+<!-- 										href="#{navigationHelper.applicationUrl}admin/cms/pages/templates/manage/" -->
+<!-- 										class="-bluelink">#{msg.admin__cms_templates_manage_label}</a> -->
+<!-- 								</div> -->
+<!-- 							</ui:fragment> -->
 						</div>
 					</h:form>
 				</div>
