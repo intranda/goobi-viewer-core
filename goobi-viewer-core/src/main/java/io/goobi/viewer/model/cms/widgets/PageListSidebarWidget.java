@@ -57,6 +57,7 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Cloning constructor
+     * 
      * @param o
      */
     public PageListSidebarWidget(PageListSidebarWidget o) {
@@ -74,6 +75,7 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
 
     /**
      * set the list of ids of listed {@link CMSPage CMSPages}
+     * 
      * @param pageIds
      */
     public void setPageIds(List<Long> pageIds) {

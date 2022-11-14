@@ -24,8 +24,8 @@ package io.goobi.viewer.model.cms.media;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 
 /**
- * Any object which may directly contain a {@link io.goobi.viewer.model.cms.media.CMSMediaItem}. Only classes implementing this interface may be given a
- * mediaItem in the selectMedia dialog, since the dialog uses
+ * Any object which may directly contain a {@link io.goobi.viewer.model.cms.media.CMSMediaItem}. Only classes implementing this interface may be given
+ * a mediaItem in the selectMedia dialog, since the dialog uses
  * {@link io.goobi.viewer.managedbeans.CmsBean#fillSelectedMediaHolder(CategorizableTranslatedSelectable)} to apply the selected MediaItem
  *
  * @author florian

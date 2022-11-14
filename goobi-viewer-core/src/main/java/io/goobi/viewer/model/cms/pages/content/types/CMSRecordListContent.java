@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,13 +42,9 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -60,27 +55,25 @@ public class CMSRecordListContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "searchhitlist";
 
-    
     @Column(name = "solr_query")
     private String solrQuery = "";
     @Column(name = "sort_field")
-    private String sortField  = "";
+    private String sortField = "";
     @Column(name = "grouping_field")
     private String groupingField = "";
     @Column(name = "include_structure_elements")
     private boolean includeStructureElements = false;
     @Column(name = "elements_per_page")
     private int elementsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
-    
 
     @Transient
     private final SearchFunctionality search;
-    
+
     public CMSRecordListContent() {
         super();
         this.search = initSearch();
     }
-    
+
     private CMSRecordListContent(CMSRecordListContent orig) {
         super(orig);
         this.solrQuery = orig.solrQuery;
@@ -90,17 +83,16 @@ public class CMSRecordListContent extends CMSContent {
         this.elementsPerPage = orig.elementsPerPage;
         this.search = initSearch();
     }
-    
+
     private SearchFunctionality initSearch() {
-        if(this.getOwningComponent() != null) {            
+        if (this.getOwningComponent() != null) {
             SearchFunctionality func = new SearchFunctionality(this.solrQuery, this.getOwningComponent().getOwningPage().getPageUrl());
             func.setPageNo(this.getOwningComponent().getListPage());
             return func;
-        } else {
-            return new SearchFunctionality(this.solrQuery, "");
         }
+        return new SearchFunctionality(this.solrQuery, "");
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
@@ -109,47 +101,47 @@ public class CMSRecordListContent extends CMSContent {
     public String getSolrQuery() {
         return solrQuery;
     }
-    
+
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
     }
-    
+
     public String getGroupingField() {
         return groupingField;
     }
-    
+
     public void setGroupingField(String groupingField) {
         this.groupingField = groupingField;
     }
-    
+
     public String getSortField() {
         return sortField;
     }
-    
+
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
-    
+
     public boolean isIncludeStructureElements() {
         return includeStructureElements;
     }
-    
+
     public void setIncludeStructureElements(boolean includeStructureElements) {
         this.includeStructureElements = includeStructureElements;
     }
-    
+
     public SearchFunctionality getSearch() {
         return search;
     }
-    
+
     public int getElementsPerPage() {
         return elementsPerPage;
     }
-    
+
     public void setElementsPerPage(int elementsPerPage) {
         this.elementsPerPage = elementsPerPage;
     }
-    
+
     @Override
     public CMSContent copy() {
         return new CMSRecordListContent(this);
@@ -163,29 +155,30 @@ public class CMSRecordListContent extends CMSContent {
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         try {
-        SearchBean searchBean = BeanUtils.getSearchBean();
-        Search search = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
-        if(StringUtils.isNotBlank(this.getSortField())) {
-            search.setSortString(this.getSortField());
-            searchBean.setSortString(this.getSortField());
-        } else if (StringUtils.isNotBlank(this.search.getSortString()) && !this.search.getSortString().equals("-")) {
-            search.setSortString(this.search.getSortString());
-            searchBean.setSortString(this.search.getSortString());
-        }
-        //NOTE: Cannot sort by multivalued fields like DC.
-        if (StringUtils.isNotBlank(this.getGroupingField())) {
-            String sortString = search.getSortString() == null ? "" : search.getSortString().replace("-", "");
-            sortString = this.getGroupingField() + ";" + sortString;
-            search.setSortString(sortString);
-        }
-        SearchFacets facets = searchBean.getFacets();
-        search.setPage(searchBean.getCurrentPage());
-        searchBean.setHitsPerPage(this.getElementsPerPage());
-        searchBean.setLastUsedSearchPage();
-            search.execute(facets, null, searchBean.getHitsPerPage(), BeanUtils.getLocale(), false, this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        searchBean.setCurrentSearch(search);
-        searchBean.setHitsPerPageSetterCalled(false);
-        return null;
+            SearchBean searchBean = BeanUtils.getSearchBean();
+            Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);
+            if (StringUtils.isNotBlank(this.getSortField())) {
+                s.setSortString(this.getSortField());
+                searchBean.setSortString(this.getSortField());
+            } else if (StringUtils.isNotBlank(this.search.getSortString()) && !this.search.getSortString().equals("-")) {
+                s.setSortString(this.search.getSortString());
+                searchBean.setSortString(this.search.getSortString());
+            }
+            //NOTE: Cannot sort by multivalued fields like DC.
+            if (StringUtils.isNotBlank(this.getGroupingField())) {
+                String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
+                sortString = this.getGroupingField() + ";" + sortString;
+                s.setSortString(sortString);
+            }
+            SearchFacets facets = searchBean.getFacets();
+            s.setPage(searchBean.getCurrentPage());
+            searchBean.setHitsPerPage(this.getElementsPerPage());
+            searchBean.setLastUsedSearchPage();
+            s.execute(facets, null, searchBean.getHitsPerPage(), BeanUtils.getLocale(), false,
+                    this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+            searchBean.setCurrentSearch(s);
+            searchBean.setHitsPerPageSetterCalled(false);
+            return null;
         } catch (PresentationException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
             throw new PresentationException("Error initializing search hit list on page load", e);
         }
@@ -195,15 +188,16 @@ public class CMSRecordListContent extends CMSContent {
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     /**
      * Alias for {@link #getSearch()}. Used in legacy templates
+     * 
      * @return
      */
     public Functionality getFunctionality() {
         return getSearch();
     }
-    
+
     @Override
     public boolean isEmpty() {
         return false;

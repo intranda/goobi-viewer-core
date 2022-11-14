@@ -33,13 +33,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.translations.TranslatedText;
-import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
@@ -49,20 +44,19 @@ import jakarta.persistence.Table;
 public class CMSSliderContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "slider";
-   
-    
+
     @JoinColumn(name = "slider_id")
     private CMSSlider slider;
-    
+
     public CMSSliderContent() {
         super();
     }
-    
+
     private CMSSliderContent(CMSSliderContent orig) {
         super(orig);
         this.slider = orig.slider;
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
@@ -71,19 +65,19 @@ public class CMSSliderContent extends CMSContent {
     public CMSSlider getSlider() {
         return slider;
     }
-    
+
     public void setSlider(CMSSlider slider) {
         this.slider = slider;
     }
-    
+
     public Long getSliderId() {
         return Optional.ofNullable(this.slider).map(CMSSlider::getId).orElse(null);
     }
-    
+
     public void setSliderId(Long id) throws DAOException {
         setSlider(DataManager.getInstance().getDao().getSlider(id));
     }
-    
+
     @Override
     public CMSContent copy() {
         return new CMSSliderContent(this);
@@ -103,7 +97,7 @@ public class CMSSliderContent extends CMSContent {
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     @Override
     public boolean isEmpty() {
         return slider == null;

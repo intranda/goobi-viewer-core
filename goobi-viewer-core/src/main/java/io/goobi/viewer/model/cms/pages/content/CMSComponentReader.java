@@ -112,7 +112,7 @@ public class CMSComponentReader {
         return new Option(value, label);
     }
     
-    private CMSContent createContentFromClassName(String className)
+    private static CMSContent createContentFromClassName(String className)
             throws InstantiationException {
         try {            
             Class<?> clazz = Class.forName(className);
@@ -120,9 +120,8 @@ public class CMSComponentReader {
             Object object = ctor.newInstance();
             if(object instanceof CMSContent) {            
                 return (CMSContent)object;
-            } else {
-                throw new InstantiationException("Class '" + className + "' is not of type 'CMSContent'");
             }
+            throw new InstantiationException("Class '" + className + "' is not of type 'CMSContent'");
         } catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NullPointerException e) {
             throw new InstantiationException(e.toString());
         }

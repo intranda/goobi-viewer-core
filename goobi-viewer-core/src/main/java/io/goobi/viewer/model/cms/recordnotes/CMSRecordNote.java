@@ -47,8 +47,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "cms_record_notes")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="note_type",
-discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "note_type",
+        discriminatorType = DiscriminatorType.STRING)
 public abstract class CMSRecordNote {
 
     private static final Logger logger = LogManager.getLogger(CMSRecordNote.class);
@@ -78,20 +78,20 @@ public abstract class CMSRecordNote {
     @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
 
-    public CMSRecordNote() {
+    protected CMSRecordNote() {
     }
 
     /**
      * @param pi
      */
-    public CMSRecordNote(String pi) {
+    protected CMSRecordNote(String pi) {
         this();
     }
 
     /**
      * @param o
      */
-    public CMSRecordNote(CMSRecordNote source) {
+    protected CMSRecordNote(CMSRecordNote source) {
         this.id = source.id;
         this.noteTitle = new TranslatedText(source.noteTitle);
         this.noteText = new TranslatedText(source.noteText);
@@ -172,7 +172,9 @@ public abstract class CMSRecordNote {
     }
 
     public abstract boolean isSingleRecordNote();
+
     public abstract boolean isMultiRecordNote();
+
     public abstract boolean matchesFilter(String filter);
 
 }

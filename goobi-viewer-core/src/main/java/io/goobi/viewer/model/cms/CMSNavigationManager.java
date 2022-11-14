@@ -231,15 +231,13 @@ public class CMSNavigationManager {
         String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
         // logger.trace("main theme: {}", mainTheme);
         // logger.trace("associated theme: {}", getAssociatedTheme());
-        List<CMSNavigationItem> daoList = DataManager.getInstance()
+        return DataManager.getInstance()
                 .getDao()
                 .getAllTopCMSNavigationItems()
                 .stream()
                 .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme()))
                         || getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
                 .collect(Collectors.toList());
-        // logger.trace("dao list: {}", daoList.size());
-        return daoList;
     }
 
     /**

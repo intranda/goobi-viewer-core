@@ -30,11 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.persistence.annotations.PrivateOwned;
-
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.converter.StringListConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -44,19 +41,13 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -69,68 +60,71 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     private static final int DEFAULT_IMAGES_PER_VIEW = 10;
     private static final int DEFAULT_IMPORTANT_IMAGES_PER_VIEW = 0;
 
-    
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cms_content_imagelist_categories", joinColumns = @JoinColumn(name = "content_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "cms_content_imagelist_categories", joinColumns = @JoinColumn(name = "content_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
-    
-    @Column(name="images_per_view")
+
+    @Column(name = "images_per_view")
     private int imagesPerView;
-    @Column(name="important_images_per_view")
+    @Column(name = "important_images_per_view")
     private int importantImagesPerView;
-    
-    @Transient List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
-    
+
+    @Transient
+    List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
+
     public CMSImageListContent() {
         super();
         this.categories = new ArrayList<>();
         imagesPerView = DEFAULT_IMAGES_PER_VIEW;
         importantImagesPerView = DEFAULT_IMPORTANT_IMAGES_PER_VIEW;
     }
-    
+
     private CMSImageListContent(CMSImageListContent orig) {
         super(orig);
         this.categories = orig.categories;
         this.imagesPerView = orig.imagesPerView;
         this.importantImagesPerView = orig.importantImagesPerView;
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
     }
-    
+
     public List<CMSCategory> getCategories() {
         return categories;
     }
 
     public List<CheckboxSelectable<CMSCategory>> getSelectableCategories() throws DAOException {
-        if(this.selectableCategories == null) {
+        if (this.selectableCategories == null) {
             createSelectableCategories();
         }
         return this.selectableCategories;
-        
+
     }
 
     private void createSelectableCategories() throws DAOException {
-        this.selectableCategories = DataManager.getInstance().getDao().getAllCategories()
-            .stream()
-           .map(cat -> new CheckboxSelectable<>(this.categories, cat, c -> c.getName()))
-           .collect(Collectors.toList());
+        this.selectableCategories = DataManager.getInstance()
+                .getDao()
+                .getAllCategories()
+                .stream()
+                .map(cat -> new CheckboxSelectable<>(this.categories, cat, c -> c.getName()))
+                .collect(Collectors.toList());
     }
-    
+
     public int getImagesPerView() {
         return imagesPerView;
     }
-    
+
     public void setImagesPerView(int imagesPerView) {
         this.imagesPerView = imagesPerView;
     }
-    
+
     public int getImportantImagesPerView() {
         return importantImagesPerView;
     }
-    
+
     public void setImportantImagesPerView(int importantImagesPerView) {
         this.importantImagesPerView = importantImagesPerView;
     }
@@ -146,20 +140,18 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
      */
     public String getTileGridUrl() throws IllegalRequestException {
 
-            String tags = this.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
+        String tags = this.getCategories().stream().map(CMSCategory::getName).collect(Collectors.joining(","));
 
-            String url = DataManager.getInstance()
-                    .getRestApiManager()
-                    .getDataApiManager()
-                    .map(urls -> urls.path(CMS_MEDIA)
-                            .query("tags", tags)
-                            .query("max", this.getImagesPerView())
-                            .query("prioritySlots", this.getImportantImagesPerView())
-                            .query("random", "true")
-                            .build())
-                    .orElse(getLegacyTileGridUrl());
-
-            return url;
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(CMS_MEDIA)
+                        .query("tags", tags)
+                        .query("max", this.getImagesPerView())
+                        .query("prioritySlots", this.getImportantImagesPerView())
+                        .query("random", "true")
+                        .build())
+                .orElse(getLegacyTileGridUrl());
     }
 
     /**
@@ -196,29 +188,27 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
 
     @Override
     public boolean addCategory(CMSCategory category) {
-        if(!this.categories.contains(category)) {            
+        if (!this.categories.contains(category)) {
             this.selectableCategories = null; //reset selectable categories
             return this.categories.add(category);
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
     public boolean removeCategory(CMSCategory category) {
-        if(this.categories.contains(category)) {            
+        if (this.categories.contains(category)) {
             this.selectableCategories = null; //reset selectable categories
             return this.categories.remove(category);
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     @Override
     public boolean isEmpty() {
         return false;

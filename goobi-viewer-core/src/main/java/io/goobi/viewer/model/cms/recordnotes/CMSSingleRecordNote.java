@@ -53,7 +53,7 @@ public class CMSSingleRecordNote extends CMSRecordNote {
     /**
      * Title of the record this note relates to; used for searching in notes. This is mulitlangual since record titles may be multilangual too
      */
-    @Column(name = "record_title", columnDefinition = "varchar(4096)", nullable= true )
+    @Column(name = "record_title", columnDefinition = "varchar(4096)", nullable = true)
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText recordTitle = new TranslatedText();
 
@@ -73,9 +73,9 @@ public class CMSSingleRecordNote extends CMSRecordNote {
      */
     public CMSSingleRecordNote(CMSRecordNote source) {
         super(source);
-        if(source instanceof CMSSingleRecordNote) {
-            this.recordPi = ((CMSSingleRecordNote)source).recordPi;
-            this.recordTitle = new TranslatedText(((CMSSingleRecordNote)source).recordTitle);
+        if (source instanceof CMSSingleRecordNote) {
+            this.recordPi = ((CMSSingleRecordNote) source).recordPi;
+            this.recordTitle = new TranslatedText(((CMSSingleRecordNote) source).recordTitle);
         }
     }
 
@@ -125,13 +125,18 @@ public class CMSSingleRecordNote extends CMSRecordNote {
 
     @Override
     public boolean matchesFilter(String filter) {
-        if(StringUtils.isNotBlank(filter)) {
-            return getNoteTitle().getValues().stream().map(pair -> pair.getValue()).anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase())) ||
-                  getRecordPi().toLowerCase().contains(filter.toLowerCase()) ||
-                  getRecordTitle().getValues().stream().map(pair -> pair.getValue()).anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
-        } else {
-            return true;
+        if (StringUtils.isNotBlank(filter)) {
+            return getNoteTitle().getValues()
+                    .stream()
+                    .map(pair -> pair.getValue())
+                    .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase())) ||
+                    getRecordPi().toLowerCase().contains(filter.toLowerCase()) ||
+                    getRecordTitle().getValues()
+                            .stream()
+                            .map(pair -> pair.getValue())
+                            .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
         }
+        return true;
     }
 
 }

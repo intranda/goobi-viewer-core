@@ -118,9 +118,8 @@ public class PageList implements Iterable<String> {
     public boolean equals(Object obj) {
         if (obj != null) {
             return this.toString().equals(obj.toString());
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -165,9 +164,8 @@ public class PageList implements Iterable<String> {
     public String getPage(int index) {
         if (pages.size() > index) {
             return pages.get(index);
-        } else {
-            return "";
         }
+        return "";
     }
 
     /**
@@ -195,16 +193,16 @@ public class PageList implements Iterable<String> {
      */
     public SearchInterface getSearch(int pageIndex) throws NumberFormatException, DAOException {
         SearchInterface search = null;
-//        String page = getPage(pageIndex);
-//        if (isCMSPage(page)) {
-//            CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(Long.parseLong(getPage()));
-//            if (cmsPage != null) {
-//                search = cmsPage.getSearch();
-//            }
-//        }
-//        if (search == null) {
-//            search = BeanUtils.getSearchBean();
-//        }
+        //        String page = getPage(pageIndex);
+        //        if (isCMSPage(page)) {
+        //            CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(Long.parseLong(getPage()));
+        //            if (cmsPage != null) {
+        //                search = cmsPage.getSearch();
+        //            }
+        //        }
+        //        if (search == null) {
+        //            search = BeanUtils.getSearchBean();
+        //        }
         return search;
     }
 
@@ -236,7 +234,7 @@ public class PageList implements Iterable<String> {
      *
      * @return true if the given string is a number, i.e. it is the identifier of a cms page
      */
-    private boolean isCMSPage(String page) {
+    private static boolean isCMSPage(String page) {
         return page.matches("\\d+");
     }
 

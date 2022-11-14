@@ -37,7 +37,7 @@ public class CMSComponentAttribute {
     public CMSComponentAttribute(CMSComponentAttribute orig, String value) {
         this(orig.name, orig.label, orig.type, orig.display, orig.booleanValue, orig.options, value);
     }
-    
+
     public CMSComponentAttribute(String name, String label, String type, boolean display, boolean booleanValue, List<Option> options, String value) {
         super();
         this.name = name;
@@ -97,7 +97,7 @@ public class CMSComponentAttribute {
     public boolean getBooleanValue() {
         return Boolean.parseBoolean(this.value);
     }
-    
+
     public boolean isDisplay() {
         return display;
     }
@@ -105,6 +105,5 @@ public class CMSComponentAttribute {
     public boolean isBooleanValue() {
         return booleanValue;
     }
-    
 
 }

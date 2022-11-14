@@ -30,7 +30,7 @@ public interface CMSCategoryHolder {
     public List<CMSCategory> getCategories();
 
     public boolean addCategory(CMSCategory category);
-    
+
     public boolean removeCategory(CMSCategory category);
-    
+
 }

@@ -64,6 +64,7 @@ public class CMSCollectionTranslation extends Translation {
 
     /**
      * Cloning constructor
+     * 
      * @param tr
      */
     public CMSCollectionTranslation(CMSCollectionTranslation tr, CMSCollection owner) {

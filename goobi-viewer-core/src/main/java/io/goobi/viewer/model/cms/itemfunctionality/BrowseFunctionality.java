@@ -87,7 +87,7 @@ public class BrowseFunctionality implements Functionality {
      * @param value
      */
     public void setFilter(String field, String value) {
-        if(StringUtils.isNoneBlank(field, value)) {
+        if (StringUtils.isNoneBlank(field, value)) {
             bean.setFilterQuery(field + ":" + value);
         } else {
             bean.setFilterQuery("");

@@ -48,45 +48,44 @@ import jakarta.persistence.Transient;
 public class CMSBrowseContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "browse";
-  
-     @Column(name = "solr_field")
-     private String solrField;
-    
+
+    @Column(name = "solr_field")
+    private String solrField;
+
     @Transient
     private final BrowseFunctionality browse;
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
     }
-    
+
     public CMSBrowseContent() {
         super();
         this.browse = this.initBrowse();
     }
-    
+
     private CMSBrowseContent(CMSBrowseContent orig) {
         super(orig);
         this.solrField = orig.solrField;
         this.browse = this.initBrowse();
     }
-    
+
     public String getSolrField() {
         return solrField;
     }
-    
+
     public void setSolrField(String solrField) {
         this.solrField = solrField;
     }
-    
+
     private BrowseFunctionality initBrowse() {
-        if(getOwningComponent() != null) {            
-            BrowseFunctionality b  = new BrowseFunctionality(this.solrField);
+        if (getOwningComponent() != null) {
+            BrowseFunctionality b = new BrowseFunctionality(this.solrField);
             b.setPageNo(this.getOwningComponent().getListPage());
             return b;
-        } else {
-            return new BrowseFunctionality(this.solrField);
         }
+        return new BrowseFunctionality(this.solrField);
     }
 
     @Override
@@ -117,7 +116,7 @@ public class CMSBrowseContent extends CMSContent {
         } catch (RedirectException e) {
             return "pretty:cmsBrowse3";
         } catch (IndexUnreachableException e) {
-           throw new PresentationException("Error initializing browsing on page load", e);
+            throw new PresentationException("Error initializing browsing on page load", e);
         }
         return "";
     }
@@ -126,13 +125,14 @@ public class CMSBrowseContent extends CMSContent {
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     public BrowseFunctionality getBrowse() {
         return browse;
     }
-    
+
     /**
      * Alias for {@link #getBrowse()}. Used in legacy templates
+     * 
      * @return
      */
     public Functionality getFunctionality() {

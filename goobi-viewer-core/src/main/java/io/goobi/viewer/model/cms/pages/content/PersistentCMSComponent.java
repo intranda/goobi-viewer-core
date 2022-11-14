@@ -66,60 +66,60 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "component_id")
     private Long id;
-    
-    @OneToMany(cascade=CascadeType.ALL, orphanRemoval=true, mappedBy="owningComponent")
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owningComponent")
     @PrivateOwned
     @CascadeOnDelete
     private final List<CMSContent> contentItems = new ArrayList<>();
-    
-    @Column(name="publication_state")
+
+    @Column(name = "publication_state")
     @Enumerated(EnumType.STRING)
     private ContentItemPublicationState publicationState = ContentItemPublicationState.ADMINISTRATOR;
-    
-    @Column(name="template_filename")
+
+    @Column(name = "template_filename")
     private String templateFilename;
-    
-    @Column(name="component_order")
+
+    @Column(name = "component_order")
     private Integer order = 0;
-    
+
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
-    @JoinColumn(name="owning_page_id", nullable=true)
+    @JoinColumn(name = "owning_page_id", nullable = true)
     private CMSPage owningPage;
-    
+
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
-    @JoinColumn(name="owning_template_id", nullable=true)
+    @JoinColumn(name = "owning_template_id", nullable = true)
     private CMSPageTemplate owningTemplate;
-    
+
     @ElementCollection
-    @JoinTable(name="cms_component_attribute_map", joinColumns=@JoinColumn(name="attribute_id"))
-    @MapKeyColumn (name="component_id")
-    @Column(name="cms_component_attributes")
-    Map<String,String> attributes = new HashMap<>();
-    
+    @JoinTable(name = "cms_component_attribute_map", joinColumns = @JoinColumn(name = "attribute_id"))
+    @MapKeyColumn(name = "component_id")
+    @Column(name = "cms_component_attributes")
+    Map<String, String> attributes = new HashMap<>();
+
     /**
-     * If the content of this component is spread out over several pages of views, as in search result lists for example, 
-     * this number indicates the current page the user is seeing
+     * If the content of this component is spread out over several pages of views, as in search result lists for example, this number indicates the
+     * current page the user is seeing
      */
     @Transient
     private int listPage = 1;
-    
+
     /**
      * JPA contrutor
      */
     public PersistentCMSComponent() {
     }
-    
+
     public PersistentCMSComponent(CMSComponent component) {
         this.order = component.getOrder();
         this.publicationState = component.getPublicationState();
         this.templateFilename = component.getTemplateFilename();
-        this.contentItems.addAll(component.getContentItems().stream().map(CMSContentItem::getContent).map(CMSContent::copy).collect(Collectors.toList()));
+        this.contentItems
+                .addAll(component.getContentItems().stream().map(CMSContentItem::getContent).map(CMSContent::copy).collect(Collectors.toList()));
         this.contentItems.forEach(c -> c.setOwningComponent(this));
     }
-    
-    
+
     public PersistentCMSComponent(CMSComponent template, Collection<CMSContent> contentData) {
         this.order = template.getOrder();
         this.publicationState = template.getPublicationState();
@@ -127,7 +127,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
         this.contentItems.addAll(contentData.stream().map(CMSContent::copy).collect(Collectors.toList()));
         this.contentItems.forEach(c -> c.setOwningComponent(this));
     }
-    
+
     public PersistentCMSComponent(PersistentCMSComponent orig) {
         this.id = orig.id;
         this.order = orig.getOrder();
@@ -144,7 +144,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -183,15 +183,15 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public List<CMSContent> getContentItems() {
         return contentItems;
     }
-    
+
     public CMSPage getOwningPage() {
         return owningPage;
     }
-    
+
     public void setOwningPage(CMSPage ownerPage) {
         this.owningPage = ownerPage;
     }
-    
+
     public void setOwningTemplate(CMSPageTemplate template) {
         this.owningTemplate = template;
     }
@@ -199,11 +199,11 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public CMSPageTemplate getOwningTemplate() {
         return owningTemplate;
     }
-    
+
     public String getTemplateFilename() {
         return templateFilename;
     }
-    
+
     public void setTemplateFilename(String templateFilename) {
         this.templateFilename = templateFilename;
     }
@@ -211,7 +211,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     @Override
     public boolean isComplete(Locale locale) {
         for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
-            if(!cmsContent.isComplete(locale)) {
+            if (!cmsContent.isComplete(locale)) {
                 return false;
             }
         }
@@ -221,7 +221,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     @Override
     public boolean isValid(Locale locale) {
         for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
-            if(!cmsContent.isValid(locale)) {
+            if (!cmsContent.isValid(locale)) {
                 return false;
             }
         }
@@ -231,7 +231,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     @Override
     public boolean isEmpty(Locale locale) {
         for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
-            if(!cmsContent.isEmpty(locale)) {
+            if (!cmsContent.isEmpty(locale)) {
                 return false;
             }
         }
@@ -240,11 +240,10 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
 
     @Override
     public Locale getSelectedLocale() {
-        if(getTranslatableContentItems().isEmpty()) {
+        if (getTranslatableContentItems().isEmpty()) {
             return BeanUtils.getDefaultLocale();
-        } else {
-            return getTranslatableContentItems().get(0).getSelectedLocale();
         }
+        return getTranslatableContentItems().get(0).getSelectedLocale();
     }
 
     @Override
@@ -256,20 +255,22 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
 
     /**
      * set the {@link #listPage}
+     * 
      * @param listPage
      */
     public void setListPage(int listPage) {
         this.listPage = listPage;
     }
-    
+
     /**
      * get the {@link #listPage}
+     * 
      * @return
      */
     public int getListPage() {
         return listPage;
     }
-    
+
     public List<TranslatableCMSContent> getTranslatableContentItems() {
         return this.contentItems.stream()
                 .filter(CMSContent::isTranslatable)
@@ -281,23 +282,23 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public int compareTo(PersistentCMSComponent o) {
         return Integer.compare(this.order, o.order);
     }
-    
+
     public void setAttribute(String key, String value) {
-        if(StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value)) {
             this.attributes.remove(key);
-        } else {            
+        } else {
             this.attributes.put(key, value);
         }
     }
-    
+
     public String getAttribute(String key) {
         return this.attributes.get(key);
     }
-    
+
     public Map<String, String> getAttributes() {
         return attributes;
     }
-    
+
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     }

@@ -41,63 +41,63 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
- * Interface for all classes containing a specific kind of content for a {@link CMSPage}. 
- * Each CMSContent on a CMSPage is wrapped in a {@link CMSContentItem} which itself is contained in
- * a {@link CMSComponent}.
+ * Interface for all classes containing a specific kind of content for a {@link CMSPage}. Each CMSContent on a CMSPage is wrapped in a
+ * {@link CMSContentItem} which itself is contained in a {@link CMSComponent}.
+ * 
  * @author florian
  *
  */
 @Entity
 @Table(name = "cms_content")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "content_type")
 public abstract class CMSContent {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_content_id")
     private Long id;
-    
+
     /**
-     * Mirrors the {@link CMSContentItem#getItemId()} of the enclosing {@link CMSContentItem}
-     * Used to identify the persistent content with the configuration from the xml component file
+     * Mirrors the {@link CMSContentItem#getItemId()} of the enclosing {@link CMSContentItem} Used to identify the persistent content with the
+     * configuration from the xml component file
      */
     @Column(name = "item_id")
     private String itemId;
 
     /** Reference to the owning <code>PersistentCMSComponent</code>. */
     @ManyToOne
-    @JoinColumn(name="owning_component_id")
+    @JoinColumn(name = "owning_component_id")
     private PersistentCMSComponent owningComponent;
-    
+
     public abstract String getBackendComponentName();
-    
-    public CMSContent() {
+
+    protected CMSContent() {
         //empty
     }
-    
+
     protected CMSContent(CMSContent orig) {
         this.setId(orig.getId());
         this.itemId = orig.itemId;
         this.owningComponent = orig.owningComponent;
     }
-    
+
     public String getBackendComponentLibrary() {
         return "cms/backend/components/content";
     }
-    
+
     public String getItemId() {
         return itemId;
     }
-    
+
     public void setItemId(String itemId) {
         this.itemId = itemId;
     }
-    
+
     public PersistentCMSComponent getOwningComponent() {
         return owningComponent;
     }
-    
+
     public void setOwningComponent(PersistentCMSComponent owningComponent) {
         this.owningComponent = owningComponent;
     }
@@ -105,7 +105,7 @@ public abstract class CMSContent {
     public CMSPage getOwningPage() {
         return this.getOwningComponent().getOwningPage();
     }
-    
+
     public abstract CMSContent copy();
 
     /**
@@ -118,41 +118,42 @@ public abstract class CMSContent {
      * @return Exported Files
      * @should write files correctly
      * @throws java.io.IOException if any.
-     * @throws ViewerConfigurationException 
+     * @throws ViewerConfigurationException
      */
     public abstract List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException;
-    
+
     /**
      * Method to call when loading a CMSPage including this content item
+     * 
      * @param cmsBean
      * @return a jsf action response
-     * @throws PresentationException 
+     * @throws PresentationException
      */
     public abstract String handlePageLoad(boolean resetResults) throws PresentationException;
-    
+
     public abstract boolean isEmpty();
-    
+
     boolean isTranslatable() {
         return this instanceof TranslatableCMSContent;
     }
-    
+
     public Long getId() {
         return this.id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
      * 
-     * @return a string representing this contentItem for use in frontend-components. May be an empty string for
-     * content with no clear String representation
+     * @return a string representing this contentItem for use in frontend-components. May be an empty string for content with no clear String
+     *         representation
      */
     public abstract String getData(Integer width, Integer height);
-    
+
     public String getData() {
-        return this.getData((Integer)null, (Integer)null);
+        return this.getData((Integer) null, (Integer) null);
     }
 
 }

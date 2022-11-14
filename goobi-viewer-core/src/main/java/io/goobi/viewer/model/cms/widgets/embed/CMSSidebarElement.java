@@ -48,6 +48,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 /**
  * <p>
  * CMSSidebarElement class.
@@ -62,7 +63,7 @@ import jakarta.persistence.Table;
 public class CMSSidebarElement {
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarElement.class);
-    
+
     public static final String WIDGET_TYPE_DEFAULT = "DEFAULT";
     public static final String WIDGET_TYPE_AUTOMATIC = "AUTOMATIC";
     public static final String WIDGET_TYPE_CUSTOM = "CUSTOM";
@@ -79,7 +80,7 @@ public class CMSSidebarElement {
     @ManyToOne
     @JoinColumn(name = "owner_page_id", nullable = true)
     private CMSPage ownerPage;
-    
+
     /** Reference to the owning <code>CMSPageTemplate</code>. */
     @ManyToOne
     @JoinColumn(name = "owner_template_id", nullable = true)
@@ -105,24 +106,27 @@ public class CMSSidebarElement {
 
     /**
      * Default constructor for a certain type of widget
+     * 
      * @param type
      */
     public CMSSidebarElement(WidgetContentType type) {
         this.generationType = WidgetContentType.getGenerationType(type);
         this.contentType = type;
     }
-    
+
     /**
      * Default constructor for a certain type of widget
+     * 
      * @param type
      */
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
         this(type);
         this.ownerPage = owner;
     }
-    
+
     /**
      * Default constructor for a certain type of widget
+     * 
      * @param type
      */
     public CMSSidebarElement(WidgetContentType type, CMSPageTemplate owner) {
@@ -130,9 +134,9 @@ public class CMSSidebarElement {
         this.ownerTemplate = owner;
     }
 
-
     /**
      * Default constructor for a certain type of widget and owning CMSPage
+     * 
      * @param type
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPage owner) {
@@ -141,9 +145,10 @@ public class CMSSidebarElement {
         this.order = orig.getOrder();
         this.ownerPage = owner;
     }
-    
+
     /**
      * Default constructor for a certain type of widget and owning CMSPageTemplate
+     * 
      * @param type
      */
     public CMSSidebarElement(CMSSidebarElement orig, CMSPageTemplate owner) {
@@ -154,8 +159,8 @@ public class CMSSidebarElement {
     }
 
     /**
-     * Clones the given sidebar element and assigns the given CMSPage as owner.
-     * Depends on cloning constructors of subclasses
+     * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
+     * 
      * @param orig
      * @param owner
      * @return
@@ -172,10 +177,10 @@ public class CMSSidebarElement {
                 throw new IllegalArgumentException("Copying of sidebar element type " + orig.getClass() + " not implemented");
         }
     }
-    
+
     /**
-     * Clones the given sidebar element and assigns the given CMSPage as owner.
-     * Depends on cloning constructors of subclasses
+     * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
+     * 
      * @param orig
      * @param owner
      * @return
@@ -195,6 +200,7 @@ public class CMSSidebarElement {
 
     /**
      * the database id
+     * 
      * @return the id
      */
     public Long getId() {
@@ -210,6 +216,7 @@ public class CMSSidebarElement {
 
     /**
      * the {@link CMSPage} containing the element
+     * 
      * @return the ownerPage
      */
     public CMSPage getOwnerPage() {
@@ -222,17 +229,18 @@ public class CMSSidebarElement {
     public void setOwnerPage(CMSPage ownerPage) {
         this.ownerPage = ownerPage;
     }
-    
+
     public CMSPageTemplate getOwnerTemplate() {
         return ownerTemplate;
     }
-    
+
     public void setOwnerTemplate(CMSPageTemplate ownerTemplate) {
         this.ownerTemplate = ownerTemplate;
     }
 
     /**
      * The order in which the element is shown. Low numbers are displayed on top of the sidebar, high numbers at the bottom
+     * 
      * @return the order
      */
     public int getOrder() {
@@ -248,6 +256,7 @@ public class CMSSidebarElement {
 
     /**
      * the {@link WidgetGenerationType} of the underlying widget
+     * 
      * @return the generationType
      */
     public WidgetGenerationType getGenerationType() {
@@ -263,6 +272,7 @@ public class CMSSidebarElement {
 
     /**
      * the {@link WidgetContentType} of the underlying widget
+     * 
      * @return the contentType
      */
     public WidgetContentType getContentType() {
@@ -278,6 +288,7 @@ public class CMSSidebarElement {
 
     /**
      * The title displayed for this element when editing the owning CMSPage
+     * 
      * @return
      */
     public TranslatedText getTitle() {

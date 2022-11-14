@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.cms.pages;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -69,9 +68,6 @@ public final class CMSTemplateManager {
     private static final String TEMPLATE_BASE_PATH = "/cms/templates/";
     private static final String TEMPLATE_ICONS_PATH = "icons/";
     private static final String TEMPLATE_VIEWS_PATH = "views/";
-    private static final String TEMPLATE_BASE_NAME = "template_base.xhtml";
-
-    private static final boolean EXTERNAL_PATH = false;
 
     private static final Object lock = new Object();
 
@@ -131,8 +127,13 @@ public final class CMSTemplateManager {
 
         return instance;
     }
-    
-    public static CMSTemplateManager getInstance(ServletContext context) throws PresentationException {
+
+    /**
+     * 
+     * @param context
+     * @return
+     */
+    public static CMSTemplateManager getInstance(ServletContext context) {
         CMSTemplateManager ctm = instance;
         if (ctm == null) {
             synchronized (lock) {
@@ -161,13 +162,11 @@ public final class CMSTemplateManager {
     private CMSTemplateManager(String filesystemPath, String themeRootPath, ServletContext servletContext) throws PresentationException {
         String webContentRoot = "";
         if (filesystemPath == null) {
-            if(servletContext == null) {
+            if (servletContext == null) {
                 if (FacesContext.getCurrentInstance() == null) {
                     throw new PresentationException("No faces context found");
-                } else {                    
-                    servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
                 }
-                
+                servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
             }
             webContentRoot = servletContext.getContextPath();
         }
@@ -211,7 +210,7 @@ public final class CMSTemplateManager {
                 logger.trace("coreFolderPath: {}", coreFolderPath.get());
                 try (Stream<java.nio.file.Path> templateFiles = Files.list(coreFolderPath.get())) {
                     templatesFound = templateFiles.filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
-                            .peek(file -> logger.trace("Found core cms template file " + file))
+                            .peek(file -> logger.trace("Found core cms template file {}", file))
                             .findAny()
                             .isPresent();
                 }
@@ -221,9 +220,7 @@ public final class CMSTemplateManager {
             if (templatesFound) {
                 this.coreTemplateFolderUrl = Optional.of(webContentRoot + "/" + templateFolderUrl);
             }
-        } catch (IOException e) {
-            logger.error(e.toString(), e);
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.toString(), e);
         }
 
@@ -277,7 +274,7 @@ public final class CMSTemplateManager {
      * @throws java.net.URISyntaxException if any.
      */
     public static Optional<URL> getCoreTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl)
-            throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {
+            throws MalformedURLException, URISyntaxException {
         Optional<URL> fileUrl = Optional.empty();
         if (servletContext != null) {
             String basePath = servletContext.getRealPath(templateFolderUrl);
@@ -286,7 +283,7 @@ public final class CMSTemplateManager {
             if (Files.exists(path)) {
                 fileUrl = Optional.of(path.toFile().toURI().toURL());
             } else {
-                logger.warn("Template folder path not found: {}", path.toAbsolutePath().toString());
+                logger.warn("Template folder path not found: {}", path.toAbsolutePath());
             }
             //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
         } else if (filesystemPath != null) {
@@ -295,7 +292,7 @@ public final class CMSTemplateManager {
             if (Files.exists(path)) {
                 fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
             } else {
-                logger.warn("Template folder path not found: {}", path.toAbsolutePath().toString());
+                logger.warn("Template folder path not found: {}", path.toAbsolutePath());
             }
         }
         return fileUrl;
@@ -317,7 +314,7 @@ public final class CMSTemplateManager {
         Optional<URL> coreFolderUrl = Optional.empty();
         if (absolutetemplateFolderUrl) {
             Path path = Paths.get(templateFolderUrl);
-            logger.debug("Looking for external theme template folder in {}", path.toAbsolutePath().toString());
+            logger.debug("Looking for external theme template folder in {}", path.toAbsolutePath());
             if (Files.isDirectory(path)) {
                 coreFolderUrl = Optional.of(path.toUri().toURL());
             }
@@ -356,7 +353,7 @@ public final class CMSTemplateManager {
         }
 
         if (templateList == null) {
-            logger.warn("No cms folder found in " + path + ". This theme is probably not configured to use cms");
+            logger.warn("No cms folder found in {}. This theme is probably not configured to use cms", path);
             return templates;
         }
         // logger.trace(templateFolder.getAbsolutePath());
@@ -382,7 +379,7 @@ public final class CMSTemplateManager {
         try {
             //load theme templates
             if (themePath.isPresent()) {
-                logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
+                logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath());
             }
             themePath.map(CMSTemplateManager::loadTemplates)
                     .ifPresent(map -> map.entrySet()
@@ -394,13 +391,15 @@ public final class CMSTemplateManager {
 
             //load core templates
             if (corePath.isPresent()) {
-                logger.trace("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath().toString());
+                logger.trace("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath());
             }
             corePath.map(path -> loadTemplates(path))
-                    .ifPresent(map -> map.entrySet().stream().forEach(entry -> legacyTemplateComponents.putIfAbsent(entry.getKey(), entry.getValue().createCMSComponent())));
+                    .ifPresent(map -> map.entrySet()
+                            .stream()
+                            .forEach(entry -> legacyTemplateComponents.putIfAbsent(entry.getKey(), entry.getValue().createCMSComponent())));
             logger.debug("Loaded {} CORE CMS templates", legacyTemplateComponents.size() - size);
         } catch (IllegalArgumentException e) {
-            logger.error("Failed to update cms templates: " + e.toString(), e);
+            logger.error("Failed to update cms templates: {}", e.toString(), e);
         }
     }
 
@@ -521,16 +520,16 @@ public final class CMSTemplateManager {
     }
 
     public Optional<CMSComponent> getComponent(String templateFilename) {
-        if(templateFilename == null) {
+        if (templateFilename == null) {
             return Optional.empty();
-        } else {            
-            Optional<CMSComponent> component = this.getContentManager().getComponent(templateFilename);
-            if(component.isEmpty()) {
-                return this.legacyTemplateComponents.values().stream().filter(t -> templateFilename.equals(t.getTemplateFilename())).findAny();
-            } else {
-                return component;
-            }
         }
+
+        Optional<CMSComponent> component = this.getContentManager().getComponent(templateFilename);
+        if (component.isEmpty()) {
+            return this.legacyTemplateComponents.values().stream().filter(t -> templateFilename.equals(t.getTemplateFilename())).findAny();
+        }
+
+        return component;
     }
 
 }

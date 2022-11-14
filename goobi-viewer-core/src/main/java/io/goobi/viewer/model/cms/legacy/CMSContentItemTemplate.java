@@ -23,9 +23,6 @@ package io.goobi.viewer.model.cms.legacy;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.update.CMSContentConverter;
-import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
@@ -49,7 +46,7 @@ import io.goobi.viewer.model.jsf.JsfComponent;
  *
  * @author Florian Alpers
  */
-public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate>{
+public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate> {
 
     private String mediaFilter = "";
     private ContentItemMode mode = ContentItemMode.simple;
@@ -61,7 +58,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     private boolean ignoreCollectionHierarchy = false;
     private final CMSContentItemType type;
     private String itemId;
-    
+
     /**
      * For SOLRQUERY items: If true, show number of hits and sort order options on page and hide them in cms backend
      */
@@ -82,15 +79,15 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     public CMSContentItemType getType() {
         return type;
     }
-    
+
     public String getItemId() {
         return itemId;
     }
-    
+
     public void setItemId(String itemId) {
         this.itemId = itemId;
     }
-    
+
     /**
      * <p>
      * Setter for the field <code>mode</code>.
@@ -103,13 +100,13 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /** {@inheritDoc} */
-    
+
     public ContentItemMode getMode() {
         return mode;
     }
 
     /** {@inheritDoc} */
-    
+
     public boolean isHasInlineHelp() {
         return StringUtils.isNotBlank(inlineHelp);
     }
@@ -119,7 +116,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
      *
      * Message key to display when clicking the inline help button
      */
-    
+
     public String getInlineHelp() {
         return this.inlineHelp;
     }
@@ -136,7 +133,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     }
 
     /** {@inheritDoc} */
-    
+
     public String getMediaFilter() {
         return mediaFilter;
     }
@@ -156,7 +153,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
      * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
      */
     /** {@inheritDoc} */
-    
+
     public boolean isPreview() {
         return this.preview;
     }
@@ -182,7 +179,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSContentItem#isMandatory()
      */
-    
+
     public boolean isMandatory() {
         return this.mandatory;
     }
@@ -211,7 +208,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSContentItem#getItemLabel()
      */
-    
+
     public String getItemLabel() {
         return this.itemLabel;
     }
@@ -222,6 +219,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     public boolean isIgnoreCollectionHierarchy() {
         return ignoreCollectionHierarchy;
     }
+
     /**
      * @param ignoreCollectionHierarchy the ignoreCollectionHierarchy to set
      */
@@ -261,20 +259,23 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     public int compareTo(CMSContentItemTemplate o) {
         return Integer.compare(this.order, o.getOrder());
     }
-    
+
     public CMSContentItem createCMSContentItem() {
-        
+
         CMSContent content = createCMSContent(this.type);
-        if(content != null) {            
+        if (content != null) {
             JsfComponent component = new JsfComponent("cms/components/backend/content", content.getBackendComponentName());
-            CMSContentItem item = new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, component, this.isMandatory());
-            return item;
-        } else {
-            return null;
+            return new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, component, this.isMandatory());
         }
+        return null;
     }
 
-    private CMSContent createCMSContent(CMSContentItemType type) {
+    /**
+     * 
+     * @param type
+     * @return
+     */
+    private static CMSContent createCMSContent(CMSContentItemType type) {
         switch (type.name()) {
             case "TEXT":
                 return new CMSShortTextContent();

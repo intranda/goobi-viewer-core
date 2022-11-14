@@ -91,5 +91,4 @@ public class TranslatedSelectable<T> extends Selectable<T> {
         this.locale = Locale.forLanguageTag(language);
     }
 
-
 }

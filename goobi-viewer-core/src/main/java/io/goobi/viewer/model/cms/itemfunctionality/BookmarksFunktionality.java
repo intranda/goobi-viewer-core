@@ -53,9 +53,8 @@ public class BookmarksFunktionality implements Functionality {
         List<BookmarkList> lists = DataManager.getInstance().getDao().getPublicBookmarkLists();
         if (lists == null) {
             return Collections.emptyList();
-        } else {
-            return lists;
         }
+        return lists;
     }
 
 }

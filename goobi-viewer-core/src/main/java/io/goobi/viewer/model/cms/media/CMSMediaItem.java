@@ -411,7 +411,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
             version = getMetadataForLocale(FacesContext.getCurrentInstance().getViewRoot().getLocale());
         }
-        if (version == null && getMetadata().size() > 0) {
+        if (version == null && !getMetadata().isEmpty()) {
             version = getMetadata().get(0);
         }
         if (version == null) {
@@ -525,7 +525,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /** {@inheritDoc} */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
-        String link = getLink();
+        String lnk = getLink();
         if (StringUtils.isNotBlank(link)) {
             try {
                 URI uri = new URI(link);
@@ -534,13 +534,13 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                     if (request != null) {
                         viewerURL = request.getContextPath();
                     }
-                    link = StringTools.decodeUrl(link);
-                    String urlString = (viewerURL + link).replace("//", "/");
+                    lnk = StringTools.decodeUrl(lnk);
+                    String urlString = (viewerURL + lnk).replace("//", "/");
                     uri = new URI(urlString);
                 }
                 return uri;
             } catch (URISyntaxException e) {
-                logger.error("Unable to create uri from " + getLink());
+                logger.error("Unable to create uri from {}", getLink());
                 return null;
             }
         }
@@ -617,7 +617,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 String uriString = CmsMediaBean.getMediaUrl(this, Integer.toString(width), Integer.toString(height));
                 return new URI(uriString);
             } catch (URISyntaxException e) {
-                logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
+                logger.error("Failed to create resource uri for {}: {}", getFileName(), e.getMessage());
             } catch (ViewerConfigurationException e) {
                 logger.error(e.getMessage());
             }
@@ -635,7 +635,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 String uriString = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(this, size);
                 return new URI(uriString);
             } catch (URISyntaxException e) {
-                logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
+                logger.error("Failed to create resource uri for {}: {}", getFileName(), e.getMessage());
             }
         }
 
@@ -736,7 +736,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 .filter(md -> StringUtils.isNotBlank(md.getName()))
                 .collect(Collectors.toMap(CMSMediaItemMetadata::getLanguage, CMSMediaItemMetadata::getName));
         return new MultiLanguageMetadataValue(names);
-        // return IMetadataValue.getTranslations(getName());
     }
 
     /**
@@ -816,7 +815,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 try {
                     lastModifiedTime = Files.getLastModifiedTime(filePath);
                 } catch (IOException e) {
-                    logger.error("Error reading last modified time from " + filePath, e);
+                    logger.error("Error reading last modified time from {}", filePath, e);
                 }
             }
         }
@@ -833,8 +832,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     public Path getFilePath() {
         Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        Path file = folder.resolve(getFileName());
-        return file;
+        return folder.resolve(getFileName());
     }
 
     /**
@@ -846,14 +844,11 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @param categories a {@link java.util.List} object.
      */
     public synchronized List<Selectable<CMSCategory>> wrapCategories(List<CMSCategory> categories) {
-        List<Selectable<CMSCategory>> wrappedCategories =
-                categories.stream().map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
-        return wrappedCategories;
+        return categories.stream().map(cat -> new Selectable<>(cat, this.getCategories().contains(cat))).collect(Collectors.toList());
     }
 
-    public static enum Priority {
+    public enum Priority {
         IMPORTANT,
         DEFAULT;
     }
-
 }
