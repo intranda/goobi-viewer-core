@@ -55,11 +55,11 @@ public class CMSContentItemUpdate implements IModelUpdate {
     @SuppressWarnings("unchecked")
     public boolean update(IDAO dao) throws DAOException, SQLException {
         logger.debug("Checking database for deprecated cms_content_items.ignore_collections datatype");
-        
-        if (!dao.tableExists("cms_content_items")){
+
+        if (!dao.tableExists("cms_content_items")) {
             return false;
         }
-        
+
         List<String> types = dao.getNativeQueryResults(
                 "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_content_items' AND COLUMN_NAME = 'ignore_collections' ");
         if (types.contains(DATATYPE_OLD)) {
