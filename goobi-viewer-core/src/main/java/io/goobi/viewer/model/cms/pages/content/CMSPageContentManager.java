@@ -23,6 +23,7 @@ package io.goobi.viewer.model.cms.pages.content;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -44,26 +45,28 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
  * @author florian
  *
  */
-public class CMSPageContentManager {
-    
+public class CMSPageContentManager implements Serializable {
+
+    private static final long serialVersionUID = 2016712096257871657L;
+
     private static final Logger logger = LogManager.getLogger(CMSPageContentManager.class);
-    
+
     private final List<CMSComponent> components = new ArrayList<>();
 
     public CMSPageContentManager(Path... configFolders) throws IOException {
         for (Path path : configFolders) {
-            if(path != null && Files.exists(path)) {                
+            if (path != null && Files.exists(path)) {
                 this.components.addAll(loadComponents(path));
             }
         }
     }
 
     private static List<CMSComponent> loadComponents(Path folder) throws IOException {
-        if(folder == null || !Files.isDirectory(folder)) {
+        if (folder == null || !Files.isDirectory(folder)) {
             throw new FileNotFoundException(folder + " doesn't exist or is not a directory");
         }
         CMSComponentReader reader = new CMSComponentReader();
-        try(Stream<Path> xmlFiles = Files.list(folder).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".xml"))) {
+        try (Stream<Path> xmlFiles = Files.list(folder).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".xml"))) {
             return xmlFiles.map(file -> {
                 try {
                     return reader.read(file);
@@ -72,18 +75,16 @@ public class CMSPageContentManager {
                     return null;
                 }
             })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
         }
     }
-    
+
     public List<CMSComponent> getComponents() {
         return components;
     }
-    
+
     public Optional<CMSComponent> getComponent(String filename) {
         return this.components.stream().filter(c -> c.getTemplateFilename().equals(filename)).findAny();
     }
 }
-
-

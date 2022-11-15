@@ -223,7 +223,8 @@ public class CmsBean implements Serializable {
                         if (!userBean.getUser().hasPrivilegeForAllCategories()) {
                             allowedCategories = getAllowedCategories(userBean.getUser()).stream()
                                     .map(CMSCategory::getId)
-                                    .map(l -> l.toString())
+                                    .map(l -> l
+                                            .toString())
                                     .collect(Collectors.toList());
                         }
                         initialized = true;
@@ -1075,7 +1076,7 @@ public class CmsBean implements Serializable {
     public boolean mayRemoveCategoryFromPage(CMSCategory cat) throws DAOException {
         if (this.selectedPage != null) {
             return userBean.getUser().hasPrivilegeForAllCategories()
-                    || this.selectedPage.getSelectableCategories().stream().anyMatch(c -> c.isSelected());
+                    || this.selectedPage.getSelectableCategories().stream().anyMatch(Selectable::isSelected);
         }
 
         return true;
@@ -1112,7 +1113,7 @@ public class CmsBean implements Serializable {
      * @param selectedMediaItem a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
-        // logger.trace("Set media item to " + selectedMediaItem.getFileName());
+        // logger.trace("Set media item to {}", selectedMediaItem.getFileName());
         this.selectedMediaItem = selectedMediaItem;
     }
 
@@ -1156,8 +1157,8 @@ public class CmsBean implements Serializable {
      * @throws RecordNotFoundException
      * @throws IllegalRequestException
      */
-    public String cmsContextAction() throws IndexUnreachableException, DAOException, ViewerConfigurationException,
-            RecordNotFoundException, RecordDeletedException, IllegalRequestException {
+    public String cmsContextAction()
+            throws IndexUnreachableException, DAOException, ViewerConfigurationException, RecordNotFoundException, RecordDeletedException {
         return cmsContextAction(true);
     }
 
@@ -1260,11 +1261,7 @@ public class CmsBean implements Serializable {
                 valueHits.add(searchHit);
             } else {
                 for (String value : groupingValues) {
-                    List<SearchHit> valueHits = hitMap.get(value);
-                    if (valueHits == null) {
-                        valueHits = new ArrayList<>();
-                        hitMap.put(value, valueHits);
-                    }
+                    List<SearchHit> valueHits = hitMap.computeIfAbsent(value, k -> new ArrayList<>());
                     valueHits.add(searchHit);
                 }
             }
@@ -1516,7 +1513,7 @@ public class CmsBean implements Serializable {
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
         List<CMSPage> allPages = getAllCMSPages().stream()
-                .filter(cmsPage -> cmsPage.isPublished())
+                .filter(CMSPage::isPublished)
                 .collect(Collectors.toList());
 
         for (CMSStaticPage staticPage : getStaticPages()) {
@@ -1544,7 +1541,7 @@ public class CmsBean implements Serializable {
                 .filter(cmsPage -> cmsPage.getPersistentComponents()
                         .stream()
                         .flatMap(c -> c.getContentItems().stream())
-                        .anyMatch(item -> item instanceof CMSSearchContent))
+                        .anyMatch(CMSSearchContent.class::isInstance))
                 .collect(Collectors.toList());
     }
 
@@ -1593,7 +1590,7 @@ public class CmsBean implements Serializable {
     public List<CMSPage> getValidCMSPages() throws DAOException {
         return getAllCMSPages().stream()
                 .filter(page -> StringUtils.isNotBlank(page.getMenuTitle()))
-                .filter(page -> page.isPublished())
+                .filter(CMSPage::isPublished)
                 .collect(Collectors.toList());
     }
 
@@ -1741,7 +1738,7 @@ public class CmsBean implements Serializable {
                 .stream()
                 //                .filter(page -> pi.equals(page.getRelatedPI()))
                 //                .filter(page -> page.getClassifications().contains(classification))
-                .filter(page -> page.isPublished())
+                .filter(CMSPage::isPublished)
                 .collect(Collectors.toList());
     }
 
@@ -1815,7 +1812,7 @@ public class CmsBean implements Serializable {
                 .stream()
                 .flatMap(c -> c.getContentItems().stream())
                 .filter(item -> item instanceof CMSRecordListContent)
-                .map(i -> (CMSRecordListContent) i)
+                .map(CMSRecordListContent.class::cast)
                 .findAny()
                 .orElseThrow(
                         () -> new IllegalStateException(

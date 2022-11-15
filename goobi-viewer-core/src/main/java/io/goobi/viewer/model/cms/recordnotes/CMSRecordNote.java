@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms.recordnotes;
 
+import java.io.Serializable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +51,9 @@ import jakarta.persistence.Table;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "note_type",
         discriminatorType = DiscriminatorType.STRING)
-public abstract class CMSRecordNote {
+public abstract class CMSRecordNote implements Serializable {
+
+    private static final long serialVersionUID = 7410745839101681842L;
 
     private static final Logger logger = LogManager.getLogger(CMSRecordNote.class);
 

@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
+import java.io.Serializable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +32,6 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
-import io.goobi.viewer.model.misc.NumberIterator;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -60,7 +61,9 @@ import jakarta.persistence.Table;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "generation_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("BASE")
-public class CMSSidebarElement {
+public class CMSSidebarElement implements Serializable {
+
+    private static final long serialVersionUID = -7230299208726799480L;
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarElement.class);
 
@@ -70,7 +73,7 @@ public class CMSSidebarElement {
 
     /** Constant <code>HASH_MULTIPLIER=11</code> */
     protected static final int HASH_MULTIPLIER = 11;
-    private static final NumberIterator ID_COUNTER = new NumberIterator();
+    // private static final NumberIterator ID_COUNTER = new NumberIterator();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_sidebar_element_id")

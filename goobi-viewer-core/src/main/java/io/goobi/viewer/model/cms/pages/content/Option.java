@@ -21,7 +21,11 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
-public class Option {
+import java.io.Serializable;
+
+public class Option implements Serializable {
+
+    private static final long serialVersionUID = 4905547711950322458L;
 
     private final String value;
     private final String label;

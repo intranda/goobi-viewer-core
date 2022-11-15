@@ -26,6 +26,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import java.io.Serializable;
+
 import io.goobi.viewer.model.translations.Translation;
 
 /**
@@ -35,7 +37,9 @@ import io.goobi.viewer.model.translations.Translation;
  */
 @Entity
 @Table(name = "translations")
-public class CMSCollectionTranslation extends Translation {
+public class CMSCollectionTranslation extends Translation implements Serializable {
+
+    private static final long serialVersionUID = 6110495225727273302L;
 
     /** Reference to the owning {@link PersistentEntity}. */
     @ManyToOne

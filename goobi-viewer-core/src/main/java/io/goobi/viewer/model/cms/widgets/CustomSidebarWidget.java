@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
@@ -60,7 +61,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "widget_type")
 @DiscriminatorValue("CustomSidebarWidget")
-public class CustomSidebarWidget implements IPolyglott {
+public class CustomSidebarWidget implements IPolyglott, Serializable {
+
+    private static final long serialVersionUID = -7060014691745797150L;
 
     private static final Logger logger = LogManager.getLogger(CustomSidebarWidget.class);
 

@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.collections;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +80,9 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 @Entity
 @Table(name = "cms_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "solrField", "solrFieldValue" }) })
-public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott {
+public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott, Serializable {
+
+    private static final long serialVersionUID = 4674623800509560656L;
 
     private static final Logger logger = LogManager.getLogger(CMSCollection.class);
 

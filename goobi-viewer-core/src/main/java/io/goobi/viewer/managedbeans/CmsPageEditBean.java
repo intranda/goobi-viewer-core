@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
+import io.goobi.viewer.model.metadata.Metadata;
 
 @Named
 @ViewScoped
@@ -45,8 +47,7 @@ public class CmsPageEditBean implements Serializable {
     private static final long serialVersionUID = 7163586584773468296L;
 
     private Map<WidgetDisplayElement, Boolean> sidebarWidgets;
-    
-    
+
     @Inject
     public CmsPageEditBean(CMSSidebarWidgetsBean widgetsBean) {
         try {
@@ -65,7 +66,7 @@ public class CmsPageEditBean implements Serializable {
     }
 
     public List<WidgetDisplayElement> getSelectedWidgets() {
-        return this.sidebarWidgets.entrySet().stream().filter(e -> e.getValue()).map(Map.Entry::getKey).collect(Collectors.toList());
+        return this.sidebarWidgets.entrySet().stream().filter(Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
     public void resetSelectedWidgets() {
@@ -92,12 +93,11 @@ public class CmsPageEditBean implements Serializable {
                 .getConfiguration()
                 .getMainMetadataForTemplate(0, null)
                 .stream()
-                .map(md -> md.getLabel())
+                .map(Metadata::getLabel)
                 .map(md -> md.replaceAll("_LANG_.*", ""))
                 .distinct()
                 .collect(Collectors.toList());
 
     }
 
-    
 }

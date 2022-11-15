@@ -21,32 +21,35 @@
  */
 package io.goobi.viewer.model.jsf;
 
-public class JsfComponent {
+import java.io.Serializable;
+
+public class JsfComponent implements Serializable {
+
+    private static final long serialVersionUID = 2205896851743823811L;
 
     private final String library;
     private final String name;
-    
+
     public JsfComponent(String library, String name) {
         this.library = library;
         this.name = name;
     }
-    
+
     public String getLibrary() {
         return library;
     }
-    
+
     public String getName() {
         return name;
     }
 
     public String getFilename() {
-        if(name.matches("(i?)[^.]+\\.x?html")) {
+        if (name.matches("(i?)[^.]+\\.x?html")) {
             return name;
-        } else {
-            return name + ".xhtml";
         }
+        return name + ".xhtml";
     }
-    
+
     @Override
     public String toString() {
         return this.library + "/" + this.getFilename();

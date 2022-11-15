@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,7 +42,9 @@ import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import io.goobi.viewer.model.security.user.User;
 
-public class CMSComponent implements Comparable<CMSComponent> {
+public class CMSComponent implements Comparable<CMSComponent>, Serializable {
+
+    private static final long serialVersionUID = -6820973601918866139L;
 
     private final String templateFilename;
 
@@ -61,8 +64,8 @@ public class CMSComponent implements Comparable<CMSComponent> {
 
     private int listPage = 1;
 
-    private UIComponent uiComponent;
-    private UIComponent backendUiComponent;
+    private transient UIComponent uiComponent;
+    private transient UIComponent backendUiComponent;
 
     public CMSComponent(CMSComponent template, Optional<PersistentCMSComponent> jpa) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),

@@ -21,10 +21,13 @@
  */
 package io.goobi.viewer.model.cms.pages.content;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CMSComponentAttribute {
+public class CMSComponentAttribute implements Serializable {
+
+    private static final long serialVersionUID = -1054428745597079708L;
 
     private final String name;
     private final String label;

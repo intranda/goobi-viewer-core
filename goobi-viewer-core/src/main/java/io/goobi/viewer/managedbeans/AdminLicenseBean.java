@@ -286,8 +286,8 @@ public class AdminLicenseBean implements Serializable {
             logger.trace("Saving changes to privileges");
             currentLicenseType.setPrivileges(new HashSet<>(currentLicenseType.getPrivilegesCopy()));
         }
-        
-        if(!currentLicenseType.isRedirect()) {
+
+        if (!currentLicenseType.isRedirect()) {
             currentLicenseType.setRedirectUrl(null);
         }
 
@@ -328,7 +328,7 @@ public class AdminLicenseBean implements Serializable {
             Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
 
         } else {
-            Messages.error("deleteFailure");
+            Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
         }
 
         return licenseType.isCore() ? "pretty:adminRoles" : "pretty:adminLicenseTypes";
@@ -552,7 +552,7 @@ public class AdminLicenseBean implements Serializable {
         } else if (license.getIpRange() != null) {
             license.getIpRange().removeLicense(license);
             success = DataManager.getInstance().getDao().updateIpRange(license.getIpRange());
-        } else if(license.getClient() != null) {
+        } else if (license.getClient() != null) {
             license.getClient().removeLicense(license);
             success = DataManager.getInstance().getDao().saveClientApplication(license.getClient());
         }
@@ -737,7 +737,7 @@ public class AdminLicenseBean implements Serializable {
         if (DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
             Messages.info("deletedSuccessfully");
         } else {
-            Messages.error("deleteFailure");
+            Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
             return "";
         }
 
@@ -760,7 +760,7 @@ public class AdminLicenseBean implements Serializable {
         if (DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
             Messages.info("deletedSuccessfully");
         } else {
-            Messages.error("deleteFailure");
+            Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
         }
 
         return "pretty:adminDownloadTickets";

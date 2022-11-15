@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.pages;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -38,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,7 +63,9 @@ import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
  * CMSTemplateManager class.
  * </p>
  */
-public final class CMSTemplateManager {
+public final class CMSTemplateManager implements Serializable {
+
+    private static final long serialVersionUID = 5783005781012709309L;
 
     private static final Logger logger = LogManager.getLogger(CMSTemplateManager.class);
 
@@ -75,11 +79,11 @@ public final class CMSTemplateManager {
 
     private Map<String, CMSComponent> legacyTemplateComponents;
 
-    private Optional<String> coreTemplateFolderUrl = Optional.empty();
-    private Optional<String> themeTemplateFolderUrl = Optional.empty();
-    private Optional<Path> coreFolderPath = Optional.empty();
-    private Optional<Path> themeFolderPath = Optional.empty();
-    private Optional<Path> passedFileSystemPath = Optional.empty();
+    private transient Optional<String> coreTemplateFolderUrl = Optional.empty();
+    private transient Optional<String> themeTemplateFolderUrl = Optional.empty();
+    private transient Optional<Path> coreFolderPath = Optional.empty();
+    private transient Optional<Path> themeFolderPath = Optional.empty();
+    private transient Optional<Path> passedFileSystemPath = Optional.empty();
 
     private CMSPageContentManager contentManager = null;
 
@@ -184,7 +188,7 @@ public final class CMSTemplateManager {
                 absolutetemplateFolderUrl = true;
             }
             Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, servletContext, templateFolder, absolutetemplateFolderUrl);
-            themeFolderPath = themeFolderUrl.map(url -> toURI(url));
+            themeFolderPath = themeFolderUrl.map(CMSTemplateManager::toURI);
             boolean templatesFound = false;
             if (themeFolderPath.isPresent()) {
                 try (Stream<java.nio.file.Path> templateFiles = Files.list(themeFolderPath.get())) {
@@ -204,7 +208,7 @@ public final class CMSTemplateManager {
         try {
             String templateFolderUrl = "resources" + TEMPLATE_BASE_PATH;
             Optional<URL> coreFolderUrl = getCoreTemplateFolderUrl(filesystemPath, servletContext, templateFolderUrl);
-            coreFolderPath = coreFolderUrl.map(path -> toURI(path));
+            coreFolderPath = coreFolderUrl.map(CMSTemplateManager::toURI);
             boolean templatesFound = false;
             if (coreFolderPath.isPresent()) {
                 logger.trace("coreFolderPath: {}", coreFolderPath.get());
@@ -344,8 +348,8 @@ public final class CMSTemplateManager {
             try (Stream<java.nio.file.Path> templateFiles = Files.list(path)) {
                 templateList = templateFiles.filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
                         .sorted()
-                        .map(templatePath -> CMSPageTemplate.loadFromXML(templatePath))
-                        .filter(template -> template != null)
+                        .map(CMSPageTemplate::loadFromXML)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
             }
         } catch (IOException e) {
@@ -393,7 +397,7 @@ public final class CMSTemplateManager {
             if (corePath.isPresent()) {
                 logger.trace("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath());
             }
-            corePath.map(path -> loadTemplates(path))
+            corePath.map(CMSTemplateManager::loadTemplates)
                     .ifPresent(map -> map.entrySet()
                             .stream()
                             .forEach(entry -> legacyTemplateComponents.putIfAbsent(entry.getKey(), entry.getValue().createCMSComponent())));
@@ -424,33 +428,6 @@ public final class CMSTemplateManager {
      */
     public CMSComponent getLegacyComponent(String templateId) {
         return legacyTemplateComponents.get(templateId);
-    }
-
-    private Optional<String> getCoreIconFolderUrl() {
-        return getCoreTemplateFolderUrl().map(url -> url + TEMPLATE_ICONS_PATH);
-    }
-
-    private Optional<String> getThemeIconFolderUrl() {
-        return getThemeTemplateFolderUrl().map(url -> url + TEMPLATE_ICONS_PATH);
-    }
-
-    /**
-     * @return the url path to the core viewer cms template url if it exists and contains files
-     */
-    private Optional<String> getCoreTemplateFolderUrl() {
-        return this.coreTemplateFolderUrl;
-    }
-
-    private Optional<String> getThemeTemplateFolderUrl() {
-        return this.themeTemplateFolderUrl;
-    }
-
-    private Optional<String> getCoreViewFolderUrl() {
-        return getCoreTemplateFolderUrl().map(url -> url + TEMPLATE_VIEWS_PATH);
-    }
-
-    private Optional<String> getThemeViewFolderUrl() {
-        return getThemeTemplateFolderUrl().map(url -> url + TEMPLATE_VIEWS_PATH);
     }
 
     /**

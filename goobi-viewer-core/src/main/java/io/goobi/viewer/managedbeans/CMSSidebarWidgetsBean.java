@@ -59,7 +59,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 @RequestScoped
 public class CMSSidebarWidgetsBean implements Serializable {
 
-    private HtmlPanelGroup sidebarGroup = null;
+    private transient HtmlPanelGroup sidebarGroup = null;
 
     private static final long serialVersionUID = -6039330925483238481L;
 

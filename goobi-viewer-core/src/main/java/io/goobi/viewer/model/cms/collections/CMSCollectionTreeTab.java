@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.collections;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +40,9 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 /**
  * Object representing tab status for a collection tree.
  */
-public class CMSCollectionTreeTab implements IPolyglott {
+public class CMSCollectionTreeTab implements IPolyglott, Serializable {
+
+    private static final long serialVersionUID = -2481253889689752533L;
 
     private static final Logger logger = LogManager.getLogger(CMSCollectionTreeTab.class);
 
