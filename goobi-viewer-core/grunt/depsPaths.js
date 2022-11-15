@@ -149,6 +149,17 @@ const depsPathsJS = [
     dest:`${jsLibsDir}leaflet/draw/`
   },
 
+  { // SIMPLE-LIGHTBOX
+    expand: true,
+    cwd: nodeModules,
+    src:  [
+      'simple-lightbox/dist/simpleLightbox.min.js', 
+      'simple-lightbox/LICENSE'
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}simpleLightbox/`
+  },
+
   { // MAPBOX GL
     expand: true,
     cwd: nodeModules,
@@ -393,6 +404,14 @@ const depsPathsCSS = [
     src: 'leaflet.markercluster/dist/MarkerCluster.css', 
     flatten: true,
     dest:`${cssLibsDir}leaflet/markercluster`
+  },
+
+  { // Simple Lightbox
+    expand: true,
+    cwd: nodeModules,
+    src: 'simple-lightbox/dist/simpleLightbox.min.css',
+    flatten: true,
+    dest:`${cssLibsDir}simpleLightbox/`
   },
 
   { // MAPBOX GL
