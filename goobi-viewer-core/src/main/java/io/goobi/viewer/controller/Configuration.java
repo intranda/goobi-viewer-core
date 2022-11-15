@@ -5012,10 +5012,7 @@ public class Configuration extends AbstractConfiguration {
         List<GeoMapMarker> markers = new ArrayList<>();
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.markers.marker");
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
-            GeoMapMarker marker = readGeoMapMarker(config);
-            if (marker != null) {
-                markers.add(marker);
-            }
+            markers.add(readGeoMapMarker(config));
         }
         return markers;
 

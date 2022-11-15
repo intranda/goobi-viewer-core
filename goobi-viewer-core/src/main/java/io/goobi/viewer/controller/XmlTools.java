@@ -43,12 +43,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.jdom2.Text;
 import org.jdom2.filter.Filter;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
@@ -57,8 +58,6 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPathBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -71,7 +70,7 @@ import io.goobi.viewer.model.xml.XMLError;
 public class XmlTools {
 
     private static final Logger logger = LogManager.getLogger(XmlTools.class);
-    
+
     private XmlTools() {
     }
 
@@ -174,6 +173,7 @@ public class XmlTools {
         try {
             byteArray = string.getBytes(encoding);
         } catch (UnsupportedEncodingException e) {
+            logger.trace(e.getMessage());
         }
         ByteArrayInputStream baos = new ByteArrayInputStream(byteArray);
 
@@ -241,7 +241,7 @@ public class XmlTools {
 
         return retList;
     }
-    
+
     public static Optional<Element> evaluateToFirstElement(String expr, Element element, List<Namespace> namespaces) {
         return evaluateToElements(expr, element, namespaces).stream().findFirst();
     }
@@ -278,23 +278,22 @@ public class XmlTools {
 
         XPathExpression<Object> xpath = builder.compileWith(XPathFactory.instance());
         return xpath.evaluate(parent).stream().map(object -> {
-            if(object instanceof Element) {
+            if (object instanceof Element) {
                 return ((Element) object).getText();
-            } else if(object instanceof Attribute) {
+            } else if (object instanceof Attribute) {
                 return ((Attribute) object).getValue();
             } else {
                 return null;
             }
         })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
-    
+
     public static Optional<String> evaluateToFirstElement(String expr, Object parent, List<Namespace> namespaces) {
         return evaluateString(expr, parent, namespaces).stream().findFirst();
     }
-    
-    
+
     /**
      * <p>
      * determineFileFormat.
