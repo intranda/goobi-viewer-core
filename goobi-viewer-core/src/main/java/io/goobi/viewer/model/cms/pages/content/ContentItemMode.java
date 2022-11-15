@@ -45,12 +45,11 @@ public enum ContentItemMode {
     public static ContentItemMode get(String name) {
         if (StringUtils.isBlank(name)) {
             return simple;
-        } else {
-            try {
-                return ContentItemMode.valueOf(name.toLowerCase());
-            } catch (IllegalArgumentException e) {
-                return simple;
-            }
+        }
+        try {
+            return ContentItemMode.valueOf(name.toLowerCase());
+        } catch (IllegalArgumentException e) {
+            return simple;
         }
     }
 }

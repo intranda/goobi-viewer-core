@@ -25,12 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -42,22 +40,22 @@ import jakarta.persistence.Table;
 public class CMSRSSContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "rssfeed";
-    
-    @Column(name="items_per_view")
+
+    @Column(name = "items_per_view")
     private int itemsPerView = 10;
-    @Column(name="filter_query")
+    @Column(name = "filter_query")
     private String filterQuery = "";
 
     public CMSRSSContent() {
         super();
     }
-    
+
     private CMSRSSContent(CMSRSSContent orig) {
         super(orig);
         this.itemsPerView = orig.itemsPerView;
         this.filterQuery = orig.filterQuery;
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
@@ -71,19 +69,19 @@ public class CMSRSSContent extends CMSContent {
     public int getItemsPerView() {
         return itemsPerView;
     }
-    
+
     public void setItemsPerView(int itemsPerView) {
         this.itemsPerView = itemsPerView;
     }
-    
+
     public String getFilterQuery() {
         return filterQuery;
     }
-    
+
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
     }
-    
+
     @Override
     public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
         return Collections.emptyList();
@@ -98,19 +96,20 @@ public class CMSRSSContent extends CMSContent {
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     /**
      * Alias for {@link #getItemsPerView()}. Used in legacy cms-templates
+     * 
      * @return
      */
     public int getElementsPerPage() {
         return getItemsPerView();
     }
-    
+
     public void setElementsPerPage(int num) {
         setItemsPerView(num);
     }
-    
+
     @Override
     public boolean isEmpty() {
         return false;

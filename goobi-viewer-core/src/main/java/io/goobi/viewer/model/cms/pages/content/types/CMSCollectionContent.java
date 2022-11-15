@@ -58,15 +58,15 @@ import jakarta.persistence.Transient;
 public class CMSCollectionContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "collection";
-    
-    @Column(name="solr_field")
+
+    @Column(name = "solr_field")
     private String solrField = SolrConstants.DC;
-    @Column(name="collection_name")
+    @Column(name = "collection_name")
     private String collectionName = ""; //if black, all collections of the solrField are included
     @Column(name = "sorting")
     @Enumerated(EnumType.STRING)
     private Sorting sorting = Sorting.alphanumeric;
-    @Column(name="filter_query") 
+    @Column(name = "filter_query")
     private String filterQuery = "";
     /** Name of SOLR field by which to group results of the collection */
     @Column(name = "grouping_field")
@@ -74,16 +74,16 @@ public class CMSCollectionContent extends CMSContent {
     /** Comma separated list of collection names to ignore for display */
     @Column(name = "ignore_collections", columnDefinition = "LONGTEXT")
     private String ignoreCollections = null;
-    @Column(name="open_expanded")
+    @Column(name = "open_expanded")
     private boolean openExpanded = false;
-    
+
     @Transient
     private Map<String, CollectionResult> dcStrings = null;
-    
+
     public CMSCollectionContent() {
         super();
     }
-    
+
     private CMSCollectionContent(CMSCollectionContent orig) {
         super(orig);
         this.solrField = orig.solrField;
@@ -93,63 +93,63 @@ public class CMSCollectionContent extends CMSContent {
         this.groupingField = orig.groupingField;
         this.ignoreCollections = orig.ignoreCollections;
     }
-    
+
     public String getSolrField() {
         return solrField;
     }
-    
+
     public void setSolrField(String solrField) {
         this.solrField = solrField;
     }
-    
+
     public String getCollectionName() {
         return collectionName;
     }
-    
+
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
     }
-    
+
     public String getFilterQuery() {
         return filterQuery;
     }
-    
+
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
     }
-    
+
     public Sorting getSorting() {
         return sorting;
     }
-    
+
     public void setSorting(Sorting sorting) {
         this.sorting = sorting;
     }
-    
+
     public String getGroupingField() {
         return groupingField;
     }
-    
+
     public void setGroupingField(String groupingSolrField) {
         this.groupingField = groupingSolrField;
     }
-    
+
     public String getIgnoreCollections() {
         return ignoreCollections;
     }
-    
+
     public void setIgnoreCollections(String ignoreCollections) {
         this.ignoreCollections = ignoreCollections;
     }
-    
+
     public boolean isOpenExpanded() {
         return openExpanded;
     }
-    
+
     public void setOpenExpanded(boolean openExpanded) {
         this.openExpanded = openExpanded;
     }
-    
+
     /**
      * <p>
      * getIgnoreCollectionsAsList.
@@ -159,13 +159,11 @@ public class CMSCollectionContent extends CMSContent {
      */
     public List<String> getIgnoreCollectionsAsList() {
         if (StringUtils.isNotBlank(ignoreCollections)) {
-            List<String> ret = Arrays.stream(ignoreCollections.split(",")).collect(Collectors.toList());
-            //            List<String> ret = new ArrayList<>(Arrays.asList(ignoreCollections.split(",")));
-            //          List<String> ret = Arrays.asList(ignoreCollections.split(","));
-            return ret;
+            return Arrays.stream(ignoreCollections.split(",")).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
+
     public String getIgnoreCollectionsAsJsonArray() {
         if (StringUtils.isNotBlank(ignoreCollections)) {
             String[] collections = ignoreCollections.split(",");
@@ -174,11 +172,10 @@ public class CMSCollectionContent extends CMSContent {
                 array.put(string);
             }
             return array.toString();
-        } else {
-            return "[]";
         }
+        return "[]";
     }
-    
+
     /**
      * <p>
      * setIgnoreCollectionsAsList.
@@ -194,7 +191,7 @@ public class CMSCollectionContent extends CMSContent {
         }
         this.resetCollection();
     }
-    
+
     /**
      * remove cached CollectionView for this content from {@link CollectionViewBean}
      */
@@ -233,16 +230,15 @@ public class CMSCollectionContent extends CMSContent {
     public String getCombinedFilterQuery() {
         String subThemeDiscriminatorValue = getOwningPage().getSubThemeDiscriminatorValue();
         if (StringUtils.isNoneBlank(subThemeDiscriminatorValue, this.filterQuery)) {
-            String filter = "(" + this.filterQuery + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":"
+            return "(" + this.filterQuery + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":"
                     + subThemeDiscriminatorValue;
-            return filter;
         } else if (StringUtils.isNotBlank(subThemeDiscriminatorValue)) {
             return DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":" + subThemeDiscriminatorValue;
         } else {
             return this.filterQuery;
         }
     }
-    
+
     /**
      * Querys solr for a list of all values of the set collectionField which my serve as a collection
      *
@@ -253,13 +249,13 @@ public class CMSCollectionContent extends CMSContent {
         if (StringUtils.isBlank(solrField)) {
             return Collections.singletonList("");
         }
-        Map<String, CollectionResult> dcStrings = getColletionMap();
-        List<String> list = new ArrayList<>(dcStrings.keySet());
+        Map<String, CollectionResult> dcStringMap = getColletionMap();
+        List<String> list = new ArrayList<>(dcStringMap.keySet());
         list.add(0, "");
         Collections.sort(list);
         return list;
     }
-    
+
     /**
      * @return
      * @throws IndexUnreachableException
@@ -272,9 +268,10 @@ public class CMSCollectionContent extends CMSContent {
         }
         return dcStrings;
     }
-    
+
     /**
      * Alias for {@link #getCollectionName()}. Used in legacy templates
+     * 
      * @return
      */
     public String getBaseCollection() {
@@ -283,28 +280,30 @@ public class CMSCollectionContent extends CMSContent {
 
     /**
      * Alias for {@link #getSolrField()}. Used in legacy templates
+     * 
      * @return
      */
     public String getCollectionField() {
         return getSolrField();
     }
-    
+
     /**
      * Alias for {@link #getGroupingField()}. Used in legacy templates
+     * 
      * @return
      */
     public String getGroupBy() {
         return getGroupingField();
     }
-    
+
     @Override
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     @Override
     public boolean isEmpty() {
         return StringUtils.isBlank(solrField);
     }
-    
+
 }

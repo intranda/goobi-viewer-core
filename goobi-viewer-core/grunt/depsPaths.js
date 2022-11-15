@@ -22,7 +22,7 @@ const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/li
 const cssLibsDir = 'src/main/resources/META-INF/resources/resources/css/libs/'
 
 const depsPathsJS = [
-  
+
   { // Bootstrap
     expand: true,
     cwd: nodeModules,
@@ -147,6 +147,17 @@ const depsPathsJS = [
     ],
     flatten: true,
     dest:`${jsLibsDir}leaflet/draw/`
+  },
+
+  { // SIMPLE-LIGHTBOX
+    expand: true,
+    cwd: nodeModules,
+    src:  [
+      'simple-lightbox/dist/simpleLightbox.min.js', 
+      'simple-lightbox/LICENSE'
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}simpleLightbox/`
   },
 
   { // MAPBOX GL
@@ -309,7 +320,7 @@ const depsPathsJS = [
 ];
 
   /////////////////////
- /////// CCS /////////
+ /////// CSS /////////
 /////////////////////
 
 
@@ -393,6 +404,14 @@ const depsPathsCSS = [
     src: 'leaflet.markercluster/dist/MarkerCluster.css', 
     flatten: true,
     dest:`${cssLibsDir}leaflet/markercluster`
+  },
+
+  { // Simple Lightbox
+    expand: true,
+    cwd: nodeModules,
+    src: 'simple-lightbox/dist/simpleLightbox.min.css',
+    flatten: true,
+    dest:`${cssLibsDir}simpleLightbox/`
   },
 
   { // MAPBOX GL

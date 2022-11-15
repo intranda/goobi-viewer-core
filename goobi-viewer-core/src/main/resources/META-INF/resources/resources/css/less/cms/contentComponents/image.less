@@ -3,7 +3,30 @@
    ==============================================================*/
 
 .content-component {
-	&__image {}
+	&__image {
+		display: block;
+		&-lightbox-link {
+			display: block;
+			&:hover {
+				text-decoration: none;
+			}
+		}
+		&-img {
+			max-width: 100%;
+		}
+		&-text {
+			display: block;
+			margin-top: 10px;
+			color: #6e6e6e;
+			text-align: center;
+			&:hover
+			&:focus,
+			&:active {
+				text-decoration: none;
+				color: #6e6e6e;
+			}
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

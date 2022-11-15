@@ -46,13 +46,13 @@ import jakarta.persistence.Table;
 @DiscriminatorValue("geomap")
 public class CMSGeomapContent extends CMSContent {
 
-    private static final Logger logger  = LogManager.getLogger(CMSGeomapContent.class);
-    
+    private static final Logger logger = LogManager.getLogger(CMSGeomapContent.class);
+
     private static final String COMPONENT_NAME = "geomap";
-    
-    @JoinColumn(name="geomap_id")
+
+    @JoinColumn(name = "geomap_id")
     private GeoMap map;
-    
+
     public CMSGeomapContent() {
         super();
     }
@@ -61,7 +61,7 @@ public class CMSGeomapContent extends CMSContent {
         super(orig);
         this.map = orig.map;
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
@@ -81,21 +81,21 @@ public class CMSGeomapContent extends CMSContent {
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
-    
+
     public GeoMap getMap() {
         return map;
     }
-    
+
     public void setMap(GeoMap map) {
         this.map = map;
     }
-    
+
     public Long getMapId() {
         return Optional.ofNullable(this.map).map(GeoMap::getId).orElse(null);
     }
-    
+
     public void setMapId(Long id) {
-        if(id != null) {
+        if (id != null) {
             try {
                 this.map = DataManager.getInstance().getDao().getGeoMap(id);
             } catch (DAOException e) {
@@ -105,15 +105,14 @@ public class CMSGeomapContent extends CMSContent {
             this.map = null;
         }
     }
-    
+
     @Override
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     @Override
     public boolean isEmpty() {
         return this.map == null;
     }
 }
-

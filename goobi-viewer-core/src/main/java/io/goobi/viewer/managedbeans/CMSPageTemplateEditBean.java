@@ -44,20 +44,18 @@ import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 @ViewScoped
 public class CMSPageTemplateEditBean implements Serializable {
 
-
     private static final long serialVersionUID = 1399752926754065793L;
-    
+
     private CMSPageTemplate selectedTemplate = null;
     private Map<WidgetDisplayElement, Boolean> sidebarWidgets;
     private final IDAO dao;
     private final CMSPageContentManager contentManager;
-    
-    
+
     @Inject
     public CMSPageTemplateEditBean(CMSSidebarWidgetsBean widgetsBean) throws DAOException {
-            this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
-            this.dao = DataManager.getInstance().getDao();
-            this.contentManager = CMSTemplateManager.getInstance().getContentManager();
+        this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
+        this.dao = DataManager.getInstance().getDao();
+        this.contentManager = CMSTemplateManager.getInstance().getContentManager();
     }
 
     public Map<WidgetDisplayElement, Boolean> getSidebarWidgets() {
@@ -85,24 +83,23 @@ public class CMSPageTemplateEditBean implements Serializable {
     public List<CMSComponent> getAvailableComponents() {
         return this.contentManager.getComponents();
     }
-    
+
     public void setSelectedTemplate(CMSPageTemplate selectedTemplate) {
         this.selectedTemplate = new CMSPageTemplate(selectedTemplate);
     }
-    
+
     public CMSPageTemplate getSelectedTemplate() {
         return selectedTemplate;
     }
-    
+
     public void setSelectedTemplateId(Long id) throws DAOException {
         CMSPageTemplate template = this.dao.getCMSPageTemplate(id);
-        if(template == null) {
+        if (template == null) {
             throw new DAOException("No cms page template with id " + id + " found in DAO");
-        } else {
-            this.setSelectedTemplate(template);
         }
+        this.setSelectedTemplate(template);
     }
-    
+
     public void setNewSelectedTemplate() {
         this.selectedTemplate = new CMSPageTemplate();
     }

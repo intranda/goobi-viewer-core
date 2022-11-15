@@ -29,8 +29,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -39,14 +37,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
-import io.goobi.viewer.model.cms.pages.content.CMSComponentAttribute;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
@@ -112,60 +107,62 @@ public class CMSPageTemplate implements Serializable {
             logger.error(e1.toString(), e1);
             return null;
         }
-        if (doc != null) {
-            Element root = doc.getRootElement();
-            try {
-                CMSPageTemplate template = new CMSPageTemplate();
-                template.setTemplateFileName(file.getFileName().toString());
-                template.setId(root.getAttributeValue("id"));
-                template.setVersion(root.getAttributeValue("version"));
-                template.setName(root.getChildText("name"));
-                template.setDescription(root.getChildText("description"));
-                template.setIconFileName(root.getChildText("icon"));
-                template.setHtmlFileName(root.getChildText("html"));
-                for (Element eleContentItem : root.getChild("content").getChildren("item")) {
+        if (doc == null) {
+            return null;
+        }
 
-                    String itemId = eleContentItem.getAttributeValue("id");
-                    if ("preview01".equals(itemId)) {
-                        continue;//preview texts are directly in cmsPage. They should not be loaded as content item
-                    }
+        Element root = doc.getRootElement();
+        try {
+            CMSPageTemplate template = new CMSPageTemplate();
+            template.setTemplateFileName(file.getFileName().toString());
+            template.setId(root.getAttributeValue("id"));
+            template.setVersion(root.getAttributeValue("version"));
+            template.setName(root.getChildText("name"));
+            template.setDescription(root.getChildText("description"));
+            template.setIconFileName(root.getChildText("icon"));
+            template.setHtmlFileName(root.getChildText("html"));
+            for (Element eleContentItem : root.getChild("content").getChildren("item")) {
 
-                    CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
-                    CMSContentItemTemplate item = new CMSContentItemTemplate(type);
-                    item.setItemId(itemId);
-                    item.setItemLabel(eleContentItem.getAttributeValue("label"));
-                    item.setMandatory(Boolean.valueOf(eleContentItem.getAttributeValue("mandatory")));
-                    item.setMode(ContentItemMode.get(eleContentItem.getAttributeValue("mode")));
-                    item.setMediaFilter(eleContentItem.getAttributeValue("filter"));
-                    item.setInlineHelp(eleContentItem.getAttributeValue("inlinehelp"));
-                    item.setPreview(Boolean.parseBoolean(eleContentItem.getAttributeValue("preview")));
-                    item.setIgnoreCollectionHierarchy(Boolean.parseBoolean(eleContentItem.getAttributeValue("ignoreHierarchy")));
-                    item.setHitListOptions(Boolean.parseBoolean(eleContentItem.getAttributeValue("hitListOptions")));
-                    item.setRandomizeItems(Boolean.parseBoolean(eleContentItem.getAttributeValue("random")));
-
-                    if (eleContentItem.getAttribute("order") != null) {
-                        try {
-                            int order = Integer.parseInt(eleContentItem.getAttributeValue("order"));
-                            item.setOrder(order);
-                        } catch (NumberFormatException e) {
-                            logger.error("Error parsing order attribute of cms template {}. Value is {}", file.getFileName(),
-                                    eleContentItem.getAttributeValue("order"));
-                        }
-                    }
-                    template.getContentItems().add(item);
+                String itemId = eleContentItem.getAttributeValue("id");
+                if ("preview01".equals(itemId)) {
+                    continue;//preview texts are directly in cmsPage. They should not be loaded as content item
                 }
-                Collections.sort(template.getContentItems());
-                Element options = root.getChild("options");
-                if (options != null) {
-                    template.setDisplaySortingField(parseBoolean(options.getChildText("useSorterField")));
-                    template.setAppliesToExpandedUrl(parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
-                    template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), false));
+
+                CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
+                CMSContentItemTemplate item = new CMSContentItemTemplate(type);
+                item.setItemId(itemId);
+                item.setItemLabel(eleContentItem.getAttributeValue("label"));
+                item.setMandatory(Boolean.valueOf(eleContentItem.getAttributeValue("mandatory")));
+                item.setMode(ContentItemMode.get(eleContentItem.getAttributeValue("mode")));
+                item.setMediaFilter(eleContentItem.getAttributeValue("filter"));
+                item.setInlineHelp(eleContentItem.getAttributeValue("inlinehelp"));
+                item.setPreview(Boolean.parseBoolean(eleContentItem.getAttributeValue("preview")));
+                item.setIgnoreCollectionHierarchy(Boolean.parseBoolean(eleContentItem.getAttributeValue("ignoreHierarchy")));
+                item.setHitListOptions(Boolean.parseBoolean(eleContentItem.getAttributeValue("hitListOptions")));
+                item.setRandomizeItems(Boolean.parseBoolean(eleContentItem.getAttributeValue("random")));
+
+                if (eleContentItem.getAttribute("order") != null) {
+                    try {
+                        int order = Integer.parseInt(eleContentItem.getAttributeValue("order"));
+                        item.setOrder(order);
+                    } catch (NumberFormatException e) {
+                        logger.error("Error parsing order attribute of cms template {}. Value is {}", file.getFileName(),
+                                eleContentItem.getAttributeValue("order"));
+                    }
                 }
-                template.validate();
-                return template;
-            } catch (NullPointerException e) {
-                logger.error("Could not parse CMS template file '{}', check document structure.", file.getFileName());
+                template.getContentItems().add(item);
             }
+            Collections.sort(template.getContentItems());
+            Element options = root.getChild("options");
+            if (options != null) {
+                template.setDisplaySortingField(parseBoolean(options.getChildText("useSorterField")));
+                template.setAppliesToExpandedUrl(parseBoolean(options.getChildText("appliesToExpandedUrl"), true));
+                template.setMayHaveTopBarSlider(parseBoolean(options.getChildText("topBarSlider"), false));
+            }
+            template.validate();
+            return template;
+        } catch (NullPointerException e) {
+            logger.error("Could not parse CMS template file '{}', check document structure.", file.getFileName());
         }
 
         return null;
@@ -479,8 +476,9 @@ public class CMSPageTemplate implements Serializable {
      * @return the enabled
      * @throws DAOException
      */
-    public CMSPageTemplateEnabled getEnabled() throws DAOException {
-        return enabled = new CMSPageTemplateEnabled(id);
+    public CMSPageTemplateEnabled getEnabled() {
+        enabled = new CMSPageTemplateEnabled(id);
+        return enabled;
     }
 
     /**

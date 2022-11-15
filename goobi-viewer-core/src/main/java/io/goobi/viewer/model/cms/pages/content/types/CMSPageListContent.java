@@ -62,57 +62,60 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     private static final String COMPONENT_NAME = "pagelist";
     private static final int DEFAULT_ITEMS_PER_VIEW = 10;
 
-    
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "cms_content_pagelist_categories", joinColumns = @JoinColumn(name = "content_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinTable(name = "cms_content_pagelist_categories", joinColumns = @JoinColumn(name = "content_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
-    
-    @Column(name="items_per_view")
+
+    @Column(name = "items_per_view")
     private int itemsPerView;
-    @Column(name="group_by_category")
+    @Column(name = "group_by_category")
     private boolean groupByCategory = false;
-    
-    @Transient List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
-    
+
+    @Transient
+    List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
+
     @Transient
     List<CMSPage> nestedPages = null;
     @Transient
     private int nestedPagesCount = 0;
-    
+
     public CMSPageListContent() {
         super();
         this.categories = new ArrayList<>();
         this.itemsPerView = DEFAULT_ITEMS_PER_VIEW;
     }
-    
+
     private CMSPageListContent(CMSPageListContent orig) {
         super(orig);
         this.categories = orig.categories;
         this.itemsPerView = orig.itemsPerView;
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
     }
-    
+
     public List<CMSCategory> getCategories() {
         return categories;
     }
 
     public List<CheckboxSelectable<CMSCategory>> getSelectableCategories() throws DAOException {
-        if(this.selectableCategories == null) {
+        if (this.selectableCategories == null) {
             createSelectableCategories();
         }
         return this.selectableCategories;
-        
+
     }
 
     private void createSelectableCategories() throws DAOException {
-        this.selectableCategories = DataManager.getInstance().getDao().getAllCategories()
-            .stream()
-           .map(cat -> new CheckboxSelectable<>(this.categories, cat, c -> c.getName()))
-           .collect(Collectors.toList());
+        this.selectableCategories = DataManager.getInstance()
+                .getDao()
+                .getAllCategories()
+                .stream()
+                .map(cat -> new CheckboxSelectable<>(this.categories, cat, c -> c.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -132,24 +135,22 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
 
     @Override
     public boolean addCategory(CMSCategory category) {
-        if(!this.categories.contains(category)) {            
+        if (!this.categories.contains(category)) {
             this.selectableCategories = null; //reset selectable categories
             return this.categories.add(category);
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
     public boolean removeCategory(CMSCategory category) {
-        if(this.categories.contains(category)) {            
+        if (this.categories.contains(category)) {
             this.selectableCategories = null; //reset selectable categories
             return this.categories.remove(category);
-        } else {
-            return false;
         }
+        return false;
     }
-    
+
     /**
      * <p>
      * Getter for the field <code>nestedPages</code>.
@@ -178,12 +179,12 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
         if (nestedPages == null) {
             nestedPages = loadNestedPages(pageNo, random, paged);
         }
-        List<CMSPage> pages = nestedPages.stream()
+        return nestedPages.stream()
                 .filter(child -> this.getCategories().isEmpty()
                         || !CollectionUtils.intersection(this.getCategories(), child.getCategories()).isEmpty())
                 .collect(Collectors.toList());
-        return pages;
     }
+
     /**
      * <p>
      * resetData.
@@ -192,7 +193,15 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     public void resetData() {
         nestedPages = null;
     }
-    
+
+    /**
+     * 
+     * @param pageNo
+     * @param random
+     * @param paged
+     * @return
+     * @throws DAOException
+     */
     private List<CMSPage> loadNestedPages(int pageNo, boolean random, boolean paged) throws DAOException {
         int size = getItemsPerView();
         int offset = (pageNo - 1) * size;
@@ -206,17 +215,18 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
                 .filter(child -> getCategories().isEmpty() || !CollectionUtils.intersection(getCategories(), child.getCategories()).isEmpty())
                 .peek(child -> totalPages.incrementAndGet());
         if (random) {
-            nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<CMSPage>());
+            nestedPagesStream = nestedPagesStream.sorted(new RandomComparator<>());
         } else {
             nestedPagesStream = nestedPagesStream.sorted(new CMSPage.PageComparator());
         }
         if (paged) {
             nestedPagesStream = nestedPagesStream.skip(offset).limit(size);
         }
-        List<CMSPage> nestedPages = nestedPagesStream.collect(Collectors.toList());
+        List<CMSPage> ret = nestedPagesStream.collect(Collectors.toList());
         setNestedPagesCount((int) Math.ceil((totalPages.intValue()) / (double) size));
-        return nestedPages;
+        return ret;
     }
+
     /**
      * <p>
      * Getter for the field <code>nestedPagesCount</code>.
@@ -227,6 +237,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     public int getNestedPagesCount() {
         return nestedPagesCount;
     }
+
     /**
      * <p>
      * Setter for the field <code>nestedPagesCount</code>.
@@ -237,7 +248,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     public void setNestedPagesCount(int nestedPages) {
         this.nestedPagesCount = nestedPages;
     }
-    
+
     /**
      * <p>
      * getSortedCategories.
@@ -267,11 +278,10 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
         return Collections.emptyList();
     }
 
-    
     public int getItemsPerView() {
         return itemsPerView;
     }
-    
+
     public void setItemsPerView(int itemsPerView) {
         this.itemsPerView = itemsPerView;
     }
@@ -279,16 +289,16 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     public void setGroupByCategory(boolean groupByCategory) {
         this.groupByCategory = groupByCategory;
     }
-    
+
     public boolean isGroupByCategory() {
         return groupByCategory;
     }
-    
+
     @Override
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     @Override
     public boolean isEmpty() {
         return false;

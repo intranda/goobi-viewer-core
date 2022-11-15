@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
@@ -42,13 +40,9 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -59,13 +53,11 @@ public class CMSSearchContent extends CMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "search";
 
-    
     @Column(name = "search_prefix")
     private String searchPrefix = "";
 
     @Column(name = "displayEmptySearchResults")
     private boolean displayEmptySearchResults = false;
-
 
     @Transient
     private final SearchFunctionality search;
@@ -83,14 +75,14 @@ public class CMSSearchContent extends CMSContent {
     }
 
     private SearchFunctionality initSearch() {
-        if(this.getOwningComponent() != null) {            
-            SearchFunctionality func = new SearchFunctionality(this.searchPrefix, Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwningPage()).map(p -> p.getPageUrl()).orElse(""));
+        if (this.getOwningComponent() != null) {
+            SearchFunctionality func = new SearchFunctionality(this.searchPrefix,
+                    Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwningPage()).map(p -> p.getPageUrl()).orElse(""));
             func.setPageNo(Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getListPage).orElse(1));
             func.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             return func;
-        } else {
-            return new SearchFunctionality(this.searchPrefix, "");
         }
+        return new SearchFunctionality(this.searchPrefix, "");
     }
 
     public void setSearchPrefix(String searchPrefix) {
@@ -120,8 +112,7 @@ public class CMSSearchContent extends CMSContent {
 
     @Override
     public CMSContent copy() {
-        CMSSearchContent copy = new CMSSearchContent(this);
-        return copy;
+        return new CMSSearchContent(this);
     }
 
     @Override
@@ -144,7 +135,7 @@ public class CMSSearchContent extends CMSContent {
                     String searchString = StringUtils.isNotBlank(this.search.getQueryString().replace("-", "")) ? this.search.getQueryString() : "";
                     searchBean.setExactSearchString(searchString);
                     return searchAction();
-                } 
+                }
             }
         } catch (ViewerConfigurationException | IndexUnreachableException | DAOException e) {
             throw new PresentationException("Error setting up search on page load", e);
@@ -172,15 +163,16 @@ public class CMSSearchContent extends CMSContent {
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     /**
      * Alias for {@link #getSearch()}. Used in legacy templates
+     * 
      * @return
      */
     public Functionality getFunctionality() {
         return getSearch();
     }
-    
+
     @Override
     public boolean isEmpty() {
         return false;

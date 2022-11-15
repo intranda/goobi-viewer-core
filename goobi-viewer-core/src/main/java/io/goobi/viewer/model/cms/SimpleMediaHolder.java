@@ -41,7 +41,6 @@ public class SimpleMediaHolder implements CMSMediaHolder {
         this.filter = filter;
     }
 
-
     public SimpleMediaHolder(CMSMediaItem item) {
         this();
         setMediaItem(item);
@@ -58,7 +57,6 @@ public class SimpleMediaHolder implements CMSMediaHolder {
         if (mediaItem != null) {
             this.mediaItemWrapper = new CategorizableTranslatedSelectable<>(mediaItem, true,
                     mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
-            ;
         } else {
             this.mediaItemWrapper = null;
         }

@@ -438,6 +438,35 @@
 			width: 150px;
 		}
 	}
+	&__choose-template-wrapper {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+	&__choose-template-box {
+		background: #fff;
+		padding: 2rem;
+		transition: background .2s ease;
+		border: 1px solid #ccc;
+		position: relative;
+		display: flex;
+		gap: 20px;
+	}
+	&__choose-template-box-start {
+	}
+	&__choose-template-box-end {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		// gap: 20px;
+		align-items: flex-end;
+		h2 {
+			align-self: flex-start;
+		}
+		.btn {
+			margin-top: auto;
+		}
+	}
 }
 
 /* EDIT CONTENT PAGE */

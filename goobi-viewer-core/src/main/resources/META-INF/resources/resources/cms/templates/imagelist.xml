@@ -2,7 +2,7 @@
 <component>
 	<jsfComponent>
 		<library>cms/components/frontend/component</library>
-		<name>imagelist</name>
+		<name>masonry</name>
 	</jsfComponent>
 	<label>cms_component__imagelist_label</label>
 	<description>cms_component__imagelist_desc</description>
@@ -14,7 +14,7 @@
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
-				<name>imagelist</name>
+				<name>masonry</name>
 			</jsfComponent>
 		</item>
 	</content>

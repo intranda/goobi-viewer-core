@@ -2567,6 +2567,7 @@ public interface IDAO {
 
     public Long getNumRecordsWithComments(User user) throws DAOException;
 
+    @SuppressWarnings("rawtypes")
     public List getNativeQueryResults(String query) throws DAOException;
 
     public int executeUpdate(String string) throws DAOException;

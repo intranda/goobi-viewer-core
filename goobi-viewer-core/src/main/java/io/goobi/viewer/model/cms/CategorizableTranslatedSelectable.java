@@ -47,7 +47,6 @@ public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T
     public CategorizableTranslatedSelectable(T value, boolean selected, Locale defaultLocale, List<Selectable<CMSCategory>> categories) {
         super(value, selected, defaultLocale);
         this.categories = categories;
-        // TODO Auto-generated constructor stub
     }
 
     /**

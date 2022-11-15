@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -48,36 +46,35 @@ public class CMSMetadataContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "metadata";
     private static final String DEFAULT_METADATA_FIELD_SELECTION = "URN,PI,MD_TITLE,DOCSTRCT_TOP";
-    
-    @Column(name="metadata_fields")
+
+    @Column(name = "metadata_fields")
     private String metadataFields = DEFAULT_METADATA_FIELD_SELECTION;
-    
+
     public CMSMetadataContent() {
         super();
     }
-    
+
     private CMSMetadataContent(CMSMetadataContent orig) {
         super(orig);
         this.metadataFields = orig.metadataFields;
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
     }
-    
+
     public String getMetadataFields() {
         return metadataFields;
     }
-    
+
     public void setMetadataFields(String metadataFields) {
         this.metadataFields = metadataFields;
     }
-    
+
     public List<String> getMetadataFieldsAsList() {
         if (StringUtils.isNotBlank(metadataFields)) {
-            List<String> ret = Arrays.stream(metadataFields.split(",")).collect(Collectors.toList());
-            return ret;
+            return Arrays.stream(metadataFields.split(",")).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
@@ -104,12 +101,12 @@ public class CMSMetadataContent extends CMSContent {
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return "";
     }
-    
+
     @Override
     public String getData(Integer w, Integer h) {
         return "";
     }
-    
+
     @Override
     public boolean isEmpty() {
         return StringUtils.isBlank(metadataFields);

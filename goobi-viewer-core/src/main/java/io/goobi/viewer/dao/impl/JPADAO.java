@@ -3056,7 +3056,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -3269,7 +3268,8 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em
-                    .createQuery("SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.publicationStatus = :publicationStatus")
+                    .createQuery(
+                            "SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.publicationStatus = :publicationStatus")
                     .setParameter("pi", pi)
                     .setParameter("publicationStatus", PublicationStatus.PUBLISHED)
                     .setMaxResults(1);
@@ -3385,7 +3385,7 @@ public class JPADAO implements IDAO {
             }
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean deleteCMSComponent(PersistentCMSComponent component) throws DAOException {
@@ -3408,7 +3408,6 @@ public class JPADAO implements IDAO {
             }
         }
     }
-    
 
     @Override
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
@@ -3465,7 +3464,6 @@ public class JPADAO implements IDAO {
             }
         }
     }
-    
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
@@ -6387,6 +6385,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List getNativeQueryResults(String query) throws DAOException {
         preQuery();
@@ -6964,51 +6963,51 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPageTemplate> getAllCMSPageTemplates() throws DAOException {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSPageTemplate o");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get cms page templates. Returning empty list", e.toString());
-                return new ArrayList<>();
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSPageTemplate o");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get cms page templates. Returning empty list", e.toString());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
     }
 
     @Override
     public CMSPageTemplate getCMSPageTemplate(Long id) throws DAOException {
-            logger.trace("getCMSPage: {}", id);
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                CMSPageTemplate o = em.getReference(CMSPageTemplate.class, id);
-                return o;
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                close(em);
-            }
+        logger.trace("getCMSPage: {}", id);
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            CMSPageTemplate o = em.getReference(CMSPageTemplate.class, id);
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
     }
 
     @Override
     public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException {
 
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                startTransaction(em);
-                em.persist(template);
-                commitTransaction(em);
-                return true;
-            } catch (PersistenceException e) {
-                logger.error("Error adding cmsPage to database", e);
-                handleException(em);
-                return false;
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(template);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error adding cmsPage to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
     }
 
     @Override

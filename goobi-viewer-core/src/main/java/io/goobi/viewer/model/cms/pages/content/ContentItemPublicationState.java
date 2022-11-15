@@ -22,7 +22,7 @@
 package io.goobi.viewer.model.cms.pages.content;
 
 /**
- *  The publication state of a content item, determining what kind of users may see the item on a page
+ * The publication state of a content item, determining what kind of users may see the item on a page
  * 
  * @author florian
  *

@@ -126,8 +126,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /**
-     * Default constructor, creating a Collection from the identifying fields {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrField} and
-     * {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrFieldValue}
+     * Default constructor, creating a Collection from the identifying fields {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrField}
+     * and {@link io.goobi.viewer.model.cms.collections.CMSCollection#solrFieldValue}
      *
      * @param solrField The name of the SOLR field holding the values for the collection
      * @param solrFieldValue The value of the solrField identifying this collection
@@ -525,7 +525,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /** {@inheritDoc} */
     @Override
     public String getName() {
-        return solrFieldValue;
+        return getSolrFieldValue();
     }
 
     /** {@inheritDoc} */
@@ -547,8 +547,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             } else {
                 applicationUri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/");
             }
-            URI uri = applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", "").trim());
-            return uri;
+            return applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", "").trim());
         }
 
         return null;
@@ -644,8 +643,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             return ViewerResourceBundle.getTranslations(getSolrFieldValue());
         }
 
-        IMetadataValue value = new MultiLanguageMetadataValue(labels);
-        return value;
+        return new MultiLanguageMetadataValue(labels);
     }
 
     @Override
@@ -657,8 +655,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             return null;
         }
 
-        IMetadataValue value = new MultiLanguageMetadataValue(descriptions);
-        return value;
+        return new MultiLanguageMetadataValue(descriptions);
     }
 
     /* (non-Javadoc)
@@ -677,7 +674,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     @Override
     public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
         if (hasMediaItem()) {
-            return new CategorizableTranslatedSelectable<CMSMediaItem>(mediaItem, true,
+            return new CategorizableTranslatedSelectable<>(mediaItem, true,
                     mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
         }
 

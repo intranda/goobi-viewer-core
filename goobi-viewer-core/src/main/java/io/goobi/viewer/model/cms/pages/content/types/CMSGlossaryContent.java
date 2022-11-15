@@ -48,22 +48,21 @@ import jakarta.persistence.Table;
 public class CMSGlossaryContent extends CMSContent {
 
     private static final Logger logger = LogManager.getLogger(CMSGlossaryContent.class);
-    
+
     private static final String COMPONENT_NAME = "glossary";
-    
-    @Column(name="glossary")
+
+    @Column(name = "glossary")
     private String glossaryName;
-    
+
     public CMSGlossaryContent() {
         super();
     }
-    
+
     private CMSGlossaryContent(CMSGlossaryContent orig) {
         super(orig);
         this.glossaryName = orig.glossaryName;
     }
-    
-    
+
     @Override
     public String getBackendComponentName() {
         return COMPONENT_NAME;
@@ -72,11 +71,11 @@ public class CMSGlossaryContent extends CMSContent {
     public String getGlossaryName() {
         return glossaryName;
     }
-    
+
     public void setGlossaryName(String glossaryName) {
         this.glossaryName = glossaryName;
     }
-    
+
     /**
      * <p>
      * getGlossary.
@@ -88,15 +87,14 @@ public class CMSGlossaryContent extends CMSContent {
      * @throws org.json.JSONException if any.
      */
     public Glossary getGlossary() throws ContentNotFoundException, IOException, JSONException {
-        try {            
+        try {
             return new GlossaryManager().getGlossary(getGlossaryName());
-        } catch(ContentNotFoundException | IOException | JSONException e) {
+        } catch (ContentNotFoundException | IOException | JSONException e) {
             logger.error("Error loading glossary {}. Reason: {}", this.glossaryName, e.toString());
             return null;
         }
     }
 
-    
     @Override
     public CMSContent copy() {
         return new CMSGlossaryContent(this);
@@ -122,7 +120,7 @@ public class CMSGlossaryContent extends CMSContent {
         }
 
     }
-    
+
     @Override
     public boolean isEmpty() {
         return StringUtils.isEmpty(glossaryName);

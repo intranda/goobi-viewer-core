@@ -27,52 +27,49 @@ import java.util.Optional;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.cms.media.CMSMediaHolder;
-import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
-import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Wraps a {@link CMSContent} within a {@link CMSPage}
+ * 
  * @author florian
  *
  */
 public class CMSContentItem {
-    
+
     private static final Logger logger = LogManager.getLogger(CMSContentItem.class);
-    
+
     /**
      * Local identifier within the component. Used to reference this item within the component xhtml
      */
     private final String itemId;
-    
+
     /**
      * The actual {@link CMSContent} wrapped in this item
      */
     private final CMSContent content;
-        
+
     private final String label;
-    
+
     private final String description;
-    
+
     private final JsfComponent jsfComponent;
-    
+
     private final boolean required;
 
     private UIComponent uiComponent;
-    
+
     public CMSContentItem(CMSContentItem orig) {
         this.itemId = orig.itemId;
         this.content = orig.content.copy();
@@ -81,19 +78,19 @@ public class CMSContentItem {
         this.jsfComponent = orig.jsfComponent;
         this.required = orig.required;
     }
-    
+
     /**
      * 
      * @param itemId
      * @param content
      */
     public CMSContentItem(String itemId, CMSContent content, String label, String description, JsfComponent jsfComponent, boolean required) {
-        if(StringUtils.isNotBlank(itemId)) {
-            this.itemId = itemId;            
+        if (StringUtils.isNotBlank(itemId)) {
+            this.itemId = itemId;
         } else {
             throw new IllegalArgumentException("ItemId of CMSContentItem may not be blank");
         }
-        if(content != null) {            
+        if (content != null) {
             this.content = content;
             this.content.setItemId(this.getItemId());
         } else {
@@ -104,7 +101,7 @@ public class CMSContentItem {
         this.jsfComponent = jsfComponent;
         this.required = required;
     }
-    
+
     public boolean isRequired() {
         return required;
     }
@@ -112,32 +109,32 @@ public class CMSContentItem {
     public String getItemId() {
         return itemId;
     }
-    
+
     public CMSContent getContent() {
         return content;
     }
-    
+
     public String getLabel() {
         return label;
     }
-    
+
     public String getItemLabel() {
         return getLabel();
     }
-    
+
     public String getDescription() {
         return description;
     }
-    
+
     public JsfComponent getJsfComponent() {
         return jsfComponent;
     }
-    
+
     @Override
     public int hashCode() {
         return itemId.hashCode();
     }
-    
+
     public boolean isMandatory() {
         return this.required;
     }
@@ -147,55 +144,55 @@ public class CMSContentItem {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            return ((CMSContentItem)obj).itemId.equals(this.itemId);
-        } else {
-            return false;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            return ((CMSContentItem) obj).itemId.equals(this.itemId);
         }
+        return false;
     }
-    
+
     public UIComponent getUiComponent() throws PresentationException {
-        
-        if(this.uiComponent == null) {
+
+        if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            //String id = FilenameUtils.getBaseName("content_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.uiComponent = new HtmlPanelGroup();
-            //this.uiComponent.setId(id);
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
             this.uiComponent.getChildren().add(wrapper);
-            if(StringUtils.isBlank(this.getJsfComponent().getFilename())) {
-                logger.warn("No backend component available for contentItem {}" + this.getContent().getBackendComponentName());
-            } else {                
+            if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
+                logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
+            } else {
                 UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.singletonMap("contentItem", this));
-                if(component == null) {
-                    throw new PresentationException("Error building jsf-component from " + this.getJsfComponent() + ". Please check that the file exists and is a valid jsf component file.");
-                } 
+                if (component == null) {
+                    throw new PresentationException("Error building jsf-component from " + this.getJsfComponent()
+                            + ". Please check that the file exists and is a valid jsf component file.");
+                }
+
             }
         }
         return uiComponent;
     }
-    
+
     public void setUiComponent(UIComponent uiComponent) {
         this.uiComponent = uiComponent;
     }
-    
+
     /**
-     * Check if the {@link #content} attribute exists (i.e. database data is present). 
-     * If so, and it is textual or media content, also check if text is empty or the media item exists
+     * Check if the {@link #content} attribute exists (i.e. database data is present). If so, and it is textual or media content, also check if text
+     * is empty or the media item exists
+     * 
      * @return true if no database entry exists or if it doesn't contain data which can be presented
      */
     public boolean isEmpty() {
         return Optional.ofNullable(this.content).map(CMSContent::isEmpty).orElse(true);
     }
-    
+
     public boolean isShortText() {
         return Optional.ofNullable(this.content).map(CMSShortTextContent.class::isInstance).orElse(false);
     }
-    
+
     public boolean isHtmlText() {
         return Optional.ofNullable(this.content).map(CMSMediumTextContent.class::isInstance).orElse(false);
     }
-    
+
     public boolean isMedia() {
         return Optional.ofNullable(this.content).map(CMSMediaContent.class::isInstance).orElse(false);
     }

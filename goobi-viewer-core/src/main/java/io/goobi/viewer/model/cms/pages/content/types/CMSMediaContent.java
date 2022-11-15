@@ -39,13 +39,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
@@ -55,7 +53,6 @@ import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -67,10 +64,9 @@ import jakarta.persistence.Table;
 public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
 
     private static final Logger logger = LogManager.getLogger(CMSMediaContent.class);
-    
+
     private static final String BACKEND_COMPONENT_NAME = "media";
 
-    
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
 
@@ -130,7 +126,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     }
 
     public String getUrl(String width, String height) throws ViewerConfigurationException, UnsupportedEncodingException {
-        
+
         String contentString = "";
         String type = getMediaType();
         switch (type) {
@@ -169,10 +165,8 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
 
     @Override
     public CMSContent copy() {
-        CMSMediaContent copy = new CMSMediaContent(this);
-        return copy;
+        return new CMSMediaContent(this);
     }
-
 
     @Override
     public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
@@ -202,12 +196,12 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
 
         return ret;
     }
-    
+
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
-    
+
     /**
      * <p>
      * getMediaName.
@@ -220,6 +214,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
         CMSMediaItemMetadata metadata = getMediaMetadata();
         return metadata == null ? "" : metadata.getName();
     }
+
     /**
      * <p>
      * getMediaDescription.
@@ -233,7 +228,6 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
         return metadata == null ? "" : metadata.getDescription();
     }
 
-    
     /**
      * <p>
      * getMediaMetadata.
@@ -250,7 +244,6 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
         }
         return null;
     }
-    
 
     @Override
     public String getData(Integer w, Integer h) {
@@ -261,7 +254,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
             return "";
         }
     }
-    
+
     @Override
     public boolean isEmpty() {
         return Optional.ofNullable(mediaItem).map(media -> StringUtils.isBlank(media.getFileName())).orElse(true);

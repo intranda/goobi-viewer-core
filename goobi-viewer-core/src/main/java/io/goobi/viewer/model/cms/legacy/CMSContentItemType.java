@@ -41,6 +41,7 @@ public enum CMSContentItemType {
     BROWSETERMS,
     GEOMAP,
     SLIDER;
+
     /**
      * This method evaluates the text from cms-template xml files to select the correct item type
      *

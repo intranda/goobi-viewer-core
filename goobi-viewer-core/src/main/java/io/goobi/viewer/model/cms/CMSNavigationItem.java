@@ -423,7 +423,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
             URI uri = new URI(url);
             return uri.isAbsolute();
         } catch (URISyntaxException e) {
-            logger.warn("Failed to validate url " + pageUrl + ". Assuming it to be an absolute url");
+            logger.warn("Failed to validate url {}. Assuming it to be an absolute url", pageUrl);
             return true;
         }
     }
@@ -751,7 +751,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return openInNewWindow;
     }
 
-    public static enum DisplayRule {
+    public enum DisplayRule {
         ALWAYS,
         NOT_LOGGED_IN,
         LOGGED_IN,

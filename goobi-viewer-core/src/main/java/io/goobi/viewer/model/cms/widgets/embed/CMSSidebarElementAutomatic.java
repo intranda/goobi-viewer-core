@@ -21,19 +21,19 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 
 /**
  * Wrapper for automatic widgets contained in a CMSPage. Currently always bound to a {@link GeoMap} object to display in this widget
+ * 
  * @author florian
  *
  */
@@ -53,6 +53,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
 
     /**
      * Default constructor for a {@link GeoMap} to display and an owning {@link CMSPage}
+     * 
      * @param map
      * @param owner
      */
@@ -61,14 +62,14 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
         this.map = map;
     }
 
-
     public CMSSidebarElementAutomatic(GeoMap map, CMSPageTemplate owner) {
         super(AutomaticWidgetType.WIDGET_CMSGEOMAP, owner);
         this.map = map;
     }
-    
+
     /**
      * Cloning constructor assigning the given CMSPage as owner
+     * 
      * @param orig
      * @param owner
      */
@@ -82,9 +83,9 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
         this.map = orig.map;
     }
 
-
     /**
      * The underlying {@link GeoMap}
+     * 
      * @return the map
      */
     public GeoMap getMap() {
@@ -93,6 +94,7 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
 
     /**
      * The title of the underlying geomap
+     * 
      * @return the title
      */
     @Override

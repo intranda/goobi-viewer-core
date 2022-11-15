@@ -58,7 +58,7 @@ public class CMSPageContentManager {
         }
     }
 
-    private List<CMSComponent> loadComponents(Path folder) throws IOException {
+    private static List<CMSComponent> loadComponents(Path folder) throws IOException {
         if(folder == null || !Files.isDirectory(folder)) {
             throw new FileNotFoundException(folder + " doesn't exist or is not a directory");
         }

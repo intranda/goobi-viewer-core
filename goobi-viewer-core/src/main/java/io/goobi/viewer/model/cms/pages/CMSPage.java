@@ -182,7 +182,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @JoinColumn(name = "slider_id")
     private CMSSlider topbarSlider = null;
 
-    @OneToMany(cascade=CascadeType.ALL, orphanRemoval=true, mappedBy="owningPage")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owningPage")
     @PrivateOwned
     @CascadeOnDelete
     private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
@@ -231,7 +231,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Transient
     private final CMSTemplateManager templateManager;
 
-    
     /**
      * <p>
      * Constructor for CMSPage.
@@ -497,7 +496,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @return the published
      */
     public boolean isPublished() {
-        return publicationStatus.PUBLISHED.equals(this.publicationStatus);
+        return PublicationStatus.PUBLISHED.equals(this.publicationStatus);
     }
 
     /**
@@ -568,7 +567,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                         GeoMap map = DataManager.getInstance().getDao().getGeoMap(displayWidget.getId());
                         element = new CMSSidebarElementAutomatic(map, this);
                     } catch (DAOException e) {
-                        logger.error("Unable to add widget: Cannot load geomap id=" + displayWidget.getId());
+                        logger.error("Unable to add widget: Cannot load geomap id={}", displayWidget.getId());
                     }
                     break;
                 case CUSTOM:
@@ -576,7 +575,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                         CustomSidebarWidget widget = DataManager.getInstance().getDao().getCustomWidget(displayWidget.getId());
                         element = new CMSSidebarElementCustom(widget, this);
                     } catch (DAOException e) {
-                        logger.error("Unable to add widget: Cannot load geomap id=" + displayWidget.getId());
+                        logger.error("Unable to add widget: Cannot load geomap id={}", displayWidget.getId());
                     }
                     break;
             }
@@ -590,7 +589,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         int currentIndex = this.sidebarElements.indexOf(element);
         if (currentIndex > 0) {
             int newIndex = currentIndex - 1;
-            CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
+            this.sidebarElements.remove(currentIndex);
             this.sidebarElements.add(newIndex, element);
         }
     }
@@ -599,7 +598,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         int currentIndex = this.sidebarElements.indexOf(element);
         if (currentIndex > -1 && currentIndex < this.sidebarElements.size() - 1) {
             int newIndex = currentIndex + 1;
-            CMSSidebarElement removed = this.sidebarElements.remove(currentIndex);
+            this.sidebarElements.remove(currentIndex);
             this.sidebarElements.add(newIndex, element);
         }
     }
@@ -756,9 +755,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getMenuTitleOrTitle() {
         if (this.menuTitle.isEmpty()) {
             return this.title.getTextOrDefault();
-        } else {
-            return this.menuTitle.getTextOrDefault();
         }
+        return this.menuTitle.getTextOrDefault();
     }
 
     /**
@@ -886,6 +884,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public static class PageComparator implements Comparator<CMSPage> {
         //null values are high
+        @SuppressWarnings("rawtypes")
         NullComparator nullComparator = new NullComparator(true);
 
         @Override
@@ -1058,12 +1057,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @throws java.lang.ClassCastException if the returned property has the wrong generic type.
      */
     public CMSProperty getProperty(String key) throws ClassCastException {
-        CMSProperty property = this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
+        return this.properties.stream().filter(prop -> key.equalsIgnoreCase(prop.getKey())).findFirst().orElseGet(() -> {
             CMSProperty prop = new CMSProperty(key);
             this.properties.add(prop);
             return prop;
         });
-        return property;
     }
 
     /*
@@ -1074,12 +1072,12 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        String title = this.getTitle();
-        if (StringUtils.isBlank(title)) {
+        String t = this.getTitle();
+        if (StringUtils.isBlank(t)) {
             return "ID: " + this.getId() + " (no title)";
 
         }
-        return title;
+        return t;
     }
 
     /**
@@ -1174,9 +1172,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
-        } catch (PresentationException e) {
-            logger.error(e.getMessage(), e);
-        } catch (IndexUnreachableException e) {
+        } catch (PresentationException | IndexUnreachableException e) {
             logger.error(e.getMessage(), e);
         }
 
@@ -1202,7 +1198,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             try {
                 ret.addAll(cmsContent.exportHtmlFragment(outputFolderPath, namingScheme));
             } catch (IOException | ViewerConfigurationException e) {
-                logger.error("Error writing html file for cms content " + cmsContent.getId());
+                logger.error("Error writing html file for cms content {}", cmsContent.getId());
             }
         }
         return ret;
@@ -1335,7 +1331,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public PersistentCMSComponent addComponent(String filename) throws IllegalArgumentException, IllegalStateException {
-        if(this.templateManager == null) {
+        if (this.templateManager == null) {
             throw new IllegalStateException("Components can only be added if cmsPage was created by a non-default constructor");
         }
         return addComponent(templateManager

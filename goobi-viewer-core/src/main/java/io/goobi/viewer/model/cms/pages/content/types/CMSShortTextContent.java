@@ -51,6 +51,7 @@ import jakarta.persistence.Table;
 
 /**
  * CMS content for small texts, holding up to 4,294,967,295 characters (all translations combined)
+ * 
  * @author florian
  *
  */
@@ -61,7 +62,6 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
 
     private static final String BACKEND_COMPONENT_NAME = "text";
 
-    
     @Column(name = "shorttext_text", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text = new TranslatedText();
@@ -69,12 +69,12 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     public CMSShortTextContent() {
         super();
     }
-    
+
     public CMSShortTextContent(CMSShortTextContent orig) {
         super(orig);
         this.text = new TranslatedText(orig.text);
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return BACKEND_COMPONENT_NAME;
@@ -83,17 +83,16 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     public TranslatedText getText() {
         return text;
     }
-    
+
     public void setText(TranslatedText text) {
         this.text = text;
     }
-    
+
     @Override
     public CMSContent copy() {
-        CMSShortTextContent copy = new CMSShortTextContent(this);
-        return copy;
+        return new CMSShortTextContent(this);
     }
-    
+
     @Override
     public boolean isComplete(Locale locale) {
         return this.text.isComplete(locale);
@@ -118,7 +117,7 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     public void setSelectedLocale(Locale locale) {
         this.text.setSelectedLocale(locale);
     }
-    
+
     @Override
     public List<File> exportHtmlFragment(String outputFolderPath, String namingScheme) throws IOException, ViewerConfigurationException {
         if (StringUtils.isEmpty(outputFolderPath)) {
@@ -136,12 +135,12 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
         if (!Files.isDirectory(cmsDataDir)) {
             Files.createDirectory(cmsDataDir);
         }
-        
+
         List<File> filesWritten = new ArrayList<>();
         for (String language : text.getLanguages()) {
             String string = text.getValue(language).orElse(null);
-            if(StringUtils.isNotBlank(string)) {
-                File file = new File(cmsDataDir.toFile(), this.getId() + "-" + language + ".xml");                
+            if (StringUtils.isNotBlank(string)) {
+                File file = new File(cmsDataDir.toFile(), this.getId() + "-" + language + ".xml");
                 FileUtils.writeStringToFile(file, string, StringTools.DEFAULT_ENCODING);
                 filesWritten.add(file);
             }
@@ -154,12 +153,12 @@ public class CMSShortTextContent extends CMSContent implements TranslatableCMSCo
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
-    
+
     @Override
     public String getData(Integer w, Integer h) {
         return getText().getTextOrDefault();
     }
-    
+
     @Override
     public boolean isEmpty() {
         return Optional.ofNullable(text).map(TranslatedText::isEmpty).orElse(true);

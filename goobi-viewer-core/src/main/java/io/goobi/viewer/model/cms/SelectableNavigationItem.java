@@ -25,8 +25,8 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  *
- * A {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems to be used
- * in the navigation menu
+ * A {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems
+ * to be used in the navigation menu
  *
  * @author Florian Alpers
  */

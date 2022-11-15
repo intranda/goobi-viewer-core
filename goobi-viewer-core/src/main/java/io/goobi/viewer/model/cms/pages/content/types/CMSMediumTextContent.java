@@ -47,13 +47,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
  * CMS content for longer texts, holding up to 16,777,215 characters (all translations combined)
+ * 
  * @author florian
  *
  */
@@ -64,7 +62,6 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
 
     private static final String BACKEND_COMPONENT_NAME = "htmltext";
 
-    
     @Column(name = "mediumtext_text", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText text = new TranslatedText();
@@ -72,12 +69,12 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
     public CMSMediumTextContent() {
         super();
     }
-    
+
     public CMSMediumTextContent(CMSMediumTextContent orig) {
         super(orig);
         this.text = new TranslatedText(orig.text);
     }
-    
+
     @Override
     public String getBackendComponentName() {
         return BACKEND_COMPONENT_NAME;
@@ -86,15 +83,14 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
     public TranslatedText getText() {
         return text;
     }
-    
+
     public void setText(TranslatedText text) {
         this.text = text;
     }
 
     @Override
     public CMSContent copy() {
-        CMSMediumTextContent copy = new CMSMediumTextContent(this);
-        return copy;
+        return new CMSMediumTextContent(this);
     }
 
     @Override
@@ -139,12 +135,12 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
         if (!Files.isDirectory(cmsDataDir)) {
             Files.createDirectory(cmsDataDir);
         }
-        
+
         List<File> filesWritten = new ArrayList<>();
         for (String language : text.getLanguages()) {
             String string = text.getValue(language).orElse(null);
-            if(StringUtils.isNotBlank(string)) {
-                File file = new File(cmsDataDir.toFile(), this.getId() + "-" + language + ".xml");                
+            if (StringUtils.isNotBlank(string)) {
+                File file = new File(cmsDataDir.toFile(), this.getId() + "-" + language + ".xml");
                 FileUtils.writeStringToFile(file, string, StringTools.DEFAULT_ENCODING);
                 filesWritten.add(file);
             }
@@ -152,17 +148,17 @@ public class CMSMediumTextContent extends CMSContent implements TranslatableCMSC
 
         return ret;
     }
-    
+
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         return null;
     }
-    
+
     @Override
     public String getData(Integer w, Integer h) {
         return getText().getTextOrDefault();
     }
-    
+
     @Override
     public boolean isEmpty() {
         return Optional.ofNullable(text).map(TranslatedText::isEmpty).orElse(true);
