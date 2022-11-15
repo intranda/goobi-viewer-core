@@ -156,7 +156,7 @@ public class CMSMediaResource {
                 .stream()
                 .filter(
                         item -> tagList.isEmpty() ||
-                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
+                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(tagList::contains))
                 .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
                 .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
@@ -384,7 +384,8 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
+    public Response
+            uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
             @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
             throws DAOException {
 

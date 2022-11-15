@@ -72,14 +72,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -119,9 +118,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class CMSMediaResource {
 
     private static final Logger logger = LogManager.getLogger(CMSMediaResource.class);
-    
+
     private static final String FILE_NOT_FOUND_MESSAGE = "File {} not found in file system";
-    
+
     @Context
     protected HttpServletRequest servletRequest;
     @Context
@@ -161,7 +160,7 @@ public class CMSMediaResource {
                 .stream()
                 .filter(
                         item -> tagList.isEmpty() ||
-                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
+                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(tagList::contains))
                 .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
                 .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
@@ -395,9 +394,9 @@ public class CMSMediaResource {
             throws DAOException {
 
         try {
-        if (uploadedInputStream == null) {
-            throw new RestApiException("Upload stream is null", Status.NOT_ACCEPTABLE);
-        }
+            if (uploadedInputStream == null) {
+                throw new RestApiException("Upload stream is null", Status.NOT_ACCEPTABLE);
+            }
 
             Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                     DataManager.getInstance().getConfiguration().getCmsMediaFolder());
@@ -408,6 +407,14 @@ public class CMSMediaResource {
         }
     }
 
+    /**
+     * 
+     * @param uploadedInputStream
+     * @param cmsMediaFolder
+     * @param mediaFile
+     * @return
+     * @throws RestApiException
+     */
     private Response writeMediaFile(InputStream uploadedInputStream, Path cmsMediaFolder, Path mediaFile) throws RestApiException {
         try {
             Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(getUser().orElse(null));
@@ -438,13 +445,12 @@ public class CMSMediaResource {
                 }
                 MediaItem jsonItem = new MediaItem(item, servletRequest);
                 return Response.status(Status.OK).entity(jsonItem).build();
-            } else {                    
-                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                if (Files.exists(mediaFile)) {
-                    Files.delete(mediaFile);
-                }
-                throw new RestApiException(message, Status.INTERNAL_SERVER_ERROR);
             }
+            String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
+            if (Files.exists(mediaFile)) {
+                Files.delete(mediaFile);
+            }
+            throw new RestApiException(message, Status.INTERNAL_SERVER_ERROR);
         } catch (AccessDeniedException e) {
             throw new RestApiException(e.getMessage(), Status.FORBIDDEN);
         } catch (FileAlreadyExistsException e) {
@@ -604,9 +610,16 @@ public class CMSMediaResource {
             }
         }
 
-
     }
 
+    /**
+     * 
+     * @param type
+     * @param file
+     * @return
+     * @throws PresentationException
+     * @throws WebApplicationException
+     */
     private String serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 
