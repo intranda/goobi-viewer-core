@@ -188,27 +188,16 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     public UIComponent getUiComponent() throws PresentationException {
 
-        if(this.uiComponent == null) {
+        if(this.uiComponent == null && this.jsfComponent != null && StringUtils.isNotBlank(this.jsfComponent.getFilename())) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             String id = FilenameUtils.getBaseName(this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.uiComponent = new HtmlPanelGroup();
             this.uiComponent.setId(id);
-            Map<String, Object> attrs = new HashMap<>();
-            attrs.put("component", this);
+            UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
+            component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
-                attrs.put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
-            }
-            UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, attrs);
-            
-            CMSPageListContent subPagesContent = this.getContentItems().stream()
-                    .map(i -> i.getContent())
-                    .filter(c -> c instanceof CMSPageListContent)
-                    .map(CMSPageListContent.class::cast)
-                    .findAny().orElse(null);
-            if(subPagesContent != null) {
-                subPagesContent.getNestedPages(this.listPage, null, null)
-            }
-
+                component.getAttributes().put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
+            }            
         }
         return uiComponent;
     }
@@ -375,5 +364,9 @@ public class CMSComponent implements Comparable<CMSComponent> {
     
     public void setScope(CMSComponentScope scope) {
         this.scope = scope;
+    }
+    
+    public long getPersistenceId() {
+        return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getId).orElse(0l);
     }
 }

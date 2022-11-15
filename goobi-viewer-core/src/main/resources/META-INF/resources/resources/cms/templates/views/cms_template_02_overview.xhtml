@@ -40,17 +40,50 @@
                 <!-- OVERVIEW LIST -->
                 <div class="tpl-news-overview__list">
                     <div class="row">
-                    <c:set var="nestedPages" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}"/>
-						<!-- FAQ ITEMS -->
-						<ui:repeat var="subPage"
-							value="#{nestedPages}"
-							varStatus="status">
-                            <div class="tpl-news-overview__list-item clearfix">
-                            <ui:repeat var="previewComponent" value="#{subPage.components.stream().filter(c -> c.preview).toList()}">
-                            	PREVIEW COMPONENT: #{previewComponent.templateFilename}
-                            </ui:repeat>
-                            </div>
-                        </ui:repeat>
+                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}">
+							
+							<div class="tpl-news-overview__list-item clearfix">
+							
+								<ui:repeat var="previewComponent" value="#{subPage.previewComponents}">
+									
+									<!-- IMAGE -->
+							       	<ui:fragment rendered="#{previewComponent.hasContent('image')}">
+								        <div class="col-12 col-sm-4">
+								            <figure class="tpl-news-overview__list-image">
+								                <a href="#{cmsBean.getUrl(subPage)}">
+								                 	<img src="#{previewComponent.getContent('image').url}" class="img-fluid" title="#{previewComponent.getContent('image').mediaName}" />
+								                </a>
+								                <figcaption>#{previewComponent.getContent('image').mediaDescription}</figcaption>
+								            </figure>
+								        </div>
+									</ui:fragment>
+									
+									<div class="col-12 col-sm-8">
+	            						<div class="tpl-news-overview__list-preview">
+											 <ui:fragment rendered="#{previewComponent.hasContent('title')}">
+							                	<h1 >#{previewComponent.getContent('title').text}</h1>
+							                </ui:fragment>
+							                
+							                <h:panelGroup rendered="#{previewComponent.hasContent('date')}">
+						                        <div class="tpl-news-overview__preview-date">
+						                            #{previewComponent.getContent('date').text}
+						                        </div>
+						                    </h:panelGroup>
+							                
+							                <h:panelGroup rendered="#{previewComponent.hasContent('text')}">
+							                    <div class="tpl-news-overview__preview-text">
+							                        <h:outputText escape="false" value="#{previewComponent.getContent('text').text}"></h:outputText>
+							                    	<a href="#{cmsBean.getUrl(subPage)}" class="tpl-news-overview__preview-continue">#{msg.more}</a>
+							                    </div>
+							                </h:panelGroup>
+										</div>
+									</div>
+	                
+								</ui:repeat>
+	
+							</div>
+							
+						</ui:repeat>
                         <!-- PAGINATOR -->
 						<viewerComponent:simplePaginator 
 							itemCount="#{cc.attrs.component.getContentItem('list01').content.nestedPagesCount}" 

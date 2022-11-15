@@ -40,7 +40,6 @@ public class ViewerPage {
     public final URI link;
     public final IContent image;
     public final IMetadataValue label;
-    public final IMetadataValue description;
     /**
      * @param link
      * @param image
@@ -52,17 +51,15 @@ public class ViewerPage {
         this.link = link;
         this.image = image;
         this.label = label;
-        this.description = description;
     }
 
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();
-        this.description = page.getPreviewTranslations();
         this.link = URI.create(page.getUrl());
         this.image = page.getPersistentComponents().stream().flatMap(c -> c.getContentItems().stream())
-                .filter(item -> item instanceof CMSMediaHolder)
+                .filter(CMSMediaHolder.class::isInstance)
                 .sorted()
-                .map(item -> (CMSMediaHolder)item)
+                .map(CMSMediaHolder.class::cast)
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
                 .findFirst().orElse(null);
     }

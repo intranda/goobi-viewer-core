@@ -685,7 +685,7 @@ public class CmsBean implements Serializable {
         this.componentsToDelete = new HashMap<>();
         
         setSidebarElementOrder(selectedPage);
-
+        selectedPage.writeSelectableCategories();
         // Save
         boolean success = false;
         selectedPage.setDateUpdated(LocalDateTime.now());

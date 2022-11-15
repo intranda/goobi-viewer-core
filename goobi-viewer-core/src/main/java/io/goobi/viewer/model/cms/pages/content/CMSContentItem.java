@@ -37,6 +37,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import io.goobi.viewer.model.translations.TranslatedText;
@@ -183,6 +186,18 @@ public class CMSContentItem {
      */
     public boolean isEmpty() {
         return Optional.ofNullable(this.content).map(CMSContent::isEmpty).orElse(true);
+    }
+    
+    public boolean isShortText() {
+        return Optional.ofNullable(this.content).map(CMSShortTextContent.class::isInstance).orElse(false);
+    }
+    
+    public boolean isHtmlText() {
+        return Optional.ofNullable(this.content).map(CMSMediumTextContent.class::isInstance).orElse(false);
+    }
+    
+    public boolean isMedia() {
+        return Optional.ofNullable(this.content).map(CMSMediaContent.class::isInstance).orElse(false);
     }
 
 }
