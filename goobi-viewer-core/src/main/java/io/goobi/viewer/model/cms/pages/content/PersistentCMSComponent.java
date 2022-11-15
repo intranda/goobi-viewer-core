@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -301,5 +302,9 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
 
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
+    }
+    
+    public Optional<CMSContent> getContentByItemId(String itemId) {
+        return this.contentItems.stream().filter(c -> c.getItemId().equals(itemId)).findAny();
     }
 }

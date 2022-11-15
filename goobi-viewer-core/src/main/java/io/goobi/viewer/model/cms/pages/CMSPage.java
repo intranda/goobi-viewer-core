@@ -68,6 +68,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
@@ -110,7 +111,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_pages")
-public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable, CMSMediaHolder {
+public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable {
 
     private static final long serialVersionUID = -3601192218326197746L;
 
@@ -177,13 +178,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Column(name = "menu_title", nullable = true)
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText menuTitle = new TranslatedText();
-
-    @Column(name = "preview_text", nullable = true, columnDefinition = "MEDIUMTEXT")
-    @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText previewText = new TranslatedText();
-
-    @JoinColumn(name = "preview_image_id")
-    private CMSMediaItem previewImage;
 
     @JoinColumn(name = "slider_id")
     private CMSSlider topbarSlider = null;
@@ -270,7 +264,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
         this.title = new TranslatedText(original.title);
         this.menuTitle = new TranslatedText(original.menuTitle);
-        this.previewText = new TranslatedText(original.previewText);
         this.topbarSlider = original.topbarSlider;
         this.dateCreated = original.dateCreated;
         this.dateUpdated = original.dateUpdated;
@@ -728,9 +721,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return this.title;
     }
 
-    public IMetadataValue getPreviewTranslations() {
-        return this.previewText;
-    }
 
     /**
      * <p>
@@ -849,20 +839,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(getRelativeUrlPath(true)).toString();
     }
 
-    /**
-     * <p>
-     * getPreviewContent.
-     * </p>
-     *
-     * @return the first TEXT or HTML contentItem with preview="true"
-     */
-    public String getPreviewContent() {
-        return this.previewText.getTextOrDefault();
-    }
-
-    public TranslatedText getPreviewText() {
-        return previewText;
-    }
 
     /**
      * Gets the pagination number for this page's main list if it contains one
@@ -1384,7 +1360,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public boolean isComplete(Locale locale) {
         Locale defaultLocale = IPolyglott.getDefaultLocale();
         return this.title.isComplete(locale, defaultLocale, true) &&
-                this.previewText.isComplete(locale, defaultLocale, false) &&
                 this.menuTitle.isComplete(locale, defaultLocale, false) &&
                 this.cmsComponents.stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
@@ -1416,7 +1391,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void setSelectedLocale(Locale locale) {
         this.title.setSelectedLocale(locale);
         this.menuTitle.setSelectedLocale(locale);
-        this.previewText.setSelectedLocale(locale);
         this.persistentComponents.forEach(comp -> comp.setSelectedLocale(locale));
     }
 
@@ -1481,53 +1455,30 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.menuTitle = menuTitle;
     }
 
-    public void setPreviewText(TranslatedText previewText) {
-        this.previewText = previewText;
+
+    public void addPersistentComponent(PersistentCMSComponent persistentComponent) {
+        persistentComponent.setOwningPage(this);
+        this.persistentComponents.add(persistentComponent);
     }
 
-    public CMSMediaItem getPreviewImage() {
-        return previewImage;
+    
+    public List<CMSContentItem> getPreviewItems() {
+        return this.getComponents().stream()
+                .filter(CMSComponent::isPreview)
+                .map(CMSComponent::getContentItems)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
-
-    public void setPreviewImage(CMSMediaItem previewImage) {
-        this.previewImage = previewImage;
+    
+    public List<CMSComponent> getPreviewComponents() {
+        return this.getComponents().stream()
+                .filter(CMSComponent::isPreview)
+                .collect(Collectors.toList());
     }
-
-    @Override
-    public void setMediaItem(CMSMediaItem item) {
-        this.previewImage = item;
-    }
-
-    @Override
-    public CMSMediaItem getMediaItem() {
-        return this.previewImage;
-    }
-
-    @Override
-    public String getMediaFilter() {
-        return CmsMediaBean.getImageFilter();
-
-    }
-
-    @Override
-    public boolean hasMediaItem() {
-        return this.previewImage != null;
-    }
-
-    public void setPersistentComponents(List<PersistentCMSComponent> persistentComponents) {
-        this.persistentComponents = persistentComponents;
-    }
-
-    @Override
-    public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
-        if (hasMediaItem()) {
-            return new CategorizableTranslatedSelectable<>(previewImage, true,
-                    previewImage.getFinishedLocales()
-                            .stream()
-                            .findFirst()
-                            .orElse(BeanUtils.getLocale()),
-                    Collections.emptyList());
-        }
-        return null;
+    
+    public List<CMSComponent> getPageViewComponents() {
+        return this.getComponents().stream()
+                .filter(c -> CMSComponentScope.PAGEVIEW.equals(c.getScope()))
+                .collect(Collectors.toList());
     }
 }

@@ -120,11 +120,15 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     public String getUrl() throws UnsupportedEncodingException, ViewerConfigurationException {
         return getUrl(null, null);
     }
+    
+    public String getMediaType() {
+        return getMediaItem() != null ? getMediaItem().getContentType() : "";
+    }
 
     public String getUrl(String width, String height) throws ViewerConfigurationException, UnsupportedEncodingException {
 
         String contentString = "";
-        String type = getMediaItem() != null ? getMediaItem().getContentType() : "";
+        String type = getMediaType();
         switch (type) {
             case CMSMediaItem.CONTENT_TYPE_XML:
                 contentString = CmsMediaBean.getMediaFileAsString(getMediaItem());

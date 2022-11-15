@@ -43,8 +43,8 @@
 
                 <div class="cms-page__content content-components__outer-wrapper">
                 
-                	<div class="content-components__all-items-container">
-						<c:forEach var="cmsComponent" items="#{cmsPage.components}">
+                	<div id="cmsComponentContainer" class="content-components__all-items-container">
+						<c:forEach var="cmsComponent" items="#{cmsPage.pageViewComponents}">
 								<h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
 						</c:forEach>
 					</div>

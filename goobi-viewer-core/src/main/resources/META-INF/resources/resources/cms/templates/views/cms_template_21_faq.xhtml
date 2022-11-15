@@ -62,25 +62,32 @@
 									<div class="card-body">
 										<div class="tpl-faq-single__content">
 
-											<ui:fragment rendered="#{!subPage.previewText.isEmpty()}">
-												<div class="tpl-faq-single__text">
-													<h:outputText escape="false"
-														value="#{subPage.previewText}"></h:outputText>
-												</div>
-											</ui:fragment>
-											<!-- IMAGE -->
-											<ui:fragment rendered="#{subPage.previewImage != null}">
-												<div class="tpl-faq-single__image">
-													<figure class="tpl-faq-single__image">
-														<img title="#{subPage.previewImage.name}"
-															src="#{subPage.previewImage.iconURI}"
-															class="img-responsive"
-															alt="#{subPage.previewImage.name}" />
-														<figcaption>
-															#{subPage.previewImage.description}</figcaption>
-													</figure>
-												</div>
-											</ui:fragment>
+											<ui:repeat var="previewItem" value="#{subPage.previewItems}">
+									
+												<ui:fragment rendered="#{!previewItem.isEmpty()}">
+													<ui:fragment rendered="#{previewItem.isMedia()}">
+														<!-- IMAGE -->
+															<figure class="tpl-news-overview__list-image">
+																<a href="#{cmsBean.getUrl(subPage)}"> <img
+																	src="#{previewItem.content.url}" class="img-fluid"
+																	title="#{previewItem.content.mediaName}" alt="#{previewItem.content.mediaName}"/>
+																</a>
+																<figcaption>#{previewItem.content.mediaDescription}</figcaption>
+															</figure>
+													</ui:fragment>
+													<ui:fragment rendered="#{previewItem.isShortText()}">
+														<!-- CAPTION -->
+															<h1>#{previewItem.content.text}</h1>
+													</ui:fragment>
+													<ui:fragment rendered="#{previewItem.isHtmlText()}">
+														<!-- HTML -->
+															<div class="tpl-news-overview__preview-text">
+																<h:outputText escape="false" value="#{previewItem.content.text}"></h:outputText>
+															</div>
+													</ui:fragment>
+												</ui:fragment>
+												
+											</ui:repeat>
 										</div>
 									</div>
 								</div>

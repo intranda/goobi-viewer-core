@@ -158,44 +158,6 @@
                                                             <!-- TOPBAR SLIDER -->
                                                             <ui:include src="/resources/cms/includes/contentTypes/cms_createPageContentTypeTopBarSlider.xhtml" />
 
-															<!-- Preview Text -->
-                                                            <div class="cms-module__option-group">
-                                                                <div class="cms-module__option-label">
-                                                                    <label for="previewText_textArea">#{msg.label__cms_page_preview_text}:</label>
-                                                                </div>
-                                                                <div class="cms-module__option-control">
-                                                                    <h:inputTextarea value="#{page.previewText.text}"
-																		id="previewText_textArea"
-																		label="labelEmpty"
-																		styleClass="form-control -validation-input tinyMCE">
-																		<f:passThroughAttribute name="aria-label"
-																			value="#{msg.label__cms_page_preview_text}" />
-																	</h:inputTextarea>
-                                                                    <span class="cms-module__option-control-helptext">#{msg.help__cms_page_preview_text}</span>
-                                                                </div>
-                                                                <div class="cms-module__option-help">
-                                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Preview Image -->
-                                                            <div class="cms-module__option-group">
-                                                                <div class="cms-module__option-label">
-                                                                    <label for="previewText_textArea">#{msg.label__cms_page_preview_image}:</label>
-                                                                </div>
-                                                                <div class="cms-module__option-control">
-                                                                    <cmsComponent:mediaSelection mediaHolder="#{page}" />
-                                                                    <span class="cms-module__option-control-helptext">#{msg.help__cms_page_preview_im}</span>
-                                                                </div>
-                                                                <div class="cms-module__option-help">
-                                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-
 															<!-- CONTENT COMPONENTS ON THIS PAGE -->
 															<h:commandScript name="refreshComponents" execute="pageComponents" render="pageComponents"></h:commandScript>
 															

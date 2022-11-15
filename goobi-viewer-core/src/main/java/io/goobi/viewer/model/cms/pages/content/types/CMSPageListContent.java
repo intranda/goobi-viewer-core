@@ -180,7 +180,6 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
             nestedPages = loadNestedPages(pageNo, random, paged);
         }
         return nestedPages.stream()
-                .filter(CMSPage::isPublished)
                 .filter(child -> this.getCategories().isEmpty()
                         || !CollectionUtils.intersection(this.getCategories(), child.getCategories()).isEmpty())
                 .collect(Collectors.toList());
@@ -212,6 +211,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
                 .getAllCMSPages()
                 .stream()
                 .filter(CMSPage::isPublished)
+                .map(CMSPage::new)
                 .filter(child -> getCategories().isEmpty() || !CollectionUtils.intersection(getCategories(), child.getCategories()).isEmpty())
                 .peek(child -> totalPages.incrementAndGet());
         if (random) {

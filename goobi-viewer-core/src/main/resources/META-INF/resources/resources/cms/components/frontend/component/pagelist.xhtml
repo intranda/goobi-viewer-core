@@ -12,8 +12,8 @@
 
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
-		<composite:attribute name="pageListItem" required="false"
-			default="#{cc.attrs.component.firstContentItem}" />
+		<composite:attribute name="random" required="false" default="false" type="java.lang.Boolean"/>
+		<composite:attribute name="paged" required="false" default="false" type="java.lang.Boolean" />
 	</composite:interface>
 
 	<composite:implementation>
@@ -37,45 +37,44 @@
 
 				<div class="tpl-news-overview__list">
 					<div class="row">
-						<c:forEach var="subPage"
-							items="#{cc.attrs.pageListItem.nestedPages}">
+						<ui:repeat var="subPage" value="#{cc.attrs.component.firstContentItem.content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}">
 							<div class="tpl-news-overview__list-item clearfix">
-								<!-- IMAGE -->
+							
+								<ui:repeat var="previewItem" value="#{subPage.previewItems}">
+								
+									<ui:fragment rendered="#{!previewItem.isEmpty()}">
+										<ui:fragment rendered="#{previewItem.isMedia()}">
+											<!-- IMAGE -->
+											<figure class="tpl-news-overview__list-image">
+												<a href="#{cmsBean.getUrl(subPage)}"> <img
+													src="#{previewItem.content.url}" class="img-fluid"
+													title="#{previewItem.content.mediaName}" alt="#{previewItem.content.mediaName}"/>
+												</a>
+												<figcaption>#{previewItem.content.mediaDescription}</figcaption>
+											</figure>
+										</ui:fragment>
+										<ui:fragment rendered="#{previewItem.isShortText()}">
+											<!-- CAPTION -->
+											<h1>#{previewItem.content.text}</h1> 
+										</ui:fragment>
+										<ui:fragment rendered="#{previewItem.isHtmlText()}">
+											<!-- HTML -->
+											<div class="tpl-news-overview__preview-text">
+												<h:outputText escape="false" value="#{previewItem.content.text}"></h:outputText>
+											</div>
+										</ui:fragment>
+									</ui:fragment>
+								</ui:repeat>
 								<div class="col-12 col-sm-4">
-									<figure class="tpl-news-overview__list-image">
-										<a href="#{cmsBean.getUrl(subPage)}"> <img
-											src="#{subPage.getContent('image01')}" class="img-fluid"
-											title="#{subPage.getMediaName('image01')}" />
-										</a>
-										<figcaption></figcaption>
-									</figure>
-								</div>
-
-								<!-- PREVIEW -->
-								<div class="col-12 col-sm-8">
-									<div class="tpl-news-overview__list-preview">
-										<h1>#{subPage.title}</h1>
-
-										<h:panelGroup rendered="#{subPage.getContent('A0') != ''}">
-											<div class="tpl-news-overview__preview-date">
-												#{subPage.getContent('A0')}</div>
-										</h:panelGroup>
-
-										<div class="tpl-news-overview__preview-text">
-											<h:outputText escape="false"
-												value="#{subPage.getContent('preview01')}"></h:outputText>
-											<a href="#{cmsBean.getUrl(subPage)}"
-												class="tpl-news-overview__preview-continue">#{msg.more}</a>
-										</div>
-									</div>
+									<a href="#{cmsBean.getUrl(subPage)}" class="tpl-news-overview__preview-continue">#{msg.more}</a>
 								</div>
 							</div>
-						</c:forEach>
+						</ui:repeat>
 						<!-- PAGINATOR -->
 						<viewerComponent:simplePaginator
-							itemCount="#{cc.attrs.pageListItem.content.nestedPagesCount}"
+							itemCount="#{cc.attrs.component.firstContentItem.content.nestedPagesCount}"
 							itemActive="#{cc.attrs.component.listPage}"
-							urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
+							urlPrefix="#{cmsBean.getUrl(subPage)}" />
 					</div>
 				</div>
 

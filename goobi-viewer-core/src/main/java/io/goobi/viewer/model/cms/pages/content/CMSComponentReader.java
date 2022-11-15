@@ -56,6 +56,16 @@ public class CMSComponentReader {
         String desc = XmlTools.evaluateToFirstElement("description", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         String icon = XmlTools.evaluateToFirstElement("icon", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         
+        String scopeString = XmlTools.evaluateToFirstElement("scope", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
+        CMSComponentScope scope = CMSComponentScope.PAGEVIEW;
+        if(StringUtils.isNotBlank(scopeString)) {
+            try {
+                scope = CMSComponentScope.valueOf(scopeString.toUpperCase());
+            } catch(IllegalStateException e) {
+                logger.error("Unable to set scope for component template {}: {} is not a known scope", templateFile.getFileName(), scopeString);
+            }
+        }
+        
         List<Element> attributeElements = XmlTools.evaluateToElements("attribute", templateDoc.getRootElement(), null);
         Map<String, CMSComponentAttribute> attributes = new HashMap<>(attributeElements.size());
         for (Element element : attributeElements) {
@@ -74,7 +84,7 @@ public class CMSComponentReader {
         }
         
         String filename = FilenameUtils.getBaseName(templateFile.getFileName().toString());
-        CMSComponent component = new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, attributes);
+        CMSComponent component = new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes);
         
         List<Element> contentElements = XmlTools.evaluateToElements("content/item", templateDoc.getRootElement(), null);
         

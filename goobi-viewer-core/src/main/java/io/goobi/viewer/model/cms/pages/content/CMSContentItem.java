@@ -34,6 +34,9 @@ import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 
@@ -151,20 +154,18 @@ public class CMSContentItem {
 
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            //String id = FilenameUtils.getBaseName("content_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.uiComponent = new HtmlPanelGroup();
-            //this.uiComponent.setId(id);
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
             this.uiComponent.getChildren().add(wrapper);
             if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
                 logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
             } else {
-                UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.emptyMap());
+                UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.singletonMap("contentItem", this));
                 if (component == null) {
                     throw new PresentationException("Error building jsf-component from " + this.getJsfComponent()
                             + ". Please check that the file exists and is a valid jsf component file.");
                 }
-                component.getAttributes().put("contentItem", this);
+
             }
         }
         return uiComponent;
@@ -182,6 +183,18 @@ public class CMSContentItem {
      */
     public boolean isEmpty() {
         return Optional.ofNullable(this.content).map(CMSContent::isEmpty).orElse(true);
+    }
+
+    public boolean isShortText() {
+        return Optional.ofNullable(this.content).map(CMSShortTextContent.class::isInstance).orElse(false);
+    }
+
+    public boolean isHtmlText() {
+        return Optional.ofNullable(this.content).map(CMSMediumTextContent.class::isInstance).orElse(false);
+    }
+
+    public boolean isMedia() {
+        return Optional.ofNullable(this.content).map(CMSMediaContent.class::isInstance).orElse(false);
     }
 
 }
