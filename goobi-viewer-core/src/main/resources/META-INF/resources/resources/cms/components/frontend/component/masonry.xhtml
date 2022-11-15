@@ -24,7 +24,7 @@
 			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
 			<div
 				class="content-component content-component__masonry
-						-width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes}
+						-width-100 #{cc.attrs.hideOnScreenSizes}
 						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
 						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}
 						#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
@@ -35,10 +35,10 @@
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
 
-				<div class="tpl-masonry">
+				<div class="content-component__masonry">
 
 					<!-- LOADER -->
-					<div class="tpl-masonry__loader" style="display: none;">
+					<div class="tpl-masonry__loader content-component__masonry-loader" style="display: none;">
 						<img
 							src="#{request.contextPath}/resources/images/infinity_loader.gif"
 							alt="Masonry Loader" /> #{msg.cms_masonryLoading}...

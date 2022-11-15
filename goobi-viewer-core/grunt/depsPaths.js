@@ -22,7 +22,7 @@ const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/li
 const cssLibsDir = 'src/main/resources/META-INF/resources/resources/css/libs/'
 
 const depsPathsJS = [
-  
+
   { // Bootstrap
     expand: true,
     cwd: nodeModules,
@@ -320,7 +320,7 @@ const depsPathsJS = [
 ];
 
   /////////////////////
- /////// CCS /////////
+ /////// CSS /////////
 /////////////////////
 
 
