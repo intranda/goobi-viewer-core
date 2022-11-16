@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -34,8 +35,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.amazonaws.util.StringUtils;
+import com.google.common.base.Strings;
+
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
@@ -86,7 +92,10 @@ public class CmsPageEditBean implements Serializable {
         if(page != null && page.isContainsPagedComponents()) {
             stream = stream.filter(c -> !c.isPaged());
         }
-        return stream.collect(Collectors.toList());
+        Locale locale = BeanUtils.getLocale();
+        return stream
+                .sorted((c1,c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale), ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
+                .collect(Collectors.toList());
     }
 
     /**
