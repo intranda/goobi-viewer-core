@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -42,7 +43,9 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_static_pages")
-public class CMSStaticPage {
+public class CMSStaticPage implements Serializable {
+
+    private static final long serialVersionUID = -8591081547005923490L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

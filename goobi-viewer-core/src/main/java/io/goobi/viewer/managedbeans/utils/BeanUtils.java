@@ -86,7 +86,7 @@ public class BeanUtils {
     public static HttpServletRequest getRequest() {
         SessionBean sb = getSessionBean();
         try {
-                return sb.getRequest();
+            return sb.getRequest();
         } catch (ContextNotActiveException | IllegalStateException e) {
             // logger.trace(e.getMessage());
         }
@@ -323,7 +323,7 @@ public class BeanUtils {
     public static NavigationHelper getNavigationHelper() {
         //Don't attempt to get navigationHelper outside of faces context. Otherwise a new navigationHelper entity will be constructed
         //with false assumptions on current locale
-        if(FacesContext.getCurrentInstance() != null) {            
+        if (FacesContext.getCurrentInstance() != null) {
             return (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
         }
         return null;
@@ -339,7 +339,7 @@ public class BeanUtils {
     public static AdminBean getAdminBean() {
         return (AdminBean) getBeanByName("adminBean", AdminBean.class);
     }
-    
+
     public static CollectionViewBean getCollectionViewBean() {
         return (CollectionViewBean) getBeanByName("collectionViewBean", CollectionViewBean.class);
     }

@@ -21,12 +21,16 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
+
 /**
- * An entity holding an object which can be selected or deselected
+ * An entity holding an object which can be selected or unselected
  *
  * @author florian
  */
-public class Selectable<T> implements Comparable<Selectable<T>> {
+public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
+
+    private static final long serialVersionUID = -7364321290125791403L;
 
     private final T value;
     private boolean selected;

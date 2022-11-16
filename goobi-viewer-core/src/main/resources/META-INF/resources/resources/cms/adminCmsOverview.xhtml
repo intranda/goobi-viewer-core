@@ -145,6 +145,7 @@
                                     </div>
                                 </div>
                             </ui:repeat>
+                            
 
 
                             <!-- delete page modal -->
@@ -178,6 +179,14 @@
                                 </div>
                             </div>
                         </div>
+                       
+                        <div class="admin__table-tools">
+                            <!-- BOTTOM PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
+                            </div>
+                        </div>
+                        
                     </div>
                 </h:form>
             </h:panelGroup>

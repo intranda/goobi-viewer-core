@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -37,8 +38,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -86,7 +85,9 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_geomap")
-public class GeoMap {
+public class GeoMap implements Serializable {
+
+    private static final long serialVersionUID = -117775783802522686L;
 
     private static final Logger logger = LogManager.getLogger(GeoMap.class);
 
@@ -100,13 +101,13 @@ public class GeoMap {
     private static final String DEFAULT_MARKER_NAME = "default";
     private static final String POINT_LAT_LNG_PATTERN = "([\\d\\.]+)\\s*\\/\\s*([\\d\\.]+)";
 
-    public static enum GeoMapType {
+    public enum GeoMapType {
         SOLR_QUERY,
         MANUAL
     }
 
     @Transient
-    private final Object lockTranslations = new Object();
+    private final transient Object lockTranslations = new Object();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -169,7 +170,7 @@ public class GeoMap {
      * Empty Constructor
      */
     public GeoMap() {
-        // TODO Auto-generated constructor stub
+        //
     }
 
     /**
@@ -375,19 +376,18 @@ public class GeoMap {
                     string = "[" + string + "]";
                     return string;
                 case SOLR_QUERY:
-                    if(DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
+                    if (DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
                         //No features required since they will be loaded dynamically with the heatmap
                         return "[]";
-                    } else {
-                        Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
-                        String ret = features.stream()
-                                .distinct()
-                                .map(GeoMapFeature::getJsonObject)
-                                .map(Object::toString)
-                                .collect(Collectors.joining(","));
-
-                        return "[" + ret + "]";
                     }
+                    Collection<GeoMapFeature> features = getFeaturesFromSolrQuery(getSolrQuery(), Collections.emptyList(), getMarkerTitleField());
+                    String ret = features.stream()
+                            .distinct()
+                            .map(GeoMapFeature::getJsonObject)
+                            .map(Object::toString)
+                            .collect(Collectors.joining(","));
+
+                    return "[" + ret + "]";
                 default:
                     return "[]";
             }
@@ -397,7 +397,8 @@ public class GeoMap {
         return "[]";
     }
 
-    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, String markerTitleField) throws PresentationException, IndexUnreachableException {
+    public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, String markerTitleField)
+            throws PresentationException, IndexUnreachableException {
         List<SolrDocument> docs;
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         List<String> fieldList = new ArrayList<>(coordinateFields);
@@ -405,7 +406,7 @@ public class GeoMap {
         String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
         String filterQuery = SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
         String finalQuery = String.format("+(%s) +(%s) +(%s)", query, coordinateFieldsQuery, filterQuery);
-        docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null,fieldList, filterQueries, null).getResults();
+        docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, fieldList, filterQueries, null).getResults();
         List<GeoMapFeature> features = new ArrayList<>();
         for (SolrDocument doc : docs) {
             for (String field : coordinateFields) {
@@ -418,7 +419,8 @@ public class GeoMap {
                 .stream()
                 .collect(Collectors.groupingBy(Function.identity()));
 
-            features = featureMap.entrySet().stream()
+        features = featureMap.entrySet()
+                .stream()
                 .map(e -> {
                     GeoMapFeature f = e.getKey();
                     f.setCount(e.getValue().size());
@@ -440,28 +442,28 @@ public class GeoMap {
         List<String> points = SolrTools.getMetadataValues(doc, metadataField);
         for (String point : points) {
             try {
-            if(point.matches(POINT_LAT_LNG_PATTERN)) {  //NOSONAR  no catastrophic backtracking detected
-                GeoMapFeature feature = new GeoMapFeature();
-                feature.setTitle(title);
-                feature.setDescription(desc);
+                if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
+                    GeoMapFeature feature = new GeoMapFeature();
+                    feature.setTitle(title);
+                    feature.setDescription(desc);
 
-                Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
-                matcher.find();
-                Double lat = Double.valueOf(matcher.group(1));
-                Double lng = Double.valueOf(matcher.group(2));
+                    Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
+                    matcher.find();
+                    Double lat = Double.valueOf(matcher.group(1));
+                    Double lng = Double.valueOf(matcher.group(2));
 
-                JSONObject json = new JSONObject();
-                json.put("type", "Feature");
-                JSONObject geom = new JSONObject();
-                geom.put("type", "Point");
-                geom.put("coordinates", new double[] {lng, lat});
-                json.put("geometry", geom);
-                feature.setJson(json.toString());
-                docFeatures.add(feature);
-            } else {
-                docFeatures.addAll(createFeaturesFromJson(title, desc, point));
-            }
-            } catch(JSONException | NumberFormatException e) {
+                    JSONObject json = new JSONObject();
+                    json.put("type", "Feature");
+                    JSONObject geom = new JSONObject();
+                    geom.put("type", "Point");
+                    geom.put("coordinates", new double[] { lng, lat });
+                    json.put("geometry", geom);
+                    feature.setJson(json.toString());
+                    docFeatures.add(feature);
+                } else {
+                    docFeatures.addAll(createFeaturesFromJson(title, desc, point));
+                }
+            } catch (JSONException | NumberFormatException e) {
                 logger.error("Encountered non-json feature: {}", point);
             }
         }
@@ -540,8 +542,7 @@ public class GeoMap {
      * @return
      */
     public URI getOEmbedLink() {
-        URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/embed/map/" + getId() + "/");
-        return uri;
+        return URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/embed/map/" + getId() + "/");
     }
 
     public URI getOEmbedURI() {
@@ -555,8 +556,7 @@ public class GeoMap {
                 linkURI += "?linkTarget=" + linkTarget;
             }
             String escLinkURI = URLEncoder.encode(linkURI, "utf-8");
-            URI uri = URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + escLinkURI + "&format=json");
-            return uri;
+            return URI.create(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/oembed?url=" + escLinkURI + "&format=json");
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
         }
@@ -580,9 +580,9 @@ public class GeoMap {
 
     public String getMarkerAsJSON() throws JsonProcessingException {
         if (StringUtils.isNotBlank(marker)) {
-            GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
-            if (marker != null) {
-                return marker.toJSONString();
+            GeoMapMarker m = DataManager.getInstance().getConfiguration().getGeoMapMarker(this.marker);
+            if (m != null) {
+                return m.toJSONString();
             }
         }
         return "{}";

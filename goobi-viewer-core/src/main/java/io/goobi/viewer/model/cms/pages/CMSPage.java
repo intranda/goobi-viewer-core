@@ -846,7 +846,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @return a int.
      */
     public int getListPage() {
-        return this.cmsComponents.stream().findAny().map(c -> c.getListPage()).orElse(1);
+        return this.cmsComponents.stream().findAny().map(CMSComponent::getListPage).orElse(1);
     }
 
     /**
@@ -1122,7 +1122,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         try {
             Set<Path> filesToDelete = new HashSet<>();
             Path cmsTextFolder = DataFileTools.getDataFolder(relatedPI, DataManager.getInstance().getConfiguration().getCmsTextFolder());
-            logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath().toString());
+            logger.trace("CMS text folder path: {}", cmsTextFolder.toAbsolutePath());
             if (!Files.isDirectory(cmsTextFolder)) {
                 logger.trace("CMS text folder not found - nothing to delete");
                 return 0;
@@ -1156,7 +1156,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                     try {
                         Files.delete(file);
                         count++;
-                        logger.info("CMS text file deleted: {}", file.getFileName().toString());
+                        logger.info("CMS text file deleted: {}", file.getFileName());
                     } catch (IOException e) {
                         logger.error(e.getMessage());
                     }
@@ -1397,13 +1397,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public boolean hasSearchFunctionality() {
         return this.persistentComponents.stream()
                 .flatMap(c -> c.getContentItems().stream())
-                .anyMatch(content -> content instanceof CMSSearchContent);
+                .anyMatch(CMSSearchContent.class::isInstance);
     }
 
     public Optional<SearchFunctionality> getSearch() {
         return this.persistentComponents.stream()
                 .flatMap(c -> c.getContentItems().stream())
-                .filter(content -> content instanceof CMSSearchContent)
+                .filter(CMSSearchContent.class::isInstance)
                 .map(content -> ((CMSSearchContent) content).getSearch())
                 .findAny();
     }
@@ -1426,9 +1426,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.getComponents()
                 .stream()
                 .filter(c -> Integer.compare(c.getOrder(), order) == 0)
-                .forEach(comp -> {
-                    comp.setOrder(currentOrder);
-                });
+                .forEach(comp -> comp.setOrder(currentOrder));
         persistentComponent.setOrder(order);
         Collections.sort(this.cmsComponents);
     }

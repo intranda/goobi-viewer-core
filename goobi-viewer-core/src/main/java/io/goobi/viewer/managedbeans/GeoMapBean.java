@@ -209,7 +209,7 @@ public class GeoMapBean implements Serializable {
     }
 
     public boolean isInUse(GeoMap map) throws DAOException {
-        return DataManager.getInstance().getDao().getPagesUsingMap(map).size() > 0;
+        return !DataManager.getInstance().getDao().getPagesUsingMap(map).isEmpty();
     }
 
     public List<CMSPage> getEmbeddingCmsPages(GeoMap map) throws DAOException {
@@ -236,14 +236,18 @@ public class GeoMapBean implements Serializable {
     }
 
     public String getHeatmapUrl() {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager()
-        .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_HEATMAP).build())
-        .orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_HEATMAP).build())
+                .orElse("");
     }
 
     public String getFeatureUrl() {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager()
-        .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())
-        .orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())
+                .orElse("");
     }
 }

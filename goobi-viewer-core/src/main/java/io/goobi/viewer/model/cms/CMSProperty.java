@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +39,9 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "cms_properties")
-public class CMSProperty {
+public class CMSProperty implements Serializable {
+
+    private static final long serialVersionUID = -2227539151219620322L;
 
     /** Constant <code>KEY_EMPTY="EMPTY"</code> */
     public static final String KEY_EMPTY = "EMPTY";

@@ -50,47 +50,49 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.viewer.collections.Sorting;
 
 public class CMSContentConverter {
-    
+
     private final IDAO dao;
-    
+
     public CMSContentConverter(IDAO dao) {
         this.dao = dao;
     }
-    
+
     public CMSShortTextContent createShortTextContent(String language, Map<String, Object> legacyItem, Optional<CMSContent> orig) {
         String text = (String) legacyItem.get("html_fragment");
-        CMSShortTextContent content = orig.filter(CMSShortTextContent.class::isInstance).map(o -> (CMSShortTextContent)o).orElse(new CMSShortTextContent());
+        CMSShortTextContent content =
+                orig.filter(CMSShortTextContent.class::isInstance).map(CMSShortTextContent.class::cast).orElse(new CMSShortTextContent());
         content.getText().setValue(text, language);
         return content;
     }
-    
+
     public CMSMediumTextContent createMediumTextContent(String language, Map<String, Object> legacyItem, Optional<CMSContent> orig) {
         String text = (String) legacyItem.get("html_fragment");
-        CMSMediumTextContent content = orig.filter(CMSMediumTextContent.class::isInstance).map(o -> (CMSMediumTextContent)o).orElse(new CMSMediumTextContent());
+        CMSMediumTextContent content =
+                orig.filter(CMSMediumTextContent.class::isInstance).map(CMSMediumTextContent.class::cast).orElse(new CMSMediumTextContent());
         content.getText().setValue(text, language);
         return content;
     }
-    
+
     public CMSMediaContent createMediaContent(Map<String, Object> legacyItem) throws DAOException {
         Long mediaItemId = (Long) legacyItem.get("media_item_id");
         CMSMediaContent content = new CMSMediaContent();
-        if(mediaItemId != null) {            
+        if (mediaItemId != null) {
             CMSMediaItem media = dao.getCMSMediaItem(mediaItemId);
-            if(media != null) {
-                content.setMediaItem(media);                
+            if (media != null) {
+                content.setMediaItem(media);
                 return content;
             }
         }
         return null;
     }
-    
+
     public CMSBrowseContent createBrowseContent(Map<String, Object> legacyItem) {
         String collectionField = (String) legacyItem.get("collection_field");
         CMSBrowseContent content = new CMSBrowseContent();
         content.setSolrField(collectionField);
         return content;
     }
-    
+
     public CMSCollectionContent createCollectionContent(Map<String, Object> legacyItem) {
         String collectionField = (String) legacyItem.get("collection_field");
         String baseCollection = (String) legacyItem.get("base_collection");
@@ -106,40 +108,40 @@ public class CMSContentConverter {
         content.setGroupingField(groupByField);
         content.setIgnoreCollections(ignoreCollections);
         content.setOpenExpanded(openExpanded);
-        if(sorting != null) {            
+        if (sorting != null) {
             content.setSorting(Sorting.valueOf(sorting));
         }
 
         return content;
     }
-    
+
     public CMSGeomapContent createGeomapContent(Map<String, Object> legacyItem) throws DAOException {
         Long geomapId = (Long) legacyItem.get("geomap_id");
         CMSGeomapContent content = new CMSGeomapContent();
-        if(geomapId != null) {            
+        if (geomapId != null) {
             GeoMap map = dao.getGeoMap(geomapId);
-            if(map != null) {
-                content.setMap(map);  
+            if (map != null) {
+                content.setMap(map);
             }
         }
         return content;
     }
-    
+
     public CMSImageListContent createImageListContent(Map<String, Object> legacyItem) throws DAOException {
         Long itemId = (Long) legacyItem.get("cms_content_item_id");
         Integer itemsPerView = (Integer) legacyItem.get("elements_per_page");
         Integer importantItemsPerView = (Integer) legacyItem.get("important_count");
 
         List<CMSCategory> categories = getCategories(itemId);
-        
+
         CMSImageListContent collection = new CMSImageListContent();
         collection.setImagesPerView(itemsPerView);
         collection.setImportantImagesPerView(importantItemsPerView);
         categories.forEach(collection::addCategory);
-        
+
         return collection;
     }
-    
+
     public CMSRecordListContent createRecordListContent(Map<String, Object> legacyItem) {
         String solrQuery = (String) legacyItem.get("solr_query");
         String solrSortFields = (String) legacyItem.get("solr_sort_fields");
@@ -147,35 +149,34 @@ public class CMSContentConverter {
         Boolean noAggregation = (Boolean) legacyItem.get("no_search_aggregation");
         Integer itemsPerView = (Integer) legacyItem.get("elements_per_page");
 
-        
         CMSRecordListContent content = new CMSRecordListContent();
         content.setSolrQuery(solrQuery);
         content.setSortField(solrSortFields);
         content.setGroupingField(groupField);
         content.setIncludeStructureElements(noAggregation);
         content.setElementsPerPage(itemsPerView);
-        
+
         return content;
     }
-    
+
     public CMSSearchContent createSearchContent(Map<String, Object> legacyItem) {
         Boolean displayEmptySearchResults = (Boolean) legacyItem.get("displayEmptySearchResults");
         String solrQuery = (String) legacyItem.get("search_prefix");
-        
+
         CMSSearchContent content = new CMSSearchContent();
         content.setDisplayEmptySearchResults(displayEmptySearchResults);
         content.setSearchPrefix(solrQuery);
-        
+
         return content;
     }
-    
+
     public CMSSliderContent createSliderContent(Map<String, Object> legacyItem) throws DAOException {
-        
+
         Long sliderId = (Long) legacyItem.get("slider_id");
         CMSSliderContent content = new CMSSliderContent();
-        if(sliderId != null) {
+        if (sliderId != null) {
             CMSSlider slider = dao.getSlider(sliderId);
-            if(slider != null) {                
+            if (slider != null) {
                 content.setSlider(slider);
             }
         }
@@ -193,7 +194,7 @@ public class CMSContentConverter {
         Long itemId = (Long) legacyItem.get("cms_content_item_id");
         Integer itemsPerView = (Integer) legacyItem.get("elements_per_page");
         List<CMSCategory> categories = getCategories(itemId);
-        
+
         CMSPageListContent content = new CMSPageListContent();
         categories.forEach(content::addCategory);
         content.setItemsPerView(itemsPerView);
@@ -206,11 +207,11 @@ public class CMSContentConverter {
         content.setGlossaryName(glossaryName);
         return content;
     }
-    
-    
+
     @SuppressWarnings("unchecked")
     private List<CMSCategory> getCategories(Long itemId) throws DAOException {
-        List<Long> categoryIds = dao.getNativeQueryResults("SELECT category_id FROM cms_content_item_cms_categories WHERE content_item_id = " + itemId );
+        List<Long> categoryIds =
+                dao.getNativeQueryResults("SELECT category_id FROM cms_content_item_cms_categories WHERE content_item_id = " + itemId);
         List<CMSCategory> categories = new ArrayList<>(categoryIds.size());
         for (Long id : categoryIds) {
             CMSCategory category = dao.getCategory(id);
@@ -226,5 +227,4 @@ public class CMSContentConverter {
         return content;
     }
 
-    
 }

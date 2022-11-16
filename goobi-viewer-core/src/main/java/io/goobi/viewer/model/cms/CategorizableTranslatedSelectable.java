@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -30,7 +31,9 @@ import java.util.stream.Collectors;
  *
  * @author florian
  */
-public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T> {
+public class CategorizableTranslatedSelectable<T> extends TranslatedSelectable<T> implements Serializable {
+
+    private static final long serialVersionUID = 8238554814746815173L;
 
     private List<Selectable<CMSCategory>> categories;
 

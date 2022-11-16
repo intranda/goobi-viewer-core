@@ -51,6 +51,7 @@ import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvide
 
 /**
  * Creates and stored {@link CollectionView}s for a session
+ * 
  * @author florian
  *
  */
@@ -60,42 +61,44 @@ public class CollectionViewBean implements Serializable {
 
     private static final long serialVersionUID = 6707278968715712945L;
 
-    private static final Logger logger = Logger.getLogger(CollectionView.class);
-    
+    private static final Logger logger = Logger.getLogger(CollectionViewBean.class);
+
     /**
      * {@link CollectionView}s mapped to contentItem-Ids of {@link CMSCollectionContent} used to create the CollectionView
      */
     private Map<String, CollectionView> collections = new HashMap<>();
 
     /**
-     * Solr statistics (in the form of {@link CollectionResult}) mapped to collection names
-     * which are in turn mapped to contentItem-Ids because each contentItem may have different statistics for
-     * its collections due to different filter queries and excluded subcollections
+     * Solr statistics (in the form of {@link CollectionResult}) mapped to collection names which are in turn mapped to contentItem-Ids because each
+     * contentItem may have different statistics for its collections due to different filter queries and excluded subcollections
      */
-    private Map<String, Map<String,CollectionResult>> collectionStatistics = new HashMap<>();
-    
+    private Map<String, Map<String, CollectionResult>> collectionStatistics = new HashMap<>();
+
     /**
-     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been initialized
-     * yet, do so and add it to the Bean's CollectionView map
+     * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
+     * initialized yet, do so and add it to the Bean's CollectionView map
      *
-     * @param content   a {@link CMSCollectionContent} instance providing the base data for this collection
-     * @param collectionBaseLevels  The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a view of the clicked collection alone
-     * @param openExpanded  whether to open the page with all collections expanded. 
-     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels > 0 to navigate back out of the current collection
+     * @param content a {@link CMSCollectionContent} instance providing the base data for this collection
+     * @param collectionBaseLevels The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a
+     *            view of the clicked collection alone
+     * @param openExpanded whether to open the page with all collections expanded.
+     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels > 0 to
+     *            navigate back out of the current collection
      * @param ignoreHierarchy
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
-    public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents, boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
+    public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
+            boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
         CollectionView collection = collections.get(myId);
         if (collection == null) {
             try {
                 collection = initializeCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy);
                 collections.put(myId, collection);
-            } catch(CmsElementNotFoundException e) {
+            } catch (CmsElementNotFoundException e) {
                 logger.debug("Not matching collection element for id {} on page {}", content.getItemId(), content.getOwningPage().getId());
             }
         }
@@ -111,7 +114,7 @@ public class CollectionViewBean implements Serializable {
         CollectionView collection = collections.get(myId);
         return Optional.ofNullable(collection);
     }
-    
+
     public boolean removeCollection(CMSCollectionContent content) {
         String myId = getCollectionId(content);
         return removeCollection(myId);
@@ -121,8 +124,7 @@ public class CollectionViewBean implements Serializable {
         this.collectionStatistics.remove(myId);
         return collections.remove(myId) != null;
     }
-    
-    
+
     /**
      * Creates a collection view object from the item's collection related properties
      *
@@ -131,7 +133,8 @@ public class CollectionViewBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
-    public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean displayParents, boolean openExpanded, boolean ignoreHierarchy) throws PresentationException, IllegalRequestException, IndexUnreachableException {
+    public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean displayParents, boolean openExpanded,
+            boolean ignoreHierarchy) throws PresentationException, IllegalRequestException, IndexUnreachableException {
         if (StringUtils.isBlank(content.getSolrField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
@@ -145,7 +148,7 @@ public class CollectionViewBean implements Serializable {
         collection.populateCollectionList();
         return collection;
     }
-    
+
     /**
      * Adds a CollecitonView object for the given field to the map and populates its values.
      *
@@ -154,20 +157,19 @@ public class CollectionViewBean implements Serializable {
      * @param sortField
      * @param filterQuery
      */
-    private CollectionView initializeCollection(final CMSCollectionContent content) {
+    private static CollectionView initializeCollection(final CMSCollectionContent content) {
         // Use FACET_* instead of MD_*, otherwise the hierarchy may be broken
         String useCollectionField = SearchHelper.facetifyField(content.getSolrField());
-        
+
         BrowseDataProvider provider = new BrowseDataProvider() {
             @Override
             public Map<String, CollectionResult> getData() throws IndexUnreachableException {
-                Map<String, CollectionResult> dcStrings =
-                        SearchHelper.findAllCollectionsFromField(useCollectionField, content.getGroupingField(), content.getCombinedFilterQuery(), true, true,
-                                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField()));
-                return dcStrings;
+                return SearchHelper.findAllCollectionsFromField(useCollectionField, content.getGroupingField(), content.getCombinedFilterQuery(),
+                        true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField()));
             }
         };
-        
+
         CollectionView collection = new CollectionView(content.getSolrField(), provider);
         String subtheme = content.getOwningPage().getSubThemeDiscriminatorValue();
         if (StringUtils.isNotBlank(subtheme)) {
@@ -179,16 +181,13 @@ public class CollectionViewBean implements Serializable {
                         .filter(CMSPage::isPublished)
                         .filter(CMSPage::hasSearchFunctionality)
                         .findFirst();
-                searchPage.ifPresent(p -> {
-                    collection.setSearchUrl(p.getPageUrl());
-                });
+                searchPage.ifPresent(p -> collection.setSearchUrl(p.getPageUrl()));
             } catch (DAOException e) {
                 logger.debug("Error getting subtheme search page: " + e.toString());
             }
         }
         return collection;
     }
-
 
     /**
      * Querys solr for a list of all values of the set collectionField which my serve as a collection
@@ -205,22 +204,22 @@ public class CollectionViewBean implements Serializable {
         list = list.stream()
                 .filter(c -> StringUtils.isBlank(content.getCollectionName()) || c.startsWith(content.getCollectionName() + "."))
                 .filter(c -> (ignoreHierarchy) ? true
-                        : (StringUtils.isBlank(content.getCollectionName()) ? !c.contains(".") : !c.replace(content.getCollectionName() + ".", "").contains(".")))
+                        : (StringUtils.isBlank(content.getCollectionName()) ? !c.contains(".")
+                                : !c.replace(content.getCollectionName() + ".", "").contains(".")))
                 .collect(Collectors.toList());
         Collections.sort(list);
         return list;
     }
-    
-    
+
     /**
      * @return
      * @throws IndexUnreachableException
      */
     public Map<String, CollectionResult> getColletionMap(CMSCollectionContent content) throws IndexUnreachableException {
-        
+
         String contentId = getCollectionId(content);
         Map<String, CollectionResult> map = this.collectionStatistics.get(contentId);
-        if(map == null) {
+        if (map == null) {
             map = SearchHelper.findAllCollectionsFromField(content.getSolrField(), null, content.getCombinedFilterQuery(), true, true,
                     DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField()));
             this.collectionStatistics.put(contentId, map);
@@ -231,21 +230,21 @@ public class CollectionViewBean implements Serializable {
     public void removeCollectionsForPage(CMSPage page) {
         String idRegex = page.getId() + "_" + "\\w";
         new ArrayList<>(this.collections.keySet()).forEach(id -> {
-            if(id.matches(idRegex)) {
+            if (id.matches(idRegex)) {
                 removeCollection(id);
             }
         });
-        
+
     }
-    
+
     public List<CollectionView> getLoadedCollectionsForPage(CMSPage page) {
         String idRegex = page.getId() + "_" + "\\w";
         return new ArrayList<>(this.collections.keySet()).stream()
-        .filter(id -> id.matches(idRegex))
-        .map(id -> this.collections.get(id))
-        .collect(Collectors.toList());
+                .filter(id -> id.matches(idRegex))
+                .map(id -> this.collections.get(id))
+                .collect(Collectors.toList());
     }
-    
+
     /**
      * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
      * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)
@@ -261,5 +260,5 @@ public class CollectionViewBean implements Serializable {
         this.collections = new HashMap<>();
         this.collectionStatistics = new HashMap<>();
     }
-    
+
 }

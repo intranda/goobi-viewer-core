@@ -37,8 +37,6 @@ import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.api.iiif.presentation.content.ImageContent;
-import de.intranda.api.iiif.presentation.content.LinkingContent;
-import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.serializer.WebAnnotationMetadataValueSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -104,7 +102,6 @@ public class MediaItem {
 
     }
 
-
     /**
      * @return the id
      */
@@ -133,14 +130,12 @@ public class MediaItem {
         return image;
     }
 
-
     /**
      * @return the link
      */
     public String getLink() {
         return link;
     }
-
 
     /**
      * @return the tags

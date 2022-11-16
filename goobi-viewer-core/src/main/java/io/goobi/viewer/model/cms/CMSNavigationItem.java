@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -61,7 +62,9 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "cms_navigation_items")
-public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
+public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Serializable {
+
+    private static final long serialVersionUID = -5141867398238202463L;
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSNavigationItem.class);
@@ -720,7 +723,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      */
     public String getAssociatedTheme() {
         return Optional.ofNullable(cmsPage)
-                .map(page -> page.getSubThemeDiscriminatorValue())
+                .map(CMSPage::getSubThemeDiscriminatorValue)
                 .map(value -> StringUtils.isBlank(value) ? null : value)
                 .orElse(this.associatedTheme);
     }
@@ -775,7 +778,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
-     * @return true if the item links to a cmsPage and that page has a subtheme associated wih it.
+     * @return true if the item links to a cmsPage and that page has a subtheme associated with it.
      */
     public boolean isAssociatedWithSubtheme() {
         return Optional.ofNullable(cmsPage).map(CMSPage::getSubThemeDiscriminatorValue).filter(StringUtils::isNotBlank).isPresent();

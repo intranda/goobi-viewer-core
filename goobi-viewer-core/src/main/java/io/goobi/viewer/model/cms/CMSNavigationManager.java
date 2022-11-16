@@ -21,7 +21,9 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
@@ -44,18 +46,17 @@ import jakarta.persistence.EntityNotFoundException;
  * CMSNavigationManager class.
  * </p>
  */
-public class CMSNavigationManager {
+public class CMSNavigationManager implements Serializable {
+
+    private static final long serialVersionUID = 1839819725485560794L;
 
     private static final Logger logger = LogManager.getLogger(CMSNavigationManager.class);
+
     private AtomicInteger visibleItemIdCounter = new AtomicInteger(0);
 
     private final String associatedTheme;
     private List<SelectableNavigationItem> availableItems;
     private List<CMSNavigationItem> visibleItems;
-
-    //    public static CMSNavigationManager getInstance() {
-    //        return instance;
-    //    }
 
     /**
      * <p>
@@ -145,7 +146,7 @@ public class CMSNavigationManager {
                 .stream()
                 .flatMap(module -> module.getCmsMenuContributions().entrySet().stream())
                 .map(entry -> new SelectableNavigationItem(entry.getValue(), entry.getKey()))
-                .forEach(item -> addAvailableItem(item));
+                .forEach(this::addAvailableItem);
 
     }
 
@@ -181,8 +182,8 @@ public class CMSNavigationManager {
     public void addSelectedItemsToMenu() {
         getAvailableItems().stream()
                 .filter(SelectableNavigationItem::isSelected)
-                .map(selectedItem -> new CMSNavigationItem(selectedItem))
-                .forEach(visibleItem -> addVisibleItem(visibleItem));
+                .map(CMSNavigationItem::new)
+                .forEach(this::addVisibleItem);
         getAvailableItems().forEach(item -> item.setSelected(false));
     }
 
@@ -258,7 +259,7 @@ public class CMSNavigationManager {
      */
     public void setVisibleItems(List<CMSNavigationItem> items) {
         this.visibleItems = new ArrayList<>();
-        items.stream().map(CMSNavigationItem::getMeWithDescendants).flatMap(l -> l.stream()).forEach(item -> addVisibleItem(item));
+        items.stream().map(CMSNavigationItem::getMeWithDescendants).flatMap(Collection::stream).forEach(this::addVisibleItem);
     }
 
     /**

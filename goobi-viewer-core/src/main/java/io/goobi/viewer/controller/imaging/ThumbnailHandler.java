@@ -712,7 +712,7 @@ public class ThumbnailHandler {
                         thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
                     }
                 } catch (PresentationException | IndexUnreachableException e) {
-                    logger.error("Unable to retrieve first volume of " + doc + "from index", e);
+                    logger.error("Unable to retrieve first volume of {} from index", doc, e);
                 }
             } else {
                 logger.error("Unknown value in viewer.anchorThumbnailMode: {}. No thumbnail can be rendered for {}", anchorThumbnailMode, doc);
@@ -810,7 +810,7 @@ public class ThumbnailHandler {
                 logger.warn("Unable to retrieve first page of structElement from index");
             }
         }
-        return Optional.ofNullable(filename).filter(name -> StringUtils.isNotBlank(name));
+        return Optional.ofNullable(filename).filter(StringUtils::isNotBlank);
     }
 
     private static Optional<String> getMimeType(StructElement structElement) {
@@ -826,7 +826,7 @@ public class ThumbnailHandler {
         }
         if (!mimeType.isPresent()) {
             mimeType = getFilename(structElement)
-                    .map(filename -> ImageFileFormat.getImageFileFormatFromFileExtension(filename))
+                    .map(ImageFileFormat::getImageFileFormatFromFileExtension)
                     .map(ImageFileFormat::getMimeType);
         }
         return mimeType;
@@ -1052,8 +1052,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square and
-     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square
+     * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param item a {@link java.util.Optional} object.
      * @return a {@link java.lang.String} object.
@@ -1063,8 +1063,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square and
-     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square
+     * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.

@@ -29,8 +29,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * Simple template to create a json-representation of a viewer page, typically a CMS-Page.
- * Used to provide slides to sliders
+ * Simple template to create a json-representation of a viewer page, typically a CMS-Page. Used to provide slides to sliders
  *
  * @author florian
  *
@@ -40,6 +39,7 @@ public class ViewerPage {
     public final URI link;
     public final IContent image;
     public final IMetadataValue label;
+
     /**
      * @param link
      * @param image
@@ -56,11 +56,14 @@ public class ViewerPage {
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();
         this.link = URI.create(page.getUrl());
-        this.image = page.getPersistentComponents().stream().flatMap(c -> c.getContentItems().stream())
+        this.image = page.getPersistentComponents()
+                .stream()
+                .flatMap(c -> c.getContentItems().stream())
                 .filter(CMSMediaHolder.class::isInstance)
                 .sorted()
                 .map(CMSMediaHolder.class::cast)
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -227,25 +227,27 @@ public class CMSCategoryUpdate implements IModelUpdate {
      * @param map
      */
     private static void linkToPages(List<CMSCategory> categories, Map<String, List<Long>> map, List<CMSPage> pages) {
-        if (map != null) {
-            for (String categoryName : map.keySet()) {
-                CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(categoryName)).findFirst().orElse(null);
-                if (category == null) {
-                    logger.error("Error creating categories. No category by name {} found or created", categoryName);
-                } else {
-                    List<Long> pageIds = map.get(categoryName);
-                    for (Long pageId : pageIds) {
-                        if (pageId != null) {
-                            try {
-                                CMSPage page = pages.stream()
-                                        .filter(p -> p.getId() != null)
-                                        .filter(p -> pageId.equals(p.getId()))
-                                        .findFirst()
-                                        .orElseThrow(() -> new DAOException("No page found by Id " + pageId));
-                                page.addCategory(category);
-                            } catch (DAOException e) {
-                                logger.warn("Error getting pages for category {}. Failed to load page for id {}", categoryName, pageId, e);
-                            }
+        if (map == null) {
+            return;
+        }
+
+        for (Entry<String, List<Long>> entry : map.entrySet()) {
+            CMSCategory category = categories.stream().filter(cat -> cat.getName().equalsIgnoreCase(entry.getKey())).findFirst().orElse(null);
+            if (category == null) {
+                logger.error("Error creating categories. No category by name {} found or created", entry.getKey());
+            } else {
+                List<Long> pageIds = entry.getValue();
+                for (Long pageId : pageIds) {
+                    if (pageId != null) {
+                        try {
+                            CMSPage page = pages.stream()
+                                    .filter(p -> p.getId() != null)
+                                    .filter(p -> pageId.equals(p.getId()))
+                                    .findFirst()
+                                    .orElseThrow(() -> new DAOException("No page found by Id " + pageId));
+                            page.addCategory(category);
+                        } catch (DAOException e) {
+                            logger.warn("Error getting pages for category {}. Failed to load page for id {}", entry.getKey(), pageId, e);
                         }
                     }
                 }
@@ -312,8 +314,8 @@ public class CMSCategoryUpdate implements IModelUpdate {
                     try {
                         CMSCategoryHolder item = items.stream()
                                 .filter(i -> itemId.equals(i.getId()))
-                                .filter(i -> i instanceof CMSCategoryHolder)
-                                .map(i -> (CMSCategoryHolder) i)
+                                .filter(CMSCategoryHolder.class::isInstance)
+                                .map(CMSCategoryHolder.class::cast)
                                 .findFirst()
                                 .orElseThrow(() -> new DAOException("No contentItem found by Id " + itemId));
                         item.addCategory(category);
@@ -357,11 +359,11 @@ public class CMSCategoryUpdate implements IModelUpdate {
                 .stream()
                 .flatMap(map -> map.keySet().stream())
                 .flatMap(name -> Arrays.stream(name.split(CLASSIFICATION_SEPARATOR_REGEX)))
-                .filter(name -> StringUtils.isNotBlank(name))
+                .filter(StringUtils::isNotBlank)
                 .filter(name -> !name.equals("-"))
                 .map(String::toLowerCase)
                 .distinct()
-                .map(name -> new CMSCategory(name))
+                .map(CMSCategory::new)
                 .collect(Collectors.toList());
     }
 

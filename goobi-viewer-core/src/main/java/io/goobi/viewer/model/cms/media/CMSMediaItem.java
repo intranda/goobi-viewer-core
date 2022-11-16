@@ -50,7 +50,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
@@ -254,10 +253,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @return true if item content types allows for text export; false otherwise
      */
     public boolean isHasExportableText() {
-        switch (getContentType()) {
-            default:
-                return false;
-        }
+        return false;
     }
 
     /**
@@ -618,8 +614,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
                 return new URI(uriString);
             } catch (URISyntaxException e) {
                 logger.error("Failed to create resource uri for {}: {}", getFileName(), e.getMessage());
-            } catch (ViewerConfigurationException e) {
-                logger.error(e.getMessage());
             }
         }
 

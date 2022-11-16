@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,7 @@ public class CMSPageTemplateEditBean implements Serializable {
     }
 
     public List<WidgetDisplayElement> getSelectedWidgets() {
-        return this.sidebarWidgets.entrySet().stream().filter(e -> e.getValue()).map(Map.Entry::getKey).collect(Collectors.toList());
+        return this.sidebarWidgets.entrySet().stream().filter(Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
     public void resetSelectedWidgets() {

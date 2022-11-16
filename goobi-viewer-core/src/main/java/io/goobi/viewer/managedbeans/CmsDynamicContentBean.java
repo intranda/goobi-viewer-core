@@ -45,12 +45,12 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
  */
 @Named
 @ViewScoped
-public class CmsDynamicContentBean implements Serializable{
+public class CmsDynamicContentBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CmsDynamicContentBean.class);
 
     private static final long serialVersionUID = 644204008911471246L;
-    private HtmlPanelGroup topBarGroup = null;
+    private transient HtmlPanelGroup topBarGroup = null;
     private CMSPage cmsPage = null;
 
     @Deprecated //no longer needed to set
@@ -63,8 +63,8 @@ public class CmsDynamicContentBean implements Serializable{
         if (topBarGroup == null) {
             try {
                 loadTopBarContent();
-            } catch(IllegalStateException e) {
-                logger.error("Error initializing topbar content: " + e.toString());
+            } catch (IllegalStateException e) {
+                logger.error("Error initializing topbar content: {}", e.getMessage());
             }
         }
         return topBarGroup;
@@ -80,16 +80,16 @@ public class CmsDynamicContentBean implements Serializable{
     private void loadTopBarContent() {
 
         this.topBarGroup = new HtmlPanelGroup();
-        if(this.cmsPage == null) {
+        if (this.cmsPage == null) {
             throw new IllegalStateException("CMSPage must be set before loading content");
-        } else if(this.cmsPage.getTopbarSlider() != null) {
+        } else if (this.cmsPage.getTopbarSlider() != null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            DynamicContent slider = builder.createContent("topBarSlider", DynamicContentType.SLIDER, Map.of("sliderId", cmsPage.getTopbarSlider().getId()));
-            if(builder.build(slider, this.topBarGroup) == null) {
-                logger.error("Error building slider compoenent from slider " + cmsPage.getTopbarSlider().getId());
+            DynamicContent slider =
+                    builder.createContent("topBarSlider", DynamicContentType.SLIDER, Map.of("sliderId", cmsPage.getTopbarSlider().getId()));
+            if (builder.build(slider, this.topBarGroup) == null) {
+                logger.error("Error building slider compoenent from slider {}", cmsPage.getTopbarSlider().getId());
             }
         }
-
 
     }
 
