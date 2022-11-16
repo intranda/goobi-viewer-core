@@ -23,6 +23,7 @@ package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
@@ -97,18 +99,20 @@ public class CMSPageUpdate implements IModelUpdate {
                 TranslatedText title = getTranslatedText(pageLanguageVersions, "title");
                 TranslatedText menuTitle = getTranslatedText(pageLanguageVersions, "menu_title");
                 Boolean published = (Boolean) pageValues.get("published");
-                Long topbarSliderId = getTopbarSliderId(contentItemMap, pageLanguageVersions);
                 String legacyPageTemplateId = (String) pageValues.get("template_id");
 
                 createPreviewComponent(contentItemMap, pageLanguageVersions, title, dao)
                         .ifPresent(page::addPersistentComponent);
 
+                createTopbarSliderComponent(contentItemMap, pageLanguageVersions)
+                        .ifPresent(page::addPersistentComponent);
+                
+                
                 if (title.isEmpty()) {
                     title.setText(legacyPageTemplateId, IPolyglott.getDefaultLocale());
                 }
                 page.setTitle(title);
                 page.setMenuTitle(menuTitle);
-                page.setTopbarSliderId(topbarSliderId);
                 page.setPublished(published);
 
                 Map<String, CMSContent> contentMap = createContentObjects(pageContentItemsMap);
@@ -144,6 +148,23 @@ public class CMSPageUpdate implements IModelUpdate {
         dao.executeUpdate("ALTER TABLE cms_pages DROP COLUMN template_id;");
 
         return true;
+    }
+
+    private Optional<PersistentCMSComponent> createTopbarSliderComponent(Map<Long, List<Map<String, Object>>> contentItemMap,
+            Map<String, Map<String, Object>> pageLanguageVersions) throws DAOException {
+        Long topbarSliderId = getTopbarSliderId(contentItemMap, pageLanguageVersions);
+        CMSComponent topbarComponentTemplate = templateManager.getComponent("headerslider").orElse(null);
+        if(topbarSliderId != null && topbarComponentTemplate != null) {
+            
+            PersistentCMSComponent component = new PersistentCMSComponent(topbarComponentTemplate);
+            CMSSliderContent sliderContent = component.getFirstContentOfType(CMSSliderContent.class);
+            if(sliderContent != null) {
+                sliderContent.setSliderId(topbarSliderId);
+            }
+            return Optional.ofNullable(component);
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**

@@ -179,9 +179,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText menuTitle = new TranslatedText();
 
-    @JoinColumn(name = "slider_id")
-    private CMSSlider topbarSlider = null;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owningPage")
     @PrivateOwned
     @CascadeOnDelete
@@ -267,7 +264,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
         this.title = new TranslatedText(original.title);
         this.menuTitle = new TranslatedText(original.menuTitle);
-        this.topbarSlider = original.topbarSlider;
         this.dateCreated = original.dateCreated;
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
@@ -1261,44 +1257,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getPi() {
         return getRelatedPI();
     }
-
-    /**
-     * @return
-     */
-    public CMSSlider getTopbarSlider() {
-        return this.topbarSlider;
+    
+    public boolean hasTopbarComponents() {
+        return this.getComponents().stream().anyMatch(c -> CMSComponentScope.PAGEHEADER.equals(c.getScope()));
     }
 
-    public void setTopbarSlider(CMSSlider topbarSlider) {
-        this.topbarSlider = topbarSlider;
-    }
-
-    public Long getTopbarSliderId() {
-        return Optional.ofNullable(this.topbarSlider).map(CMSSlider::getId).orElse(null);
-    }
-
-    /**
-     * 
-     * @param topbarSlider
-     * @throws DAOException
-     * @deprecated only used for backward compatibility with older themes
-     */
-    @Deprecated
-    public void setTopBarSliderId(Long id) throws DAOException {
-        this.setTopbarSliderId(id);
-    }
-
-    /**
-     * 
-     * @param topbarSlider
-     * @deprecated only used for backward compatibility with older themes
-     */
-    public Long getTopBarSliderId() {
-        return getTopbarSliderId();
-    }
-
-    public void setTopbarSliderId(Long id) throws DAOException {
-        setTopbarSlider(DataManager.getInstance().getDao().getSlider(id));
+    public List<CMSComponent> getTopbarComponents() {
+        return this.getComponents().stream().filter(c -> CMSComponentScope.PAGEHEADER.equals(c.getScope())).collect(Collectors.toList());
     }
 
     public String getAdminBackendUrl() {

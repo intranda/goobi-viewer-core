@@ -282,4 +282,19 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public Optional<CMSContent> getContentByItemId(String itemId) {
         return this.contentItems.stream().filter(c -> c.getItemId().equals(itemId)).findAny();
     }
+    
+    
+    @SuppressWarnings("unchecked")
+    public <T extends CMSContent> T getFirstContentOfType(Class<? extends CMSContent> clazz) {
+        return (T) this.contentItems.stream()
+        .filter(c -> c.getClass().equals(clazz))
+        .findFirst().orElse(null);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T extends CMSContent> List<T> getAllContentOfType(Class<? extends CMSContent> clazz) {
+        return (List<T>) this.contentItems.stream()
+        .filter(c -> c.getClass().equals(clazz))
+        .collect(Collectors.toList());
+    }
 }

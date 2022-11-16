@@ -30,5 +30,9 @@ public enum CMSComponentScope {
     /**
      * Component is visible in a preview of its owning page embedded within another page
      */
-    PREVIEW;
+    PREVIEW,
+    /**
+     * Component is displayed in the header of the page
+     */
+    PAGEHEADER;
 }

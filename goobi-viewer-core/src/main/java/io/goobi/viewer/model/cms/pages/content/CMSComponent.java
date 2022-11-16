@@ -141,6 +141,22 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public CMSContentItem getFirstContentItem() {
         return this.contentItems.stream().findFirst().orElse(null);
     }
+    
+    @SuppressWarnings("unchecked")
+    public <T extends CMSContent> T getFirstContentOfType(Class<? extends CMSContent> clazz) {
+        return (T) this.contentItems.stream()
+        .map(CMSContentItem::getContent)
+        .filter(c -> c.getClass().equals(clazz))
+        .findFirst().orElse(null);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T extends CMSContent> List<T> getAllContentOfType(Class<? extends CMSContent> clazz) {
+        return (List<T>) this.contentItems.stream()
+        .map(CMSContentItem::getContent)
+        .filter(c -> c.getClass().equals(clazz))
+        .collect(Collectors.toList());
+    }
 
     public CMSContentItem getFirstContentItem(String className) {
         return this.contentItems.stream()
