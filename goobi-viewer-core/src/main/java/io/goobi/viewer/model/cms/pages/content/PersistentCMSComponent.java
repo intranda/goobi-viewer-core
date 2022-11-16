@@ -100,13 +100,6 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     Map<String, String> attributes = new HashMap<>();
 
     /**
-     * If the content of this component is spread out over several pages of views, as in search result lists for example, this number indicates the
-     * current page the user is seeing
-     */
-    @Transient
-    private int listPage = 1;
-
-    /**
      * JPA contrutor
      */
     public PersistentCMSComponent() {
@@ -252,24 +245,6 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
         for (TranslatableCMSContent cmsContent : getTranslatableContentItems()) {
             cmsContent.setSelectedLocale(locale);
         }
-    }
-
-    /**
-     * set the {@link #listPage}
-     * 
-     * @param listPage
-     */
-    public void setListPage(int listPage) {
-        this.listPage = listPage;
-    }
-
-    /**
-     * get the {@link #listPage}
-     * 
-     * @return
-     */
-    public int getListPage() {
-        return listPage;
     }
 
     public List<TranslatableCMSContent> getTranslatableContentItems() {

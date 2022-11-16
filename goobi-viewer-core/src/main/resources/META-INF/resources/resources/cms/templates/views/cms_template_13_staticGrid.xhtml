@@ -24,7 +24,7 @@
 
                 <script type="text/javascript">
                     $.ajax( {
-                        url: "#{cmsPage.getTileGridUrl('grid')}",
+                        url: "#{cc.attrs.component.getContent('grid').tileGridUrl}",
                         type: "GET",
                         datatype: "JSON"
                     } ).then( function( data ) {

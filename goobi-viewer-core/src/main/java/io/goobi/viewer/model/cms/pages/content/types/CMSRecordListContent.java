@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,7 +38,9 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -87,7 +90,7 @@ public class CMSRecordListContent extends CMSContent {
     private SearchFunctionality initSearch() {
         if (this.getOwningComponent() != null) {
             SearchFunctionality func = new SearchFunctionality(this.solrQuery, this.getOwningComponent().getOwningPage().getPageUrl());
-            func.setPageNo(this.getOwningComponent().getListPage());
+            func.setPageNo(getCurrentListPage());
             return func;
         }
         return new SearchFunctionality(this.solrQuery, "");
@@ -171,9 +174,10 @@ public class CMSRecordListContent extends CMSContent {
                 s.setSortString(sortString);
             }
             SearchFacets facets = searchBean.getFacets();
-            s.setPage(searchBean.getCurrentPage());
+            s.setPage(getCurrentListPage());
             searchBean.setHitsPerPage(this.getElementsPerPage());
             searchBean.setLastUsedSearchPage();
+            s.setCustomFilterQuery(this.solrQuery);
             s.execute(facets, null, searchBean.getHitsPerPage(), BeanUtils.getLocale(), false,
                     this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(s);
@@ -196,6 +200,10 @@ public class CMSRecordListContent extends CMSContent {
      */
     public Functionality getFunctionality() {
         return getSearch();
+    }
+    
+    public int getCurrentListPage() {
+        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
     }
 
     @Override

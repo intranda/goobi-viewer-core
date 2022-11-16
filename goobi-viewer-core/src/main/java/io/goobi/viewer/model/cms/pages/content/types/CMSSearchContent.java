@@ -37,6 +37,7 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -78,7 +79,7 @@ public class CMSSearchContent extends CMSContent {
         if (this.getOwningComponent() != null) {
             SearchFunctionality func = new SearchFunctionality(this.searchPrefix,
                     Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwningPage()).map(p -> p.getPageUrl()).orElse(""));
-            func.setPageNo(Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getListPage).orElse(1));
+            func.setPageNo(getCurrentListPage());
             func.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             return func;
         }
@@ -171,6 +172,10 @@ public class CMSSearchContent extends CMSContent {
      */
     public Functionality getFunctionality() {
         return getSearch();
+    }
+    
+    public int getCurrentListPage() {
+        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
     }
 
     @Override
