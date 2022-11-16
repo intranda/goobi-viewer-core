@@ -119,7 +119,7 @@ public class CmsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CmsBean.class);
 
-    private static final int DEFAULT_ROWS_PER_PAGE = 15;
+    private static final int DEFAULT_ROWS_PER_PAGE = 30;
 
     @Inject
     private NavigationHelper navigationHelper;
