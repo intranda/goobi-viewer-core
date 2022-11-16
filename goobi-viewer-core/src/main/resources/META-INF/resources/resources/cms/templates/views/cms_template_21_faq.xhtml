@@ -34,7 +34,7 @@
 					rendered="#{cc.attrs.component.hasContent('faqList') and !cc.attrs.component.getContentItem('faqList').content.groupByCategory}">
 					<div class="accordion tpl-faq__list" id="faqAccordion"
 						role="tablist" aria-multiselectable="true">
-						<c:set var="nestedPages" value="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}"/>
+						<c:set var="nestedPages" value="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(cc.attrs.random, cc.attrs.paged)}"/>
 						<!-- FAQ ITEMS -->
 						<ui:repeat var="subPage"
 							value="#{nestedPages}"
@@ -100,7 +100,7 @@
 					rendered="#{cc.attrs.component.hasContent('faqList') and cc.attrs.component.getContentItem('faqList').content.groupByCategory}">
 					<!-- CLASSIFICATIONS -->
 					<c:forEach var="category"
-						items="#{cc.attrs.component.getContentItem('faqList').content.getSortedCategories(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}"
+						items="#{cc.attrs.component.getContentItem('faqList').content.getSortedCategories(cc.attrs.random, cc.attrs.paged)}"
 						varStatus="classification_status">
 						<h1 class="tpl-faq__subheader">#{msg[category]}</h1>
 						<div class="accordion tpl-faq__list" id="faqAccordion"
@@ -108,7 +108,7 @@
 
 							<!-- FAQ ITEMS -->
 							<c:forEach var="faqItem"
-								items="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged, category)}"
+								items="#{cc.attrs.component.getContentItem('faqList').content.getNestedPages(cc.attrs.random, cc.attrs.paged, category)}"
 								varStatus="status">
 								<div class="card" id="card-#{faqItem.id}-#{category.id}">
 									<div class="card-header" role="tab"

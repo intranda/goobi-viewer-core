@@ -230,6 +230,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     @Transient
     private final CMSTemplateManager templateManager;
+    
+    @Transient
+    private int listPage = 1;
 
     /**
      * <p>
@@ -846,7 +849,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @return a int.
      */
     public int getListPage() {
-        return this.cmsComponents.stream().findAny().map(CMSComponent::getListPage).orElse(1);
+        return this.listPage;
     }
 
     /**
@@ -855,7 +858,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @param listPage a int.
      */
     public void setListPage(int listPage) {
-        this.cmsComponents.forEach(c -> c.setListPage(listPage));
+        this.listPage = listPage;
     }
 
     /**

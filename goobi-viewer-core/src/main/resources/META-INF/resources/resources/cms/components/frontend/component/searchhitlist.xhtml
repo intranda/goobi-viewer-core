@@ -86,8 +86,8 @@
 					<!-- paginator -->
 					<viewerComponent:simplePaginator
 						itemCount="#{cmsBean.getQueryResultCount()}"
-						itemActive="#{cmsPage.listPage}"
-						urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
+						itemActive="#{cc.attrs.component.owningPage.listPage}"
+						urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
 				</div>
 
 			</div>

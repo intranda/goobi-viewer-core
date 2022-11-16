@@ -38,8 +38,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.UserBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import io.goobi.viewer.model.security.user.User;
@@ -64,7 +63,6 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private final PersistentCMSComponent persistentComponent;
 
-    private int listPage = 1;
 
     private transient UIComponent uiComponent;
     private transient UIComponent backendUiComponent;
@@ -182,14 +180,6 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public String getTemplateFilename() {
         return templateFilename;
-    }
-
-    public int getListPage() {
-        return listPage;
-    }
-
-    public void setListPage(int listPage) {
-        this.listPage = listPage;
     }
 
     @Override
@@ -386,4 +376,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getId).orElse(0l);
     }
  
+    public CMSPage getOwningPage() {
+        return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getOwningPage).orElse(null);
+    }
 }

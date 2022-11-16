@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <component>
-	<label>cms_component__previewltext_label</label>
-	<description>cms_component__previewltext_desc</description>
+	<label>cms_component__previewltext__label</label>
+	<description>cms_component__previewtext__desc</description>
 	<icon>cms/components/frontend/component/icon/htmltext.png</icon>
 	<scope>preview</scope>
 	<content>

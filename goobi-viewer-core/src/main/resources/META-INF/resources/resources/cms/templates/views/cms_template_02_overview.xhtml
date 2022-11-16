@@ -40,7 +40,7 @@
                 <!-- OVERVIEW LIST -->
                 <div class="tpl-news-overview__list">
                     <div class="row">
-                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.component.listPage, cc.attrs.random, cc.attrs.paged)}">
+                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.random, cc.attrs.paged)}">
 							
 							<div class="tpl-news-overview__list-item clearfix">
 							
@@ -87,7 +87,7 @@
                         <!-- PAGINATOR -->
 						<viewerComponent:simplePaginator 
 							itemCount="#{cc.attrs.component.getContentItem('list01').content.nestedPagesCount}" 
-							itemActive="#{cc.attrs.component.listPage}"
+							itemActive="#{cc.attrs.component.owningPage.listPage}"
 							urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
                     </div>
                 </div>

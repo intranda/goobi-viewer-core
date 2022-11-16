@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,6 +44,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -159,9 +161,9 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getNestedPages(Integer pageNo, Boolean random, Boolean paged) throws DAOException {
+    public List<CMSPage> getNestedPages(Boolean random, Boolean paged) throws DAOException {
         if (nestedPages == null) {
-            nestedPages = loadNestedPages(pageNo, random, paged);
+            nestedPages = loadNestedPages(random, paged);
         }
         return nestedPages;
     }
@@ -175,9 +177,9 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getNestedPagesByCategory(int pageNo, boolean random, boolean paged, CMSCategory category) throws DAOException {
+    public List<CMSPage> getNestedPagesByCategory(boolean random, boolean paged, CMSCategory category) throws DAOException {
         if (nestedPages == null) {
-            nestedPages = loadNestedPages(pageNo, random, paged);
+            nestedPages = loadNestedPages(random, paged);
         }
         return nestedPages.stream()
                 .filter(child -> this.getCategories().isEmpty()
@@ -202,7 +204,8 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
      * @return
      * @throws DAOException
      */
-    private List<CMSPage> loadNestedPages(int pageNo, boolean random, boolean paged) throws DAOException {
+    private List<CMSPage> loadNestedPages(boolean random, boolean paged) throws DAOException {
+        int pageNo = getCurrentListPage();      
         int size = getItemsPerView();
         int offset = (pageNo - 1) * size;
         AtomicInteger totalPages = new AtomicInteger(0);
@@ -261,7 +264,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
         if (!this.categories.isEmpty()) {
             SortedMap<Long, CMSCategory> sortMap = new TreeMap<>();
             for (CMSCategory category : getCategories()) {
-                long order = getNestedPagesByCategory(pageNo, random, paged, category).stream()
+                long order = getNestedPagesByCategory(random, paged, category).stream()
                         .filter(page -> page.getPageSorting() != null)
                         .mapToLong(CMSPage::getPageSorting)
                         .sorted()
@@ -302,5 +305,9 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     @Override
     public boolean isEmpty() {
         return false;
+    }
+    
+    public int getCurrentListPage() {
+        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
     }
 }

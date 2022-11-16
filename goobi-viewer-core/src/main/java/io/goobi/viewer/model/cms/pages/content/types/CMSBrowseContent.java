@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,7 +36,9 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -82,7 +85,7 @@ public class CMSBrowseContent extends CMSContent {
     private BrowseFunctionality initBrowse() {
         if (getOwningComponent() != null) {
             BrowseFunctionality b = new BrowseFunctionality(this.solrField);
-            b.setPageNo(this.getOwningComponent().getListPage());
+            b.setPageNo(getCurrentListPage());
             return b;
         }
         return new BrowseFunctionality(this.solrField);
@@ -142,6 +145,10 @@ public class CMSBrowseContent extends CMSContent {
     @Override
     public boolean isEmpty() {
         return StringUtils.isBlank(solrField);
+    }
+    
+    public int getCurrentListPage() {
+        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
     }
 
 }
