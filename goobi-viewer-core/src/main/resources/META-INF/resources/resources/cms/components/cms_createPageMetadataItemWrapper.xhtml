@@ -385,51 +385,7 @@
             	<div data-target="cmsPageJumpToQuickCSSLink" class="admin__small-info mt-2"><a target="_blank" href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a></div>
 
             </div>
-            
-           	<div class="admin__default-block">
-           	
-		    <h2>#{msg.cms_page_url_parameters}</h2>
 
-		    <div class="admin__form-help-text in mb-3">#{msg.cms_page_url_parameters_help}</div>
-		    
-			<!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup id="urlParametersGroup" layout="block" styleClass="cms-module__option-checkbox">
-                <!-- VALIDATION MESSAGE -->
-                <div class="cms-module__option-message">
-                    <h:messages for="urlParameters" 
-                        infoClass="cms-module__option-message-status success" 
-                        warnClass="cms-module__option-message-status warning"
-                        errorClass="cms-module__option-message-status danger" />
-
-                    <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-                    </div>
-                </div>
-                
-                <!-- ALLOW URL PARAMS TOGGLE -->
-                 <div class="admin__radio-switch">
-                 <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
-	            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-	            <input type="radio" jsf:id="cmsPageAllowUrlParams_no"
-	            pt:name="#{cmsPageAllowUrlParams.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.mayContainUrlParameters ? null : 'false'}"/>
-				<h:outputLabel for="cmsPageAllowUrlParams_no" value="#{msg.no}" />
-	         	<input type="radio" jsf:id="cmsPageAllowUrlParams_yes"
-	         	pt:name="#{cmsPageAllowUrlParams.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.mayContainUrlParameters ? 'false' : null}"/>
-	         	<h:outputLabel for="cmsPageAllowUrlParams_yes" value="#{msg.yes}" />
-				<h:inputHidden id="cmsPageAllowUrlParams_input" binding="#{cmsPageAllowUrlParams}" value="#{cmsBean.selectedPage.mayContainUrlParameters}"
-       				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
-                     <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                 </div>
-                    
-                    
-                    
-            </h:panelGroup>
-            
-            
-            </div>   
-            
-            
 				<!-- SCRIPT FOR PRETTY URL PREVIEW -->
 				<script>
 				

@@ -297,4 +297,8 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
         .filter(c -> c.getClass().equals(clazz))
         .collect(Collectors.toList());
     }
+
+    public boolean isPaged() {
+        return getContentItems().stream().anyMatch(PagedCMSContent.class::isInstance);
+    }
 }

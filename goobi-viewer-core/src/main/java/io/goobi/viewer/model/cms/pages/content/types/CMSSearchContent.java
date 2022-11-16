@@ -39,6 +39,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.SearchHelper;
 import jakarta.persistence.Column;
@@ -50,7 +51,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "cms_content_search")
 @DiscriminatorValue("search")
-public class CMSSearchContent extends CMSContent {
+public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "search";
 
@@ -173,10 +174,7 @@ public class CMSSearchContent extends CMSContent {
     public Functionality getFunctionality() {
         return getSearch();
     }
-    
-    public int getCurrentListPage() {
-        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
-    }
+ 
 
     @Override
     public boolean isEmpty() {

@@ -226,7 +226,7 @@
 								                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
 								                                            jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
 																			#{msg.delete}
-																			<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																			<f:ajax render="componentSelectionWrapper" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
 																		</button>
 																	
 																	</div>
@@ -243,7 +243,7 @@
 							                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{cmsBean.selectedComponent}">
 							                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
 							                                                <f:selectItems
-							                                                value="#{cmsPageEditBean.availableComponents}"
+							                                                value="#{cmsPageEditBean.getAvailableComponents(page)}"
 							                                                var="comp"
 							                                                itemLabel="#{msg[comp.label]}"
 							                                                itemValue="#{comp.templateFilename}"

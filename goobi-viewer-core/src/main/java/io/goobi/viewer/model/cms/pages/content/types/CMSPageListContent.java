@@ -44,6 +44,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.Column;
@@ -59,7 +60,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "cms_content_pagelist")
 @DiscriminatorValue("pagelist")
-public class CMSPageListContent extends CMSContent implements CMSCategoryHolder {
+public class CMSPageListContent extends CMSContent implements CMSCategoryHolder, PagedCMSContent {
 
     private static final String COMPONENT_NAME = "pagelist";
     private static final int DEFAULT_ITEMS_PER_VIEW = 10;
@@ -306,8 +307,5 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     public boolean isEmpty() {
         return false;
     }
-    
-    public int getCurrentListPage() {
-        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
-    }
+
 }

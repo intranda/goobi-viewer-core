@@ -38,6 +38,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -48,7 +49,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "cms_content_browse")
 @DiscriminatorValue("browse")
-public class CMSBrowseContent extends CMSContent {
+public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
 
     private static final String COMPONENT_NAME = "browse";
 
@@ -147,8 +148,5 @@ public class CMSBrowseContent extends CMSContent {
         return StringUtils.isBlank(solrField);
     }
     
-    public int getCurrentListPage() {
-        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
-    }
 
 }

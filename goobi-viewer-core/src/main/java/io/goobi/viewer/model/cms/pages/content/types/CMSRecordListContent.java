@@ -40,6 +40,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
@@ -54,7 +55,7 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "cms_content_record_list")
 @DiscriminatorValue("recordlist")
-public class CMSRecordListContent extends CMSContent {
+public class CMSRecordListContent extends CMSContent implements PagedCMSContent {
 
     private static final String COMPONENT_NAME = "searchhitlist";
 
@@ -200,10 +201,6 @@ public class CMSRecordListContent extends CMSContent {
      */
     public Functionality getFunctionality() {
         return getSearch();
-    }
-    
-    public int getCurrentListPage() {
-        return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
     }
 
     @Override

@@ -395,4 +395,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public CMSPage getOwningPage() {
         return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getOwningPage).orElse(null);
     }
+    
+    public boolean isPaged() {
+        return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
+    }
 }

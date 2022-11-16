@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -35,6 +36,7 @@ import javax.inject.Named;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
@@ -79,8 +81,12 @@ public class CmsPageEditBean implements Serializable {
         return selected;
     }
 
-    public List<CMSComponent> getAvailableComponents() {
-        return CMSTemplateManager.getInstance().getContentManager().getComponents();
+    public List<CMSComponent> getAvailableComponents(CMSPage page) {
+        Stream<CMSComponent> stream = CMSTemplateManager.getInstance().getContentManager().getComponents().stream();
+        if(page != null && page.isContainsPagedComponents()) {
+            stream = stream.filter(c -> !c.isPaged());
+        }
+        return stream.collect(Collectors.toList());
     }
 
     /**

@@ -71,6 +71,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
@@ -199,15 +200,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private String parentPageId = null;
 
     /**
-     * whether the url to this page may contain additional path parameters at its end while still pointing to this page Should be true if this is a
-     * search page, because search parameters are introduced to the url for an actual search Should not be true if this overrides a default page, but
-     * should only do so if no parameters are present (for example if parameters indicate a search on the default search page)
-     *
-     */
-    @Column(name = "may_contain_url_parameters")
-    private boolean mayContainUrlParameters = true;
-
-    /**
      * A html class name to be applied to the DOM element containing the page html
      */
     @Column(name = "wrapper_element_class")
@@ -277,7 +269,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.subThemeDiscriminatorValue = original.subThemeDiscriminatorValue;
         this.categories = new ArrayList<>(original.categories);
         this.parentPageId = original.parentPageId;
-        this.mayContainUrlParameters = original.mayContainUrlParameters;
         this.wrapperElementClass = original.wrapperElementClass;
         this.useAsDefaultRecordView = original.useAsDefaultRecordView;
 
@@ -981,35 +972,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @return the mayContainUrlParameters
      */
     public boolean isMayContainUrlParameters() {
-        return mayContainUrlParameters;
+        return isContainsPagedComponents();
+    }  
+    
+    public boolean isContainsPagedComponents() {
+        return this.persistentComponents.stream().anyMatch(PersistentCMSComponent::isPaged);
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>mayContainUrlParameters</code>.
-     * </p>
-     *
-     * @param mayContainUrlParameters the mayContainUrlParameters to set
-     */
-    public void setMayContainUrlParameters(boolean mayContainUrlParameters) {
-        this.mayContainUrlParameters = mayContainUrlParameters;
-    }
-
-    //    /**
-    // * @return true if this page's template is configured to follow urls which
-    // contain additional parameters (e.g. search parameters)
-    //     */
-    //    public boolean mayContainURLParameters() {
-    //        try {
-    //            if (getTemplate() != null) {
-    //                return getTemplate().isAppliesToExpandedUrl();
-    //            }
-    //            return false;
-    //        } catch (IllegalStateException e) {
-    //            logger.warn("Unable to acquire template", e);
-    //            return false;
-    //        }
-    //    }
 
     /**
      * <p>
@@ -1423,12 +1392,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.menuTitle = menuTitle;
     }
 
-
     public void addPersistentComponent(PersistentCMSComponent persistentComponent) {
         persistentComponent.setOwningPage(this);
         this.persistentComponents.add(persistentComponent);
     }
-
     
     public List<CMSContentItem> getPreviewItems() {
         return this.getComponents().stream()
