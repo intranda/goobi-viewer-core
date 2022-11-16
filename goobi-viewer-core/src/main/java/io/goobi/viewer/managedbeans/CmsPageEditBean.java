@@ -35,7 +35,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.amazonaws.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.Strings;
 
 import io.goobi.viewer.controller.DataManager;
