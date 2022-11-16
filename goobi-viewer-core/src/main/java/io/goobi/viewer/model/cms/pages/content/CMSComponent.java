@@ -37,6 +37,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import io.goobi.viewer.model.security.user.User;
@@ -196,9 +198,7 @@ public class CMSComponent implements Comparable<CMSComponent> {
 
         if (this.uiComponent == null && this.jsfComponent != null && StringUtils.isNotBlank(this.jsfComponent.getFilename())) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
-            String id = FilenameUtils.getBaseName(this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.uiComponent = new HtmlPanelGroup();
-            this.uiComponent.setId(id);
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, Collections.emptyMap());
             component.getAttributes().put("component", this);
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
@@ -382,4 +382,5 @@ public class CMSComponent implements Comparable<CMSComponent> {
     public long getPersistenceId() {
         return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getId).orElse(0l);
     }
+ 
 }

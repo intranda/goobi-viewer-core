@@ -116,7 +116,6 @@ public class UserBean implements Serializable {
     /** Honey pot field invisible to human users. */
     private String lastName;
     private String redirectUrl = null;
-    private Feedback feedback;
     private String transkribusUserName;
     private String transkribusPassword;
     private Boolean hasAdminBackendAccess;
@@ -129,10 +128,7 @@ public class UserBean implements Serializable {
         this.authenticationProvider = getLocalAuthenticationProvider();
     }
 
-    @PostConstruct
-    public void init() {
-        createFeedback();
-    }
+
 
     /**
      * Required setter for ManagedProperty injection
@@ -350,7 +346,6 @@ public class UserBean implements Serializable {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(u);
-                    createFeedback();
                     if (request != null && request.getSession(false) != null) {
                         request.getSession(false).setAttribute("user", u);
                     }
@@ -421,7 +416,6 @@ public class UserBean implements Serializable {
 
         user.setTranskribusSession(null);
         setUser(null);
-        createFeedback();
         password = null;
         hasAdminBackendAccess = null;
         if (loggedInProvider != null) {
@@ -730,109 +724,9 @@ public class UserBean implements Serializable {
         return "";
     }
 
-    /**
-     * <p>
-     * createFeedback.
-     * </p>
-     */
-    public void createFeedback() {
-        lastName = null;
-        if (captchaBean != null) {
-            captchaBean.reset();
-        }
 
-        feedback = new Feedback();
-        if (user != null) {
-            feedback.setSenderAddress(user.getEmail());
-            feedback.setName(user.getDisplayName());
-        }
-        feedback.setRecipientAddress(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress());
 
-        String url = Optional.ofNullable(FacesContext.getCurrentInstance())
-                .map(FacesContext::getExternalContext)
-                .map(ExternalContext::getRequestHeaderMap)
-                .map(map -> map.get("referer"))
-                .orElse(null);
-        if (StringUtils.isEmpty(url)) {
-            // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
-            try {
-                Optional.ofNullable(BeanUtils.getNavigationHelper())
-                        .map(NavigationHelper::getCurrentPrettyUrl)
-                        .ifPresent(u -> feedback.setUrl(u));
-            } catch (Exception e) {
-                logger.warn(e.getMessage());
-            }
 
-        }
-    }
-
-    /**
-     * <p>
-     * submitFeedbackAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String submitFeedbackAction(boolean setCurrentUrl) {
-        // Check whether the security question has been answered correct, if configured
-        if (captchaBean != null && !captchaBean.checkAnswer()) {
-            captchaBean.reset();
-            Messages.error("user__security_question_wrong");
-            return "";
-        }
-
-        // Check whether the invisible field lastName has been filled (real users cannot do that)
-        if (StringUtils.isNotEmpty(lastName)) {
-            logger.debug("Honeypot field entry: {}", lastName);
-            return "";
-        }
-        if (!EmailValidator.validateEmailAddress(this.feedback.getSenderAddress())) {
-            Messages.error("email_errlnvalid");
-            logger.debug("Invalid email: {}", this.feedback.getSenderAddress());
-            return "";
-        }
-        if (StringUtils.isBlank(feedback.getName())) {
-            Messages.error("errFeedbackNameRequired");
-            return "";
-        }
-        if (StringUtils.isBlank(feedback.getMessage())) {
-            Messages.error("errFeedbackMessageRequired");
-            return "";
-        }
-        if (StringUtils.isBlank(feedback.getRecipientAddress())) {
-            Messages.error("errFeedbackRecipientRequired");
-            return "";
-        }
-
-        //set current url to feedback
-        if (setCurrentUrl && navigationHelper != null) {
-            feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
-        }
-
-        try {
-            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
-                    feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
-                // Send confirmation to sender
-                if (StringUtils.isNotEmpty(feedback.getSenderAddress())
-                        && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null,
-                                feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
-                    logger.warn("Could not send feedback confirmation to sender.");
-                }
-                Messages.info("feedbackSubmitted");
-            } else {
-                logger.error("{} could not send feedback.", feedback.getSenderAddress());
-                Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                        .replace("{0}", feedback.getRecipientAddress()));
-            }
-        } catch (UnsupportedEncodingException | MessagingException e) {
-            logger.error(e.getMessage(), e);
-            Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", feedback.getRecipientAddress()));
-        }
-        //eventually always create a new feedback object to erase prior inputs
-        createFeedback();
-        return "";
-    }
 
     /**
      * <p>
@@ -1174,27 +1068,7 @@ public class UserBean implements Serializable {
         this.activationKey = activationKey;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>feedback</code>.
-     * </p>
-     *
-     * @return the feedback
-     */
-    public Feedback getFeedback() {
-        return feedback;
-    }
 
-    /**
-     * <p>
-     * Setter for the field <code>feedback</code>.
-     * </p>
-     *
-     * @param feedback the feedback to set
-     */
-    public void setFeedback(Feedback feedback) {
-        this.feedback = feedback;
-    }
 
     /**
      * <p>

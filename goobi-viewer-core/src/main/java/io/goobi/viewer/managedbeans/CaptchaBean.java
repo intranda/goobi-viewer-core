@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Random;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.logging.log4j.Logger;
@@ -39,7 +40,7 @@ import io.goobi.viewer.model.security.SecurityQuestion;
  * Handles security question checks.
  */
 @Named
-@SessionScoped
+@ViewScoped
 public class CaptchaBean implements Serializable {
 
     private static final long serialVersionUID = -8342047587240066920L;
@@ -56,8 +57,8 @@ public class CaptchaBean implements Serializable {
      * 
      */
     public void reset() {
-        securityQuestion = null;
-        securityAnswer = null;
+//        securityQuestion = null;
+//        securityAnswer = null;
     }
 
     /**
