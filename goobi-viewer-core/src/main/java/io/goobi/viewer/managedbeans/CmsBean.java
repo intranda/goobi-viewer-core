@@ -119,7 +119,6 @@ public class CmsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CmsBean.class);
 
-    private static final int DEFAULT_ROWS_PER_PAGE = 50;
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -240,7 +239,7 @@ public class CmsBean implements Serializable {
                     numCreatedPages = Optional.empty();
                 }
             });
-            lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelPages.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
             lazyModelPages.addFilter(CMSPAGES_FILTER);
             //            lazyModelPages.addFilter("CMSCategory", "name");
         }
@@ -264,7 +263,7 @@ public class CmsBean implements Serializable {
         } finally {
             lazyModelPages.setSortField("id");
             lazyModelPages.setSortOrder(SortOrder.ASCENDING);
-            lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+            lazyModelPages.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
             lazyModelPages.update();
         }
     }
