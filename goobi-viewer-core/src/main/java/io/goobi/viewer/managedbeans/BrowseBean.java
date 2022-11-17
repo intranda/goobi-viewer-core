@@ -519,7 +519,7 @@ public class BrowseBean implements Serializable {
      * @should return numerical filter if available
      * @should return first filter if no other available
      */
-    String selectRedirectFilter() {
+    public String selectRedirectFilter() {
         if (availableStringFilters.isEmpty()) {
             return null;
         }

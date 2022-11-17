@@ -1185,19 +1185,6 @@ public class CmsBean implements Serializable {
             return "";
         }
 
-        currentPage.getComponents()
-                .stream()
-                .flatMap(comp -> comp.getContentItems().stream())
-                .map(CMSContentItem::getContent)
-                .forEach(content -> {
-                    try {
-                        content.handlePageLoad(resetSearch);
-                    } catch (PresentationException e) {
-                        logger.error("Error handling page load for page {} in content {}", content.getOwningPage().getId(), content.getItemId(), e);
-
-                    }
-                });
-
         // If the page is related to a record, load that record
         if (StringUtils.isNotEmpty(currentPage.getRelatedPI())) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -1217,8 +1204,24 @@ public class CmsBean implements Serializable {
                 }
             }
         }
+        
+        //Execute all page loading reoutines of content items.
+        //If one returns a redirect url, return that, otherwise an empty string
+        return currentPage.getComponents()
+                .stream()
+                .flatMap(comp -> comp.getContentItems().stream())
+                .map(CMSContentItem::getContent)
+                .map(content -> {
+                    try {
+                        return content.handlePageLoad(resetSearch);
+                    } catch (PresentationException e) {
+                        logger.error("Error handling page load for page {} in content {}", content.getOwningPage().getId(), content.getItemId(), e);
+                        return "";
+                    }
+                })
+                .filter(StringUtils::isNotBlank)
+                .findAny().orElse("");
 
-        return "";
     }
 
     /**
