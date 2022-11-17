@@ -12,8 +12,8 @@
 
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
-		<composite:attribute name="imagelistItem" required="false"
-			default="#{cc.attrs.component.firstContentItem}" />
+		<composite:attribute name="imagelist" required="false"
+			default="#{cc.attrs.component.firstContentItem.content}" />
 	</composite:interface>
 
 	<composite:implementation>
@@ -39,7 +39,7 @@
 
                 <script type="text/javascript">
                     $.ajax( {
-                        url: "#{cc.attrs.component.getContent('grid').tileGridUrl}",
+                        url: "#{cc.attrs.imagelist.tileGridUrl}",
                         type: "GET",
                         datatype: "JSON"
                     } ).then( function( data ) {

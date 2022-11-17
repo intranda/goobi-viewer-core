@@ -222,14 +222,12 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     public UIComponent getBackendUiComponent() throws PresentationException {
-        String id = "component_" + this.getOrder();
         if (this.backendUiComponent == null) {
+            String id = FilenameUtils.getBaseName("component_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
             this.backendUiComponent = new HtmlPanelGroup();
             this.backendUiComponent.setId(id);
             for (CMSContentItem cmsContentItem : contentItems) {
-                String contentId = id + "_content_" + cmsContentItem.getItemId();
                 UIComponent itemComponent = cmsContentItem.getUiComponent();
-//                itemComponent.setId(contentId);
                 this.backendUiComponent.getChildren().add(itemComponent);
             }
         }

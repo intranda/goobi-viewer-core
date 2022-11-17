@@ -8,7 +8,7 @@
 	<description>cms_component__imagegrid__desc</description>
 	<icon>cms/components/frontend/component/icon/imagelist.png</icon>
 	<content>
-		<item id="pagelist">
+		<item id="grid">
 			<label>cms_content__imagelist_label</label>
 			<description>cms_content__imagelist_desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</className>

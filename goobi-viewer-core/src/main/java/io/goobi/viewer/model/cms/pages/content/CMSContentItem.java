@@ -155,12 +155,10 @@ public class CMSContentItem {
     }
 
     public UIComponent getUiComponent() throws PresentationException {
-        String id = "component_" + this.getOwningComponent().getOrder() + "_content_" + this.getItemId();
 
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = new HtmlPanelGroup();
-            uiComponent.setId(id);
             UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
             this.uiComponent.getChildren().add(wrapper);
             if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
