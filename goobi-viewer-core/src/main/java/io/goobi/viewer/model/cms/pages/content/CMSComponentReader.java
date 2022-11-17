@@ -101,7 +101,7 @@ public class CMSComponentReader {
                 boolean required = !requiredString.equalsIgnoreCase("false");
                 
                 CMSContent content = createContentFromClassName(className);
-                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), required);
+                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), component, required);
 
                 component.addContentItem(item);
             } catch (InstantiationException e) {

@@ -310,7 +310,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 .findAny()
                 .orElse(null);
         if (content != null) {
-            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), item.isRequired());
+            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), this, item.isRequired());
         }
 
         CMSContentItem newContentItem = new CMSContentItem(item);

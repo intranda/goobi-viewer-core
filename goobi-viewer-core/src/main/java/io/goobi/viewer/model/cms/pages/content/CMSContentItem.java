@@ -67,6 +67,8 @@ public class CMSContentItem {
     private final JsfComponent jsfComponent;
 
     private final boolean required;
+    
+    private final CMSComponent owningComponent;
 
     private UIComponent uiComponent;
 
@@ -77,6 +79,7 @@ public class CMSContentItem {
         this.description = orig.description;
         this.jsfComponent = orig.jsfComponent;
         this.required = orig.required;
+        this.owningComponent = orig.owningComponent;
     }
 
     /**
@@ -84,7 +87,7 @@ public class CMSContentItem {
      * @param itemId
      * @param content
      */
-    public CMSContentItem(String itemId, CMSContent content, String label, String description, JsfComponent jsfComponent, boolean required) {
+    public CMSContentItem(String itemId, CMSContent content, String label, String description, JsfComponent jsfComponent, CMSComponent owningComponent, boolean required) {
         if (StringUtils.isNotBlank(itemId)) {
             this.itemId = itemId;
         } else {
@@ -100,6 +103,7 @@ public class CMSContentItem {
         this.description = description;
         this.jsfComponent = jsfComponent;
         this.required = required;
+        this.owningComponent = owningComponent;
     }
 
     public boolean isRequired() {
@@ -195,6 +199,10 @@ public class CMSContentItem {
 
     public boolean isMedia() {
         return Optional.ofNullable(this.content).map(CMSMediaContent.class::isInstance).orElse(false);
+    }
+    
+    public CMSComponent getOwningComponent() {
+        return owningComponent;
     }
 
 }

@@ -2,10 +2,10 @@
 <component>
 	<jsfComponent>
 		<library>cms/components/frontend/component</library>
-		<name>collection</name>
+		<name>collectiontiled</name>
 	</jsfComponent>
-	<label>cms_component__collection_label</label>
-	<description>cms_component__collection_desc</description>
+	<label>cms_component__collection_tiled__label</label>
+	<description>cms_component__collection_tiled__desc</description>
 	<icon>cms/components/frontend/component/icon/collection.png</icon>
 	<content>
 		<item id="collection">

@@ -140,24 +140,26 @@
 			</div>
 
 			<!-- GROUP BY SOLR FIELD -->
-			<div class="admin__content-component-input-group">
-				<div class="admin__content-component-input-label">
-					<label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
-				</div>
-				<div class="admin__content-component-input-field">
-					<div class="custom-control custom-control--select">
-						<h:selectOneMenu id="groupByFieldCollection"
-							styleClass="form-control"
-							value="#{cc.attrs.contentItem.content.groupingField}">
-							<f:selectItem itemValue="" itemLabel="#{msg.select}" />
-							<f:selectItems value="#{cmsBean.possibleGroupFields}" var="field"
-								itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" />
-							<f:passThroughAttribute name="aria-label"
-								value="#{msg.cms_itemGroupByField}" />
-						</h:selectOneMenu>
+			<ui:fragment rendered="#{cc.attrs.contentItem.owningComponent.getAttributeValue('allowGrouping')}">
+				<div class="admin__content-component-input-group">
+					<div class="admin__content-component-input-label">
+						<label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
+					</div>
+					<div class="admin__content-component-input-field">
+						<div class="custom-control custom-control--select">
+							<h:selectOneMenu id="groupByFieldCollection"
+								styleClass="form-control"
+								value="#{cc.attrs.contentItem.content.groupingField}">
+								<f:selectItem itemValue="" itemLabel="#{msg.select}" />
+								<f:selectItems value="#{cmsBean.possibleGroupFields}" var="field"
+									itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.cms_itemGroupByField}" />
+							</h:selectOneMenu>
+						</div>
 					</div>
 				</div>
-			</div>
+			</ui:fragment>
 
 			<!-- SORTING MODE -->
 			<div class="admin__content-component-input-group">

@@ -2,10 +2,10 @@
 <component>
 	<jsfComponent>
 		<library>cms/components/frontend/component</library>
-		<name>collection</name>
+		<name>collectionstacked</name>
 	</jsfComponent>
-	<label>cms_component__collection_label</label>
-	<description>cms_component__collection_desc</description>
+	<label>cms_component__collection_stacked__label</label>
+	<description>cms_component__collection_stacked__desc</description>
 	<icon>cms/components/frontend/component/icon/collection.png</icon>
 	<content>
 		<item id="collection">
@@ -30,7 +30,10 @@
 	<attribute name="ignoreHierarchy" display="false" boolean="true">
 		<value>false</value>
 	</attribute>
+	<attribute name="hierarchyLevelsToInclude" display="false" boolean="false">
+		<value>2</value>
+	</attribute>
 	<attribute name="allowGrouping" display="false" boolean="true">
-		<value>false</value>
+		<value>true</value>
 	</attribute>
 </component>

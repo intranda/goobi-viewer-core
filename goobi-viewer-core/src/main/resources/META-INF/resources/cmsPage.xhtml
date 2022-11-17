@@ -46,7 +46,6 @@
                 	<div id="cmsComponentContainer" class="content-components__all-items-container">
 						<c:forEach var="cmsComponent" items="#{cmsPage.pageViewComponents}">
 								<h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
-<!-- 						<viewerComponent:feedbackForm /> -->
 						</c:forEach>
 					</div>
 

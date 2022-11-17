@@ -23,6 +23,7 @@ package io.goobi.viewer.model.cms.legacy;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
@@ -261,12 +262,12 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
         return Integer.compare(this.order, o.getOrder());
     }
 
-    public CMSContentItem createCMSContentItem() {
+    public CMSContentItem createCMSContentItem(CMSComponent component) {
 
         CMSContent content = createCMSContent(this.type);
         if (content != null) {
-            JsfComponent component = new JsfComponent("cms/components/backend/content", content.getBackendComponentName());
-            return new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, component, this.isMandatory());
+            JsfComponent jsf = new JsfComponent("cms/components/backend/content", content.getBackendComponentName());
+            return new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, jsf, component, this.isMandatory());
         }
         return null;
     }

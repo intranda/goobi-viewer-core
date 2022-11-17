@@ -220,7 +220,7 @@ public class CMSPageTemplate implements Serializable {
                 this.templateFileName, scope,  Collections.emptyMap());
 
         for (CMSContentItemTemplate itemTemplate : contentItems) {
-            CMSContentItem item = itemTemplate.createCMSContentItem();
+            CMSContentItem item = itemTemplate.createCMSContentItem(component);
             if (item != null) {
                 component.addContentItem(item);
             }
