@@ -30,14 +30,19 @@
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
 
-				<div id="templateTimematrix" class="tpl-timeMatrix">
-	                <!-- TEXT -->
-	                <div class="tpl-timeMatrix__text">
-	                    <h:outputText escape="false" value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
-	                </div>				
-					<ui:include src="/resources/includes/search/timematrix.xhtml">
-								<ui:param name="subtheme" value="#{cmsPage.subThemeDiscriminatorValue}"/>
-					</ui:include>
+				<div id="templateBookmarkLists" class="tpl-bookmarklists content-component__legacy-full-width">
+					<ui:fragment rendered="#{cc.attrs.component.hasContent('text')}">
+	                    <div class="tpl-bookmarklists__text">
+	    					<h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
+	    				</div>
+	                </ui:fragment>
+	                
+				    <h:form class="tpl-bookmarklists__lists">    	
+			          	<ui:include src="/resources/includes/bookmarks/sharedBookmarkLists.xhtml">
+	                           <ui:param name="source" value="#{bookmarkBean.publicBookmarkLists}" />
+	                    </ui:include>
+					</h:form>
+				
 				</div>
 				
 			</div>
