@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
+import io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
@@ -303,6 +304,8 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
                 return new CMSGeomapContent();
             case "SLIDER":
                 return new CMSSliderContent();
+            case "BROWSETERMS":
+                return new CMSBrowseContent();
             default:
                 return null;
         }

@@ -116,6 +116,7 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
             browse.setFilter(null, null);
         }
         try {
+            browse.setStartingCharacter("A");
             browse.searchTerms();
         } catch (RedirectException e) {
             return "pretty:cmsBrowse3";

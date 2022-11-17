@@ -303,7 +303,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param contentData
      * @return
      */
-    private static CMSContentItem populateContentItem(CMSContentItem item, List<CMSContent> contentData) {
+    private CMSContentItem populateContentItem(CMSContentItem item, List<CMSContent> contentData) {
         CMSContent content = contentData
                 .stream()
                 .filter(i -> i.getItemId().equals(item.getItemId()))
@@ -313,7 +313,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
             return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), item.isRequired());
         }
 
-        return new CMSContentItem(item);
+        CMSContentItem newContentItem = new CMSContentItem(item);
+        newContentItem.getContent().setOwningComponent(this.persistentComponent);
+        return newContentItem;
     }
 
     private static Map<String, CMSComponentAttribute> initializeAttributes(Map<String, CMSComponentAttribute> attrs,

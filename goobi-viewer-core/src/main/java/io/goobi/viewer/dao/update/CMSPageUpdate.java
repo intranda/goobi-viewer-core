@@ -306,6 +306,8 @@ public class CMSPageUpdate implements IModelUpdate {
                 return contentConverter.createSliderContent(legacyItem);
             case "METADATA":
                 return contentConverter.createMetadataContent(legacyItem);
+            case "BROWSETERMS":
+                return contentConverter.createBrowseContent(legacyItem);
             default:
                 return null;
         }

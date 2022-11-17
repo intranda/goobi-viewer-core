@@ -22,7 +22,7 @@
 			</div>
 			<!-- BROWSE TERMS LIST -->
 			<ui:include src="/resources/includes/search/browseTerms.xhtml">
-				<ui:param name="baseUrl" value="#{cmsPage.pageUrl}" />
+				<ui:param name="baseUrl" value="#{cc.attrs.component.owningPage.pageUrl}" />
 			</ui:include>
 		</div>
 	</composite:implementation>

@@ -210,7 +210,7 @@ public class CMSPageTemplate implements Serializable {
     public CMSComponent createCMSComponent() {
         String jsfLibraryPath = JSF_COMPONENT_PATH;
         Path componentPath = Paths.get(this.htmlFileName);
-        boolean allItemsArePreview = contentItems.stream().allMatch(i -> i.isPreview());
+        boolean allItemsArePreview = contentItems.stream().allMatch(CMSContentItemTemplate::isPreview);
         CMSComponentScope scope = allItemsArePreview ? CMSComponentScope.PREVIEW : CMSComponentScope.PAGEVIEW;
         if (componentPath.getNameCount() > 1) {
             jsfLibraryPath = componentPath.getParent().toString();

@@ -86,6 +86,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
@@ -1184,9 +1185,10 @@ public class CmsBean implements Serializable {
             return "";
         }
 
-        currentPage.getPersistentComponents()
+        currentPage.getComponents()
                 .stream()
                 .flatMap(comp -> comp.getContentItems().stream())
+                .map(CMSContentItem::getContent)
                 .forEach(content -> {
                     try {
                         content.handlePageLoad(resetSearch);
