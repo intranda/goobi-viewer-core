@@ -4,8 +4,8 @@
 		<library>cms/components/frontend/component</library>
 		<name>masonry</name>
 	</jsfComponent>
-	<label>cms_component__imagelist_label</label>
-	<description>cms_component__imagelist_desc</description>
+	<label>cms_component__masonry__label</label>
+	<description>cms_component__masonry__desc</description>
 	<icon>cms/components/frontend/component/icon/imagelist.png</icon>
 	<content>
 		<item id="pagelist">

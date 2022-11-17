@@ -30,7 +30,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -57,7 +61,7 @@ import jakarta.persistence.Transient;
 public class CMSImageListContent extends CMSContent implements CMSCategoryHolder {
 
     private static final String COMPONENT_NAME = "masonry";
-    private static final int DEFAULT_IMAGES_PER_VIEW = 10;
+    private static final int DEFAULT_IMAGES_PER_VIEW = 9;
     private static final int DEFAULT_IMPORTANT_IMAGES_PER_VIEW = 0;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -145,13 +149,19 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
         return DataManager.getInstance()
                 .getRestApiManager()
                 .getDataApiManager()
-                .map(urls -> urls.path(CMS_MEDIA)
-                        .query("tags", tags)
-                        .query("max", this.getImagesPerView())
-                        .query("prioritySlots", this.getImportantImagesPerView())
-                        .query("random", "true")
-                        .build())
+                .map(urls -> buildTilegridUrl(urls, tags, this.getImagesPerView(), this.getImportantImagesPerView()))
                 .orElse(getLegacyTileGridUrl());
+    }
+
+    private String buildTilegridUrl(AbstractApiUrlManager urls, String tags, int imagesPerView, int priorityImagesPerView) {
+        ApiPath path = urls.path(CMS_MEDIA)
+                .query("max", imagesPerView)
+                .query("prioritySlots", priorityImagesPerView)
+                .query("random", "true");
+        if (StringUtils.isNotBlank(tags)) {
+            path = path.query("tags", tags);
+        }
+        return path.build();
     }
 
     /**

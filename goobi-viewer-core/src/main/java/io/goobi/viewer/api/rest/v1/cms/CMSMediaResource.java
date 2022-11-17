@@ -150,12 +150,12 @@ public class CMSMediaResource {
         if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
         }
+        
         List<CMSMediaItem> items = DataManager.getInstance()
                 .getDao()
                 .getAllCMSMediaItems()
                 .stream()
-                .filter(
-                        item -> tagList.isEmpty() ||
+                .filter(item -> tagList.isEmpty() ||
                                 item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(tagList::contains))
                 .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
