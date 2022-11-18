@@ -2154,7 +2154,6 @@ public final class SearchHelper {
      * 
      * @param query
      * @param facetString
-     * @param locale
      * @return
      * @should parse phrase search query correctly
      * @should parse regular search query correctly
@@ -2163,9 +2162,9 @@ public final class SearchHelper {
      * @should parse items from facet string correctly
      * @should parse mixed search query correctly
      */
-    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString, Locale locale) {
+    public static SearchQueryGroup parseSearchQueryGroupFromQuery(String query, String facetString) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
-        SearchQueryGroup ret = new SearchQueryGroup(locale, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        SearchQueryGroup ret = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
 
         List<List<StringPair>> allPairs = new ArrayList<>();
         List<Set<String>> allFieldNames = new ArrayList<>();
@@ -2336,7 +2335,7 @@ public final class SearchHelper {
                 // Re-use existing all-fields item, if available
                 item = ret.getQueryItems().get(i);
             } else {
-                item = new SearchQueryItem(locale);
+                item = new SearchQueryItem();
                 ret.getQueryItems().add(item);
             }
             if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
