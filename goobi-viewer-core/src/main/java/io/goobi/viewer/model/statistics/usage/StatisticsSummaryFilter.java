@@ -109,7 +109,7 @@ public class StatisticsSummaryFilter {
      * @return
      */
     public static StatisticsSummaryFilter forRecord(String pi) {
-        return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, "PI:" + pi);
+        return new StatisticsSummaryFilter(LOCAL_DATE_MIN, LOCAL_DATE_MAX, StringUtils.isNotBlank(pi) ?  ("PI:" + pi) : "PI:\"\"" );
     }
     
     /**

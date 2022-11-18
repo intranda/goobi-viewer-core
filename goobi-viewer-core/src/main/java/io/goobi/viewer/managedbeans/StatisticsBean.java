@@ -39,6 +39,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField.Count;
@@ -334,8 +335,12 @@ public class StatisticsBean implements Serializable {
     }
 
     public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
-        StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
-        return new StatisticsSummaryBuilder().loadSummary(filter);
+        if(StringUtils.isNotBlank(pi)) {            
+            StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
+            return new StatisticsSummaryBuilder().loadSummary(filter);
+        } else {
+            return new StatisticsSummary(Collections.emptyMap());
+        }
     }
 
     public LocalDate getLastUsageStatisticsCheck() throws IndexUnreachableException {
