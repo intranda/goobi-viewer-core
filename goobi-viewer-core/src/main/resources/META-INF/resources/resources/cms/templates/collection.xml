@@ -4,13 +4,11 @@
 		<library>cms/components/frontend/component</library>
 		<name>collection</name>
 	</jsfComponent>
-	<label>cms_component__collection_label</label>
-	<description>cms_component__collection_desc</description>
+	<label>cms_component__collection__label</label>
+	<description>cms_component__collection__desc</description>
 	<icon>cms/components/frontend/component/icon/collection.png</icon>
 	<content>
 		<item id="collection">
-			<label>cms_component__collection_label</label>
-			<description>cms_content__collection_desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>

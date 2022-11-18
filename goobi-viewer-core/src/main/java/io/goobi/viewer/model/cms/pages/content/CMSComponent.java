@@ -311,11 +311,12 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 .orElse(null);
         if (content != null) {
             return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), this, item.isRequired());
+        } else {
+            CMSContentItem newContentItem = new CMSContentItem(item);
+            newContentItem.getContent().setOwningComponent(this.persistentComponent);
+            return newContentItem;            
         }
 
-        CMSContentItem newContentItem = new CMSContentItem(item);
-        newContentItem.getContent().setOwningComponent(this.persistentComponent);
-        return newContentItem;
     }
 
     private static Map<String, CMSComponentAttribute> initializeAttributes(Map<String, CMSComponentAttribute> attrs,

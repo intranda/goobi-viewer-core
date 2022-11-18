@@ -686,9 +686,6 @@ public class CmsBean implements Serializable {
         if (success) {
             Messages.info("cms_pageSaveSuccess");
             logger.trace("reload cms page");
-            //                selectedPage = getCMSPage(selectedPage.getId());
-            //            setSelectedPage(selectedPage);
-            //                DataManager.getInstance().getDao().updateCMSPage(selectedPage);
             logger.trace("update pages");
             lazyModelPages.update();
 

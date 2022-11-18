@@ -2,7 +2,7 @@
 <component>
 	<jsfComponent>
 		<library>cms/components/frontend/component</library>
-		<name>browsw</name>
+		<name>browse</name>
 	</jsfComponent>
 	<label>cms_component__browse__label</label>
 	<description>cms_component__browse__desc</description>

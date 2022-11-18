@@ -85,6 +85,7 @@ import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.CascadeType;
@@ -1415,5 +1416,9 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return this.getComponents().stream()
                 .filter(c -> CMSComponentScope.PAGEVIEW.equals(c.getScope()))
                 .collect(Collectors.toList());
+    }
+    
+    public boolean isLockComponents() {
+        return this.template != null && this.template.isLockComponents();
     }
 }
