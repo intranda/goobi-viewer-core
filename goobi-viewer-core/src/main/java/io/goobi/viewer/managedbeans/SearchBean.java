@@ -175,7 +175,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private final Map<String, List<StringPair>> advancedSearchSelectItems = new HashMap<>();
     /** Group of query item clusters for the advanced search. */
     private final SearchQueryGroup advancedSearchQueryGroup =
-            new SearchQueryGroup(BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+            new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
 
@@ -789,8 +789,7 @@ public class SearchBean implements SearchInterface, Serializable {
         // Create SearchQueryGroup from query
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED && advancedSearchQueryGroup.isBlank()) {
             SearchQueryGroup parsedGroup =
-                    SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getCurrentFacetString(),
-                            navigationHelper != null ? navigationHelper.getLocale() : null);
+                    SearchHelper.parseSearchQueryGroupFromQuery(searchStringInternal.replace("\\", ""), facets.getCurrentFacetString());
             advancedSearchQueryGroup.injectItems(parsedGroup.getQueryItems());
         }
 
@@ -1456,9 +1455,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             if (!matched) {
                 // If no search field is set up for collection search, add new field containing the currently selected collection
-                SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
-                item.setField(facetItem.getField());
-                item.setValue(facetItem.getValue());
+                SearchQueryItem item = new SearchQueryItem().setField(facetItem.getField()).setValue(facetItem.getValue());
                 // ...but only if there is no exact field:value pair already among the query items
                 if (!populatedQueryItems.contains(item)) {
                     advancedSearchQueryGroup.getQueryItems().add(item);
@@ -1849,6 +1846,8 @@ public class SearchBean implements SearchInterface, Serializable {
         if (language == null) {
             throw new IllegalArgumentException("language may not be null.");
         }
+
+        // Check for pre-generated items
         String key = new StringBuilder(language).append('_').append(field).toString();
         List<StringPair> ret = advancedSearchSelectItems.get(key);
         if (ret != null) {
@@ -1857,6 +1856,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         ret = new ArrayList<>();
         logger.trace("Generating drop-down values for {}", field);
+        Locale locale = Locale.forLanguageTag(language);
         if (SolrConstants.BOOKMARKS.equals(field)) {
             if (userBean != null && userBean.isLoggedIn()) {
                 // User bookshelves
@@ -1874,7 +1874,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession());
                 if (bookmarkList.isPresent() && !bookmarkList.get().getItems().isEmpty()) {
                     ret.add(new StringPair(bookmarkList.get().getName(),
-                            ViewerResourceBundle.getTranslation("bookmarkList_session", null)));
+                            ViewerResourceBundle.getTranslation("bookmarkList_session", locale)));
                 }
             }
             // public bookmark lists
@@ -1904,7 +1904,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 for (int i = 0; i < dc.getLevel(); ++i) {
                     sbItemLabel.append("- ");
                 }
-                sbItemLabel.append(ViewerResourceBundle.getTranslation(dc.getName(), null));
+                sbItemLabel.append(ViewerResourceBundle.getTranslation(dc.getName(), locale));
                 ret.add(new StringPair(dc.getName(), sbItemLabel.toString()));
                 sbItemLabel.setLength(0);
             }

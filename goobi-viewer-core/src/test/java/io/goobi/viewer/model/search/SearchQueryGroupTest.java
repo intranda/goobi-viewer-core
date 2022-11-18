@@ -31,14 +31,14 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
-    
+
     /**
-    * @see SearchQueryGroup#init(List)
-    * @verifies create and preselect visible fields
-    */
+     * @see SearchQueryGroup#init(List)
+     * @verifies create and preselect visible fields
+     */
     @Test
     public void init_shouldCreateAndPreselectVisibleFields() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
         Assert.assertEquals(3, group.getQueryItems().size());
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(1).getField());
