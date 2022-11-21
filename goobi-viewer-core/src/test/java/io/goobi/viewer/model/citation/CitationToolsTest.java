@@ -36,6 +36,6 @@ public class CitationToolsTest {
     public void getCSLTypeForDocstrct_shouldReturnCorrectType() throws Exception {
        Assert.assertEquals(CSLType.BOOK, CitationTools.getCSLTypeForDocstrct("monograph"));
        Assert.assertEquals(CSLType.MANUSCRIPT, CitationTools.getCSLTypeForDocstrct("manuscript"));
-       Assert.assertEquals(CSLType.WEBPAGE, CitationTools.getCSLTypeForDocstrct("object"));
+       Assert.assertEquals(CSLType.ARTICLE, CitationTools.getCSLTypeForDocstrct("object"));
     }
 }
