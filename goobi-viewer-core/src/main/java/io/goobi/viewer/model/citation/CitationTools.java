@@ -50,7 +50,7 @@ public class CitationTools {
             case "chapter":
                 return CSLType.CHAPTER;
             default:
-                return CSLType.WEBPAGE;
+                return CSLType.ARTICLE;
         }
     }
 
