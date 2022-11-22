@@ -28,15 +28,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -70,6 +73,7 @@ public class FacetItem implements Serializable, IFacetItem {
     private String label;
     private String translatedLabel;
     private long count;
+    private boolean group;
     private final boolean hierarchial;
 
     /**
@@ -110,9 +114,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     public FacetItem(Count count) {
-        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
+        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(),
+                Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
     }
-
 
     /**
      * Internal constructor.
@@ -206,18 +210,21 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * Constructs facet items from thelist of given field:value combinations. Always sorted by the label translation.
+     * Constructs facet items from the list of given field:value combinations. Always sorted by the label translation.
      *
      * @param field Facet field
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
+     * @param groupFacets I this is a grouped facet item, group values by starting letter
      * @param locale Optional locale for translation
      * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
      * @should add priority values first
      * @should set label from separate field if configured and found
+     * @should group values by starting character correctly
      */
-    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale,
+    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, boolean groupFacets,
+            Locale locale,
             Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
         List<IFacetItem> retList = new ArrayList<>();
@@ -238,34 +245,51 @@ public class FacetItem implements Serializable, IFacetItem {
             }
         }
 
-        for (String value : values.keySet()) {
+        Map<String, FacetItem> existingItems = new HashMap<>();
+        for (Entry<String, Long> entry : values.entrySet()) {
             // Skip reversed values
-            if (value.charAt(0) == 1) {
+            if (entry.getKey().charAt(0) == 1) {
                 continue;
             }
-            String label = value;
+            String useValue;
+            if (groupFacets) {
+                useValue = entry.getKey().substring(0, 1);
+            } else {
+                useValue = entry.getKey();
+            }
 
-            String key = field + ":" + value;
+            String label = useValue;
+
+            String key = field + ":" + useValue;
             if (labelMap != null && labelMap.containsKey(key)) {
                 label = labelMap.get(key);
                 logger.trace("using label from map: {}", label);
             }
 
             if (StringUtils.isEmpty(field)) {
-                label = new StringBuilder(value).append(SolrConstants.SUFFIX_DD).toString();
+                label = new StringBuilder(useValue).append(SolrConstants.SUFFIX_DD).toString();
             }
-            String linkValue = value;
+            String linkValue = useValue;
             if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
+                linkValue = '"' + linkValue + '"';
+            } else if (groupFacets) {
+                linkValue += '*';
             }
             String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
-            FacetItem facetItem =
-                    new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), values.get(value),
-                            hierarchical);
-            if (!priorityValues.isEmpty() && priorityValues.contains(value)) {
-                priorityValueMap.put(value, facetItem);
+
+            if (existingItems.containsKey(key)) {
+                existingItems.get(key).increaseCount(entry.getValue());
             } else {
-                retList.add(facetItem);
+                FacetItem facetItem =
+                        new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), entry.getValue(),
+                                hierarchical);
+                if (!priorityValues.isEmpty() && priorityValues.contains(useValue)) {
+                    priorityValueMap.put(useValue, facetItem);
+                } else {
+                    retList.add(facetItem);
+                }
+
+                existingItems.put(key, facetItem);
             }
         }
         switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
@@ -652,6 +676,27 @@ public class FacetItem implements Serializable, IFacetItem {
     @Override
     public FacetItem setCount(long count) {
         this.count = count;
+        return this;
+    }
+
+    public void increaseCount(long amount) {
+        this.count += amount;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public boolean isGroup() {
+        return group;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public IFacetItem setGroup(boolean group) {
+        this.group = group;
         return this;
     }
 

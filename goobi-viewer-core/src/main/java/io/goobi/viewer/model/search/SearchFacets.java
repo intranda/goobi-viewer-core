@@ -485,7 +485,6 @@ public class SearchFacets implements Serializable {
      * @should use label from labelMap if available
      */
     static void parseFacetString(String facetString, List<IFacetItem> facetItems, Map<String, String> labelMap) {
-
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         } else {
@@ -508,21 +507,22 @@ public class SearchFacets implements Serializable {
         }
         String[] facetStringSplit = facetString.split(";;");
         for (String facetLink : facetStringSplit) {
-            if (StringUtils.isNotEmpty(facetLink)) {
-                if (!facetLink.contains(":")) {
-                    facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
-                }
-                String facetField = facetLink.substring(0, facetLink.indexOf(":"));
-                if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoFacetFields())) {
-                    GeoFacetItem item = new GeoFacetItem(facetField);
-                    item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
-                    facetItems.add(item);
-                } else {
-                    // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
-                    String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
-                    facetItems.add(
-                            new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
-                }
+            if (StringUtils.isEmpty(facetLink)) {
+                continue;
+            }
+            if (!facetLink.contains(":")) {
+                facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
+            }
+            String facetField = facetLink.substring(0, facetLink.indexOf(":"));
+            if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoFacetFields())) {
+                GeoFacetItem item = new GeoFacetItem(facetField);
+                item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
+                facetItems.add(item);
+            } else {
+                // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
+                String label = labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
+                facetItems.add(
+                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
             }
         }
     }
@@ -565,34 +565,36 @@ public class SearchFacets implements Serializable {
             facetItems = new ArrayList<>();
         }
 
-        if (StringUtils.isNotEmpty(updateValue) && !"-".equals(updateValue)) {
-            try {
-                updateValue = URLDecoder.decode(updateValue, "utf-8");
-                updateValue = StringTools.unescapeCriticalUrlChracters(updateValue);
-            } catch (UnsupportedEncodingException e) {
-                //
-            }
-
-            IFacetItem fieldItem = null;
-            for (IFacetItem item : facetItems) {
-                if (item.getField().equals(field)) {
-                    fieldItem = item;
-                    break;
-                }
-            }
-            if (fieldItem == null) {
-                String geoFacetField = DataManager.getInstance().getConfiguration().getGeoFacetFields();
-                if (geoFacetField != null && geoFacetField.equals(field)) {
-                    fieldItem = new GeoFacetItem(field);
-                    fieldItem.setValue(updateValue);
-                } else {
-                    fieldItem = new FacetItem(field + ":" + updateValue, hierarchical);
-                }
-                facetItems.add(fieldItem);
-            }
-            fieldItem.setLink(field + ":" + updateValue);
-            logger.trace("Facet item updated: {}", fieldItem.getLink());
+        if (StringUtils.isEmpty(updateValue) || "-".equals(updateValue)) {
+            return;
         }
+
+        try {
+            updateValue = URLDecoder.decode(updateValue, "utf-8");
+            updateValue = StringTools.unescapeCriticalUrlChracters(updateValue);
+        } catch (UnsupportedEncodingException e) {
+            //
+        }
+
+        IFacetItem fieldItem = null;
+        for (IFacetItem item : facetItems) {
+            if (item.getField().equals(field)) {
+                fieldItem = item;
+                break;
+            }
+        }
+        if (fieldItem == null) {
+            String geoFacetField = DataManager.getInstance().getConfiguration().getGeoFacetFields();
+            if (geoFacetField != null && geoFacetField.equals(field)) {
+                fieldItem = new GeoFacetItem(field);
+                fieldItem.setValue(updateValue);
+            } else {
+                fieldItem = new FacetItem(field + ":" + updateValue, hierarchical);
+            }
+            facetItems.add(fieldItem);
+        }
+        fieldItem.setLink(field + ":" + updateValue);
+        logger.trace("Facet item updated: {}", fieldItem.getLink());
     }
 
     /**
@@ -681,11 +683,9 @@ public class SearchFacets implements Serializable {
     public String getCurrentMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         synchronized (lock) {
             for (IFacetItem item : currentFacets) {
-                if (item.getField().equals(field)) {
-                    if (item.getValue2() != null) {
-                        logger.trace("currentMaxRangeValue: {}", item.getValue());
-                        return item.getValue2();
-                    }
+                if (item.getField().equals(field) && item.getValue2() != null) {
+                    logger.trace("currentMaxRangeValue: {}", item.getValue());
+                    return item.getValue2();
                 }
             }
 
@@ -1016,7 +1016,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getFacetValue(String field) {
-        return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(facet -> getFacetName(facet)).findFirst().orElse("");
+        return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(SearchFacets::getFacetName).findFirst().orElse("");
     }
 
     /**
@@ -1030,7 +1030,7 @@ public class SearchFacets implements Serializable {
     public String getFacetDescription(String field) {
         return getCurrentFacets().stream()
                 .filter(facet -> facet.getField().equals(field))
-                .map(facet -> getFacetDescription(facet))
+                .map(SearchFacets::getFacetDescription)
                 .findFirst()
                 .orElse("");
     }
@@ -1043,7 +1043,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getFirstHierarchicalFacetValue() {
-        return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetName(facet)).findFirst().orElse("");
+        return getCurrentFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetName).findFirst().orElse("");
     }
 
     /**
@@ -1055,7 +1055,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getFirstHierarchicalFacetDescription(String field) {
-        return getCurrentFacets().stream().filter(facet -> facet.isHierarchial()).map(facet -> getFacetDescription(facet)).findFirst().orElse("");
+        return getCurrentFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetDescription).findFirst().orElse("");
     }
 
     /**
@@ -1101,8 +1101,8 @@ public class SearchFacets implements Serializable {
         synchronized (lock) {
             return new ArrayList<>(this.currentFacets)
                     .stream()
-                    .filter(f -> f instanceof GeoFacetItem)
-                    .map(f -> (GeoFacetItem) f)
+                    .filter(GeoFacetItem.class::isInstance)
+                    .map(GeoFacetItem.class::cast)
                     .findAny()
                     .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoFacetFields()));
         }

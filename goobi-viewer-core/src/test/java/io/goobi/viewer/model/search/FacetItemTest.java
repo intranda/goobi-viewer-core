@@ -33,8 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class FacetItemTest extends AbstractTest {
@@ -237,9 +235,30 @@ public class FacetItemTest extends AbstractTest {
     public void generateFilterLinkList_shouldSetLabelFromSeparateFieldIfConfiguredAndFound() throws Exception {
         Map<String, String> labelMap = new HashMap<>(1);
         List<IFacetItem> facetItems =
-                FacetItem.generateFilterLinkList("MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, null, labelMap);
+                FacetItem.generateFilterLinkList("MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, false, null, labelMap);
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("Karl", facetItems.get(0).getLabel());
+    }
+    
+
+
+    /**
+     * @see FacetItem#generateFilterLinkList(String,Map,boolean,boolean,Locale,Map)
+     * @verifies group values by starting character correctly
+     */
+    @Test
+    public void generateFilterLinkList_shouldGroupValuesByStartingCharacterCorrectly() throws Exception {
+        Map<String, String> labelMap = new HashMap<>(1);
+        Map<String, Long> valueMap =  new HashMap<>(3);
+        valueMap.put("Cooper, Alice", 1L);
+        valueMap.put("Campbell, Wayne", 1L);
+        valueMap.put("Algar, Garth", 1L);
+        List<IFacetItem> facetItems = FacetItem.generateFilterLinkList("MD_CREATOR", valueMap, false, true, null, labelMap);
+        Assert.assertEquals(2, facetItems.size());
+        Assert.assertEquals("A", facetItems.get(0).getLabel());
+        Assert.assertEquals(1L, facetItems.get(0).getCount());
+        Assert.assertEquals("C", facetItems.get(1).getLabel());
+        Assert.assertEquals(2L, facetItems.get(1).getCount());
     }
 
     /**
@@ -248,10 +267,10 @@ public class FacetItemTest extends AbstractTest {
      */
     @Test
     public void parseLink_shouldSetLabelToValueIfLabelEmpty() throws Exception {
-       FacetItem item = new FacetItem(false);
-       Assert.assertNull(item.getLabel());
-       item.setLink("foo:bar");
-       item.parseLink();
-       Assert.assertEquals("bar", item.getLabel());
+        FacetItem item = new FacetItem(false);
+        Assert.assertNull(item.getLabel());
+        item.setLink("foo:bar");
+        item.parseLink();
+        Assert.assertEquals("bar", item.getLabel());
     }
 }

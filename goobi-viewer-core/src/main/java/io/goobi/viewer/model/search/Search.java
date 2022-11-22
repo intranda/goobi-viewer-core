@@ -264,7 +264,7 @@ public class Search implements Serializable {
      * @return
      * @throws IndexUnreachableException
      */
-    public String generateFinalSolrQuery(SearchFacets facets) throws IndexUnreachableException {
+    public String generateFinalSolrQuery(SearchFacets facets) {
         return generateFinalSolrQuery(facets, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
@@ -307,7 +307,7 @@ public class Search implements Serializable {
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, locale, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        execute(facets, searchTerms, hitsPerPage, locale, false, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
     /**
@@ -320,13 +320,15 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param locale Selected locale
      * @param keepSolrDoc
+     * @param groupFacets
+     * @param aggregationType
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale, boolean keepSolrDoc,
-            SearchAggregationType aggregationType)
+            boolean groupFacets, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -427,8 +429,10 @@ public class Search implements Serializable {
                         // Use non-FACET_ field names outside of the actual faceting query
                         String fieldName = SearchHelper.defacetifyField(facetField.getName());
                         facets.getAvailableFacets()
-                                .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
-                                        locale, facets.getLabelMap()));
+                                .put(fieldName,
+                                        FacetItem
+                                                .generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
+                                                groupFacets, locale, facets.getLabelMap()));
                         allFacetFields.remove(facetField.getName());
                     }
                 }
@@ -498,8 +502,8 @@ public class Search implements Serializable {
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
                 facets.getAvailableFacets()
                         .put(fieldName,
-                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale,
-                                        facets.getLabelMap()));
+                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), groupFacets,
+                                        locale, facets.getLabelMap()));
             }
         }
 
@@ -604,7 +608,7 @@ public class Search implements Serializable {
 
     protected static double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
-        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value); //NOSONAR   no caastrophic backtracking detected
+        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
         while (matcher.find() && matcher.groupCount() == 2) {
             points.add(parsePoint(matcher.group(1), matcher.group(2)));
         }
