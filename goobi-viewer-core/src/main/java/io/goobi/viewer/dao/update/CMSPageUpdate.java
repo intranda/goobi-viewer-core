@@ -142,10 +142,17 @@ public class CMSPageUpdate implements IModelUpdate {
             }
         }
 
+        /**
+         * drop unused tables
+         */
         dao.executeUpdate("DROP TABLE cms_content_item_cms_categories;");
         dao.executeUpdate("DROP TABLE cms_content_items;");
         dao.executeUpdate("DROP TABLE cms_page_language_versions;");
         dao.executeUpdate("ALTER TABLE cms_pages DROP COLUMN template_id;");
+        /**
+         * sidebar elements may be owned by a template instead of a page now, so owner_page_id needs to be able to be null        
+         */
+        dao.executeUpdate("ALTER TABLE cms_page_sidebar_elements MODIFY owner_page_id BIGINT NULL;");
 
         return true;
     }

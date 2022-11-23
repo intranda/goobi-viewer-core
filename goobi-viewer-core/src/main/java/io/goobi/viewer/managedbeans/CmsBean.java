@@ -415,7 +415,7 @@ public class CmsBean implements Serializable {
             return Collections.emptyList();
         }
 
-        return user.getAllowedTemplates(getTemplates(true));
+        return user.getAllowedTemplates(getTemplates());
     }
 
     /**
@@ -2172,6 +2172,26 @@ public class CmsBean implements Serializable {
 
     public void setNewSelectedPage() {
         this.selectedPage = new CMSPage(CMSTemplateManager.getInstance());
+    }
+    
+    public void setNewSelectedPage(Long templateId) {
+        CMSPageTemplate template = loadTemplate(templateId);
+        if(template == null) {            
+            this.selectedPage = new CMSPage(CMSTemplateManager.getInstance());
+        } else {
+            this.selectedPage = new CMSPage(template);
+        }
+    }
+
+    private CMSPageTemplate loadTemplate(Long templateId) {
+        if(templateId != null) {
+            try {
+                return DataManager.getInstance().getDao().getCMSPageTemplate(templateId);
+            } catch (DAOException e) {
+                logger.error("Error loading cms page template with id {}: {}", templateId, e.toString());
+            }
+        }
+        return null;
     }
 
     public CMSPageEditState getPageEditState() {

@@ -35,7 +35,7 @@
 		                    #{msg.cms_editPage}
 		                    </ui:fragment>
 		                    <ui:fragment rendered="#{!cmsBean.editMode and page.template.isPresent()}">
-		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.get().name]}
+		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.get().title]}
 		                    </ui:fragment>
 		                    <ui:fragment rendered="#{!cmsBean.editMode and page.template.isEmpty()}">
 		                    #{msg.cms_createPage}
@@ -171,7 +171,9 @@
 																				<div class="admin__content-component-header">
 																				
 																					<!-- CONTENT COMPONENT ORDER FUNCTIONS -->
-																					<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+																					<ui:fragment rendered="#{!page.lockComponents}">
+																						<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+																					</ui:fragment>
 																				
 																					<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
 
@@ -219,13 +221,15 @@
 																		</div>
 																		
 																		<!-- DELETE THIS CONTENT ITEM -->
-																		<button class="admin__content-component-delete" 
-								                                            data-require-confirmation="true"
-								                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
-								                                            jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
-																			#{msg.delete}
-																			<f:ajax render="componentSelectionWrapper" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																		</button>
+																		<ui:fragment rendered="#{!page.lockComponents}">
+																			<button class="admin__content-component-delete" 
+									                                            data-require-confirmation="true"
+									                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
+									                                            jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
+																				#{msg.delete}
+																				<f:ajax render="componentSelectionWrapper" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																			</button>
+																		</ui:fragment>
 																	
 																	</div>
 									
@@ -233,29 +237,33 @@
 															</h:panelGroup>
 															
 															<!-- AVAILABLE CONTENT COMPONENTS -->
-															<div class="admin__content-component-add-area">
-
-																<div class="admin__content-component-add-area-label">#{msg.cms__page_new_component}</div>
-																
-																<h:panelGroup id="componentSelectionWrapper" layout="block" styleClass="admin__content-component-add-select-wrapper">
-							                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{cmsBean.selectedComponent}">
-							                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
-							                                                <f:selectItems
-							                                                value="#{cmsPageEditBean.getAvailableComponents(page)}"
-							                                                var="comp"
-							                                                itemLabel="#{msg[comp.label]}"
-							                                                itemValue="#{comp.templateFilename}"
-							                                                itemDescription="#{msg[comp.description]}" />
-							                                                <f:ajax event="valueChange" execute="@this" render="componentSelectionWrapper"></f:ajax>
-							                                            </h:selectOneMenu>
-							                                            
-																		<button class="btn btn--full admin__content-component-add-area-button" jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}">
-																			#{msg.cms__page_add_component}
-																			<f:ajax execute="@form" render="@form" ></f:ajax>
-																		</button>
-																</h:panelGroup>
-
-														</div>
+															<ui:fragment rendered="#{!page.lockComponents}">
+																<div class="admin__content-component-add-area">
+	
+																	<div class="admin__content-component-add-area-label">#{msg.cms__page_new_component}</div>
+																	
+																	<h:panelGroup id="componentSelectionWrapper" layout="block" styleClass="admin__content-component-add-select-wrapper">
+								                                            <h:selectOneMenu id="componentSelectList" styleClass="form-control" value="#{cmsBean.selectedComponent}"
+								                                            disabled="#{page.lockComponents}">
+								                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
+								                                                <f:selectItems
+								                                                value="#{cmsPageEditBean.getAvailableComponents(page)}"
+								                                                var="comp"
+								                                                itemLabel="#{msg[comp.label]}"
+								                                                itemValue="#{comp.templateFilename}"
+								                                                itemDescription="#{msg[comp.description]}" />
+								                                                <f:ajax event="valueChange" execute="@this" render="componentSelectionWrapper"></f:ajax>
+								                                            </h:selectOneMenu>
+								                                            
+																			<button class="btn btn--full admin__content-component-add-area-button" jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}"
+																			jsf:disabled="#{page.lockComponents}">
+																				#{msg.cms__page_add_component}
+																				<f:ajax execute="@form" render="@form" ></f:ajax>
+																			</button>
+																	</h:panelGroup>
+	
+																</div>
+															</ui:fragment>
 
                                                        </div>
                                                        

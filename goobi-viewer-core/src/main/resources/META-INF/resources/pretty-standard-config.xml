@@ -959,12 +959,6 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.loadTemplates}</action>
 	</url-mapping>
-    <url-mapping id="adminCmsManageTemplates">
-        <pattern value="/admin/cms/pages/templates/manage/" />
-        <view-id value="/resources/cms/adminCmsManageTemplates.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.loadTemplates}</action>
-    </url-mapping>
     <url-mapping id="adminCmsEditPage">
         <pattern value="/admin/cms/pages/edit/#{selectedPageId}/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
@@ -976,9 +970,10 @@
         <pattern value="/admin/cms/pages/new/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.setNewSelectedPage()}</action>
+        <query-param name="templateId" onPostback="false" >#{templateId}</query-param>
+        <action onPostback="false">#{cmsBean.setNewSelectedPage(templateId)}</action>
     </url-mapping>
-        <url-mapping id="adminCmsEditPageTemplate">
+    <url-mapping id="adminCmsEditPageTemplate">
         <pattern value="/admin/cms/pages/templates/edit/#{templateId}/" />
         <view-id value="/resources/cms/adminCmsCreatePageTemplate.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>

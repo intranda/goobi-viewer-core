@@ -213,6 +213,17 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             this.cmsComponents.get(i).setOrder(i);
         }
     }
+    
+    private void initialiseCMSComponents() {
+        sortComponents();
+    }
+
+    private void sortComponents() {
+        Collections.sort(this.cmsComponents);
+        for (int i = 0; i < this.cmsComponents.size(); i++) {
+            this.cmsComponents.get(i).setOrder(i + 1);
+        }
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -722,6 +733,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     public List<CMSComponent> getComponents() {
+        if (this.cmsComponents.size() != this.persistentComponents.size()) {
+            initialiseCMSComponents();
+        }
         return this.cmsComponents;
     }
 
@@ -739,7 +753,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
 
     public boolean removeComponent(CMSComponent component) {
         this.persistentComponents.remove(component.getPersistentComponent());
-        return this.cmsComponents.remove(component);
+        boolean success = this.cmsComponents.remove(component);
+        if (success) {
+            sortComponents();
+        }
+        return success;
     }
 
     public PersistentCMSComponent addComponent(CMSComponent template) {
@@ -807,10 +825,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.getComponents()
                 .stream()
                 .filter(c -> Integer.compare(c.getOrder(), order) == 0)
-                .forEach(comp -> {
-                    comp.setOrder(currentOrder);
-                });
+                .forEach(comp -> comp.setOrder(currentOrder));
         persistentComponent.setOrder(order);
+        Collections.sort(this.cmsComponents);
     }
 
     public void incrementOrder(CMSComponent component) {
