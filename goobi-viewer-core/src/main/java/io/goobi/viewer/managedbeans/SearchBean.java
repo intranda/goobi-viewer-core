@@ -1455,7 +1455,9 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             if (!matched) {
                 // If no search field is set up for collection search, add new field containing the currently selected collection
-                SearchQueryItem item = new SearchQueryItem().setField(facetItem.getField()).setValue(facetItem.getValue());
+                SearchQueryItem item = new SearchQueryItem();
+                item.setField(facetItem.getField());
+                item.setValue(facetItem.getValue());
                 // ...but only if there is no exact field:value pair already among the query items
                 if (!populatedQueryItems.contains(item)) {
                     advancedSearchQueryGroup.getQueryItems().add(item);
