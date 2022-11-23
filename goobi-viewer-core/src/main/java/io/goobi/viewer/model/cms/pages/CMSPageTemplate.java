@@ -843,4 +843,19 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     public void setLockComponents(boolean lockComponents) {
         this.lockComponents = lockComponents;
     }
+    
+    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {
+        if (templateManager == null) {
+            throw new IllegalArgumentException("template manager may not be null");
+        }
+        return addComponent(templateManager
+                .getComponent(filename)
+                .orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
+    }
+    
+    
+    public boolean isContainsPagedComponents() {
+        return this.persistentComponents.stream().anyMatch(PersistentCMSComponent::isPaged);
+    }
+
 }

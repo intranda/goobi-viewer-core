@@ -4,8 +4,8 @@
 		<library>cms/components/frontend/component</library>
 		<name>htmltext</name>
 	</jsfComponent>
-	<label>cms_component__htmltext_label</label>
-	<description>cms_component__htmltext_desc</description>
+	<label>cms_component__htmltext__label</label>
+	<description>cms_component__htmltext__desc</description>
 	<icon>cms/components/frontend/component/icon/htmltext.png</icon>
 	<content>
 		<item id="text">

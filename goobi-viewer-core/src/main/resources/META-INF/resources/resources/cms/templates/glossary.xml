@@ -4,13 +4,11 @@
 		<library>cms/components/frontend/component</library>
 		<name>glossary</name>
 	</jsfComponent>
-	<label>cms_component__glossary_label</label>
-	<description>cms_component__glossary_desc</description>
+	<label>cms_component__glossary__label</label>
+	<description>cms_component__glossary__desc</description>
 	<icon>cms/components/frontend/component/icon/image.png</icon>
 	<content>
 		<item id="glossary">
-			<label>cms_component__glossary_label</label>
-			<description>cms_component__image_desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>

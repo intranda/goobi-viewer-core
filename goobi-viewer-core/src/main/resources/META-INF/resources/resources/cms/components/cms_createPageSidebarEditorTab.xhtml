@@ -9,17 +9,17 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<composite:interface />
+	<composite:interface>
+		<composite:attribute name="page" required="true" />
+	</composite:interface>
 
 	<composite:implementation>
-		<div role="tabpanel"
-			class="tab-pane #{cmsBean.pageEditState == 'SIDEBAR' ? 'active':''} sidebar-editor__wrapper"
-			id="sidebarTab">
+		
 
 			<!-- sidebar editor -->
 
 				<h:panelGroup id="sidebarEditorWrapper" styleClass="sidebar-editor" layout="block">
-					<h:panelGroup rendered="#{!cmsBean.selectedPage.useDefaultSidebar}">
+					<h:panelGroup rendered="#{!cc.attrs.page.useDefaultSidebar}">
 
 
 							<h:panelGroup layout="block" id="selectedWidgetsGroup" class="sidebar-editor__left">
@@ -28,7 +28,7 @@
 								<div class="sidebar-editor__left-inner">
 
 									<ui:repeat var="element" varStatus="status"
-										value="#{cmsBean.selectedPage.sidebarElements}">
+										value="#{cc.attrs.page.sidebarElements}">
 
 										<div class="sidebar-editor__widget-item">
 											<!-- MOVE ITEM UP OR DOWN -->
@@ -40,14 +40,14 @@
 
 												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}"
 													class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
-													jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
+													jsf:action="#{cc.attrs.page.moveUpSidebarElement(element)}">
 													<i class="fa fa-chevron-up" aria-hidden="true"></i>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 
 												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}" 
 													class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
-													jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
+													jsf:action="#{cc.attrs.page.moveDownSidebarElement(element)}">
 													<i class="fa fa-chevron-down " aria-hidden="true"></i>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
@@ -102,7 +102,7 @@
 											<!-- ITEM DELETE -->
 											<button
 													class="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
-													jsf:action="#{cmsBean.selectedPage.removeSidebarElement(element)}"
+													jsf:action="#{cc.attrs.page.removeSidebarElement(element)}"
 													aria-label="#{msg.delete}">
 													<f:ajax render="@form"/>
 													#{msg.delete}
@@ -120,7 +120,7 @@
 								<div class="sidebar-editor__right-inner">
 
 									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet().stream().sorted().toList()}" varStatus="status">
-										<ui:fragment rendered="#{!cmsBean.selectedPage.containsSidebarElement(widget)}">
+										<ui:fragment rendered="#{!cc.attrs.page.containsSidebarElement(widget)}">
 											<div class="sidebar-editor__choose-widget-item">
 											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
 											  	<f:ajax event="change"></f:ajax>
@@ -175,22 +175,21 @@
 									</ui:repeat>
 
 
-									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cmsBean.selectedPage.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
+									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cc.attrs.page.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
 										#{msg.action__add_to_sidebar}
 										<f:ajax render="@form"/>
 									</button>
 
 								</div>
 
-
-
 							</h:panelGroup>
 					</h:panelGroup>
 				</h:panelGroup>
+				
 				<!-- choose standard sidebar for current page -->
 				<div class="sidebar-editor__choose-standard">
 					<h:selectBooleanCheckbox id="checkboxUseDefaultSidebar"
-						value="#{cmsBean.selectedPage.useDefaultSidebar}"
+						value="#{cc.attrs.page.useDefaultSidebar}"
 						onclick="cmsJS.createPage.disablePreview();">
 						<span><h:outputText value="#{msg.cms_pageSidebarUseDefault}" /></span>
 						<f:ajax event="change" render="sidebarEditorWrapper" />
@@ -198,8 +197,7 @@
 							value="#{msg.cms_pageSidebarUseDefault}" />
 					</h:selectBooleanCheckbox>
 				</div>
-
-			</div>
+				
 	</composite:implementation>
 
 

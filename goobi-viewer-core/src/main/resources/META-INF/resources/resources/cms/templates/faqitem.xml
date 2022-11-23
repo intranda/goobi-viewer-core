@@ -9,7 +9,7 @@
 	<icon>cms/components/frontend/component/icon/text.png</icon>
 	<content>
 		<item id="title">
-			<label>cms_component__faqitem_title__label</label>
+			<label>cms_content__faqitem_title__label</label>
 			<description>cms_content__faqitem_title__desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
 			<jsfComponent>

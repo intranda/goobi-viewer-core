@@ -981,15 +981,12 @@
         <url-mapping id="adminCmsEditPageTemplate">
         <pattern value="/admin/cms/pages/templates/edit/#{templateId}/" />
         <view-id value="/resources/cms/adminCmsCreatePageTemplate.xhtml" />
-        <action onPostback="false">#{cmsBean.setEditMode(true)}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.setSelectedTemplateId(templateId)}</action>
     </url-mapping>
     <url-mapping id="adminCmsNewPageTemplate">
         <pattern value="/admin/cms/pages/templates/new/" />
         <view-id value="/resources/cms/adminCmsCreatePageTemplate.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.setNewSelectedTemplate()}</action>
     </url-mapping>
 	<url-mapping id="adminCmsStaticPages">
 		<pattern value="/admin/cms/pages/mapping/" />

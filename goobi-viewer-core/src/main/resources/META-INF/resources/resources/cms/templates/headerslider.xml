@@ -10,8 +10,6 @@
 	<scope>pageheader</scope>
 	<content>
 		<item id="slider">
-			<label>cms_content__slider__label</label>
-			<description>cms_content__slider__desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
