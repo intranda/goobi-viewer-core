@@ -24,7 +24,7 @@
 					<h:form id="cmsSelectTemplateForm" prependId="false">
 
 						<div class="cms-create-page__choose-template-wrapper">
-							<ui:fragment rendered="#{userBean.user.isAllowedCreateEmptyCMSPage()}">
+							<ui:fragment rendered="#{userBean.user.hasPriviledgeForAllTemplates()}">
 								<div class="cms-create-page__choose-template-box">
 									<div class="cms-create-page__choose-template-box-start">
 										<img src="#{request.contextPath}/resources/images/backend/empty_template.jpg" class="img-responsive" alt="Choose empty template" />
@@ -41,9 +41,6 @@
 										</h:commandLink>
 									</div>
 								</div>
-							</ui:fragment>
-							
-							<ui:fragment rendered="#{userBean.user.isAllowedCreateCMSPageTemplate()}">
 								<div
 									class="cms-create-page__choose-template-box">
 									
@@ -93,7 +90,9 @@
 										<!-- ACTION -->
 										<div class="cms-select-template__action">
 											<a href="../new/?templateId=#{template.id}" class="btn">#{msg.cms_createPageWithTemplate}</a>
-											<a href="edit/#{template.id}/" class="btn">#{msg.cms__edit_template__action}</a>
+											<ui:fragment rendered="#{user.hasPriviledgeForAllTemplates()}">
+												<a href="edit/#{template.id}/" class="btn">#{msg.cms__edit_template__action}</a>
+											</ui:fragment>
 										</div>
 									</div>
 								</div>

@@ -2185,7 +2185,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, subThemes, categories);
 
-        String shouldQuery = "(:tpl1 = p.template OR :tpl2 = p.template) AND (:thm1 = p.subThemeDiscriminatorValue) AND "
+        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId) AND (:thm1 = p.subThemeDiscriminatorValue) AND "
                 + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
         Assert.assertEquals(shouldQuery, query);
 
@@ -2193,8 +2193,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("c2", params.get("cat2"));
         Assert.assertEquals("c3", params.get("cat3"));
         Assert.assertEquals("s1", params.get("thm1"));
-        Assert.assertEquals("1", params.get("tpl1"));
-        Assert.assertEquals("2", params.get("tpl2"));
+        Assert.assertEquals(1l, params.get("tpl1"));
+        Assert.assertEquals(2l, params.get("tpl2"));
 
     }
 
@@ -2227,11 +2227,11 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, null, null);
 
-        String shouldQuery = "(:tpl1 = p.template OR :tpl2 = p.template)";
+        String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId)";
         Assert.assertEquals(shouldQuery, query);
 
-        Assert.assertEquals("1", params.get("tpl1"));
-        Assert.assertEquals("2", params.get("tpl2"));
+        Assert.assertEquals(1l, params.get("tpl1"));
+        Assert.assertEquals(2l, params.get("tpl2"));
     }
 
     /**

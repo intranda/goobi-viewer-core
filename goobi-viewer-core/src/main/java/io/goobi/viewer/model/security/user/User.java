@@ -757,43 +757,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
         return false;
     }
-    
-    public boolean isAllowedCreateCMSPageTemplate() {
-        return isAllowedCreateEmptyCMSPage();
-    }
-    
-    public boolean isAllowedCreateEmptyCMSPage() {
-        if (!isCmsAdmin()) {
-            return false;
-        }
-        // Full admins get all values
-        if (isSuperuser()) {
-            return true;
-        }
-        
-        for (License license : licenses) {
-            if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
-                continue;
-            } else if (license.isPrivCmsAllTemplates()) {
-                return true;
-            }
-        }
-        // Check user group licenses
-        try {
-            for (UserGroup userGroup : getUserGroupsWithMembership()) {
-                for (License license : userGroup.getLicenses()) {
-                    if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
-                        continue;
-                    } else if (license.isPrivCmsAllTemplates()) {
-                        return true;
-                    }
-                }
-            }
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-        }
-        return false;
-    }
+
 
     /**
      * <p>
