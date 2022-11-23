@@ -2181,7 +2181,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<String> subThemes = Arrays.asList(new String[] { "s1" });
         List<Long> templates = Arrays.asList(new Long[] { 1l, 2l });
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, subThemes, categories);
 
@@ -2204,7 +2204,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
         List<String> subThemes = Arrays.asList(new String[] { "s1" });
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String query = JPADAO.createCMSPageFilter(params, "p", null, subThemes, categories);
 
@@ -2223,7 +2223,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         List<Long> templates = Arrays.asList(new Long[] { 1l, 2l });
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, null, null);
 
@@ -2757,7 +2757,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void createFilterQuery_twoJoinedTables() throws Exception {
         Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String expectedFilterString = " LEFT JOIN a.b b LEFT JOIN a.c c WHERE (UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
@@ -2769,7 +2769,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void createFilterQuery_joinedTableAndField() throws Exception {
         Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String expectedFilterString = " LEFT JOIN a.c b WHERE (UPPER(a.B) LIKE :BcC OR UPPER(b.C) LIKE :BcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);

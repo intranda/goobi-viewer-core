@@ -88,7 +88,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     @JoinColumn(name = "owning_page_id", nullable = true)
     private CMSPage owningPage;
 
-    /** Reference to the owning <code>CMSPage</code>. */
+    /** Reference to the owning <code>CMSPageTemplate</code>. */
     @ManyToOne
     @JoinColumn(name = "owning_template_id", nullable = true)
     private CMSPageTemplate owningTemplate;

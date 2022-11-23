@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -108,6 +109,12 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      */
     @Column(name = "lock_components")
     private boolean lockComponents = false;
+    
+    /**
+     * Set to true to mark this template as a legacy template, i.e. a template automatically created from the old page templates
+     */
+    @Column(name = "legacy_template")
+    private boolean legacyTemplate = false;
 
     @Column(name = "publication_status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -138,6 +145,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     private TranslatedText description = new TranslatedText();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owningTemplate")
+    @PrivateOwned
+    @CascadeOnDelete
     private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
 
     /**
@@ -186,6 +195,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.categories = new ArrayList<>(original.categories);
         this.wrapperElementClass = original.wrapperElementClass;
         this.lockComponents = original.lockComponents;
+        this.legacyTemplate = original.legacyTemplate;
 
         if (original.sidebarElements != null) {
             this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
@@ -883,6 +893,10 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     
     public boolean isContainsPagedComponents() {
         return this.persistentComponents.stream().anyMatch(PersistentCMSComponent::isPaged);
+    }
+    
+    public String getName() {
+        return this.title.getTextOrDefault();
     }
 
 }

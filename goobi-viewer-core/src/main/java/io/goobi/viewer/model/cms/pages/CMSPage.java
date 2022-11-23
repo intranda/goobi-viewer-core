@@ -191,6 +191,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * privileges for templates to pages derived from that template as well as determining if a page may be edited by a user
      */
     @JoinColumn(name = "page_template_id")
+    private Long templateId = null;
+    @Transient
     private CMSPageTemplate template = null;
 
     /**
@@ -260,6 +262,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.dateCreated = original.dateCreated;
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
+        this.templateId = original.templateId;
         this.template = original.template;
         if (original.pageSorting != null) {
             this.pageSorting = original.pageSorting;
@@ -315,6 +318,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
         this.categories = new ArrayList<>(original.getCategories());
         this.wrapperElementClass = original.getWrapperElementClass();
+        this.templateId = original.getId();
         this.template = original;
 
         if (original.getSidebarElements() != null) {
@@ -1347,6 +1351,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public Optional<CMSPageTemplate> getTemplate() {
+        if(this.template == null && this.templateId != null) {
+            try {
+                this.template = DataManager.getInstance().getDao().getCMSPageTemplate(this.templateId);
+            } catch (DAOException e) {
+                logger.error("Error loading cms-template with id {}: {}", this.templateId, e.toString());
+            }
+        }
         return Optional.ofNullable(this.template);
     }
 
@@ -1419,6 +1430,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
     
     public boolean isLockComponents() {
-        return this.template != null && this.template.isLockComponents();
+        return this.getTemplate().map(CMSPageTemplate::isLockComponents).orElse(false);
     }
 }

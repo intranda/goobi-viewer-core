@@ -296,20 +296,6 @@
 									<div id="cmsCreatePageMetadataItemWrapper" class="admin__default-block">
           
 							          <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
-							             
-										<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
-								
-								         <div class="admin__radio-switch mb-3">
-								            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
-								            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-								            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{page.published ? null : 'false'}"/>
-											<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
-								         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{page.published ? 'false' : null}"/>
-								         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
-											<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{page.published}"
-						        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
-								             <span class="toggle-outside"><span class="toggle-inside"></span></span>
-								         </div>
           
 							            <!-- CMS PAGE ACTION -->
 							            <div class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-3">
@@ -345,7 +331,7 @@
 						                                        <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
 						                                        <div class="modal-footer">
 						                                            <a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-						                                            <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
+						                                            <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsPageTemplateEditBean.deleteSelectedTemplate}" value="#{msg.cms_deletePage_agree}"
 						                                                styleClass="btn btn--danger">
 						                                                <f:ajax render="@none" />
 						                                            </h:commandLink>
@@ -375,7 +361,7 @@
 							                    <!-- METADATA ITEM SELECTED CATEGORIES -->
 							                    <h:panelGroup id="selected_categories">
 							                        <div class="page-metadata-item__categories-selected-categories">
-							                            <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
+							                            <ui:repeat var="category" value="#{page.selectableCategories}">
 							                                <ui:fragment rendered="#{category.selected}">
 							                                    <div class="badge badge-violet">#{category.value.name}</div>
 							                                </ui:fragment>
@@ -390,7 +376,7 @@
 							                            <div class="cms-module__option-dropdown">
 							                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
 							                                <ul>
-							                                    <ui:repeat var="selectable" value="#{cmsPageTemplateEditBean.selectedTemplate.selectableCategories}">
+							                                    <ui:repeat var="selectable" value="#{page.selectableCategories}">
 																	<li>
 							                                            <label>
 							                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
@@ -434,7 +420,7 @@
 									                    <h:selectOneMenu 
 									                        id="subthemeDiscriminator" 
 									                        styleClass="form-control" 
-									                        value="#{cmsPageTemplateEditBean.selectedTemplate.subThemeDiscriminatorValue}"
+									                        value="#{page.subThemeDiscriminatorValue}"
 									                        disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
 									                        required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
 									                        requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
@@ -476,7 +462,7 @@
 						                <!-- INPUT TEXT -->
 						                <h:inputText 
 						                    id="cssClass" 
-						                    value="#{cmsPageTemplateEditBean.selectedTemplate.wrapperElementClass}" 
+						                    value="#{page.wrapperElementClass}" 
 						                    styleClass="form-control" 
 						                    pt:data-target="quickCSSInputField"/>
 						            </h:panelGroup>

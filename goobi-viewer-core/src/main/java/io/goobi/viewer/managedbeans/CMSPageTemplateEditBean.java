@@ -51,6 +51,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 
 @Named("cmsPageTemplateEditBean")
@@ -233,6 +234,17 @@ public class CMSPageTemplateEditBean implements Serializable {
     private static void setSidebarElementOrder(CMSPageTemplate page) {
         for (int i = 0; i < page.getSidebarElements().size(); i++) {
             page.getSidebarElements().get(i).setOrder(i);
+        }
+    }
+    
+    public boolean deleteSelectedTemplate() throws DAOException {
+        if(this.selectedTemplate != null) {
+            for (PersistentCMSComponent component : selectedTemplate.getPersistentComponents()) {
+                dao.deleteCMSComponent(component);
+            }
+            return dao.removeCMSPageTemplate(selectedTemplate);
+        } else {
+            return false;
         }
     }
 

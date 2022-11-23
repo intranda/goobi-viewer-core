@@ -3114,7 +3114,7 @@ public class JPADAO implements IDAO {
                 StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
                 StringBuilder order = new StringBuilder();
 
-                Map<String, String> params = new HashMap<>();
+                Map<String, Object> params = new HashMap<>();
 
                 String filterString = createFilterQuery2(null, filters, params);
                 String rightsFilterString = "";
@@ -4327,7 +4327,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM CMSPage").append(" a");
-            Map<String, String> params = new HashMap<>();
+            Map<String, Object> params = new HashMap<>();
             sbQuery.append(createFilterQuery2(null, filters, params));
             try {
                 String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
@@ -4715,7 +4715,7 @@ public class JPADAO implements IDAO {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
-    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<Long> allowedTemplates,
+    public static String createCMSPageFilter(Map<String, Object> params, String pageParameter, List<Long> allowedTemplates,
             List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
 
         String query = "";
@@ -4728,8 +4728,8 @@ public class JPADAO implements IDAO {
             for (Long template : allowedTemplates) {
                 String templateParameter = "tpl" + ++index;
 
-                sbQueryInner.append(":").append(templateParameter).append(" = ").append(pageParameter).append(".template").append(" OR ");
-                params.put(templateParameter, template.toString());
+                sbQueryInner.append(":").append(templateParameter).append(" = ").append(pageParameter).append(".templateId").append(" OR ");
+                params.put(templateParameter, template);
             }
             query += sbQueryInner.toString();
             if (query.endsWith(" OR ")) {
@@ -6421,7 +6421,7 @@ public class JPADAO implements IDAO {
      * @param params
      * @return
      */
-    static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+    static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
         StringBuilder q = new StringBuilder(" ");
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
             q.append(staticFilterQuery);
@@ -7034,6 +7034,7 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
+            logger.error(e);
             handleException(em);
             return false;
         } finally {
