@@ -850,7 +850,7 @@ public class SearchBean implements SearchInterface, Serializable {
         this.lastUsedSearchPage = ViewHistory.getCurrentView(BeanUtils.getRequest());
     }
 
-    public String getFinalSolrQuery() throws IndexUnreachableException {
+    public String getFinalSolrQuery() {
         if (this.currentSearch != null) {
             return this.currentSearch.generateFinalSolrQuery(null);
         }
@@ -2906,6 +2906,61 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public String changeSorting() throws IOException {
         return "pretty:newSearch5";
+    }
+
+    public void searchMono() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        logger.debug("searchMono");
+        setExactSearchString("+PI:* +DOCSTRCT:monograph");
+
+        //remember the current page to return to hit list in widget_searchResultNavigation
+        setLastUsedSearchPage();
+
+        // If hitsPerPage is not one of the available values, reset to default
+        if (!hitsPerPageSetterCalled && !DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().contains(hitsPerPage)) {
+            hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
+            logger.trace("hitsPerPage reset to {}", hitsPerPage);
+        }
+        setHitsPerPageSetterCalled(false);
+
+        if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
+            setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
+            logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
+        }
+
+        // Init search object
+        currentSearch = new Search(activeSearchType, currentSearchFilter);
+        currentSearch.setUserInput(searchString);
+        currentSearch.setQuery(searchStringInternal);
+        currentSearch.setPage(currentPage);
+        currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
+        currentSearch.setFacetString(facets.getCurrentFacetString());
+        currentSearch.setCustomFilterQuery(customFilterQuery);
+        currentSearch.setProximitySearchDistance(proximitySearchDistance);
+
+        // When searching in MONTHDAY, add a term so that an expand query is created
+        if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
+            searchTerms.put(SolrConstants.MONTHDAY, Collections.singleton(searchStringInternal.substring(SolrConstants.MONTHDAY.length() + 1)));
+            logger.trace("monthday terms: {}", searchTerms.get(SolrConstants.MONTHDAY).iterator().next());
+        }
+
+        // Add search hit aggregation parameters, if enabled
+        if (!searchTerms.isEmpty()) {
+            List<String> additionalExpandQueryfields = Collections.emptyList();
+            // Add MONTHDAY to the list of expand query fields
+            if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
+                additionalExpandQueryfields = Collections.singletonList(SolrConstants.MONTHDAY);
+            }
+            String expandQuery = activeSearchType == 1
+                    ? SearchHelper.generateAdvancedExpandQuery(advancedSearchQueryGroup, fuzzySearchEnabled)
+                    : SearchHelper.generateExpandQuery(
+                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
+                                    additionalExpandQueryfields),
+                            searchTerms, phraseSearch, proximitySearchDistance);
+            currentSearch.setExpandQuery(expandQuery);
+        }
+
+        currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale(), false, true,
+                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
 }
