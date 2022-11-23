@@ -250,12 +250,10 @@ public class SearchQueryItem implements Serializable {
      * </p>
      *
      * @param field the field to set
-     * @return this
      */
-    public SearchQueryItem setField(String field) {
+    public void setField(String field) {
         this.field = field;
         toggleDisplaySelectItems();
-        return this;
     }
 
     /**
@@ -275,11 +273,9 @@ public class SearchQueryItem implements Serializable {
      * </p>
      *
      * @param operator the operator to set
-     * @return this
      */
-    public SearchQueryItem setOperator(SearchItemOperator operator) {
+    public void setOperator(SearchItemOperator operator) {
         this.operator = operator;
-        return this;
     }
 
     /**
@@ -299,14 +295,12 @@ public class SearchQueryItem implements Serializable {
      * </p>
      *
      * @param value the value to set
-     * @return this
      */
-    public SearchQueryItem setValue(String value) {
+    public void setValue(String value) {
         this.value = StringTools.stripJS(value);
         //        if(StringUtils.isNotBlank(this.value) && !this.value.contains(" ")) {
         //            this.value = SearchHelper.addFuzzySearchToken(this.value);
         //        }
-        return this;
     }
 
     /**
@@ -318,11 +312,9 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * @param value2 the value2 to set
-     * @return this
      */
-    public SearchQueryItem setValue2(String value2) {
+    public void setValue2(String value2) {
         this.value2 = value2;
-        return this;
     }
 
     /**
