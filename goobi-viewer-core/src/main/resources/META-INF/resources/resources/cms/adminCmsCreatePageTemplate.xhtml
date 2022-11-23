@@ -111,6 +111,23 @@
                                                                 </div>
                                                             </div>
                                                             
+                                                            <!-- DESCRIPTION -->
+                                                            <div class="cms-module__option-group">
+                                                                <div class="cms-module__option-label">
+                                                                    <label for="cmsCreatePageDesc">#{msg.label__cms_page_template_description__label}*:</label>
+                                                                </div>
+                                                                <div class="cms-module__option-control">
+                                                                    <h:inputTextarea id="cmsCreatePageDesc" styleClass="form-control tinyMCE"
+                                                                        value="#{page.description.text}" pt:data-target="watchedInput"/>
+                                                                    <span class="cms-module__option-control-helptext">#{msg.label__cms_page_template_description__description}</span>
+                                                                </div>
+                                                                <div class="cms-module__option-help">
+                                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+                                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            
                                                              <!-- LOCK COMPONENTS -->
                                                             <div class="cms-module__option-group">
                                                                 <div class="cms-module__option-label">
@@ -118,7 +135,7 @@
                                                                 </div>
                                                                 <div class="cms-module__option-control">
                                                                     <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{page.lockComponents}"/>
-                                                                    <span class="cms-module__option-control-helptext">#{msg.label__cms_page_template__lock_components__label}</span>
+                                                                    <span class="cms-module__option-control-helptext">#{msg.label__cms_page_template__lock_components__description}</span>
                                                                 </div>
                                                                 <div class="cms-module__option-help">
                                                                     <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
@@ -285,11 +302,11 @@
 								         <div class="admin__radio-switch mb-3">
 								            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 								            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-								            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.published ? null : 'false'}"/>
+								            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{page.published ? null : 'false'}"/>
 											<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
-								         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.published ? 'false' : null}"/>
+								         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{page.published ? 'false' : null}"/>
 								         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
-											<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsBean.selectedPage.published}"
+											<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{page.published}"
 						        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 								             <span class="toggle-outside"><span class="toggle-inside"></span></span>
 								         </div>

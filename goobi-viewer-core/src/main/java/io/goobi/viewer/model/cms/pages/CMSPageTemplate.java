@@ -176,6 +176,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         if (original.id != null) {
             this.id = original.id;
         }
+        this.title = original.title;
+        this.description = original.description;
         this.dateCreated = original.dateCreated;
         this.dateUpdated = original.dateUpdated;
         this.publicationStatus = original.publicationStatus;
@@ -817,6 +819,14 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
 
     public void decrementOrder(CMSComponent component) {
         this.setComponentOrder(component, component.getOrder() - 1);
+    }
+    
+    public boolean isFirstComponent(CMSComponent component) {
+        return this.cmsComponents.indexOf(component) == 0;
+    }
+
+    public boolean isLastComponent(CMSComponent component) {
+        return this.cmsComponents.indexOf(component) == this.cmsComponents.size() - 1;
     }
 
     @Override

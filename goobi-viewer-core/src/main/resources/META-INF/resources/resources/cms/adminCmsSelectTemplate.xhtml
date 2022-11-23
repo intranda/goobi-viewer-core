@@ -53,7 +53,7 @@
 									<h2>#{msg.cms__create_page_template_title}</h2>
 									<p>#{msg.lorem_ipsum__short}</p>
 								
-									<h:commandLink action="pretty:adminCmsNewTemplate"
+									<h:commandLink action="pretty:adminCmsNewPageTemplate"
 										value="#{msg.cms__create_page_template_button}"
 										styleClass="btn btn--full">
 										<f:setPropertyActionListener value="#{false}"
@@ -76,15 +76,15 @@
 									<div class="col-9 d-flex align-items-center">
 										<!-- ICON -->
 										<div class="admin__table-img">
-											<img title="#{msg.label__cms_template_id}: #{template.id}"
-												alt="#{template.name}"
-												src="#{cmsBean.getIconUrlByTemplateId(template.id)}"
-												class="img-fluid" />
+<!-- 											<img title="#{msg.label__cms_template_id}: #{template.id}" -->
+<!-- 												alt="#{template.title}" -->
+<!-- 												src="#{cmsBean.getIconUrlByTemplateId(template.id)}" -->
+<!-- 												class="img-fluid" /> -->
 										</div>
 										<!-- DESCRIPTION -->
 										<div class="admin__table-data">
-											<h2>#{msg[template.name]}</h2>
-											<div>#{msg[template.description]}</div>
+											<h2>#{msg[template.title]}</h2>
+											<h:outputFormat escape="false">#{template.description}</h:outputFormat>
 										</div>
 									</div>
 									<div class="col-3">
@@ -92,7 +92,7 @@
 										<div class="cms-select-template__action">
 											<h:commandLink action="pretty:adminCmsNewPage"
 												value="#{msg.cms_createPageWithTemplate}"
-												styleClass="btn #{template.themeTemplate ? 'btn--full' : 'btn--default'}">
+												styleClass="btn">
 												<f:setPropertyActionListener
 													value="#{cmsBean.createNewPage(template)}"
 													target="#{cmsBean.selectedPage}" />
@@ -100,10 +100,6 @@
 													target="#{cmsBean.editMode}" />
 											</h:commandLink>
 										</div>
-										<!-- THEME TEMPLATE MARKER -->
-										<ui:fragment rendered="#{template.themeTemplate}">
-											<div class="cms-select-template__theme-template-marker">#{msg.cms_themeTemplate}</div>
-										</ui:fragment>
 									</div>
 								</div>
 							</ui:repeat>
