@@ -807,6 +807,8 @@ public class UserBean implements Serializable {
         //set current url to feedback
         if (setCurrentUrl && navigationHelper != null) {
             feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
+        } else if(navigationHelper != null) {
+            feedback.setUrl(navigationHelper.getPreviousViewUrl());
         }
 
         try {
