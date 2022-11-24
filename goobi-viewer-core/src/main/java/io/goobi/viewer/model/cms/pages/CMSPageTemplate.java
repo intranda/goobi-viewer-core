@@ -132,11 +132,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText title = new TranslatedText();
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText description = new TranslatedText();
 
@@ -177,7 +177,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      *
      * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
      */
-    public CMSPageTemplate(CMSPageTemplate original) {
+    public CMSPageTemplate(CMSPageTemplate original, CMSTemplateManager templateManager) {
         if (original.id != null) {
             this.id = original.id;
         }
@@ -204,7 +204,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwningTemplate(this);
             this.persistentComponents.add(copy);
-            CMSComponent comp = CMSTemplateManager.getInstance()
+            CMSComponent comp = templateManager
                     .getComponent(copy.getTemplateFilename())
                     .map(c -> new CMSComponent(c, Optional.of(copy)))
                     .orElse(null);
@@ -219,7 +219,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         }
     }
     
-    public CMSPageTemplate(CMSPage original) {
+    public CMSPageTemplate(CMSPage original, CMSTemplateManager templateManager) {
         this.title = new TranslatedText(original.getTitleTranslations());
         this.dateCreated = LocalDateTime.now();
         this.dateUpdated = LocalDateTime.now();
@@ -240,7 +240,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwningTemplate(this);
             this.persistentComponents.add(copy);
-            CMSComponent comp = CMSTemplateManager.getInstance()
+            CMSComponent comp = templateManager
                     .getComponent(copy.getTemplateFilename())
                     .map(c -> new CMSComponent(c, Optional.of(copy)))
                     .orElse(null);
@@ -290,8 +290,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             return false;
         CMSPageTemplate other = (CMSPageTemplate) obj;
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {                
                 return false;
+            } else {
+                return super.equals(obj);
+            }
         } else if (!id.equals(other.id))
             return false;
         return true;
@@ -644,6 +647,10 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return description;
     }
 
+    public void setDescription(TranslatedText description) {
+        this.description = description;
+    }
+    
     /**
      * <p>
      * Getter for the field <code>subThemeDiscriminatorValue</code>.
@@ -911,7 +918,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
     
     public boolean isLegacyTemplate() {
-        return this.cmsComponents.stream().anyMatch(CMSComponent::isLegacyComponent);
+        return this.getComponents().stream().anyMatch(CMSComponent::isLegacyComponent);
     }
     
     public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {
@@ -930,6 +937,10 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     
     public String getName() {
         return this.title.getTextOrDefault();
+    }
+    
+    public void setTitleTranslations(TranslatedText title) {
+        this.title = title;
     }
 
 }

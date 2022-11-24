@@ -414,8 +414,8 @@ public class CmsBean implements Serializable {
         if (user == null) {
             return Collections.emptyList();
         }
-
-        return user.getAllowedTemplates(getTemplates());
+        return user.getAllowedTemplates(getTemplates()).stream()
+                .map(t -> new CMSPageTemplate(t, CMSTemplateManager.getInstance())).collect(Collectors.toList());
     }
 
     /**

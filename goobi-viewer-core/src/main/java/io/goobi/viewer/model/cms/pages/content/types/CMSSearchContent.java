@@ -62,18 +62,16 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     private boolean displayEmptySearchResults = false;
 
     @Transient
-    private final SearchFunctionality search;
+    private SearchFunctionality search = null;
 
     public CMSSearchContent() {
         super();
-        this.search = initSearch();
     }
 
     public CMSSearchContent(CMSSearchContent orig) {
         super(orig);
         this.searchPrefix = orig.searchPrefix;
         this.displayEmptySearchResults = orig.displayEmptySearchResults;
-        this.search = initSearch();
     }
 
     private SearchFunctionality initSearch() {
@@ -124,6 +122,9 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
+        if(this.search == null) {
+            this.search = initSearch();
+        }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {

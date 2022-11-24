@@ -173,11 +173,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @JoinTable(name = "cms_page_cms_categories", joinColumns = @JoinColumn(name = "page_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<CMSCategory> categories = new ArrayList<>();
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText title = new TranslatedText();
 
-    @Column(name = "menu_title", nullable = true)
+    @Column(name = "menu_title", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText menuTitle = new TranslatedText();
 
@@ -1435,5 +1435,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     
     public boolean isLegacyPage() {
         return this.cmsComponents.stream().anyMatch(CMSComponent::isLegacyComponent);
+    }
+    
+    public Long getTemplateId() {
+        return templateId;
+    }
+    
+    public void setTemplateId(Long templateId) {
+        this.templateId = templateId;
     }
 }

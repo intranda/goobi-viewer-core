@@ -295,7 +295,21 @@
                                    
 									<div id="cmsCreatePageMetadataItemWrapper" class="admin__default-block">
           
-							          <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
+							          <h2>#{msg.admin__cms_template_visible}</h2>
+          
+										<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
+								
+								         <div class="admin__radio-switch mb-3">
+								            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+								            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+								            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{page.published ? null : 'false'}"/>
+											<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
+								         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{page.published ? 'false' : null}"/>
+								         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
+											<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{page.published}"
+						        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+								             <span class="toggle-outside"><span class="toggle-inside"></span></span>
+								         </div>
           
 							            <!-- CMS PAGE ACTION -->
 							            <div class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-3">

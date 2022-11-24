@@ -71,11 +71,10 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     private int elementsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
 
     @Transient
-    private final SearchFunctionality search;
+    private SearchFunctionality search = null;
 
     public CMSRecordListContent() {
         super();
-        this.search = initSearch();
     }
 
     private CMSRecordListContent(CMSRecordListContent orig) {
@@ -85,7 +84,6 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.groupingField = orig.groupingField;
         this.includeStructureElements = orig.includeStructureElements;
         this.elementsPerPage = orig.elementsPerPage;
-        this.search = initSearch();
     }
 
     private SearchFunctionality initSearch() {
@@ -158,6 +156,9 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
+        if(this.search == null) {
+            this.search = initSearch();
+        }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
             Search s = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL);

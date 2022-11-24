@@ -16,6 +16,11 @@
 	
     <composite:implementation>
 
+		<!-- LABEL -->
+		<ui:fragment rendered="#{not empty cc.attrs.contentItem.label}">
+			<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
+		</ui:fragment>
+
         <!-- MEDIA FILE -->
         <ui:fragment rendered="#{cc.attrs.contentItem.content.mediaItem != null}">
             <ui:include src="/resources/cms/includes/mediaFile.xhtml">

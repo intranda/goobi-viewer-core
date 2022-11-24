@@ -417,6 +417,10 @@ public final class CMSTemplateManager implements Serializable {
     public Collection<CMSComponent> getLegacyComponents() {
         return legacyTemplateComponents.values();
     }
+    
+    public Map<String, CMSComponent> getLegacyComponentMap() {
+        return legacyTemplateComponents;
+    }
 
     /**
      * <p>

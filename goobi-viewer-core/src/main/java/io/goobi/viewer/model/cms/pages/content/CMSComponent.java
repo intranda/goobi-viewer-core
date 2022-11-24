@@ -245,7 +245,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     public String getAttributeValue(String key) {
-        return this.attributes.get(key).getValue();
+        return Optional.ofNullable(this.attributes).map(map -> map.get(key)).map(CMSComponentAttribute::getValue).orElse("");
     }
 
     public void setAttribute(String key, String value) {

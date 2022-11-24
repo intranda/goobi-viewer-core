@@ -137,7 +137,7 @@ public class CMSPageTemplateEditBean implements Serializable {
     }
 
     public void setSelectedTemplate(CMSPageTemplate selectedTemplate) {
-        this.selectedTemplate = new CMSPageTemplate(selectedTemplate);
+        this.selectedTemplate = new CMSPageTemplate(selectedTemplate, templateManager);
         this.editMode = true;
     }
 

@@ -17,7 +17,10 @@
 
 		<div class="admin__content-item-text">
 		
-			<div class="admin__content-component-content-item-start">Text:</div>
+			<!-- LABEL -->
+			<ui:fragment rendered="#{not empty cc.attrs.contentItem.label}">
+				<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
+			</ui:fragment>
 			
 			<h:panelGroup layout="block" id="inputGroup" styleClass="admin__content-component-content-item-end">
 				<h:inputText 

@@ -23,8 +23,8 @@ package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,9 +41,11 @@ import org.apache.logging.log4j.Logger;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
@@ -86,9 +88,25 @@ public class CMSPageUpdate implements IModelUpdate {
         /*Map language version ids to a list of all owned contentItems*/
         Map<Long, List<Map<String, Object>>> contentItemMap = contentItems.stream()
                 .collect(Collectors.toMap(map -> (Long) map.get("owner_page_language_version_id"), List::of,
-                        (map1, map2) -> ListUtils.union(map1, map2)));
+                        ListUtils::union));
 
-        List<CMSPage> updatedPages = new ArrayList<>();
+        Map<String, CMSPageTemplate> templateIdMap = new HashMap<>();
+        Map<String, List<CMSPage>> pageTemplateIdMap = new LinkedHashMap<>();
+
+        //create templates
+        for (Entry<String, CMSComponent> entry : templateManager.getLegacyComponentMap().entrySet()) {
+            CMSComponent component = entry.getValue();
+            String componentId = entry.getKey();
+            CMSPageTemplate template = new CMSPageTemplate();
+            template.setLockComponents(true);
+            template.setPublished(true);
+            template.setTitleTranslations(new TranslatedText(ViewerResourceBundle.getTranslations(component.getLabel())));
+            template.setDescription(new TranslatedText(ViewerResourceBundle.getTranslations(component.getDescription())));
+            template.addComponent(component);
+            templateIdMap.put(componentId, template);
+            pageTemplateIdMap.put(componentId, new ArrayList<>());
+        }
+
         for (Map<String, Object> pageValues : pages) {
             Long pageId = (Long) pageValues.get("cms_page_id");
             CMSPage page = dao.getCMSPage(pageId);
@@ -106,8 +124,7 @@ public class CMSPageUpdate implements IModelUpdate {
 
                 createTopbarSliderComponent(contentItemMap, pageLanguageVersions)
                         .ifPresent(page::addPersistentComponent);
-                
-                
+
                 if (title.isEmpty()) {
                     title.setText(legacyPageTemplateId, IPolyglott.getDefaultLocale());
                 }
@@ -121,24 +138,51 @@ public class CMSPageUpdate implements IModelUpdate {
                 if (componentTemplate != null) {
                     PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());
                     page.addPersistentComponent(component);
+                    List<CMSPage> pagesOfTemplate = pageTemplateIdMap.get(legacyPageTemplateId);
+                    if(pagesOfTemplate != null) {
+                        pagesOfTemplate.add(page);
+                    } else {
+                        logger.warn("No cms template found with id {}: Cannot update cmsPage {}", legacyPageTemplateId, page.getId());
+                    }
                 } else {
                     logger.warn("No legacy template found with id {}: Cannot update cmsPage {}", legacyPageTemplateId, page.getId());
                 }
+
             } catch (Exception e) {
                 logger.error("Error updating page {}", page.getId(), e);
                 throw e;
             }
-            updatedPages.add(page);
         }
 
-        for (CMSPage cmsPage : updatedPages) {
+        /**
+         * sidebar elements may be owned by a template instead of a page now, so owner_page_id needs to be able to be null
+         */
+        dao.executeUpdate("ALTER TABLE cms_page_sidebar_elements MODIFY owner_page_id BIGINT NULL;");
+
+        /**
+         * Save page and template to database
+         */
+        for (Entry<String, List<CMSPage>> entry : pageTemplateIdMap.entrySet()) {
+            CMSPageTemplate template = templateIdMap.get(entry.getKey());
+            List<CMSPage> templatePages = entry.getValue();
             try {
-                if (!dao.updateCMSPage(cmsPage)) {
-                    throw new DAOException("Saving page failed");
+                if (!dao.addCMSPageTemplate(template)) {
+                    throw new DAOException("Adding template failed");
                 }
             } catch (Exception e) {
-                logger.error("Error updating page {}", cmsPage.getId(), e);
+                logger.error("Error creating template {}: {}", template.getName(), e.toString());
                 throw e;
+            }
+            for (CMSPage page : templatePages) {
+                page.setTemplateId(template.getId());
+                try {
+                    if (!dao.updateCMSPage(page)) {
+                        throw new DAOException("Saving page failed");
+                    }
+                } catch (Exception e) {
+                    logger.error("Error updating page {}: {}", page.getId(), e.toString());
+                    throw e;
+                }
             }
         }
 
@@ -149,10 +193,6 @@ public class CMSPageUpdate implements IModelUpdate {
         dao.executeUpdate("DROP TABLE cms_content_items;");
         dao.executeUpdate("DROP TABLE cms_page_language_versions;");
         dao.executeUpdate("ALTER TABLE cms_pages DROP COLUMN template_id;");
-        /**
-         * sidebar elements may be owned by a template instead of a page now, so owner_page_id needs to be able to be null        
-         */
-        dao.executeUpdate("ALTER TABLE cms_page_sidebar_elements MODIFY owner_page_id BIGINT NULL;");
 
         return true;
     }
@@ -161,11 +201,11 @@ public class CMSPageUpdate implements IModelUpdate {
             Map<String, Map<String, Object>> pageLanguageVersions) throws DAOException {
         Long topbarSliderId = getTopbarSliderId(contentItemMap, pageLanguageVersions);
         CMSComponent topbarComponentTemplate = templateManager.getComponent("headerslider").orElse(null);
-        if(topbarSliderId != null && topbarComponentTemplate != null) {
-            
+        if (topbarSliderId != null && topbarComponentTemplate != null) {
+
             PersistentCMSComponent component = new PersistentCMSComponent(topbarComponentTemplate);
             CMSSliderContent sliderContent = component.getFirstContentOfType(CMSSliderContent.class);
-            if(sliderContent != null) {
+            if (sliderContent != null) {
                 sliderContent.setSliderId(topbarSliderId);
             }
             return Optional.ofNullable(component);

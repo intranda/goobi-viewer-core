@@ -57,7 +57,7 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
     private String solrField;
 
     @Transient
-    private final BrowseFunctionality browse;
+    private BrowseFunctionality browse = null;
 
     @Override
     public String getBackendComponentName() {
@@ -66,13 +66,11 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
 
     public CMSBrowseContent() {
         super();
-        this.browse = this.initBrowse();
     }
 
     private CMSBrowseContent(CMSBrowseContent orig) {
         super(orig);
         this.solrField = orig.solrField;
-        this.browse = this.initBrowse();
     }
 
     public String getSolrField() {
@@ -104,6 +102,10 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
+        if(this.browse == null) {            
+            this.browse = this.initBrowse();
+        }
+
         if (resetResults) {
             browse.reset();
         }
