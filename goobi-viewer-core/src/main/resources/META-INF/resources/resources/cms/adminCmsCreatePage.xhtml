@@ -248,10 +248,10 @@
 								                                                <f:selectItem itemLabel="#{msg.select}" itemValue="" />
 								                                                <f:selectItems
 								                                                value="#{cmsPageEditBean.getAvailableComponents(page)}"
-								                                                var="comp"
-								                                                itemLabel="#{msg[comp.label]}"
-								                                                itemValue="#{comp.templateFilename}"
-								                                                itemDescription="#{msg[comp.description]}" />
+								                                                var="item"
+								                                                itemLabel="#{msg[item.value.label]}"
+								                                                itemValue="#{item.value.templateFilename}"
+								                                                itemDescription="#{msg[item.value.description]}" />
 								                                                <f:ajax event="valueChange" execute="@this" render="componentSelectionWrapper"></f:ajax>
 								                                            </h:selectOneMenu>
 								                                            

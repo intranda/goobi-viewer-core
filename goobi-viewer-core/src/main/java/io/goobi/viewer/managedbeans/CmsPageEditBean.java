@@ -22,24 +22,29 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import com.google.common.base.Strings;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.faces.utils.SelectItemBuilder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -87,16 +92,20 @@ public class CmsPageEditBean implements Serializable {
         return selected;
     }
 
-    public List<CMSComponent> getAvailableComponents(CMSPage page) {
+    public List<SelectItem> getAvailableComponents(CMSPage page) {
         Stream<CMSComponent> stream = CMSTemplateManager.getInstance().getContentManager().getComponents().stream();
         if(page != null && page.isContainsPagedComponents()) {
             stream = stream.filter(c -> !c.isPaged());
         }
         Locale locale = BeanUtils.getLocale();
-        return stream
+        List<CMSComponent> components =  stream
                 .sorted((c1,c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale), ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
                 .collect(Collectors.toList());
+        Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components, component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
+        return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, c -> c.getTemplateFilename(), c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
     }
+
+
 
     /**
      * Get the list of metadata fields which may be displayed. This is the main metadata list
