@@ -47,6 +47,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
@@ -109,12 +110,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      */
     @Column(name = "lock_components")
     private boolean lockComponents = false;
-    
-    /**
-     * Set to true to mark this template as a legacy template, i.e. a template automatically created from the old page templates
-     */
-    @Column(name = "legacy_template")
-    private boolean legacyTemplate = false;
+
 
     @Column(name = "publication_status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -195,11 +191,46 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.categories = new ArrayList<>(original.categories);
         this.wrapperElementClass = original.wrapperElementClass;
         this.lockComponents = original.lockComponents;
-        this.legacyTemplate = original.legacyTemplate;
 
         if (original.sidebarElements != null) {
             this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
             for (CMSSidebarElement sidebarElement : original.sidebarElements) {
+                CMSSidebarElement copy = CMSSidebarElement.copy(sidebarElement, this);
+                this.sidebarElements.add(copy);
+            }
+        }
+
+        for (PersistentCMSComponent component : original.getPersistentComponents()) {
+            PersistentCMSComponent copy = new PersistentCMSComponent(component);
+            copy.setOwningTemplate(this);
+            this.persistentComponents.add(copy);
+            CMSComponent comp = CMSTemplateManager.getInstance()
+                    .getComponent(copy.getTemplateFilename())
+                    .map(c -> new CMSComponent(c, Optional.of(copy)))
+                    .orElse(null);
+            if (comp != null) {
+                this.cmsComponents.add(comp);
+            }
+        }
+        //sort components and normalize order attributes
+        Collections.sort(this.cmsComponents);
+        for (int i = 0; i < this.cmsComponents.size(); i++) {
+            this.cmsComponents.get(i).setOrder(i);
+        }
+    }
+    
+    public CMSPageTemplate(CMSPage original) {
+        this.title = new TranslatedText(original.getTitleTranslations());
+        this.dateCreated = LocalDateTime.now();
+        this.dateUpdated = LocalDateTime.now();
+        this.useDefaultSidebar = original.isUseDefaultSidebar();
+        this.subThemeDiscriminatorValue = original.getSubThemeDiscriminatorValue();
+        this.categories = new ArrayList<>(original.getCategories());
+        this.wrapperElementClass = original.getWrapperElementClass();
+
+        if (original.getSidebarElements() != null) {
+            this.sidebarElements = new ArrayList<>(original.getSidebarElements().size());
+            for (CMSSidebarElement sidebarElement : original.getSidebarElements()) {
                 CMSSidebarElement copy = CMSSidebarElement.copy(sidebarElement, this);
                 this.sidebarElements.add(copy);
             }
@@ -700,9 +731,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
             List<CMSCategory> tempCats = new ArrayList<>();
             for (CMSCategory cat : allCats) {
-                if (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) {
-                    tempCats.add(cat);
-                } else if (selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
+                if ( (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) || selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected()) ) {
                     tempCats.add(cat);
                 }
             }
@@ -802,7 +831,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         return this.title.isValid(locale) &&
                 this.cmsComponents.stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
-                        .filter(content -> content.isRequired())
+                        .filter(CMSContentItem::isRequired)
                         .allMatch(content -> ((TranslatableCMSContent) content.getContent()).getText().isValid(locale));
 
     }
@@ -810,13 +839,13 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     public boolean hasSearchFunctionality() {
         return this.persistentComponents.stream()
                 .flatMap(c -> c.getContentItems().stream())
-                .anyMatch(content -> content instanceof CMSSearchContent);
+                .anyMatch(CMSSearchContent.class::isInstance);
     }
 
     public Optional<SearchFunctionality> getSearch() {
         return this.persistentComponents.stream()
                 .flatMap(c -> c.getContentItems().stream())
-                .filter(content -> content instanceof CMSSearchContent)
+                .filter(CMSSearchContent.class::isInstance)
                 .map(content -> ((CMSSearchContent) content).getSearch())
                 .findAny();
     }
@@ -874,11 +903,15 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     public boolean isLockComponents() {
-        return lockComponents;
+        return lockComponents ;
     }
 
     public void setLockComponents(boolean lockComponents) {
         this.lockComponents = lockComponents;
+    }
+    
+    public boolean isLegacyTemplate() {
+        return this.cmsComponents.stream().anyMatch(CMSComponent::isLegacyComponent);
     }
     
     public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {

@@ -1432,4 +1432,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public boolean isLockComponents() {
         return this.getTemplate().map(CMSPageTemplate::isLockComponents).orElse(false);
     }
+    
+    public boolean isLegacyPage() {
+        return this.cmsComponents.stream().anyMatch(CMSComponent::isLegacyComponent);
+    }
 }
