@@ -7,6 +7,7 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface />
@@ -313,6 +314,31 @@
             	<div data-target="cmsPageJumpToQuickCSSLink" class="admin__small-info mt-2"><a target="_blank" href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a></div>
 
             </div>
+            
+	        <div id="saveAsTemplateWidget" class="admin__default-block">
+	            <!-- TEMPLATE TOGGLE + SETTINGS -->
+	             <h2>#{msg.cms__pageMetadata_save_template_title}</h2>
+	             
+					<div class="admin__form-help-text in mb-4">#{msg.cms__pageMetadata_save_template_help}</div>
+			
+			         <div class="admin__radio-switch mb-3">
+	                 	<viewerComponent:toggleSwitch name="openAccessToggle" value="#{cmsBean.selectedPage.published}" toggleTarget="#additionalTemplateOptions"/>
+			         </div>
+			         
+		                 <div id="additionalTemplateOptions" class="admin__sidebar-divider-top">
+		                 
+		                 	<div class="mb-3">
+		                 		<h3 class="mb-2">#{msg.cms__name_of_template}</h3>
+                            	<h:inputText value="templatename" /> 
+                            </div>
+		                 
+		                 	<h3 class="mb-2">#{msg.label__cms_page_template__lock_components__label}</h3>
+                            <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{page.lockComponents}"/>
+                         	<div class="admin__form-help-text in mb-4">#{msg.label__cms_page_template__lock_components__description}</div>
+		                 </div>
+	
+	        		
+	        		</div>
 
 				<!-- SCRIPT FOR PRETTY URL PREVIEW -->
 				<script>

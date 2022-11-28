@@ -32,10 +32,10 @@
 	                <div class="admin__title-bar">
 	                    <h1 class="admin__title">
 		                    <ui:fragment rendered="#{cmsPageTemplateEditBean.editMode}">
-		                    #{msg.cms_editPage}
+		                    #{msg.cms__edit_template_title}
 		                    </ui:fragment>
 		                    <ui:fragment rendered="#{!cmsPageTemplateEditBean.editMode}">
-		                    #{msg.cms_createPage}
+		                    #{msg.cms__create_template_title}
 		                    </ui:fragment>
 	                    </h1>
 	                    <!-- EXIT -->
@@ -131,7 +131,7 @@
                                                              <!-- LOCK COMPONENTS -->
                                                             <div class="cms-module__option-group">
                                                                 <div class="cms-module__option-label">
-                                                                    <label for="cmsCreatePageTitle">#{msg.label__cms_page_template__lock_components__label}*:</label>
+                                                                    <label for="cmsCreatePageTitle">#{msg.label__cms_page_template__lock_components__label}:</label>
                                                                 </div>
                                                                 <div class="cms-module__option-control">
                                                                     <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{page.lockComponents}"/>
@@ -161,42 +161,61 @@
 																				<div class="admin__content-component-header">
 																				
 																					<!-- CONTENT COMPONENT ORDER FUNCTIONS -->
-																					<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+																					<ui:fragment rendered="#{!page.lockComponents}">
+																						<ui:include
+																							src="/resources/cms/includes/orderContentItems.xhtml" />
+																					</ui:fragment>
 																				
 																					<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
 
-																					<div class="admin__content-component-options">
+<div
+																							class="admin__content-component-options #{!page.isDefaultLocaleSelected() ? '-hideIfNotDefault':''}">
 
-																						<ui:repeat var="attribute" value="#{cmsComponent.attributes.values()}">
-																								
-																								<ui:fragment rendered="#{attribute.display and attribute.type == 'toggle'}">
-																								
-																									<ui:repeat var="option" value="#{attribute.options}">
-																									
-																										<button  jsf:action="#{cmsComponent.toggleAttribute(attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
-																											<f:ajax execute="@this" render="pageComponents"/>
+																							<ui:repeat var="attribute"
+																								value="#{cmsComponent.attributes.values()}">
+
+																								<ui:fragment
+																									rendered="#{attribute.display and attribute.type == 'toggle'}">
+
+																									<ui:repeat var="option"
+																										value="#{attribute.options}">
+
+																										<button
+																											jsf:action="#{cmsComponent.toggleAttribute(attribute.name, option.value)}"
+																											class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
+																											#{msg[option.label]}
+																											<f:ajax execute="@this"
+																												render="pageComponents" />
 																										</button>
 
 																									</ui:repeat>
-																									
+
 																								</ui:fragment>
-																								
-																								<ui:fragment rendered="#{attribute.display and attribute.type != 'toggle'}">
-																									<ui:repeat var="option" value="#{attribute.options}">
-																										<button jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}" class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">#{msg[option.label]}
-																											<f:ajax render="pageComponents"/>
+
+																								<ui:fragment
+																									rendered="#{attribute.display and attribute.type != 'toggle'}">
+																									<ui:repeat var="option"
+																										value="#{attribute.options}">
+																										<button
+																											jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}"
+																											class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
+																											#{msg[option.label]}
+																											<f:ajax render="pageComponents" />
 																										</button>
 																									</ui:repeat>
 																								</ui:fragment>
 
-																						</ui:repeat>
+																							</ui:repeat>
 
-																						<!-- SET THIS CONTENT COMPONENT TO PRIVATE - ONLY VISIBLE FOR ADMINS -->
-																						<button jsf:action="#{cmsComponent.togglePrivate()}" class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">Private
-																							<f:ajax render="pageComponents"/>
-																						</button>
+																							<!-- SET THIS CONTENT COMPONENT TO PRIVATE - ONLY VISIBLE FOR ADMINS -->
+																							<button
+																								jsf:action="#{cmsComponent.togglePrivate()}"
+																								class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">
+																								Private
+																								<f:ajax render="pageComponents" />
+																							</button>
 
-																					</div>
+																						</div>
 																	
 																				</div>
 																				
