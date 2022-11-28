@@ -22,25 +22,25 @@
 			rendered="#{userBean.user.cmsAdmin}">
 			<div id="cmsCreatePage" class="cms-create-page">
 				<!-- BACK TO OVERVIEW -->
-				<h:form rendered="#{cmsBean.selectedPage == null}">
+				<h:form rendered="#{cmsPageEditBean.selectedPage == null}">
 					<h:commandLink action="pretty:adminCmsOverview">
 						<h:outputText value="#{msg.cms_backToOverview}" />
 					</h:commandLink>
 				</h:form>
 
-				<h:panelGroup rendered="#{cmsBean.selectedPage != null}">
-					<c:set scope="request" var="page" value="#{cmsBean.selectedPage}" />
+				<h:panelGroup rendered="#{cmsPageEditBean.selectedPage != null}">
+					<c:set scope="request" var="page" value="#{cmsPageEditBean.selectedPage}" />
 					<div class="admin__title-bar">
 						<h1 class="admin__title">
-							<ui:fragment rendered="#{cmsBean.editMode}">
+							<ui:fragment rendered="#{cmsPageEditBean.editMode}">
 		                    #{msg.cms_editPage}
 		                    </ui:fragment>
 							<ui:fragment
-								rendered="#{!cmsBean.editMode and page.template.isPresent()}">
-		                    #{msg.cms_createPage}: #{msg[cmsBean.selectedPage.template.get().title]}
+								rendered="#{!cmsPageEditBean.editMode and page.template.isPresent()}">
+		                    #{msg.cms_createPage}: #{msg[cmsPageEditBean.selectedPage.template.get().title]}
 		                    </ui:fragment>
 							<ui:fragment
-								rendered="#{!cmsBean.editMode and page.template.isEmpty()}">
+								rendered="#{!cmsPageEditBean.editMode and page.template.isEmpty()}">
 		                    #{msg.cms_createPage}
 		                    </ui:fragment>
 						</h1>
@@ -69,22 +69,22 @@
 														<ui:repeat var="locale" value="#{page.getLocales()}">
 															<li role="tab"
 																class="admin__language-tab
-															#{page.isSelected(locale) and cmsBean.pageEditState == 'CONTENT' ? 'active':''}
+															#{page.isSelected(locale) and cmsPageEditBean.pageEditState == 'CONTENT' ? 'active':''}
 															#{page.isEmpty(locale) ? '' : (page.isComplete(locale) ? '-already-translated' : '-partly-translated')}
 															#{page.isDefaultLocaleSelected() ? '-default-language':''}">
 																<h:commandLink role="button"
 																	value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 																	action="#{page.setSelectedLocale(locale)}"
-																	actionListener="#{cmsBean.setPageEditState('CONTENT')}">
+																	actionListener="#{cmsPageEditBean.setPageEditState('CONTENT')}">
 																	<f:ajax render="@form" execute="@form"></f:ajax>
 																</h:commandLink>
 															</li>
 														</ui:repeat>
 														<li
-															class="#{cmsBean.pageEditState == 'SIDEBAR' ? 'active':''} nav-tabs__sidebar-button">
+															class="#{cmsPageEditBean.pageEditState == 'SIDEBAR' ? 'active':''} nav-tabs__sidebar-button">
 															<h:commandLink role="button"
 																value="#{msg.cms_pageSidebar}"
-																action="#{cmsBean.setPageEditState('SIDEBAR')}">
+																action="#{cmsPageEditBean.setPageEditState('SIDEBAR')}">
 																<f:ajax render="@form" execute="@form"></f:ajax>
 															</h:commandLink>
 														</li>
@@ -93,7 +93,7 @@
 													<div class="tab-content">
 														<!-- LOCALIZE TABS -->
 														<h:panelGroup
-															rendered="#{cmsBean.pageEditState == 'CONTENT'}">
+															rendered="#{cmsPageEditBean.pageEditState == 'CONTENT'}">
 															<ui:param name="locale" value="#{page.selectedLocale}" />
 															<div
 																class="tab-pane admin__cms-create-page-inner #{page.selectedLocale == locale ? 'active':''}"
@@ -134,7 +134,7 @@
 																		<div class="cms-module__option-control">
 																			<h:inputText id="cmsCreatePageMenutitle"
 																				styleClass="form-control"
-																				value="#{cmsBean.selectedPage.menuTitleTranslations.text}" />
+																				value="#{cmsPageEditBean.selectedPage.menuTitleTranslations.text}" />
 																			<span class="cms-module__option-control-helptext">#{msg.help__cms_page_menutitle}</span>
 																		</div>
 																		<div class="cms-module__option-help">
@@ -156,7 +156,7 @@
 																		<div class="cms-module__option-control">
 																			<h:inputText id="cmsCreatePageSortingField"
 																				styleClass="form-control"
-																				value="#{cmsBean.selectedPage.pageSorting}">
+																				value="#{cmsPageEditBean.selectedPage.pageSorting}">
 																				<f:passThroughAttribute name="type" value="number" />
 																			</h:inputText>
 																			<span class="cms-module__option-control-helptext">#{msg.help__cms_page_sortfield}</span>
@@ -264,7 +264,7 @@
 																						<button class="admin__content-component-delete"
 																							data-require-confirmation="true"
 																							data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
-																							jsf:action="#{cmsBean.deleteComponent(cmsComponent)}">
+																							jsf:action="#{cmsPageEditBean.deleteComponent(cmsComponent)}">
 																							#{msg.delete}
 																							<f:ajax render="componentSelectionWrapper"
 																								onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
@@ -289,7 +289,7 @@
 																				styleClass="admin__content-component-add-select-wrapper">
 																				<h:selectOneMenu id="componentSelectList"
 																					styleClass="form-control"
-																					value="#{cmsBean.selectedComponent}"
+																					value="#{cmsPageEditBean.selectedComponent}"
 																					disabled="#{page.lockComponents}">
 																					<f:selectItem itemLabel="#{msg.select}"
 																						itemValue="" />
@@ -304,7 +304,7 @@
 
 																				<button
 																					class="btn btn--full admin__content-component-add-area-button"
-																					jsf:action="#{cmsBean.addComponent(page, cmsBean.selectedComponent)}"
+																					jsf:action="#{cmsPageEditBean.addComponent(page, cmsPageEditBean.selectedComponent)}"
 																					jsf:disabled="#{page.lockComponents}">
 																					#{msg.cms__page_add_component}
 																					<f:ajax execute="@form" render="@form"></f:ajax>
@@ -325,10 +325,10 @@
 
 														<!-- SIDEBAR EDITOR TAB -->
 														<div role="tabpanel" id="sidebarTab"
-															class="tab-pane #{cmsBean.pageEditState == 'SIDEBAR' ? 'active':''} sidebar-editor__wrapper">
+															class="tab-pane #{cmsPageEditBean.pageEditState == 'SIDEBAR' ? 'active':''} sidebar-editor__wrapper">
 															<cmsComponent:cms_createPageSidebarEditorTab
 																id="sidebar_editor_component"
-																page="#{cmsBean.selectedPage}" />
+																page="#{cmsPageEditBean.selectedPage}" />
 														</div>
 													</div>
 
@@ -368,7 +368,7 @@
 
 											<div data-target="saveChangedPage" class="admin__content-component-overlay-bar">
 												<!-- SHOW -->
-						                        <a id="showPageButton" class="btn btn--default" target="_blank" href="#{cmsBean.getUrl(cmsBean.selectedPage)}">
+						                        <a id="showPageButton" class="btn btn--default" target="_blank" href="#{cmsBean.getUrl(cmsPageEditBean.selectedPage)}">
 						                            #{msg.cms_pagePreview}
 						                        </a>
 						                        
@@ -376,7 +376,7 @@
 						                        <button type="button" role="button" href="#" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" class="btn btn--danger"> #{msg.delete} </button>
 											
 						                        <!-- SAVE -->
-						                        <h:commandButton type="submit" action="#{cmsBean.saveSelectedPage}" id="save-button" styleClass="btn btn--success" value="#{msg.cms_pageMetadata_save}"
+						                        <h:commandButton type="submit" action="#{cmsPageEditBean.saveSelectedPage}" id="save-button" styleClass="btn btn--success" value="#{msg.cms_pageMetadata_save}"
 						                            onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
 						                        </h:commandButton>
 											</div>
@@ -387,7 +387,7 @@
 				                        <div id="deleteMediaModal-#{media.id}" class="modal fade" tabindex="-1" role="dialog">
 				                            <div class="modal-dialog">
 				                                <div class="modal-content">
-				                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
+				                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsPageEditBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsPageEditBean.selectedPage)}">
 				                                        <div class="modal-header">
 				                                            <h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
 				                                            <button type="button" class="close" data-dismiss="modal">
@@ -400,14 +400,14 @@
 				                                        <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
 				                                        <div class="modal-footer">
 				                                            <a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-				                                            <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
+				                                            <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsPageEditBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
 				                                                styleClass="btn btn--danger">
 				                                                <f:ajax render="@none" />
 				                                            </h:commandLink>
 				                                        </div>
 				                                    </h:panelGroup>
 				
-				                                    <h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) or cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
+				                                    <h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsPageEditBean.selectedPage) or cmsBean.isLinkedToStaticPage(cmsPageEditBean.selectedPage)}">
 				                                        <div class="modal-header">
 				                                            <button type="button" class="close" data-dismiss="modal">
 				                                                <span aria-hidden="true">
@@ -453,14 +453,14 @@
 				<script type="text/javascript">
                 
     				// deactivate show page button if page was not saved once
-                	var actualPageID = "#{cmsBean.selectedPage.id}";
+                	var actualPageID = "#{selectedPage.id}";
                     if ( !(actualPageID)) {
         				$('#showPageButton').hide();
         				// console.log('page is null');#20130
                     }
                 
                 	var createPageConfig = {
-						selectedPageID : "#{cmsBean.selectedPage.id}",
+						selectedPageID : "#{selectedPage.id}",
 						inputFields : $(".content-input"),
 						prevBtn : $("#preview-button"),
 						prevDescription : $("#previewDescription"),

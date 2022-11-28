@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -106,6 +107,29 @@ public class CmsPageEditBean implements Serializable {
     
     @PostConstruct
     public void setup() {
+        try {
+            long pageId = Long.parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("selectedPageId", "-1"));
+            long templateId = Long.parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("templateId", "-1"));
+            
+            if(pageId > 0) {
+                CMSPage page = this.dao.getCMSPage(pageId);
+                this.setSelectedPage(page);
+                this.editMode = true;                
+            } else if(templateId > -1) {
+                this.editMode = false;
+                this.setNewSelectedPage(templateId);
+            } else {
+                this.editMode = false;
+                this.setNewSelectedPage();
+            }
+        } catch (NullPointerException | NumberFormatException e) {
+            this.editMode = false;
+            this.setNewSelectedPage();
+        } catch (DAOException e) {
+            logger.error("Error retrieving cms page template from dao: {}", e.toString());
+            this.editMode = false;
+            this.setNewSelectedPage();
+        }
     }
 
     /**
@@ -423,7 +447,11 @@ public class CmsPageEditBean implements Serializable {
     private CMSPageTemplate loadTemplate(Long templateId) {
         if(templateId != null) {
             try {
-                return DataManager.getInstance().getDao().getCMSPageTemplate(templateId);
+                CMSPageTemplate template = DataManager.getInstance().getDao().getCMSPageTemplate(templateId);
+                if(template != null)  {
+                    template.initialiseCMSComponents(templateManager);
+                }
+                return template;
             } catch (DAOException e) {
                 logger.error("Error loading cms page template with id {}: {}", templateId, e.toString());
             }
