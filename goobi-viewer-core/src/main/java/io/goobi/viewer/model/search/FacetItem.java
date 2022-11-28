@@ -28,12 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -410,24 +408,24 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     @Override
     public String getQueryEscapedLink() {
-        String field = SearchHelper.facetifyField(this.field);
+        String f = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
         if (hierarchial) {
-            return new StringBuilder("(").append(field)
+            return new StringBuilder("(").append(f)
                     .append(':')
                     .append(escapedValue)
                     .append(" OR ")
-                    .append(field)
+                    .append(f)
                     .append(':')
                     .append(escapedValue)
                     .append(".*)")
                     .toString();
         }
-        if (value2 == null) {
-            return new StringBuilder(field).append(':').append(escapedValue).toString();
+        if (StringUtils.isEmpty(value2)) {
+            return new StringBuilder(f).append(':').append(escapedValue).toString();
         }
         String escapedValue2 = getEscapedValue(value2);
-        return new StringBuilder(field).append(":[").append(escapedValue).append(" TO ").append(escapedValue2).append(']').toString();
+        return new StringBuilder(f).append(":[").append(escapedValue).append(" TO ").append(escapedValue2).append(']').toString();
     }
 
     /**
@@ -437,11 +435,25 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should escape value correctly
      * @should add quotation marks if value contains space
      * @should preserve leading and trailing quotation marks
+     * @should preserve wildcard
      */
     static String getEscapedValue(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
         }
+
+        boolean addLeftTruncation = false;
+        boolean addRightTruncation = false;
+        if (value.charAt(0) == '*') {
+            addLeftTruncation = true;
+            value = value.substring(1);
+
+        }
+        if (value.endsWith("*")) {
+            addRightTruncation = true;
+            value = value.substring(0, value.length() - 1);
+        }
+
         String escapedValue = null;
         if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"' && value.length() > 2) {
             escapedValue = '"' + ClientUtils.escapeQueryChars(value.substring(1, value.length() - 1)) + '"';
@@ -451,6 +463,13 @@ public class FacetItem implements Serializable, IFacetItem {
         // Add quotation marks if spaces are contained
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
             escapedValue = '"' + escapedValue + '"';
+        }
+
+        if (addLeftTruncation) {
+            escapedValue = '*' + escapedValue;
+        }
+        if (addRightTruncation) {
+            escapedValue += '*';
         }
 
         return escapedValue;

@@ -300,7 +300,7 @@ public class SolrSearchIndex {
             //             logger.debug("fieldList: {}", fieldList);
             QueryResponse resp = client.query(solrQuery);
             //             logger.debug("found: {}", resp.getResults().getNumFound());
-            //                         logger.debug("fetched: {}", resp.getResults().size());
+            //             logger.debug("fetched: {}", resp.getResults().size());
 
             return resp;
         } catch (SolrServerException e) {

@@ -183,6 +183,15 @@ public class FacetItemTest extends AbstractTest {
     }
 
     /**
+     * @see FacetItem#getEscapedValue(String)
+     * @verifies preserve wildcard
+     */
+    @Test
+    public void getEscapedValue_shouldPreserveWildcard() throws Exception {
+        Assert.assertEquals("A*", FacetItem.getEscapedValue("A*"));
+    }
+
+    /**
      * @see FacetItem#compareTo(FacetItem)
      * @verifies return plus if count less than other count
      */
@@ -239,8 +248,6 @@ public class FacetItemTest extends AbstractTest {
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("Karl", facetItems.get(0).getLabel());
     }
-    
-
 
     /**
      * @see FacetItem#generateFilterLinkList(String,Map,boolean,boolean,Locale,Map)
@@ -249,7 +256,7 @@ public class FacetItemTest extends AbstractTest {
     @Test
     public void generateFilterLinkList_shouldGroupValuesByStartingCharacterCorrectly() throws Exception {
         Map<String, String> labelMap = new HashMap<>(1);
-        Map<String, Long> valueMap =  new HashMap<>(3);
+        Map<String, Long> valueMap = new HashMap<>(3);
         valueMap.put("Cooper, Alice", 1L);
         valueMap.put("Campbell, Wayne", 1L);
         valueMap.put("Algar, Garth", 1L);

@@ -387,8 +387,7 @@ public class SearchBean implements SearchInterface, Serializable {
         facets.resetCurrentFacetString();
         generateSimpleSearchString(searchString);
 
-        String query = SolrConstants.MONTHDAY + ":" + DateTools.formatterMonthDayOnly.format(LocalDateTime.now());
-        setExactSearchString(query);
+        searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.formatterMonthDayOnly.format(LocalDateTime.now());
 
         return "pretty:newSearch5";
     }
@@ -1280,8 +1279,8 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Sets the current searchString to the given query, without parsing it like the regular setSearchString() method. To be used for sorting,
-     * drill-down, etc.
+     * Sets the current <code>searchStringInternal</code> to the given query, without parsing it like the regular setSearchString() method. This
+     * method performs URL-unescaping, so using it directly with unescaped queries containing '+' etc. will change the logic.
      *
      * @param inSearchString a {@link java.lang.String} object.
      * @should perform double unescaping if necessary
@@ -2910,7 +2909,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public void searchMono() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("searchMono");
-        setExactSearchString("+PI:* +DOCSTRCT:monograph");
+        searchStringInternal = "+PI:* +DOCSTRCT:monograph";
 
         //remember the current page to return to hit list in widget_searchResultNavigation
         setLastUsedSearchPage();
