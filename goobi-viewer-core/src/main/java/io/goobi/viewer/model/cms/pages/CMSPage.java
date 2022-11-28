@@ -39,6 +39,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -56,22 +58,16 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSProperty;
-import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
-import io.goobi.viewer.model.cms.media.CMSMediaHolder;
-import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
-import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
@@ -85,7 +81,6 @@ import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
-import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.CascadeType;
@@ -221,9 +216,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     private List<CMSComponent> cmsComponents = new ArrayList<>();
 
     @Transient
-    private final CMSTemplateManager templateManager;
-    
-    @Transient
     private int listPage = 1;
 
     /**
@@ -233,13 +225,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public CMSPage() {
         this.dateCreated = LocalDateTime.now();
-        templateManager = null;
-    }
-
-    public CMSPage(CMSTemplateManager templateManager) {
-        this.dateCreated = LocalDateTime.now();
-        this.templateManager = templateManager;
-
     }
 
     /**
@@ -248,11 +233,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSPage(CMSPage original) {
-        this(original, CMSTemplateManager.getInstance());
-    }
-
-    CMSPage(CMSPage original, CMSTemplateManager templateManager) {
-        this(templateManager);
         if (original.id != null) {
             this.id = original.id;
         }
@@ -298,7 +278,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             copy.setOwningPage(this);
             this.persistentComponents.add(copy);
         }
-        initialiseCMSComponents();
     }
 
     /**
@@ -307,11 +286,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
      */
     public CMSPage(CMSPageTemplate original) {
-        this(original, CMSTemplateManager.getInstance());
-    }
-
-    CMSPage(CMSPageTemplate original, CMSTemplateManager templateManager) {
-        this(templateManager);
 
         this.dateCreated = LocalDateTime.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
@@ -336,20 +310,17 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             copy.setOwningPage(this);
             this.persistentComponents.add(copy);
         }
-        initialiseCMSComponents();
     }
 
-    private void initialiseCMSComponents() {
-        if (this.templateManager != null) {
-            this.cmsComponents = new ArrayList<>();
-            for (PersistentCMSComponent component : this.persistentComponents) {
-                CMSComponent comp = templateManager
-                        .getComponent(component.getTemplateFilename())
-                        .map(c -> new CMSComponent(c, Optional.of(component)))
-                        .orElse(null);
-                if (comp != null) {
-                    this.cmsComponents.add(comp);
-                }
+    public void initialiseCMSComponents(CMSTemplateManager templateManager) {
+        this.cmsComponents = new ArrayList<>();
+        for (PersistentCMSComponent component : this.persistentComponents) {
+            CMSComponent comp = templateManager
+                    .getComponent(component.getTemplateFilename())
+                    .map(c -> new CMSComponent(c, Optional.of(component)))
+                    .orElse(null);
+            if (comp != null) {
+                this.cmsComponents.add(comp);
             }
         }
         sortComponents();
@@ -716,7 +687,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return this.title;
     }
 
-
     /**
      * <p>
      * getMenuTitle.
@@ -833,7 +803,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getUrl() {
         return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(getRelativeUrlPath(true)).toString();
     }
-
 
     /**
      * Gets the pagination number for this page's main list if it contains one
@@ -978,12 +947,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public boolean isMayContainUrlParameters() {
         return isContainsPagedComponents();
-    }  
-    
+    }
+
     public boolean isContainsPagedComponents() {
         return this.persistentComponents.stream().anyMatch(PersistentCMSComponent::isPaged);
     }
-
 
     /**
      * <p>
@@ -1231,7 +1199,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getPi() {
         return getRelatedPI();
     }
-    
+
     public boolean hasTopbarComponents() {
         return this.getComponents().stream().anyMatch(c -> CMSComponentScope.PAGEHEADER.equals(c.getScope()));
     }
@@ -1250,14 +1218,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public List<CMSComponent> getComponents() {
-        if (this.cmsComponents.size() != this.persistentComponents.size()) {
-            initialiseCMSComponents();
+        if(this.cmsComponents.size() != this.persistentComponents.size()) {
+            logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
     }
 
     public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {
-        return this.cmsComponents.stream()
+        return this.getComponents().stream()
                 .filter(c -> c.getPersistentComponent() == p)
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Component " + p.getId() + " is not registered in page"));
@@ -1272,10 +1240,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return success;
     }
 
-    public PersistentCMSComponent addComponent(String filename) throws IllegalArgumentException, IllegalStateException {
-        if (this.templateManager == null) {
-            throw new IllegalStateException("Components can only be added if cmsPage was created by a non-default constructor");
-        }
+    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {
         return addComponent(templateManager
                 .getComponent(filename)
                 .orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
@@ -1287,7 +1252,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         persistentComponent.setOwningPage(this);
         this.persistentComponents.add(persistentComponent);
         CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
-        this.cmsComponents.add(cmsComponent);
+        this.getComponents().add(cmsComponent);
         return persistentComponent;
     }
 
@@ -1303,19 +1268,18 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         Locale defaultLocale = IPolyglott.getDefaultLocale();
         return this.title.isComplete(locale, defaultLocale, true) &&
                 this.menuTitle.isComplete(locale, defaultLocale, false) &&
-                this.cmsComponents.stream()
+                this.getPersistentComponents().stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
-                        .allMatch(content -> ((TranslatableCMSContent) content.getContent()).getText()
-                                .isComplete(locale, defaultLocale, content.isRequired()));
+                        .allMatch(content -> content.getText().isComplete(locale, defaultLocale, content.isRequired()));
     }
 
     @Override
     public boolean isValid(Locale locale) {
         return this.title.isValid(locale) &&
-                this.cmsComponents.stream()
+                this.getPersistentComponents().stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
-                        .filter(CMSContentItem::isRequired)
-                        .allMatch(content -> ((TranslatableCMSContent) content.getContent()).getText().isValid(locale));
+                        .filter(TranslatableCMSContent::isRequired)
+                        .allMatch(content -> content.getText().isValid(locale));
 
     }
 
@@ -1351,7 +1315,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public Optional<CMSPageTemplate> getTemplate() {
-        if(this.template == null && this.templateId != null) {
+        if (this.template == null && this.templateId != null) {
             try {
                 this.template = DataManager.getInstance().getDao().getCMSPageTemplate(this.templateId);
             } catch (DAOException e) {
@@ -1389,11 +1353,11 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean isFirstComponent(CMSComponent component) {
-        return this.cmsComponents.indexOf(component) == 0;
+        return this.getComponents().indexOf(component) == 0;
     }
 
     public boolean isLastComponent(CMSComponent component) {
-        return this.cmsComponents.indexOf(component) == this.cmsComponents.size() - 1;
+        return this.getComponents().indexOf(component) == this.cmsComponents.size() - 1;
     }
 
     public void setTitle(TranslatedText title) {
@@ -1408,39 +1372,42 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         persistentComponent.setOwningPage(this);
         this.persistentComponents.add(persistentComponent);
     }
-    
+
     public List<CMSContentItem> getPreviewItems() {
-        return this.getComponents().stream()
+        return this.getComponents()
+                .stream()
                 .filter(CMSComponent::isPreview)
                 .map(CMSComponent::getContentItems)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
-    
+
     public List<CMSComponent> getPreviewComponents() {
-        return this.getComponents().stream()
+        return this.getComponents()
+                .stream()
                 .filter(CMSComponent::isPreview)
                 .collect(Collectors.toList());
     }
-    
+
     public List<CMSComponent> getPageViewComponents() {
-        return this.getComponents().stream()
+        return this.getComponents()
+                .stream()
                 .filter(c -> CMSComponentScope.PAGEVIEW.equals(c.getScope()))
                 .collect(Collectors.toList());
     }
-    
+
     public boolean isLockComponents() {
         return this.getTemplate().map(CMSPageTemplate::isLockComponents).orElse(false);
     }
-    
+
     public boolean isLegacyPage() {
-        return this.cmsComponents.stream().anyMatch(CMSComponent::isLegacyComponent);
+        return getTemplate().map(CMSPageTemplate::isLegacyTemplate).orElse(null);
     }
-    
+
     public Long getTemplateId() {
         return templateId;
     }
-    
+
     public void setTemplateId(Long templateId) {
         this.templateId = templateId;
     }

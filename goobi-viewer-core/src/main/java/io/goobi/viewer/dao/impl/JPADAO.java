@@ -63,7 +63,6 @@ import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
-import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.pages.PublicationStatus;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
@@ -2993,69 +2992,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     * @see io.goobi.viewer.dao.IDAO#getCMSTemplateEnabled(java.lang.String)
-     * @should return correct value
-     */
-    @Override
-    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
-            q.setParameter("templateId", templateId);
-            return (CMSPageTemplateEnabled) q.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        } catch (NonUniqueResultException e) {
-            logger.error(e.getMessage());
-            return null;
-        } finally {
-            close(em);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
-     */
-    @Override
-    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.persist(o);
-            commitTransaction(em);
-        } catch (PersistenceException e) {
-            logger.error("Error adding cmsPage to database", e);
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
-     */
-    @Override
-    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.merge(o);
-            commitTransaction(em);
-            return true;
-        } catch (PersistenceException e) {
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-    }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")

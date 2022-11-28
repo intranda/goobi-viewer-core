@@ -287,7 +287,6 @@ public class CmsMediaBean implements Serializable {
             }
             List<CMSCategory> allowedCategories = user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories());
             items = items.stream()
-                    //						.peek(item -> System.out.println(StringUtils.join(item.getCategories(), ", ")))
                     .filter(item -> !ListUtils.intersection(item.getCategories(), allowedCategories).isEmpty())
                     .collect(Collectors.toList());
             return items;

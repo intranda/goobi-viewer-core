@@ -122,26 +122,21 @@ public class CmsBean implements Serializable {
 
 
     @Inject
-    private NavigationHelper navigationHelper;
+    private transient NavigationHelper navigationHelper;
     @Inject
-    private CmsNavigationBean cmsNavigationBean;
+    private transient SearchBean searchBean;
     @Inject
-    private SearchBean searchBean;
+    private transient UserBean userBean;
     @Inject
-    private UserBean userBean;
+    private transient CmsMediaBean cmsMediaBean;
     @Inject
-    private CmsMediaBean cmsMediaBean;
+    private transient CMSTemplateManager templateManager;
 
     private TableDataProvider<CMSPage> lazyModelPages;
-    /** The page open for editing */
-    private CMSPage selectedPage;
     /** The page currently open for viewing */
     private CMSPage currentPage;
-    private Locale selectedLocale;
     private Locale selectedMediaLocale;
     private CMSMediaItem selectedMediaItem;
-    private boolean displaySidebarEditor = false;
-    private boolean editMode = false;
     private List<CMSStaticPage> staticPages = null;
     private String currentWorkPi = "";
     private Optional<CMSMediaHolder> selectedMediaHolder = Optional.empty();
@@ -151,12 +146,14 @@ public class CmsBean implements Serializable {
 
     private List<String> luceneFields = null;
 
-    private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
-
-    private Map<CMSPage, List<PersistentCMSComponent>> componentsToDelete = new HashMap<>();
-
-    private String selectedComponent = "";
-
+    public CmsBean() {
+        
+    }
+    
+    public CmsBean(CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
+    
     /**
      * <p>
      * init.
@@ -244,7 +241,6 @@ public class CmsBean implements Serializable {
             lazyModelPages.addFilter(CMSPAGES_FILTER);
             //            lazyModelPages.addFilter("CMSCategory", "name");
         }
-        selectedLocale = getDefaultLocale();
     }
 
     /**
@@ -354,7 +350,7 @@ public class CmsBean implements Serializable {
      */
     public void loadTemplates() {
         logger.trace("loadTemplates");
-        CMSTemplateManager.getInstance().reloadContentManager();
+        templateManager.reloadContentManager();
     }
 
     /**
@@ -415,7 +411,7 @@ public class CmsBean implements Serializable {
             return Collections.emptyList();
         }
         return user.getAllowedTemplates(getTemplates()).stream()
-                .map(t -> new CMSPageTemplate(t, CMSTemplateManager.getInstance())).collect(Collectors.toList());
+                .map(CMSPageTemplate::new).collect(Collectors.toList());
     }
 
     /**
@@ -453,73 +449,6 @@ public class CmsBean implements Serializable {
         return lazyModelPages;
     }
 
-    /**
-     * <p>
-     * createNewPage.
-     * </p>
-     *
-     * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public CMSPage createNewPage(CMSPageTemplate template) throws PresentationException, IndexUnreachableException, DAOException {
-        CMSPage page = new CMSPage(template);
-        setUserRestrictedValues(page, userBean.getUser());
-        // page.setId(System.currentTimeMillis());
-        page.setDateCreated(LocalDateTime.now());
-        return page;
-    }
-
-    /**
-     * Create a new CMSPage based on the given template. title and relatedPI are set on the page if given Opens the view to create/edit the cmsPage
-     *
-     * @param templateId The id of the template to base the page on
-     * @param title The title to be used for the current locale, optional
-     * @param relatedPI The PI of a related work, optional
-     * @return a {@link java.lang.String} object.
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public String createAndOpenNewPage(String title, String relatedPI) throws PresentationException, IndexUnreachableException, DAOException {
-        CMSPage page = new CMSPage(CMSTemplateManager.getInstance());
-        page.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
-        page.setRelatedPI(relatedPI);
-        setUserRestrictedValues(page, userBean.getUser());
-        setSelectedPage(page);
-        return "pretty:adminCmsNewPage";
-    }
-
-    /**
-     * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted privileges for that
-     * property
-     *
-     * @param page
-     * @param user
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, IndexUnreachableException, DAOException {
-        if (!user.hasPrivilegeForAllSubthemeDiscriminatorValues()) {
-            List<String> allowedSubThemeDiscriminatorValues = user.getAllowedSubthemeDiscriminatorValues(getSubthemeDiscriminatorValues());
-            if (StringUtils.isBlank(page.getSubThemeDiscriminatorValue()) && !allowedSubThemeDiscriminatorValues.isEmpty()) {
-                page.setSubThemeDiscriminatorValue(allowedSubThemeDiscriminatorValues.get(0));
-            } else {
-                logger.error("User has no access to any subtheme discriminator values and can therefore not create a page");
-                //do something??
-            }
-        }
-        if (!user.hasPrivilegeForAllCategories()) {
-            List<CMSCategory> allowedCategories = user.getAllowedCategories(getAllCategories());
-            if (page.getCategories().isEmpty() && !allowedCategories.isEmpty()) {
-                page.setCategories(allowedCategories.subList(0, 1));
-            }
-        }
-
-    }
 
     /**
      * Returns the URL to the CMS template of the given page. This URL will only resolve if the page has been published or the current user is CMS
@@ -587,7 +516,7 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    private CMSPage findPage(String id) throws DAOException {
+    CMSPage findPage(String id) throws DAOException {
         CMSPage page = null;
         if (id != null) {
             try {
@@ -650,92 +579,6 @@ public class CmsBean implements Serializable {
         return false;
     }
 
-    /**
-     * Adds the current page to the database, if it doesn't exist or updates it otherwise
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void saveSelectedPage() throws DAOException {
-        logger.trace("saveSelectedPage");
-        if (userBean == null || !userBean.getUser().isCmsAdmin() || selectedPage == null) {
-            // Only authorized CMS admins may save
-            return;
-        }
-
-        for (PersistentCMSComponent persistentCMSComponent : getComponentsToDelete()) {
-            if (persistentCMSComponent.getId() != null && !DataManager.getInstance().getDao().deleteCMSComponent(persistentCMSComponent)) {
-                Messages.error("cms_pageSaveFailure");
-                logger.error("Error deleting component {}", persistentCMSComponent.getId());
-                return;
-            }
-        }
-        this.componentsToDelete = new HashMap<>();
-
-        setSidebarElementOrder(selectedPage);
-        selectedPage.writeSelectableCategories();
-        // Save
-        boolean success = false;
-        selectedPage.setDateUpdated(LocalDateTime.now());
-
-        logger.trace("update dao");
-        if (selectedPage.getId() != null) {
-            success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
-        } else {
-            success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
-        }
-        if (success) {
-            Messages.info("cms_pageSaveSuccess");
-            logger.trace("reload cms page");
-            logger.trace("update pages");
-            lazyModelPages.update();
-
-            // Re-index related record
-            if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
-                try {
-                    IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
-                    Messages.info("admin_recordReExported");
-                } catch (RecordNotFoundException e) {
-                    logger.error(e.getMessage());
-                }
-            }
-        } else {
-            Messages.error("cms_pageSaveFailure");
-        }
-        logger.trace("reset collections");
-        resetCollectionsForPage(selectedPage);
-        if (cmsNavigationBean != null) {
-            logger.trace("add navigation item");
-            cmsNavigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
-        }
-        logger.trace("Done saving page");
-    }
-
-    private static void setSidebarElementOrder(CMSPage page) {
-        for (int i = 0; i < page.getSidebarElements().size(); i++) {
-            page.getSidebarElements().get(i).setOrder(i);
-        }
-    }
-
-    /**
-     * @param id
-     */
-    private static void resetCollectionsForPage(CMSPage page) {
-        BeanUtils.getCollectionViewBean().removeCollectionsForPage(page);
-    }
-
-    /**
-     * Same as saveCurrentPage, but also set published=true for currentPage
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void publishSelectedPage() throws DAOException {
-        if (getSelectedPage() != null) {
-            synchronized (selectedPage) {
-                getSelectedPage().setPublished(true);
-                saveSelectedPage();
-            }
-        }
-    }
 
     /**
      * <p>
@@ -763,52 +606,6 @@ public class CmsBean implements Serializable {
     public Optional<CMSPage> getCurrentCmsPageIfLoaded() {
         return Optional.ofNullable(currentPage)
                 .filter(page -> BeanUtils.getNavigationHelper().isCmsPage());
-    }
-
-    /**
-     * Action method for deleting selectedPage from the database.
-     *
-     * @return Return view
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String deleteSelectedPage() throws DAOException {
-        deletePage(selectedPage);
-        return "cmsOverview";
-    }
-
-    /**
-     * Deletes given CMS page from the database.
-     *
-     * @param page Page to delete
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void deletePage(CMSPage page) throws DAOException {
-        if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
-            logger.info("Deleting CMS page: {}", selectedPage);
-            if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
-                // Delete files matching content item IDs of the deleted page and re-index record
-                try {
-                    if (page.deleteExportedTextFiles() > 0) {
-                        try {
-                            IndexerTools.reIndexRecord(page.getRelatedPI());
-                            logger.debug("Re-indexing record: {}", page.getRelatedPI());
-                        } catch (RecordNotFoundException e) {
-                            logger.error(e.getMessage());
-                        }
-                    }
-                } catch (ViewerConfigurationException e) {
-                    logger.error(e.getMessage());
-                    Messages.error(e.getMessage());
-                }
-                lazyModelPages.update();
-                Messages.info("cms_deletePage_success");
-            } else {
-                logger.error("Failed to delete page");
-                Messages.error("cms_deletePage_failure");
-            }
-        }
-
-        selectedPage = null;
     }
 
     /**
@@ -840,64 +637,10 @@ public class CmsBean implements Serializable {
         return null;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>selectedPage</code>.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
-     */
-    public CMSPage getSelectedPage() {
-        return selectedPage;
-    }
 
-    /**
-     * <p>
-     * Setter for the field <code>selectedPage</code>.
-     * </p>
-     *
-     * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void setSelectedPage(CMSPage currentPage) throws DAOException {
-        if (currentPage != null) {
-            if (currentPage.getId() != null) {
-                //get page from DAO
-                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
-            } else {
-                this.selectedPage = currentPage;
-            }
-            logger.debug("Selected page: {}", currentPage);
-        } else {
-            this.selectedPage = null;
-        }
-        //delete list of components to delete. Only the list for the selected page is needed
-        this.componentsToDelete = new HashMap<>();
 
-    }
 
-    /**
-     *
-     * @return
-     */
-    public String getSelectedPageId() {
-        if (selectedPage == null) {
-            return null;
-        }
 
-        return String.valueOf(selectedPage.getId());
-    }
-
-    /**
-     *
-     * @param id
-     * @throws DAOException
-     */
-    public void setSelectedPageId(String id) throws DAOException {
-        logger.trace("setSelectedPageId: {}", id);
-        CMSPage page = findPage(id);
-        setSelectedPage(page);
-    }
 
     /**
      * <p>
@@ -908,7 +651,7 @@ public class CmsBean implements Serializable {
      */
     public CMSPage getCurrentPage() {
         if (currentPage == null) {
-            return new CMSPage(CMSTemplateManager.getInstance());
+            return new CMSPage();
         }
         return currentPage;
     }
@@ -923,23 +666,12 @@ public class CmsBean implements Serializable {
     public void setCurrentPage(CMSPage currentPage) {
         if (currentPage != null) {
             this.currentPage = new CMSPage(currentPage);
+            this.currentPage.initialiseCMSComponents(templateManager);
             this.currentPage.setListPage(1);
             navigationHelper.setCmsPage(true);
             logger.trace("Set current cms page to {}", this.currentPage.getTitle());
         } else {
             this.currentPage = null;
-        }
-    }
-
-    /**
-     * <p>
-     * updatePage.
-     * </p>
-     */
-    public void updatePage() {
-        if (getSelectedPage() != null) {
-            logger.trace("Setting current page to {}", getSelectedPage().getTitle());
-            setCurrentPage(getSelectedPage());
         }
     }
 
@@ -987,97 +719,6 @@ public class CmsBean implements Serializable {
         }
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>selectedLocale</code>.
-     * </p>
-     *
-     * @return a {@link java.util.Locale} object.
-     */
-    public Locale getSelectedLocale() {
-        return selectedLocale;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>selectedLocale</code>.
-     * </p>
-     *
-     * @param selectedLocale a {@link java.util.Locale} object.
-     */
-    public void setSelectedLocale(Locale selectedLocale) {
-        this.selectedLocale = selectedLocale;
-
-    }
-
-    /**
-     * <p>
-     * isDisplaySidebarEditor.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplaySidebarEditor() {
-        return displaySidebarEditor;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>displaySidebarEditor</code>.
-     * </p>
-     *
-     * @param displaySidebarEditor a boolean.
-     */
-    public void setDisplaySidebarEditor(boolean displaySidebarEditor) {
-        this.displaySidebarEditor = displaySidebarEditor;
-    }
-
-    /**
-     * Create a list of {@link io.goobi.viewer.model.cms.Selectable} containing all {@link CMSCategory CMSCategories} which the current user may
-     * access and select those which are included in the {@link #getSelectedPage()}
-     *
-     * @return the list of selectable categories which may be applied to the selected page
-     * @deprecated moved categories logic to {@link io.goobi.viewer.model.cms.pages.CMSPage}
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<Selectable<CMSCategory>> getCategoriesToSelect() throws DAOException {
-        User user = null;
-        if (userBean != null) {
-            user = userBean.getUser();
-        }
-        if (user == null) {
-            return Collections.emptyList();
-        }
-        List<CMSCategory> categories = new ArrayList<>(user.getAllowedCategories(DataManager.getInstance().getDao().getAllCategories()));
-        categories.sort((c1, c2) -> c1.getId().compareTo(c2.getId()));
-        List<Selectable<CMSCategory>> selectables = new ArrayList<>();
-        if (this.selectedPage != null) {
-            for (CMSCategory category : categories) {
-                boolean used = this.selectedPage.getCategories().contains(category);
-                Selectable<CMSCategory> selectable = new Selectable<>(category, used);
-                selectables.add(selectable);
-            }
-        }
-        return selectables;
-    }
-
-    /**
-     * <p>
-     * mayRemoveCategoryFromPage.
-     * </p>
-     *
-     * @return false only if the user has limited privileges for categories and only one category is set for the selected page
-     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public boolean mayRemoveCategoryFromPage(CMSCategory cat) throws DAOException {
-        if (this.selectedPage != null) {
-            return userBean.getUser().hasPrivilegeForAllCategories()
-                    || this.selectedPage.getSelectableCategories().stream().anyMatch(Selectable::isSelected);
-        }
-
-        return true;
-    }
 
     /**
      * <p>
@@ -1123,7 +764,7 @@ public class CmsBean implements Serializable {
      */
     public Locale getSelectedMediaLocale() {
         if (selectedMediaLocale == null) {
-            selectedMediaLocale = getSelectedLocale();
+            selectedMediaLocale = IPolyglott.getDefaultLocale();
         }
         return selectedMediaLocale;
     }
@@ -1330,27 +971,7 @@ public class CmsBean implements Serializable {
         return Collections.emptyList();
     }
 
-    /**
-     * <p>
-     * isEditMode.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isEditMode() {
-        return editMode;
-    }
 
-    /**
-     * <p>
-     * Setter for the field <code>editMode</code>.
-     * </p>
-     *
-     * @param editMode a boolean.
-     */
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
-    }
 
     /**
      * <p>
@@ -2086,26 +1707,6 @@ public class CmsBean implements Serializable {
     }
 
     /**
-     * <p>
-     * editPage.
-     * </p>
-     *
-     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public String editPage(CMSPage page) throws DAOException, PresentationException, IndexUnreachableException {
-        if (mayEdit(page)) {
-            setSelectedPage(page);
-            return "pretty:adminCmsCreatePage";
-        }
-
-        return "";
-    }
-
-    /**
      * For cms pages with {@link CMSPage#getWrapperElementClass()} return 'body_' followed by the wrapperElementClass. Otherwise return an empty
      * String
      *
@@ -2170,37 +1771,6 @@ public class CmsBean implements Serializable {
         return Arrays.asList(Sorting.values());
     }
 
-    public void setNewSelectedPage() {
-        this.selectedPage = new CMSPage(CMSTemplateManager.getInstance());
-    }
-    
-    public void setNewSelectedPage(Long templateId) {
-        CMSPageTemplate template = loadTemplate(templateId);
-        if(template == null) {            
-            this.selectedPage = new CMSPage(CMSTemplateManager.getInstance());
-        } else {
-            this.selectedPage = new CMSPage(template);
-        }
-    }
-
-    private CMSPageTemplate loadTemplate(Long templateId) {
-        if(templateId != null) {
-            try {
-                return DataManager.getInstance().getDao().getCMSPageTemplate(templateId);
-            } catch (DAOException e) {
-                logger.error("Error loading cms page template with id {}: {}", templateId, e.toString());
-            }
-        }
-        return null;
-    }
-
-    public CMSPageEditState getPageEditState() {
-        return pageEditState;
-    }
-
-    public void setPageEditState(CMSPageEditState pageEditState) {
-        this.pageEditState = pageEditState;
-    }
 
     public String getCurrentPageUrl() {
         if (this.currentPage != null) {
@@ -2209,45 +1779,5 @@ public class CmsBean implements Serializable {
         return "";
     }
 
-    public boolean deleteComponent(CMSComponent component) {
-        PersistentCMSComponent persistentComponent = component.getPersistentComponent();
-        if (persistentComponent.getId() != null) {
-            List<PersistentCMSComponent> pageComponents = getComponentsToDelete();
-            pageComponents.add(persistentComponent);
-        }
-        return this.selectedPage.removeComponent(component);
-    }
 
-    private List<PersistentCMSComponent> getComponentsToDelete() {
-        List<PersistentCMSComponent> pageComponents = this.componentsToDelete.getOrDefault(getSelectedPage(), new ArrayList<>());
-        this.componentsToDelete.put(getSelectedPage(), pageComponents);
-        return pageComponents;
-    }
-
-    public String getSelectedComponent() {
-        return selectedComponent;
-    }
-
-    public void setSelectedComponent(String selectedComponent) {
-        this.selectedComponent = selectedComponent;
-    }
-
-    public void addComponent(CMSPage page, String componentFilename) {
-        if (page != null) {
-            if (StringUtils.isNotBlank(componentFilename)) {
-                try {
-                    page.addComponent(componentFilename);
-                    setSelectedComponent(null);
-                } catch (IllegalArgumentException e) {
-                    logger.error("Cannot add component: No component found for filename {}.", componentFilename);
-                    Messages.error(null, "admin__cms__create_page__error_unknown_component_name", componentFilename);
-                }
-            } else {
-                logger.error("Cannot add component: No component filename given");
-                Messages.error("admin__cms__create_page__error_no_component_name_given");
-            }
-        } else {
-            logger.error("Cannot add component: No page given");
-        }
-    }
 }

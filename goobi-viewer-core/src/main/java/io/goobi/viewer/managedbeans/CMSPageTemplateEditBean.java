@@ -62,7 +62,8 @@ public class CMSPageTemplateEditBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CMSPageTemplateEditBean.class);
 
     private final IDAO dao;
-    private final CMSTemplateManager templateManager;
+    @Inject
+    transient private CMSTemplateManager templateManager;
     @Inject
     private UserBean userBean;
 
@@ -78,7 +79,6 @@ public class CMSPageTemplateEditBean implements Serializable {
     public CMSPageTemplateEditBean(CMSSidebarWidgetsBean widgetsBean) throws DAOException {
         this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
         this.dao = DataManager.getInstance().getDao();
-        this.templateManager = CMSTemplateManager.getInstance();
     }
     
     @PostConstruct
@@ -137,7 +137,8 @@ public class CMSPageTemplateEditBean implements Serializable {
     }
 
     public void setSelectedTemplate(CMSPageTemplate selectedTemplate) {
-        this.selectedTemplate = new CMSPageTemplate(selectedTemplate, templateManager);
+        this.selectedTemplate = new CMSPageTemplate(selectedTemplate);
+        this.selectedTemplate.initialiseCMSComponents(templateManager);
         this.editMode = true;
     }
 

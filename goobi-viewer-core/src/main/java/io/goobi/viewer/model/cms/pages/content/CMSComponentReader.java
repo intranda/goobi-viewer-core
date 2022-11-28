@@ -84,7 +84,7 @@ public class CMSComponentReader {
         }
         
         String filename = FilenameUtils.getBaseName(templateFile.getFileName().toString());
-        CMSComponent component = new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes, false);
+        CMSComponent component = new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes);
         
         List<Element> contentElements = XmlTools.evaluateToElements("content/item", templateDoc.getRootElement(), null);
         

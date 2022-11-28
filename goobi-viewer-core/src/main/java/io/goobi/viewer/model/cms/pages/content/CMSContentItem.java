@@ -96,6 +96,7 @@ public class CMSContentItem {
         if (content != null) {
             this.content = content;
             this.content.setItemId(this.getItemId());
+            this.content.setRequired(required);
         } else {
             throw new IllegalArgumentException("CMSContent of COMSContentItem may not be null");
         }

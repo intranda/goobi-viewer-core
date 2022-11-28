@@ -22,43 +22,77 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.utils.SelectItemBuilder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageEditState;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.translations.IPolyglott;
 
 @Named
 @ViewScoped
 public class CmsPageEditBean implements Serializable {
 
     private static final long serialVersionUID = 7163586584773468296L;
+    private static final Logger logger = LogManager.getLogger(CmsPageEditBean.class);
+    
+    @Inject
+    private transient IDAO dao;
+    @Inject
+    private transient CMSTemplateManager templateManager;
+    @Inject
+    private transient UserBean userBean;
+    @Inject
+    private transient CmsBean cmsBean;
+    @Inject
+    private transient CmsNavigationBean navigationBean;
 
+    private CMSPage selectedPage = null;
+    private boolean editMode = false;
+    private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
+    private String selectedComponent = "";
+    
     private Map<WidgetDisplayElement, Boolean> sidebarWidgets;
 
     @Inject
@@ -69,7 +103,205 @@ public class CmsPageEditBean implements Serializable {
             this.sidebarWidgets = Collections.emptyMap();
         }
     }
+    
+    @PostConstruct
+    public void setup() {
+    }
 
+    /**
+     * Adds the current page to the database, if it doesn't exist or updates it otherwise
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public void saveSelectedPage() throws DAOException {
+        logger.trace("saveSelectedPage");
+        if (userBean == null || !userBean.getUser().isCmsAdmin() || selectedPage == null) {
+            // Only authorized CMS admins may save
+            return;
+        }
+
+        setSidebarElementOrder(selectedPage);
+        selectedPage.writeSelectableCategories();
+        // Save
+        boolean success = false;
+        selectedPage.setDateUpdated(LocalDateTime.now());
+
+        logger.trace("update dao");
+        if (selectedPage.getId() != null) {
+            success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
+        } else {
+            success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
+        }
+        if (success) {
+            Messages.info("cms_pageSaveSuccess");
+            logger.trace("reload cms page");
+            logger.trace("update pages");
+            cmsBean.getLazyModelPages().update();
+
+            // Re-index related record
+            if (StringUtils.isNotEmpty(selectedPage.getRelatedPI())) {
+                try {
+                    IndexerTools.reIndexRecord(selectedPage.getRelatedPI());
+                    Messages.info("admin_recordReExported");
+                } catch (RecordNotFoundException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        } else {
+            Messages.error("cms_pageSaveFailure");
+        }
+        logger.trace("reset collections");
+        BeanUtils.getCollectionViewBean().removeCollectionsForPage(selectedPage);
+        if (navigationBean != null) {
+            logger.trace("add navigation item");
+            navigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
+        }
+        logger.trace("Done saving page");
+    }
+    
+
+    /**
+     * Action method for deleting selectedPage from the database.
+     *
+     * @return Return view
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public String deleteSelectedPage() throws DAOException {
+        deletePage(selectedPage);
+        return "cmsOverview";
+    }
+
+    /**
+     * Deletes given CMS page from the database.
+     *
+     * @param page Page to delete
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public void deletePage(CMSPage page) throws DAOException {
+        if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
+            logger.info("Deleting CMS page: {}", selectedPage);
+            if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
+                // Delete files matching content item IDs of the deleted page and re-index record
+                try {
+                    if (page.deleteExportedTextFiles() > 0) {
+                        try {
+                            IndexerTools.reIndexRecord(page.getRelatedPI());
+                            logger.debug("Re-indexing record: {}", page.getRelatedPI());
+                        } catch (RecordNotFoundException e) {
+                            logger.error(e.getMessage());
+                        }
+                    }
+                } catch (ViewerConfigurationException e) {
+                    logger.error(e.getMessage());
+                    Messages.error(e.getMessage());
+                }
+                cmsBean.getLazyModelPages().update();
+                Messages.info("cms_deletePage_success");
+            } else {
+                logger.error("Failed to delete page");
+                Messages.error("cms_deletePage_failure");
+            }
+        }
+
+        selectedPage = null;
+    }
+    
+    /**
+     * <p>
+     * Setter for the field <code>selectedPage</code>.
+     * </p>
+     *
+     * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public void setSelectedPage(CMSPage currentPage) throws DAOException {
+        if (currentPage != null) {
+            if (currentPage.getId() != null) {
+                //get page from DAO
+                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+            } else {
+                this.selectedPage = currentPage;
+            }
+            this.selectedPage.initialiseCMSComponents(templateManager);
+            logger.debug("Selected page: {}", currentPage);
+        } else {
+            this.selectedPage = null;
+        }
+
+    }
+    
+    /**
+    *
+    * @return
+    */
+   public String getSelectedPageId() {
+       if (selectedPage == null) {
+           return null;
+       }
+
+       return String.valueOf(selectedPage.getId());
+   }
+
+   /**
+    *
+    * @param id
+    * @throws DAOException
+    */
+   public void setSelectedPageId(String id) throws DAOException {
+       logger.trace("setSelectedPageId: {}", id);
+       CMSPage page = cmsBean.findPage(id);
+       setSelectedPage(page);
+   }
+    
+    public CMSPage getSelectedPage() {
+        return selectedPage;
+    }
+
+    /**
+     * <p>
+     * createNewPage.
+     * </p>
+     *
+     * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public CMSPage createNewPage(CMSPageTemplate template) throws PresentationException, IndexUnreachableException, DAOException {
+        CMSPage page = new CMSPage(template);
+        setUserRestrictedValues(page, userBean.getUser());
+        // page.setId(System.currentTimeMillis());
+        page.setDateCreated(LocalDateTime.now());
+        return page;
+    }
+
+    /**
+     * Create a new CMSPage based on the given template. title and relatedPI are set on the page if given Opens the view to create/edit the cmsPage
+     *
+     * @param templateId The id of the template to base the page on
+     * @param title The title to be used for the current locale, optional
+     * @param relatedPI The PI of a related work, optional
+     * @return a {@link java.lang.String} object.
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String createAndOpenNewPage(String title, String relatedPI) throws PresentationException, IndexUnreachableException, DAOException {
+        CMSPage page = new CMSPage();
+        page.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
+        page.setRelatedPI(relatedPI);
+        setUserRestrictedValues(page, userBean.getUser());
+        setSelectedPage(page);
+        return "pretty:adminCmsNewPage";
+    }
+
+    private static void setSidebarElementOrder(CMSPage page) {
+        for (int i = 0; i < page.getSidebarElements().size(); i++) {
+            page.getSidebarElements().get(i).setOrder(i);
+        }
+    }
+    
     public Map<WidgetDisplayElement, Boolean> getSidebarWidgets() {
         return sidebarWidgets;
     }
@@ -91,9 +323,17 @@ public class CmsPageEditBean implements Serializable {
         resetSelectedWidgets();
         return selected;
     }
+    
+    public String getSelectedComponent() {
+        return selectedComponent;
+    }
+    
+    public void setSelectedComponent(String selectedComponent) {
+        this.selectedComponent = selectedComponent;
+    }
 
     public List<SelectItem> getAvailableComponents(CMSPage page) {
-        Stream<CMSComponent> stream = CMSTemplateManager.getInstance().getContentManager().getComponents().stream();
+        Stream<CMSComponent> stream = templateManager.getContentManager().getComponents().stream();
         if(page != null && page.isContainsPagedComponents()) {
             stream = stream.filter(c -> !c.isPaged());
         }
@@ -121,6 +361,135 @@ public class CmsPageEditBean implements Serializable {
                 .map(md -> md.replaceAll("_LANG_.*", ""))
                 .distinct()
                 .collect(Collectors.toList());
+
+    }
+    
+
+    /**
+     * <p>
+     * mayRemoveCategoryFromPage.
+     * </p>
+     *
+     * @return false only if the user has limited privileges for categories and only one category is set for the selected page
+     * @param cat a {@link io.goobi.viewer.model.cms.CMSCategory} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean mayRemoveCategoryFromPage(CMSCategory cat) throws DAOException {
+        if (this.selectedPage != null) {
+            return userBean.getUser().hasPrivilegeForAllCategories()
+                    || this.selectedPage.getSelectableCategories().stream().anyMatch(Selectable::isSelected);
+        }
+
+        return true;
+    }
+    
+    /**
+     * <p>
+     * isEditMode.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isEditMode() {
+        return editMode;
+    }
+
+    /**
+     * <p>
+     * Setter for the field <code>editMode</code>.
+     * </p>
+     *
+     * @param editMode a boolean.
+     */
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
+    }
+    
+
+    public void setNewSelectedPage() {
+        this.selectedPage = new CMSPage();
+    }
+    
+    public void setNewSelectedPage(Long templateId) {
+        CMSPageTemplate template = loadTemplate(templateId);
+        if(template == null) {            
+            this.selectedPage = new CMSPage();
+        } else {
+            this.selectedPage = new CMSPage(template);
+            this.selectedPage.initialiseCMSComponents(templateManager);
+        }
+    }
+
+    private CMSPageTemplate loadTemplate(Long templateId) {
+        if(templateId != null) {
+            try {
+                return DataManager.getInstance().getDao().getCMSPageTemplate(templateId);
+            } catch (DAOException e) {
+                logger.error("Error loading cms page template with id {}: {}", templateId, e.toString());
+            }
+        }
+        return null;
+    }
+
+    public CMSPageEditState getPageEditState() {
+        return pageEditState;
+    }
+
+    public void setPageEditState(CMSPageEditState pageEditState) {
+        this.pageEditState = pageEditState;
+    }
+    
+    public boolean deleteComponent(CMSComponent component) {
+        return this.selectedPage.removeComponent(component);
+    }
+
+    public void addComponent(CMSPage page, String componentFilename) {
+        if (page != null) {
+            if (StringUtils.isNotBlank(componentFilename)) {
+                try {
+                    page.addComponent(componentFilename, templateManager);
+                    setSelectedComponent(null);
+                } catch (IllegalArgumentException e) {
+                    logger.error("Cannot add component: No component found for filename {}.", componentFilename);
+                    Messages.error(null, "admin__cms__create_page__error_unknown_component_name", componentFilename);
+                }
+            } else {
+                logger.error("Cannot add component: No component filename given");
+                Messages.error("admin__cms__create_page__error_no_component_name_given");
+            }
+        } else {
+            logger.error("Cannot add component: No page given");
+        }
+    }
+    
+
+
+    /**
+     * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted privileges for that
+     * property
+     *
+     * @param page
+     * @param user
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    private void setUserRestrictedValues(CMSPage page, User user) throws PresentationException, IndexUnreachableException, DAOException {
+        if (!user.hasPrivilegeForAllSubthemeDiscriminatorValues()) {
+            List<String> allowedSubThemeDiscriminatorValues = user.getAllowedSubthemeDiscriminatorValues(cmsBean.getSubthemeDiscriminatorValues());
+            if (StringUtils.isBlank(page.getSubThemeDiscriminatorValue()) && !allowedSubThemeDiscriminatorValues.isEmpty()) {
+                page.setSubThemeDiscriminatorValue(allowedSubThemeDiscriminatorValues.get(0));
+            } else {
+                logger.error("User has no access to any subtheme discriminator values and can therefore not create a page");
+                //do something??
+            }
+        }
+        if (!user.hasPrivilegeForAllCategories()) {
+            List<CMSCategory> allowedCategories = user.getAllowedCategories(cmsBean.getAllCategories());
+            if (page.getCategories().isEmpty() && !allowedCategories.isEmpty()) {
+                page.setCategories(allowedCategories.subList(0, 1));
+            }
+        }
 
     }
 

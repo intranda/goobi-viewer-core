@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
+import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.ws.rs.ApplicationPath;
@@ -33,6 +34,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * <p>
@@ -43,6 +47,8 @@ import io.goobi.viewer.controller.DataManager;
 @ViewerRestServiceBinding
 public class Application extends ResourceConfig {
 
+    
+    
     /**
      * <p>
      * Constructor for ViewerApplication.
@@ -50,6 +56,7 @@ public class Application extends ResourceConfig {
      */
     public Application(@Context ServletConfig servletConfig) {
         super();
+        PersistentStorageBean applicationBean = (PersistentStorageBean) BeanUtils.getBeanByName("applicationBean", PersistentStorageBean.class);
         AbstractBinder binder = new AbstractBinder() {
 
             @Override
@@ -57,6 +64,8 @@ public class Application extends ResourceConfig {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v1");
                 bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
+                CMSTemplateManager templateManager = applicationBean.getTemplateManager();
+                bind(templateManager).to(CMSTemplateManager.class);
             }
         };
         this.init(binder, servletConfig);

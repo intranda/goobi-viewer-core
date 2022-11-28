@@ -28,12 +28,13 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.monitoring.timer.TimingStatistics;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * @author florian

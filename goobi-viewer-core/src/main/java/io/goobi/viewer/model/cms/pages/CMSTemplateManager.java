@@ -44,12 +44,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.omnifaces.cdi.Startup;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
@@ -63,7 +68,10 @@ import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
  * CMSTemplateManager class.
  * </p>
  */
-public final class CMSTemplateManager implements Serializable {
+@Singleton
+@Startup
+@Named("cmsTemplateManager")
+public class CMSTemplateManager implements Serializable {
 
     private static final long serialVersionUID = 5783005781012709309L;
 
@@ -72,10 +80,6 @@ public final class CMSTemplateManager implements Serializable {
     private static final String TEMPLATE_BASE_PATH = "/cms/templates/";
     private static final String TEMPLATE_ICONS_PATH = "icons/";
     private static final String TEMPLATE_VIEWS_PATH = "views/";
-
-    private static final Object lock = new Object();
-
-    private static CMSTemplateManager instance;
 
     private Map<String, CMSComponent> legacyTemplateComponents;
 
@@ -87,83 +91,30 @@ public final class CMSTemplateManager implements Serializable {
 
     private CMSPageContentManager contentManager = null;
 
-    /**
-     * <p>
-     * Getter for the field <code>instance</code>.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSTemplateManager} object.
-     */
-    public static CMSTemplateManager getInstance() {
-        CMSTemplateManager ctm = instance;
-        if (ctm == null) {
-            synchronized (lock) {
-                ctm = instance;
-                if (ctm == null) {
-                    try {
-                        ctm = new CMSTemplateManager(null, DataManager.getInstance().getConfiguration().getThemeRootPath(), null);
-                        instance = ctm;
-                    } catch (NullPointerException e) {
-                        throw new IllegalStateException("Cannot access servlet context", e);
-                    } catch (PresentationException e) {
-                        throw new IllegalStateException(e);
-                    }
-                }
-            }
-        }
-        return ctm;
+    @Inject
+    private transient ServletContext servletContext;
+    
+    private String filesystemPath;
+    private String themeRootPath;
+
+    public CMSTemplateManager() {
+        filesystemPath = null;
+        themeRootPath = DataManager.getInstance().getConfiguration().getThemeRootPath();
     }
-
-    /**
-     * <p>
-     * Getter for the field <code>instance</code>.
-     * </p>
-     *
-     * @param templateFolderPath a {@link java.lang.String} object.
-     * @param themeRootPath a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSTemplateManager} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     */
-    public static CMSTemplateManager getInstance(String templateFolderPath, String themeRootPath) throws PresentationException {
-        synchronized (lock) {
-            instance = new CMSTemplateManager(templateFolderPath, themeRootPath, null);
-        }
-
-        return instance;
+    
+    public CMSTemplateManager(String filesystemPath, String themeRootPath) {
+        this.filesystemPath = filesystemPath;
+        this.themeRootPath = themeRootPath;
     }
-
-    /**
-     * 
-     * @param context
-     * @return
-     */
-    public static CMSTemplateManager getInstance(ServletContext context) {
-        CMSTemplateManager ctm = instance;
-        if (ctm == null) {
-            synchronized (lock) {
-                ctm = instance;
-                if (ctm == null) {
-                    try {
-                        ctm = new CMSTemplateManager(null, DataManager.getInstance().getConfiguration().getThemeRootPath(), context);
-                        instance = ctm;
-                    } catch (NullPointerException e) {
-                        throw new IllegalStateException("Cannot access servlet context", e);
-                    } catch (PresentationException e) {
-                        throw new IllegalStateException(e);
-                    }
-                }
-            }
-        }
-        return ctm;
-    }
-
+    
     /**
      *
      * @param filesystemPath
      * @param themeRootPath If the theme contents are in an external folder, its root path must be provided here
      * @throws PresentationException
      */
-    private CMSTemplateManager(String filesystemPath, String themeRootPath, ServletContext servletContext) throws PresentationException {
+    @PostConstruct
+    public void init() throws PresentationException {
         String webContentRoot = "";
         if (filesystemPath == null) {
             if (servletContext == null) {

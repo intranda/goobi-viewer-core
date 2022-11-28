@@ -70,9 +70,6 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
-import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
-import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
@@ -124,10 +121,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();
-        //        if (webContentPath.startsWith("file:/")) {
-        //            webContentPath = webContentPath.replace("file:/", "");
-        //        }
-        CMSTemplateManager.getInstance(webContentPath, null);
     }
 
     // Users
@@ -2729,16 +2722,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
     }
 
-    /**
-     * @see JPADAO#getCMSPageTemplateEnabled(String)
-     * @verifies return correct value
-     */
-    @Test
-    public void getCMSPageTemplateEnabled_shouldReturnCorrectValue() throws Exception {
-        CMSPageTemplateEnabled o = DataManager.getInstance().getDao().getCMSPageTemplateEnabled("template_disabled");
-        Assert.assertNotNull(o);
-        Assert.assertFalse(o.isEnabled());
-    }
 
     /**
      * @see JPADAO#createFilterQuery(String,Map,Map)

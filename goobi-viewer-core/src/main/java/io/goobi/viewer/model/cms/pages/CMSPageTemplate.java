@@ -144,6 +144,9 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @PrivateOwned
     @CascadeOnDelete
     private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
+    
+    @Column(name="lecacy_template")
+    private boolean legacyTemplate = false;
 
     /**
      * A html class name to be applied to the DOM element containing the page html
@@ -177,7 +180,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      *
      * @param original a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
      */
-    public CMSPageTemplate(CMSPageTemplate original, CMSTemplateManager templateManager) {
+    public CMSPageTemplate(CMSPageTemplate original) {
         if (original.id != null) {
             this.id = original.id;
         }
@@ -191,6 +194,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.categories = new ArrayList<>(original.categories);
         this.wrapperElementClass = original.wrapperElementClass;
         this.lockComponents = original.lockComponents;
+        this.legacyTemplate = original.legacyTemplate;
 
         if (original.sidebarElements != null) {
             this.sidebarElements = new ArrayList<>(original.sidebarElements.size());
@@ -204,22 +208,10 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwningTemplate(this);
             this.persistentComponents.add(copy);
-            CMSComponent comp = templateManager
-                    .getComponent(copy.getTemplateFilename())
-                    .map(c -> new CMSComponent(c, Optional.of(copy)))
-                    .orElse(null);
-            if (comp != null) {
-                this.cmsComponents.add(comp);
-            }
-        }
-        //sort components and normalize order attributes
-        Collections.sort(this.cmsComponents);
-        for (int i = 0; i < this.cmsComponents.size(); i++) {
-            this.cmsComponents.get(i).setOrder(i);
         }
     }
     
-    public CMSPageTemplate(CMSPage original, CMSTemplateManager templateManager) {
+    public CMSPageTemplate(CMSPage original) {
         this.title = new TranslatedText(original.getTitleTranslations());
         this.dateCreated = LocalDateTime.now();
         this.dateUpdated = LocalDateTime.now();
@@ -240,22 +232,20 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             PersistentCMSComponent copy = new PersistentCMSComponent(component);
             copy.setOwningTemplate(this);
             this.persistentComponents.add(copy);
+        }
+    }
+    
+    public void initialiseCMSComponents(CMSTemplateManager templateManager) {
+        this.cmsComponents = new ArrayList<>();
+        for (PersistentCMSComponent persistentComponent : persistentComponents) {            
             CMSComponent comp = templateManager
-                    .getComponent(copy.getTemplateFilename())
-                    .map(c -> new CMSComponent(c, Optional.of(copy)))
+                    .getComponent(persistentComponent.getTemplateFilename())
+                    .map(c -> new CMSComponent(c, Optional.of(persistentComponent)))
                     .orElse(null);
             if (comp != null) {
                 this.cmsComponents.add(comp);
             }
         }
-        //sort components and normalize order attributes
-        Collections.sort(this.cmsComponents);
-        for (int i = 0; i < this.cmsComponents.size(); i++) {
-            this.cmsComponents.get(i).setOrder(i);
-        }
-    }
-    
-    private void initialiseCMSComponents() {
         sortComponents();
     }
 
@@ -780,7 +770,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
 
     public List<CMSComponent> getComponents() {
         if (this.cmsComponents.size() != this.persistentComponents.size()) {
-            initialiseCMSComponents();
+            logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
     }
@@ -918,7 +908,11 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
     
     public boolean isLegacyTemplate() {
-        return this.getComponents().stream().anyMatch(CMSComponent::isLegacyComponent);
+        return this.legacyTemplate;
+    }
+    
+    public void setLegacyTemplate(boolean legacyTemplate) {
+        this.legacyTemplate = legacyTemplate;
     }
     
     public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {

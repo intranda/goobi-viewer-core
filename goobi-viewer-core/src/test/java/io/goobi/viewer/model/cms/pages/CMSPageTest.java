@@ -52,7 +52,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
     public void setup() throws Exception { 
         super.setUp();
         dao = DataManager.getInstance().getDao();
-        templateManager = CMSTemplateManager.getInstance(componentTemplatesPath.toString(), null);
+        templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
         contentManager = templateManager.getContentManager();// new CMSPageContentManager(componentTemplatesPath);
     }
     
@@ -90,7 +90,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         assertTrue(page.removeComponent(page.getAsCMSComponent(textComponentInPage)));
         
         CMSPage loaded = dao.getCMSPage(page.getId());
-        CMSPage cloned = new CMSPage(loaded, templateManager);
+        CMSPage cloned = new CMSPage(loaded);
         
         CMSShortTextContent clonedTextContent = (CMSShortTextContent)cloned.getPersistentComponents().get(0).getContentItems().get(0);
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));

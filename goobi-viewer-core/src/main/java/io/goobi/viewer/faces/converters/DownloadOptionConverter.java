@@ -34,7 +34,6 @@ public class DownloadOptionConverter implements Converter<DownloadOption> {
 
     @Override
     public DownloadOption getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-        System.out.println("submittedValue: " + submittedValue);
         if (submittedValue == null || submittedValue.isEmpty()) {
             return null;
         }
