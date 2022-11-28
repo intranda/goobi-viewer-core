@@ -2907,6 +2907,14 @@ public class SearchBean implements SearchInterface, Serializable {
         return "pretty:newSearch5";
     }
 
+    /**
+     * TODO Remove this test method after feature development is completed.
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
     public void searchMono() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("searchMono");
         searchStringInternal = "+PI:* +DOCSTRCT:monograph";
@@ -2935,30 +2943,7 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setFacetString(facets.getCurrentFacetString());
         currentSearch.setCustomFilterQuery(customFilterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
-
-        // When searching in MONTHDAY, add a term so that an expand query is created
-        if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
-            searchTerms.put(SolrConstants.MONTHDAY, Collections.singleton(searchStringInternal.substring(SolrConstants.MONTHDAY.length() + 1)));
-            logger.trace("monthday terms: {}", searchTerms.get(SolrConstants.MONTHDAY).iterator().next());
-        }
-
-        // Add search hit aggregation parameters, if enabled
-        if (!searchTerms.isEmpty()) {
-            List<String> additionalExpandQueryfields = Collections.emptyList();
-            // Add MONTHDAY to the list of expand query fields
-            if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
-                additionalExpandQueryfields = Collections.singletonList(SolrConstants.MONTHDAY);
-            }
-            String expandQuery = activeSearchType == 1
-                    ? SearchHelper.generateAdvancedExpandQuery(advancedSearchQueryGroup, fuzzySearchEnabled)
-                    : SearchHelper.generateExpandQuery(
-                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
-                                    additionalExpandQueryfields),
-                            searchTerms, phraseSearch, proximitySearchDistance);
-            currentSearch.setExpandQuery(expandQuery);
-        }
-
-        currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale(), false, true,
+        currentSearch.execute(facets, null, hitsPerPage, navigationHelper.getLocale(), false, true,
                 SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
