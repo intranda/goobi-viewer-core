@@ -451,7 +451,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
-        return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, null);
+        return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
     }
 
     /**
