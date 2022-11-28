@@ -14,7 +14,7 @@
 
 	<composite:implementation>
 
-		<div class="admin__content-component-input-group">
+		<div class="admin__content-component-input-group admin__content-component-browse">
 			<!-- LABEL -->
 			<ui:fragment rendered="#{not empty cc.attrs.contentItem.label}">
 				<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
