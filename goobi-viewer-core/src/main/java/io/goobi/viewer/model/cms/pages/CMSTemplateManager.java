@@ -45,10 +45,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
@@ -102,9 +102,10 @@ public class CMSTemplateManager implements Serializable {
         themeRootPath = DataManager.getInstance().getConfiguration().getThemeRootPath();
     }
     
-    public CMSTemplateManager(String filesystemPath, String themeRootPath) {
+    public CMSTemplateManager(String filesystemPath, String themeRootPath) throws PresentationException {
         this.filesystemPath = filesystemPath;
         this.themeRootPath = themeRootPath;
+        this.init();
     }
     
     /**

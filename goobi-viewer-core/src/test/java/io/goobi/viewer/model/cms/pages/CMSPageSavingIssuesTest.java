@@ -74,6 +74,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         assertTrue(dao.addCMSPage(page));
         
         CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()));
+        page2.initialiseCMSComponents(templateManager);
         assertEquals(2, page2.getPersistentComponents().size());
         assertEquals(2, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
         assertEquals("text1text2", page2.getComponents().stream().map(CMSComponent::getPersistentComponent).flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
@@ -88,6 +89,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         assertTrue(dao.updateCMSPage(page2));
         
         CMSPage page3 = new CMSPage(dao.getCMSPage(page2.getId()));
+        page3.initialiseCMSComponents(templateManager);
         assertEquals(1, page3.getPersistentComponents().size());
         assertEquals(1, page3.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
         assertEquals("text2", page3.getComponents().stream().map(CMSComponent::getPersistentComponent).flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
@@ -114,6 +116,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         assertEquals(0, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
         assertEquals(2, dao.getNativeQueryResults("SELECT * FROM cms_components WHERE owning_page_id=" + page2.getId()).size());
 
+        page2.initialiseCMSComponents(templateManager);
         CMSComponent deletedComponent = page2.getComponents().get(0);
         page2.removeComponent(deletedComponent);
         assertEquals(1, page2.getPersistentComponents().size());

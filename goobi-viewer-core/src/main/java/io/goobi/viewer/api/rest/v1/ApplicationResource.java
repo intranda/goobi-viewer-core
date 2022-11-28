@@ -24,16 +24,17 @@ package io.goobi.viewer.api.rest.v1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.monitoring.timer.TimingStatistics;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
@@ -41,6 +42,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
  *
  */
 @Path("/")
+@RequestScoped
 public class ApplicationResource {
 
     @Inject

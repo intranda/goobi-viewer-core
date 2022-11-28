@@ -150,8 +150,9 @@ public class CmsBean implements Serializable {
         
     }
     
-    public CmsBean(CMSTemplateManager templateManager) {
+    public CmsBean(CMSTemplateManager templateManager, NavigationHelper navigationHelper) {
         this.templateManager = templateManager;
+        this.navigationHelper = navigationHelper;
     }
     
     /**

@@ -59,6 +59,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     private static final Logger logger = LogManager.getLogger(CmsBeanTest.class);
 
     private CMSTemplateManager templateManager;
+    private NavigationHelper navigationHelper;
     
     /**
      * @throws java.lang.Exception
@@ -70,6 +71,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();
         templateManager = new CMSTemplateManager(webContentPath, null);
+        navigationHelper = new NavigationHelper();
     }
 
     /**
@@ -84,7 +86,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testPage() throws DAOException {
         CMSPage page = new CMSPage();
-        CmsBean bean = new CmsBean(templateManager);
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
         bean.setCurrentPage(page);
         Assert.assertEquals(page, bean.getCurrentPage());
     }
