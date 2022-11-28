@@ -129,7 +129,6 @@ public class SearchFacets implements Serializable {
         String regularQuery = generateFacetFilterQuery(includeRangeFacets);
         if (StringUtils.isNotEmpty(regularQuery)) {
             ret.add(regularQuery);
-            logger.trace("added facet query: " + regularQuery);
         }
 
         return ret;
