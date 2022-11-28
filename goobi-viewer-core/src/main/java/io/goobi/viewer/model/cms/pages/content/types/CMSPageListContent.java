@@ -26,12 +26,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -42,10 +43,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
-import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -82,6 +83,9 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
     List<CMSPage> nestedPages = null;
     @Transient
     private int nestedPagesCount = 0;
+    @Transient
+    @Inject
+    CMSTemplateManager templateManager;    
 
     public CMSPageListContent() {
         super();

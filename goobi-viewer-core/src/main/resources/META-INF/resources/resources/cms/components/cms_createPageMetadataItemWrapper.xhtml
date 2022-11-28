@@ -25,11 +25,11 @@
 		         <div class="admin__radio-switch mb-3">
 		            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 		            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.published ? null : 'false'}"/>
+		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
 					<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
-		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.published ? 'false' : null}"/>
+		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}"/>
 		         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
-					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsBean.selectedPage.published}"
+					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsPageEditBean.selectedPage.published}"
         				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 		             <span class="toggle-outside"><span class="toggle-inside"></span></span>
 		         </div>
@@ -62,14 +62,14 @@
 		                <!-- INPUT TEXT -->
 		                <h:inputText 
 		                    id="prettyUrl" 
-		                    value="#{cmsBean.selectedPage.persistentUrl}" 
+		                    value="#{cmsPageEditBean.selectedPage.persistentUrl}" 
 		                    styleClass="form-control"
 		                    pt:data-target="prettyUrlHolder"
 		                    pt:data-input-restricted="url"
 		                    pt:data-input-restricted-message="#{msg.alert__character_not_allowed_in_url}" />
 		            </h:panelGroup>
 		            
-		            <div data-target="cmsPageUrlPreview" class="admin__small-info mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
+		            <div data-target="cmsPageUrlPreview" class="admin__small-info mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsPageEditBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
 				
 				</div>
 				
@@ -98,23 +98,23 @@
 						<div class="custom-control custom-control--select">
 							<h:selectOneMenu id="pageBreadcrumbParent"
 								styleClass="form-control"
-								value="#{cmsBean.selectedPage.parentPageId}">
+								value="#{cmsPageEditBean.selectedPage.parentPageId}">
 								<f:selectItem itemValue="#{null}" itemLabel="-" />
 								<f:selectItems
-									value="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}"
+									value="#{cmsBean.getAvailableParentPages(cmsPageEditBean.selectedPage)}"
 									var="availablePage" itemValue="#{availablePage.id}"
 									itemLabel="#{availablePage.title}" />
 								<f:ajax event="change" render="pageBreadcrumbParentGroup" />
 							</h:selectOneMenu>
 						</div>
 		
-						<ui:fragment rendered="#{cmsBean.selectedPage.parentPageId != null and cmsBean.selectedPage.parentPageId != ''}">
+						<ui:fragment rendered="#{cmsPageEditBean.selectedPage.parentPageId != null and cmsPageEditBean.selectedPage.parentPageId != ''}">
 		
 						<div data-target="cmsPageBreadcrumbsPreview"
 							class="admin__small-info mt-2">#{msg.title__preview}:
 							#{msg.home} >
-							#{cmsBean.getCMSPage(cmsBean.selectedPage.parentPageId).title} >
-							#{cmsBean.selectedPage.title}</div>
+							#{cmsBean.getCMSPage(cmsPageEditBean.selectedPage.parentPageId).title} >
+							#{cmsPageEditBean.selectedPage.title}</div>
 							
 						</ui:fragment>
 		
@@ -132,7 +132,7 @@
 		                    <!-- METADATA ITEM SELECTED CATEGORIES -->
 		                    <h:panelGroup id="selected_categories">
 		                        <div class="page-metadata-item__categories-selected-categories">
-		                            <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
+		                            <ui:repeat var="category" value="#{cmsPageEditBean.selectedPage.selectableCategories}">
 		                                <ui:fragment rendered="#{category.selected}">
 		                                    <div class="badge badge-violet">#{category.value.name}</div>
 		                                </ui:fragment>
@@ -147,7 +147,7 @@
 		                            <div class="cms-module__option-dropdown">
 		                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
 		                                <ul>
-		                                    <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
+		                                    <ui:repeat var="selectable" value="#{cmsPageEditBean.selectedPage.selectableCategories}">
 												<li>
 		                                            <label>
 		                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
@@ -189,7 +189,7 @@
 			                </div>
 			                
 			                <!-- INPUT TEXT -->
-			                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control" pt:data-target="relatedPiInputField">
+			                <h:inputText id="relatedPiInput" value="#{cmsPageEditBean.selectedPage.relatedPI}" styleClass="form-control" pt:data-target="relatedPiInputField">
 			                
 			                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
 			                    <f:ajax event="blur" render="relatedPiInputGroup useAsDefaultRecordViewGroup" />
@@ -225,12 +225,12 @@
 	                                <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 						            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
 						            <input type="radio" jsf:id="cmsPageDefaultRecordView_no"
-						            pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.useAsDefaultRecordView ? null : 'false'}"/>
+						            pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.useAsDefaultRecordView ? null : 'false'}"/>
 									<h:outputLabel for="cmsPageDefaultRecordView_no" value="#{msg.no}" />
 						         	<input type="radio" jsf:id="cmsPageDefaultRecordView_yes"
-						         	pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.useAsDefaultRecordView ? 'false' : null}"/>
+						         	pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.useAsDefaultRecordView ? 'false' : null}"/>
 						         	<h:outputLabel for="cmsPageDefaultRecordView_yes" value="#{msg.yes}" />
-									<h:inputHidden id="cmsPageDefaultRecordView_input" binding="#{cmsPageDefaultRecordView}" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
+									<h:inputHidden id="cmsPageDefaultRecordView_input" binding="#{cmsPageDefaultRecordView}" value="#{cmsPageEditBean.selectedPage.useAsDefaultRecordView}"
 				        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 	                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                            </div>
@@ -265,7 +265,7 @@
 				                    <h:selectOneMenu 
 				                        id="subthemeDiscriminator" 
 				                        styleClass="form-control" 
-				                        value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
+				                        value="#{cmsPageEditBean.selectedPage.subThemeDiscriminatorValue}"
 				                        disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
 				                        required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
 				                        requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
@@ -307,7 +307,7 @@
 	                <!-- INPUT TEXT -->
 	                <h:inputText 
 	                    id="cssClass" 
-	                    value="#{cmsBean.selectedPage.wrapperElementClass}" 
+	                    value="#{cmsPageEditBean.selectedPage.wrapperElementClass}" 
 	                    styleClass="form-control" 
 	                    pt:data-target="quickCSSInputField"/>
 	            </h:panelGroup>

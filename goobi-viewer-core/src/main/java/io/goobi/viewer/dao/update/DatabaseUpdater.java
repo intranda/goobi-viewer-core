@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * Management tool to updated deprecated viewer database setups to the one required by the viewer. to be run at viewer start, right after initializing
@@ -40,20 +41,10 @@ public class DatabaseUpdater {
 
     private static final Logger logger = LogManager.getLogger(DatabaseUpdater.class);
 
-    private static final IModelUpdate[] updates = {
-            new UserUpdate(),
-            new CMSRecordNoteUpdate(),
-            new CMSMediaUpdate(),
-            new CMSCategoryUpdate(),
-            new LicenseTypeUpdate(),
-            new CMSContentItemUpdate(),
-            new AnnotationUpdate(),
-            new SidebarWidgetUpdate(),
-            new CommentGroupUpdate(),
-            new CMSPageUpdate()
-    };
+    private final IModelUpdate[] updates;
 
     private final IDAO dao;
+    private final CMSTemplateManager templateManager;
 
     /**
      * <p>
@@ -62,8 +53,21 @@ public class DatabaseUpdater {
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      */
-    public DatabaseUpdater(IDAO dao) {
+    public DatabaseUpdater(IDAO dao, CMSTemplateManager templateManager) {
         this.dao = dao;
+        this.templateManager = templateManager;
+        this.updates = new IModelUpdate[]{
+                new UserUpdate(),
+                new CMSRecordNoteUpdate(),
+                new CMSMediaUpdate(),
+                new CMSCategoryUpdate(),
+                new LicenseTypeUpdate(),
+                new CMSContentItemUpdate(),
+                new AnnotationUpdate(),
+                new SidebarWidgetUpdate(),
+                new CommentGroupUpdate(),
+                new CMSPageUpdate(templateManager)
+        };
     }
 
     /**

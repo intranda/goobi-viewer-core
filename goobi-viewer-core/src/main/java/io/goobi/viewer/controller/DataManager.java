@@ -327,7 +327,6 @@ public final class DataManager {
         if (dao == null) {
             synchronized (lock) {
                 dao = new JPADAO(getConfiguration().getDbPersistenceUnit());
-                new DatabaseUpdater(dao).update();
             }
         }
 

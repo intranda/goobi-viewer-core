@@ -132,7 +132,6 @@ public class RecordPagesResource {
         URI itemUrl = urls.path(RECORDS_PAGES, RECORDS_PAGES_MEDIA, "/" + itemId).params(pi, pageNo).buildURI();
         return new CanvasBuilder(urls).build(pi, pageNo).getItems().stream()
                 .flatMap(p -> p.getItems().stream())
-                .peek(p -> System.out.println(p.getId()))
                 .filter(p -> p.getId().equals(itemUrl))
                 .findAny()
                 .orElseThrow(() -> new ContentNotFoundException(String.format("No media annotation found for page %d in %s", pageNo, pi)));

@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.inject.Inject;
+
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -61,12 +63,19 @@ public class CMSPageUpdate implements IModelUpdate {
     CMSContentConverter contentConverter;
     CMSTemplateManager templateManager;
 
+    public CMSPageUpdate(CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
+    }
+
     @Override
     public boolean update(IDAO dao) throws DAOException, SQLException {
 
         if (!dao.tableExists("cms_content_items")) {
             return false;
         }
+        
+        this.contentConverter = new CMSContentConverter(dao);
+
 
         List<Map<String, Object>> languageVersions = getTableData(dao, "cms_page_language_versions");
         List<Map<String, Object>> contentItems = getTableData(dao, "cms_content_items");
@@ -77,8 +86,6 @@ public class CMSPageUpdate implements IModelUpdate {
 
         List<Map<String, Object>> pages = getTableData(dao, "cms_pages");
 
-        contentConverter = new CMSContentConverter(dao);
-        templateManager = CMSTemplateManager.getInstance();
 
         /*Map page ids to a map of all owned languageVersions mapped to language*/
         Map<Long, Map<String, Map<String, Object>>> languageVersionMap = languageVersions.stream()
@@ -100,6 +107,7 @@ public class CMSPageUpdate implements IModelUpdate {
             CMSPageTemplate template = new CMSPageTemplate();
             template.setLockComponents(true);
             template.setPublished(true);
+            template.setLegacyTemplate(true);
             template.setTitleTranslations(new TranslatedText(ViewerResourceBundle.getTranslations(component.getLabel())));
             template.setDescription(new TranslatedText(ViewerResourceBundle.getTranslations(component.getDescription())));
             template.addComponent(component);

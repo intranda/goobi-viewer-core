@@ -80,7 +80,7 @@ public class ContextListener implements ServletContextListener {
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         try {
             //Initialize CMSTemplateManager with the exisitng ServletContext
-            CMSTemplateManager.getInstance(sce.getServletContext());
+            //CMSTemplateManager.getInstance(sce.getServletContext());
             // Add a "member" role, if not yet in the database
             if (DataManager.getInstance().getDao().getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");

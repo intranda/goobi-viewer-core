@@ -63,8 +63,6 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private final PersistentCMSComponent persistentComponent;
 
-    private final boolean legacyComponent;
-
     private transient UIComponent uiComponent;
     private transient UIComponent backendUiComponent;
 
@@ -75,7 +73,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 template.getScope(),
                 CMSComponent.initializeAttributes(template.getAttributes(),
                         jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())),
-                jpa, template.isLegacyComponent());
+                jpa);
         List<CMSContent> contentData = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList());
         List<CMSContentItem> items =
                 template.getContentItems().stream().map(item -> populateContentItem(item, contentData)).collect(Collectors.toList());
@@ -83,12 +81,12 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     }
 
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
-            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, boolean legacyComponent) {
-        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, Optional.empty(), legacyComponent);
+            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes) {
+        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, Optional.empty());
     }
 
     private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
-            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Optional<PersistentCMSComponent> jpa, boolean legacyComponent) {
+            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Optional<PersistentCMSComponent> jpa) {
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
@@ -97,7 +95,6 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         this.attributes = attributes == null ? Collections.emptyMap() : attributes;
         this.scope = scope;
         this.persistentComponent = jpa.orElse(null);
-        this.legacyComponent = legacyComponent;
     }
 
     public PersistentCMSComponent getPersistentComponent() {
@@ -403,9 +400,5 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     
     public boolean isPaged() {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
-    }
-    
-    public boolean isLegacyComponent() {
-        return legacyComponent;
     }
 }

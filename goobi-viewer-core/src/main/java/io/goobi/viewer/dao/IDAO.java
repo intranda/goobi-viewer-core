@@ -45,7 +45,6 @@ import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
-import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
@@ -1409,13 +1408,6 @@ public interface IDAO {
     public boolean deleteUploadJob(UploadJob uploadJob) throws DAOException;
 
     // CMS
-
-    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException;
-
-    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
-
-    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
-
     /**
      * <p>
      * getAllCMSPages.

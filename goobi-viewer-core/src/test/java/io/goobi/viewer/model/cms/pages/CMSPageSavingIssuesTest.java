@@ -52,18 +52,18 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     public void setup() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
-        templateManager = CMSTemplateManager.getInstance(componentTemplatesPath.toString(), null);
+        templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
         contentManager = templateManager.getContentManager();
     }
     
     @Test
     public void test() throws DAOException {
-        CMSPage page = new CMSPage(templateManager);
+        CMSPage page = new CMSPage();
         
-        PersistentCMSComponent component1 = page.addComponent("text");
+        PersistentCMSComponent component1 = page.addComponent("text", templateManager);
         component1.getTranslatableContentItems().get(0).getText().setValue("text1");
         component1.setOrder(1);
-        PersistentCMSComponent component2 = page.addComponent("text");
+        PersistentCMSComponent component2 = page.addComponent("text", templateManager);
         component2.getTranslatableContentItems().get(0).getText().setValue("text2");
         component2.setOrder(2);
         
@@ -73,7 +73,8 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
 
         assertTrue(dao.addCMSPage(page));
         
-        CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()), templateManager);
+        CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()));
+        page2.initialiseCMSComponents(templateManager);
         assertEquals(2, page2.getPersistentComponents().size());
         assertEquals(2, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
         assertEquals("text1text2", page2.getComponents().stream().map(CMSComponent::getPersistentComponent).flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
@@ -87,7 +88,8 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         
         assertTrue(dao.updateCMSPage(page2));
         
-        CMSPage page3 = new CMSPage(dao.getCMSPage(page2.getId()), templateManager);
+        CMSPage page3 = new CMSPage(dao.getCMSPage(page2.getId()));
+        page3.initialiseCMSComponents(templateManager);
         assertEquals(1, page3.getPersistentComponents().size());
         assertEquals(1, page3.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
         assertEquals("text2", page3.getComponents().stream().map(CMSComponent::getPersistentComponent).flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
@@ -97,11 +99,11 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     
     @Test
     public void testNoContent() throws DAOException {
-        CMSPage page = new CMSPage(templateManager);
+        CMSPage page = new CMSPage();
         
-        PersistentCMSComponent component1 = page.addComponent("static");
+        PersistentCMSComponent component1 = page.addComponent("static", templateManager);
         component1.setOrder(1);
-        PersistentCMSComponent component2 = page.addComponent("static");
+        PersistentCMSComponent component2 = page.addComponent("static", templateManager);
         component2.setOrder(2);
         
         assertEquals(2, page.getPersistentComponents().size());
@@ -109,18 +111,19 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
 
         assertTrue(dao.addCMSPage(page));
         
-        CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()), templateManager);
+        CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()));
         assertEquals(2, page2.getPersistentComponents().size());
         assertEquals(0, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
         assertEquals(2, dao.getNativeQueryResults("SELECT * FROM cms_components WHERE owning_page_id=" + page2.getId()).size());
 
+        page2.initialiseCMSComponents(templateManager);
         CMSComponent deletedComponent = page2.getComponents().get(0);
         page2.removeComponent(deletedComponent);
         assertEquals(1, page2.getPersistentComponents().size());
         
         assertTrue(dao.updateCMSPage(page2));
         
-        CMSPage page3 = new CMSPage(dao.getCMSPage(page2.getId()), templateManager);
+        CMSPage page3 = new CMSPage(dao.getCMSPage(page2.getId()));
         assertEquals(1, page3.getPersistentComponents().size());
         assertEquals(1, dao.getNativeQueryResults("SELECT * FROM cms_components WHERE owning_page_id=" + page3.getId()).size());
         

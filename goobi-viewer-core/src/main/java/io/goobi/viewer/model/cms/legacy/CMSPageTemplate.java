@@ -38,9 +38,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
 import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
@@ -84,8 +82,6 @@ public class CMSPageTemplate implements Serializable {
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
 
     private boolean themeTemplate = false;
-
-    private CMSPageTemplateEnabled enabled;
 
     /**
      * Loads a page template from the given template file and returns the template object.
@@ -217,7 +213,7 @@ public class CMSPageTemplate implements Serializable {
         }
         JsfComponent jsfComponent = new JsfComponent(jsfLibraryPath, componentPath.getFileName().toString());
         CMSComponent component = new CMSComponent(jsfComponent, this.name, this.description, ICONS_PATH + this.iconFileName,
-                this.templateFileName, scope,  Collections.emptyMap(), true);
+                this.templateFileName, scope,  Collections.emptyMap());
 
         for (CMSContentItemTemplate itemTemplate : contentItems) {
             CMSContentItem item = itemTemplate.createCMSContentItem(component);
@@ -470,22 +466,6 @@ public class CMSPageTemplate implements Serializable {
      */
     public void setThemeTemplate(boolean themeTemplate) {
         this.themeTemplate = themeTemplate;
-    }
-
-    /**
-     * @return the enabled
-     * @throws DAOException
-     */
-    public CMSPageTemplateEnabled getEnabled() {
-        enabled = new CMSPageTemplateEnabled(id);
-        return enabled;
-    }
-
-    /**
-     * @param enabled the enabled to set
-     */
-    public void setEnabled(CMSPageTemplateEnabled enabled) {
-        this.enabled = enabled;
     }
 
     /**
