@@ -22,7 +22,7 @@
              
 				<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
 		
-		         <div class="admin__radio-switch mb-3">
+		         <div class="admin__radio-switch">
 		            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 		            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
 		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
@@ -322,14 +322,16 @@
 					<div class="admin__form-help-text in mb-4">#{msg.cms__pageMetadata_save_template_help}</div>
 			
 			         <div class="admin__radio-switch mb-3">
-	                 	<viewerComponent:toggleSwitch name="openAccessToggle" value="#{cmsBean.selectedPage.published}" toggleTarget="#additionalTemplateOptions"/>
+	                 	<viewerComponent:toggleSwitch name="openAccessToggle" value="#{page.published}" toggleTarget="#additionalTemplateOptions"/>
 			         </div>
 			         
 		                 <div id="additionalTemplateOptions" class="admin__sidebar-divider-top">
 		                 
 		                 	<div class="mb-3">
 		                 		<h3 class="mb-2">#{msg.cms__name_of_template}</h3>
-                            	<h:inputText value="templatename" /> 
+		                 			                <h:inputText 
+								                    id="templateName"
+								                    styleClass="form-control" />
                             </div>
 		                 
 		                 	<h3 class="mb-2">#{msg.label__cms_page_template__lock_components__label}</h3>
