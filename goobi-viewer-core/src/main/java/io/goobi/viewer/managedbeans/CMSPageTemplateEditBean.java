@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,6 +45,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.faces.utils.SelectItemBuilder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -125,15 +127,18 @@ public class CMSPageTemplateEditBean implements Serializable {
         return selected;
     }
 
-    public List<CMSComponent> getAvailableComponents(CMSPageTemplate template) {
+    public List<SelectItem> getAvailableComponents(CMSPageTemplate template) {
         Stream<CMSComponent> stream = this.templateManager.getContentManager().getComponents().stream();
         if(template != null && template.isContainsPagedComponents()) {
             stream = stream.filter(c -> !c.isPaged());
         }
         Locale locale = BeanUtils.getLocale();
-        return stream
+        List<CMSComponent> components =  stream
                 .sorted((c1,c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale), ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
                 .collect(Collectors.toList());
+        Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components, component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
+        return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, c -> c.getTemplateFilename(), c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
+
     }
 
     public void setSelectedTemplate(CMSPageTemplate selectedTemplate) {

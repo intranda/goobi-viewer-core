@@ -70,6 +70,7 @@ import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 @Named
 @ViewScoped
@@ -95,6 +96,10 @@ public class CmsPageEditBean implements Serializable {
     private String selectedComponent = "";
     
     private Map<WidgetDisplayElement, Boolean> sidebarWidgets;
+    
+    private boolean saveAsTemplate = false;
+    private String templateName = "";
+    private boolean templateLockComponents = false;
 
     @Inject
     public CmsPageEditBean(CMSSidebarWidgetsBean widgetsBean) {
@@ -156,6 +161,16 @@ public class CmsPageEditBean implements Serializable {
         } else {
             success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
         }
+        
+        if(saveAsTemplate) {
+            success = saveTemplate(selectedPage, templateName, templateLockComponents);
+            if(success) {
+                saveAsTemplate = false;
+                this.templateLockComponents = false;
+                this.templateName = "";
+            }
+        }
+        
         if (success) {
             Messages.info("cms_pageSaveSuccess");
             logger.trace("reload cms page");
@@ -181,6 +196,16 @@ public class CmsPageEditBean implements Serializable {
             navigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
         }
         logger.trace("Done saving page");
+    }
+
+    private boolean saveTemplate(CMSPage page, String name, boolean lockComponents) throws DAOException {
+        CMSPageTemplate template = new CMSPageTemplate(page);
+        TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic());
+        title.setText(name, IPolyglott.getDefaultLocale());
+        template.setTitleTranslations(title);
+        template.setLockComponents(lockComponents);
+        template.setPublished(true);
+        return DataManager.getInstance().getDao().addCMSPageTemplate(template);
     }
     
 
@@ -519,6 +544,34 @@ public class CmsPageEditBean implements Serializable {
             }
         }
 
+    }
+    
+    public void setSaveAsTemplate(boolean saveAsTemplate) {
+        this.saveAsTemplate = saveAsTemplate;
+    }
+    
+    public boolean isSaveAsTemplate() {
+        return saveAsTemplate;
+    }
+    
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+    
+    public String getTemplateName() {
+        if(StringUtils.isBlank(this.templateName)) {
+            return getSelectedPage().getTitle(IPolyglott.getDefaultLocale());
+        } else {            
+            return templateName;
+        }
+    }
+    
+    public boolean isTemplateLockComponents() {
+        return templateLockComponents;
+    }
+    
+    public void setTemplateLockComponents(boolean templateLockComponents) {
+        this.templateLockComponents = templateLockComponents;
     }
 
 }
