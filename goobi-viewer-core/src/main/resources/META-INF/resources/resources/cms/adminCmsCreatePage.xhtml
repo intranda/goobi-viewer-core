@@ -116,11 +116,11 @@
 																			<span class="cms-module__option-control-helptext">#{msg.help__cms_page_title}</span>
 																		</div>
 																		<div class="cms-module__option-help">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext"
-																				aria-label="#{msg.aria_label__help}">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
+<!-- 																			<button type="button" class="btn btn-clean" -->
+<!-- 																				data-toggle="helptext" -->
+<!-- 																				aria-label="#{msg.aria_label__help}"> -->
+<!-- 																				<i class="fa fa-question-circle" aria-hidden="true"></i> -->
+<!-- 																			</button> -->
 																		</div>
 																	</div>
 
@@ -138,17 +138,17 @@
 																				value="#{cmsPageEditBean.selectedPage.menuTitleTranslations.text}" />
 																			<span class="cms-module__option-control-helptext">#{msg.help__cms_page_menutitle}</span>
 																		</div>
-																		<div class="cms-module__option-help">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext"
-																				aria-label="#{msg.aria_label__help}">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
+<!-- 																		<div class="cms-module__option-help"> -->
+<!-- 																			<button type="button" class="btn btn-clean" -->
+<!-- 																				data-toggle="helptext" -->
+<!-- 																				aria-label="#{msg.aria_label__help}"> -->
+<!-- 																				<i class="fa fa-question-circle" aria-hidden="true"></i> -->
+<!-- 																			</button> -->
+<!-- 																		</div> -->
 																	</div>
 
 
-
+																	<ui:fragment rendered="#{page.isDefaultLocaleSelected()}">
 																	<!-- PAGE SORTING -->
 																	<div class="cms-module__option-group">
 																		<div class="cms-module__option-label">
@@ -162,14 +162,16 @@
 																			</h:inputText>
 																			<span class="cms-module__option-control-helptext">#{msg.help__cms_page_sortfield}</span>
 																		</div>
-																		<div class="cms-module__option-help">
-																			<button type="button" class="btn btn--clean"
-																				data-toggle="helptext"
-																				aria-label="#{msg.aria_label__help}">
-																				<i class="fa fa-question-circle" aria-hidden="true"></i>
-																			</button>
-																		</div>
+<!-- 																		<div class="cms-module__option-help"> -->
+<!-- 																			<button type="button" class="btn btn-clean" -->
+<!-- 																				data-toggle="helptext" -->
+<!-- 																				aria-label="#{msg.aria_label__help}"> -->
+<!-- 																				<i class="fa fa-question-circle" aria-hidden="true"></i> -->
+<!-- 																			</button> -->
+<!-- 																		</div> -->
 																	</div>
+																	
+																	</ui:fragment>
 
 																	<!-- CONTENT COMPONENTS ON THIS PAGE -->
 																	<h:commandScript name="refreshComponents"
@@ -191,57 +193,62 @@
 
 																						<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
 
-																						<div
-																							class="admin__content-component-options #{!page.isDefaultLocaleSelected() ? '-hideIfNotDefault':''}">
+																						<ui:fragment
+																							rendered="#{page.isDefaultLocaleSelected()}">
+																							<div class="admin__content-component-options">
 
-																							<ui:repeat var="attribute"
-																								value="#{cmsComponent.attributes.values()}">
+																								<ui:repeat var="attribute"
+																									value="#{cmsComponent.attributes.values()}">
 
-																								<ui:fragment
-																									rendered="#{attribute.display and attribute.type == 'toggle'}">
+																									<ui:fragment
+																										rendered="#{attribute.display and attribute.type == 'toggle'}">
 
-																									<ui:repeat var="option"
-																										value="#{attribute.options}">
+																										<ui:repeat var="option"
+																											value="#{attribute.options}">
 
-																										<button
-																											jsf:action="#{cmsComponent.toggleAttribute(attribute.name, option.value)}"
-																											class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
-																											#{msg[option.label]}
-																											<f:ajax execute="@this"
-																												render="pageComponents" />
-																										</button>
+																											<button
+																												jsf:action="#{cmsComponent.toggleAttribute(attribute.name, option.value)}"
+																												class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
+																												#{msg[option.label]}
+																												<f:ajax execute="@this"
+																													render="pageComponents" />
+																											</button>
 
-																									</ui:repeat>
+																										</ui:repeat>
 
-																								</ui:fragment>
+																									</ui:fragment>
 
-																								<ui:fragment
-																									rendered="#{attribute.display and attribute.type != 'toggle'}">
-																									<ui:repeat var="option"
-																										value="#{attribute.options}">
-																										<button
-																											jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}"
-																											class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
-																											#{msg[option.label]}
-																											<f:ajax render="pageComponents" />
-																										</button>
-																									</ui:repeat>
-																								</ui:fragment>
+																									<ui:fragment
+																										rendered="#{attribute.display and attribute.type != 'toggle'}">
+																										<ui:repeat var="option"
+																											value="#{attribute.options}">
+																											<button
+																												jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}"
+																												class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
+																												#{msg[option.label]}
+																												<f:ajax render="pageComponents" />
+																											</button>
+																										</ui:repeat>
+																									</ui:fragment>
 
-																							</ui:repeat>
+																								</ui:repeat>
 
-																							<!-- SET THIS CONTENT COMPONENT TO PRIVATE - ONLY VISIBLE FOR ADMINS -->
-																							<button
-																								jsf:action="#{cmsComponent.togglePrivate()}"
-																								class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">
-																								Private
-																								<f:ajax render="pageComponents" />
-																							</button>
+																								<!-- SET THIS CONTENT COMPONENT TO PRIVATE - ONLY VISIBLE FOR ADMINS -->
+																								<button
+																									jsf:action="#{cmsComponent.togglePrivate()}"
+																									class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">
+																									Private
+																									<f:ajax render="pageComponents" />
+																								</button>
 
-																						</div>
+																							</div>
+																						</ui:fragment>
+
+
 
 																						<!-- CONTENT COMPONENT ORDER FUNCTIONS -->
-																						<ui:fragment rendered="#{!page.lockComponents}">
+																						<ui:fragment
+																							rendered="#{!page.lockComponents and page.isDefaultLocaleSelected()}">
 																							<ui:include
 																								src="/resources/cms/includes/orderContentItems.xhtml" />
 																						</ui:fragment>
@@ -258,21 +265,25 @@
 																						binding="#{cmsComponent.backendUiComponent}"></h:panelGroup>
 																				</div>
 
-																				<div class="admin__content-component-delete-wrapper">
+																				<ui:fragment
+																					rendered="#{page.isDefaultLocaleSelected()}">
+																					<div
+																						class="admin__content-component-delete-wrapper">
 
-																					<!-- DELETE THIS CONTENT ITEM -->
-																					<ui:fragment rendered="#{!page.lockComponents}">
-																						<button class="admin__content-component-delete"
-																							data-require-confirmation="true"
-																							data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
-																							jsf:action="#{cmsPageEditBean.deleteComponent(cmsComponent)}">
-																							#{msg.delete}
-																							<f:ajax render="componentSelectionWrapper"
-																								onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																						</button>
-																					</ui:fragment>
+																						<!-- DELETE THIS CONTENT ITEM -->
+																						<ui:fragment rendered="#{!page.lockComponents}">
+																							<button class="admin__content-component-delete"
+																								data-require-confirmation="true"
+																								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
+																								jsf:action="#{cmsPageEditBean.deleteComponent(cmsComponent)}">
+																								#{msg.delete}
+																								<f:ajax render="componentSelectionWrapper"
+																									onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																							</button>
+																						</ui:fragment>
 
-																				</div>
+																					</div>
+																				</ui:fragment>
 
 																			</div>
 
@@ -342,23 +353,31 @@
 
 
 													<script>
+														$(document)
+																.ready(
+																		function() {
+																			if ($(
+																					'.admin__content-main')
+																					.height() > 1400) {
+																				$(
+																						'[data-target="revealOnScroll"]')
+																						.show();
+																				$(
+																						'.-refreshHCsticky')
+																						.hcSticky(
+																								'refresh',
+																								{});
+																			}
+																		});
 
-												$(document).ready(function() {
-												  if ($('.admin__content-main').height() > 1400) {
-													    $('[data-target="revealOnScroll"]').show();
-														$('.-refreshHCsticky').hcSticky('refresh', {});
-													}
-												});
-												
-// 												inputsFieldsAll = $('[data-target="watchedInput"]');
-											
-// 									            // listen to changes on input fields
-// 									            inputsFieldsAll.on( 'change input paste', function() {
-// 									                console.log('changed happened');
-// 									                $('.admin__overlay-bar').fadeIn('');
-// 									            });
+														// 												inputsFieldsAll = $('[data-target="watchedInput"]');
 
-											</script>
+														// 									            // listen to changes on input fields
+														// 									            inputsFieldsAll.on( 'change input paste', function() {
+														// 									                console.log('changed happened');
+														// 									                $('.admin__overlay-bar').fadeIn('');
+														// 									            });
+													</script>
 
 												</div>
 											</div>
@@ -469,31 +488,30 @@
 				</h:panelGroup>
 
 				<script type="text/javascript">
-                
-    				// deactivate show page button if page was not saved once
-                	var actualPageID = "#{selectedPage.id}";
-                    if ( !(actualPageID)) {
-        				$('#showPageButton').hide();
-        				// console.log('page is null');#20130
-                    }
-                
-                	var createPageConfig = {
+					// deactivate show page button if page was not saved once
+					var actualPageID = "#{selectedPage.id}";
+					if (!(actualPageID)) {
+						$('#showPageButton').hide();
+						// console.log('page is null');#20130
+					}
+
+					var createPageConfig = {
 						selectedPageID : "#{selectedPage.id}",
 						inputFields : $(".content-input"),
 						prevBtn : $("#preview-button"),
 						prevDescription : $("#previewDescription"),
 						saveBtn : $('a[id*="save-button"]'),
 						sortablesConfig : {
-							componentListInput : document.getElementById("sidebar_editor_component:itemOrderInput"),
+							componentListInput : document
+									.getElementById("sidebar_editor_component:itemOrderInput"),
 							editButton : $(".widget-edit"),
 							availableItemList : "#availableItemList",
 							visibleItemList : "#visibleItemList"
 						}
 					};
 
-
 					cmsJS.createPage.init(createPageConfig);
-                </script>
+				</script>
 			</div>
 		</h:panelGroup>
 	</ui:define>

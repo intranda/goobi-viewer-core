@@ -337,8 +337,8 @@
                             </div>
 		                 
 		                 	<h3 class="mb-2">#{msg.label__cms_page_template__lock_components__label}</h3>
-                            <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{page.lockComponents}"/>
-                         	<div class="admin__form-help-text in mb-4">#{msg.label__cms_page_template__lock_components__description}</div>
+                            <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{cmsPageEditBean.selectedPage.published}" />
+                         	<div class="admin__form-help-text in mb-4 mt-2">#{msg.label__cms_page_template__lock_components__description}</div>
 		                 </div>
 	
 	        		
