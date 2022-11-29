@@ -322,7 +322,9 @@
 					<div class="admin__form-help-text in mb-4">#{msg.cms__pageMetadata_save_template_help}</div>
 			
 			         <div class="admin__radio-switch mb-3">
-	                 	<viewerComponent:toggleSwitch name="openAccessToggle" value="#{page.published}" toggleTarget="#additionalTemplateOptions"/>
+
+	                 	<viewerComponent:toggleSwitch name="openAccessToggle" value="#{cmsPageEditBean.selectedPage.published}" toggleTarget="#additionalTemplateOptions"/>
+
 			         </div>
 			         
 		                 <div id="additionalTemplateOptions" class="admin__sidebar-divider-top">
