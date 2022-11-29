@@ -29,7 +29,8 @@
 				</h:form>
 
 				<h:panelGroup rendered="#{cmsPageEditBean.selectedPage != null}">
-					<c:set scope="request" var="page" value="#{cmsPageEditBean.selectedPage}" />
+					<c:set scope="request" var="page"
+						value="#{cmsPageEditBean.selectedPage}" />
 					<div class="admin__title-bar">
 						<h1 class="admin__title">
 							<ui:fragment rendered="#{cmsPageEditBean.editMode}">
@@ -284,23 +285,28 @@
 
 																			<div class="admin__content-component-add-area-label">#{msg.cms__page_new_component}</div>
 
-																			<h:panelGroup id="componentSelectionWrapper"
-																				layout="block"
-																				styleClass="admin__content-component-add-select-wrapper">
-																				<h:selectOneMenu id="componentSelectList"
-																					styleClass="form-control"
-																					value="#{cmsPageEditBean.selectedComponent}"
-																					disabled="#{page.lockComponents}">
-																					<f:selectItem itemLabel="#{msg.select}"
-																						itemValue="" />
-																					<f:selectItems
-																						value="#{cmsPageEditBean.getAvailableComponents(page)}"
-																						var="item" itemLabel="#{msg[item.value.label]}"
-																						itemValue="#{item.value.templateFilename}"
-																						itemDescription="#{msg[item.value.description]}" />
-																					<f:ajax event="valueChange" execute="@this"
-																						render="componentSelectionWrapper"></f:ajax>
-																				</h:selectOneMenu>
+																			<div
+																				class="admin__content-component-add-select-wrapper">
+																				<h:panelGroup id="componentSelectionWrapper"
+																					layout="block"
+																					styleClass="custom-control custom-control--select">
+																					<h:selectOneMenu id="componentSelectList"
+																						styleClass="form-control"
+																						value="#{cmsPageEditBean.selectedComponent}"
+																						disabled="#{page.lockComponents}">
+																						<f:selectItem itemLabel="#{msg.select}"
+																							itemValue="" />
+																						<f:selectItems
+																							value="#{cmsPageEditBean.getAvailableComponents(page)}"
+																							var="item" itemLabel="#{msg[item.value.label]}"
+																							itemValue="#{item.value.templateFilename}"
+																							itemDescription="#{msg[item.value.description]}" />
+																						<f:ajax event="valueChange" execute="@this"
+																							render="componentSelectionWrapper"></f:ajax>
+																					</h:selectOneMenu>
+
+																				</h:panelGroup>
+
 
 																				<button
 																					class="btn btn--full admin__content-component-add-area-button"
@@ -309,7 +315,8 @@
 																					#{msg.cms__page_add_component}
 																					<f:ajax execute="@form" render="@form"></f:ajax>
 																				</button>
-																			</h:panelGroup>
+																			</div>
+
 
 																		</div>
 																	</ui:fragment>
@@ -366,66 +373,77 @@
 										<div class="admin__content-component-overlay-wrapper"
 											data-target="revealOnScroll">
 
-											<div data-target="saveChangedPage" class="admin__content-component-overlay-bar">
+											<div data-target="saveChangedPage"
+												class="admin__content-component-overlay-bar">
 												<!-- SHOW -->
-						                        <a id="showPageButton" class="btn btn--default" target="_blank" href="#{cmsBean.getUrl(cmsPageEditBean.selectedPage)}">
-						                            #{msg.cms_pagePreview}
-						                        </a>
-						                        
-						                        <!-- DELETE -->
-						                        <button type="button" role="button" href="#" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" class="btn btn--danger"> #{msg.delete} </button>
-											
-						                        <!-- SAVE -->
-						                        <h:commandButton type="submit" action="#{cmsPageEditBean.saveSelectedPage}" id="save-button" styleClass="btn btn--success" value="#{msg.cms_pageMetadata_save}"
-						                            onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
-						                        </h:commandButton>
+												<a id="showPageButton" class="btn btn--default"
+													target="_blank"
+													href="#{cmsBean.getUrl(cmsPageEditBean.selectedPage)}">
+													#{msg.cms_pagePreview} </a>
+
+												<!-- DELETE -->
+												<button type="button" role="button" href="#"
+													data-toggle="modal"
+													data-target="#deleteMediaModal-#{media.id}"
+													class="btn btn--danger">#{msg.delete}</button>
+
+												<!-- SAVE -->
+												<h:commandButton type="submit"
+													action="#{cmsPageEditBean.saveSelectedPage}"
+													id="save-button" styleClass="btn btn--success"
+													value="#{msg.cms_pageMetadata_save}"
+													onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
+												</h:commandButton>
 											</div>
 
 										</div>
-										
-				                        <!-- delete page modal -->
-				                        <div id="deleteMediaModal-#{media.id}" class="modal fade" tabindex="-1" role="dialog">
-				                            <div class="modal-dialog">
-				                                <div class="modal-content">
-				                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsPageEditBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsPageEditBean.selectedPage)}">
-				                                        <div class="modal-header">
-				                                            <h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
-				                                            <button type="button" class="close" data-dismiss="modal">
-				                                                <span aria-hidden="true">
-				                                                    <h:outputText value="&amp;times;" escape="false" />
-				                                                </span>
-				                                                <span class="sr-only">Close</span>
-				                                            </button>
-				                                        </div>
-				                                        <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
-				                                        <div class="modal-footer">
-				                                            <a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-				                                            <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsPageEditBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
-				                                                styleClass="btn btn--danger">
-				                                                <f:ajax render="@none" />
-				                                            </h:commandLink>
-				                                        </div>
-				                                    </h:panelGroup>
-				
-				                                    <h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsPageEditBean.selectedPage) or cmsBean.isLinkedToStaticPage(cmsPageEditBean.selectedPage)}">
-				                                        <div class="modal-header">
-				                                            <button type="button" class="close" data-dismiss="modal">
-				                                                <span aria-hidden="true">
-				                                                    <h:outputText value="&amp;times;" escape="false" />
-				                                                </span>
-				                                                <span class="sr-only">Close</span>
-				                                            </button>
-				                                        </div>
-				                                        <div class="modal-body">
-				                                            <h3 class="modal-title" id="myModalLabel">#{msg.cms_deletePage_denied}</h3>
-				                                        </div>
-				                                        <div class="modal-footer">
-				                                            <a href="#" class="btn btn--full" data-dismiss="modal">#{msg.OK}</a>
-				                                        </div>
-				                                    </h:panelGroup>
-				                                </div>
-				                            </div>
-				                        </div>
+
+										<!-- delete page modal -->
+										<div id="deleteMediaModal-#{media.id}" class="modal fade"
+											tabindex="-1" role="dialog">
+											<div class="modal-dialog">
+												<div class="modal-content">
+													<h:panelGroup
+														rendered="#{!cmsBean.isLinkedFromNavBar(cmsPageEditBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsPageEditBean.selectedPage)}">
+														<div class="modal-header">
+															<h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
+															<button type="button" class="close" data-dismiss="modal">
+																<span aria-hidden="true"> <h:outputText
+																		value="&amp;times;" escape="false" />
+																</span> <span class="sr-only">Close</span>
+															</button>
+														</div>
+														<div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
+														<div class="modal-footer">
+															<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
+															<h:commandLink action="pretty:adminCmsOverview"
+																actionListener="#{cmsPageEditBean.deleteSelectedPage}"
+																value="#{msg.cms_deletePage_agree}"
+																styleClass="btn btn--danger">
+																<f:ajax render="@none" />
+															</h:commandLink>
+														</div>
+													</h:panelGroup>
+
+													<h:panelGroup
+														rendered="#{cmsBean.isLinkedFromNavBar(cmsPageEditBean.selectedPage) or cmsBean.isLinkedToStaticPage(cmsPageEditBean.selectedPage)}">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal">
+																<span aria-hidden="true"> <h:outputText
+																		value="&amp;times;" escape="false" />
+																</span> <span class="sr-only">Close</span>
+															</button>
+														</div>
+														<div class="modal-body">
+															<h3 class="modal-title" id="myModalLabel">#{msg.cms_deletePage_denied}</h3>
+														</div>
+														<div class="modal-footer">
+															<a href="#" class="btn btn--full" data-dismiss="modal">#{msg.OK}</a>
+														</div>
+													</h:panelGroup>
+												</div>
+											</div>
+										</div>
 
 									</div>
 								</div>
