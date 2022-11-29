@@ -322,18 +322,17 @@
 					<div class="admin__form-help-text in mb-4">#{msg.cms__pageMetadata_save_template_help}</div>
 			
 			         <div class="admin__radio-switch mb-3">
-	                 	<viewerComponent:toggleSwitch name="openAccessToggle" value="#{cmsPageEditBean.selectedPage.published}" toggleTarget="#additionalTemplateOptions"/>
+	                 	<viewerComponent:toggleSwitch name="saveAsTemplateToggle" value="#{cmsPageEditBean.saveAsTemplate}" toggleTarget="#additionalTemplateOptions"/>
 			         </div>
 			         
 		                 <div id="additionalTemplateOptions" class="admin__sidebar-divider-top">
-		                 
 		                 	<div class="mb-3">
 		                 		<h3 class="mb-2">#{msg.cms__name_of_template}</h3>
-                            	<h:inputText value="templatename" /> 
+                            	<h:inputText value="#{cmsPageEditBean.templateName}" /> 
                             </div>
 		                 
 		                 	<h3 class="mb-2">#{msg.label__cms_page_template__lock_components__label}</h3>
-                            <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{page.lockComponents}"/>
+                            <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{cmsPageEditBean.templateLockComponents}"/>
                          	<div class="admin__form-help-text in mb-4">#{msg.label__cms_page_template__lock_components__description}</div>
 		                 </div>
 	

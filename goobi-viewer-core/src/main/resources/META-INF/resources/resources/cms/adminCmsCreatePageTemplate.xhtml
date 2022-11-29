@@ -160,12 +160,6 @@
 																				<!-- CONTENT HEADER + TOOLBAR -->
 																				<div class="admin__content-component-header">
 																				
-																					<!-- CONTENT COMPONENT ORDER FUNCTIONS -->
-																					<ui:fragment rendered="#{!page.lockComponents}">
-																						<ui:include
-																							src="/resources/cms/includes/orderContentItems.xhtml" />
-																					</ui:fragment>
-																				
 																					<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
 
 <div
@@ -216,21 +210,25 @@
 																							</button>
 
 																						</div>
-																	
+																						
+																						<!-- CONTENT COMPONENT ORDER FUNCTIONS -->
+																						<ui:include src="/resources/cms/includes/orderContentItems.xhtml" />
+																				
 																				</div>
 																				
 																				<div class="admin__content-component-description">#{msg[cmsComponent.description]}</div>
 																	
 																			</div>
-																		
-																		<!-- DELETE THIS CONTENT ITEM -->
-																		<button class="admin__content-component-delete" 
-								                                            data-require-confirmation="true"
-								                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
-								                                            jsf:action="#{page.removeComponent(cmsComponent)}">
-																			#{msg.delete}
-																			<f:ajax render="componentSelectionWrapper" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																		</button>
+																			<div class="admin__content-component-delete-wrapper">
+																				<!-- DELETE THIS CONTENT ITEM -->
+																				<button class="admin__content-component-delete" 
+										                                            data-require-confirmation="true"
+										                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
+										                                            jsf:action="#{page.removeComponent(cmsComponent)}">
+																					#{msg.delete}
+																					<f:ajax render="componentSelectionWrapper" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																				</button>
+																			</div>
 																	
 																	</div>
 									
