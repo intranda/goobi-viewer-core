@@ -639,17 +639,6 @@
 			<version>${weld-servlet-shaded.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.coveo</groupId>
-			<artifactId>saml-client</artifactId>
-			<version>${saml-client.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>joda-time</groupId>
-					<artifactId>joda-time</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2</artifactId>
 			<version>${swagger.version}</version>
