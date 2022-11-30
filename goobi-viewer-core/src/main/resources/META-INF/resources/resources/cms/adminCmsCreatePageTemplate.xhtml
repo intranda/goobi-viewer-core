@@ -63,21 +63,21 @@
                                         <div>
                                             <!-- NAV TABS -->
                                             <ul class="nav nav-tabs">
-                                                <ui:repeat var="locale" value="#{page.getLocales()}">
-													<li role="tab"
-														class="admin__language-tab
-															#{page.isSelected(locale) and cmsPageTemplateEditBean.pageEditState == 'CONTENT' ? 'active':''}
-															#{page.isEmpty(locale) ? '' : (page.isComplete(locale) ? '-already-translated' : '-partly-translated')}
-															#{page.isDefaultLocaleSelected() ? '-default-language':''}">
-														<h:commandLink
+
+
+											<li role="tab"
+												class="admin__language-tab #{page.isDefaultLocaleSelected() ? '-default-language':''} #{cmsPageTemplateEditBean.pageEditState == 'CONTENT' ? 'active':''}">
+
+												<h:commandLink
 															role="button"
-															value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
-															action="#{page.setSelectedLocale(locale)}"
-															actionListener="#{cmsPageTemplateEditBean.setPageEditState('CONTENT')}">
+															value="#{page.selectedLocale.getDisplayLanguage(navigationHelper.locale)}"
+															action="#{cmsPageTemplateEditBean.setPageEditState('CONTENT')}">
 															<f:ajax render="@form" execute="@form"></f:ajax>
-														</h:commandLink>
-													</li>
-												</ui:repeat>
+												</h:commandLink>
+											
+											</li>
+
+
                                                 <li class="#{cmsPageTemplateEditBean.pageEditState == 'SIDEBAR' ? 'active':''} admin__language-tab  nav-tabs__sidebar-button">
                                                     <h:commandLink role="button" value="#{msg.cms_pageSidebar}" action="#{cmsPageTemplateEditBean.setPageEditState('SIDEBAR')}">
                                                     	<f:ajax render="@form" execute="@form"></f:ajax>
@@ -509,16 +509,19 @@
                 
                 <!-- SCRIPT FOR JUMP TO QUICK CSS LINK -->
 				<script>
-				if ( !$('[data-target="quickCSSInputField"]').val()) {
-					$('[data-target="cmsPageJumpToQuickCSSLink"]').hide();
-				}
-				
-				$('[data-target="quickCSSInputField"]').keyup(function() {
+				$( document ).ready(function() {
 					if ( !$('[data-target="quickCSSInputField"]').val()) {
-						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeOut('fast');
-					} else {
-						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeIn('fast');
+						$('[data-target="cmsPageJumpToQuickCSSLink"]').hide();
 					}
+					
+					
+					$('[data-target="quickCSSInputField"]').keyup(function() {
+						if ( !$('[data-target="quickCSSInputField"]').val()) {
+							$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeOut('fast');
+						} else {
+							$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeIn('fast');
+						}
+					});
 				});
 				</script>
                 

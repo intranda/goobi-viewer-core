@@ -24,12 +24,16 @@
 					<h:form id="cmsSelectTemplateForm" prependId="false">
 
 						<div class="cms-create-page__choose-template-wrapper">
-							<ui:fragment rendered="#{userBean.user.hasPriviledgeForAllTemplates()}">
+							<ui:fragment
+								rendered="#{userBean.user.hasPriviledgeForAllTemplates()}">
+
 								<div class="cms-create-page__choose-template-box">
 									<div class="cms-create-page__choose-template-box-start">
-										<img src="#{request.contextPath}/resources/images/backend/empty_template.jpg" class="img-responsive" alt="Choose empty template" />
+										<img
+											src="#{request.contextPath}/resources/images/backend/empty_template.jpg"
+											class="img-responsive" alt="Choose empty template" />
 									</div>
-	
+
 									<div class="cms-create-page__choose-template-box-end">
 										<h2>#{msg.cms__create_empty_page_title}</h2>
 										<p>#{msg.lorem_ipsum__short}</p>
@@ -39,17 +43,20 @@
 										</h:commandLink>
 									</div>
 								</div>
-								<div
-									class="cms-create-page__choose-template-box">
-									
+
+
+								<div class="cms-create-page__choose-template-box">
+
 									<div class="cms-create-page__choose-template-box-start">
-										<img src="#{request.contextPath}/resources/images/backend/predefined_template.jpg" class="img-responsive" alt="Choose prefined template" />
+										<img
+											src="#{request.contextPath}/resources/images/backend/predefined_template.jpg"
+											class="img-responsive" alt="Choose prefined template" />
 									</div>
-	
+
 									<div class="cms-create-page__choose-template-box-end">
-										<h2>#{msg.cms__create_page_template_title}</h2>
+										<h2>#{msg.cms__create_new_template_title}</h2>
 										<p>#{msg.lorem_ipsum__short}</p>
-									
+
 										<h:commandLink action="pretty:adminCmsNewPageTemplate"
 											value="#{msg.cms__create_page_template_button}"
 											styleClass="btn btn--full">
@@ -57,62 +64,85 @@
 									</div>
 								</div>
 							</ui:fragment>
-						
+
 						</div>
 
-						<div class="cms-select-template__filters">
-							<button type="button" onclick="setTemplateFilter('.admin__entry-list .admin__boxed-entry', this)" 
+						<div class="cms-select-template__wrapper">
+
+							<h2 class="cms-select-template__wrapper mt-3">Available templates</h2>
+
+
+
+							<div class="cms-select-template__filters">
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list .admin__boxed-entry', this)"
 									class="admin__content-component-option -active">#{msg.all}
-							</button>
-							<button type="button" onclick="setTemplateFilter('.admin__entry-list .-published:not(.-legacy-template)', this)" 
+								</button>
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list .-published:not(.-legacy-template)', this)"
 									class="admin__content-component-option">#{msg.pubished}
-							</button>
-							<button type="button" onclick="setTemplateFilter('.admin__entry-list .admin__boxed-entry:not(.-published)', this)" 
+								</button>
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list .admin__boxed-entry:not(.-published)', this)"
 									class="admin__content-component-option">#{msg.not_published}
-							</button>
-							<button type="button" onclick="setTemplateFilter('.admin__entry-list .-legacy-template', this)" 
+								</button>
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list .-legacy-template', this)"
 									class="admin__content-component-option">#{msg.legacy}
-							</button>
-							
-							<script>
-								function hideAll() {
-								    $('.admin__entry-list .admin__boxed-entry').hide();
-								}
-								function setTemplateFilter(selector, source) {
-								    console.log("show Templates with ", selector, source);
-								    $(source).parent().children().removeClass("-active");
-								    $(source).addClass("-active");
-								    hideAll();
-								    $(selector).show();
-								}
-							</script>
-						</div>
+								</button>
 
-						<div id="cmsSelectTemplateWrapper"
-							class="cms-select-template__wrapper admin__entry-list">
-							<ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}"
-								var="template">
-								<div
-									class="admin__boxed-entry row no-gutters -std-bottom-pad -w100 #{template.legacyTemplate ? '-legacy-template':''} #{template.published ? '-published':''}">
-									<!-- TEMPLATE -->
-									<div class="col-9 d-flex align-items-center">
-										<!-- DESCRIPTION -->
-										<div class="admin__table-data">
-											<h2>#{msg[template.title]}</h2>
-											<h:outputFormat value="#{template.description}" escape="false"></h:outputFormat>
+								<script>
+									function hideAll() {
+										$('.admin__entry-list .admin__boxed-entry').hide();
+										if ($('.cms-select-template__single').length != 0) {
+											$('.cms-select-template__wrapper').show();
+										}
+									}
+									function setTemplateFilter(selector, source) {
+										// console.log("show Templates with ",selector, source);
+										$(source).parent().children().removeClass("-active");
+										$(source).addClass("-active");
+										hideAll();
+										$(selector).show();
+									}
+								</script>
+							</div>
+
+							<div id="cmsSelectTemplateWrapper"
+								class="cms-select-template__wrapper admin__entry-list -w25">
+								<ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}"
+									var="template">
+									<div
+										class="admin__boxed-entry -std-bottom-pad -w25 cms-select-template__single #{template.legacyTemplate ? '-legacy-template':''} #{template.published ? '-published':''}">
+										<!-- TEMPLATE -->
+										<div class="d-flex flex-column h-100">
+											<div>
+												<!-- TITLE -->
+												<h2>#{msg[template.title]}</h2>
+											</div>
+											
+											<div class="mb-3">
+												<!-- DESCRIPTION -->
+												<h:outputFormat value="#{template.description}" escape="false"></h:outputFormat>
+											</div>
+											
+											<div class="mt-auto">
+												<!-- ACTION -->
+												<div class="d-flex cms-select-template__action">
+													<ui:fragment
+														rendered="#{user.hasPriviledgeForAllTemplates()}">
+														<a href="edit/#{template.id}/" class="ml-auto btn btn--default">#{msg.cms__edit_template__action}</a>
+													</ui:fragment>
+													<a href="../new/?templateId=#{template.id}"
+														class="ml-2 btn btn--full btn  #{template.published ? '':'disabled'}">#{msg.cms_createPageWithTemplate}</a>
+												</div>
+											</div>
+
 										</div>
+
 									</div>
-									<div class="col-3">
-										<!-- ACTION -->
-										<div class="cms-select-template__action">
-											<a href="../new/?templateId=#{template.id}" class="btn  #{template.published ? '':'disabled'}">#{msg.cms_createPageWithTemplate}</a>
-											<ui:fragment rendered="#{user.hasPriviledgeForAllTemplates()}">
-												<a href="edit/#{template.id}/" class="btn">#{msg.cms__edit_template__action}</a>
-											</ui:fragment>
-										</div>
-									</div>
-								</div>
-							</ui:repeat>
+								</ui:repeat>
+							</div>
 						</div>
 					</h:form>
 				</div>
