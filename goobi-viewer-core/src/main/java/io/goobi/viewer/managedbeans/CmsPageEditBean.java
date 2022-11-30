@@ -23,9 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -65,7 +63,6 @@ import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
-import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.user.User;
@@ -198,7 +195,7 @@ public class CmsPageEditBean implements Serializable {
         logger.trace("Done saving page");
     }
 
-    private boolean saveTemplate(CMSPage page, String name, boolean lockComponents) throws DAOException {
+    private static boolean saveTemplate(CMSPage page, String name, boolean lockComponents) throws DAOException {
         CMSPageTemplate template = new CMSPageTemplate(page);
         TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic());
         title.setText(name, IPolyglott.getDefaultLocale());
@@ -391,7 +388,7 @@ public class CmsPageEditBean implements Serializable {
                 .sorted((c1,c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale), ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
                 .collect(Collectors.toList());
         Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components, component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
-        return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, c -> c.getTemplateFilename(), c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
+        return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename, c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
     }
 
 
@@ -549,7 +546,7 @@ public class CmsPageEditBean implements Serializable {
     public void setSaveAsTemplate(boolean saveAsTemplate) {
         this.saveAsTemplate = saveAsTemplate;
     }
-    
+
     public boolean isSaveAsTemplate() {
         return saveAsTemplate;
     }
@@ -561,9 +558,8 @@ public class CmsPageEditBean implements Serializable {
     public String getTemplateName() {
         if(StringUtils.isBlank(this.templateName)) {
             return getSelectedPage().getTitle(IPolyglott.getDefaultLocale());
-        } else {            
-            return templateName;
         }
+        return templateName;
     }
     
     public boolean isTemplateLockComponents() {
