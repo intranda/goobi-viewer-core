@@ -25,11 +25,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -52,18 +50,15 @@ public class SearchQueryGroup implements Serializable {
     private final List<SearchQueryItem> queryItems = new ArrayList<>();
 
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
-    private final Locale locale;
 
     /**
      * <p>
      * Constructor for SearchQueryGroup.
      * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
      * @param fieldConfigs
      */
-    public SearchQueryGroup(Locale locale, List<AdvancedSearchFieldConfiguration> fieldConfigs) {
-        this.locale = locale;
+    public SearchQueryGroup(List<AdvancedSearchFieldConfiguration> fieldConfigs) {
         init(fieldConfigs);
     }
 
@@ -76,13 +71,13 @@ public class SearchQueryGroup implements Serializable {
         queryItems.clear();
         operator = SearchQueryGroupOperator.AND;
 
-        SearchQueryItem firstItem = new SearchQueryItem(locale);
+        SearchQueryItem firstItem = new SearchQueryItem();
         firstItem.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         queryItems.add(firstItem);
         if (fieldConfigs != null) {
             for (AdvancedSearchFieldConfiguration fieldConfig : fieldConfigs) {
                 if (fieldConfig.isVisible()) {
-                    SearchQueryItem item = new SearchQueryItem(locale);
+                    SearchQueryItem item = new SearchQueryItem();
                     item.setField(fieldConfig.getField());
                     queryItems.add(item);
                 }
@@ -144,7 +139,7 @@ public class SearchQueryGroup implements Serializable {
      * @return a boolean.
      */
     public boolean addNewQueryItem() {
-        return queryItems.add(new SearchQueryItem(BeanUtils.getLocale()));
+        return queryItems.add(new SearchQueryItem());
     }
 
     /**
@@ -185,16 +180,5 @@ public class SearchQueryGroup implements Serializable {
      */
     public void setOperator(SearchQueryGroupOperator operator) {
         this.operator = operator;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>locale</code>.
-     * </p>
-     *
-     * @return the locale
-     */
-    public Locale getLocale() {
-        return locale;
     }
 }

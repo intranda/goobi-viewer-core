@@ -296,7 +296,7 @@ public class IndexResource {
             @Parameter(description = "The granularity of each grid cell") @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException {
         servletResponse.addHeader("Cache-Control", "max-age=300");
-
+        
         String finalQuery = filterQuery;
         if (!finalQuery.startsWith("{!join")) {
             finalQuery =
