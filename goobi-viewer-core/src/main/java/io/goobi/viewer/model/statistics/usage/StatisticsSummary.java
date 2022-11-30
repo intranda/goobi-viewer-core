@@ -52,7 +52,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @JsonInclude(Include.NON_NULL)
 public class StatisticsSummary {
 
-;
     /**
      * Request counts sorted by {@link RequestType}
      */

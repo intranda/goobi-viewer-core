@@ -40,7 +40,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     public void generateQuery_shouldGenerateQueryCorrectly() throws Exception {
         {
-            SearchQueryItem item = new SearchQueryItem(null);
+            SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
             item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
             item.setValue("foo bar");
@@ -52,7 +52,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
             Assert.assertTrue(searchTerms.contains("bar"));
         }
         {
-            SearchQueryItem item = new SearchQueryItem(null);
+            SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.AND);
             item.setField("MD_TITLE");
             item.setValue("bla \"blup\" -nein");
@@ -61,7 +61,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
             Assert.assertTrue(searchTerms.isEmpty());
         }
         {
-            SearchQueryItem item = new SearchQueryItem(null);
+            SearchQueryItem item = new SearchQueryItem();
             item.setField(SolrConstants.FULLTEXT);
             item.setValue("\"lorem ipsum dolor sit amet\"");
             Set<String> searchTerms = new HashSet<>(1);
@@ -71,7 +71,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
         }
         // Auto-tokenize phrase search field if so configured
         {
-            SearchQueryItem item = new SearchQueryItem(null);
+            SearchQueryItem item = new SearchQueryItem();
             item.setField("MD_TITLE");
             item.setValue("\"lorem ipsum dolor sit amet\"");
             Set<String> searchTerms = new HashSet<>(0);
@@ -88,16 +88,17 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     public void generateQuery_shouldEscapeReservedCharacters() throws Exception {
         {
-            SearchQueryItem item = new SearchQueryItem(null);
+            SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
             item.setField(SolrConstants.DEFAULT);
             item.setValue("[foo] :bar:");
             Set<String> searchTerms = new HashSet<>(2);
-            Assert.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\:bar\\:) DEFAULT:(\\[foo\\] AND \\:bar\\:))", item.generateQuery(searchTerms, true, false));
+            Assert.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\:bar\\:) DEFAULT:(\\[foo\\] AND \\:bar\\:))",
+                    item.generateQuery(searchTerms, true, false));
         }
         {
             // Phrase searches should NOT have escaped terms
-            SearchQueryItem item = new SearchQueryItem(null);
+            SearchQueryItem item = new SearchQueryItem();
             item.setField(SolrConstants.DEFAULT);
             item.setValue("\"[foo] :bar:\"");
             Set<String> searchTerms = new HashSet<>(2);
@@ -111,7 +112,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateQuery_shouldAlwaysUseOROperatorIfSearchingInAllFields() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         item.setValue("foo bar");
@@ -127,7 +128,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateQuery_shouldPreserveTruncation() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         item.setValue("*foo*");
@@ -139,7 +140,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     @Test
     public void generateQuery_shouldAddFuzzySearchOperator() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField("MD_TITLE");
         item.setValue("fooo bar");
@@ -149,7 +150,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     @Test
     public void generateQuery_shouldAddFuzzySearchOperatorWithWildcards() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField("MD_TITLE");
         item.setValue("*fooo* *bar*");
@@ -163,7 +164,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateQuery_shouldAddFuzzySearchOperatorWithHyphen() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
         item.setField("MD_TITLE");
         item.setValue("foo-bar");
@@ -177,7 +178,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateQuery_shouldGenerateRangeQueryCorrectly() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.YEAR);
         item.setValue(" 1900 ");
         item.setValue2(" 2020 ");
@@ -190,7 +191,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateQuery_shouldAddProximitySearchTokenCorrectly() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.FULLTEXT);
         item.setValue("\"foo bar\"~10");
         Set<String> searchTerms = new HashSet<>(2);
@@ -204,7 +205,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInAllFields() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
         item.displaySelectItems = true;
         item.toggleDisplaySelectItems();
@@ -217,7 +218,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInFulltext() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.FULLTEXT);
         item.displaySelectItems = true;
         item.toggleDisplaySelectItems();
@@ -230,7 +231,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsTrueIfValueCountBelowThreshold() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setField("MD_FOO");
         item.toggleDisplaySelectItems();
         Assert.assertTrue(item.isDisplaySelectItems());
@@ -242,7 +243,7 @@ public class SearchQueryItemTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfValueCountAboveThreshold() throws Exception {
-        SearchQueryItem item = new SearchQueryItem(null);
+        SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.PI);
         item.toggleDisplaySelectItems();
         Assert.assertFalse(item.isDisplaySelectItems());

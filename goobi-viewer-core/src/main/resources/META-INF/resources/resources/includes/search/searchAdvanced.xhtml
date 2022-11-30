@@ -41,7 +41,8 @@
                                             <!-- FIELD SELECT -->
                                             <div class="search-advanced__input-col">
                                                 <div class="search-advanced__select custom-control custom-control--select">
-                                                    <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="value-text" value="#{queryItem.field}" valueChangeListener="#{queryItem.selectOneMenuListener}">
+                                                    <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="value-text"
+                                                        value="#{queryItem.field}" valueChangeListener="#{queryItem.selectOneMenuListener}">
                                                         
                                                         <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
                                                     	   <f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
@@ -98,6 +99,7 @@
                                         <!-- INPUT FIELD -->
                                         <h:panelGroup layout="block" id="advsearch_value_group_0-#{status.count}">
                                             <div class="search-advanced__input-col">
+                                                <!-- TEXT INPUT FIELD + RANGE -->
                                                 <h:panelGroup rendered="#{!queryItem.displaySelectItems}">
                                                         <label class="sr-only" for="advsearchValueText_0-#{status.count}"></label>
                                                         <div class="search-advanced__input-group-field">
@@ -123,12 +125,13 @@
                                                             </ui:fragment>
                                                         </div>
                                                 </h:panelGroup>
+                                                <!-- DROP-DOWN -->
                                                 <h:panelGroup rendered="#{queryItem.displaySelectItems}">
                                                     <div class="custom-control custom-control--select">
                                                         <h:selectOneMenu id="advsearch_value_select_0-#{status.count}" styleClass="value-text"
                                                             value="#{queryItem.value}">
                                                             <f:selectItem itemLabel="#{msg.select}" itemValue="" noSelectionOption="true" />
-                                                            <c:forEach var="item" items="#{queryItem.selectItems}">
+                                                            <c:forEach var="item" items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
                                                                 <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
                                                             </c:forEach>
                                                             <f:passThroughAttribute name="aria-label" value="#{msg.cms_collections_err_noselection}" />

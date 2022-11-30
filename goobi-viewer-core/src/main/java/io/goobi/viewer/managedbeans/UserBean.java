@@ -128,8 +128,6 @@ public class UserBean implements Serializable {
         this.authenticationProvider = getLocalAuthenticationProvider();
     }
 
-
-
     /**
      * Required setter for ManagedProperty injection
      *
@@ -620,7 +618,7 @@ public class UserBean implements Serializable {
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + u.getEmail() + "/" + u.getActivationKey() + "/";
 
-                if (DataManager.getInstance().getDao().updateUser(user)) {
+                if (DataManager.getInstance().getDao().updateUser(u)) {
                     try {
                         if (NetTools.postMail(Collections.singletonList(email), null, null,
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
@@ -631,7 +629,7 @@ public class UserBean implements Serializable {
                             Messages.info("user_retrieveAccountConfirmationEmailMessage");
                             return "user?faces-redirect=true";
                         }
-                        logger.error("Could not send passwort reset link e-mail to: {}", user.getEmail());
+                        logger.error("Could not send passwort reset link e-mail to: {}", u.getEmail());
                     } catch (UnsupportedEncodingException | MessagingException e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -723,10 +721,6 @@ public class UserBean implements Serializable {
 
         return "";
     }
-
-
-
-
 
     /**
      * <p>
@@ -1067,8 +1061,6 @@ public class UserBean implements Serializable {
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
     }
-
-
 
     /**
      * <p>

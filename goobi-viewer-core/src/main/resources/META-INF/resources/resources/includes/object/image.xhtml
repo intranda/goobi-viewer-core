@@ -259,26 +259,61 @@
         	        imageView.dragging = true;
         	    })
 				
-				let activeArea = config.areas.find(a => a.logId === config.currentLogId);
-				if(activeArea) {
-				    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
-		            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, 0.5, rect, true);
+				let activeAreas = config.areas.filter(a => a.logId === config.currentLogId);
+				if(activeAreas.length > 0) {
+				    let areasOnCanvas = [];
+					activeAreas.forEach((activeArea, index) => {				        
+					    let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
+			            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
+			            areasOnCanvas.push(rect);
+					    drawArea(activeArea, index, imageView);
+		        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
+		        	    $(document).scrollTop(parseInt(scrollPosition));
+		        	    window.sessionStorage.removeItem("scrollPosition");
+				    })
+		            let shadow = new ImageView.Tools.Filter.HighlightArea(imageView, 0.5, areasOnCanvas, true);
 					shadow.start();
-				    drawArea(activeArea, imageView, true);
-	        	    let scrollPosition = window.sessionStorage.getItem("scrollPosition");
-	        	    $(document).scrollTop(parseInt(scrollPosition));
-	        	    window.sessionStorage.removeItem("scrollPosition");
+					initAreaClick(imageView, activeAreas);
 				} else {
-			        config.areas.forEach( (area, index) => drawArea(area, imageView))				    
+					let inactiveAreas = config.areas.filter(a => a.logId !== config.currentLogId);
+				    let inactiveLogIds = inactiveAreas.map(a => a.logId).filter((v, i, a) => a.indexOf(v) === i); //last filter to make logIds unique
+				    inactiveLogIds.forEach(logId => {
+				        let logIdAreas = config.areas.filter(a => a.logId === logId);
+				        logIdAreas.forEach( (area, index) => drawArea(area, index, imageView));				    
+				    })
+				    initAreaClick(imageView, inactiveAreas);				    
 				}
 
 		    }
-		    function drawArea(area, imageView, clickToLeave) {
+		    function initAreaClick(imageView, areas) {
+	        	if(areas.length > 0) {
+	        	    let $area = $(".page-area.active");
+	        	    let url = areas[0].url.replace("/" + areas[0].logId, "");
+	        	    $(imageView.viewer.canvas).css("cursor", "pointer");
+	        	     imageView.viewer.addHandler("canvas-release", () => {
+	        	        if(!imageView.dragging) {		        	            
+		        	        let $target = $(event.target);
+		        	        if($target.filter($area).length == 0) {
+			        	    	window.location.href = url;
+		        	        }
+	        	        }
+	        	    })
+	        	    areas.forEach((area) => {
+		        	    let $area = $(".page-area:not(.active)[id^=pageAreaFrame_"+area.logId+"_]");
+			        	$area.on("click", () => {
+			        	    if(!imageView.dragging) {		        	        
+				        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
+				        	    window.location.href = area.url;
+			        	    }
+			        	});
+			        });
+	        	}
+		    }
+		    function drawArea(area, shapeIndex, imageView, clickToLeave) {
 		        let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
 	            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(rect, imageView.viewer, imageView.getOriginalImageSize());
-	        	let $area = $("#pageAreaFrame_" + area.logId);
-	        	let $label = $("#pageAreaLabel_" + area.logId);
+	        	let $area = $("#pageAreaFrame_" + area.logId + "_" + shapeIndex);
+	        	let $label = $("#pageAreaLabel_" + area.logId + "_" + shapeIndex);
 	            let overlay = new ImageView.Overlay({
 	                rect: rect,
 	                viewer: imageView.viewer,
@@ -287,24 +322,7 @@
 	                label: $label.get(0)
 	            });
 	        	overlay.draw();
-	        	if(clickToLeave) {
-	        	    $(imageView.viewer.canvas).css("cursor", "pointer");
-	        	     imageView.viewer.addHandler("canvas-release", () => {
-	        	        if(!imageView.dragging) {		        	            
-		        	        let $target = $(event.target);
-		        	        if($target.filter($area).length == 0) {
-			        	    	window.location.href = area.url.replace("/" + area.logId, "");
-		        	        }
-	        	        }
-	        	    })
-	        	} else {
-		        	$area.on("click", () => {
-		        	    if(!imageView.dragging) {		        	        
-			        	    window.sessionStorage.setItem("scrollPosition", $(document).scrollTop());
-			        	    window.location.href = area.url;
-		        	    }
-		        	})
-	        	}
+
 	        	$area.hover(
 	        		() => $label.addClass("hover"),
 	        		() => $label.removeClass("hover")
@@ -349,18 +367,20 @@
     
     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
     	<ui:fragment rendered="#{se.hasShapeMetadata()}">
-    	<div id="pageAreaFrame_#{se.logid}" class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}">
-    	</div>
-    	<div id="pageAreaLabel_#{se.logid}" class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">
-		    <svg viewBox="0 0 100 100">
-				  <foreignObject width="100%" height="100%">
-				  <div class="page-area-label-text"
-				  	title="#{se.label}">
-					#{se.label}
-				  </div>
-				  </foreignObject>
-			</svg> 
-    	</div>
+    	<ui:repeat var="shape" value="#{se.shapeMetadata}" varStatus="status">
+	    	<div id="pageAreaFrame_#{se.logid}_#{status.index}" class="page-area #{se.logid == activeDocumentBean.logid ? 'active':''}">
+	    	</div>
+	    	<div id="pageAreaLabel_#{se.logid}_#{status.index}" class="page-area-label #{se.logid == activeDocumentBean.logid ? 'active':''}">
+			    <svg viewBox="0 0 100 100">
+					  <foreignObject width="100%" height="100%">
+					  <div class="page-area-label-text"
+					  	title="#{se.label}">
+						#{se.label}
+					  </div>
+					  </foreignObject>
+				</svg> 
+	    	</div>
+    	</ui:repeat>
     	</ui:fragment>
 	</ui:repeat>
 

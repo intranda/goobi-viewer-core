@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,16 +75,13 @@ public class SearchQueryItem implements Serializable {
     private SearchItemOperator operator = SearchItemOperator.AND;
     private String value;
     private String value2;
-    private Locale locale;
     volatile boolean displaySelectItems = false;
 
     /**
      * Empty constructor
-     *
-     * @param locale a {@link java.util.Locale} object.
      */
-    public SearchQueryItem(Locale locale) {
-        this.locale = locale;
+    public SearchQueryItem() {
+        //
     }
 
     /* (non-Javadoc)
@@ -146,24 +142,6 @@ public class SearchQueryItem implements Serializable {
      */
     public List<SearchItemOperator> getAvailableOperators() {
         return Arrays.asList(SearchItemOperator.AND, SearchItemOperator.OR, SearchItemOperator.NOT);
-    }
-
-    /**
-     * <p>
-     * getSelectItems.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<StringPair> getSelectItems() throws PresentationException, IndexUnreachableException, DAOException {
-        if (locale != null) {
-            return getSelectItems(locale.getLanguage());
-        }
-
-        return getSelectItems("en");
     }
 
     /**
@@ -238,7 +216,7 @@ public class SearchQueryItem implements Serializable {
     public boolean isUntokenizeForPhraseSearch() {
         return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldUntokenizeForPhraseSearch(field);
     }
-    
+
     /**
      * 
      * @return
@@ -356,6 +334,7 @@ public class SearchQueryItem implements Serializable {
      * @param ev a {@link javax.faces.event.ValueChangeEvent} object.
      */
     public void selectOneMenuListener(ValueChangeEvent ev) {
+        //
     }
 
     /**
