@@ -53,24 +53,24 @@ public class FeedbackBean implements Serializable {
 
     private static final long serialVersionUID = 9100712106412532312L;
     private static final Logger logger = LogManager.getLogger(FeedbackBean.class);
-    
+
     @Inject
     private UserBean userBean;
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
     private CaptchaBean captchaBean;
-    
+
     private Feedback feedback;
     private User user;
     private String lastName;
-    
+
     @PostConstruct
     public void init() {
         createFeedback();
         this.user = userBean.getUser();
     }
-    
+
     /**
      * <p>
      * createFeedback.
@@ -80,6 +80,8 @@ public class FeedbackBean implements Serializable {
         if (captchaBean != null) {
             captchaBean.reset();
         }
+
+        this.lastName = null;
 
         feedback = new Feedback();
         if (user != null) {
@@ -105,7 +107,7 @@ public class FeedbackBean implements Serializable {
 
         }
     }
-    
+
     /**
      * <p>
      * submitFeedbackAction.
@@ -114,7 +116,6 @@ public class FeedbackBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String submitFeedbackAction(boolean setCurrentUrl) {
-        this.lastName = null;
         // Check whether the security question has been answered correct, if configured
         if (captchaBean != null && !captchaBean.checkAnswer()) {
             captchaBean.reset();
@@ -148,7 +149,7 @@ public class FeedbackBean implements Serializable {
         //set current url to feedback
         if (setCurrentUrl && navigationHelper != null) {
             feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
-        } else if(navigationHelper != null) {
+        } else if (navigationHelper != null) {
             feedback.setUrl(navigationHelper.getPreviousViewUrl());
         }
 
@@ -176,7 +177,7 @@ public class FeedbackBean implements Serializable {
         createFeedback();
         return "";
     }
-    
+
     /**
      * <p>
      * Getter for the field <code>feedback</code>.
@@ -198,19 +199,19 @@ public class FeedbackBean implements Serializable {
     public void setFeedback(Feedback feedback) {
         this.feedback = feedback;
     }
-    
+
     public String getLastName() {
         return lastName;
     }
-    
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     public boolean isLoggedIn() {
         return this.userBean.isLoggedIn();
     }
-    
+
     public CaptchaBean getCaptchaBean() {
         return this.captchaBean;
     }
