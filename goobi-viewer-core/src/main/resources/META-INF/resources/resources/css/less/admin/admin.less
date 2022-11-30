@@ -304,6 +304,13 @@
 			}
 		}
 	}
+	&__entry-list-grid {
+		display: grid;
+		gap: 20px;
+		&.-w25 {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+	}
 	&__boxed-entry {
 		background: @white;
 		padding: 2rem;

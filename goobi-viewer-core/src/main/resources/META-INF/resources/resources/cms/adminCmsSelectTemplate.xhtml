@@ -75,25 +75,25 @@
 
 							<div class="cms-select-template__filters">
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list .admin__boxed-entry', this)"
+									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry', this)"
 									class="admin__content-component-option -active">#{msg.all}
 								</button>
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list .-published:not(.-legacy-template)', this)"
+									onclick="setTemplateFilter('.admin__entry-list-grid .-published:not(.-legacy-template)', this)"
 									class="admin__content-component-option">#{msg.pubished}
 								</button>
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list .admin__boxed-entry:not(.-published)', this)"
+									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry:not(.-published)', this)"
 									class="admin__content-component-option">#{msg.not_published}
 								</button>
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list .-legacy-template', this)"
+									onclick="setTemplateFilter('.admin__entry-list-grid .-legacy-template', this)"
 									class="admin__content-component-option">#{msg.legacy}
 								</button>
 
 								<script>
 									function hideAll() {
-										$('.admin__entry-list .admin__boxed-entry').hide();
+										$('.admin__entry-list-grid .admin__boxed-entry').hide();
 										if ($('.cms-select-template__single').length != 0) {
 											$('.cms-select-template__wrapper').show();
 										}
@@ -108,12 +108,12 @@
 								</script>
 							</div>
 
-							<div id="cmsSelectTemplateWrapper"
-								class="cms-select-template__wrapper admin__entry-list -w25">
+							<div id="cmsSelectTemplateWrapper" data-target="cmsSelectTemplateList"
+								class="cms-select-template__wrapper admin__entry-list-grid -w25">
 								<ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}"
 									var="template">
 									<div
-										class="admin__boxed-entry -std-bottom-pad -w25 cms-select-template__single #{template.legacyTemplate ? '-legacy-template':''} #{template.published ? '-published':''}">
+										class="admin__boxed-entry -std-bottom-pad cms-select-template__single #{template.legacyTemplate ? '-legacy-template':''} #{template.published ? '-published':''}">
 										<!-- TEMPLATE -->
 										<div class="d-flex flex-column h-100">
 											<div>
