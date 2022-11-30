@@ -47,6 +47,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
@@ -135,6 +136,8 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) throws IOException {
+        logger.debug("headerParameterLogin");
+        logger.debug("redirectUrl={}", redirectUrl);
         List<HttpHeaderProvider> providers = new ArrayList<>();
         for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
             if (p instanceof HttpHeaderProvider) {
@@ -143,6 +146,7 @@ public class AuthenticationEndpoint {
             }
         }
         if (providers.isEmpty()) {
+            logger.warn("No providers configured.");
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No authentication providers of type 'httpHeader' configured.").build();
         }
 
@@ -154,6 +158,7 @@ public class AuthenticationEndpoint {
                 final Enumeration<String> headerNames = servletRequest.getHeaderNames();
                 while (headerNames.hasMoreElements()) {
                     String headerName = headerNames.nextElement();
+                    logger.debug("Found request HEADER: {}:{}", headerName, servletRequest.getHeader(headerName));
                     if (headerName.equals(provider.getParameterName())) {
                         useProvider = provider;
                         ssoId = servletRequest.getHeader(headerName);
@@ -165,6 +170,7 @@ public class AuthenticationEndpoint {
                 final Enumeration<String> names = servletRequest.getAttributeNames();
                 while (names.hasMoreElements()) {
                     String name = names.nextElement();
+                    logger.debug("Found request ATTRIBUTE: {}:{}", name, servletRequest.getAttribute(name));
                     if (name.equals(provider.getParameterName())) {
                         useProvider = provider;
                         ssoId = (String) servletRequest.getAttribute(name);
@@ -182,6 +188,8 @@ public class AuthenticationEndpoint {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No matching provider found.").build();
         }
 
+        logger.debug("Provider selected: {}", useProvider.getName());
+
         if (ssoId == null) {
             logger.warn("Parameter not provided: {}", useProvider.getParameterName());
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Parameter not provided: " + useProvider.getParameterName()).build();
@@ -194,18 +202,16 @@ public class AuthenticationEndpoint {
             // Create new user
             user = new User();
             user.getUserProperties().put(useProvider.getParameterName(), ssoId);
-            // TODO configurable e-mail attribute name
-            if (StringUtils.isNotEmpty(servletRequest.getHeader("shib-email"))) {
-                user.setEmail(servletRequest.getHeader("shib-email"));
-            } else if (StringUtils.isNotEmpty((String) servletRequest.getAttribute("shib-email"))) {
-                user.setEmail((String) servletRequest.getAttribute("shib-email"));
+            if (EmailValidator.validateEmailAddress(ssoId)) {
+                user.setEmail(ssoId);
             } else {
-                logger.error("No e-mail address found in request, cannot create user.");
+                logger.error("No valid e-mail address found in request, cannot create user.");
                 return Response.status(Response.Status.EXPECTATION_FAILED.getStatusCode(), "No e-mail address found in request, cannot create user.")
                         .build();
             }
             try {
                 DataManager.getInstance().getDao().addUser(user);
+                logger.info("New user created.");
             } catch (DAOException e) {
                 logger.error(e.getMessage(), e);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "User could not be created.").build();
@@ -213,8 +219,10 @@ public class AuthenticationEndpoint {
         }
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
+            logger.debug("Redirecting to {}", redirectUrl);
             servletResponse.sendRedirect(redirectUrl);
         } else if (BeanUtils.getNavigationHelper() != null) {
+            logger.debug("No redirect URL found, redirecting to home");
             servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
         }
 
