@@ -75,7 +75,7 @@ public class CmsPageEditBean implements Serializable {
 
     private static final long serialVersionUID = 7163586584773468296L;
     private static final Logger logger = LogManager.getLogger(CmsPageEditBean.class);
-    
+
     @Inject
     private transient IDAO dao;
     @Inject
@@ -91,9 +91,9 @@ public class CmsPageEditBean implements Serializable {
     private boolean editMode = false;
     private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
     private String selectedComponent = "";
-    
+
     private Map<WidgetDisplayElement, Boolean> sidebarWidgets;
-    
+
     private boolean saveAsTemplate = false;
     private String templateName = "";
     private boolean templateLockComponents = false;
@@ -106,18 +106,20 @@ public class CmsPageEditBean implements Serializable {
             this.sidebarWidgets = Collections.emptyMap();
         }
     }
-    
+
     @PostConstruct
     public void setup() {
         try {
-            long pageId = Long.parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("selectedPageId", "-1"));
-            long templateId = Long.parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("templateId", "-1"));
-            
-            if(pageId > 0) {
+            long pageId = Long
+                    .parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("selectedPageId", "-1"));
+            long templateId =
+                    Long.parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("templateId", "-1"));
+
+            if (pageId > 0) {
                 CMSPage page = this.dao.getCMSPage(pageId);
                 this.setSelectedPage(page);
-                this.editMode = true;                
-            } else if(templateId > -1) {
+                this.editMode = true;
+            } else if (templateId > -1) {
                 this.editMode = false;
                 this.setNewSelectedPage(templateId);
             } else {
@@ -158,16 +160,16 @@ public class CmsPageEditBean implements Serializable {
         } else {
             success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
         }
-        
-        if(saveAsTemplate) {
+
+        if (saveAsTemplate) {
             success = saveTemplate(selectedPage, templateName, templateLockComponents);
-            if(success) {
+            if (success) {
                 saveAsTemplate = false;
                 this.templateLockComponents = false;
                 this.templateName = "";
             }
         }
-        
+
         if (success) {
             Messages.info("cms_pageSaveSuccess");
             logger.trace("reload cms page");
@@ -204,7 +206,6 @@ public class CmsPageEditBean implements Serializable {
         template.setPublished(true);
         return DataManager.getInstance().getDao().addCMSPageTemplate(template);
     }
-    
 
     /**
      * Action method for deleting selectedPage from the database.
@@ -251,7 +252,7 @@ public class CmsPageEditBean implements Serializable {
 
         selectedPage = null;
     }
-    
+
     /**
      * <p>
      * Setter for the field <code>selectedPage</code>.
@@ -275,30 +276,30 @@ public class CmsPageEditBean implements Serializable {
         }
 
     }
-    
+
     /**
-    *
-    * @return
-    */
-   public String getSelectedPageId() {
-       if (selectedPage == null) {
-           return null;
-       }
+     *
+     * @return
+     */
+    public String getSelectedPageId() {
+        if (selectedPage == null) {
+            return null;
+        }
 
-       return String.valueOf(selectedPage.getId());
-   }
+        return String.valueOf(selectedPage.getId());
+    }
 
-   /**
-    *
-    * @param id
-    * @throws DAOException
-    */
-   public void setSelectedPageId(String id) throws DAOException {
-       logger.trace("setSelectedPageId: {}", id);
-       CMSPage page = cmsBean.findPage(id);
-       setSelectedPage(page);
-   }
-    
+    /**
+     *
+     * @param id
+     * @throws DAOException
+     */
+    public void setSelectedPageId(String id) throws DAOException {
+        logger.trace("setSelectedPageId: {}", id);
+        CMSPage page = cmsBean.findPage(id);
+        setSelectedPage(page);
+    }
+
     public CMSPage getSelectedPage() {
         return selectedPage;
     }
@@ -347,7 +348,7 @@ public class CmsPageEditBean implements Serializable {
             page.getSidebarElements().get(i).setOrder(i);
         }
     }
-    
+
     public Map<WidgetDisplayElement, Boolean> getSidebarWidgets() {
         return sidebarWidgets;
     }
@@ -369,29 +370,30 @@ public class CmsPageEditBean implements Serializable {
         resetSelectedWidgets();
         return selected;
     }
-    
+
     public String getSelectedComponent() {
         return selectedComponent;
     }
-    
+
     public void setSelectedComponent(String selectedComponent) {
         this.selectedComponent = selectedComponent;
     }
 
     public List<SelectItem> getAvailableComponents(CMSPage page) {
         Stream<CMSComponent> stream = templateManager.getContentManager().getComponents().stream();
-        if(page != null && page.isContainsPagedComponents()) {
+        if (page != null && page.isContainsPagedComponents()) {
             stream = stream.filter(c -> !c.isPaged());
         }
         Locale locale = BeanUtils.getLocale();
-        List<CMSComponent> components =  stream
-                .sorted((c1,c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale), ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
+        List<CMSComponent> components = stream
+                .sorted((c1, c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale),
+                        ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
                 .collect(Collectors.toList());
-        Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components, component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
-        return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename, c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
+        Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,
+                component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
+        return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename,
+                c -> ViewerResourceBundle.getTranslation(c.getLabel(), locale), c -> ViewerResourceBundle.getTranslation(c.getDescription(), locale));
     }
-
-
 
     /**
      * Get the list of metadata fields which may be displayed. This is the main metadata list
@@ -409,7 +411,6 @@ public class CmsPageEditBean implements Serializable {
                 .collect(Collectors.toList());
 
     }
-    
 
     /**
      * <p>
@@ -428,7 +429,7 @@ public class CmsPageEditBean implements Serializable {
 
         return true;
     }
-    
+
     /**
      * <p>
      * isEditMode.
@@ -450,15 +451,14 @@ public class CmsPageEditBean implements Serializable {
     public void setEditMode(boolean editMode) {
         this.editMode = editMode;
     }
-    
 
     public void setNewSelectedPage() {
         this.selectedPage = new CMSPage();
     }
-    
+
     public void setNewSelectedPage(Long templateId) {
         CMSPageTemplate template = loadTemplate(templateId);
-        if(template == null) {            
+        if (template == null) {
             this.selectedPage = new CMSPage();
         } else {
             this.selectedPage = new CMSPage(template);
@@ -467,10 +467,10 @@ public class CmsPageEditBean implements Serializable {
     }
 
     private CMSPageTemplate loadTemplate(Long templateId) {
-        if(templateId != null) {
+        if (templateId != null) {
             try {
                 CMSPageTemplate template = DataManager.getInstance().getDao().getCMSPageTemplate(templateId);
-                if(template != null)  {
+                if (template != null) {
                     template.initialiseCMSComponents(templateManager);
                 }
                 return template;
@@ -488,7 +488,7 @@ public class CmsPageEditBean implements Serializable {
     public void setPageEditState(CMSPageEditState pageEditState) {
         this.pageEditState = pageEditState;
     }
-    
+
     public boolean deleteComponent(CMSComponent component) {
         return this.selectedPage.removeComponent(component);
     }
@@ -511,8 +511,6 @@ public class CmsPageEditBean implements Serializable {
             logger.error("Cannot add component: No page given");
         }
     }
-    
-
 
     /**
      * Fills all properties of the page with values for which the user has privileges - but only if the user has restricted privileges for that
@@ -542,7 +540,7 @@ public class CmsPageEditBean implements Serializable {
         }
 
     }
-    
+
     public void setSaveAsTemplate(boolean saveAsTemplate) {
         this.saveAsTemplate = saveAsTemplate;
     }
@@ -550,22 +548,22 @@ public class CmsPageEditBean implements Serializable {
     public boolean isSaveAsTemplate() {
         return saveAsTemplate;
     }
-    
+
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
-    
+
     public String getTemplateName() {
-        if(StringUtils.isBlank(this.templateName)) {
+        if (StringUtils.isBlank(this.templateName)) {
             return getSelectedPage().getTitle(IPolyglott.getDefaultLocale());
         }
         return templateName;
     }
-    
+
     public boolean isTemplateLockComponents() {
         return templateLockComponents;
     }
-    
+
     public void setTemplateLockComponents(boolean templateLockComponents) {
         this.templateLockComponents = templateLockComponents;
     }

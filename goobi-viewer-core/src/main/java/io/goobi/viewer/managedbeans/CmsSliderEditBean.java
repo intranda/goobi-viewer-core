@@ -218,7 +218,8 @@ public class CmsSliderEditBean implements Serializable {
                     .filter(Selectable::isSelected)
                     .map(Selectable::getValue)
                     .map(CMSCategory::getId)
-                    .map(l -> l.toString())
+                    .map(l -> l
+                            .toString())
                     .collect(Collectors.toList()));
         }
     }

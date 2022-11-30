@@ -23,7 +23,6 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +55,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -77,17 +75,12 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
-import io.goobi.viewer.model.cms.Selectable;
-import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
-import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
-import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.glossary.Glossary;
@@ -1434,7 +1427,7 @@ public class CmsBean implements Serializable {
         CMSRecordListContent contentItem = page.getPersistentComponents()
                 .stream()
                 .flatMap(c -> c.getContentItems().stream())
-                .filter(item -> item instanceof CMSRecordListContent)
+                .filter(CMSRecordListContent.class::isInstance)
                 .map(CMSRecordListContent.class::cast)
                 .findAny()
                 .orElseThrow(

@@ -23,7 +23,6 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.faces.component.UIComponent;
@@ -39,9 +38,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
-import io.goobi.viewer.model.jsf.DynamicContent;
-import io.goobi.viewer.model.jsf.DynamicContentBuilder;
-import io.goobi.viewer.model.jsf.DynamicContentType;
 
 /**
  * @author florian
@@ -86,19 +82,17 @@ public class CmsDynamicContentBean implements Serializable {
         this.topBarGroup = new HtmlPanelGroup();
         if (this.cmsPage == null) {
             throw new IllegalStateException("CMSPage must be set before loading content");
-        } else {
-            try {
-                List<CMSComponent> components = this.cmsPage.getTopbarComponents();
-                for (CMSComponent component : components) {
-                    UIComponent ui = component.getUiComponent();
-                    this.topBarGroup.getChildren().add(ui);
-                }
-            } catch (PresentationException e) {
-                logger.error("Error building header components for page {}", cmsPage.getId(), e);
-
-            }
         }
+        try {
+            List<CMSComponent> components = this.cmsPage.getTopbarComponents();
+            for (CMSComponent component : components) {
+                UIComponent ui = component.getUiComponent();
+                this.topBarGroup.getChildren().add(ui);
+            }
+        } catch (PresentationException e) {
+            logger.error("Error building header components for page {}", cmsPage.getId(), e);
 
+        }
     }
 
 }
