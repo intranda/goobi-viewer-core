@@ -117,15 +117,15 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
         return null;
     }
 
-    public String getUrl() throws UnsupportedEncodingException, ViewerConfigurationException {
+    public String getUrl() throws UnsupportedEncodingException {
         return getUrl(null, null);
     }
-    
+
     public String getMediaType() {
         return getMediaItem() != null ? getMediaItem().getContentType() : "";
     }
 
-    public String getUrl(String width, String height) throws ViewerConfigurationException, UnsupportedEncodingException {
+    public String getUrl(String width, String height) throws UnsupportedEncodingException {
 
         String contentString = "";
         String type = getMediaType();
@@ -249,7 +249,7 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
     public String getData(Integer w, Integer h) {
         try {
             return getUrl(Optional.ofNullable(w).map(i -> i.toString()).orElse(null), Optional.ofNullable(h).map(i -> i.toString()).orElse(null));
-        } catch (UnsupportedEncodingException | ViewerConfigurationException e) {
+        } catch (UnsupportedEncodingException e) {
             logger.error("Error loading media item url for media item {}. Reason: {}", this.mediaItem, e.toString());
             return "";
         }

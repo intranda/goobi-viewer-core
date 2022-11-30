@@ -111,7 +111,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @Column(name = "lock_components")
     private boolean lockComponents = false;
 
-
     @Column(name = "publication_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private PublicationStatus publicationStatus = PublicationStatus.PRIVATE;
@@ -144,8 +143,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     @PrivateOwned
     @CascadeOnDelete
     private List<PersistentCMSComponent> persistentComponents = new ArrayList<>();
-    
-    @Column(name="lecacy_template")
+
+    @Column(name = "lecacy_template")
     private boolean legacyTemplate = false;
 
     /**
@@ -210,7 +209,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             this.persistentComponents.add(copy);
         }
     }
-    
+
     public CMSPageTemplate(CMSPage original) {
         this.title = new TranslatedText(original.getTitleTranslations());
         this.dateCreated = LocalDateTime.now();
@@ -234,10 +233,10 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             this.persistentComponents.add(copy);
         }
     }
-    
+
     public void initialiseCMSComponents(CMSTemplateManager templateManager) {
         this.cmsComponents = new ArrayList<>();
-        for (PersistentCMSComponent persistentComponent : persistentComponents) {            
+        for (PersistentCMSComponent persistentComponent : persistentComponents) {
             CMSComponent comp = templateManager
                     .getComponent(persistentComponent.getTemplateFilename())
                     .map(c -> new CMSComponent(c, Optional.of(persistentComponent)))
@@ -280,11 +279,10 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             return false;
         CMSPageTemplate other = (CMSPageTemplate) obj;
         if (id == null) {
-            if (other.id != null) {                
+            if (other.id != null) {
                 return false;
-            } else {
-                return super.equals(obj);
             }
+            return super.equals(obj);
         } else if (!id.equals(other.id))
             return false;
         return true;
@@ -640,7 +638,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     public void setDescription(TranslatedText description) {
         this.description = description;
     }
-    
+
     /**
      * <p>
      * Getter for the field <code>subThemeDiscriminatorValue</code>.
@@ -728,7 +726,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
             List<CMSCategory> allCats = DataManager.getInstance().getDao().getAllCategories();
             List<CMSCategory> tempCats = new ArrayList<>();
             for (CMSCategory cat : allCats) {
-                if ( (this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat))) || selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected()) ) {
+                if ((this.categories.contains(cat) && selectableCategories.stream().noneMatch(s -> s.getValue().equals(cat)))
+                        || selectableCategories.stream().anyMatch(s -> s.getValue().equals(cat) && s.isSelected())) {
                     tempCats.add(cat);
                 }
             }
@@ -873,7 +872,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     public void decrementOrder(CMSComponent component) {
         this.setComponentOrder(component, component.getOrder() - 1);
     }
-    
+
     public boolean isFirstComponent(CMSComponent component) {
         return this.cmsComponents.indexOf(component) == 0;
     }
@@ -900,22 +899,23 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     }
 
     public boolean isLockComponents() {
-        return lockComponents ;
+        return lockComponents;
     }
 
     public void setLockComponents(boolean lockComponents) {
         this.lockComponents = lockComponents;
     }
-    
+
     public boolean isLegacyTemplate() {
         return this.legacyTemplate;
     }
-    
+
     public void setLegacyTemplate(boolean legacyTemplate) {
         this.legacyTemplate = legacyTemplate;
     }
-    
-    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {
+
+    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager)
+            throws IllegalArgumentException, IllegalStateException {
         if (templateManager == null) {
             throw new IllegalArgumentException("template manager may not be null");
         }
@@ -923,16 +923,15 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
                 .getComponent(filename)
                 .orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
     }
-    
-    
+
     public boolean isContainsPagedComponents() {
         return this.persistentComponents.stream().anyMatch(PersistentCMSComponent::isPaged);
     }
-    
+
     public String getName() {
         return this.title.getTextOrDefault();
     }
-    
+
     public void setTitleTranslations(TranslatedText title) {
         this.title = title;
     }

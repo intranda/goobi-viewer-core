@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,10 +35,8 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
-import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
-import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -102,7 +99,7 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
-        if(this.browse == null) {            
+        if (this.browse == null) {
             this.browse = this.initBrowse();
         }
 
@@ -149,6 +146,5 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
     public boolean isEmpty() {
         return StringUtils.isBlank(solrField);
     }
-    
 
 }

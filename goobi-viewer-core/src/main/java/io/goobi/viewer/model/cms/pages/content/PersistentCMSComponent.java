@@ -54,7 +54,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cms_components")
@@ -97,7 +96,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     @JoinTable(name = "cms_component_attribute_map", joinColumns = @JoinColumn(name = "attribute_id"))
     @MapKeyColumn(name = "component_id")
     @Column(name = "cms_component_attributes")
-    Map<String, String> attributes = new HashMap<>();
+    private Map<String, String> attributes = new HashMap<>();
 
     /**
      * JPA contrutor
@@ -278,24 +277,24 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     }
-    
+
     public Optional<CMSContent> getContentByItemId(String itemId) {
         return this.contentItems.stream().filter(c -> c.getItemId().equals(itemId)).findAny();
     }
-    
-    
+
     @SuppressWarnings("unchecked")
     public <T extends CMSContent> T getFirstContentOfType(Class<? extends CMSContent> clazz) {
         return (T) this.contentItems.stream()
-        .filter(c -> c.getClass().equals(clazz))
-        .findFirst().orElse(null);
+                .filter(c -> c.getClass().equals(clazz))
+                .findFirst()
+                .orElse(null);
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T extends CMSContent> List<T> getAllContentOfType(Class<? extends CMSContent> clazz) {
         return (List<T>) this.contentItems.stream()
-        .filter(c -> c.getClass().equals(clazz))
-        .collect(Collectors.toList());
+                .filter(c -> c.getClass().equals(clazz))
+                .collect(Collectors.toList());
     }
 
     public boolean isPaged() {

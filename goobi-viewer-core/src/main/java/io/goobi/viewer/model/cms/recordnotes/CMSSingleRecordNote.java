@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
@@ -41,6 +42,8 @@ import jakarta.persistence.Entity;
 @Entity
 @DiscriminatorValue("SINGLE")
 public class CMSSingleRecordNote extends CMSRecordNote {
+
+    private static final long serialVersionUID = -4019734190447608999L;
 
     private static final Logger logger = LogManager.getLogger(CMSSingleRecordNote.class);
 
@@ -128,12 +131,12 @@ public class CMSSingleRecordNote extends CMSRecordNote {
         if (StringUtils.isNotBlank(filter)) {
             return getNoteTitle().getValues()
                     .stream()
-                    .map(pair -> pair.getValue())
+                    .map(ValuePair::getValue)
                     .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase())) ||
                     getRecordPi().toLowerCase().contains(filter.toLowerCase()) ||
                     getRecordTitle().getValues()
                             .stream()
-                            .map(pair -> pair.getValue())
+                            .map(ValuePair::getValue)
                             .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
         }
         return true;

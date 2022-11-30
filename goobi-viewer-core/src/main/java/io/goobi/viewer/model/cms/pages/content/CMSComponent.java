@@ -140,21 +140,22 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public CMSContentItem getFirstContentItem() {
         return this.contentItems.stream().findFirst().orElse(null);
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T extends CMSContent> T getFirstContentOfType(Class<? extends CMSContent> clazz) {
         return (T) this.contentItems.stream()
-        .map(CMSContentItem::getContent)
-        .filter(c -> c.getClass().equals(clazz))
-        .findFirst().orElse(null);
+                .map(CMSContentItem::getContent)
+                .filter(c -> c.getClass().equals(clazz))
+                .findFirst()
+                .orElse(null);
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T extends CMSContent> List<T> getAllContentOfType(Class<? extends CMSContent> clazz) {
         return (List<T>) this.contentItems.stream()
-        .map(CMSContentItem::getContent)
-        .filter(c -> c.getClass().equals(clazz))
-        .collect(Collectors.toList());
+                .map(CMSContentItem::getContent)
+                .filter(c -> c.getClass().equals(clazz))
+                .collect(Collectors.toList());
     }
 
     public CMSContentItem getFirstContentItem(String className) {
@@ -309,12 +310,13 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 .findAny()
                 .orElse(null);
         if (content != null) {
-            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), this, item.isRequired());
-        } else {
-            CMSContentItem newContentItem = new CMSContentItem(item);
-            newContentItem.getContent().setOwningComponent(this.persistentComponent);
-            return newContentItem;            
+            return new CMSContentItem(item.getItemId(), content, item.getLabel(), item.getDescription(), item.getJsfComponent(), this,
+                    item.isRequired());
         }
+        
+        CMSContentItem newContentItem = new CMSContentItem(item);
+        newContentItem.getContent().setOwningComponent(this.persistentComponent);
+        return newContentItem;
 
     }
 
@@ -393,11 +395,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public long getPersistenceId() {
         return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getId).orElse(0l);
     }
- 
+
     public CMSPage getOwningPage() {
         return Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getOwningPage).orElse(null);
     }
-    
+
     public boolean isPaged() {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
     }

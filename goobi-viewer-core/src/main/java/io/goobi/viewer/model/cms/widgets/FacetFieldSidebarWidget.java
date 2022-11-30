@@ -39,6 +39,8 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("FacetFieldSidebarWidget")
 public class FacetFieldSidebarWidget extends CustomSidebarWidget {
 
+    private static final long serialVersionUID = 265864701646294713L;
+
     @Column(name = "facet_field", nullable = true, columnDefinition = "TINYTEXT")
     private String facetField = "";
     @Column(name = "filter_query", nullable = true, columnDefinition = "MEDIUMTEXT")

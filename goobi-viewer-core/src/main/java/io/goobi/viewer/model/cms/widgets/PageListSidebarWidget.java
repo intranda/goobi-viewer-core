@@ -44,6 +44,8 @@ import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 @DiscriminatorValue("PageListSidebarWidget")
 public class PageListSidebarWidget extends CustomSidebarWidget {
 
+    private static final long serialVersionUID = -1795376189059189147L;
+
     @Column(name = "page_ids", nullable = true, columnDefinition = "MEDIUMTEXT")
     @Convert(converter = NumberListConverter.class)
     private List<Long> pageIds = new ArrayList<>();

@@ -41,6 +41,8 @@ import jakarta.persistence.JoinColumn;
 @DiscriminatorValue("AUTOMATIC")
 public class CMSSidebarElementAutomatic extends CMSSidebarElement {
 
+    private static final long serialVersionUID = 6660551841281434712L;
+
     @JoinColumn(name = "geomap_id")
     private GeoMap map;
 

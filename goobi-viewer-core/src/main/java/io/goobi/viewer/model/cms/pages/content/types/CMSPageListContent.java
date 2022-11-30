@@ -85,7 +85,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
     private int nestedPagesCount = 0;
     @Transient
     @Inject
-    CMSTemplateManager templateManager;    
+    CMSTemplateManager templateManager;
 
     public CMSPageListContent() {
         super();
@@ -121,7 +121,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
                 .getDao()
                 .getAllCategories()
                 .stream()
-                .map(cat -> new CheckboxSelectable<>(this.categories, cat, c -> c.getName()))
+                .map(cat -> new CheckboxSelectable<>(this.categories, cat, CMSCategory::getName))
                 .collect(Collectors.toList());
     }
 
@@ -210,7 +210,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder,
      * @throws DAOException
      */
     private List<CMSPage> loadNestedPages(boolean random, boolean paged) throws DAOException {
-        int pageNo = getCurrentListPage();      
+        int pageNo = getCurrentListPage();
         int size = getItemsPerView();
         int offset = (pageNo - 1) * size;
         AtomicInteger totalPages = new AtomicInteger(0);

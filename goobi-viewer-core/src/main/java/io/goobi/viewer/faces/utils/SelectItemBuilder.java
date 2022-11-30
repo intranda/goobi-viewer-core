@@ -38,38 +38,48 @@ import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * Tools to create SelectItem collections to use in jsf components
+ * 
  * @author florian
  *
  */
 public class SelectItemBuilder {
 
+    private SelectItemBuilder() {
+    }
+
     /**
      * Sort the given list of items into buckets for each starting letter
-     * @param items     List of items that should be sorted
-     * @param sortValueSupplier     Function mapping an item to the sting according to which it should be sorted
-     * @return  Map with starting letters of sort values as keys
+     * 
+     * @param items List of items that should be sorted
+     * @param sortValueSupplier Function mapping an item to the sting according to which it should be sorted
+     * @return Map with starting letters of sort values as keys
      */
     public static <T> SortedMap<String, List<T>> getAsAlphabeticallySortedMap(List<T> items, Function<T, String> sortValueSupplier) {
-        Map<String, List<T>> unsortedMap = items.stream().collect(Collectors.toMap(
-                i -> sortValueSupplier.apply(i).substring(0, 1).toUpperCase(),    //key is the first character of the sortValue 
-                Arrays::asList,                                                   //values are lists of <T>
-                (l1, l2) -> new ArrayList<>(CollectionUtils.union(l1, l2))));     //combine lists by building union
-        SortedMap<String, List<T>> sortedMap = new TreeMap<>(unsortedMap);
-        return sortedMap;
+        Map<String, List<T>> unsortedMap = items.stream()
+                .collect(Collectors.toMap(
+                        i -> sortValueSupplier.apply(i).substring(0, 1).toUpperCase(), //key is the first character of the sortValue 
+                        Arrays::asList, //values are lists of <T>
+                        (l1, l2) -> new ArrayList<>(CollectionUtils.union(l1, l2)))); //combine lists by building union
+        return new TreeMap<>(unsortedMap);
     }
 
     /**
      * Create a List of {@link SelectItem selectItems} from the given map, grouped into OptGroups for each map key
+     * 
      * @param sortedMap Map of items to include in selectItems
      * @return
      */
-    public static <T> List<SelectItem> getAsGroupedSelectItems(Map<String, List<T>> map, Function<T, Object> valueSupplier, Function<T, String> labelSupplier, Function<T, String> descriptionSupplier) {
-        List<SelectItem> items = new ArrayList<>(map.size()); 
+    public static <T> List<SelectItem> getAsGroupedSelectItems(Map<String, List<T>> map, Function<T, Object> valueSupplier,
+            Function<T, String> labelSupplier, Function<T, String> descriptionSupplier) {
+        List<SelectItem> items = new ArrayList<>(map.size());
         for (Entry<String, List<T>> entry : map.entrySet()) {
             String groupName = entry.getKey();
             List<T> groupValues = entry.getValue();
             SelectItemGroup group = new SelectItemGroup(groupName);
-            SelectItem[] groupItems = groupValues.stream().map(value -> new SelectItem(valueSupplier.apply(value), labelSupplier.apply(value), descriptionSupplier.apply(value))).collect(Collectors.toList()).toArray(new SelectItem[0]);
+            SelectItem[] groupItems = groupValues.stream()
+                    .map(value -> new SelectItem(valueSupplier.apply(value), labelSupplier.apply(value), descriptionSupplier.apply(value)))
+                    .collect(Collectors.toList())
+                    .toArray(new SelectItem[0]);
             group.setSelectItems(groupItems);
             items.add(group);
         }

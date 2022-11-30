@@ -42,6 +42,8 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("HtmlSidebarWidget")
 public class HtmlSidebarWidget extends CustomSidebarWidget {
 
+    private static final long serialVersionUID = 3921353218873876880L;
+
     @Column(name = "html_text", columnDefinition = "LONGTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText htmlText = new TranslatedText(IPolyglott.getLocalesStatic());

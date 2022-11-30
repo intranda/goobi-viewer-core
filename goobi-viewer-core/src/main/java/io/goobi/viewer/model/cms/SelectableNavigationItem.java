@@ -32,6 +32,8 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
  */
 public class SelectableNavigationItem extends CMSNavigationItem {
 
+    private static final long serialVersionUID = -8569951374947384020L;
+
     private boolean selected = false;
 
     /**

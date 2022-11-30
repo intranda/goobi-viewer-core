@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.api.rest.v1;
 
-import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.ws.rs.ApplicationPath;
@@ -31,7 +30,6 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.PersistentStorageBean;
@@ -47,8 +45,6 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 @ViewerRestServiceBinding
 public class Application extends ResourceConfig {
 
-    
-    
     /**
      * <p>
      * Constructor for ViewerApplication.
@@ -92,7 +88,6 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "io.swagger");
-
 
     }
 

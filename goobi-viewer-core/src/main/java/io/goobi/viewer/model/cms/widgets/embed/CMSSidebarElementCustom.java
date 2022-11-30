@@ -39,6 +39,8 @@ import jakarta.persistence.JoinColumn;
 @DiscriminatorValue("CUSTOM")
 public class CMSSidebarElementCustom extends CMSSidebarElement {
 
+    private static final long serialVersionUID = -8790669781907905873L;
+
     @JoinColumn(name = "custom_widget_id")
     private CustomSidebarWidget widget;
 

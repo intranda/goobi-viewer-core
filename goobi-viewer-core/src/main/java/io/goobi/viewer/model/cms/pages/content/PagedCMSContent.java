@@ -28,7 +28,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 public interface PagedCMSContent {
 
     public PersistentCMSComponent getOwningComponent();
-    
+
     public default int getCurrentListPage() {
         return Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getListPage).orElse(1);
     }

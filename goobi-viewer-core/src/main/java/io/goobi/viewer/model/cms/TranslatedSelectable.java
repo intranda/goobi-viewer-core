@@ -30,6 +30,8 @@ import java.util.Locale;
  */
 public class TranslatedSelectable<T> extends Selectable<T> {
 
+    private static final long serialVersionUID = -8860896349160943598L;
+
     private Locale locale;
 
     /**

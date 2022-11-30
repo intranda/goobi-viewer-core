@@ -38,6 +38,8 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("DEFAULT")
 public class CMSSidebarElementDefault extends CMSSidebarElement {
 
+    private static final long serialVersionUID = 3406687346141124347L;
+
     /**
      * Empty constructor for the DAO
      */

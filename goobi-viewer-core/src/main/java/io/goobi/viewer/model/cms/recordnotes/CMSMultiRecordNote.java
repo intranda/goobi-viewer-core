@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -52,10 +53,12 @@ import jakarta.persistence.Transient;
 @DiscriminatorValue("MULTI")
 public class CMSMultiRecordNote extends CMSRecordNote {
 
+    private static final long serialVersionUID = -7380697992750404715L;
+
     private static final Logger logger = LogManager.getLogger(CMSMultiRecordNote.class);
 
     /**
-     * PI of the record this note relates to. Should be effectively final, but can't be for DAO campatibility
+     * PI of the record this note relates to. Should be effectively final, but can't be for DAO compatibility
      */
     @Column(name = "query", nullable = true)
     private String query;
@@ -164,7 +167,7 @@ public class CMSMultiRecordNote extends CMSRecordNote {
         if (StringUtils.isNotBlank(filter)) {
             return getNoteTitle().getValues()
                     .stream()
-                    .map(pair -> pair.getValue())
+                    .map(ValuePair::getValue)
                     .anyMatch(title -> title.toLowerCase().contains(filter.toLowerCase()));
         }
 

@@ -45,27 +45,29 @@ import io.goobi.viewer.model.jsf.JsfComponent;
 public class CMSComponentReader {
 
     private static final Logger logger = LogManager.getLogger(CMSComponentReader.class);
-    
+
     public CMSComponent read(Path templateFile) throws IOException, JDOMException {
-        
+
         Document templateDoc = XmlTools.readXmlFile(templateFile);
-        
-        String jsfComponentLibrary = XmlTools.evaluateToFirstElement("jsfComponent/library", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
-        String jsfComponentName = XmlTools.evaluateToFirstElement("jsfComponent/name", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
+
+        String jsfComponentLibrary =
+                XmlTools.evaluateToFirstElement("jsfComponent/library", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
+        String jsfComponentName =
+                XmlTools.evaluateToFirstElement("jsfComponent/name", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         String label = XmlTools.evaluateToFirstElement("label", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         String desc = XmlTools.evaluateToFirstElement("description", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         String icon = XmlTools.evaluateToFirstElement("icon", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
-        
+
         String scopeString = XmlTools.evaluateToFirstElement("scope", templateDoc.getRootElement(), null).map(Element::getText).orElse(null);
         CMSComponentScope scope = CMSComponentScope.PAGEVIEW;
-        if(StringUtils.isNotBlank(scopeString)) {
+        if (StringUtils.isNotBlank(scopeString)) {
             try {
                 scope = CMSComponentScope.valueOf(scopeString.toUpperCase());
-            } catch(IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 logger.error("Unable to set scope for component template {}: {} is not a known scope", templateFile.getFileName(), scopeString);
             }
         }
-        
+
         List<Element> attributeElements = XmlTools.evaluateToElements("attribute", templateDoc.getRootElement(), null);
         Map<String, CMSComponentAttribute> attributes = new HashMap<>(attributeElements.size());
         for (Element element : attributeElements) {
@@ -76,65 +78,70 @@ public class CMSComponentReader {
             boolean display = Optional.ofNullable(element.getAttributeValue("display")).map(Boolean::parseBoolean).orElse(true);
             List<Option> options = XmlTools.evaluateToElements("value", element, null).stream().map(this::createOption).collect(Collectors.toList());
             String value = XmlTools.evaluateToFirstElement("value[@default='true']", element, null).map(Element::getText).orElse("");
-            if(!display && StringUtils.isBlank(value)) {
+            if (!display && StringUtils.isBlank(value)) {
                 value = options.iterator().next().getValue();
             }
             CMSComponentAttribute attr = new CMSComponentAttribute(attrName, attrLabel, attrType, display, bool, options, value);
             attributes.put(attr.getName(), attr);
         }
-        
+
         String filename = FilenameUtils.getBaseName(templateFile.getFileName().toString());
-        CMSComponent component = new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes);
-        
+        CMSComponent component =
+                new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes);
+
         List<Element> contentElements = XmlTools.evaluateToElements("content/item", templateDoc.getRootElement(), null);
-        
+
         for (Element element : contentElements) {
-         
+
             String className = XmlTools.evaluateToFirstElement("className", element, null).map(Element::getText).orElse(null);
             try {
-                String elementJsfComponentLibrary = XmlTools.evaluateToFirstElement("jsfComponent/library", element, null).map(Element::getText).orElse(null);
-                String elementJsfComponentName = XmlTools.evaluateToFirstElement("jsfComponent/name", element, null).map(Element::getText).orElse(null);
+                String elementJsfComponentLibrary =
+                        XmlTools.evaluateToFirstElement("jsfComponent/library", element, null).map(Element::getText).orElse(null);
+                String elementJsfComponentName =
+                        XmlTools.evaluateToFirstElement("jsfComponent/name", element, null).map(Element::getText).orElse(null);
                 String elementLabel = XmlTools.evaluateToFirstElement("label", element, null).map(Element::getText).orElse(null);
                 String elementDesc = XmlTools.evaluateToFirstElement("description", element, null).map(Element::getText).orElse(null);
                 String componentId = element.getAttributeValue("id");
                 String requiredString = element.getAttributeValue("required", "false");
                 boolean required = !requiredString.equalsIgnoreCase("false");
-                
+
                 CMSContent content = createContentFromClassName(className);
-                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc, new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), component, required);
+                CMSContentItem item = new CMSContentItem(componentId, content, elementLabel, elementDesc,
+                        new JsfComponent(elementJsfComponentLibrary, elementJsfComponentName), component, required);
 
                 component.addContentItem(item);
             } catch (InstantiationException e) {
                 logger.error("Error instantiating CMSContent from class '{}'", className);
             }
         }
-        
+
         return component;
-        
+
     }
 
     private Option createOption(Element element) {
         String label = element.getAttributeValue("label");
         String value = element.getText();
-        if(StringUtils.isBlank(label)) {
+        if (StringUtils.isBlank(label)) {
             label = value;
         }
         return new Option(value, label);
     }
-    
+
     private static CMSContent createContentFromClassName(String className)
             throws InstantiationException {
-        try {            
+        try {
             Class<?> clazz = Class.forName(className);
             Constructor<?> ctor = clazz.getConstructor();
             Object object = ctor.newInstance();
-            if(object instanceof CMSContent) {            
-                return (CMSContent)object;
+            if (object instanceof CMSContent) {
+                return (CMSContent) object;
             }
             throw new InstantiationException("Class '" + className + "' is not of type 'CMSContent'");
-        } catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NullPointerException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                | SecurityException | NullPointerException e) {
             throw new InstantiationException(e.toString());
         }
     }
-    
+
 }

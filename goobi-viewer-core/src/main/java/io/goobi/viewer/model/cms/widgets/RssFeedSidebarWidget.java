@@ -37,6 +37,8 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("RssFeedSidebarWidget")
 public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
+    private static final long serialVersionUID = 6410849010435447708L;
+
     @Column(name = "filter_query", nullable = true, columnDefinition = "MEDIUMTEXT")
     private String filterQuery = "";
     @Column(name = "sort_field", nullable = true, columnDefinition = "TEXT")

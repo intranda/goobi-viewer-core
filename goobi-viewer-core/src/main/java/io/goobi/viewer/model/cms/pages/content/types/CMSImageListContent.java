@@ -153,7 +153,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
                 .orElse(getLegacyTileGridUrl());
     }
 
-    private String buildTilegridUrl(AbstractApiUrlManager urls, String tags, int imagesPerView, int priorityImagesPerView) {
+    private static String buildTilegridUrl(AbstractApiUrlManager urls, String tags, int imagesPerView, int priorityImagesPerView) {
         ApiPath path = urls.path(CMS_MEDIA)
                 .query("max", imagesPerView)
                 .query("prioritySlots", priorityImagesPerView)

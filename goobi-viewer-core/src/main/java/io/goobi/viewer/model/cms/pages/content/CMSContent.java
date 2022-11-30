@@ -69,8 +69,8 @@ public abstract class CMSContent {
     @ManyToOne
     @JoinColumn(name = "owning_component_id")
     private PersistentCMSComponent owningComponent;
-    
-    @Column(name="required")
+
+    @Column(name = "required")
     private boolean required = false;
 
     public abstract String getBackendComponentName();
@@ -158,11 +158,11 @@ public abstract class CMSContent {
     public String getData() {
         return this.getData((Integer) null, (Integer) null);
     }
-    
+
     public boolean isRequired() {
         return required;
     }
-    
+
     public void setRequired(boolean required) {
         this.required = required;
     }

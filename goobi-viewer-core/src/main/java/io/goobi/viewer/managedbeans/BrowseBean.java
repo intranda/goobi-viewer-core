@@ -1062,7 +1062,7 @@ public class BrowseBean implements Serializable {
     public long getRecordCount(String collectionField, String collectionName) {
         CollectionView view = this.getOrCreateCollection(collectionField);
         return Optional.ofNullable(view.getCollectionElement(collectionName))
-                .map(e -> e.getNumberOfVolumes())
+                .map(BrowseDcElement::getNumberOfVolumes)
                 .orElse(0l);
     }
 }

@@ -150,13 +150,13 @@ public class CMSMediaResource {
         if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
         }
-        
+
         List<CMSMediaItem> items = DataManager.getInstance()
                 .getDao()
                 .getAllCMSMediaItems()
                 .stream()
                 .filter(item -> tagList.isEmpty() ||
-                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(tagList::contains))
+                        item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(tagList::contains))
                 .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
                 .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
@@ -386,8 +386,8 @@ public class CMSMediaResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response
             uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
-            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
-            throws DAOException {
+                    @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
+                    throws DAOException {
 
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();

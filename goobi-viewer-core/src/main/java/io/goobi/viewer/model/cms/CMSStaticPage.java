@@ -121,7 +121,7 @@ public class CMSStaticPage implements Serializable {
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = Optional.ofNullable(cmsPage);
-        setCmsPageId(this.cmsPage.map(page -> page.getId()).orElse(null));
+        setCmsPageId(this.cmsPage.map(CMSPage::getId).orElse(null));
     }
 
     /**
@@ -193,7 +193,7 @@ public class CMSStaticPage implements Serializable {
     public void setCmsPageId(Long cmsPageId) {
         this.cmsPageId = cmsPageId;
         Optional<CMSPage> localCmsPage = getCmsPageOptional();
-        if (!localCmsPage.isPresent() || localCmsPage.map(page -> page.getId()).map(id -> !id.equals(cmsPageId)).orElse(true)) {
+        if (!localCmsPage.isPresent() || localCmsPage.map(CMSPage::getId).map(id1 -> !id1.equals(cmsPageId)).orElse(true)) {
             updateCmsPage();
         }
     }
@@ -202,9 +202,9 @@ public class CMSStaticPage implements Serializable {
      * @param cmsPageId2
      */
     private void updateCmsPage() {
-        getCmsPageId().ifPresent(id -> {
+        getCmsPageId().ifPresent(id1 -> {
             try {
-                this.cmsPage = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(id));
+                this.cmsPage = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(id1));
             } catch (DAOException e) {
                 this.cmsPage = Optional.empty();
             }

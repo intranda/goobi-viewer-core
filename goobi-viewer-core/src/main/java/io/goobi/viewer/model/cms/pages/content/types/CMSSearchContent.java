@@ -77,7 +77,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     private SearchFunctionality initSearch() {
         if (this.getOwningComponent() != null) {
             SearchFunctionality func = new SearchFunctionality(this.searchPrefix,
-                    Optional.ofNullable(this.getOwningComponent()).map(c -> c.getOwningPage()).map(p -> p.getPageUrl()).orElse(""));
+                    Optional.ofNullable(this.getOwningComponent()).map(PersistentCMSComponent::getOwningPage).map(CMSPage::getPageUrl).orElse(""));
             func.setPageNo(getCurrentListPage());
             func.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             return func;
@@ -122,7 +122,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults) throws PresentationException {
-        if(this.search == null) {
+        if (this.search == null) {
             this.search = initSearch();
         }
         try {
@@ -175,7 +175,6 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     public Functionality getFunctionality() {
         return getSearch();
     }
- 
 
     @Override
     public boolean isEmpty() {

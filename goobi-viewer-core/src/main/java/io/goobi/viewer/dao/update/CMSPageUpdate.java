@@ -33,8 +33,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.inject.Inject;
-
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -73,9 +71,8 @@ public class CMSPageUpdate implements IModelUpdate {
         if (!dao.tableExists("cms_content_items")) {
             return false;
         }
-        
-        this.contentConverter = new CMSContentConverter(dao);
 
+        this.contentConverter = new CMSContentConverter(dao);
 
         List<Map<String, Object>> languageVersions = getTableData(dao, "cms_page_language_versions");
         List<Map<String, Object>> contentItems = getTableData(dao, "cms_content_items");
@@ -85,7 +82,6 @@ public class CMSPageUpdate implements IModelUpdate {
         }
 
         List<Map<String, Object>> pages = getTableData(dao, "cms_pages");
-
 
         /*Map page ids to a map of all owned languageVersions mapped to language*/
         Map<Long, Map<String, Map<String, Object>>> languageVersionMap = languageVersions.stream()
@@ -147,7 +143,7 @@ public class CMSPageUpdate implements IModelUpdate {
                     PersistentCMSComponent component = new PersistentCMSComponent(componentTemplate, contentMap.values());
                     page.addPersistentComponent(component);
                     List<CMSPage> pagesOfTemplate = pageTemplateIdMap.get(legacyPageTemplateId);
-                    if(pagesOfTemplate != null) {
+                    if (pagesOfTemplate != null) {
                         pagesOfTemplate.add(page);
                     } else {
                         logger.warn("No cms template found with id {}: Cannot update cmsPage {}", legacyPageTemplateId, page.getId());
@@ -217,9 +213,9 @@ public class CMSPageUpdate implements IModelUpdate {
                 sliderContent.setSliderId(topbarSliderId);
             }
             return Optional.ofNullable(component);
-        } else {
-            return Optional.empty();
         }
+
+        return Optional.empty();
     }
 
     /**

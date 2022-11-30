@@ -36,9 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -61,7 +59,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -79,7 +76,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
-import io.goobi.viewer.model.viewer.Feedback;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import jakarta.mail.MessagingException;
 
@@ -513,15 +509,15 @@ public class UserBean implements Serializable {
 
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
-                        .ifPresentOrElse(bean -> bean.invalidate(), () -> {
+                        .ifPresentOrElse(CollectionViewBean::invalidate, () -> {
                             throw new IllegalStateException("Cannot access collectionViewBean to invalidate");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
-                        .ifPresentOrElse(bean -> bean.resetAccess(), () -> {
+                        .ifPresentOrElse(ActiveDocumentBean::resetAccess, () -> {
                             throw new IllegalStateException("Cannot access activeDocumentBean to resetAccess");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
-                        .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {
+                        .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
                             throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
             } catch (Exception e) {
