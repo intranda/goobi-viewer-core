@@ -190,6 +190,26 @@ public class AuthenticationEndpoint {
         User user = useProvider.loadUser(ssoId);
         if (user != null) {
             userBean.setUser(user);
+        } else {
+            // Create new user
+            user = new User();
+            user.getUserProperties().put(useProvider.getParameterName(), ssoId);
+            // TODO configurable e-mail attribute name
+            if (StringUtils.isNotEmpty(servletRequest.getHeader("shib-email"))) {
+                user.setEmail(servletRequest.getHeader("shib-email"));
+            } else if (StringUtils.isNotEmpty((String) servletRequest.getAttribute("shib-email"))) {
+                user.setEmail((String) servletRequest.getAttribute("shib-email"));
+            } else {
+                logger.error("No e-mail address found in request, cannot create user.");
+                return Response.status(Response.Status.EXPECTATION_FAILED.getStatusCode(), "No e-mail address found in request, cannot create user.")
+                        .build();
+            }
+            try {
+                DataManager.getInstance().getDao().addUser(user);
+            } catch (DAOException e) {
+                logger.error(e.getMessage(), e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "User could not be created.").build();
+            }
         }
 
         if (StringUtils.isNotEmpty(redirectUrl)) {

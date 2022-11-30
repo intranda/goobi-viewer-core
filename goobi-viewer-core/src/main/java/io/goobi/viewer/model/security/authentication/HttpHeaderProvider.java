@@ -115,7 +115,6 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                 logger.error("{} found on multiple users: {}", parameterName, parameterValue);
             }
             logger.trace("No user found for {}={}", parameterName, parameterValue);
-            // TODO add user to db?
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
