@@ -75,6 +75,25 @@ public class ConfigurationTest extends AbstractTest {
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
     /**
+     * @see Configuration#getConfigLocalPath()
+     * @verifies return environment variable value if available
+     */
+    @Test
+    public void getConfigLocalPath_shouldReturnEnvironmentVariableValueIfAvailable() throws Exception {
+        System.setProperty("configFolder", "/opt/digiverso/viewer/config_other/");
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().getConfigLocalPath().endsWith("/opt/digiverso/viewer/config_other/"));
+    }
+
+    /**
+     * @see Configuration#getConfigLocalPath()
+     * @verifies add trailing slash
+     */
+    @Test
+    public void getConfigLocalPath_shouldAddTrailingSlash() throws Exception {
+        Assert.assertEquals("target/configFolder_value/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+    }
+
+    /**
      * @see Configuration#getBreadcrumbsClipping()
      * @verifies return correct value
      */
