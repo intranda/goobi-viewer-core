@@ -300,6 +300,7 @@ public class UserBean implements Serializable {
         }
         logger.trace("login");
         if (provider != null) {
+            provider.setRedirectUrl(redirectUrl);
             provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 

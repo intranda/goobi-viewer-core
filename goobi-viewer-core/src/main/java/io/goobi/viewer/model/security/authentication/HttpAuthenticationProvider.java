@@ -69,6 +69,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected final String image;
     protected final long timeoutMillis;
     protected List<String> addUserToGroups;
+    protected String redirectUrl;
 
     /**
      * <p>
@@ -189,6 +190,20 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {
         this.addUserToGroups = addUserToGroups;
+    }
+
+    /**
+     * @return the redirectUrl
+     */
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    /**
+     * @param redirectUrl the redirectUrl to set
+     */
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
     }
 
     /**

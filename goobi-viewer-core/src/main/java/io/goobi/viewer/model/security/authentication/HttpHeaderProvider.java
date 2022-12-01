@@ -76,9 +76,10 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     @Override
     public CompletableFuture<LoginResult> login(String ssoId, String password) throws AuthenticationProviderException {
         if (StringUtils.isNotEmpty(url)) {
+            String fullUrl = url + (StringUtils.isNoneEmpty(redirectUrl) ? "?redirectUrl=" + redirectUrl : "");
             try {
-                logger.trace("Redirecting to: {}", url);
-                BeanUtils.getResponse().sendRedirect(url);
+                logger.trace("Redirecting to: {}", fullUrl);
+                BeanUtils.getResponse().sendRedirect(fullUrl);
             } catch (IOException e) {
                 throw new AuthenticationProviderException(e);
             }
