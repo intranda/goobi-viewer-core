@@ -330,7 +330,7 @@ public class UserBean implements Serializable {
                 }
             } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
                 Messages.error("errLoginWrong");
-            } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
+            } else if (result.getUser().map(User::isSuspended).orElse(false)) {
                 Messages.error("errLoginWrong");
             } else if (oUser.isPresent()) { //login successful
                 try {

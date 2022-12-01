@@ -24,6 +24,8 @@ package io.goobi.viewer.api.rest.v1.authentication;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,8 +51,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
+import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -195,6 +199,9 @@ public class AuthenticationEndpoint {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "User could not be created.").build();
             }
         }
+
+        useProvider
+                .setLoginResult(new LoginResult(servletRequest, servletResponse, Optional.ofNullable(user), user.isSuspended() || !user.isActive()));
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
             logger.debug("Redirecting to {}", redirectUrl);

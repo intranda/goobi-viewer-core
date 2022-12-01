@@ -185,4 +185,8 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     public String getParameterName() {
         return parameterName;
     }
+
+    public void setLoginResult(LoginResult loginResult) {
+        this.loginResult = loginResult;
+    }
 }
