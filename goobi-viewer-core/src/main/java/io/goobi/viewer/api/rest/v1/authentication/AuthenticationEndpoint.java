@@ -23,7 +23,6 @@ package io.goobi.viewer.api.rest.v1.authentication;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -180,6 +179,7 @@ public class AuthenticationEndpoint {
             // Create new user
             user = new User();
             user.getUserProperties().put(useProvider.getParameterName(), ssoId);
+            user.setActive(true);
             if (EmailValidator.validateEmailAddress(ssoId)) {
                 user.setEmail(ssoId);
             } else {
