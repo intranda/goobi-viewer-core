@@ -99,34 +99,22 @@ public class SearchHit implements Comparable<SearchHit> {
         GROUP, // convolute/series
         CMS; // CMS page type for search hits
 
+        /**
+         * 
+         * @param name
+         * @return
+         * @should return all known types correctly
+         * @should return null if name unknown
+         */
         public static HitType getByName(String name) {
             if (name != null) {
-                switch (name) {
-                    case "ACCESSDENIED":
-                        return ACCESSDENIED;
-                    case "DOCSTRCT":
-                        return DOCSTRCT;
-                    case "PAGE":
-                        return PAGE;
-                    case "EVENT":
-                        return EVENT;
-                    case "CMS":
-                    case "OVERVIEWPAGE":
-                        return CMS;
-                    case "UGC":
-                        return UGC;
-                    case "METADATA":
-                        return METADATA;
-                    case "PERSON":
-                        return PERSON;
-                    case "CORPORATION":
-                        return CORPORATION;
-                    case "ADDRESS":
-                        return ADDRESS;
-                    case "COMMENT":
-                        return COMMENT;
-                    default:
-                        return null;
+                if ("OVERVIEWPAGE".equals(name)) {
+                    return HitType.CMS;
+                }
+                for (HitType type : HitType.values()) {
+                    if (type.name().equals(name)) {
+                        return type;
+                    }
                 }
             }
 
@@ -389,6 +377,8 @@ public class SearchHit implements Comparable<SearchHit> {
      * Creates child hit elements for each hit matching a CMS page text, if CMS page texts were also searched.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should do nothing if searchTerms do not contain key
+     * @should do nothing if no cms pages for record found
      */
     public void addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {

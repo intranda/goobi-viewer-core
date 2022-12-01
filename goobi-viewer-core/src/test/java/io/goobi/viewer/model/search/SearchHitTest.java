@@ -50,6 +50,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
+    
 
     /**
      * @see SearchHit#populateFoundMetadata(SolrDocument)

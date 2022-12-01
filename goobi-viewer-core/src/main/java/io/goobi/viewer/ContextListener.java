@@ -37,16 +37,14 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.model.security.Role;
 
 /**
  * <p>
