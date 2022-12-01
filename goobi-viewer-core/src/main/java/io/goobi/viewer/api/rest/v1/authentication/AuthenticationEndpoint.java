@@ -153,32 +153,14 @@ public class AuthenticationEndpoint {
         HttpHeaderProvider useProvider = null;
         String ssoId = null;
         for (HttpHeaderProvider provider : providers) {
-            if (HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType())) {
-                // Header
-                final Enumeration<String> headerNames = servletRequest.getHeaderNames();
-                while (headerNames.hasMoreElements()) {
-                    String headerName = headerNames.nextElement();
-                    logger.debug("Found request HEADER: {}:{}", headerName, servletRequest.getHeader(headerName));
-                    if (headerName.equals(provider.getParameterName())) {
-                        useProvider = provider;
-                        ssoId = servletRequest.getHeader(headerName);
-                        break;
-                    }
-                }
-            } else {
-                // Attribute
-                final Enumeration<String> names = servletRequest.getAttributeNames();
-                while (names.hasMoreElements()) {
-                    String name = names.nextElement();
-                    logger.debug("Found request ATTRIBUTE: {}:{}", name, servletRequest.getAttribute(name));
-                    if (name.equals(provider.getParameterName())) {
-                        useProvider = provider;
-                        ssoId = (String) servletRequest.getAttribute(name);
-                        break;
-                    }
-                }
-            }
-            if (useProvider != null) {
+            logger.trace(provider.getName());
+            boolean headerType = HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType());
+            String value = headerType ? servletRequest.getHeader(provider.getParameterName())
+                    : (String) servletRequest.getAttribute(provider.getParameterName());
+            if (StringUtils.isNotEmpty(value)) {
+                logger.debug("Found request {}: {}:{}", (headerType ? "HEADER" : "ATTRIBUTE"), provider.getParameterName(), value);
+                useProvider = provider;
+                ssoId = value;
                 break;
             }
         }
@@ -190,10 +172,6 @@ public class AuthenticationEndpoint {
 
         logger.debug("Provider selected: {}", useProvider.getName());
 
-        if (ssoId == null) {
-            logger.warn("Parameter not provided: {}", useProvider.getParameterName());
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Parameter not provided: " + useProvider.getParameterName()).build();
-        }
         UserBean userBean = BeanUtils.getUserBean();
         User user = useProvider.loadUser(ssoId);
         if (user != null) {
