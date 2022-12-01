@@ -315,6 +315,7 @@ public class UserBean implements Serializable {
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
+        logger.debug("completeLogin");
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
         try {

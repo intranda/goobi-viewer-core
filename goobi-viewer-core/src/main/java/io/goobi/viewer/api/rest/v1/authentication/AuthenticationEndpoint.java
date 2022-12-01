@@ -175,10 +175,11 @@ public class AuthenticationEndpoint {
 
         logger.debug("Provider selected: {}", useProvider.getName());
 
-        UserBean userBean = BeanUtils.getUserBean();
+        //        UserBean userBean = BeanUtils.getUserBean();
         User user = useProvider.loadUser(ssoId);
         if (user != null) {
-            userBean.setUser(user);
+            //            userBean.setUser(user);
+            logger.debug("User found: {}", user.getId());
         } else {
             // Create new user
             user = new User();

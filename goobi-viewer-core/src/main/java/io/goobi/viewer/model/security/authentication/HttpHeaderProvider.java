@@ -187,6 +187,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     }
 
     public void setLoginResult(LoginResult loginResult) {
+        logger.debug("setLoginResult");
         this.loginResult = loginResult;
     }
 }
