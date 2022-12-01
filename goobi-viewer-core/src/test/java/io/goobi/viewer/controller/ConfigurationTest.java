@@ -80,8 +80,12 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getConfigLocalPath_shouldReturnEnvironmentVariableValueIfAvailable() throws Exception {
-        System.setProperty("configFolder", "/opt/digiverso/viewer/config_other/");
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().getConfigLocalPath().endsWith("/opt/digiverso/viewer/config_other/"));
+        try {
+            System.setProperty("configFolder", "/opt/digiverso/viewer/config_other/");
+            Assert.assertTrue(DataManager.getInstance().getConfiguration().getConfigLocalPath().endsWith("/opt/digiverso/viewer/config_other/"));
+        } finally {
+            System.clearProperty("configFolder");
+        }
     }
 
     /**
