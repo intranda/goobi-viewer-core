@@ -72,6 +72,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
+import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
@@ -107,7 +108,6 @@ public class UserBean implements Serializable {
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
     private IAuthenticationProvider loggedInProvider;
-    private List<IAuthenticationProvider> authenticationProviders;
 
     // Passwords for creating an new local user account
     private transient String passwordOne = "";
@@ -115,6 +115,7 @@ public class UserBean implements Serializable {
 
     /** Honey pot field invisible to human users. */
     private String lastName;
+    /** Redirect URL after successful login. */
     private String redirectUrl = null;
     private Feedback feedback;
     private String transkribusUserName;
@@ -293,18 +294,26 @@ public class UserBean implements Serializable {
     public String login(IAuthenticationProvider provider)
             throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         if ("#".equals(this.redirectUrl)) {
-            HttpServletRequest request = BeanUtils.getRequest();
-            this.redirectUrl = ViewHistory.getCurrentView(request)
-                    .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
-                    .orElse("");
+            this.redirectUrl = buildRedirectUrl();
         }
         logger.trace("login");
         if (provider != null) {
-            provider.setRedirectUrl(redirectUrl);
+            if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
+                this.redirectUrl = buildRedirectUrl();
+            }
+            logger.trace("redirectUrl: {}", redirectUrl);
+            provider.setRedirectUrl(this.redirectUrl);
             provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 
         return null;
+    }
+
+    static String buildRedirectUrl() {
+        HttpServletRequest request = BeanUtils.getRequest();
+        return ViewHistory.getCurrentView(request)
+                .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
+                .orElse("");
     }
 
     /**
@@ -347,13 +356,16 @@ public class UserBean implements Serializable {
                     wipeSession(result.getRequest());
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
+                    logger.trace("X");
                     u.setLastLogin(LocalDateTime.now());
                     if (!DataManager.getInstance().getDao().updateUser(u)) {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(u);
                     createFeedback();
+                    logger.trace("X");
                     if (request != null && request.getSession(false) != null) {
+                        logger.trace("X");
                         request.getSession(false).setAttribute("user", u);
                     }
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
@@ -362,6 +374,7 @@ public class UserBean implements Serializable {
                         this.redirectUrl = "";
                         response.sendRedirect(url);
                     } else if (response != null) {
+                        logger.trace("X");
                         Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
                         if (currentPath.isPresent()) {
                             logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
@@ -537,8 +550,6 @@ public class UserBean implements Serializable {
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-
-            this.authenticationProviders = null;
         }
     }
 
@@ -809,7 +820,7 @@ public class UserBean implements Serializable {
         //set current url to feedback
         if (setCurrentUrl && navigationHelper != null) {
             feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
-        } else if(navigationHelper != null) {
+        } else if (navigationHelper != null) {
             feedback.setUrl(navigationHelper.getPreviousViewUrl());
         }
 
@@ -978,10 +989,7 @@ public class UserBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
-        if (this.authenticationProviders == null) {
-            this.authenticationProviders = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        }
-        return this.authenticationProviders;
+        return DataManager.getInstance().getConfiguration().getAuthenticationProviders();
     }
 
     /**
@@ -1020,6 +1028,7 @@ public class UserBean implements Serializable {
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
+        logger.trace("setAuthenticationProvider: {}", provider.getName());
         this.authenticationProvider = provider;
     }
 

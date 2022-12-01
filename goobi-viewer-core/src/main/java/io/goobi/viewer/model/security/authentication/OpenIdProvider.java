@@ -62,7 +62,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
     private String oAuthState = null;
     private String oAuthAccessToken = null;
-    private volatile LoginResult loginResult = null;    //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
+    private volatile LoginResult loginResult = null; //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
 
     /**
      * Lock to be opened once login is completed
@@ -160,7 +160,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                 synchronized (responseLock) {
                     try {
                         long startTime = System.currentTimeMillis();
-                        while(System.currentTimeMillis() - startTime < getTimeoutMillis()) {                            
+                        while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
                             responseLock.wait(getTimeoutMillis());
                         }
                         return this.loginResult;
@@ -171,9 +171,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                 }
             });
 
-        } catch (OAuthSystemException e) {
-            throw new AuthenticationProviderException(e);
-        } catch (IOException e) {
+        } catch (IOException | OAuthSystemException e) {
             throw new AuthenticationProviderException(e);
         }
     }
@@ -205,7 +203,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                         break;
                     }
                     if (!"accounts.google.com".equals(json.get("iss"))) {
-                        logger.error("Google id_token validation failed - 'iss' value: " + json.get("iss"));
+                        logger.error("Google id_token validation failed - 'iss' value: {}", json.get("iss"));
                         break;
                     }
                     if (!json.has("aud")) {
@@ -213,7 +211,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                         break;
                     }
                     if (!getClientId().equals(json.get("aud"))) {
-                        logger.error("Google id_token validation failed - 'aud' value: " + json.get("aud"));
+                        logger.error("Google id_token validation failed - 'aud' value: {}", json.get("aud"));
                         break;
                     }
                     if (json.has("email")) {

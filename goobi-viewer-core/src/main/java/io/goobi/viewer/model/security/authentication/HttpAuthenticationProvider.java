@@ -40,6 +40,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.StringTools;
 
@@ -53,6 +55,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * @author Florian Alpers
  */
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
+    
+    private static final Logger logger = LogManager.getLogger(HttpAuthenticationProvider.class);
 
     /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
@@ -203,6 +207,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * @param redirectUrl the redirectUrl to set
      */
     public void setRedirectUrl(String redirectUrl) {
+        logger.trace("setRedirectUrl: {}", redirectUrl);
         this.redirectUrl = redirectUrl;
     }
 

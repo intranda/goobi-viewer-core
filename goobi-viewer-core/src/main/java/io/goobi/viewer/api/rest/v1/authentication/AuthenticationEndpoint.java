@@ -24,8 +24,8 @@ package io.goobi.viewer.api.rest.v1.authentication;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,13 +48,10 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
-import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -141,32 +138,56 @@ public class AuthenticationEndpoint {
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) throws IOException {
         logger.debug("headerParameterLogin");
         logger.debug("redirectUrl={}", redirectUrl);
-        List<HttpHeaderProvider> providers = new ArrayList<>();
-        for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
-            if (p instanceof HttpHeaderProvider) {
-                providers.add((HttpHeaderProvider) p);
-                break;
-            }
-        }
-        if (providers.isEmpty()) {
-            logger.warn("No providers configured.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No authentication providers of type 'httpHeader' configured.").build();
-        }
 
         HttpHeaderProvider useProvider = null;
+
+        UserBean userBean = BeanUtils.getUserBean();
+        if (userBean != null && userBean.getAuthenticationProvider() instanceof HttpHeaderProvider) {
+            useProvider = (HttpHeaderProvider) userBean.getAuthenticationProvider();
+        }
+        //        AuthResponseListener<HttpHeaderProvider> listener = DataManager.getInstance().getHttpHeaderResponseListener();
+        //        for(HttpHeaderProvider provider : listener.getProviders()) {
+        //            useProvider = provider;
+        //            listener.unregister(provider);
+        //            break;
+        //        }
+
         String ssoId = null;
-        for (HttpHeaderProvider provider : providers) {
-            logger.trace(provider.getName());
-            boolean headerType = HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType());
-            String value = headerType ? servletRequest.getHeader(provider.getParameterName())
-                    : (String) servletRequest.getAttribute(provider.getParameterName());
-            if (StringUtils.isNotEmpty(value)) {
-                logger.debug("Found request {}: {}:{}", (headerType ? "HEADER" : "ATTRIBUTE"), provider.getParameterName(), value);
-                useProvider = provider;
-                ssoId = value;
-                break;
+
+        if (useProvider == null) {
+            List<HttpHeaderProvider> providers = new ArrayList<>();
+            for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
+                if (p instanceof HttpHeaderProvider) {
+                    providers.add((HttpHeaderProvider) p);
+                    break;
+                }
+            }
+            if (providers.isEmpty()) {
+                logger.warn("No providers configured.");
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No authentication providers of type 'httpHeader' configured.")
+                        .build();
+            }
+
+            for (HttpHeaderProvider provider : providers) {
+                logger.trace(provider.getName());
+                boolean headerType = HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(provider.getParameterType());
+                String value = headerType ? servletRequest.getHeader(provider.getParameterName())
+                        : (String) servletRequest.getAttribute(provider.getParameterName());
+                if (StringUtils.isNotEmpty(value)) {
+                    logger.debug("Found request {}: {}:{}", (headerType ? "HEADER" : "ATTRIBUTE"), provider.getParameterName(), value);
+                    useProvider = provider;
+                    if (userBean != null) {
+                        userBean.setAuthenticationProvider(provider);
+                    }
+                    ssoId = value;
+                    break;
+                }
+
             }
         }
+
+        // TODO REMOVE
+        ssoId = "foo@example.com";
 
         if (useProvider == null) {
             logger.warn("No matching authentication provider found.");
@@ -174,43 +195,21 @@ public class AuthenticationEndpoint {
         }
 
         logger.debug("Provider selected: {}", useProvider.getName());
-
-        //        UserBean userBean = BeanUtils.getUserBean();
-        User user = useProvider.loadUser(ssoId);
-        if (user != null) {
-            //            userBean.setUser(user);
-            logger.debug("User found: {}", user.getId());
-        } else {
-            // Create new user
-            user = new User();
-            user.getUserProperties().put(useProvider.getParameterName(), ssoId);
-            user.setActive(true);
-            if (EmailValidator.validateEmailAddress(ssoId)) {
-                user.setEmail(ssoId);
-            } else {
-                logger.error("No valid e-mail address found in request, cannot create user.");
-                return Response.status(Response.Status.EXPECTATION_FAILED.getStatusCode(), "No e-mail address found in request, cannot create user.")
-                        .build();
-            }
+        Future<Boolean> loginSuccess = useProvider.completeLogin(ssoId, servletRequest, servletResponse);
             try {
-                DataManager.getInstance().getDao().addUser(user);
-                logger.info("New user created.");
-            } catch (DAOException e) {
-                logger.error(e.getMessage(), e);
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "User could not be created.").build();
+                if (Boolean.FALSE.equals(loginSuccess.get())) {
+                    if (StringUtils.isNotEmpty(redirectUrl)) {
+                        logger.debug("Redirecting to {}", redirectUrl);
+                        servletResponse.sendRedirect(redirectUrl);
+                    } else if (BeanUtils.getNavigationHelper() != null) {
+                        logger.debug("No redirect URL found, redirecting to home");
+                        servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
+                    }
+                }
+            } catch (InterruptedException | ExecutionException | IOException e) {
+                logger.error(e.getMessage());
             }
-        }
-
-        useProvider
-                .setLoginResult(new LoginResult(servletRequest, servletResponse, Optional.ofNullable(user), user.isSuspended() || !user.isActive()));
-
-        if (StringUtils.isNotEmpty(redirectUrl)) {
-            logger.debug("Redirecting to {}", redirectUrl);
-            servletResponse.sendRedirect(redirectUrl);
-        } else if (BeanUtils.getNavigationHelper() != null) {
-            logger.debug("No redirect URL found, redirecting to home");
-            servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
-        }
+    
 
         return Response.ok("").build();
     }

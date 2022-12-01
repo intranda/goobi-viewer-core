@@ -24,7 +24,12 @@ package io.goobi.viewer.model.security.authentication;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +37,8 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.faces.validators.EmailValidator;
+import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
@@ -75,6 +82,13 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
      */
     @Override
     public CompletableFuture<LoginResult> login(String ssoId, String password) throws AuthenticationProviderException {
+        //        DataManager.getInstance().getHttpHeaderResponseListener().register(this);
+        // Register this provider for access in the REST endpoint
+        UserBean userBean = BeanUtils.getUserBean();
+        if (userBean != null) {
+            userBean.setAuthenticationProvider(this);
+        }
+
         if (StringUtils.isNotEmpty(url)) {
             String fullUrl = url + (StringUtils.isNoneEmpty(redirectUrl) ? "?redirectUrl=" + redirectUrl : "");
             try {
@@ -89,11 +103,11 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
             synchronized (responseLock) {
                 try {
                     long startTime = System.currentTimeMillis();
-                    while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
-                        responseLock.wait(getTimeoutMillis());
-                    }
+                    responseLock.wait(getTimeoutMillis());
+                    logger.trace("Returning result");
                     return this.loginResult;
                 } catch (InterruptedException e) {
+                    logger.trace("interrupted");
                     Thread.currentThread().interrupt();
                     return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
                 }
@@ -121,6 +135,49 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
         }
 
         return null;
+    }
+
+    /**
+     * 
+     * @param ssoId User identifier
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
+    public Future<Boolean> completeLogin(String ssoId, HttpServletRequest request, HttpServletResponse response) {
+        boolean success = true;
+        try {
+            User user = loadUser(ssoId);
+            if (user == null) {
+                // Create new user
+                user = new User();
+                user.getUserProperties().put(parameterName, ssoId);
+                user.setActive(true);
+                if (EmailValidator.validateEmailAddress(ssoId)) {
+                    user.setEmail(ssoId);
+                } else {
+                    logger.error("No valid e-mail address found in request, cannot create user.");
+                    success = false;
+                }
+                try {
+                    DataManager.getInstance().getDao().addUser(user);
+                    logger.info("New user created.");
+                } catch (DAOException e) {
+                    logger.error(e.getMessage(), e);
+                    success = false;
+                }
+            } else {
+                success = !user.isSuspended() && user.isActive();
+            }
+            loginResult = new LoginResult(request, response, Optional.ofNullable(user), !success);
+        } finally {
+            synchronized (responseLock) {
+                responseLock.notifyAll();
+                logger.trace("lock released");
+            }
+        }
+
+        return this.loginResult.isRedirected(getTimeoutMillis());
     }
 
     /* (non-Javadoc)

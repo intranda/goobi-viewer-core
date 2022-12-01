@@ -27,13 +27,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
@@ -46,6 +47,7 @@ import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
+import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
@@ -86,6 +88,8 @@ public final class DataManager {
     private SessionStoreBookmarkManager bookmarkManager;
 
     private AuthResponseListener<OpenIdProvider> oAuthResponseListener;
+    
+    private AuthResponseListener<HttpHeaderProvider> httpHeaderResponseListener;
 
     private IURLBuilder defaultUrlBuilder = new DefaultURLBuilder();
 
@@ -160,8 +164,8 @@ public final class DataManager {
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
-                .map(module -> module.getURLBuilder())
-                .filter(optional -> optional.isPresent())
+                .map(IModule::getURLBuilder)
+                .filter(Optional::isPresent)
                 .map(optional -> optional.get())
                 .findFirst()
                 .orElse(defaultUrlBuilder);
@@ -419,6 +423,23 @@ public final class DataManager {
         }
 
         return oAuthResponseListener;
+    }
+    
+    /**
+     * <p>
+     * Getter for the field <code>httpHeaderResponseListener</code>.
+     * </p>
+     *
+     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
+     */
+    public AuthResponseListener<HttpHeaderProvider> getHttpHeaderResponseListener() {
+        if (httpHeaderResponseListener == null) {
+            synchronized (lock) {
+                httpHeaderResponseListener = new AuthResponseListener<>();
+            }
+        }
+
+        return httpHeaderResponseListener;
     }
 
     /**
