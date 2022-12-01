@@ -266,9 +266,14 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @return the path to the local config_viewer.xml file.
+     * @should return environment variable value if available
+     * @should add trailing slash
      */
     public String getConfigLocalPath() {
-        String configLocalPath = getConfig().getString("configFolder", "/opt/digiverso/viewer/config/");
+        String configLocalPath = System.getProperty("configFolder");
+        if (StringUtils.isEmpty(configLocalPath)) {
+            configLocalPath = getConfig().getString("configFolder", "/opt/digiverso/viewer/config/");
+        }
         if (!configLocalPath.endsWith("/")) {
             configLocalPath += "/";
         }
