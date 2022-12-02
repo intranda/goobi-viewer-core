@@ -46,6 +46,7 @@ public class LoginResult {
     private final AuthenticationProviderException exception;
     private final long delay;
     private final Object redirectLock = new Object();
+    private volatile boolean redirected = false;
 
     /**
      * <p>
@@ -60,7 +61,7 @@ public class LoginResult {
     public LoginResult(HttpServletRequest request, HttpServletResponse response, Optional<User> user, boolean loginRefused) {
         this(request, response, user, loginRefused, 0l);
     }
-    
+
     /**
      * <p>
      * Constructor for LoginResult.
@@ -94,7 +95,7 @@ public class LoginResult {
     public LoginResult(HttpServletRequest request, HttpServletResponse response, AuthenticationProviderException exception) {
         this(request, response, exception, 0);
     }
-    
+
     /**
      * <p>
      * Constructor for LoginResult.
@@ -164,10 +165,9 @@ public class LoginResult {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (redirectLock) {
                 try {
-                    long startTime = System.currentTimeMillis();
-//                    while(System.currentTimeMillis() - startTime < timeout) {                        
-                        redirectLock.wait(timeout);     
-//                    }
+                    while (!redirected) {
+                        redirectLock.wait(timeout);
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -183,6 +183,7 @@ public class LoginResult {
      */
     public void setRedirected() {
         synchronized (redirectLock) {
+            redirected = true;
             redirectLock.notifyAll();
         }
     }

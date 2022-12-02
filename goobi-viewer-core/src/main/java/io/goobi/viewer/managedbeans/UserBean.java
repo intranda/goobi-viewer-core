@@ -747,9 +747,14 @@ public class UserBean implements Serializable {
      */
     public void createFeedback() {
         lastName = null;
+
+        try {
             if (captchaBean != null) {
                 captchaBean.reset();
             }
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+        }
 
         feedback = new Feedback();
         if (user != null) {

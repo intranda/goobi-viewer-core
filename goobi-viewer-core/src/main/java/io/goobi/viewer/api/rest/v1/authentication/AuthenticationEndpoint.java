@@ -182,7 +182,7 @@ public class AuthenticationEndpoint {
         }
 
         // TODO REMOVE
-        //        ssoId = "foo@example.com";
+        // ssoId = "foo@example.com";
 
         if (useProvider == null) {
             logger.warn("No matching authentication provider found.");
@@ -190,7 +190,7 @@ public class AuthenticationEndpoint {
         }
 
         logger.debug("Provider selected: {}", useProvider.getName());
-
+        
         Future<Boolean> loginSuccess = useProvider.completeLogin(ssoId, servletRequest, servletResponse);
         try {
             // Before sending response, wait until UserBean.completeLogin() has finished and released the result
@@ -209,6 +209,7 @@ public class AuthenticationEndpoint {
             Thread.currentThread().interrupt();
         }
 
+        logger.trace("endpoint end");
         return Response.ok("").build();
     }
 }
