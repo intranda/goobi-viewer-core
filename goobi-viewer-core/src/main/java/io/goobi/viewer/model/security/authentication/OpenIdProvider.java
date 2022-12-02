@@ -159,10 +159,10 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
             return CompletableFuture.supplyAsync(() -> {
                 synchronized (responseLock) {
                     try {
-                        long startTime = System.currentTimeMillis();
-                        while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
-                            responseLock.wait(getTimeoutMillis());
-                        }
+                        //                        long startTime = System.currentTimeMillis();
+                        //                        while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
+                        responseLock.wait(getTimeoutMillis());
+                        //                        }
                         return this.loginResult;
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
