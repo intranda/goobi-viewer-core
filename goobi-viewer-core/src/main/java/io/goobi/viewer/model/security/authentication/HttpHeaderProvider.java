@@ -172,15 +172,15 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                 user.setActive(true);
                 if (EmailValidator.validateEmailAddress(ssoId)) {
                     user.setEmail(ssoId);
+                    try {
+                        DataManager.getInstance().getDao().addUser(user);
+                        logger.info("New user created.");
+                    } catch (DAOException e) {
+                        logger.error(e.getMessage(), e);
+                        success = false;
+                    }
                 } else {
                     logger.error("No valid e-mail address found in request, cannot create user.");
-                    success = false;
-                }
-                try {
-                    DataManager.getInstance().getDao().addUser(user);
-                    logger.info("New user created.");
-                } catch (DAOException e) {
-                    logger.error(e.getMessage(), e);
                     success = false;
                 }
             } else {
