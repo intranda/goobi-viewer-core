@@ -38,7 +38,6 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.EmailValidator;
-import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
@@ -82,12 +81,6 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
      */
     @Override
     public CompletableFuture<LoginResult> login(String ssoId, String password) throws AuthenticationProviderException {
-        // Register this provider for access in the REST endpoint
-        UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null) {
-            userBean.setAuthenticationProvider(this);
-        }
-
         if (StringUtils.isNotEmpty(url)) {
             String fullUrl = url + (StringUtils.isNoneEmpty(redirectUrl) ? "?redirectUrl=" + redirectUrl : "");
             try {
@@ -101,7 +94,6 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
         return CompletableFuture.supplyAsync(() -> {
             synchronized (responseLock) {
                 try {
-                    long startTime = System.currentTimeMillis();
                     responseLock.wait(getTimeoutMillis());
                     logger.trace("Returning result");
                     return this.loginResult;
@@ -112,23 +104,6 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                 }
             }
         });
-
-        //        return CompletableFuture.supplyAsync(() -> {
-        //            synchronized (responseLock) {
-        //                try {
-        //                    long startTime = System.currentTimeMillis();
-        //                    while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
-        //                        responseLock.wait(getTimeoutMillis());
-        //                    }
-        //                    logger.trace("Returning result");
-        //                    return this.loginResult;
-        //                } catch (InterruptedException e) {
-        //                    logger.trace("interrupted");
-        //                    Thread.currentThread().interrupt();
-        //                    return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
-        //                }
-        //            }
-        //        });
     }
 
     /**

@@ -298,12 +298,14 @@ public class UserBean implements Serializable {
         }
         logger.trace("login");
         if (provider != null) {
-            if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
-                this.redirectUrl = buildRedirectUrl();
-            }
-            logger.trace("redirectUrl: {}", redirectUrl);
-            provider.setRedirectUrl(this.redirectUrl);
-            provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
+                // Set provider so it can be accessed from outsde
+                setAuthenticationProvider(provider);
+                if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
+                    this.redirectUrl = buildRedirectUrl();
+                }
+                logger.trace("redirectUrl: {}", redirectUrl);
+                provider.setRedirectUrl(this.redirectUrl);
+                provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 
         return null;
@@ -416,6 +418,8 @@ public class UserBean implements Serializable {
         } finally {
             logger.trace("releasing result");
             result.setRedirected();
+            // Reset to local provider so that the email field is displayed
+            setAuthenticationProvider(getLocalAuthenticationProvider());
         }
     }
 

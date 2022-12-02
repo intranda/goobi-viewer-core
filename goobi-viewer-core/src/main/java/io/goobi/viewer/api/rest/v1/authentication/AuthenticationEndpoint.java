@@ -135,7 +135,7 @@ public class AuthenticationEndpoint {
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "500", description = "Internal error")
-    public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) throws IOException {
+    public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
         logger.debug("redirectUrl={}", redirectUrl);
 
@@ -191,7 +191,7 @@ public class AuthenticationEndpoint {
                 : (String) servletRequest.getAttribute(useProvider.getParameterName());
 
         // TODO REMOVE
-        //ssoId = "foo@example.com";
+        // ssoId = "foo@example.com";
 
         logger.debug("Provider selected: {}", useProvider.getName());
 
