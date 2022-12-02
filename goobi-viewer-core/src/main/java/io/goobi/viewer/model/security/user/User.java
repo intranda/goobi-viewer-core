@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -254,8 +255,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         for (License license : blueprint.getLicenses()) {
             getLicenses().add(license);
         }
+        // Clone OpenID identifiers
         for (String openIdAccount : blueprint.getOpenIdAccounts()) {
             getOpenIdAccounts().add(openIdAccount);
+        }
+        // Clone properties
+        for (Entry<String, String> entry : blueprint.getUserProperties().entrySet()) {
+            userProperties.put(entry.getKey(), entry.getValue());
         }
     }
 
