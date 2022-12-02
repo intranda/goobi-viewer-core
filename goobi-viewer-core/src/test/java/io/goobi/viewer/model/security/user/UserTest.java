@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.security.user;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,10 +34,72 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class UserTest extends AbstractDatabaseEnabledTest {
+    
+    /**
+     * @see User#User(User)
+     * @verifies clone blueprint correctly
+     */
+    @Test
+    public void User_shouldCloneBlueprintCorrectly() throws Exception {
+        LocalDateTime now = LocalDateTime.now();
+        License license = new License();
+        
+        User blueprint = new User();
+        
+        blueprint.setId(123L);
+        blueprint.setEmail("foo@example.com");
+        blueprint.setPasswordHash("!§$%");
+        blueprint.setActivationKey("555");
+        blueprint.setLastLogin(now);
+        blueprint.setActive(true);
+        blueprint.setSuspended(true);
+        blueprint.setSuperuser(true);
+        blueprint.setLastName("Last");
+        blueprint.setFirstName("First");
+        blueprint.setNickName("nn");
+        blueprint.setComments("Lorem ipsum");
+        blueprint.setScore(22);
+        blueprint.setAgreedToTermsOfUse(true);
+        blueprint.setAvatarType(UserAvatarOption.GRAVATAR);
+        blueprint.setLocalAvatarUpdated(DateTools.getMillisFromLocalDateTime(now, false));
+        blueprint.getLicenses().add(license);
+        blueprint.getOpenIdAccounts().add("google:foo@example.com");
+        blueprint.getUserProperties().put("foo", "bar");
+        
+        User clone = new User(blueprint);
+        Assert.assertEquals(blueprint.getId(), clone.getId());
+        Assert.assertEquals(blueprint.getEmail(), clone.getEmail());
+        Assert.assertEquals(blueprint.getPasswordHash(), clone.getPasswordHash());
+        Assert.assertEquals(blueprint.getActivationKey(), clone.getActivationKey());
+        Assert.assertEquals(blueprint.getLastLogin(), clone.getLastLogin());
+        Assert.assertEquals(blueprint.isActive(), clone.isActive());
+        Assert.assertEquals(blueprint.isSuspended(), clone.isSuspended());
+        Assert.assertEquals(blueprint.isSuperuser(), clone.isSuperuser());
+        Assert.assertEquals(blueprint.getLastName(), clone.getLastName());
+        Assert.assertEquals(blueprint.getFirstName(), clone.getFirstName());
+        Assert.assertEquals(blueprint.getNickName(), clone.getNickName());
+        Assert.assertEquals(blueprint.getComments(), clone.getComments());
+        Assert.assertEquals(blueprint.getScore(), clone.getScore());
+        Assert.assertEquals(blueprint.isAgreedToTermsOfUse(), clone.isAgreedToTermsOfUse());
+        Assert.assertEquals(blueprint.getAvatarType(), clone.getAvatarType());
+        Assert.assertEquals(blueprint.getLocalAvatarUpdated(), clone.getLocalAvatarUpdated());
+        
+        Assert.assertEquals(1, clone.getLicenses().size());
+        Assert.assertEquals(license, clone.getLicenses().get(0));
+        
+        Assert.assertEquals(1, clone.getOpenIdAccounts().size());
+        Assert.assertEquals(blueprint.getOpenIdAccounts().get(0), clone.getOpenIdAccounts().get(0));
+        
+        Assert.assertEquals(1, clone.getUserProperties().size());
+        Assert.assertEquals(blueprint.getUserProperties().get("foo"), clone.getUserProperties().get("foo"));
+    }
 
     /**
      * @see User#canSatisfyAllAccessConditions(Set,String,String)
@@ -106,5 +169,4 @@ public class UserTest extends AbstractDatabaseEnabledTest {
     public void getId_shouldExtractIdCorrectly() throws Exception {
         Assert.assertEquals(Long.valueOf(1234567890L), User.getId(new URI("https://example.com/viewer/users/1234567890/")));
     }
-
 }
