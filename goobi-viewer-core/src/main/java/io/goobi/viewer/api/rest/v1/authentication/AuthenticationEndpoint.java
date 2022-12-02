@@ -174,23 +174,27 @@ public class AuthenticationEndpoint {
                     if (userBean != null) {
                         userBean.setAuthenticationProvider(provider);
                     }
-                    ssoId = value;
                     break;
                 }
 
             }
         }
 
-        // TODO REMOVE
-        // ssoId = "foo@example.com";
-
         if (useProvider == null) {
             logger.warn("No matching authentication provider found.");
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No matching provider found.").build();
         }
 
+        // Set ssoId
+        boolean headerType = HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(useProvider.getParameterType());
+        ssoId = headerType ? servletRequest.getHeader(useProvider.getParameterName())
+                : (String) servletRequest.getAttribute(useProvider.getParameterName());
+
+        // TODO REMOVE
+        //ssoId = "foo@example.com";
+
         logger.debug("Provider selected: {}", useProvider.getName());
-        
+
         Future<Boolean> loginSuccess = useProvider.completeLogin(ssoId, servletRequest, servletResponse);
         try {
             // Before sending response, wait until UserBean.completeLogin() has finished and released the result

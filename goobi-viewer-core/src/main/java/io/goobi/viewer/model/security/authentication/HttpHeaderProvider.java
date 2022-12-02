@@ -82,7 +82,6 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
      */
     @Override
     public CompletableFuture<LoginResult> login(String ssoId, String password) throws AuthenticationProviderException {
-        //        DataManager.getInstance().getHttpHeaderResponseListener().register(this);
         // Register this provider for access in the REST endpoint
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
@@ -113,23 +112,23 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                 }
             }
         });
-        
-//        return CompletableFuture.supplyAsync(() -> {
-//            synchronized (responseLock) {
-//                try {
-//                    long startTime = System.currentTimeMillis();
-//                    while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
-//                        responseLock.wait(getTimeoutMillis());
-//                    }
-//                    logger.trace("Returning result");
-//                    return this.loginResult;
-//                } catch (InterruptedException e) {
-//                    logger.trace("interrupted");
-//                    Thread.currentThread().interrupt();
-//                    return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
-//                }
-//            }
-//        });
+
+        //        return CompletableFuture.supplyAsync(() -> {
+        //            synchronized (responseLock) {
+        //                try {
+        //                    long startTime = System.currentTimeMillis();
+        //                    while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
+        //                        responseLock.wait(getTimeoutMillis());
+        //                    }
+        //                    logger.trace("Returning result");
+        //                    return this.loginResult;
+        //                } catch (InterruptedException e) {
+        //                    logger.trace("interrupted");
+        //                    Thread.currentThread().interrupt();
+        //                    return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
+        //                }
+        //            }
+        //        });
     }
 
     /**
@@ -164,27 +163,33 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     public Future<Boolean> completeLogin(String ssoId, HttpServletRequest request, HttpServletResponse response) {
         boolean success = true;
         try {
-            User user = loadUser(ssoId);
-            if (user == null) {
-                // Create new user
-                user = new User();
-                user.getUserProperties().put(parameterName, ssoId);
-                user.setActive(true);
-                if (EmailValidator.validateEmailAddress(ssoId)) {
-                    user.setEmail(ssoId);
-                    try {
-                        DataManager.getInstance().getDao().addUser(user);
-                        logger.info("New user created.");
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
+            User user = null;
+            if (StringUtils.isEmpty(ssoId)) {
+                logger.error("No ssoId value, cannot login.");
+                success = false;
+            } else {
+                user = loadUser(ssoId);
+                if (user == null) {
+                    // Create new user
+                    user = new User();
+                    user.getUserProperties().put(parameterName, ssoId);
+                    user.setActive(true);
+                    if (EmailValidator.validateEmailAddress(ssoId)) {
+                        user.setEmail(ssoId);
+                        try {
+                            DataManager.getInstance().getDao().addUser(user);
+                            logger.info("New user created.");
+                        } catch (DAOException e) {
+                            logger.error(e.getMessage(), e);
+                            success = false;
+                        }
+                    } else {
+                        logger.error("No valid e-mail address found in request, cannot create user.");
                         success = false;
                     }
                 } else {
-                    logger.error("No valid e-mail address found in request, cannot create user.");
-                    success = false;
+                    success = !user.isSuspended() && user.isActive();
                 }
-            } else {
-                success = !user.isSuspended() && user.isActive();
             }
             loginResult = new LoginResult(request, response, Optional.ofNullable(user), !success);
         } finally {
