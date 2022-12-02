@@ -356,16 +356,13 @@ public class UserBean implements Serializable {
                     wipeSession(result.getRequest());
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
-                    logger.trace("X");
                     u.setLastLogin(LocalDateTime.now());
                     if (!DataManager.getInstance().getDao().updateUser(u)) {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(u);
                     createFeedback();
-                    logger.trace("X");
                     if (request != null && request.getSession(false) != null) {
-                        logger.trace("X");
                         request.getSession(false).setAttribute("user", u);
                     }
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
@@ -374,7 +371,6 @@ public class UserBean implements Serializable {
                         this.redirectUrl = "";
                         response.sendRedirect(url);
                     } else if (response != null) {
-                        logger.trace("X");
                         Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
                         if (currentPath.isPresent()) {
                             logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
@@ -418,6 +414,7 @@ public class UserBean implements Serializable {
             logger.error("Error logging in ", e);
             Messages.error("errLoginError");
         } finally {
+            logger.trace("releasing result");
             result.setRedirected();
         }
     }
@@ -750,9 +747,9 @@ public class UserBean implements Serializable {
      */
     public void createFeedback() {
         lastName = null;
-        if (captchaBean != null) {
-            captchaBean.reset();
-        }
+            if (captchaBean != null) {
+                captchaBean.reset();
+            }
 
         feedback = new Feedback();
         if (user != null) {
@@ -775,7 +772,6 @@ public class UserBean implements Serializable {
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-
         }
     }
 

@@ -165,9 +165,9 @@ public class LoginResult {
             synchronized (redirectLock) {
                 try {
                     long startTime = System.currentTimeMillis();
-                    while(System.currentTimeMillis() - startTime < timeout) {                        
+//                    while(System.currentTimeMillis() - startTime < timeout) {                        
                         redirectLock.wait(timeout);     
-                    }
+//                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

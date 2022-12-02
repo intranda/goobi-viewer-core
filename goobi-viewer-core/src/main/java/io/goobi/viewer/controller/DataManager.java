@@ -47,7 +47,6 @@ import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
-import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
@@ -88,8 +87,6 @@ public final class DataManager {
     private SessionStoreBookmarkManager bookmarkManager;
 
     private AuthResponseListener<OpenIdProvider> oAuthResponseListener;
-    
-    private AuthResponseListener<HttpHeaderProvider> httpHeaderResponseListener;
 
     private IURLBuilder defaultUrlBuilder = new DefaultURLBuilder();
 
@@ -423,23 +420,6 @@ public final class DataManager {
         }
 
         return oAuthResponseListener;
-    }
-    
-    /**
-     * <p>
-     * Getter for the field <code>httpHeaderResponseListener</code>.
-     * </p>
-     *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
-     */
-    public AuthResponseListener<HttpHeaderProvider> getHttpHeaderResponseListener() {
-        if (httpHeaderResponseListener == null) {
-            synchronized (lock) {
-                httpHeaderResponseListener = new AuthResponseListener<>();
-            }
-        }
-
-        return httpHeaderResponseListener;
     }
 
     /**

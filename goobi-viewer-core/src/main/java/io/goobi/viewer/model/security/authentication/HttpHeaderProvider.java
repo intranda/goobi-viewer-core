@@ -113,6 +113,23 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                 }
             }
         });
+        
+//        return CompletableFuture.supplyAsync(() -> {
+//            synchronized (responseLock) {
+//                try {
+//                    long startTime = System.currentTimeMillis();
+//                    while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
+//                        responseLock.wait(getTimeoutMillis());
+//                    }
+//                    logger.trace("Returning result");
+//                    return this.loginResult;
+//                } catch (InterruptedException e) {
+//                    logger.trace("interrupted");
+//                    Thread.currentThread().interrupt();
+//                    return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
+//                }
+//            }
+//        });
     }
 
     /**

@@ -145,15 +145,10 @@ public class AuthenticationEndpoint {
         if (userBean != null && userBean.getAuthenticationProvider() instanceof HttpHeaderProvider) {
             useProvider = (HttpHeaderProvider) userBean.getAuthenticationProvider();
         }
-        //        AuthResponseListener<HttpHeaderProvider> listener = DataManager.getInstance().getHttpHeaderResponseListener();
-        //        for(HttpHeaderProvider provider : listener.getProviders()) {
-        //            useProvider = provider;
-        //            listener.unregister(provider);
-        //            break;
-        //        }
 
         String ssoId = null;
 
+        // If the login wasn't triggered by the user, find an appropriate provider
         if (useProvider == null) {
             List<HttpHeaderProvider> providers = new ArrayList<>();
             for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
@@ -187,7 +182,7 @@ public class AuthenticationEndpoint {
         }
 
         // TODO REMOVE
-        ssoId = "foo@example.com";
+        //        ssoId = "foo@example.com";
 
         if (useProvider == null) {
             logger.warn("No matching authentication provider found.");
@@ -195,21 +190,24 @@ public class AuthenticationEndpoint {
         }
 
         logger.debug("Provider selected: {}", useProvider.getName());
+
         Future<Boolean> loginSuccess = useProvider.completeLogin(ssoId, servletRequest, servletResponse);
-            try {
-                if (Boolean.FALSE.equals(loginSuccess.get())) {
-                    if (StringUtils.isNotEmpty(redirectUrl)) {
-                        logger.debug("Redirecting to {}", redirectUrl);
-                        servletResponse.sendRedirect(redirectUrl);
-                    } else if (BeanUtils.getNavigationHelper() != null) {
-                        logger.debug("No redirect URL found, redirecting to home");
-                        servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
-                    }
+        try {
+            // Before sending response, wait until UserBean.completeLogin() has finished and released the result
+            if (Boolean.FALSE.equals(loginSuccess.get())) {
+                if (StringUtils.isNotEmpty(redirectUrl)) {
+                    logger.debug("Redirecting to {}", redirectUrl);
+                    servletResponse.sendRedirect(redirectUrl);
+                } else if (BeanUtils.getNavigationHelper() != null) {
+                    logger.debug("No redirect URL found, redirecting to home");
+                    servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
                 }
-            } catch (InterruptedException | ExecutionException | IOException e) {
-                logger.error(e.getMessage());
             }
-    
+        } catch (ExecutionException | IOException e) {
+            logger.error(e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         return Response.ok("").build();
     }
