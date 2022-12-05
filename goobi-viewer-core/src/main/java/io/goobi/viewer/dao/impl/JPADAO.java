@@ -1244,7 +1244,12 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should filter results correctly
+     * @should sort results correctly
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<LicenseType> getLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
@@ -1283,7 +1288,12 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should sort results correctly
+     * @should filter results correctly
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<LicenseType> getCoreLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
