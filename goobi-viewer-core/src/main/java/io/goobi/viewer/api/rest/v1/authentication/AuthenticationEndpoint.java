@@ -200,7 +200,7 @@ public class AuthenticationEndpoint {
             // Before sending response, wait until UserBean.completeLogin() has finished and released the result
             if (Boolean.FALSE.equals(loginSuccess.get())) {
                 if (StringUtils.isNotEmpty(redirectUrl)) {
-                    logger.debug("Redirecting to {}", redirectUrl);
+                    logger.debug("Redirecting to redirectUrl");
                     servletResponse.sendRedirect(redirectUrl);
                 } else if (BeanUtils.getNavigationHelper() != null) {
                     logger.debug("No redirect URL found, redirecting to home");
