@@ -37,6 +37,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -50,7 +55,6 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
-    
 
     /**
      * @see SearchHit#populateFoundMetadata(SolrDocument)
@@ -288,10 +292,10 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHit#addLabelHighlighting()
-     * @verifies modify label correctly
+     * @verifies modify label correctly from default
      */
     @Test
-    public void addLabelHighlighting_shouldModifyLabelCorrectly() throws Exception {
+    public void addLabelHighlighting_shouldModifyLabelCorrectlyFromDefault() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -303,7 +307,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
         doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
-        doc.addField("MD_TITLE", SearchHelperTest.LOREM_IPSUM);
+        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
@@ -312,6 +316,53 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
                 .getLabelShort()
                 .startsWith(
                         "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
+    }
+
+    /**
+     * @see SearchHit#addLabelHighlighting()
+     * @verifies modify label correctly from title
+     */
+    @Test
+    public void addLabelHighlighting_shouldModifyLabelCorrectlyFromTitle() throws Exception {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        {
+            Set<String> terms = new HashSet<>();
+            searchTerms.put(SolrConstants.TITLE, terms);
+            terms.add("ipsum");
+        }
+
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
+        Assert.assertNotNull(hit);
+        hit.addLabelHighlighting();
+        Assert.assertTrue("label: " + hit.getBrowseElement().getLabelShort(), hit.getBrowseElement()
+                .getLabelShort()
+                .startsWith(
+                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore"));
+    }
+
+    /**
+     * @see SearchHit#addLabelHighlighting()
+     * @verifies do nothing if searchTerms null
+     */
+    @Test
+    public void addLabelHighlighting_shouldDoNothingIfSearchTermsNull() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, null, null, null, null, null, null, null, 0, null);
+        Assert.assertNotNull(hit);
+        hit.addLabelHighlighting();
+        Assert.assertEquals("label: " + hit.getBrowseElement().getLabelShort(), SearchHelperTest.LOREM_IPSUM, hit.getBrowseElement()
+                .getLabelShort());
     }
 
     @Test
@@ -336,5 +387,80 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.GERMAN, "", searchTerms, Arrays.asList("MD_CREATOR", "MD_PUBLISHER"),
                 Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, null, 0, null);
         assertEquals(1, hit.getFoundMetadata().size());
+    }
+
+    /**
+     * @see SearchHit#addFulltextChild(SolrDocument,String)
+     * @verifies throw IllegalArgumentException if doc null
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void addFulltextChild_shouldThrowIllegalArgumentExceptionIfDocNull() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+
+        SearchHit hit =
+                SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, Collections.emptyMap(), null, null, null, null, null, null, 0, null);
+        Assert.assertNotNull(hit);
+
+        hit.addFulltextChild(null, "en");
+    }
+
+    /**
+     * @see SearchHit#addFulltextChild(SolrDocument,String)
+     * @verifies do nothing if searchTerms does not contain fulltext
+     */
+    @Test
+    public void addFulltextChild_shouldDoNothingIfSearchTermsDoesNotContainFulltext() throws Exception {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        {
+            Set<String> terms = new HashSet<>();
+            searchTerms.put(SolrConstants.TITLE, terms);
+            terms.add("ipsum");
+        }
+
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
+        Assert.assertNotNull(hit);
+        Assert.assertEquals(0, hit.getChildren().size());
+
+        SolrDocument pageDoc = new SolrDocument();
+        pageDoc.addField(SolrConstants.IDDOC, "2");
+        doc.addField(SolrConstants.DOCTYPE, DocType.PAGE);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+
+        hit.addFulltextChild(pageDoc, "en");
+        Assert.assertEquals(0, hit.getChildren().size());
+    }
+
+    /**
+     * @see SearchHit#generateNotificationFragment(int)
+     * @verifies generate fragment correctly
+     */
+    @Test
+    public void generateNotificationFragment_shouldGenerateFragmentCorrectly() throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + AbstractSolrEnabledTest.PI_KLEIUNIV, null);
+        Assert.assertNotNull(doc);
+        String title = (String) doc.getFieldValue(SolrConstants.TITLE);
+        Assert.assertNotNull(title);
+
+        SearchHit hit =
+                SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, Collections.emptyMap(), null, null, null, null, null, null, 0,
+                        new ThumbnailHandler(new IIIFUrlHandler(new ApiUrls(ApiUrls.API)), "/foo/bar/"));
+        Assert.assertNotNull(hit);
+
+        int count = 3;
+        String fragment = hit.generateNotificationFragment(count);
+        Assert.assertEquals("<tr><td>" + count + ".</td><td><img src=\""
+                + "/api/v1/records/PPN517154005/files/images/00000001.tif/full/!10,11/0/default.jpg" + "\" alt=\"" + title
+                + "\" /></td><td>" + title
+                + "</td></tr>", fragment);
     }
 }

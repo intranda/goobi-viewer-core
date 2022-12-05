@@ -189,7 +189,7 @@ public class BrowseElement implements Serializable {
      * @throws ViewerConfigurationException
      */
     BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, Map<String, Set<String>> searchTerms,
-            ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException {
         this.metadataList = metadataList;
         if (this.metadataList == null) {
             this.metadataList = new ArrayList<>();

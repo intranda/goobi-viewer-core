@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -150,7 +151,7 @@ public class SearchHit implements Comparable<SearchHit> {
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
-    private final Map<HitType, Integer> hitTypeCounts = new HashMap<>();
+    private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
     /** Metadata for Excel export. */
     @JsonIgnore
     private final Map<String, String> exportMetadata = new HashMap<>();
@@ -225,12 +226,12 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param overrideType a {@link io.goobi.viewer.model.search.SearchHit.HitType} object.
      * @param proximitySearchDistance
      * @param thumbnailHandler
-     * @should add export fields correctly
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should add export fields correctly
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata,
             Locale locale, String fulltext, Map<String, Set<String>> searchTerms, List<String> exportFields,
@@ -343,7 +344,9 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * First truncate and unescape the label, then add highlighting (overrides BrowseElement.labelShort).
      *
-     * @should modify label correctly
+     * @should modify label correctly from default
+     * @should modify label correctly from title
+     * @should do nothing if searchTerms null
      */
     void addLabelHighlighting() {
         if (searchTerms == null) {
@@ -453,11 +456,13 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * Creates a child hit element for TEI full-texts, with child hits of its own for each truncated fragment containing search terms.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr page doc
      * @param language a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should throw IllegalArgumentException if doc null
+     * @should do nothing if searchTerms does not contain fulltext
      */
     public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (doc == null) {
@@ -890,57 +895,6 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
-     *
-     * @param pi
-     * @param order
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     */
-    @Deprecated
-    List<SolrDocument> getUgcDocsForPage(String pi, int order) throws PresentationException, IndexUnreachableException {
-        String ugcQuery = new StringBuilder().append(SolrConstants.DOCTYPE)
-                .append(':')
-                .append(DocType.UGC.name())
-                .append(" AND ")
-                .append(SolrConstants.PI_TOPSTRUCT)
-                .append(':')
-                .append(pi)
-                .append(" AND ")
-                .append(SolrConstants.ORDER)
-                .append(':')
-                .append(order)
-                .toString();
-        logger.trace("ugc query: {}", ugcQuery);
-        SolrDocumentList ugcDocList = DataManager.getInstance().getSearchIndex().search(ugcQuery);
-        if (!ugcDocList.isEmpty()) {
-            List<SolrDocument> ret = new ArrayList<>(ugcDocList.size());
-            for (SolrDocument doc : ugcDocList) {
-                boolean added = false;
-                for (String field : doc.getFieldNames()) {
-                    if (added) {
-                        break;
-                    }
-                    String value = SolrTools.getSingleFieldStringValue(doc, field);
-                    if (value != null) {
-                        for (String term : searchTerms.get(SolrConstants.UGCTERMS)) {
-                            if (value.toLowerCase().contains(term)) {
-                                ret.add(doc);
-                                added = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            logger.trace("Found {} UGC documents for page {}", ret.size(), order);
-            return ret;
-        }
-
-        return Collections.emptyList();
-    }
-
-    /**
      * <p>
      * Getter for the field <code>type</code>.
      * </p>
@@ -1202,20 +1156,12 @@ public class SearchHit implements Comparable<SearchHit> {
      *
      * @param count a int.
      * @return a {@link java.lang.String} object.
+     * @should generate fragment correctly
      */
     public String generateNotificationFragment(int count) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<tr><td>")
-                .append(count)
-                .append(".</td><td><img src=\"")
-                .append(browseElement.getThumbnailUrl())
-                .append("\" alt=\"")
-                .append(browseElement.getLabel())
-                .append("\" /></td><td>")
-                .append(browseElement.getLabel())
-                .append("</td></tr>");
-
-        return sb.toString();
+        return "<tr><td>" + count + ".</td><td><img src=\"" + browseElement.getThumbnailUrl() + "\" alt=\"" + browseElement.getLabel()
+                + "\" /></td><td>" + browseElement.getLabel()
+                + "</td></tr>";
     }
 
     /**
