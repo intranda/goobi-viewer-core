@@ -107,7 +107,7 @@
 	                                               data-require-confirmation="true"
 	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_pageMetadata_delete, page.title)}"
 	                                               jsf:rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}"
-	                                               jsf:action="#{cmsBean.deletePage(page)}"
+	                                               jsf:action="#{cmsPageEditBean.deletePage(page)}"
 	                                               aria-label="#{msg.delete}" >
 	                                               #{msg.delete}
 	                                                <f:ajax render="@all" />
