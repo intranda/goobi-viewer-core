@@ -202,7 +202,7 @@ public class AuthenticationEndpoint {
             if (Boolean.FALSE.equals(loginSuccess.get())) {
                 if (StringUtils.isNotEmpty(redirectUrl)) {
                     logger.debug("Redirecting to redirectUrl");
-                    servletResponse.sendRedirect(redirectUrl);
+                    servletResponse.sendRedirect(redirectUrl); //NOSONAR redirectUrl is verified at this point
                 } else if (BeanUtils.getNavigationHelper() != null) {
                     logger.debug("No redirect URL found, redirecting to home");
                     servletResponse.sendRedirect(BeanUtils.getNavigationHelper().getApplicationUrl());
