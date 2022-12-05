@@ -43,12 +43,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.utils.SelectItemBuilder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -244,18 +248,34 @@ public class CMSPageTemplateEditBean implements Serializable {
     }
 
     public boolean deleteSelectedTemplate() throws DAOException {
-        return deleteTemplate(this.selectedTemplate);
+        if(deleteTemplate(this.selectedTemplate)) {
+            this.selectedTemplate = null;
+            return true;
+        } else {
+            return false;
+        }
     }
     
+    /**
+     * Deletes given CMS page from the database.
+     *
+     * @param page Page to delete
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public boolean deleteTemplate(CMSPageTemplate template) throws DAOException {
-        if (template != null) {
-            for (PersistentCMSComponent component : template.getPersistentComponents()) {
-                dao.deleteCMSComponent(component);
+        if (dao != null && template != null && template.getId() != null) {
+            logger.info("Deleting CMS page: {}", template);
+            if (dao.removeCMSPageTemplate(template)) {
+                Messages.info("cms_deletePageTemplate_success");
+                return true;
+            } else {
+                logger.error("Failed to delete page");
+                Messages.error("cms_deletePageTemplate_failure");
+                return false;
             }
-            return dao.removeCMSPageTemplate(template);
+        } else {
+            return false;
         }
-
-        return false;
     }
 
 }

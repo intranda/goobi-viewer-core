@@ -226,7 +226,7 @@ public class CmsPageEditBean implements Serializable {
      */
     public void deletePage(CMSPage page) throws DAOException {
         if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
-            logger.info("Deleting CMS page: {}", selectedPage);
+            logger.info("Deleting CMS page: {}", page);
             if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
                 // Delete files matching content item IDs of the deleted page and re-index record
                 try {
