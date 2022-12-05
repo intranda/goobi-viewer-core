@@ -48,6 +48,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
@@ -137,7 +138,11 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
-        logger.debug("redirectUrl={}", redirectUrl);
+        NavigationHelper nh = BeanUtils.getNavigationHelper();
+        if (redirectUrl != null && (nh == null || !redirectUrl.startsWith(nh.getApplicationUrl()))) {
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Illegal redirect URL or URL cannot be checked.")
+                    .build();
+        }
 
         HttpHeaderProvider useProvider = null;
 
@@ -184,16 +189,12 @@ public class AuthenticationEndpoint {
             logger.warn("No matching authentication provider found.");
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No matching provider found.").build();
         }
+        logger.debug("Provider selected: {}", useProvider.getName());
 
         // Set ssoId
         boolean headerType = HttpHeaderProvider.PARAMETER_TYPE_HEADER.equalsIgnoreCase(useProvider.getParameterType());
         ssoId = headerType ? servletRequest.getHeader(useProvider.getParameterName())
                 : (String) servletRequest.getAttribute(useProvider.getParameterName());
-
-        // TODO REMOVE
-        // ssoId = "foo@example.com";
-
-        logger.debug("Provider selected: {}", useProvider.getName());
 
         Future<Boolean> loginSuccess = useProvider.completeLogin(ssoId, servletRequest, servletResponse);
         try {
