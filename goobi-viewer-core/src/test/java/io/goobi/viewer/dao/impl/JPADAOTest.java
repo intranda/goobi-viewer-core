@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -1227,8 +1228,28 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return correct row for name
+     */
     @Test
-    public void getBookmarkListByNameTest() throws DAOException {
+    public void getBookmarkList_shouldReturnCorrectRowForName() throws Exception {
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList("bookmark list 1 name", null);
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(Long.valueOf(1), bl.getId());
+        Assert.assertNotNull(bl.getOwner());
+        Assert.assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        Assert.assertEquals("bookmark list 1 name", bl.getName());
+        Assert.assertEquals("bookmark list 1 desc", bl.getDescription());
+        Assert.assertEquals(2, bl.getItems().size());
+    }
+
+    /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return correct row for name and user
+     */
+    @Test
+    public void getBookmarkList_shouldReturnCorrectRowForNameAndUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
 
@@ -1243,6 +1264,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return null if no result found
+     */
+    @Test
+    public void getBookmarkList_shouldReturnNullIfNoResultFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getBookmarkList("notfound", null));
+    }
+
+    /**
      * @see JPADAO#getBookmarkListByShareKey(String)
      * @verifies return correct row
      */
@@ -1251,6 +1281,24 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkListByShareKey("c548e2ea6915acbfa17c3dc6f453f5b1");
         Assert.assertNotNull(bl);
         Assert.assertEquals(Long.valueOf(1), bl.getId());
+    }
+
+    /**
+     * @see JPADAO#getBookmarkListByShareKey(String)
+     * @verifies return null if no result found
+     */
+    @Test
+    public void getBookmarkListByShareKey_shouldReturnNullIfNoResultFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getBookmarkListByShareKey("123"));
+    }
+
+    /**
+     * @see JPADAO#getBookmarkListByShareKey(String)
+     * @verifies throw IllegalArgumentException if shareKey empty
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getBookmarkListByShareKey_shouldThrowIllegalArgumentExceptionIfShareKeyEmpty() throws Exception {
+        DataManager.getInstance().getDao().getBookmarkListByShareKey("");
     }
 
     @Test
@@ -2733,7 +2781,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
     }
 
-
     /**
      * @see JPADAO#createFilterQuery(String,Map,Map)
      * @verifies build multikey filter query correctly
@@ -3039,7 +3086,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(slider.getId());
         CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
         assertNotNull(loadedSlider);
-        assertFalse(loadedSlider == slider);
+        assertNotSame(loadedSlider, slider);
         assertEquals(loadedSlider.getId(), slider.getId());
         assertEquals(name, loadedSlider.getName());
     }
