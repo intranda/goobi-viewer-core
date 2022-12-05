@@ -34,7 +34,6 @@ import javax.faces.context.FacesContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
@@ -198,6 +197,7 @@ public class TestUtils {
          */
         @Override
         public void invalidate() {
+            //
         }
 
         /* (non-Javadoc)
@@ -213,6 +213,7 @@ public class TestUtils {
          */
         @Override
         public void putValue(String arg0, Object arg1) {
+            //
         }
 
         /* (non-Javadoc)
@@ -220,6 +221,7 @@ public class TestUtils {
          */
         @Override
         public void removeValue(String arg0) {
+            //
         }
 
         /* (non-Javadoc)
@@ -227,6 +229,7 @@ public class TestUtils {
          */
         @Override
         public void setMaxInactiveInterval(int arg0) {
+            //
         }
 
     }
@@ -237,6 +240,7 @@ public class TestUtils {
 
         @Override
         public void logout() throws AuthenticationProviderException {
+            //F
         }
 
         @Override
@@ -287,6 +291,17 @@ public class TestUtils {
 
         @Override
         public void setAddUserToGroups(List<String> addUserToGroups) {
+            //
+        }
+
+        @Override
+        public String getRedirectUrl() {
+            return null;
+        }
+
+        @Override
+        public void setRedirectUrl(String redirectUrl) {
+            //            
         }
     };
 

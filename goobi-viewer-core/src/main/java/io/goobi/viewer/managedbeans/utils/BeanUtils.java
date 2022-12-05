@@ -53,6 +53,7 @@ import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
 import io.goobi.viewer.managedbeans.BrowseBean;
 import io.goobi.viewer.managedbeans.CalendarBean;
+import io.goobi.viewer.managedbeans.CaptchaBean;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
@@ -427,6 +428,17 @@ public class BeanUtils {
      */
     public static CalendarBean getCalendarBean() {
         return (CalendarBean) getBeanByName("calendarBean", CalendarBean.class);
+    }
+    
+    /**
+     * <p>
+     * getCaptchaBean.
+     * </p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.CaptchaBean} object.
+     */
+    public static CaptchaBean getCaptchaBean() {
+        return (CaptchaBean) getBeanByName("captchaBean", CaptchaBean.class);
     }
 
     /**

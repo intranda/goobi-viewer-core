@@ -161,7 +161,7 @@ public final class DataManager {
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
-                .map(module -> module.getURLBuilder())
+                .map(IModule::getURLBuilder)
                 .filter(Optional::isPresent)
                 .map(optional -> optional.get())
                 .findFirst()
