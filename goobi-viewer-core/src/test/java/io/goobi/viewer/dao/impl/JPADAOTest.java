@@ -1013,7 +1013,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("license type 1 name", result.get(0).getName());
         Assert.assertEquals("license type 2 name", result.get(1).getName());
     }
-    
 
     /**
      * @see JPADAO#getOverridingLicenseType(LicenseType)
@@ -1420,6 +1419,18 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<User> ret = DataManager.getInstance().getDao().getUsers(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("1@users.org", ret.get(0).getEmail());
+    }
+
+    /**
+     * @see JPADAO#getUsersByPropertyValue(String,String)
+     * @verifies return correct rows
+     */
+    @Test
+    public void getUsersByPropertyValue_shouldReturnCorrectRows() throws Exception {
+        List<User> result = DataManager.getInstance().getDao().getUsersByPropertyValue("foo", "bar");
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(Long.valueOf(2), result.get(0).getId());
+        Assert.assertEquals(Long.valueOf(3), result.get(1).getId());
     }
 
     /**
@@ -3143,7 +3154,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void getDownloadTicketCount_shouldReturnCorrectCount() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.emptyMap()));
-        Assert.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
+        Assert.assertEquals(2,
+                DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
         Assert.assertEquals(1, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
     }
 
@@ -3160,7 +3172,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                         .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "user2@example.com"))
                         .size());
         Assert.assertEquals(1,
-                DataManager.getInstance().getDao().getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456")).size());
+                DataManager.getInstance()
+                        .getDao()
+                        .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456"))
+                        .size());
     }
 
     /**

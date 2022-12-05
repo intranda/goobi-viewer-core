@@ -66,6 +66,7 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
             @Override
             public void logout() throws AuthenticationProviderException {
+                //
             }
 
             @Override
@@ -116,7 +117,17 @@ public class UserBeanTest extends AbstractDatabaseEnabledTest {
 
             @Override
             public void setAddUserToGroups(List<String> addUserToGroups) {
+                //
+            }
 
+            @Override
+            public String getRedirectUrl() {
+                return null;
+            }
+
+            @Override
+            public void setRedirectUrl(String redirectUrl) {
+                //
             }
         });
     }

@@ -149,6 +149,15 @@ public interface IDAO {
     public List<User> getUsers(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
 
     /**
+     * 
+     * @param propertyName
+     * @param propertyValue
+     * @return
+     * @throws DAOException
+     */
+    public List<User> getUsersByPropertyValue(String propertyName, String propertyValue) throws DAOException;
+
+    /**
      * <p>
      * getUser.
      * </p>
