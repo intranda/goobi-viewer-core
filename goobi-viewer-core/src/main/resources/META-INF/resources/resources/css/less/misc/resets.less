@@ -403,8 +403,14 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
 	}
 }
 .swal2-actions {
-	.btn--default {
-		margin-left: 1rem;
+	gap: 15px;
+	margin-top: 35px;
+	.btn--danger {
+		&:focus, 
+		&:hover,
+		&:active {
+			border: 1px solid #875359;
+		}
 	}
 }
 .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {

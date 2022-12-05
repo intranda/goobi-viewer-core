@@ -32,20 +32,21 @@ var viewerJS = ( function( viewer ) {
 		error : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "error"),
 		warn : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "warning"),
 		confirm : (message, confirmText, denyText, titleAlert) => {
-			return viewer.translator.addTranslations(["cancel", "ok"])
+			return viewer.translator.addTranslations(["cancel", "ok", "delete"])
 			.then( () => {
-				confirmText = confirmText ? confirmText : viewerJS.translator.translate("ok");
+				confirmText = confirmText ? confirmText : viewerJS.translator.translate("delete");
 				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
 				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
 						scrollbarPadding: false,
 						title: titleAlert,
 						text: message,
-						icon: 'warning',
+						icon: 'error',
 						showCancelButton: true,
 						confirmButtonText: confirmText,
 	  					cancelButtonText: denyText,
 					    buttonsStyling: false,
+						reverseButtons: true,
 						showClass: {
 							popup: '-sweetAlertShowAnimation'
 						},
@@ -53,7 +54,7 @@ var viewerJS = ( function( viewer ) {
 							popup: '-sweetAlertHideAnimation'
 						},
 	  					customClass: {
-						    confirmButton: 'btn btn--full',
+						    confirmButton: 'btn btn--danger',
 						    cancelButton: 'btn btn--default'
 						  }
 					})

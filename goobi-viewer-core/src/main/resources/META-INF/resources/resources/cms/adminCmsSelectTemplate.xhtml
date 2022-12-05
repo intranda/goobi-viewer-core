@@ -2,6 +2,7 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -112,8 +113,7 @@
 								$('[data-trigger="showTemplateSelection"]').on('click', function() {
 									$('.cms-select-template__wrapper').addClass('-fadeIn');
 								});
-								
-								cms-select-template__wrapper
+
 								
 									function hideAll() {
 										$('.admin__entry-list-grid .admin__boxed-entry').hide();
@@ -159,7 +159,18 @@
 													</ui:fragment>
 													<ui:fragment
 														rendered="#{user.hasPriviledgeForAllTemplates()}">
-														<a class="admin__boxed-entry-actions-delete -redlink cms-select-template__action-delete" href="edit/#{template.id}/">#{msg.delete}</a>
+<!-- 														<h:commandButton value="#{msg.delete}" class="admin__boxed-entry-actions-delete -redlink cms-select-template__action-delete" action="#{cmsPageTemplateEditBean.deleteTemplate(template)}"> -->
+<!-- 														<f:ajax execute="@form" render="@form" /> -->
+<!-- 														</h:commandButton> -->
+														
+														<button class="admin__boxed-entry-actions-delete -redlink"
+															data-require-confirmation="true"
+															data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__template_selection_delete_confirm, template.title)}"
+															jsf:action="#{cmsPageTemplateEditBean.deleteTemplate(template)}"
+															aria-label="#{msg.delete}: #{template.title}">
+															#{msg.delete}</button>
+														
+														
 													</ui:fragment>		
 												</div>
 													
