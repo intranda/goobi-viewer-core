@@ -36,7 +36,7 @@
 								id="inputFieldTextArea"
 								label="labelEmpty"
 								styleClass="form-control -validation-input tinyMCE"
-								required="#{cc.attrs.contentItem.mandatory}" 
+								required="#{cc.attrs.contentItem.content.isDefaultLocaleSelected() and cc.attrs.contentItem.mandatory}" 
 								requiredMessage="#{msg.info__input_required}">
 								<f:passThroughAttribute name="aria-label"
 									value="#{cc.attrs.label}" />

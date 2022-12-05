@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -57,7 +58,7 @@ public class SelectItemBuilder {
     public static <T> SortedMap<String, List<T>> getAsAlphabeticallySortedMap(List<T> items, Function<T, String> sortValueSupplier) {
         Map<String, List<T>> unsortedMap = items.stream()
                 .collect(Collectors.toMap(
-                        i -> sortValueSupplier.apply(i).substring(0, 1).toUpperCase(), //key is the first character of the sortValue 
+                        i -> Optional.ofNullable(sortValueSupplier.apply(i)).map(s -> s.substring(0, 1)).map(s -> s.toUpperCase()).orElse(i.toString()), //key is the first character of the sortValue 
                         Arrays::asList, //values are lists of <T>
                         (l1, l2) -> new ArrayList<>(CollectionUtils.union(l1, l2)))); //combine lists by building union
         return new TreeMap<>(unsortedMap);

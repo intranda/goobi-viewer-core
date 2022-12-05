@@ -33,7 +33,7 @@
 					id="inputFieldContentItemText"
 					label="input"
 					styleClass="form-control"
-					required="#{cc.attrs.contentItem.mandatory}" 
+					required="#{cc.attrs.contentItem.content.isDefaultLocaleSelected() and cc.attrs.contentItem.mandatory}" 
 					requiredMessage="#{msg.info__input_required}">
 					<f:passThroughAttribute name="aria-label" value="text box" />
 				</h:inputText>
