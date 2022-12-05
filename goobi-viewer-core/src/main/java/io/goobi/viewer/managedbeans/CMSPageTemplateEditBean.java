@@ -244,11 +244,15 @@ public class CMSPageTemplateEditBean implements Serializable {
     }
 
     public boolean deleteSelectedTemplate() throws DAOException {
-        if (this.selectedTemplate != null) {
-            for (PersistentCMSComponent component : selectedTemplate.getPersistentComponents()) {
+        return deleteTemplate(this.selectedTemplate);
+    }
+    
+    public boolean deleteTemplate(CMSPageTemplate template) throws DAOException {
+        if (template != null) {
+            for (PersistentCMSComponent component : template.getPersistentComponents()) {
                 dao.deleteCMSComponent(component);
             }
-            return dao.removeCMSPageTemplate(selectedTemplate);
+            return dao.removeCMSPageTemplate(template);
         }
 
         return false;
