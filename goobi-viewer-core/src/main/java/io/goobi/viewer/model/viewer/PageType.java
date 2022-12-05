@@ -127,7 +127,7 @@ public enum PageType {
     // The order of page types handled by CMS here determines the listing order of static pages
     index("index", PageTypeHandling.cms),
     search("search", PageTypeHandling.cms),
-    advancedSearch("searchadvanced", PageTypeHandling.cms),
+    advancedSearch("searchadvanced"),
     browse("browse", PageTypeHandling.cms),
     privacy("privacy", PageTypeHandling.cms),
     imprint("imprint", PageTypeHandling.cms),
