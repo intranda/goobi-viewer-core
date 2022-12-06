@@ -102,6 +102,14 @@ public class CmsPageEditBeanTest {
         return userBean;
     }
     
+
+    private CMSTemplateManager createTemplateManager() {
+        CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
+        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW, Collections.emptyMap());
+        Mockito.when(templateManager.getComponent(FILENAME_COMPONENT)).thenReturn(Optional.of(component));
+        return templateManager;
+    }
+    
     /**
      * When calling bean without context-parameters, create an empty new page
      * @throws DAOException
@@ -252,12 +260,6 @@ public class CmsPageEditBeanTest {
         assertTrue(bean.getSelectedPage().getComponents().isEmpty());
     }
 
-    private CMSTemplateManager createTemplateManager() {
-        CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
-        CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW, Collections.emptyMap());
-        Mockito.when(templateManager.getComponent(FILENAME_COMPONENT)).thenReturn(Optional.of(component));
-        return templateManager;
-    }
     
 
 }
