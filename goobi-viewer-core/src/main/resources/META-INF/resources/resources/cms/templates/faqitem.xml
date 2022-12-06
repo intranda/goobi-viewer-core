@@ -8,7 +8,7 @@
 	<description>cms_component__faqitem__desc</description>
 	<icon>cms/components/frontend/component/icon/text.png</icon>
 	<content>
-		<item id="title" required="true">
+		<item id="title">
 			<label>cms_content__faqitem_title__label</label>
 			<description>cms_content__faqitem_title__desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
@@ -17,7 +17,7 @@
 				<name>text</name>
 			</jsfComponent>
 		</item>
-		<item id="text" required="true">
+		<item id="text">
 			<label>cms_component__faqitem_text__label</label>
 			<description>cms_content__faqitem_text__desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>

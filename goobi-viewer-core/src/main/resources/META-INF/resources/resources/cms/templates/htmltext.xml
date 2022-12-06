@@ -8,7 +8,7 @@
 	<description>cms_component__htmltext__desc</description>
 	<icon>cms/components/frontend/component/icon/htmltext.png</icon>
 	<content>
-		<item id="text" required="true">
+		<item id="text">
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
