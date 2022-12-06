@@ -43,6 +43,7 @@ import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.email.EMailSender;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.Feedback;
 import jakarta.mail.MessagingException;
@@ -60,6 +61,8 @@ public class FeedbackBean implements Serializable {
     private NavigationHelper navigationHelper;
     @Inject
     private CaptchaBean captchaBean;
+    @Inject
+    private EMailSender emailSender;
 
     private Feedback feedback;
     private User user;
@@ -154,11 +157,11 @@ public class FeedbackBean implements Serializable {
         }
 
         try {
-            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
+            if (emailSender.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 // Send confirmation to sender
                 if (StringUtils.isNotEmpty(feedback.getSenderAddress())
-                        && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null,
+                        && !emailSender.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null,
                                 feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
                     logger.warn("Could not send feedback confirmation to sender.");
                 }
