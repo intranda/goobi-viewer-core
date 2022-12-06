@@ -4,7 +4,7 @@
 		<library>cms/components/frontend/component</library>
 		<name>image</name>
 	</jsfComponent>
-	<label>cms_component__image__label</label>
+	<label>admin__cms_media_file</label>
 	<description>cms_component__image__desc</description>
 	<icon>cms/components/frontend/component/icon/image.png</icon>
 	<content>

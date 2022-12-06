@@ -15,7 +15,7 @@
 			</jsfComponent>
 		</item>
 		<item id="date">
-			<label>cms_component__date_label</label>
+			<label>date</label>
 			<description>cms_content__date_desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
 			<jsfComponent>
