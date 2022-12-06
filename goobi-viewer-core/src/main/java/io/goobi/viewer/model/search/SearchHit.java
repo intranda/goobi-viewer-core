@@ -163,7 +163,7 @@ public class SearchHit implements Comparable<SearchHit> {
     private int proximitySearchDistance = 0;
 
     /**
-     * Private constructor. Use createSearchHit() from other classes.
+     * Package-private constructor. Use createSearchHit() from other classes.
      *
      * @param type
      * @param browseElement
@@ -171,7 +171,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param searchTerms
      * @param locale
      */
-    private SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale) {
+    SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale) {
         this.type = type;
         this.translatedType = type != null ? ViewerResourceBundle.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale) : null;
         this.browseElement = browseElement;
@@ -237,7 +237,7 @@ public class SearchHit implements Comparable<SearchHit> {
             Locale locale, String fulltext, Map<String, Set<String>> searchTerms, List<String> exportFields,
             List<StringPair> sortFields, Set<String> ignoreAdditionalFields, Set<String> translateAdditionalFields,
             Set<String> oneLineAdditionalFields, HitType overrideType, int proximitySearchDistance, ThumbnailHandler thumbnailHandler)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException {
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
                         DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
