@@ -79,16 +79,22 @@ public class CmsPageEditBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CmsPageEditBean.class);
 
     @Inject
-    private transient IDAO dao;
+    transient IDAO dao;
     @Inject
-    private transient CMSTemplateManager templateManager;
+    transient CMSTemplateManager templateManager;
     @Inject
-    private transient UserBean userBean;
+    transient UserBean userBean;
     @Inject
-    private transient CmsBean cmsBean;
+    transient CmsBean cmsBean;
     @Inject
-    private transient CmsNavigationBean navigationBean;
-
+    transient CmsNavigationBean navigationBean;
+    @Inject
+    transient CMSSidebarWidgetsBean widgetsBean;
+    @Inject 
+    transient CollectionViewBean collectionViewBean;
+    @Inject
+    transient FacesContext facesContext;
+    
     private CMSPage selectedPage = null;
     private boolean editMode = false;
     private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
@@ -100,22 +106,17 @@ public class CmsPageEditBean implements Serializable {
     private String templateName = "";
     private boolean templateLockComponents = false;
 
-    @Inject
-    public CmsPageEditBean(CMSSidebarWidgetsBean widgetsBean) {
-        try {
-            this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
-        } catch (DAOException e) {
-            this.sidebarWidgets = Collections.emptyMap();
-        }
-    }
-
     @PostConstruct
     public void setup() {
         try {
             long pageId = Long
-                    .parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("selectedPageId", "-1"));
+                    .parseLong(facesContext.getExternalContext().getRequestParameterMap().getOrDefault("selectedPageId", "-1"));
             long templateId =
-                    Long.parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().getOrDefault("templateId", "-1"));
+                    Long.parseLong(facesContext.getExternalContext().getRequestParameterMap().getOrDefault("templateId", "-1"));
+            String title =
+                    facesContext.getExternalContext().getRequestParameterMap().getOrDefault("title", "");
+            String relatedPi =
+                    facesContext.getExternalContext().getRequestParameterMap().getOrDefault("relatedPi", "");
 
             if (pageId > 0) {
                 CMSPage page = this.dao.getCMSPage(pageId);
@@ -127,6 +128,22 @@ public class CmsPageEditBean implements Serializable {
             } else {
                 this.editMode = false;
                 this.setNewSelectedPage();
+            }
+            if(!this.editMode && StringUtils.isNotBlank(title)) {
+                this.selectedPage.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
+            }
+            if(!this.editMode && StringUtils.isNotBlank(relatedPi)) {
+                this.selectedPage.setRelatedPI(relatedPi);
+            }
+            try {
+                setUserRestrictedValues(selectedPage, userBean.getUser());
+            } catch (PresentationException | IndexUnreachableException e1) {
+                logger.error("Error setting user specific subtheme and categories", e1);
+            }
+            try {
+                this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
+            } catch (DAOException e) {
+                this.sidebarWidgets = Collections.emptyMap();
             }
         } catch (NullPointerException | NumberFormatException e) {
             this.editMode = false;
@@ -143,7 +160,7 @@ public class CmsPageEditBean implements Serializable {
         if(this.selectedPage.getId() != null) {            
             String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsEditPage", this.selectedPage.getId());
             try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+                facesContext.getExternalContext().redirect(url);
             } catch (IOException | NullPointerException e) {
                 logger.error("Error redirecting to database url {}: {}", url, e.toString());
             }
@@ -170,9 +187,9 @@ public class CmsPageEditBean implements Serializable {
 
         logger.trace("update dao");
         if (selectedPage.getId() != null) {
-            success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
+            success = this.dao.updateCMSPage(selectedPage);
         } else {
-            success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
+            success = this.dao.addCMSPage(selectedPage);
         }
 
         if (saveAsTemplate) {
@@ -203,7 +220,7 @@ public class CmsPageEditBean implements Serializable {
             Messages.error("cms_pageSaveFailure");
         }
         logger.trace("reset collections");
-        BeanUtils.getCollectionViewBean().removeCollectionsForPage(selectedPage);
+        this.collectionViewBean.removeCollectionsForPage(selectedPage);
         if (navigationBean != null) {
             logger.trace("add navigation item");
             navigationBean.getItemManager().addAvailableItem(new SelectableNavigationItem(this.selectedPage));
@@ -211,14 +228,14 @@ public class CmsPageEditBean implements Serializable {
         logger.trace("Done saving page");
     }
 
-    private static boolean saveTemplate(CMSPage page, String name, boolean lockComponents) throws DAOException {
+    private boolean saveTemplate(CMSPage page, String name, boolean lockComponents) throws DAOException {
         CMSPageTemplate template = new CMSPageTemplate(page);
         TranslatedText title = new TranslatedText(IPolyglott.getLocalesStatic());
         title.setText(name, IPolyglott.getDefaultLocale());
         template.setTitleTranslations(title);
         template.setLockComponents(lockComponents);
         template.setPublished(true);
-        return DataManager.getInstance().getDao().addCMSPageTemplate(template);
+        return this.dao.addCMSPageTemplate(template);
     }
 
     /**
@@ -239,9 +256,9 @@ public class CmsPageEditBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deletePage(CMSPage page) throws DAOException {
-        if (DataManager.getInstance().getDao() != null && page != null && page.getId() != null) {
+        if (this.dao != null && page != null && page.getId() != null) {
             logger.info("Deleting CMS page: {}", page);
-            if (DataManager.getInstance().getDao().deleteCMSPage(page)) {
+            if (this.dao.deleteCMSPage(page)) {
                 // Delete files matching content item IDs of the deleted page and re-index record
                 try {
                     if (page.deleteExportedTextFiles() > 0) {
@@ -279,7 +296,7 @@ public class CmsPageEditBean implements Serializable {
         if (currentPage != null) {
             if (currentPage.getId() != null) {
                 //get page from DAO
-                this.selectedPage = DataManager.getInstance().getDao().getCMSPageForEditing(currentPage.getId());
+                this.selectedPage = new CMSPage(this.dao.getCMSPage(currentPage.getId()));
             } else {
                 this.selectedPage = currentPage;
             }
@@ -316,25 +333,6 @@ public class CmsPageEditBean implements Serializable {
 
     public CMSPage getSelectedPage() {
         return selectedPage;
-    }
-
-    /**
-     * <p>
-     * createNewPage.
-     * </p>
-     *
-     * @param template a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public CMSPage createNewPage(CMSPageTemplate template) throws PresentationException, IndexUnreachableException, DAOException {
-        CMSPage page = new CMSPage(template);
-        setUserRestrictedValues(page, userBean.getUser());
-        // page.setId(System.currentTimeMillis());
-        page.setDateCreated(LocalDateTime.now());
-        return page;
     }
 
     /**
@@ -483,7 +481,7 @@ public class CmsPageEditBean implements Serializable {
     private CMSPageTemplate loadTemplate(Long templateId) {
         if (templateId != null) {
             try {
-                CMSPageTemplate template = DataManager.getInstance().getDao().getCMSPageTemplate(templateId);
+                CMSPageTemplate template = this.dao.getCMSPageTemplate(templateId);
                 if (template != null) {
                     template.initialiseCMSComponents(templateManager);
                 }
@@ -507,7 +505,12 @@ public class CmsPageEditBean implements Serializable {
         return this.selectedPage.removeComponent(component);
     }
 
-    public void addComponent(CMSPage page, String componentFilename) {
+    public void addComponent() {
+        addComponent(getSelectedPage(), getSelectedComponent());
+    }
+
+    
+    private void addComponent(CMSPage page, String componentFilename) {
         if (page != null) {
             if (StringUtils.isNotBlank(componentFilename)) {
                 try {

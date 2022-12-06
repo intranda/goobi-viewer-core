@@ -2102,16 +2102,6 @@ public interface IDAO {
      */
     public void shutdown();
 
-    /**
-     * <p>
-     * getCMSPageForEditing.
-     * </p>
-     *
-     * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
-     * @throws io.goobi.view@Override er.exceptions.DAOException if any.
-     */
-    public CMSPage getCMSPageForEditing(long id) throws DAOException;
 
     /**
      * <p>
