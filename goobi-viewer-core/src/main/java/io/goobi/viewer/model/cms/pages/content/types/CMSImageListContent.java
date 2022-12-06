@@ -60,7 +60,7 @@ import jakarta.persistence.Transient;
 @DiscriminatorValue("imagelist")
 public class CMSImageListContent extends CMSContent implements CMSCategoryHolder {
 
-    private static final String COMPONENT_NAME = "masonry";
+    private static final String COMPONENT_NAME = "imagelist";
     private static final int DEFAULT_IMAGES_PER_VIEW = 9;
     private static final int DEFAULT_IMPORTANT_IMAGES_PER_VIEW = 0;
 

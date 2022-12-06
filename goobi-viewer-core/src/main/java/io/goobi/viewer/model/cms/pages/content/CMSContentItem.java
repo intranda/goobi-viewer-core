@@ -161,7 +161,7 @@ public class CMSContentItem {
         if (this.uiComponent == null) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = new HtmlPanelGroup();
-            UIComponent wrapper = builder.createTag("div", Collections.emptyMap());
+            UIComponent wrapper = builder.createTag("div", Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper" ));
             this.uiComponent.getChildren().add(wrapper);
             if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
                 logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
