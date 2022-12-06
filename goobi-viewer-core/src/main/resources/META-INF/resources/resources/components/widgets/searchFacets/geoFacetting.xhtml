@@ -81,7 +81,8 @@
 				      				popover: $( '<div><p data-metadata="title"></p></div>' ),
 				      				clusterMarkers: true,
 				      				style: {
-				      					fillOpacity: 0.02
+				      					fillOpacity: 0.02,
+				      					color: "#{configurationBean.markerForFacetting.markerColor}"
 				      				},
 									markerIcon: (icon => icon)(#{configurationBean.markerForFacetting.toJSONString()})
 				      			},

@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -212,6 +214,18 @@ public class CMSPageTemplateEditBean implements Serializable {
         }
     }
 
+    public void saveTemplateAndForwardToEdit() throws DAOException {
+        this.saveSelectedTemplate();
+        if(this.selectedTemplate.getId() != null) {            
+            String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsEditPageTemplate", this.selectedTemplate.getId());
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+            } catch (IOException | NullPointerException e) {
+                logger.error("Error redirecting to database url {}: {}", url, e.toString());
+            }
+        }
+    }
+    
     public void saveSelectedTemplate() throws DAOException {
         logger.trace("saveSelectedPage");
         if (userBean == null || !userBean.getUser().isCmsAdmin() || selectedTemplate == null) {
@@ -247,12 +261,12 @@ public class CMSPageTemplateEditBean implements Serializable {
         }
     }
 
-    public boolean deleteSelectedTemplate() throws DAOException {
+    public String deleteSelectedTemplate() throws DAOException {
         if(deleteTemplate(this.selectedTemplate)) {
             this.selectedTemplate = null;
-            return true;
+            return "pretty:adminCmsSelectTemplate";
         } else {
-            return false;
+            return "";
         }
     }
     

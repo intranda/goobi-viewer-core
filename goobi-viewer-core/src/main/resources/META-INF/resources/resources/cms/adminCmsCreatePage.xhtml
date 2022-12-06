@@ -371,30 +371,32 @@
 
 										<div class="admin__content-component-overlay-wrapper"
 											data-target="revealOnScroll">
-
 											<div data-target="saveChangedPage"
 												class="admin__content-component-overlay-bar">
 												<!-- SHOW -->
-												<a id="showPageButton" class="btn btn--default"
-													target="_blank"
-													href="#{cmsBean.getUrl(cmsPageEditBean.selectedPage)}">
-													#{msg.cms_pagePreview} </a>
-
+												<ui:fragment rendered="#{cmsPageEditBean.selectedPage.id != null}">
+													<a id="showPageButton" class="btn btn--default"
+														target="_blank"
+														href="#{cmsBean.getUrl(cmsPageEditBean.selectedPage)}">
+														#{msg.cms_pagePreview} </a>
+												</ui:fragment>
+												
 												<!-- DELETE -->
-												<button type="button" role="button" href="#"
-													data-toggle="modal"
-													data-target="#deleteMediaModal-#{media.id}"
-													class="btn btn--danger">#{msg.delete}</button>
+												<ui:fragment rendered="#{cmsPageEditBean.selectedPage.id != null}">
+													<button type="button" role="button" href="#"
+														data-toggle="modal"
+														data-target="#deleteMediaModal-#{media.id}"
+														class="btn btn--danger">#{msg.delete}</button>
+												</ui:fragment>
 
 												<!-- SAVE -->
 												<h:commandButton type="submit"
-													action="#{cmsPageEditBean.saveSelectedPage}"
+													action="#{cmsPageEditBean.savePageAndForwardToEdit}"
 													id="save-button" styleClass="btn btn--success"
 													value="#{msg.cms_pageMetadata_save}"
 													onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
 												</h:commandButton>
 											</div>
-
 										</div>
 
 										<!-- delete page modal -->
@@ -468,12 +470,6 @@
 				</h:panelGroup>
 
 				<script type="text/javascript">
-					// deactivate show page button if page was not saved once
-					var actualPageID = "#{selectedPage.id}";
-					if (!(actualPageID)) {
-						$('#showPageButton').hide();
-						// console.log('page is null');#20130
-					}
 
 					var createPageConfig = {
 						selectedPageID : "#{selectedPage.id}",

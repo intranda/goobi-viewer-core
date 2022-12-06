@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -136,6 +138,18 @@ public class CmsPageEditBean implements Serializable {
         }
     }
 
+    public void savePageAndForwardToEdit() throws DAOException {
+        this.saveSelectedPage();
+        if(this.selectedPage.getId() != null) {            
+            String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsEditPage", this.selectedPage.getId());
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+            } catch (IOException | NullPointerException e) {
+                logger.error("Error redirecting to database url {}: {}", url, e.toString());
+            }
+        }
+    }
+    
     /**
      * Adds the current page to the database, if it doesn't exist or updates it otherwise
      *

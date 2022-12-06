@@ -370,41 +370,43 @@
 
 
 														</li>
-														<li>
-															<!-- delete page --> <a role="button" href="#"
-															data-toggle="modal"
-															data-target="#deleteMediaModal-#{media.id}"
-															class="btn btn--danger"> #{msg.delete} </a> <!-- delete media modal -->
-															<div id="deleteMediaModal-#{media.id}" class="modal fade"
-																tabindex="-1" role="dialog">
-																<div class="modal-dialog">
-																	<div class="modal-content">
-																		<div class="modal-header">
-																			<h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
-																			<button type="button" class="close"
-																				data-dismiss="modal">
-																				<span aria-hidden="true"> <h:outputText
-																						value="&amp;times;" escape="false" />
-																				</span> <span class="sr-only">Close</span>
-																			</button>
-																		</div>
-																		<div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
-																		<div class="modal-footer">
-																			<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-																			<h:commandLink action="pretty:adminCmsOverview"
-																				actionListener="#{cmsPageTemplateEditBean.deleteSelectedTemplate}"
-																				value="#{msg.cms_deletePage_agree}"
-																				styleClass="btn btn--danger">
-																				<f:ajax render="@none" />
-																			</h:commandLink>
+														<ui:fragment rendered="#{page.id != null}">
+															<li>
+																<!-- delete page --> <a role="button" href="#"
+																data-toggle="modal"
+																data-target="#deleteMediaModal-#{media.id}"
+																class="btn btn--danger"> #{msg.delete} </a> <!-- delete media modal -->
+																<div id="deleteMediaModal-#{media.id}" class="modal fade"
+																	tabindex="-1" role="dialog">
+																	<div class="modal-dialog">
+																		<div class="modal-content">
+																			<div class="modal-header">
+																				<h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
+																				<button type="button" class="close"
+																					data-dismiss="modal">
+																					<span aria-hidden="true"> <h:outputText
+																							value="&amp;times;" escape="false" />
+																					</span> <span class="sr-only">Close</span>
+																				</button>
+																			</div>
+																			<div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
+																			<div class="modal-footer">
+																				<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
+																				<h:commandLink action="pretty:adminCmsOverview"
+																					actionListener="#{cmsPageTemplateEditBean.deleteSelectedTemplate}"
+																					value="#{msg.cms_deletePage_agree}"
+																					styleClass="btn btn--danger">
+																					<f:ajax render="@none" />
+																				</h:commandLink>
+																			</div>
 																		</div>
 																	</div>
 																</div>
-															</div>
-														</li>
+															</li>
+														</ui:fragment>
 														<li>
 															<!-- save page --> <h:commandButton type="submit"
-																action="#{cmsPageTemplateEditBean.saveSelectedTemplate}"
+																action="#{cmsPageTemplateEditBean.saveTemplateAndForwardToEdit}"
 																id="save-button" styleClass="btn btn--success"
 																value="#{msg.cms_pageMetadata_save}"
 																onclick="$( '#AJAXLoader' ).show();">
@@ -585,14 +587,7 @@
 				</script>
 
 				<script type="text/javascript">
-                
-    				// deactivate show page button if page was not saved once
-                	var actualPageID = "#{cmsPageTemplateEditBean.selectedTemplate.id}";
-                    if ( !(actualPageID)) {
-        				$('#showPageButton').hide();
-        				// console.log('page is null');#20130
-                    }
-                
+                  
                 	var createPageConfig = {
 						selectedPageID : "#{cmsPageTemplateEditBean.selectedTemplate.id}",
 						inputFields : $(".content-input"),
