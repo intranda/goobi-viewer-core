@@ -386,7 +386,7 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
                 Collections.emptyList(), Collections.emptySet(), Collections.emptySet(), null, null, 0, null);
         assertEquals(1, hit.getFoundMetadata().size());
     }
-    
+
     /**
      * @see SearchHit#addCMSPageChildren()
      * @verifies do nothing if searchTerms do not contain key
@@ -411,7 +411,8 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
             searchTerms.put(SolrConstants.CMS_TEXT_ALL, terms);
             terms.add("ipsum");
         }
-        SearchHit hit = new SearchHit(HitType.DOCSTRCT,   new BrowseElement("PPN123", 1, "Hello World", null, null, null, null), null, searchTerms, null);
+        SearchHit hit =
+                new SearchHit(HitType.DOCSTRCT, new BrowseElement("PPN123", 1, "Hello World", null, null, null, null), null, searchTerms, null);
         Assert.assertEquals(0, hit.getChildren().size());
         hit.addCMSPageChildren();
         Assert.assertEquals(0, hit.getChildren().size());
@@ -456,6 +457,38 @@ public class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, null, Locale.ENGLISH, null, searchTerms, null, null, null, null, null, null, 0, null);
+        Assert.assertNotNull(hit);
+        Assert.assertEquals(0, hit.getChildren().size());
+
+        SolrDocument pageDoc = new SolrDocument();
+        pageDoc.addField(SolrConstants.IDDOC, "2");
+        doc.addField(SolrConstants.DOCTYPE, DocType.PAGE);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+
+        hit.addFulltextChild(pageDoc, "en");
+        Assert.assertEquals(0, hit.getChildren().size());
+    }
+
+    /**
+     * @see SearchHit#addFulltextChild(SolrDocument,String)
+     * @verifies do nothing if tei file name not found
+     */
+    @Test
+    public void addFulltextChild_shouldDoNothingIfTeiFileNameNotFound() throws Exception {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        {
+            Set<String> terms = new HashSet<>();
+            searchTerms.put(SolrConstants.FULLTEXT, terms);
+            terms.add("ipsum");
+        }
+
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        doc.addField(SolrConstants.PI_TOPSTRUCT, "PPN123");
+        doc.addField(SolrConstants.TITLE, SearchHelperTest.LOREM_IPSUM);
+
+        SearchHit hit = SearchHit.createSearchHit(doc, null, null, null, null, searchTerms, null, null, null, null, null, null, 0, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(0, hit.getChildren().size());
 

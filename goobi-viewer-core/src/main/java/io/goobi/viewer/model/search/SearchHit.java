@@ -463,6 +463,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should throw IllegalArgumentException if doc null
      * @should do nothing if searchTerms does not contain fulltext
+     * @should do nothing if tei file name not found
      */
     public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (doc == null) {
