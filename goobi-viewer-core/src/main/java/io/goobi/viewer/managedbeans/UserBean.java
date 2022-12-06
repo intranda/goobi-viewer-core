@@ -72,6 +72,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
+import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
@@ -107,7 +108,6 @@ public class UserBean implements Serializable {
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
     private IAuthenticationProvider loggedInProvider;
-    private List<IAuthenticationProvider> authenticationProviders;
 
     // Passwords for creating an new local user account
     private transient String passwordOne = "";
@@ -115,6 +115,7 @@ public class UserBean implements Serializable {
 
     /** Honey pot field invisible to human users. */
     private String lastName;
+    /** Redirect URL after successful login. */
     private String redirectUrl = null;
     private Feedback feedback;
     private String transkribusUserName;
@@ -293,17 +294,28 @@ public class UserBean implements Serializable {
     public String login(IAuthenticationProvider provider)
             throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         if ("#".equals(this.redirectUrl)) {
-            HttpServletRequest request = BeanUtils.getRequest();
-            this.redirectUrl = ViewHistory.getCurrentView(request)
-                    .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
-                    .orElse("");
+            this.redirectUrl = buildRedirectUrl();
         }
         logger.trace("login");
         if (provider != null) {
-            provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
+                // Set provider so it can be accessed from outsde
+                setAuthenticationProvider(provider);
+                if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
+                    this.redirectUrl = buildRedirectUrl();
+                }
+                logger.trace("redirectUrl: {}", redirectUrl);
+                provider.setRedirectUrl(this.redirectUrl);
+                provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 
         return null;
+    }
+
+    static String buildRedirectUrl() {
+        HttpServletRequest request = BeanUtils.getRequest();
+        return ViewHistory.getCurrentView(request)
+                .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
+                .orElse("");
     }
 
     /**
@@ -314,6 +326,7 @@ public class UserBean implements Serializable {
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
+        logger.debug("completeLogin");
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
         try {
@@ -329,7 +342,7 @@ public class UserBean implements Serializable {
                 }
             } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
                 Messages.error("errLoginWrong");
-            } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
+            } else if (result.getUser().map(User::isSuspended).orElse(false)) {
                 Messages.error("errLoginWrong");
             } else if (oUser.isPresent()) { //login successful
                 try {
@@ -403,7 +416,10 @@ public class UserBean implements Serializable {
             logger.error("Error logging in ", e);
             Messages.error("errLoginError");
         } finally {
+            logger.trace("releasing result");
             result.setRedirected();
+            // Reset to local provider so that the email field is displayed
+            setAuthenticationProvider(getLocalAuthenticationProvider());
         }
     }
 
@@ -535,8 +551,6 @@ public class UserBean implements Serializable {
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-
-            this.authenticationProviders = null;
         }
     }
 
@@ -737,8 +751,13 @@ public class UserBean implements Serializable {
      */
     public void createFeedback() {
         lastName = null;
-        if (captchaBean != null) {
-            captchaBean.reset();
+
+        try {
+            if (captchaBean != null) {
+                captchaBean.reset();
+            }
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
         }
 
         feedback = new Feedback();
@@ -762,7 +781,6 @@ public class UserBean implements Serializable {
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-
         }
     }
 
@@ -807,7 +825,7 @@ public class UserBean implements Serializable {
         //set current url to feedback
         if (setCurrentUrl && navigationHelper != null) {
             feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
-        } else if(navigationHelper != null) {
+        } else if (navigationHelper != null) {
             feedback.setUrl(navigationHelper.getPreviousViewUrl());
         }
 
@@ -976,10 +994,7 @@ public class UserBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
-        if (this.authenticationProviders == null) {
-            this.authenticationProviders = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        }
-        return this.authenticationProviders;
+        return DataManager.getInstance().getConfiguration().getAuthenticationProviders();
     }
 
     /**
@@ -1018,6 +1033,7 @@ public class UserBean implements Serializable {
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
+        logger.trace("setAuthenticationProvider: {}", provider.getName());
         this.authenticationProvider = provider;
     }
 

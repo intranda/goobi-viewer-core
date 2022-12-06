@@ -27,13 +27,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
@@ -93,6 +94,8 @@ public final class DataManager {
 
     private String indexerVersion = "";
 
+    private String connectorVersion = "";
+
     private int hotfolderFileCount = 0;
 
     private RestApiManager restApiManager;
@@ -104,11 +107,11 @@ public final class DataManager {
     private final TaskManager restApiJobManager;
 
     private ArchiveManager archiveManager = null;
-    
+
     private ClientApplicationManager clientManager = null;
 
     private SecurityManager securityManager = null;
-    
+
     private UsageStatisticsRecorder usageStatisticsRecorder = null;
 
     /**
@@ -158,8 +161,8 @@ public final class DataManager {
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
-                .map(module -> module.getURLBuilder())
-                .filter(optional -> optional.isPresent())
+                .map(IModule::getURLBuilder)
+                .filter(Optional::isPresent)
                 .map(optional -> optional.get())
                 .findFirst()
                 .orElse(defaultUrlBuilder);
@@ -456,6 +459,20 @@ public final class DataManager {
     }
 
     /**
+     * @return the connectorVersion
+     */
+    public String getConnectorVersion() {
+        return connectorVersion;
+    }
+
+    /**
+     * @param connectorVersion the connectorVersion to set
+     */
+    public void setConnectorVersion(String connectorVersion) {
+        this.connectorVersion = connectorVersion;
+    }
+
+    /**
      * @return the hotfolderFileCount
      */
     public int getHotfolderFileCount() {
@@ -542,15 +559,16 @@ public final class DataManager {
         }
         return archiveManager;
     }
-    
+
     public ClientApplicationManager getClientManager() throws DAOException {
-        if(this.clientManager == null) {
+        if (this.clientManager == null) {
             synchronized (lock) {
                 this.clientManager = new ClientApplicationManager(dao);
             }
         }
         return this.clientManager;
     }
+
     /**
      * 
      * @return
@@ -564,11 +582,11 @@ public final class DataManager {
 
         return securityManager;
     }
-    
+
     public void setClientManager(ClientApplicationManager manager) {
         this.clientManager = manager;
     }
-    
+
     public UsageStatisticsRecorder getUsageStatisticsRecorder() throws DAOException {
         if (usageStatisticsRecorder == null) {
             synchronized (lock) {

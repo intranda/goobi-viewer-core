@@ -94,6 +94,7 @@ import io.goobi.viewer.model.security.user.UserRole;
 import io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -345,6 +346,28 @@ public class JPADAO implements IDAO {
             q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
 
             return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<User> getUsersByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM User a JOIN a.userProperties p WHERE KEY(p) = :key AND VALUE(p) = :value";
+            return em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getResultList();
         } finally {
             close(em);
         }

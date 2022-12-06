@@ -36,37 +36,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
@@ -87,6 +73,22 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * <p>
@@ -178,6 +180,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     @Column(name = "claimed_identifier")
     private List<String> openIdAccounts = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_properties", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyColumn(name = "property_name")
+    @Column(name = "property_value")
+    @PrivateOwned
+    private Map<String, String> userProperties = new HashMap<>();
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @PrivateOwned
     private List<License> licenses = new ArrayList<>();
@@ -246,8 +255,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         for (License license : blueprint.getLicenses()) {
             getLicenses().add(license);
         }
+        // Clone OpenID identifiers
         for (String openIdAccount : blueprint.getOpenIdAccounts()) {
             getOpenIdAccounts().add(openIdAccount);
+        }
+        // Clone properties
+        for (Entry<String, String> entry : blueprint.getUserProperties().entrySet()) {
+            userProperties.put(entry.getKey(), entry.getValue());
         }
     }
 
@@ -1341,6 +1355,20 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      */
     public void setLicenses(List<License> licenses) {
         this.licenses = licenses;
+    }
+
+    /**
+     * @return the userProperties
+     */
+    public Map<String, String> getUserProperties() {
+        return userProperties;
+    }
+
+    /**
+     * @param userProperties the userProperties to set
+     */
+    public void setUserProperties(Map<String, String> userProperties) {
+        this.userProperties = userProperties;
     }
 
     /**

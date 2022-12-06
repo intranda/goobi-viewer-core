@@ -29,11 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.PersistenceException;
-
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
@@ -78,6 +73,10 @@ import io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
 
 /**
  * <p>
@@ -148,6 +147,15 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<User> getUsers(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
+
+    /**
+     * 
+     * @param propertyName
+     * @param propertyValue
+     * @return
+     * @throws DAOException
+     */
+    public List<User> getUsersByPropertyValue(String propertyName, String propertyValue) throws DAOException;
 
     /**
      * <p>

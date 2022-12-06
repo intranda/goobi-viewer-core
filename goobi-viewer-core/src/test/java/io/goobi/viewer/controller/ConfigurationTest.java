@@ -75,6 +75,29 @@ public class ConfigurationTest extends AbstractTest {
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
 
     /**
+     * @see Configuration#getConfigLocalPath()
+     * @verifies return environment variable value if available
+     */
+    @Test
+    public void getConfigLocalPath_shouldReturnEnvironmentVariableValueIfAvailable() throws Exception {
+        try {
+            System.setProperty("configFolder", "/opt/digiverso/viewer/config_other/");
+            Assert.assertTrue(DataManager.getInstance().getConfiguration().getConfigLocalPath().endsWith("/opt/digiverso/viewer/config_other/"));
+        } finally {
+            System.clearProperty("configFolder");
+        }
+    }
+
+    /**
+     * @see Configuration#getConfigLocalPath()
+     * @verifies add trailing slash
+     */
+    @Test
+    public void getConfigLocalPath_shouldAddTrailingSlash() throws Exception {
+        Assert.assertEquals("target/configFolder_value/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+    }
+
+    /**
      * @see Configuration#getBreadcrumbsClipping()
      * @verifies return correct value
      */
@@ -2689,16 +2712,6 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertNotNull(marker);
         Assert.assertEquals("maps__marker_2", marker.getName());
         Assert.assertEquals("fa-search", marker.getIcon());
-    }
-
-    /**
-     * @see Configuration#getConnectorVersionUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getConnectorVersionUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("http://localhost:8081/M2M/oai/tools?action=getVersion",
-                DataManager.getInstance().getConfiguration().getConnectorVersionUrl());
     }
 
     /**

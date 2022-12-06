@@ -74,9 +74,10 @@ public class MetadataValue implements Serializable {
     private String masterValue;
     private String groupType;
     private String docstrct = null;
+    private String topstruct = null;
     private String label;
-    private CSL citationProcessor = null;
-    private CitationDataProvider citationItemDataProvider = null;
+    private transient CSL citationProcessor = null;
+    private transient CitationDataProvider citationItemDataProvider = null;
     private String citationString = null;
 
     /**
@@ -153,9 +154,9 @@ public class MetadataValue implements Serializable {
                 }
                 try {
                     if (citationString == null) {
-                        citationString = new Citation(id, citationProcessor, citationItemDataProvider, CitationTools.getCSLTypeForDocstrct(docstrct),
-                                citationValues)
-                                        .getCitationString("text");
+                        citationString = new Citation(id, citationProcessor, citationItemDataProvider,
+                                CitationTools.getCSLTypeForDocstrct(docstrct, topstruct),
+                                citationValues).getCitationString("text");
                     }
                     return citationString;
                 } catch (IOException e) {
@@ -509,6 +510,20 @@ public class MetadataValue implements Serializable {
     }
 
     /**
+     * @return the topstruct
+     */
+    public String getTopstruct() {
+        return topstruct;
+    }
+
+    /**
+     * @param topstruct the topstruct to set
+     */
+    public void setTopstruct(String topstruct) {
+        this.topstruct = topstruct;
+    }
+
+    /**
      * @return the label
      */
     public String getLabel() {
@@ -555,7 +570,7 @@ public class MetadataValue implements Serializable {
         }
         return sb.toString();
     }
-    
+
     public String getCombinedValue() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < paramValues.size(); i++) {

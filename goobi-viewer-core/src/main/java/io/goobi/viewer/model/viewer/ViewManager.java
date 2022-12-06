@@ -3752,7 +3752,8 @@ public class ViewManager implements Serializable {
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
-                        CitationTools.getCSLTypeForDocstrct(topStructElement.getDocStructType()), val.getCitationValues());
+                        CitationTools.getCSLTypeForDocstrct(topStructElement.getDocStructType(), topStructElement.getDocStructType()),
+                        val.getCitationValues());
                 return citation.getCitationString(outputFormat);
             }
         }
