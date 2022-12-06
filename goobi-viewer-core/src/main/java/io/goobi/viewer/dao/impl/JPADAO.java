@@ -3258,13 +3258,6 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public CMSPage getCMSPageForEditing(long id) throws DAOException {
-        CMSPage original = getCMSPage(id);
-        return new CMSPage(original);
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException {
