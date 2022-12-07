@@ -21,7 +21,13 @@
 	<composite:implementation> 
 
     	<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
-			<div id="templateStckedCollection" class="tpl-stacked-collection content-component__legacy-full-width">
+
+			<div id="templateStckedCollection" class="tpl-stacked-collection content-component content-component__stacked-collection
+						-width-100 #{cc.attrs.hideOnScreenSizes}
+						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
+						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}
+						#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
+						
 				<div class="tpl-stacked-collection__collections">
 					<collectionView 
 						url='#{request.contextPath}/api/v1/collections/#{cc.attrs.component.firstContentItem.content.collectionField}/'

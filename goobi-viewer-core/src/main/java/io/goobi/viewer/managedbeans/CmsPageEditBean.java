@@ -520,11 +520,11 @@ public class CmsPageEditBean implements Serializable {
                     return true;
                 } catch (IllegalArgumentException e) {
                     logger.error("Cannot add component: No component found for filename {}.", componentFilename);
-                    Messages.error(null, "admin__cms__create_page__error_unknown_component_name", componentFilename);
+                    Messages.error(null, "cms__create_page__error_unknown_component_name", componentFilename);
                 }
             } else {
                 logger.error("Cannot add component: No component filename given");
-                Messages.error("admin__cms__create_page__error_no_component_name_given");
+                Messages.error("cms__create_page__error_no_component_name_given");
             }
         } else {
             logger.error("Cannot add component: No page given");

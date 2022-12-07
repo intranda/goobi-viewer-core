@@ -272,6 +272,10 @@
 	&__not-published-info {
 		margin-bottom: 10px;
 		font-weight: 700;
+		margin: 0 -12px 10px -12px;
+		// background: rgba(255,109,109,0.59);
+		background: rgb(255, 226, 140);
+		padding: 7px;
 	}
 	// WIDTH OPTIONS
 	&.-width-100 {
@@ -295,8 +299,11 @@
 		display: none;
 	}
 	&.-isPrivate {
-		border: 2px dashed rgba(255, 109, 109, 0.59) !important;
+		// border: 2px dashed rgba(255, 109, 109, 0.59) !important;
 		padding: 10px;
+		padding-top: 0;
+		border: 2px dashed rgb(255, 226, 140) !important;
+		border-top: none !important;
 	}
 	
 	&__heading {

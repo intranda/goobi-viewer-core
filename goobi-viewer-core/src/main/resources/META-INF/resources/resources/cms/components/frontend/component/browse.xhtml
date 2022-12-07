@@ -19,11 +19,8 @@
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
 
 			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
-			<div class="content-component content-component__browse
-						-width-#{cc.attrs.width} #{cc.attrs.hideOnScreenSizes}
-						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
-						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}
-						#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
+			<div class="content-component content-component__browse 
+				#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
 
 				<!-- INFO: CONTENT ITEM IS NOT PUBLISHED YET -->
 				<ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
@@ -31,8 +28,10 @@
 				</ui:fragment>
 
 
-				<!-- RENDER THE TEXT CONTENT -->
-				<h:outputText escape="false" value="#{cc.attrs.component.firstContentItem.content.text.textOrDefault}"></h:outputText>
+				<!-- BROWSE TERMS LIST -->
+				<ui:include src="/resources/includes/search/browseTerms.xhtml">
+					<ui:param name="baseUrl" value="#{cc.attrs.component.owningPage.pageUrl}" />
+				</ui:include>
 				
 			</div>
 

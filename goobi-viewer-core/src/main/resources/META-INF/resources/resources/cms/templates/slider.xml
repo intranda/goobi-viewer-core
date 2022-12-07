@@ -9,8 +9,6 @@
 	<icon>cms/components/frontend/component/icon/image.png</icon>
 	<content>
 		<item id="slider">
-			<label>cms_content__slider__label</label>
-			<description>cms_content__slider__desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
@@ -18,10 +16,5 @@
 			</jsfComponent>
 		</item>
 	</content>
-
-	<attribute name="width">
-		<value label="50 %">50</value>
-		<value label="100 %" default="true">100</value>
-	</attribute>
 
 </component>

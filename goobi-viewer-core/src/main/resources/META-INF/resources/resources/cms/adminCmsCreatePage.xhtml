@@ -254,12 +254,12 @@
 																						<ui:fragment rendered="#{!page.lockComponents}">
 																							<button class="admin__content-component-delete"
 																								data-require-confirmation="true"
-																								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
+																								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__create_page__delete_component_confirmation, msg[cmsComponent.label])}"
 																								jsf:action="#{cmsPageEditBean.deleteComponent(cmsComponent)}">
 																								#{msg.delete}
 																								<f:ajax render="componentSelectionWrapper"
 																									onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																							</button>
+																							</button> 
 																						</ui:fragment>
 
 																					</div>

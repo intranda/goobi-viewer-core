@@ -9,8 +9,6 @@
 	<icon>cms/components/frontend/component/icon/image.png</icon>
 	<content>
 		<item id="geomap">
-			<label>cms_component__map_label</label>
-			<description>cms_component__image_desc</description>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
