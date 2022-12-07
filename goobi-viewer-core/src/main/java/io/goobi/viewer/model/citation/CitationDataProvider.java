@@ -44,15 +44,23 @@ public class CitationDataProvider implements ItemDataProvider {
 
     public static final String AUTHOR = "author";
     public static final String COLLECTION_TITLE = "collection-title";
+    public static final String COMPOSER = "composer";
     public static final String CONTAINER_TITLE = "container-title";
+    public static final String DIRECTOR = "director";
     public static final String DOI = "DOI";
+    public static final String EDITOR = "editor";
+    public static final String ILLUSTRATOR = "illustrator";
+    public static final String INTERVIEWER = "interviewer";
     public static final String ISBN = "ISBN";
     public static final String ISSN = "ISSN";
     public static final String ISSUED = "issued";
     public static final String LANGUAGE = "language";
     public static final String PUBLISHER_PLACE = "placepublish";
     public static final String PUBLISHER = "publisher";
+    public static final String RECIPIENT = "recipient";
+    public static final String SCALE = "scale";
     public static final String TITLE = "title";
+    public static final String TRANSLATOR = "translator";
     public static final String URL = "url";
 
     private final Map<String, CSLItemData> itemDataMap = new TreeMap<>();
@@ -75,7 +83,15 @@ public class CitationDataProvider implements ItemDataProvider {
             }
 
             switch (entry.getKey()) {
+                // Persons
                 case AUTHOR:
+                case COMPOSER:
+                case DIRECTOR:
+                case EDITOR:
+                case ILLUSTRATOR:
+                case INTERVIEWER:
+                case RECIPIENT:
+                case TRANSLATOR:
                     List<CSLName> names = new ArrayList<>(entry.getValue().size());
                     for (String name : entry.getValue()) {
                         if (StringUtils.isBlank(name)) {
@@ -98,7 +114,34 @@ public class CitationDataProvider implements ItemDataProvider {
                         }
                     }
                     if (!names.isEmpty()) {
-                        builder.author(names.toArray(new CSLName[0]));
+                        switch (entry.getKey()) {
+                            case AUTHOR:
+                                builder.author(names.toArray(new CSLName[0]));
+                                break;
+                            case COMPOSER:
+                                builder.composer(names.toArray(new CSLName[0]));
+                                break;
+                            case DIRECTOR:
+                                builder.director(names.toArray(new CSLName[0]));
+                                break;
+                            case EDITOR:
+                                builder.editor(names.toArray(new CSLName[0]));
+                                break;
+                            case ILLUSTRATOR:
+                                builder.illustrator(names.toArray(new CSLName[0]));
+                                break;
+                            case INTERVIEWER:
+                                builder.interviewer(names.toArray(new CSLName[0]));
+                                break;
+                            case RECIPIENT:
+                                builder.recipient(names.toArray(new CSLName[0]));
+                                break;
+                            case TRANSLATOR:
+                                builder.translator(names.toArray(new CSLName[0]));
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     break;
                 case COLLECTION_TITLE:
@@ -134,6 +177,8 @@ public class CitationDataProvider implements ItemDataProvider {
                 case PUBLISHER_PLACE:
                     builder.publisherPlace(entry.getValue().get(0));
                     break;
+                case SCALE:
+                    builder.scale(entry.getValue().get(0));
                 case TITLE:
                     builder.title(entry.getValue().get(0));
                     break;

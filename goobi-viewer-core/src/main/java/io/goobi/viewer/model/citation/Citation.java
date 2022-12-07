@@ -107,12 +107,9 @@ public class Citation {
      * @should return apa html plaintext correctly
      */
     public String getCitationString(String outputFormat) throws IOException {
-        // logger.trace("Citation string generation START");
         CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);
         try {
-            String ret = makeAdhocBibliography(outputFormat, itemData).makeString().trim();
-            // logger.trace("Citation string generation END");
-            return ret;
+            return makeAdhocBibliography(outputFormat, itemData).makeString().trim();
         } catch (Exception e) {
             logger.warn(e.getMessage());
             return "";
