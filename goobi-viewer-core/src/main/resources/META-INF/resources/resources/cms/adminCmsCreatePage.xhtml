@@ -301,7 +301,7 @@
 
 																				<button
 																					class="btn btn--full admin__content-component-add-area-button"
-																					jsf:action="#{cmsPageEditBean.addComponent(page, cmsPageEditBean.selectedComponent)}"
+																					jsf:action="#{cmsPageEditBean.addComponent()}"
 																					jsf:disabled="#{page.lockComponents}">
 																					#{msg.cms__page_add_component}
 																					<f:ajax execute="@form" render="@form :messages"></f:ajax>
