@@ -37,8 +37,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -56,22 +56,34 @@ public class FeedbackBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(FeedbackBean.class);
 
     @Inject
-    private UserBean userBean;
+    UserBean userBean;
     @Inject
-    private NavigationHelper navigationHelper;
+    NavigationHelper navigationHelper;
     @Inject
-    private CaptchaBean captchaBean;
+    CaptchaBean captchaBean;
     @Inject
-    private EMailSender emailSender;
+    EMailSender emailSender;
+    @Inject
+    FacesContext facesContext;
+    
+    private final Configuration config;
 
     private Feedback feedback;
     private User user;
     private String lastName;
 
+    public FeedbackBean() {
+        this.config = DataManager.getInstance().getConfiguration();
+    }
+    
+    public FeedbackBean(Configuration config) {
+        this.config = config;
+    }
+    
     @PostConstruct
     public void init() {
-        createFeedback();
         this.user = userBean.getUser();
+        createFeedback();
     }
 
     /**
@@ -80,9 +92,6 @@ public class FeedbackBean implements Serializable {
      * </p>
      */
     public void createFeedback() {
-        if (captchaBean != null) {
-            captchaBean.reset();
-        }
 
         this.lastName = null;
 
@@ -91,24 +100,16 @@ public class FeedbackBean implements Serializable {
             feedback.setSenderAddress(user.getEmail());
             feedback.setName(user.getDisplayName());
         }
-        feedback.setRecipientAddress(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress());
+        feedback.setRecipientAddress(this.config.getDefaultFeedbackEmailAddress());
+        setFeedbackUrl(true);
+    }
 
-        String url = Optional.ofNullable(FacesContext.getCurrentInstance())
+    private String getReferrerUrl() {
+        return Optional.ofNullable(facesContext)
                 .map(FacesContext::getExternalContext)
                 .map(ExternalContext::getRequestHeaderMap)
                 .map(map -> map.get("referer"))
                 .orElse(null);
-        if (StringUtils.isEmpty(url)) {
-            // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
-            try {
-                Optional.ofNullable(BeanUtils.getNavigationHelper())
-                        .map(NavigationHelper::getCurrentPrettyUrl)
-                        .ifPresent(u -> feedback.setUrl(u));
-            } catch (Exception e) {
-                logger.warn(e.getMessage());
-            }
-
-        }
     }
 
     /**
@@ -150,11 +151,7 @@ public class FeedbackBean implements Serializable {
         }
 
         //set current url to feedback
-        if (setCurrentUrl && navigationHelper != null) {
-            feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
-        } else if (navigationHelper != null) {
-            feedback.setUrl(navigationHelper.getPreviousViewUrl());
-        }
+        setFeedbackUrl(setCurrentUrl);
 
         try {
             if (emailSender.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
@@ -179,6 +176,16 @@ public class FeedbackBean implements Serializable {
         //eventually always create a new feedback object to erase prior inputs
         createFeedback();
         return "";
+    }
+
+    private void setFeedbackUrl(boolean setCurrentUrl) {
+        if (setCurrentUrl && navigationHelper != null) {
+            feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
+        } else if (navigationHelper != null) {
+            feedback.setUrl(navigationHelper.getPreviousViewUrl());
+        } else {
+            feedback.setUrl(getReferrerUrl());
+        }
     }
 
     /**
