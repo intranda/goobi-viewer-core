@@ -43,30 +43,23 @@ public class AuthenticationEndpointTest extends AbstractRestApiTest {
         }
     }
 
-    //    /**
-    //     * @see AuthenticationEndpoint#headerParameterLogin(String)
-    //     * @verifies return status 403 if no matching provider found
-    //     */
-    //    @Test
-    //    public void headerParameterLogin_shouldReturnStatus403IfNoMatchingProviderFound() throws Exception {
-    //        String url = urls.path(ApiUrls.AUTH, ApiUrls.AUTH_HEADER).build();
-    //        assertEquals(5, DataManager.getInstance()
-    //                .getConfiguration()
-    //                .getAuthenticationProviders()
-    //                .size());
-    //        DataManager.getInstance()
-    //                .getConfiguration()
-    //                .getAuthenticationProviders()
-    //                .add(new HttpHeaderProvider("HTTP", "HTTP", "https://locahost:8080/viewer/index", null, 60000, "header", "someOtherParameter"));
-    //        assertEquals(6, DataManager.getInstance()
-    //                .getConfiguration()
-    //                .getAuthenticationProviders()
-    //                .size());
-    //        try (Response response = target(url)
-    //                .request()
-    //                .get()) {
-    //            assertEquals("Should return status 403", 403, response.getStatus());
-    //            assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDER_FOUND, response.getStatusInfo().getReasonPhrase());
-    //        }
-    //    }
+        /**
+         * @see AuthenticationEndpoint#headerParameterLogin(String)
+         * @verifies return status 403 if no matching provider found
+         */
+        @Test
+        public void headerParameterLogin_shouldReturnStatus403IfNoMatchingProviderFound() throws Exception {
+            String url = urls.path(ApiUrls.AUTH, ApiUrls.AUTH_HEADER).build();
+            DataManager.getInstance().getConfiguration().overrideValue("user.authenticationProviders.provider(5)[@enabled]", "true");
+            assertEquals(6, DataManager.getInstance()
+                    .getConfiguration()
+                    .getAuthenticationProviders()
+                    .size());
+            try (Response response = target(url)
+                    .request()
+                    .get()) {
+                assertEquals("Should return status 403", 403, response.getStatus());
+                assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDER_FOUND, response.getStatusInfo().getReasonPhrase());
+            }
+        }
 }
