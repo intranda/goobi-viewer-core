@@ -53,7 +53,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;

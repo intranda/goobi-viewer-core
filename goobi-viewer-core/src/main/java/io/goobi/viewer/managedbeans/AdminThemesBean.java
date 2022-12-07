@@ -77,16 +77,16 @@ public class AdminThemesBean implements Serializable {
                 .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
                 .collect(Collectors.toList());
         } catch(DAOException e) {
-            logger.error("Unable to load configured themes:", e.toString());
+            logger.error("Unable to load configured themes: {}", e.toString());
             return Collections.emptyList();
         }
     }
 
-    private List<String> getExistingSubThemes() {
+    private static List<String> getExistingSubThemes() {
         try {
             return SolrTools.getExistingSubthemes();
         } catch(IndexUnreachableException | PresentationException e) {
-            logger.error("Unable to load subtheme names from Index:", e.toString());
+            logger.error("Unable to load subtheme names from Index: {}", e.toString());
             return Collections.emptyList();
         }
     }
@@ -125,8 +125,7 @@ public class AdminThemesBean implements Serializable {
 
     public ThemeConfiguration getCurrentTheme() throws DAOException {
         String themeName = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
-        ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
-        return theme;
+        return DataManager.getInstance().getDao().getTheme(themeName);
     }
 
     public boolean isCurrentThemeConfigured() throws DAOException {
@@ -173,7 +172,7 @@ public class AdminThemesBean implements Serializable {
                 .orElse(getFullUrl(defaultUrl));
     }
 
-    private String getFullUrl(String defaultUrl) {
+    private static String getFullUrl(String defaultUrl) {
         String basePath = BeanUtils.getRequest().getContextPath();
         String imagePath = BeanUtils.getNavigationHelper().getResource(defaultUrl.replaceAll("^\\/", ""));
         return basePath + imagePath;
@@ -223,8 +222,8 @@ public class AdminThemesBean implements Serializable {
         String styleSheet = Optional.ofNullable(getCurrentTheme()).map(t -> t.getStyleSheet()).orElse("");
         if (StringUtils.isNotBlank(styleSheet)) {
             return "<style>" + styleSheet + "</style>";
-        } else {
-            return "";
         }
+        
+        return "";
     }
 }

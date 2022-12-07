@@ -32,6 +32,24 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.converter.ConsentScopeConverter;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.administration.legal.ConsentScope;
+import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.security.clients.ClientApplication;
+import io.goobi.viewer.model.security.user.IpRange;
+import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserGroup;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -47,25 +65,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.dao.converter.ConsentScopeConverter;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.administration.legal.ConsentScope;
-import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.cms.Selectable;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
-import io.goobi.viewer.model.security.clients.ClientApplication;
-import io.goobi.viewer.model.security.user.IpRange;
-import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.model.security.user.UserGroup;
 
 /**
  * <p>
@@ -176,10 +175,10 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     private List<CMSCategory> allowedCategories = new ArrayList<>();
 
     /** List of allowed CMS templates. */
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"))
-    @Column(name = "template_id")
-    private List<String> allowedCmsTemplates = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "license_cms_templates", joinColumns = @JoinColumn(name = "license_id"),
+    inverseJoinColumns = @JoinColumn(name = "template_id"))
+    private List<CMSPageTemplate> allowedCmsTemplates = new ArrayList<>();
 
     /** List of allowed crowdsourcing campaigns. */
     @ManyToMany(fetch = FetchType.LAZY)
@@ -635,13 +634,14 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     /**
      *
      * @return
+     * @throws DAOException 
      */
-    public List<Selectable<CMSPageTemplate>> getSelectableTemplates() {
+    public List<Selectable<CMSPageTemplate>> getSelectableTemplates() throws DAOException {
         if (selectableTemplates == null) {
-            List<CMSPageTemplate> allTemplates = BeanUtils.getCmsBean().getTemplates();
+            List<CMSPageTemplate> allTemplates = DataManager.getInstance().getDao().getAllCMSPageTemplates();
             selectableTemplates =
                     allTemplates.stream()
-                            .map(template -> new Selectable<>(template, this.allowedCmsTemplates.contains(template.getId())))
+                            .map(template -> new Selectable<>(template, this.allowedCmsTemplates.contains(template)))
                             .collect(Collectors.toList());
         }
         return selectableTemplates;
@@ -958,7 +958,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @return the allowedCmsTemplates
      */
-    public List<String> getAllowedCmsTemplates() {
+    public List<CMSPageTemplate> getAllowedCmsTemplates() {
         return allowedCmsTemplates;
     }
 
@@ -969,7 +969,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      *
      * @param allowedCmsTemplates the allowedCmsTemplates to set
      */
-    public void setAllowedCmsTemplates(List<String> allowedCmsTemplates) {
+    public void setAllowedCmsTemplates(List<CMSPageTemplate> allowedCmsTemplates) {
         this.allowedCmsTemplates = allowedCmsTemplates;
     }
 

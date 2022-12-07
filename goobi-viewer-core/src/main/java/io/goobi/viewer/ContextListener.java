@@ -36,17 +36,15 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-//import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.UserTools;
+import io.goobi.viewer.model.security.Role;
 
 /**
  * <p>
@@ -64,7 +62,7 @@ public class ContextListener implements ServletContextListener {
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
     /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code> */
-    public volatile String prettyConfigFiles =
+    private volatile String prettyConfigFiles =
             "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
@@ -79,6 +77,8 @@ public class ContextListener implements ServletContextListener {
         ViewerResourceBundle.init(sce.getServletContext());
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         try {
+            //Initialize CMSTemplateManager with the exisitng ServletContext
+            //CMSTemplateManager.getInstance(sce.getServletContext());
             // Add a "member" role, if not yet in the database
             if (DataManager.getInstance().getDao().getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");
@@ -104,11 +104,12 @@ public class ContextListener implements ServletContextListener {
             if (libPath != null) {
                 logger.debug("Lib path: {}", libPath);
                 try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libPath), "*viewer-module-*.jar")) {
+                    StringBuilder sbPrettyConfigFiles = new StringBuilder(prettyConfigFiles);
                     for (Path path : stream) {
-                        logger.debug("Found module JAR: {}", path.getFileName().toString());
+                        logger.debug("Found module JAR: {}", path.getFileName());
                         try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
                             while (prettyConfigFiles.length() < PRETTY_CONFIG_FILES_STRING_THRESHOLD) {
-                                ZipEntry e = zip.getNextEntry();    //NOSONAR only viewer jars are scanned, which we control, and no data is written besides entry names
+                                ZipEntry e = zip.getNextEntry(); //NOSONAR only viewer jars are scanned, which we control, and no data is written besides entry names
                                 if (e == null) {
                                     break;
                                 }
@@ -116,12 +117,13 @@ public class ContextListener implements ServletContextListener {
                                 if (nameSplit.length > 0) {
                                     String name = nameSplit[nameSplit.length - 1];
                                     if (name.startsWith("pretty-config-")) {
-                                        prettyConfigFiles += ", " + name;
+                                        sbPrettyConfigFiles.append(", ").append(name);
                                     }
                                 }
                             }
                         }
                     }
+                    prettyConfigFiles = sbPrettyConfigFiles.toString();
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                     //                } catch (URISyntaxException e) {
@@ -135,6 +137,7 @@ public class ContextListener implements ServletContextListener {
             //        } catch (MalformedURLException e) {
             //            logger.error(e.getMessage(), e);
         } finally {
+            //
         }
 
         // Set Pretty config files parameter
@@ -153,7 +156,7 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             DataManager.getInstance().getDao().shutdown();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
     }

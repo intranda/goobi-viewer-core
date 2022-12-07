@@ -114,7 +114,7 @@ public class CalendarBean implements Serializable {
     private void init() {
         // PostConstruct methods may not throw exceptions
         logger.trace("init");
-        try (Time time = DataManager.getInstance().getTiming().takeTime("init calendar bean")) {
+        try {
             getDefaultDates();
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here");

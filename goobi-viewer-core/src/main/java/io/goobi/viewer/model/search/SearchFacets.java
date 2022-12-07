@@ -46,7 +46,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**

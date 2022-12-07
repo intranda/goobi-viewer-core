@@ -29,24 +29,22 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.PrettyUrlTools;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.cms.CMSMultiRecordNote;
-import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSingleRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -64,7 +62,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = -8850189223154382470L;
 
-    private static final Logger logger = LogManager.getLogger(CmsRecordNotesBean.class);
+    private static final Logger logger = LogManager.getLogger(CmsRecordNoteEditBean.class);
 
     private CMSRecordNote note = null;
     private Locale selectedLocale = BeanUtils.getLocale();
@@ -116,11 +114,17 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     public String getRecordIdentifier() {
-        return Optional.ofNullable(this.note).filter(note -> note instanceof CMSSingleRecordNote).map(n -> ((CMSSingleRecordNote)note).getRecordPi()).orElse("");
+        return Optional.ofNullable(this.note)
+                .filter(CMSSingleRecordNote.class::isInstance)
+                .map(n -> ((CMSSingleRecordNote) note).getRecordPi())
+                .orElse("");
     }
 
     public String getRecordQuery() {
-        return Optional.ofNullable(this.note).filter(note -> note instanceof CMSMultiRecordNote).map(n -> ((CMSMultiRecordNote)note).getQuery()).orElse("");
+        return Optional.ofNullable(this.note)
+                .filter(CMSMultiRecordNote.class::isInstance)
+                .map(n -> ((CMSMultiRecordNote) note).getQuery())
+                .orElse("");
     }
 
     /**
@@ -189,12 +193,12 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     public MetadataElement getMetadataElement() {
         if (this.metadataElement == null && this.note != null && this.note instanceof CMSSingleRecordNote) {
-            CMSSingleRecordNote note = (CMSSingleRecordNote)this.note;
+            CMSSingleRecordNote n = (CMSSingleRecordNote) this.note;
             try {
-                this.metadataElement = loadMetadataElement(note.getRecordPi(), 0);
-            } catch (PresentationException | IndexUnreachableException | DAOException e) {
-                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", note.getRecordTitle().getText(), e.getMessage());
-                Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}", note.getRecordTitle().getText(), e.getMessage());
+                this.metadataElement = loadMetadataElement(n.getRecordPi(), 0);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", n.getRecordTitle().getText(), e.getMessage());
+                Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}", n.getRecordTitle().getText(), e.getMessage());
             }
         }
         return this.metadataElement;
@@ -208,7 +212,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private MetadataElement loadMetadataElement(String recordPi, int index) throws PresentationException, IndexUnreachableException, DAOException {
+    private MetadataElement loadMetadataElement(String recordPi, int index) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(recordPi)) {
             return null;
         }
@@ -241,32 +245,28 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public TranslatedText createRecordTitle(IMetadataValue label) {
         if (label instanceof MultiLanguageMetadataValue) {
             MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
-            TranslatedText labelAsText = new TranslatedText(mLabel);
-            return labelAsText;
+            return new TranslatedText(mLabel);
         }
 
-        TranslatedText labelAsText = new TranslatedText(((SimpleMetadataValue) label).getValue().orElse(""));
-        return labelAsText;
+        return new TranslatedText(((SimpleMetadataValue) label).getValue().orElse(""));
     }
 
     /**
-     * Return true if text and title are both complete (not empty) for both title and text. If locale is not the default locale, text/title counts as complete if they are empty as long
-     * as the corresponding field in the default language is also empty
+     * Return true if text and title are both complete (not empty) for both title and text. If locale is not the default locale, text/title counts as
+     * complete if they are empty as long as the corresponding field in the default language is also empty
      */
     @Override
     public boolean isComplete(Locale locale) {
 
-        if(this.note != null) {
-            if(IPolyglott.getDefaultLocale().equals(locale)) {
+        if (this.note != null) {
+            if (IPolyglott.getDefaultLocale().equals(locale)) {
                 return this.note.getNoteTitle().isComplete(locale) && this.note.getNoteText().isComplete(locale);
-            } else {
-                return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale())) &&
-                       (this.note.getNoteText().isComplete(locale) || !this.note.getNoteText().isComplete(IPolyglott.getDefaultLocale()));
             }
-        } else {
-            return false;
+            return (this.note.getNoteTitle().isComplete(locale) || !this.note.getNoteTitle().isComplete(IPolyglott.getDefaultLocale())) &&
+                    (this.note.getNoteText().isComplete(locale) || !this.note.getNoteText().isComplete(IPolyglott.getDefaultLocale()));
         }
 
+        return false;
     }
 
     /* (non-Javadoc)
@@ -339,11 +339,11 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     public boolean isMultiRecordNote() {
-        return this.note != null && this.note instanceof CMSMultiRecordNote;
+        return this.note instanceof CMSMultiRecordNote;
     }
 
     public boolean isSingleRecordNote() {
-        return this.note != null && this.note instanceof CMSSingleRecordNote;
+        return this.note instanceof CMSSingleRecordNote;
     }
 
 }

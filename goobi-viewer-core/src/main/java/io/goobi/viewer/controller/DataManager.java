@@ -27,13 +27,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
@@ -160,8 +161,8 @@ public final class DataManager {
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
-                .map(module -> module.getURLBuilder())
-                .filter(optional -> optional.isPresent())
+                .map(IModule::getURLBuilder)
+                .filter(Optional::isPresent)
                 .map(optional -> optional.get())
                 .findFirst()
                 .orElse(defaultUrlBuilder);
@@ -326,7 +327,6 @@ public final class DataManager {
         if (dao == null) {
             synchronized (lock) {
                 dao = new JPADAO(getConfiguration().getDbPersistenceUnit());
-                new DatabaseUpdater(dao).update();
             }
         }
 
@@ -562,7 +562,7 @@ public final class DataManager {
     public ClientApplicationManager getClientManager() throws DAOException {
         if (this.clientManager == null) {
             synchronized (lock) {
-                this.clientManager = new ClientApplicationManager(dao);
+                this.clientManager = new ClientApplicationManager(getDao());
             }
         }
         return this.clientManager;

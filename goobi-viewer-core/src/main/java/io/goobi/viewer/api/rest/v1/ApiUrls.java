@@ -34,6 +34,9 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String API = "/api/v1";
 
+    public static final String AUTH = "/auth";
+    public static final String AUTH_HEADER = "/header";
+
     public static final String CACHE = "/cache";
     public static final String CACHE_RECORD = "/{pi}";
 

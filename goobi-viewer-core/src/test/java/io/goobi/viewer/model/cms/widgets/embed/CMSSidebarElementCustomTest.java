@@ -31,7 +31,7 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;

@@ -56,19 +56,19 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
-import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.cms.pages.PublicationStatus;
+import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom;
@@ -126,6 +126,7 @@ public class JPADAO implements IDAO {
 
     static final String QUERY_ELEMENT_AND = " AND ";
     private static final String QUERY_ELEMENT_DESC = " DESC";
+    private static final String QUERY_ELEMENT_JOIN = " JOIN ";
     static final String QUERY_ELEMENT_WHERE = " WHERE ";
 
     static final String MULTIKEY_SEPARATOR = "_";
@@ -242,8 +243,6 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * Commits a persistence context transaction Only to be used following a {@link #startTransaction()} call
      */
     @Override
@@ -255,11 +254,13 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void commitTransaction(EntityManager em) throws PersistenceException {
         commitTransaction(em.getTransaction());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleException(EntityTransaction et) throws PersistenceException {
         if (et.isActive()) {
@@ -269,16 +270,12 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleException(EntityManager em) {
         handleException(em.getTransaction());
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getAllUsers(boolean)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -334,7 +331,7 @@ public class JPADAO implements IDAO {
                     sbQuery.append(QUERY_ELEMENT_DESC);
                 }
             }
-            logger.trace(sbQuery.toString());
+            logger.trace(sbQuery);
             Query q = em.createQuery(sbQuery.toString());
             for (Entry<String, String> entry : params.entrySet()) {
                 q.setParameter(entry.getKey(), entry.getValue());
@@ -345,6 +342,28 @@ public class JPADAO implements IDAO {
             q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
 
             return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<User> getUsersByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM User a JOIN a.userProperties p WHERE KEY(p) = :key AND VALUE(p) = :value";
+            return em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getResultList();
         } finally {
             close(em);
         }
@@ -381,11 +400,6 @@ public class JPADAO implements IDAO {
         return param;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getUser(long)
-     */
     /** {@inheritDoc} */
     @Override
     public User getUser(long id) throws DAOException {
@@ -400,11 +414,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getUserByEmail(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public User getUserByEmail(String email) throws DAOException {
@@ -428,11 +437,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getUserByOpenId(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public User getUserByOpenId(String identifier) throws DAOException {
@@ -477,11 +481,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#addUser(io.goobi.viewer.model.user.User)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean addUser(User user) throws DAOException {
         preQuery();
@@ -499,11 +499,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#updateUser(io.goobi.viewer.model.user.User)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateUser(User user) throws DAOException {
@@ -522,11 +517,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteUser(io.goobi.viewer.model.user.User)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteUser(User user) throws DAOException {
@@ -548,11 +538,6 @@ public class JPADAO implements IDAO {
 
     // UserGroup
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getAllUserGroups()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -612,11 +597,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getUserGroups(io.goobi.viewer.model.user.User)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -632,11 +612,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getUserGroup(long)
-     */
     /** {@inheritDoc} */
     @Override
     public UserGroup getUserGroup(long id) throws DAOException {
@@ -651,11 +626,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getUserGroup(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public UserGroup getUserGroup(String name) throws DAOException {
@@ -675,11 +645,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#addUserGroup(io.goobi.viewer.model.user.UserGroup)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addUserGroup(UserGroup userGroup) throws DAOException {
@@ -723,11 +688,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteUserGroup(io.goobi.viewer.model.user.UserGroup)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteUserGroup(UserGroup userGroup) throws DAOException {
@@ -747,11 +707,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getAllBookmarkLists()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -765,9 +720,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getPublicBookmarkLists()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -783,11 +735,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getBookmarkLists(io.goobi.viewer.model.user.User)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -804,6 +751,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public long getBookmarkListCount(User user) throws DAOException {
         preQuery();
@@ -817,11 +765,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getBookmarkList(long)
-     */
     /** {@inheritDoc} */
     @Override
     public BookmarkList getBookmarkList(long id) throws DAOException {
@@ -836,12 +779,14 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getBookmarkList(java.lang.String)
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct row for name
+     * @should return correct row for name and user
+     * @should return null if no result found
+     * 
      */
-    /** {@inheritDoc} */
     @Override
     public BookmarkList getBookmarkList(String name, User user) throws DAOException {
         preQuery();
@@ -868,9 +813,19 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct row
+     * @should return null if no result found
+     * @should throw IllegalArgumentException if shareKey empty
+     */
     @Override
     public BookmarkList getBookmarkListByShareKey(String shareKey) throws DAOException {
+        if (StringUtils.isEmpty(shareKey)) {
+            throw new org.jboss.weld.exceptions.IllegalArgumentException("shareKey may not be null or empty");
+
+        }
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -887,11 +842,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#addBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addBookmarkList(BookmarkList bookmarkList) throws DAOException {
@@ -910,11 +860,6 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#updateBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateBookmarkList(BookmarkList bookmarkList) throws DAOException {
@@ -933,11 +878,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteBookmarkList(io.goobi.viewer.model.bookmark.BookmarkList)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteBookmarkList(BookmarkList bookmarkList) throws DAOException {
@@ -956,11 +896,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getAllRoles()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1018,11 +953,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getRole(long)
-     */
     /** {@inheritDoc} */
     @Override
     public Role getRole(long id) throws DAOException {
@@ -1037,11 +967,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getRole(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public Role getRole(String name) throws DAOException {
@@ -1061,11 +986,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#addRole(io.goobi.viewer.model.user.Role)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addRole(Role role) throws DAOException {
@@ -1084,11 +1004,6 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#updateRole(io.goobi.viewer.model.user.Role)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateRole(Role role) throws DAOException {
@@ -1107,11 +1022,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteRole(io.goobi.viewer.model.user.Role)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteRole(Role role) throws DAOException {
@@ -1131,11 +1041,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getAllUserRoles()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1201,12 +1106,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getUserRoles(io.goobi.viewer.model.user.UserGroup,
-     * io.goobi.viewer.model.user.User, io.goobi.viewer.model.user.Role)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1255,11 +1154,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#addUserRole(io.goobi.viewer.model.user.UserRole)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addUserRole(UserRole userRole) throws DAOException {
@@ -1279,11 +1173,6 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#updateUserRole(io.goobi.viewer.model.user.UserRole)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateUserRole(UserRole userRole) throws DAOException {
@@ -1302,11 +1191,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteUserRole(io.goobi.viewer.model.user.UserRole)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteUserRole(UserRole userRole) throws DAOException {
@@ -1326,11 +1210,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getAllLicenseTypes()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1348,6 +1227,8 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * {@inheritDoc}
+     * 
      * @should only return non open access license types
      */
     @SuppressWarnings("unchecked")
@@ -1363,7 +1244,12 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should filter results correctly
+     * @should sort results correctly
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<LicenseType> getLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
@@ -1402,7 +1288,12 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should sort results correctly
+     * @should filter results correctly
+     */
     @SuppressWarnings("unchecked")
     @Override
     public List<LicenseType> getCoreLicenseTypes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
@@ -1443,11 +1334,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getLicenseType(long)
-     */
     /** {@inheritDoc} */
     @Override
     public LicenseType getLicenseType(long id) throws DAOException {
@@ -1462,11 +1348,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getLicenseType(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public LicenseType getLicenseType(String name) throws DAOException {
@@ -1540,11 +1421,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#addLicenseType(io.goobi.viewer.model.user.LicenseType)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addLicenseType(LicenseType licenseType) throws DAOException {
@@ -1563,11 +1439,6 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#updateLicenseType(io.goobi.viewer.model.user.LicenseType)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateLicenseType(LicenseType licenseType) throws DAOException {
@@ -1830,6 +1701,7 @@ public class JPADAO implements IDAO {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean updateDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
         preQuery();
@@ -1848,6 +1720,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean deleteDownloadTicket(DownloadTicket downloadTicket) throws DAOException {
         preQuery();
@@ -1867,11 +1740,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getAllIpRanges()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -1929,11 +1797,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getIpRange(long)
-     */
     /** {@inheritDoc} */
     @Override
     public IpRange getIpRange(long id) throws DAOException {
@@ -1948,11 +1811,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#getIpRange(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public IpRange getIpRange(String name) throws DAOException {
@@ -1972,11 +1830,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#addIpRange(io.goobi.viewer.model.user.IpRange)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addIpRange(IpRange ipRange) throws DAOException {
@@ -1995,11 +1848,6 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#updateIpRange(io.goobi.viewer.model.user.IpRange)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateIpRange(IpRange ipRange) throws DAOException {
@@ -2018,11 +1866,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#deleteIpRange(io.goobi.viewer.model.user.IpRange)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteIpRange(IpRange ipRange) throws DAOException {
@@ -2162,9 +2005,6 @@ public class JPADAO implements IDAO {
 
     // Comment
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllComments()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -2257,9 +2097,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCommentsForPage(java.lang.String, int)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -2295,9 +2132,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getComment(long)
-     */
     /** {@inheritDoc} */
     @Override
     public Comment getComment(long id) throws DAOException {
@@ -2310,9 +2144,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addComment(io.goobi.viewer.model.annotation.Comment)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addComment(Comment comment) throws DAOException {
@@ -2332,9 +2163,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateComment(io.goobi.viewer.model.annotation.Comment)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateComment(Comment comment) throws DAOException {
@@ -2353,9 +2181,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteComment(io.goobi.viewer.model.annotation.Comment)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteComment(Comment comment) throws DAOException {
@@ -2376,7 +2201,8 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#changeCommentsOwner(io.goobi.viewer.model.security.user.User, io.goobi.viewer.model.security.user.User)
+     * {@inheritDoc}
+     * 
      * @should update rows correctly
      */
     @Override
@@ -2477,9 +2303,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllSearches()
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -2604,9 +2427,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getSearches(io.goobi.viewer.model.user.User)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -2624,9 +2444,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getSearch(long)
-     */
     /** {@inheritDoc} */
     @Override
     public Search getSearch(long id) throws DAOException {
@@ -2641,9 +2458,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addSearch(io.goobi.viewer.model.search.Search)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addSearch(Search search) throws DAOException {
@@ -2663,9 +2477,6 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateSearch(io.goobi.viewer.model.search.Search)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateSearch(Search search) throws DAOException {
@@ -2684,9 +2495,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteSearch(io.goobi.viewer.model.search.Search)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteSearch(Search search) throws DAOException {
@@ -2727,9 +2535,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     *
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<DownloadJob> getDownloadJobsForPi(String pi) throws DAOException {
@@ -2991,93 +2797,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /**
-     * @see io.goobi.viewer.dao.IDAO#getCMSTemplateEnabled(java.lang.String)
-     * @should return correct value
-     */
-    @Override
-    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            Query q = em.createQuery("SELECT o FROM CMSPageTemplateEnabled o where o.templateId = :templateId");
-            q.setParameter("templateId", templateId);
-            return (CMSPageTemplateEnabled) q.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        } catch (NonUniqueResultException e) {
-            logger.error(e.getMessage());
-            return null;
-        } finally {
-            close(em);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
-     */
-    @Override
-    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.persist(o);
-            commitTransaction(em);
-        } catch (PersistenceException e) {
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateCMSTemplateEnabled(io.goobi.viewer.model.cms.CMSPageTemplateEnabled)
-     */
-    @Override
-    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException {
-        preQuery();
-        EntityManager em = getEntityManager();
-        try {
-            startTransaction(em);
-            em.merge(o);
-            commitTransaction(em);
-            return true;
-        } catch (PersistenceException e) {
-            handleException(em);
-            return false;
-        } finally {
-            close(em);
-        }
-    }
-
-    /**
-     * @throws DAOException
-     * @see io.goobi.viewer.dao.IDAO#saveCMSTemplateEnabledStatuses(java.util.List)
-     * @should update rows correctly
-     */
-    @Override
-    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException {
-        if (templates == null) {
-            return 0;
-        }
-
-        int count = 0;
-        for (CMSPageTemplate template : templates) {
-            if (template.getEnabled().getId() != null) {
-                updateCMSPageTemplateEnabled(template.getEnabled());
-            } else {
-                addCMSPageTemplateEnabled(template.getEnabled());
-            }
-            count++;
-        }
-
-        return count;
-    }
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -3097,9 +2816,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCmsPageForStaticPage(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException {
@@ -3120,14 +2836,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSPages(int, int, java.lang.String, boolean, java.util.Map)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
-            List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
+            List<Long> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
@@ -3135,7 +2848,7 @@ public class JPADAO implements IDAO {
                 StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
                 StringBuilder order = new StringBuilder();
 
-                Map<String, String> params = new HashMap<>();
+                Map<String, Object> params = new HashMap<>();
 
                 String filterString = createFilterQuery2(null, filters, params);
                 String rightsFilterString = "";
@@ -3157,7 +2870,7 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append(filterString).append(rightsFilterString).append(order);
 
-                logger.trace("CMS page query: {}", sbQuery.toString());
+                logger.trace("CMS page query: {}", sbQuery);
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 q.setFirstResult(first);
@@ -3177,7 +2890,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate)
             throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -3188,18 +2901,6 @@ public class JPADAO implements IDAO {
             }
             if (toDate != null) {
                 sbQuery.append(QUERY_ELEMENT_AND).append("o.dateUpdated <= :toDate");
-            }
-            if (templateIds != null && !templateIds.isEmpty()) {
-                sbQuery.append(QUERY_ELEMENT_AND).append('(');
-                int count = 0;
-                for (String templateId : templateIds) {
-                    if (count != 0) {
-                        sbQuery.append(" OR ");
-                    }
-                    sbQuery.append("o.templateId = '").append(templateId).append("'");
-                    count++;
-                }
-                sbQuery.append(')');
             }
             sbQuery.append(" GROUP BY o.relatedPI ORDER BY o.dateUpdated DESC");
             Query q = em.createQuery(sbQuery.toString());
@@ -3255,7 +2956,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException {
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -3266,18 +2967,6 @@ public class JPADAO implements IDAO {
             }
             if (toDate != null) {
                 sbQuery.append(QUERY_ELEMENT_AND).append("o.dateUpdated <= :toDate");
-            }
-            if (templateIds != null && !templateIds.isEmpty()) {
-                sbQuery.append(QUERY_ELEMENT_AND).append("(");
-                int count = 0;
-                for (String templateId : templateIds) {
-                    if (count != 0) {
-                        sbQuery.append(" OR ");
-                    }
-                    sbQuery.append("o.templateId = '").append(templateId).append("'");
-                    count++;
-                }
-                sbQuery.append(')');
             }
             Query q = em.createQuery(sbQuery.toString());
             if (fromDate != null) {
@@ -3314,8 +3003,10 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             Query q = em
-                    .createQuery("SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.published = true")
+                    .createQuery(
+                            "SELECT o FROM CMSPage o WHERE o.relatedPI = :pi AND o.useAsDefaultRecordView = true and o.publicationStatus = :publicationStatus")
                     .setParameter("pi", pi)
+                    .setParameter("publicationStatus", PublicationStatus.PUBLISHED)
                     .setMaxResults(1);
 
             return (CMSPage) getSingleResult(q).orElse(null);
@@ -3339,13 +3030,6 @@ public class JPADAO implements IDAO {
                 close(em);
             }
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CMSPage getCMSPageForEditing(long id) throws DAOException {
-        CMSPage original = getCMSPage(id);
-        return new CMSPage(original);
     }
 
     /** {@inheritDoc} */
@@ -3378,6 +3062,7 @@ public class JPADAO implements IDAO {
                 commitTransaction(em);
                 return true;
             } catch (PersistenceException e) {
+                logger.error("Error adding cmsPage to database", e);
                 handleException(em);
                 return false;
             } finally {
@@ -3397,7 +3082,8 @@ public class JPADAO implements IDAO {
                 em.merge(page);
                 commitTransaction(em);
                 return true;
-            } catch (PersistenceException e) {
+            } catch (PersistenceException | NullPointerException e) {
+                logger.error("Error saving page ", e);
                 handleException(em);
                 return false;
             } finally {
@@ -3422,6 +3108,88 @@ public class JPADAO implements IDAO {
             } catch (PersistenceException e) {
                 handleException(em);
                 return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteCMSComponent(PersistentCMSComponent component) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                PersistentCMSComponent o = em.getReference(PersistentCMSComponent.class, component.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error deleting cms component", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(persistentCMSComponent);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error adding cmsPage to database", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.merge(persistentCMSComponent);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException | NullPointerException e) {
+                logger.error("Error saving page ", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PersistentCMSComponent getCMSComponent(Long id) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                return em.getReference(PersistentCMSComponent.class, id);
+            } catch (EntityNotFoundException e) {
+                return null;
             } finally {
                 close(em);
             }
@@ -3574,44 +3342,6 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public List<CMSPage> getMediaOwners(CMSMediaItem item) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            List<CMSPage> ownerList = new ArrayList<>();
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSContentItem o WHERE o.mediaItem = :media");
-                q.setParameter("media", item);
-                q.setFlushMode(FlushModeType.COMMIT);
-                // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
-                for (Object o : q.getResultList()) {
-                    if (o instanceof CMSContentItem) {
-                        try {
-                            CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion().getOwnerPage();
-                            if (!ownerList.contains(page)) {
-                                ownerList.add(page);
-                            }
-                        } catch (NullPointerException e) {
-                            //
-                        }
-                    }
-                }
-                return ownerList;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS pages. Returning empty list.", e.toString());
-                return new ArrayList<>();
-            } finally {
-                close(em);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
-     */
-    /** {@inheritDoc} */
-    @Override
     @SuppressWarnings("unchecked")
     public List<CMSMediaItem> getCMSMediaItemsByCategory(CMSCategory category) throws DAOException {
         preQuery();
@@ -3746,9 +3476,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getTranskribusJobs(java.lang.String, java.lang.String, io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -3911,7 +3638,7 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append(filterString).append(order);
 
-                logger.trace(sbQuery.toString());
+                logger.trace(sbQuery);
                 Query q = em.createQuery(sbQuery.toString());
                 params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
@@ -3982,8 +3709,7 @@ public class JPADAO implements IDAO {
                 }
                 // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
 
-                List<CampaignRecordStatistic> list = q.getResultList();
-                return list;
+                return q.getResultList();
             } catch (PersistenceException e) {
                 logger.error("Exception \"{}\" when trying to get CS campaigns. Returning empty list.", e.toString());
                 return Collections.emptyList();
@@ -4022,9 +3748,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addCampaign(Campaign campaign) throws DAOException {
@@ -4045,9 +3768,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateCampaign(io.goobi.viewer.model.crowdsourcing.campaigns.Campaign)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateCampaign(Campaign campaign) throws DAOException {
@@ -4189,9 +3909,6 @@ public class JPADAO implements IDAO {
 
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#checkAvailability()
-     */
     @Override
     public boolean checkAvailability() {
         try {
@@ -4211,11 +3928,6 @@ public class JPADAO implements IDAO {
         //noop
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see io.goobi.viewer.dao.IDAO#shutdown()
-     */
     /** {@inheritDoc} */
     @Override
     public void shutdown() {
@@ -4319,18 +4031,18 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
+    public long getCMSPageCount(Map<String, String> filters, List<Long> allowedTemplates, List<String> allowedSubthemes,
             List<String> allowedCategories) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM CMSPage").append(" a");
-            Map<String, String> params = new HashMap<>();
+            Map<String, Object> params = new HashMap<>();
             sbQuery.append(createFilterQuery2(null, filters, params));
             try {
                 String rightsFilter = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
                 if (!rightsFilter.isEmpty()) {
-                    if (filters.values().stream().anyMatch(v -> StringUtils.isNotBlank(v))) {
+                    if (filters.values().stream().anyMatch(StringUtils::isNotBlank)) {
                         sbQuery.append(QUERY_ELEMENT_AND);
                     } else {
                         sbQuery.append(QUERY_ELEMENT_WHERE);
@@ -4395,9 +4107,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllStaticPages()
-     */
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
@@ -4413,9 +4122,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addStaticPage(io.goobi.viewer.model.cms.StaticPage)
-     */
     /**
      * {@inheritDoc}
      *
@@ -4438,9 +4144,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateStaticPage(io.goobi.viewer.model.cms.StaticPage)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateStaticPage(CMSStaticPage page) throws DAOException {
@@ -4459,9 +4162,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteStaticPage(io.goobi.viewer.model.cms.StaticPage)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteStaticPage(CMSStaticPage page) throws DAOException {
@@ -4499,9 +4199,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getStaticPageForTypeType(io.goobi.viewer.dao.PageType)
-     */
     /** {@inheritDoc} */
     @Override
     public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException {
@@ -4538,9 +4235,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSCollections(java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
@@ -4558,9 +4252,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean addCMSCollection(CMSCollection collection) throws DAOException {
@@ -4579,9 +4270,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
@@ -4600,9 +4288,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSCollection(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException {
@@ -4618,9 +4303,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteCMSCollection(io.goobi.viewer.model.cms.CMSCollection)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteCMSCollection(CMSCollection collection) throws DAOException {
@@ -4640,9 +4322,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSPagesByCategory(io.goobi.viewer.model.cms.Category)
-     */
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
@@ -4658,6 +4337,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public List<CMSPage> getCMSPagesForSubtheme(String subtheme) throws DAOException {
@@ -4672,9 +4352,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getCMSPagesForRecord(java.lang.String, io.goobi.viewer.model.cms.Category)
-     */
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -4713,17 +4390,19 @@ public class JPADAO implements IDAO {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
-    public static String createCMSPageFilter(Map<String, String> params, String pageParameter, List<String> allowedTemplateIds,
+    public static String createCMSPageFilter(Map<String, Object> params, String pageParameter, List<Long> allowedTemplates,
             List<String> allowedSubthemes, List<String> allowedCategoryIds) throws AccessDeniedException {
 
         String query = "";
 
         int index = 0;
-        if (allowedTemplateIds != null && !allowedTemplateIds.isEmpty()) {
+        if (allowedTemplates != null && !allowedTemplates.isEmpty()) {
             query += "(";
+
             StringBuilder sbQueryInner = new StringBuilder();
-            for (String template : allowedTemplateIds) {
+            for (Long template : allowedTemplates) {
                 String templateParameter = "tpl" + ++index;
+
                 sbQueryInner.append(":").append(templateParameter).append(" = ").append(pageParameter).append(".templateId").append(" OR ");
                 params.put(templateParameter, template);
             }
@@ -4732,7 +4411,7 @@ public class JPADAO implements IDAO {
                 query = query.substring(0, query.length() - 4);
             }
             query += ") AND";
-        } else if (allowedTemplateIds != null) {
+        } else if (allowedTemplates != null) {
             throw new AccessDeniedException("User may not view pages with any templates");
         }
 
@@ -4804,7 +4483,8 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#getCountPagesUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * {@inheritDoc}
+     * 
      * @should return correct value
      */
     @Override
@@ -4828,7 +4508,8 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#getCountMediaItemsUsingCategory(io.goobi.viewer.model.cms.CMSCategory)
+     * {@inheritDoc}
+     * 
      * @should return correct value
      */
     @Override
@@ -5116,6 +4797,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public long getTotalAnnotationCount() throws DAOException {
         preQuery();
@@ -5136,9 +4818,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllAnnotationsByMotivation(java.lang.String)
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAllAnnotationsByMotivation(String motivation) throws DAOException {
@@ -5183,6 +4863,7 @@ public class JPADAO implements IDAO {
         return getAnnotationsForTarget(pi, page, null);
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CrowdsourcingAnnotation> getAnnotationsForTarget(String pi, Integer page, String motivation) throws DAOException {
@@ -5333,7 +5014,8 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @see io.goobi.viewer.dao.IDAO#getAnnotationsForUser(java.lang.Long)
+     * {@inheritDoc}
+     * 
      * @should return correct rows
      * @should throw IllegalArgumentException if sortField unknown
      */
@@ -5465,9 +5147,6 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
@@ -5488,9 +5167,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteAnnotation(io.goobi.viewer.model.annotation.CrowdsourcingAnnotation)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean deleteAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
@@ -5512,9 +5188,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getGeoMap(java.lang.Long)
-     */
+    /** {@inheritDoc} */
     @Override
     public GeoMap getGeoMap(Long mapId) throws DAOException {
         if (mapId == null) {
@@ -5531,9 +5205,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllGeoMaps()
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<GeoMap> getAllGeoMaps() throws DAOException {
@@ -5547,9 +5219,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addGeoMap(io.goobi.viewer.model.maps.GeoMap)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean addGeoMap(GeoMap map) throws DAOException {
         if (getGeoMap(map.getId()) != null) {
@@ -5570,9 +5240,7 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateGeoMap(io.goobi.viewer.model.maps.GeoMap)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean updateGeoMap(GeoMap map) throws DAOException {
         if (map.getId() == null) {
@@ -5595,9 +5263,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteGeoMap(io.goobi.viewer.model.maps.GeoMap)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean deleteGeoMap(GeoMap map) throws DAOException {
         if (map.getId() == null) {
@@ -5621,9 +5287,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getPagesUsingMap(io.goobi.viewer.model.maps.GeoMap)
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingMap(GeoMap map) throws DAOException {
@@ -5632,9 +5296,9 @@ public class JPADAO implements IDAO {
         try {
 
             Query qItems = em.createQuery(
-                    "SELECT item FROM CMSContentItem item WHERE item.geoMap = :map");
+                    "SELECT item FROM CMSGeomapContent item WHERE item.map = :map");
             qItems.setParameter("map", map);
-            List<CMSContentItem> itemList = qItems.getResultList();
+            List<CMSContent> itemList = qItems.getResultList();
 
             Query qWidgets = em.createQuery(
                     "SELECT ele FROM CMSSidebarElementAutomatic ele WHERE ele.map = :map");
@@ -5642,8 +5306,8 @@ public class JPADAO implements IDAO {
             List<CMSSidebarElement> widgetList = qWidgets.getResultList();
 
             Stream<CMSPage> itemPages = itemList.stream()
-                    .map(CMSContentItem::getOwnerPageLanguageVersion)
-                    .map(CMSPageLanguageVersion::getOwnerPage);
+                    .map(CMSContent::getOwningComponent)
+                    .map(PersistentCMSComponent::getOwningPage);
 
             Stream<CMSPage> widgetPages = widgetList.stream()
                     .map(CMSSidebarElement::getOwnerPage);
@@ -5656,6 +5320,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingMapInSidebar(GeoMap map) throws DAOException {
@@ -5677,9 +5342,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#saveTermsOfUse(io.goobi.viewer.model.security.TermsOfUse)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException {
         preQuery();
@@ -5699,9 +5362,7 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getTermsOfUse()
-     */
+    /** {@inheritDoc} */
     @Override
     public TermsOfUse getTermsOfUse() throws DAOException {
         preQuery();
@@ -5722,9 +5383,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#resetUserAgreementsToTermsOfUse()
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean resetUserAgreementsToTermsOfUse() throws DAOException {
         List<User> users = getAllUsers(true);
@@ -5739,9 +5398,7 @@ public class JPADAO implements IDAO {
         return true;
     }
 
-    /**
-     * Implements filtering with java methods because filtering single-table inheritance objects does not work as expected
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSRecordNote> getRecordNotes(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
@@ -5769,9 +5426,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllRecordNotes()
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSRecordNote> getAllRecordNotes() throws DAOException {
@@ -5779,7 +5434,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSRecordNote a");
-            logger.trace(sbQuery.toString());
+            logger.trace(sbQuery);
             Query q = em.createQuery(sbQuery.toString());
             q.setFlushMode(FlushModeType.COMMIT);
             // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
@@ -5792,9 +5447,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getRecordNotesForPi(java.lang.String)
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSSingleRecordNote> getRecordNotesForPi(String pi, boolean displayedNotesOnly) throws DAOException {
@@ -5817,6 +5470,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSMultiRecordNote> getAllMultiRecordNotes(boolean displayedNotesOnly) throws DAOException {
@@ -5838,9 +5492,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getRecordNote(java.lang.Long)
-     */
+    /** {@inheritDoc} */
     @Override
     public CMSRecordNote getRecordNote(Long id) throws DAOException {
         preQuery();
@@ -5861,9 +5513,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean addRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
@@ -5883,9 +5533,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
@@ -5905,9 +5553,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteRecordNote(io.goobi.viewer.model.cms.CMSRecordNote)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean deleteRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
@@ -5928,9 +5574,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getAllSliders()
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSSlider> getAllSliders() throws DAOException {
@@ -5938,7 +5582,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSSlider a");
-            logger.trace(sbQuery.toString());
+            logger.trace(sbQuery);
             Query q = em.createQuery(sbQuery.toString());
             q.setFlushMode(FlushModeType.COMMIT);
             return q.getResultList();
@@ -5950,9 +5594,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getSlider(java.lang.Long)
-     */
+    /** {@inheritDoc} */
     @Override
     public CMSSlider getSlider(Long id) throws DAOException {
         if (id == null) {
@@ -5970,9 +5612,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean addSlider(CMSSlider slider) throws DAOException {
         preQuery();
@@ -5992,9 +5632,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean updateSlider(CMSSlider slider) throws DAOException {
         preQuery();
@@ -6014,9 +5652,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean deleteSlider(CMSSlider slider) throws DAOException {
         preQuery();
@@ -6037,24 +5673,18 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getPagesUsingSlider(io.goobi.viewer.model.cms.CMSSlider)
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingSlider(CMSSlider slider) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-
-            Query qItems = em.createQuery(
-                    "SELECT item FROM CMSContentItem item WHERE item.slider = :slider");
-            qItems.setParameter("slider", slider);
-            List<CMSContentItem> itemList = qItems.getResultList();
-
+            Query qItems = em.createQuery("SELECT item FROM CMSSliderContent item");
+            List<CMSContent> itemList = qItems.getResultList();
             return itemList.stream()
-                    .map(CMSContentItem::getOwnerPageLanguageVersion)
-                    .map(CMSPageLanguageVersion::getOwnerPage)
+                    .map(CMSContent::getOwningComponent)
+                    .map(PersistentCMSComponent::getOwningPage)
                     .distinct()
                     .collect(Collectors.toList());
         } finally {
@@ -6062,9 +5692,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getConfiguredThemes()
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<ThemeConfiguration> getConfiguredThemes() throws DAOException {
@@ -6078,9 +5706,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#getTheme(java.lang.String)
-     */
+    /** {@inheritDoc} */
     @Override
     public ThemeConfiguration getTheme(String name) throws DAOException {
         preQuery();
@@ -6103,9 +5729,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#addTheme(io.goobi.viewer.model.viewer.themes.Theme)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean addTheme(ThemeConfiguration theme) throws DAOException {
         preQuery();
@@ -6125,9 +5749,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#updateTheme(io.goobi.viewer.model.viewer.themes.Theme)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean updateTheme(ThemeConfiguration theme) throws DAOException {
         preQuery();
@@ -6147,9 +5769,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.IDAO#deleteTheme(io.goobi.viewer.model.viewer.themes.Theme)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean deleteTheme(ThemeConfiguration theme) throws DAOException {
         preQuery();
@@ -6170,6 +5790,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CustomSidebarWidget> getAllCustomWidgets() throws DAOException {
@@ -6183,6 +5804,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public CustomSidebarWidget getCustomWidget(Long id) throws DAOException {
         if (id == null) {
@@ -6200,6 +5822,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException {
         synchronized (cmsRequestLock) {
@@ -6220,6 +5843,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
         synchronized (cmsRequestLock) {
@@ -6241,6 +5865,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean deleteCustomWidget(Long id) throws DAOException {
         synchronized (cmsRequestLock) {
@@ -6261,6 +5886,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getPagesUsingWidget(CustomSidebarWidget widget) throws DAOException {
@@ -6282,6 +5908,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public CookieBanner getCookieBanner() throws DAOException {
         preQuery();
@@ -6302,6 +5929,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean saveCookieBanner(CookieBanner banner) throws DAOException {
         preQuery();
@@ -6324,6 +5952,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException {
         preQuery();
@@ -6347,6 +5976,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public Disclaimer getDisclaimer() throws DAOException {
         preQuery();
@@ -6367,6 +5997,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public Long getNumRecordsWithComments(User user) throws DAOException {
         preQuery();
@@ -6382,6 +6013,8 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @SuppressWarnings("rawtypes")
     @Override
     public List getNativeQueryResults(String query) throws DAOException {
         preQuery();
@@ -6393,6 +6026,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public int executeUpdate(String query) throws DAOException {
         preQuery();
@@ -6417,7 +6051,7 @@ public class JPADAO implements IDAO {
      * @param params
      * @return
      */
-    static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, String> params) {
+    static String createFilterQuery2(String staticFilterQuery, Map<String, String> filters, Map<String, Object> params) {
         StringBuilder q = new StringBuilder(" ");
         if (StringUtils.isNotEmpty(staticFilterQuery)) {
             q.append(staticFilterQuery);
@@ -6681,6 +6315,7 @@ public class JPADAO implements IDAO {
     /**
      * Builds a query string to filter a query across several tables
      *
+     * @param staticFilterQuery
      * @param filters The filters to use
      * @param params Empty map which will be filled with the used query parameters. These to be added to the query
      * @return A string consisting of a WHERE and possibly JOIN clause of a query
@@ -6735,7 +6370,7 @@ public class JPADAO implements IDAO {
 
                     //apply join table if necessary
                     if ("CMSPageLanguageVersion".equalsIgnoreCase(joinTable) || "CMSSidebarElement".equalsIgnoreCase(joinTable)) {
-                        join.append(" JOIN ")
+                        join.append(QUERY_ELEMENT_JOIN)
                                 .append(joinTable)
                                 .append(" ")
                                 .append(tableKey)
@@ -6750,10 +6385,10 @@ public class JPADAO implements IDAO {
                         //                                .append(" (").append(tableKey).append(".language = :lang) ");
                         //                            }
                     } else if ("classifications".equals(joinTable)) {
-                        join.append(" JOIN ").append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
+                        join.append(QUERY_ELEMENT_JOIN).append(pageKey).append(".").append(joinTable).append(" ").append(tableKey);
                         //                            .append(" ON ").append(" (").append(pageKey).append(".id = ").append(tableKey).append(".ownerPage.id)");
                     } else if ("groupOwner".equals(joinTable)) {
-                        join.append(" JOIN ")
+                        join.append(QUERY_ELEMENT_JOIN)
                                 .append(joinTable)
                                 .append(" ")
                                 .append(tableKey)
@@ -6774,19 +6409,20 @@ public class JPADAO implements IDAO {
         return join.append(where).toString();
     }
 
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public List<ClientApplication> getAllClientApplications() throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT c FROM ClientApplication c");
-            return q.getResultList();
+            return em.createQuery("SELECT c FROM ClientApplication c").getResultList();
         } finally {
             close(em);
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public ClientApplication getClientApplication(long id) throws DAOException {
         preQuery();
@@ -6800,14 +6436,15 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public ClientApplication getClientApplicationByClientId(String clientId) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT c FROM ClientApplication c WHERE c.clientIdentifier = :clientId");
-            q.setParameter("clientId", clientId);
-            return (ClientApplication) q.getSingleResult();
+            return (ClientApplication) em.createQuery("SELECT c FROM ClientApplication c WHERE c.clientIdentifier = :clientId")
+                    .setParameter("clientId", clientId)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         } finally {
@@ -6815,6 +6452,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean saveClientApplication(ClientApplication client) throws DAOException {
         preQuery();
@@ -6837,6 +6475,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean deleteClientApplication(long id) throws DAOException {
         preQuery();
@@ -6855,14 +6494,14 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public List<DailySessionUsageStatistics> getAllUsageStatistics() throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s");
-            return q.getResultList();
+            return em.createQuery("SELECT s FROM DailySessionUsageStatistics s").getResultList();
         } catch (NoResultException e) {
             return null;
         } finally {
@@ -6870,6 +6509,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public DailySessionUsageStatistics getUsageStatistics(LocalDate date) throws DAOException {
         preQuery();
@@ -6885,6 +6525,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public List<DailySessionUsageStatistics> getUsageStatistics(LocalDate start, LocalDate end) throws DAOException {
@@ -6902,6 +6543,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
         preQuery();
@@ -6920,6 +6562,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
         preQuery();
@@ -6938,6 +6581,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean deleteUsageStatistics(long id) throws DAOException {
         preQuery();
@@ -6949,6 +6593,95 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
             return true;
         } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CMSPageTemplate> getAllCMSPageTemplates() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o FROM CMSPageTemplate o").getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get cms page templates. Returning empty list", e.toString());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CMSPageTemplate getCMSPageTemplate(Long id) throws DAOException {
+        logger.trace("getCMSPage: {}", id);
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(CMSPageTemplate.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(template);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error adding cmsPage to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(template);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean removeCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            CMSPageTemplate o = em.getReference(CMSPageTemplate.class, template.getId());
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error(e);
             handleException(em);
             return false;
         } finally {

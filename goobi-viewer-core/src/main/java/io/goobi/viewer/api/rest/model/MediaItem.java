@@ -37,15 +37,13 @@ import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.api.iiif.presentation.content.ImageContent;
-import de.intranda.api.iiif.presentation.content.LinkingContent;
-import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.serializer.WebAnnotationMetadataValueSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 /**
  * @author florian
@@ -104,7 +102,6 @@ public class MediaItem {
 
     }
 
-
     /**
      * @return the id
      */
@@ -133,14 +130,12 @@ public class MediaItem {
         return image;
     }
 
-
     /**
      * @return the link
      */
     public String getLink() {
         return link;
     }
-
 
     /**
      * @return the tags

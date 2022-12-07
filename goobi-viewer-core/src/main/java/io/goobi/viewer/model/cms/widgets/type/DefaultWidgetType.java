@@ -34,8 +34,8 @@ public enum DefaultWidgetType implements WidgetContentType {
      */
     WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "widget_browsing.xhtml"),
     /**
-     * Displays search facetting for a page with search functionality. Always displays the facet fields configured in viewer-config
-     * Also includes chronology-facetting (by year) and geospatial facetting (on a map) which are displayed as independent widgets in the GUI
+     * Displays search facetting for a page with search functionality. Always displays the facet fields configured in viewer-config Also includes
+     * chronology-facetting (by year) and geospatial facetting (on a map) which are displayed as independent widgets in the GUI
      */
     WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "widget_searchFacets.xhtml"),
     /**
@@ -63,6 +63,7 @@ public enum DefaultWidgetType implements WidgetContentType {
 
     /**
      * A message key for a description of ths widget type
+     * 
      * @return
      */
     public String getDescription() {

@@ -304,6 +304,13 @@
 			}
 		}
 	}
+	&__entry-list-grid {
+		display: grid;
+		gap: 20px;
+		&.-w25 {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+	}
 	&__boxed-entry {
 		background: @white;
 		padding: 2rem;
@@ -1139,14 +1146,14 @@
 		color: @white;
 		align-items: center;
 		justify-content: center;
-		flex-direction: column;
+		flex-direction: row;
+		gap: 15px;
 		&.-showExportOptions {
 			display: flex;
 			animation: slideInUp 0.25s ease 0s 1 forwards;
 		}
 	}
 	&__overlay-bar-message {
-		margin-bottom: 1rem;
 		text-align: center;
 	}
 
@@ -1682,7 +1689,7 @@
 	&__language-tab {
 		border: none;
 		margin-right: 0;
-		margin-bottom: -2px;
+		margin-bottom: -1px;
 		a {
 		    display: inline-block;
 		    padding: 1rem 1.7rem;
@@ -1976,6 +1983,14 @@
 .btn--danger,
 .btn--success {
 	min-width: 130px;
+}
+
+// BUTTON HOVER EFFECT FOR ADMIN BACKEND
+.btn--full {
+	&:hover {
+		border-color: #3a72bf;
+		background-color: #3a72bf;
+	}
 }
 
 .-h100 {

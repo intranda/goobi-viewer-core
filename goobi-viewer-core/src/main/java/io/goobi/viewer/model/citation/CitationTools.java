@@ -25,18 +25,22 @@ import de.undercouch.citeproc.csl.CSLType;
 
 public class CitationTools {
 
+    private CitationTools() {
+    }
+
     /**
      *
-     * @param docstrct
-     * @return CLSType for the given docstrct; default value if none mapped
+     * @param docstruct
+     * @param topstruct
+     * @return CLSType for the given docstruct; default value if none mapped
      * @should return correct type
      */
-    public static CSLType getCSLTypeForDocstrct(String docstrct) {
-        if (docstrct == null) {
-            return CSLType.WEBPAGE;
+    public static CSLType getCSLTypeForDocstrct(String docstruct, String topstruct) {
+        if (docstruct == null) {
+            return CSLType.ARTICLE;
         }
 
-        switch (docstrct.toLowerCase()) {
+        switch (docstruct.toLowerCase()) {
             case "monograph":
             case "volume":
                 return CSLType.BOOK;
@@ -46,6 +50,14 @@ public class CitationTools {
             case "singlemap":
                 return CSLType.MAP;
             case "article":
+                if (topstruct != null) {
+                    if (topstruct.toLowerCase().startsWith("newspaper")) {
+                        return CSLType.ARTICLE_NEWSPAPER;
+                    }
+                    if ("periodicalvolume".equalsIgnoreCase(topstruct)) {
+                        return CSLType.ARTICLE_JOURNAL;
+                    }
+                }
                 return CSLType.ARTICLE;
             case "chapter":
                 return CSLType.CHAPTER;

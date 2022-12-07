@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
@@ -43,7 +42,6 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -56,7 +54,8 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.viewer.CompoundLabeledLink;
 import io.goobi.viewer.model.viewer.LabeledLink;
@@ -109,18 +108,6 @@ public class BreadcrumbBean implements Serializable {
     public static final int WEIGHT_CROWDSOURCING_CAMPAIGN_PARENT = 1;
 
     private List<LabeledLink> breadcrumbs = new LinkedList<>();
-
-    /**
-     * <p>
-     * init.
-     * </p>
-     *
-     * @should sort lazyModelComments by dateUpdated desc by default
-     */
-    @PostConstruct
-    public void init() {
-
-    }
 
     /**
      * Attaches a new link to the breadcrumb list at the appropriate position (depending on the link's weight).
@@ -213,15 +200,12 @@ public class BreadcrumbBean implements Serializable {
             CMSPage currentPage = cmsPage;
 
             // If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
-            try {
-                if (cmsPage.getCollectionIfLoaded().map(CollectionView::isSubcollection).orElse(false)) {
-                    LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(),
-                            cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
-                    tempBreadcrumbs.add(0, link);
-                    // logger.trace("added cms page collection breadcrumb: {}", link.toString());
-                }
-            } catch (PresentationException | IndexUnreachableException | IllegalRequestException e) {
-                logger.error(e.toString(), e);
+            List<CollectionView> pageCollections = BeanUtils.getCollectionViewBean().getLoadedCollectionsForPage(cmsPage);
+            if (!pageCollections.isEmpty()) {
+                CollectionView firstCollection = pageCollections.get(0);
+                LabeledLink link = new LabeledLink(firstCollection.getTopVisibleElement(),
+                        firstCollection.getCollectionUrl(firstCollection.getTopVisibleElement()), WEIGHT_SEARCH_RESULTS);
+                tempBreadcrumbs.add(0, link);
             }
 
             while (currentPage != null) {
@@ -235,7 +219,7 @@ public class BreadcrumbBean implements Serializable {
                         .getStaticPageForCMSPage(currentPage)
                         .stream()
                         .findFirst()
-                        .map(sp -> sp.getPageName())
+                        .map(CMSStaticPage::getPageName)
                         .filter(name -> PageType.index.name().equals(name))
                         .isPresent()) {
                     logger.trace("CMS index page found");
@@ -282,7 +266,7 @@ public class BreadcrumbBean implements Serializable {
         facetString = StringTools.decodeUrl(facetString);
         List<String> facets =
                 SearchFacets.getHierarchicalFacets(facetString, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields());
-        if (facets.size() > 0) {
+        if (!facets.isEmpty()) {
             String facet = facets.get(0);
             facets = SearchFacets.splitHierarchicalFacet(facet);
             updateBreadcrumbsWithCurrentCollection(DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().get(0), facets,
@@ -301,7 +285,6 @@ public class BreadcrumbBean implements Serializable {
      */
     private void updateBreadcrumbsWithCurrentCollection(String field, List<String> subItems, int weight) {
         logger.trace("updateBreadcrumbsWithCurrentCollection: {} ({})", field, weight);
-        //        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         updateBreadcrumbs(new LabeledLink("browseCollection", getBrowseUrl() + '/', WEIGHT_BROWSE));
         updateBreadcrumbs(new CompoundLabeledLink("browseCollection", "", field, subItems, weight));
     }
@@ -316,7 +299,7 @@ public class BreadcrumbBean implements Serializable {
         logger.trace("updateBreadcrumbsWithCurrentUrl: {} / {}", name, weight);
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-        logger.trace("URL: {}", url.toString());
+        logger.trace("URL: {}", url);
         updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
     }
 
@@ -358,7 +341,6 @@ public class BreadcrumbBean implements Serializable {
         PageType page = PageType.getByName(url);
         if (page != null && !page.equals(PageType.other)) {
             url = getUrl(page);
-        } else {
         }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         updateBreadcrumbs(newLink);

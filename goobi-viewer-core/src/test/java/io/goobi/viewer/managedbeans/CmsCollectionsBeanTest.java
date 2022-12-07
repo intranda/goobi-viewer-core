@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.solr.SolrConstants;
 
