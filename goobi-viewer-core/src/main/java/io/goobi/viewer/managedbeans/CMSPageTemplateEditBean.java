@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,22 +45,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.utils.SelectItemBuilder;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageEditState;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
-import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 
 @Named("cmsPageTemplateEditBean")
@@ -69,28 +65,34 @@ public class CMSPageTemplateEditBean implements Serializable {
     private static final long serialVersionUID = 1399752926754065793L;
     private static final Logger logger = LogManager.getLogger(CMSPageTemplateEditBean.class);
 
-    private final IDAO dao;
     @Inject
-    private transient CMSTemplateManager templateManager;
+    transient IDAO dao;
     @Inject
-    private UserBean userBean;
+    transient CMSTemplateManager templateManager;
+    @Inject
+    transient UserBean userBean;
+    @Inject
+    transient CmsBean cmsBean;
+    @Inject
+    transient CmsNavigationBean navigationBean;
+    @Inject
+    transient CMSSidebarWidgetsBean widgetsBean;
+    @Inject 
+    transient CollectionViewBean collectionViewBean;
+    @Inject
+    transient FacesContext facesContext;
 
     private CMSPageTemplate selectedTemplate = null;
-    private Map<WidgetDisplayElement, Boolean> sidebarWidgets;
+    private transient Map<WidgetDisplayElement, Boolean> sidebarWidgets;
     private boolean editMode = false;
     private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
     private String selectedComponent = "";
 
-    @Inject
-    public CMSPageTemplateEditBean(CMSSidebarWidgetsBean widgetsBean) throws DAOException {
-        this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
-        this.dao = DataManager.getInstance().getDao();
-    }
 
     @PostConstruct
     public void setup() {
         try {
-            long templateId = Long.parseLong(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("templateId"));
+            long templateId = Long.parseLong(facesContext.getExternalContext().getRequestParameterMap().get("templateId"));
             CMSPageTemplate template = this.dao.getCMSPageTemplate(templateId);
             if (template != null) {
                 this.setSelectedTemplate(template);
@@ -107,6 +109,12 @@ public class CMSPageTemplateEditBean implements Serializable {
             this.editMode = false;
             this.setNewSelectedTemplate();
         }
+        try {
+            this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
+        } catch (DAOException e) {
+            this.sidebarWidgets = Collections.emptyMap();
+        }
+
     }
 
     public Map<WidgetDisplayElement, Boolean> getSidebarWidgets() {
@@ -194,13 +202,19 @@ public class CMSPageTemplateEditBean implements Serializable {
     public void setSelectedComponent(String selectedComponent) {
         this.selectedComponent = selectedComponent;
     }
+    
+    public void addComponent() {
+        if(addComponent(getSelectedTemplate(), getSelectedComponent())) {
+            setSelectedComponent(null);
+        }
+    }
 
-    public void addComponent(CMSPageTemplate page, String componentFilename) {
+    private boolean addComponent(CMSPageTemplate page, String componentFilename) {
         if (page != null) {
             if (StringUtils.isNotBlank(componentFilename)) {
                 try {
                     page.addComponent(componentFilename, templateManager);
-                    setSelectedComponent(null);
+                    return true;
                 } catch (IllegalArgumentException e) {
                     logger.error("Cannot add component: No component found for filename {}.", componentFilename);
                     Messages.error(null, "admin__cms__create_page__error_unknown_component_name", componentFilename);
@@ -212,6 +226,7 @@ public class CMSPageTemplateEditBean implements Serializable {
         } else {
             logger.error("Cannot add component: No page given");
         }
+        return false;
     }
 
     public void saveTemplateAndForwardToEdit() throws DAOException {
@@ -219,7 +234,7 @@ public class CMSPageTemplateEditBean implements Serializable {
         if(this.selectedTemplate.getId() != null) {            
             String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsEditPageTemplate", this.selectedTemplate.getId());
             try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+                facesContext.getExternalContext().redirect(url);
             } catch (IOException | NullPointerException e) {
                 logger.error("Error redirecting to database url {}: {}", url, e.toString());
             }
@@ -241,9 +256,9 @@ public class CMSPageTemplateEditBean implements Serializable {
 
         logger.trace("update dao");
         if (selectedTemplate.getId() != null) {
-            success = DataManager.getInstance().getDao().updateCMSPageTemplate(selectedTemplate);
+            success = this.dao.updateCMSPageTemplate(selectedTemplate);
         } else {
-            success = DataManager.getInstance().getDao().addCMSPageTemplate(selectedTemplate);
+            success = this.dao.addCMSPageTemplate(selectedTemplate);
         }
         if (success) {
             Messages.info("cms_pageSaveSuccess");

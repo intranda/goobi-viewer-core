@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -402,6 +403,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         Assert.assertNotNull(userGroup);
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, null, null));
+
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, null));
+
+        Role role = DataManager.getInstance().getDao().getRole(1);
+        Assert.assertNotNull(role);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, role));
     }
 
     @Test
@@ -1227,8 +1236,28 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return correct row for name
+     */
     @Test
-    public void getBookmarkListByNameTest() throws DAOException {
+    public void getBookmarkList_shouldReturnCorrectRowForName() throws Exception {
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList("bookmark list 1 name", null);
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(Long.valueOf(1), bl.getId());
+        Assert.assertNotNull(bl.getOwner());
+        Assert.assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        Assert.assertEquals("bookmark list 1 name", bl.getName());
+        Assert.assertEquals("bookmark list 1 desc", bl.getDescription());
+        Assert.assertEquals(2, bl.getItems().size());
+    }
+
+    /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return correct row for name and user
+     */
+    @Test
+    public void getBookmarkList_shouldReturnCorrectRowForNameAndUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
 
@@ -1243,6 +1272,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return null if no result found
+     */
+    @Test
+    public void getBookmarkList_shouldReturnNullIfNoResultFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getBookmarkList("notfound", null));
+    }
+
+    /**
      * @see JPADAO#getBookmarkListByShareKey(String)
      * @verifies return correct row
      */
@@ -1251,6 +1289,24 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkListByShareKey("c548e2ea6915acbfa17c3dc6f453f5b1");
         Assert.assertNotNull(bl);
         Assert.assertEquals(Long.valueOf(1), bl.getId());
+    }
+
+    /**
+     * @see JPADAO#getBookmarkListByShareKey(String)
+     * @verifies return null if no result found
+     */
+    @Test
+    public void getBookmarkListByShareKey_shouldReturnNullIfNoResultFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getBookmarkListByShareKey("123"));
+    }
+
+    /**
+     * @see JPADAO#getBookmarkListByShareKey(String)
+     * @verifies throw IllegalArgumentException if shareKey empty
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getBookmarkListByShareKey_shouldThrowIllegalArgumentExceptionIfShareKeyEmpty() throws Exception {
+        DataManager.getInstance().getDao().getBookmarkListByShareKey("");
     }
 
     @Test
@@ -1503,10 +1559,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getLicenseTypes_shouldSortResultsCorrectly() throws Exception {
+        // asc
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", true, null);
         Assert.assertEquals(2, ret.size());
         Assert.assertEquals(Long.valueOf(6), ret.get(0).getId());
         Assert.assertEquals(Long.valueOf(4), ret.get(1).getId());
+        // desc
+        ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", false, null);
+        Assert.assertEquals(2, ret.size());
+        Assert.assertEquals(Long.valueOf(1), ret.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), ret.get(1).getId());
     }
 
     /**
@@ -1521,6 +1583,41 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("license type 2 name", ret.get(0).getName());
+    }
+
+    /**
+     * @see JPADAO#getCoreLicenseTypes(int,int,String,boolean,Map)
+     * @verifies sort results correctly
+     */
+    @Test
+    public void getCoreLicenseTypes_shouldSortResultsCorrectly() throws Exception {
+        // TODO add more core types to test DB
+
+        // asc
+        List<LicenseType> ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, "name", true, null);
+        Assert.assertEquals(1, ret.size());
+        Assert.assertEquals(Long.valueOf(5), ret.get(0).getId());
+        // desc
+        ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, "name", false, null);
+        Assert.assertEquals(1, ret.size());
+        Assert.assertEquals(Long.valueOf(5), ret.get(0).getId());
+    }
+
+    /**
+     * @see JPADAO#getCoreLicenseTypes(int,int,String,boolean,Map)
+     * @verifies filter results correctly
+     */
+    @Test
+    public void getCoreLicenseTypes_shouldFilterResultsCorrectly() throws Exception {
+        Map<String, String> filterMap = new HashMap<>();
+        filterMap.put("name", "cms");
+        filterMap.put("description", "cms");
+        List<LicenseType> ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, null, true, filterMap);
+        Assert.assertEquals(1, ret.size());
+        Assert.assertEquals("CMS", ret.get(0).getName());
+
+        filterMap.put("description", "notfound");
+        Assert.assertEquals(0, DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, null, true, filterMap).size());
     }
 
     /**
@@ -2733,7 +2830,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
     }
 
-
     /**
      * @see JPADAO#createFilterQuery(String,Map,Map)
      * @verifies build multikey filter query correctly
@@ -3039,7 +3135,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(slider.getId());
         CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
         assertNotNull(loadedSlider);
-        assertFalse(loadedSlider == slider);
+        assertNotSame(loadedSlider, slider);
         assertEquals(loadedSlider.getId(), slider.getId());
         assertEquals(name, loadedSlider.getName());
     }

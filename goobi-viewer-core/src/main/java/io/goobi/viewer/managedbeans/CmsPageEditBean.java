@@ -135,16 +135,6 @@ public class CmsPageEditBean implements Serializable {
             if(!this.editMode && StringUtils.isNotBlank(relatedPi)) {
                 this.selectedPage.setRelatedPI(relatedPi);
             }
-            try {
-                setUserRestrictedValues(selectedPage, userBean.getUser());
-            } catch (PresentationException | IndexUnreachableException e1) {
-                logger.error("Error setting user specific subtheme and categories", e1);
-            }
-            try {
-                this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
-            } catch (DAOException e) {
-                this.sidebarWidgets = Collections.emptyMap();
-            }
         } catch (NullPointerException | NumberFormatException e) {
             this.editMode = false;
             this.setNewSelectedPage();
@@ -152,6 +142,16 @@ public class CmsPageEditBean implements Serializable {
             logger.error("Error retrieving cms page template from dao: {}", e.toString());
             this.editMode = false;
             this.setNewSelectedPage();
+        }
+        try {
+            setUserRestrictedValues(selectedPage, userBean.getUser());
+        } catch (PresentationException | IndexUnreachableException | DAOException e1) {
+            logger.error("Error setting user specific subtheme and categories", e1);
+        }
+        try {
+            this.sidebarWidgets = widgetsBean.getAllWidgets().stream().collect(Collectors.toMap(Function.identity(), w -> Boolean.FALSE));
+        } catch (DAOException e) {
+            this.sidebarWidgets = Collections.emptyMap();
         }
     }
 
@@ -506,16 +506,18 @@ public class CmsPageEditBean implements Serializable {
     }
 
     public void addComponent() {
-        addComponent(getSelectedPage(), getSelectedComponent());
+        if(addComponent(getSelectedPage(), getSelectedComponent())) {
+            setSelectedComponent(null);
+        }
     }
 
     
-    private void addComponent(CMSPage page, String componentFilename) {
+    private boolean addComponent(CMSPage page, String componentFilename) {
         if (page != null) {
             if (StringUtils.isNotBlank(componentFilename)) {
                 try {
                     page.addComponent(componentFilename, templateManager);
-                    setSelectedComponent(null);
+                    return true;
                 } catch (IllegalArgumentException e) {
                     logger.error("Cannot add component: No component found for filename {}.", componentFilename);
                     Messages.error(null, "admin__cms__create_page__error_unknown_component_name", componentFilename);
@@ -527,6 +529,7 @@ public class CmsPageEditBean implements Serializable {
         } else {
             logger.error("Cannot add component: No page given");
         }
+        return false;
     }
 
     /**
