@@ -101,6 +101,7 @@ public class FeedbackBeanTest {
         
         bean.submitFeedbackAction(true);
         
+        @SuppressWarnings("unchecked")
         ArgumentCaptor<List<String>> recipientCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -130,6 +131,7 @@ public class FeedbackBeanTest {
         
         bean.submitFeedbackAction(true);
         
+        @SuppressWarnings("unchecked")
         ArgumentCaptor<List<String>> recipientCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
 

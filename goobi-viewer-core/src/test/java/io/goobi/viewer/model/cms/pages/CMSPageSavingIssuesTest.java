@@ -60,6 +60,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     public void test() throws DAOException {
         CMSPage page = new CMSPage();
         
+        page.initialiseCMSComponents(templateManager);
         PersistentCMSComponent component1 = page.addComponent("text", templateManager);
         component1.getTranslatableContentItems().get(0).getText().setValue("text1");
         component1.setOrder(1);
@@ -69,7 +70,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         
         assertEquals(2, page.getPersistentComponents().size());
         assertEquals(2, page.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text1text2", page.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
+        assertEquals("text1text2", page.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).sorted().collect(Collectors.joining()));
 
         assertTrue(dao.addCMSPage(page));
         
@@ -77,14 +78,14 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         page2.initialiseCMSComponents(templateManager);
         assertEquals(2, page2.getPersistentComponents().size());
         assertEquals(2, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text1text2", page2.getComponents().stream().map(CMSComponent::getPersistentComponent).flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
+        assertEquals("text1text2", page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).sorted().collect(Collectors.joining()));
         
         CMSComponent deletedComponent = page2.getComponents().get(0);
         page2.removeComponent(deletedComponent);
         dao.deleteCMSComponent(deletedComponent.getPersistentComponent());
         assertEquals(1, page2.getPersistentComponents().size());
         assertEquals(1, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text2", page2.getComponents().stream().map(CMSComponent::getPersistentComponent).flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
+        assertEquals("text2", page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
         
         assertTrue(dao.updateCMSPage(page2));
         
@@ -92,7 +93,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         page3.initialiseCMSComponents(templateManager);
         assertEquals(1, page3.getPersistentComponents().size());
         assertEquals(1, page3.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text2", page3.getComponents().stream().map(CMSComponent::getPersistentComponent).flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
+        assertEquals("text2", page3.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
         
         
     }
@@ -101,6 +102,7 @@ public class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     public void testNoContent() throws DAOException {
         CMSPage page = new CMSPage();
         
+        page.initialiseCMSComponents(templateManager);
         PersistentCMSComponent component1 = page.addComponent("static", templateManager);
         component1.setOrder(1);
         PersistentCMSComponent component2 = page.addComponent("static", templateManager);

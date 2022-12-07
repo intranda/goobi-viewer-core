@@ -204,6 +204,7 @@ public class CMSContentConverter {
         return content;
     }
 
+    @SuppressWarnings("unchecked")
     private List<CMSCategory> getCategories(Long itemId) throws DAOException {
         List<Long> categoryIds =
                 dao.getNativeQueryResults("SELECT category_id FROM cms_content_item_cms_categories WHERE content_item_id = " + itemId);

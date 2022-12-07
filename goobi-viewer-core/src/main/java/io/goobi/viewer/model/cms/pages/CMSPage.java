@@ -846,8 +846,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public static class PageComparator implements Comparator<CMSPage> {
         //null values are high
-        @SuppressWarnings("rawtypes")
-        NullComparator nullComparator = new NullComparator(true);
+        NullComparator<Long> nullComparator = new NullComparator<>(true);
 
         @Override
         public int compare(CMSPage page1, CMSPage page2) {
@@ -1250,7 +1249,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         persistentComponent.setOwningPage(this);
         this.persistentComponents.add(persistentComponent);
         CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
-        this.getComponents().add(cmsComponent);
+        this.cmsComponents.add(cmsComponent);
         return persistentComponent;
     }
 
