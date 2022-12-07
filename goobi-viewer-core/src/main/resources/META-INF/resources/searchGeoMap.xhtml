@@ -66,8 +66,19 @@
 											mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
 									    },
 									    hitsLayer: {
+									        style: {
+						      					fillOpacity: 0.02,
+						      					color: "#{configurationBean.markerForMapSearch.markerColor}"
+						      				},
 											markerIcon: (icon => icon)(#{configurationBean.markerForMapSearch.toJSONString()})
-									    }
+									    },
+									    areaLayer: {
+						      				style : {
+						      					fillColor : "#{configurationBean.selectionColorForMapSearch}",
+						      					color : "#{configurationBean.selectionColorForMapSearch}",
+						      					fillOpacity : 0.3,
+						      				}
+						      			}
 						    		}
 							    }
 							    

@@ -5004,6 +5004,15 @@ public class Configuration extends AbstractConfiguration {
         return readGeoMapMarker(config);
     }
 
+
+    public String getSelectionColorForMapSearch() {
+        return getLocalString("maps.search.selection[@color]", "#d9534f");
+    }
+
+    public String getSelectionColorForFacetting() {
+        return getLocalString("maps.facet.selection[@color]", "#d9534f");
+    }
+    
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
@@ -5318,4 +5327,6 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getConfigEditorDirectories() {
         return getLocalList("configEditor.directory", Collections.emptyList());
     }
+
+
 }

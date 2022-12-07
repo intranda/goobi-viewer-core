@@ -14,6 +14,7 @@
 <script>
 
 this.on("mount", function() {
+    console.log("mapsearch ", this.opts);
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
@@ -50,11 +51,7 @@ initMap() {
 
 initDrawLayer(map) {
     let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
-   	    style : {
-         	fillColor : "#d9534f",
-         	color : "#d9534f",
-         	fillOpacity : 0.3,
-        	}
+   	    style : this.opts.areaLayer.style
     });
 	return drawLayer;
 }
