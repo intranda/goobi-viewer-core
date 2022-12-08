@@ -50,8 +50,9 @@ public class LicenseTypeUpdate implements IModelUpdate {
      *
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws SQLException if in case of errors
      */
-    private static void performUpdates(IDAO dao) throws DAOException {
+    private static void performUpdates(IDAO dao) throws DAOException, SQLException {
         // Remove obsolete core license type for crowdsourcing campaigns
         LicenseType ltCampaigns = dao.getLicenseType(LICENSE_TYPE_CAMPAIGNS);
         if (ltCampaigns != null) {
@@ -66,6 +67,8 @@ public class LicenseTypeUpdate implements IModelUpdate {
         }
 
         // Remove LicenseType.conditions
-        dao.executeUpdate("ALTER TABLE license_types DROP COLUMN conditions;");
+        if (dao.columnsExists(LICENSE_TYPE_CAMPAIGNS, "conditions")) {
+            dao.executeUpdate("ALTER TABLE license_types DROP COLUMN conditions;");
+        }
     }
 }
