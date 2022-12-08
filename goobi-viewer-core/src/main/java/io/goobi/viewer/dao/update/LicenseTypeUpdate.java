@@ -67,7 +67,7 @@ public class LicenseTypeUpdate implements IModelUpdate {
         }
 
         // Remove LicenseType.conditions
-        if (dao.columnsExists(LICENSE_TYPE_CAMPAIGNS, "conditions")) {
+        if (dao.columnsExists("license_types", "conditions")) {
             dao.executeUpdate("ALTER TABLE license_types DROP COLUMN conditions;");
         }
     }
