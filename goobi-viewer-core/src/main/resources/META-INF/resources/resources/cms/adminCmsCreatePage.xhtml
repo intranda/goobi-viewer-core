@@ -63,7 +63,7 @@
 									<div class="admin__content-wrapper">
 										<div class="admin__content-main -refreshHCsticky">
 											<!-- CREATE PAGE WRAPPER -->
-											<div class="cms-create-page__wrapper">
+											<h:panelGroup id="cratePageContentArea" class="cms-create-page__wrapper">
 												<div>
 													<!-- NAV TABS -->
 													<ul class="nav nav-tabs">
@@ -77,7 +77,7 @@
 																	value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 																	action="#{page.setSelectedLocale(locale)}"
 																	actionListener="#{cmsPageEditBean.setPageEditState('CONTENT')}">
-																	<f:ajax render="@form :messages" execute="@form"></f:ajax>
+																	<f:ajax render="cratePageContentArea :messages" execute="@form"></f:ajax>
 																</h:commandLink>
 															</li>
 														</ui:repeat>
@@ -86,7 +86,7 @@
 															<h:commandLink role="button"
 																value="#{msg.cms_pageSidebar}"
 																action="#{cmsPageEditBean.setPageEditState('SIDEBAR')}">
-																<f:ajax render="@form :messages" execute="@form"></f:ajax>
+																<f:ajax render="cratePageContentArea :messages" execute="@form"></f:ajax>
 															</h:commandLink>
 														</li>
 													</ul>
@@ -330,47 +330,19 @@
 														</div>
 													</div>
 
-
-
-													<script>
-														$(document)
-																.ready(
-																		function() {
-																			if ($(
-																					'.admin__content-main')
-																					.height() > 1400) {
-																				$(
-																						'[data-target="revealOnScroll"]')
-																						.show();
-																				$(
-																						'.-refreshHCsticky')
-																						.hcSticky(
-																								'refresh',
-																								{});
-																			}
-																		});
-
-														// 												inputsFieldsAll = $('[data-target="watchedInput"]');
-
-														// 									            // listen to changes on input fields
-														// 									            inputsFieldsAll.on( 'change input paste', function() {
-														// 									                console.log('changed happened');
-														// 									                $('.admin__overlay-bar').fadeIn('');
-														// 									            });
-													</script>
-
 												</div>
-											</div>
+											</h:panelGroup>
 										</div>
 
 										<div class="admin__content-side -sticky">
+										
 											<!-- METADATA WRAPPER -->
 											<cmsComponent:cms_createPageMetadataItemWrapper
 												id="metadata_component" />
+												
 										</div>
 
-										<div class="admin__content-component-overlay-wrapper"
-											data-target="revealOnScroll">
+										<div class="admin__content-component-overlay-wrapper">
 											<div data-target="saveChangedPage"
 												class="admin__content-component-overlay-bar">
 												<!-- SHOW -->
