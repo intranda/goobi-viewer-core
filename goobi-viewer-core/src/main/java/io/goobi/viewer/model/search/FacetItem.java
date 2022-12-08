@@ -213,7 +213,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param field Facet field
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
-     * @param groupFacets I this is a grouped facet item, group values by starting letter
+     * @param groupByLength If value is greater than 0, facet values will be grouped together by if they contain equal characters at {0-groupByLength}
      * @param locale Optional locale for translation
      * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
@@ -221,7 +221,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should set label from separate field if configured and found
      * @should group values by starting character correctly
      */
-    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, boolean groupFacets,
+    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, int groupByLength,
             Locale locale,
             Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
@@ -250,8 +250,8 @@ public class FacetItem implements Serializable, IFacetItem {
                 continue;
             }
             String useValue;
-            if (groupFacets) {
-                useValue = entry.getKey().substring(0, 1);
+            if (groupByLength > 0 && entry.getKey().length() > groupByLength) {
+                useValue = entry.getKey().substring(0, groupByLength);
             } else {
                 useValue = entry.getKey();
             }
@@ -270,7 +270,7 @@ public class FacetItem implements Serializable, IFacetItem {
             String linkValue = useValue;
             if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                 linkValue = '"' + linkValue + '"';
-            } else if (groupFacets) {
+            } else if (groupByLength > 0) {
                 linkValue += '*';
             }
             String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;

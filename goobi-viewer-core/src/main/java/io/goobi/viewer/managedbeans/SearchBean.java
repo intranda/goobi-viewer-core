@@ -2942,7 +2942,7 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setFacetString(facets.getCurrentFacetString());
         currentSearch.setCustomFilterQuery(customFilterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
-        currentSearch.execute(facets, null, hitsPerPage, navigationHelper.getLocale(), false, true,
+        currentSearch.execute(facets, null, hitsPerPage, navigationHelper.getLocale(), false, 1,
                 SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 

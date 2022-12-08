@@ -244,7 +244,7 @@ public class FacetItemTest extends AbstractTest {
     public void generateFilterLinkList_shouldSetLabelFromSeparateFieldIfConfiguredAndFound() throws Exception {
         Map<String, String> labelMap = new HashMap<>(1);
         List<IFacetItem> facetItems =
-                FacetItem.generateFilterLinkList("MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, false, null, labelMap);
+                FacetItem.generateFilterLinkList("MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, -1, null, labelMap);
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("Karl", facetItems.get(0).getLabel());
     }
@@ -260,7 +260,7 @@ public class FacetItemTest extends AbstractTest {
         valueMap.put("Cooper, Alice", 1L);
         valueMap.put("Campbell, Wayne", 1L);
         valueMap.put("Algar, Garth", 1L);
-        List<IFacetItem> facetItems = FacetItem.generateFilterLinkList("MD_CREATOR", valueMap, false, true, null, labelMap);
+        List<IFacetItem> facetItems = FacetItem.generateFilterLinkList("MD_CREATOR", valueMap, false, 1, null, labelMap);
         Assert.assertEquals(2, facetItems.size());
         Assert.assertEquals("A", facetItems.get(0).getLabel());
         Assert.assertEquals(1L, facetItems.get(0).getCount());

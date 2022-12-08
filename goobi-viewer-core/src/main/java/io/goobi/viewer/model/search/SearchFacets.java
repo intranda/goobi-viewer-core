@@ -326,6 +326,7 @@ public class SearchFacets implements Serializable {
      * Returns a collapsed sublist of the available facet elements for the given field.
      *
      * @param field a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
      * @should return full DC facet list if expanded
      * @should return full DC facet list if list size less than default
      * @should return reduced DC facet list if list size larger than default
@@ -333,22 +334,34 @@ public class SearchFacets implements Serializable {
      * @should return full facet list if list size less than default
      * @should return reduced facet list if list size larger than default
      * @should not contain currently used facets
-     * @return a {@link java.util.List} object.
      */
     public List<IFacetItem> getLimitedFacetListForField(String field) {
-        // logger.trace("getLimitedFacetListForField: {}", field);
+        return getAvailableFacetsForField(field, false, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field));
+    }
+    
+    /**
+     * 
+     * @param field
+     * @param excludeSelected If true, selected facets will be removed from the list
+     * @param initialNumber Optional number of elements to trim to
+     * @return
+     */
+    public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected, int initialNumber) {
         List<IFacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
             return Collections.emptyList();
         }
+        
         // Remove currently used facets
-        facetItems.removeAll(currentFacets);
-        int initial = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
-        if (!isFacetExpanded(field) && initial != -1 && facetItems.size() > initial) {
-            return facetItems.subList(0, initial);
+        if (excludeSelected) {
+            facetItems.removeAll(currentFacets);
+        }
+        
+        // Trim to initial number
+        if (!isFacetExpanded(field) && initialNumber != -1 && facetItems.size() > initialNumber) {
+            return facetItems.subList(0, initialNumber);
         }
 
-        // logger.trace("facet items {}: {}", field, facetItems.size());
         return facetItems;
     }
 
@@ -908,7 +921,7 @@ public class SearchFacets implements Serializable {
         }
 
         synchronized (lock) {
-            //add current facets which have no hits. This may happen due to geomap facetting
+            //add current facets which have no hits. This may happen due to geomap faceting
             List<IFacetItem> currentFacetsLocal = new ArrayList<>(currentFacets);
             for (IFacetItem currentItem : currentFacetsLocal) {
                 // Make a copy of the list to avoid concurrent modification
@@ -921,7 +934,6 @@ public class SearchFacets implements Serializable {
 
             return ret;
         }
-
     }
 
     /**

@@ -713,7 +713,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.getCurrentSearch().setPage(1);
         sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
         sb.getCurrentSearch().setSortString("SORT_TITLE");
-        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, -1, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Assert.assertEquals(18, sb.getCurrentSearch().getHitsCount());
 
         sb.findCurrentHitIndex("PPN9462", 1, true);

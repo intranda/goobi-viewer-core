@@ -30,10 +30,15 @@
                     <!-- FACETTING -->
                     <h2>Monographien A-Z</h2>
                     <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField('MD_TITLE')}" var="facet">
-                        <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
+                        <ui:fragment>
                                 <h:outputLink
 									value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                    #{facet.label}
+                                    <ui:fragment rendered="#{searchBean.facets.isFacetCurrentlyUsed(facet)}">
+                                        #{facet.label}
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
+                                        <strong>#{facet.label}</strong>
+                                    </ui:fragment>
                                     <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
 								</h:outputLink>
                         </ui:fragment>

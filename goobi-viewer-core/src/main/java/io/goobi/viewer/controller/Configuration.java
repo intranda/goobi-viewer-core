@@ -1965,7 +1965,6 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     public List<IAuthenticationProvider> getAuthenticationProviders() {
-        logger.trace("getAuthenticationProviders");
         XMLConfiguration myConfigToUse = getConfig();
         // User local config, if available
         if (!getConfigLocal().configurationsAt("user.authenticationProviders").isEmpty()) {

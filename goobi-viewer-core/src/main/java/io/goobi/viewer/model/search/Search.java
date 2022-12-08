@@ -307,7 +307,7 @@ public class Search implements Serializable {
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        execute(facets, searchTerms, hitsPerPage, locale, false, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        execute(facets, searchTerms, hitsPerPage, locale, false, -1, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
     /**
@@ -320,7 +320,7 @@ public class Search implements Serializable {
      * @param hitsPerPage a int.
      * @param locale Selected locale
      * @param keepSolrDoc
-     * @param groupFacets
+     * @param groupByLength
      * @param aggregationType
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -328,7 +328,7 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale, boolean keepSolrDoc,
-            boolean groupFacets, SearchAggregationType aggregationType)
+            int groupByLength, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -432,7 +432,7 @@ public class Search implements Serializable {
                                 .put(fieldName,
                                         FacetItem
                                                 .generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
-                                                groupFacets, locale, facets.getLabelMap()));
+                                                        groupByLength, locale, facets.getLabelMap()));
                         allFacetFields.remove(facetField.getName());
                     }
                 }
@@ -502,7 +502,7 @@ public class Search implements Serializable {
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
                 facets.getAvailableFacets()
                         .put(fieldName,
-                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), groupFacets,
+                                FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), groupByLength,
                                         locale, facets.getLabelMap()));
             }
         }

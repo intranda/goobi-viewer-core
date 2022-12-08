@@ -26,7 +26,6 @@ import java.util.List;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.security.user.User;
 
 /**
  * @author florian
