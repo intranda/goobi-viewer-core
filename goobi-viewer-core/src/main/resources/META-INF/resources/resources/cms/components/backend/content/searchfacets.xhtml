@@ -55,25 +55,14 @@
 		                </div>
 		                
 		                <!-- FACET FIELD -->
-		                <h:inputText
-		                    id="facetField" 
-		                    styleClass="form-control" 
-		                    value="#{cc.attrs.contentItem.content.facetField}">
-						</h:inputText>
-						
-                        <!-- GROUP BY LENGTH -->
-                        <h:inputText
-                            id="initialSize" 
-                            styleClass="form-control" 
-                            value="#{cc.attrs.contentItem.content.initialSize}">
-                        </h:inputText>
-						
-						<!-- GROUP BY LENGTH -->
-						<h:inputText
-                            id="groupByLength" 
-                            styleClass="form-control" 
-                            value="#{cc.attrs.contentItem.content.groupByLength}">
-                        </h:inputText>
+		                <h:panelGroup id="facetFieldGroup">
+                            <h:outputText value="#{msg.facetField}" />
+                            <h:inputText
+                                id="facetField" 
+                                styleClass="form-control" 
+                                value="#{cc.attrs.contentItem.content.facetField}">
+                            </h:inputText>
+						</h:panelGroup>
 						
 		            </h:panelGroup>
 		        </div>

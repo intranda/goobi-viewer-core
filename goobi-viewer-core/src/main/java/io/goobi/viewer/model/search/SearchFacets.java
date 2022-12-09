@@ -497,6 +497,7 @@ public class SearchFacets implements Serializable {
      * @should add DC field prefix if no field name is given
      * @should set hierarchical status correctly
      * @should use label from labelMap if available
+     * @should parse wildcard facets correctly
      */
     static void parseFacetString(String facetString, List<IFacetItem> facetItems, Map<String, String> labelMap) {
         if (facetItems == null) {

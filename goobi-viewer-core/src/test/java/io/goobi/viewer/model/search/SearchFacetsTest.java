@@ -133,6 +133,19 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("new label", facetItems.get(0).getLabel());
     }
+    
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies parse wildcard facets correctly
+     */
+    @Test
+    public void parseFacetString_shouldParseWildcardFacetsCorrectly() throws Exception {
+        List<IFacetItem> facetItems = new ArrayList<>(1);
+        SearchFacets.parseFacetString("FOO:A*;;", facetItems, null);
+        Assert.assertEquals(1, facetItems.size());
+        Assert.assertEquals("A", facetItems.get(0).getLabel());
+        Assert.assertEquals("A*", facetItems.get(0).getValue());
+    }
 
     /**
      * @see SearchFacets#getCurrentFacetString()

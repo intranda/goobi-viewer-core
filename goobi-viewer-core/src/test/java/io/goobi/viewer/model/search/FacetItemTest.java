@@ -280,4 +280,17 @@ public class FacetItemTest extends AbstractTest {
         item.parseLink();
         Assert.assertEquals("bar", item.getLabel());
     }
+
+    /**
+     * @see FacetItem#parseLink()
+     * @verifies removed wildcard from label
+     */
+    @Test
+    public void parseLink_shouldRemovedWildcardFromLabel() throws Exception {
+        FacetItem item = new FacetItem(false);
+        Assert.assertNull(item.getLabel());
+        item.setLink("foo:b*");
+        item.parseLink();
+        Assert.assertEquals("b", item.getLabel());
+    }
 }

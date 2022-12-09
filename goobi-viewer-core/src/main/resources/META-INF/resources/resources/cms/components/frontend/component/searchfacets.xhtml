@@ -35,15 +35,15 @@
 					<div class="tpl-search-list-custom__list">
 					
 					    <ui:repeat
-					        value="#{searchBean.facets.getAvailableFacetsForField(cc.attrs.component.facetField, cc.attrs.component.excludeSelectedValues, cc.attrs.component.initialSize)}"
+					        value="#{searchBean.facets.getAvailableFacetsForField(cc.attrs.component.getContentItem('searchfacets').content.facetField, cc.attrs.component.getContentItem('searchfacets').content.excludeSelectedValues, cc.attrs.component.getContentItem('searchfacets').content.initialSize)}"
 					        var="facet">
                             <ui:fragment>
                                 <h:outputLink
                                     value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                    <ui:fragment rendered="#{searchBean.facets.isFacetCurrentlyUsed(facet)}">
+                                    <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                         #{facet.label}
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
+                                    <ui:fragment rendered="#{searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                         <strong>#{facet.label}</strong>
                                     </ui:fragment>
                                     <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />

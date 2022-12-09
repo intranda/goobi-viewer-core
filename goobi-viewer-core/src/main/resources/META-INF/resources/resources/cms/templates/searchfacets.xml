@@ -4,12 +4,12 @@
         <library>cms/components/frontend/component</library>
         <name>searchfacets</name>
     </jsfComponent>
-    <label></label>
+    <label>cms_component__searchfacets_label</label>
     <description>cms_component__searchfacets_desc</description>
     <icon>cms/components/frontend/component/icon/text.png</icon>
     <content>
-        <item id="text">
-            <label></label>
+        <item id="searchfacets">
+            <label>FACETS</label>
             <description></description>
             <className>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</className>
             <jsfComponent>

@@ -182,6 +182,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * Extracts field name and value(s) from the given link string.
      *
      * @should set label to value if label empty
+     * @should removed wildcard from label
      */
     void parseLink() {
         if (link == null) {
@@ -204,6 +205,9 @@ public class FacetItem implements Serializable, IFacetItem {
         }
         if (StringUtils.isEmpty(label)) {
             label = value;
+            if (label.endsWith("*")) {
+                label = label.substring(0, label.length() - 1);
+            }
         }
     }
 
@@ -213,7 +217,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param field Facet field
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
-     * @param groupByLength If value is greater than 0, facet values will be grouped together by if they contain equal characters at {0-groupByLength}
+     * @param groupToLength If value is greater than 0, facet values will be grouped together by if they contain equal characters at {0-groupByLength}
      * @param locale Optional locale for translation
      * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
@@ -221,9 +225,8 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should set label from separate field if configured and found
      * @should group values by starting character correctly
      */
-    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, int groupByLength,
-            Locale locale,
-            Map<String, String> labelMap) {
+    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, int groupToLength,
+            Locale locale,  Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
         List<IFacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
@@ -250,8 +253,8 @@ public class FacetItem implements Serializable, IFacetItem {
                 continue;
             }
             String useValue;
-            if (groupByLength > 0 && entry.getKey().length() > groupByLength) {
-                useValue = entry.getKey().substring(0, groupByLength);
+            if (groupToLength > 0 && entry.getKey().length() > groupToLength) {
+                useValue = entry.getKey().substring(0, groupToLength);
             } else {
                 useValue = entry.getKey();
             }
@@ -270,7 +273,7 @@ public class FacetItem implements Serializable, IFacetItem {
             String linkValue = useValue;
             if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                 linkValue = '"' + linkValue + '"';
-            } else if (groupByLength > 0) {
+            } else if (groupToLength > 0) {
                 linkValue += '*';
             }
             String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
@@ -327,7 +330,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * Constructs a list of FilterLink objects for the drill-down. Optionally sorted by the raw values.
+     * Constructs a list of FilterLink objects for faceting. Optionally sorted by the raw values.
      *
      * @param field a {@link java.lang.String} object.
      * @param values a {@link java.util.Map} object.
@@ -339,8 +342,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @return a {@link java.util.List} object.
      */
     public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
-            boolean hierarchical,
-            Locale locale) {
+            boolean hierarchical, Locale locale) {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }

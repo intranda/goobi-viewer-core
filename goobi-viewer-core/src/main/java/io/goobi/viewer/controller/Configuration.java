@@ -2649,6 +2649,16 @@ public class Configuration extends AbstractConfiguration {
         String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
         return Boolean.valueOf(value);
     }
+    
+    /**
+     * 
+     * @param facetField
+     * @return
+     */
+    public int getGroupToLengthForFacetField(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@groupToLength]", "-1");
+        return Integer.parseInt(value);
+    }
 
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.

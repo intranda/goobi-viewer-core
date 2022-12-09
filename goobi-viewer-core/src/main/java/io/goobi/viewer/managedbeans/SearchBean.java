@@ -61,13 +61,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -87,7 +87,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.export.ExcelExport;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
@@ -2942,7 +2941,7 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setFacetString(facets.getCurrentFacetString());
         currentSearch.setCustomFilterQuery(customFilterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
-        currentSearch.execute(facets, null, hitsPerPage, navigationHelper.getLocale(), false, 1,
+        currentSearch.execute(facets, null, hitsPerPage, navigationHelper.getLocale(), false,
                 SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
     }
 
