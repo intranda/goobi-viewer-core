@@ -24,8 +24,4 @@
 	<attribute name="usePagination" display="false" boolean="true">
 		<value>true</value>
 	</attribute>
-	<attribute name="width">
-		<value label="50 %">50</value>
-		<value label="100 %" default="true">100</value>
-	</attribute>
 </component>
