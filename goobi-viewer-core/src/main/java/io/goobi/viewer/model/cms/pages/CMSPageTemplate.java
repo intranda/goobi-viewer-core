@@ -802,6 +802,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
         this.persistentComponents.add(persistentComponent);
         CMSComponent cmsComponent = new CMSComponent(template, Optional.of(persistentComponent));
         this.cmsComponents.add(cmsComponent);
+        this.sortComponents();
         return persistentComponent;
     }
 
