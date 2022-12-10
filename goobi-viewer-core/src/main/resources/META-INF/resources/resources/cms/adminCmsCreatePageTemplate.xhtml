@@ -60,7 +60,7 @@
 									<div class="admin__content-wrapper">
 										<div class="admin__content-main -refreshHCsticky">
 											<!-- CREATE PAGE WRAPPER -->
-											<h:panelGroup id="cratePageTemplateContentArea" class="cms-create-page__wrapper">
+											<h:panelGroup id="createPageTemplateContentArea" class="cms-create-page__wrapper">
 												<div>
 													<!-- NAV TABS -->
 													<ul class="nav nav-tabs">
@@ -72,7 +72,7 @@
 															<h:commandLink role="button"
 																value="#{msg.cms__template}"
 																action="#{cmsPageTemplateEditBean.setPageEditState('CONTENT')}">
-																<f:ajax render="cratePageTemplateContentArea" execute="@form"></f:ajax>
+																<f:ajax render="createPageTemplateContentArea" execute="@form"></f:ajax>
 															</h:commandLink>
 
 														</li>
@@ -83,7 +83,7 @@
 															<h:commandLink role="button"
 																value="#{msg.cms_pageSidebar}"
 																action="#{cmsPageTemplateEditBean.setPageEditState('SIDEBAR')}">
-																<f:ajax render="cratePageTemplateContentArea" execute="@form"></f:ajax>
+																<f:ajax render="createPageTemplateContentArea" execute="@form"></f:ajax>
 															</h:commandLink>
 														</li>
 													</ul>
@@ -263,7 +263,7 @@
 																				class="btn btn--full admin__content-component-add-area-button"
 																				jsf:action="#{cmsPageTemplateEditBean.addComponent()}">
 																				#{msg.cms__page_add_component}
-																				<f:ajax execute="@form" render="cratePageContentArea :messages"></f:ajax>
+																				<f:ajax execute="@form" render="createPageTemplateContentArea :messages"></f:ajax>
 																			</button>
 
 																		</div>
