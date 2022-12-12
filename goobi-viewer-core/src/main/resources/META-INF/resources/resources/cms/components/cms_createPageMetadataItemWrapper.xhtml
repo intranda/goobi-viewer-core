@@ -326,9 +326,9 @@
 						<div class="admin__radio-switch">
 				            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 				            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-				            <input type="radio" jsf:id="saveAsTemplateToggle_no" pt:name="#{saveAsTemplateToggle.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.saveAsTemplate ? null : 'false'}"/>
+				            <input type="radio" jsf:id="saveAsTemplateToggle_no" pt:name="#{saveAsTemplateToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{false}" pt:checked="#{cmsPageEditBean.saveAsTemplate ? null : 'false'}"/>
 							<h:outputLabel for="saveAsTemplateToggle_no" value="#{msg.no}" />
-				         	<input type="radio" jsf:id="saveAsTemplateToggle_yes" pt:name="#{saveAsTemplateToggle.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.saveAsTemplate ? 'false' : null}"/>
+				         	<input type="radio" jsf:id="saveAsTemplateToggle_yes" pt:name="#{saveAsTemplateToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{true}" pt:checked="#{cmsPageEditBean.saveAsTemplate ? 'false' : null}"/>
 				         	<h:outputLabel for="saveAsTemplateToggle_yes" value="#{msg.yes}" />
 							<h:inputHidden id="saveAsTemplateToggle_input" binding="#{saveAsTemplateToggle}" value="#{cmsPageEditBean.saveAsTemplate}"
 		        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
@@ -414,6 +414,20 @@
 						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeIn('fast');
 					}
 				});
+				
+				</script>
+				
+				<!-- SCRIPT FOR SAVE AS TEMPLATE TOGGLE -->
+				<script>
+				
+				saveAsTemplateToggle = $('input[data-toggle-action="toggleTemplateFunctions"]');
+				
+                $(saveAsTemplateToggle).on("change", (event) => {
+						$('#additionalTemplateOptions').animate({
+                            height: "toggle",
+                            opacity: "toggle"
+                        }, 250);
+                })
 				
 				</script>
                                                        
