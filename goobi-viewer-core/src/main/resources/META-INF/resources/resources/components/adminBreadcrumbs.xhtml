@@ -15,7 +15,7 @@
 						<ui:repeat value="#{breadcrumbBean.breadcrumbs}" var="breadcrumb" varStatus="status">
 							<!-- FIRST BREADCRUMB: TEXT NO LINK - USER IS ON FIRST PAGE (HOMEPAGE) -->
 							<h:panelGroup rendered="#{(status.first and status.last)}">
-								<li aria-current="page">
+								<li class="admin__breadcrumbs-crumb-point" aria-current="page">
 								
 									<span class="admin__breadcrumbs-crumb">
 										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
@@ -26,7 +26,7 @@
 
 							<!-- FIRST BREADCRUMB: TEXT WITH LINK - ACTUAL PAGE IS NOT HOMEPAGE -->
 							<h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link)}">
-								<li>
+								<li class="admin__breadcrumbs-crumb-point">
 									<a class="admin__breadcrumbs-crumb" href="#{breadcrumb.url}">
 										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
 									</a>
@@ -34,14 +34,14 @@
 							</h:panelGroup>
 							
 							<!-- TO DELETE -->
-							<li>
+							<li class="admin__breadcrumbs-crumb-point">
 								<a class="admin__breadcrumbs-crumb" href="#{breadcrumb.url}">
 									<h:outputText escape="false" value="DummyCrumb" />
 								</a>
 							</li>
 							
 							<!-- TO DELETE -->
-							<li>
+							<li class="admin__breadcrumbs-crumb-point">
 								<a class="admin__breadcrumbs-crumb" href="#{breadcrumb.url}">
 									<h:outputText escape="false" value="SecondDummyCrumb" />
 								</a>
@@ -50,7 +50,7 @@
 
 							<!-- BREADCRUMB TEXT LINKS - PAGES IN BETWEEN  -->
 							<h:panelGroup rendered="#{!status.last and !status.first and breadcrumb.link}">
-								<li>
+								<li class="admin__breadcrumbs-crumb-point">
 									<a class="admin__breadcrumbs-crumb" href="#{breadcrumb.url}">
 										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
 									</a>
@@ -59,7 +59,7 @@
 
 							<!-- BREADCRUMB TEXT - ACTUAL PAGE USER IS ON -->
 							<h:panelGroup rendered="#{(!status.first and status.last)}">
-								<li class="-actualPage" aria-current="page">
+								<li class="admin__breadcrumbs-crumb-point -actualPage" aria-current="page">
 									<span class="admin__breadcrumbs-crumb">
 										<h:outputText escape="false" value="#{msg[breadcrumb.name]}" />
 									</span>
