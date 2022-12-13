@@ -13,7 +13,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminUser')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin( (adminBean.currentUser.id == null) ? 'adminUserNew' : 'adminUserEdit')}" />
 			<f:viewAction onPostback="false"
 				action="#{adminBean.currentUser.backupFields}" />
 			<f:viewParam name="deleteData"
@@ -34,6 +34,8 @@
 							<h1 class="admin__title">#{msg.admin__user_edit}</h1>
 						</ui:fragment>
 					</div>
+					
+					<viewerComponent:adminBreadcrumbs />
 
 					<div class="admin__content-inner-content">
 

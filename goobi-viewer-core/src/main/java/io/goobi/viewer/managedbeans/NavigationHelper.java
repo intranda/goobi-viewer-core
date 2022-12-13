@@ -473,11 +473,29 @@ public class NavigationHelper implements Serializable {
                 this.currentPage = PageType.admin.name();
             } else {
                 this.currentPage = pageType.name();
+                setAdminBreadcrumbs(pageType);
             }
         } else {
             this.currentPage = "adminAllUsers";
         }
 
+    }
+    
+    public void setAdminBreadcrumbs(PageType pageType) {
+        
+        PageType breadcrumbType = pageType;
+        int weight = 10;
+        List<LabeledLink> links = new ArrayList<>();
+        while(breadcrumbType != null && weight > 0) {
+            links.add(
+                    new LabeledLink(ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale),
+                            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + breadcrumbType.getName(),
+                            weight));
+            weight--;
+            breadcrumbType = breadcrumbType.getParent();
+        }
+        links.sort((l1,l2) -> Integer.compare(l1.getWeight(), l2.getWeight()));
+        links.forEach(link -> breadcrumbBean.updateBreadcrumbs(link));
     }
 
     /**

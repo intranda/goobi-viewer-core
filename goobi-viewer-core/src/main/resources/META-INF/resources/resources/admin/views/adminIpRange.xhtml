@@ -23,6 +23,9 @@
                             <h:outputText value="#{msg.admin__ip_range_edit}" rendered="#{adminBean.currentIpRange.id != null}" />
                         </h1>
                     </div>
+                    
+                    <viewerComponent:adminBreadcrumbs />
+                    
                     <div class="admin__content-inner-content" role="form">
                         <h:form id="editIpRangeGeneralForm" styleClass="form-horizontal" prependId="false">
                             <h2>#{msg.general}</h2>

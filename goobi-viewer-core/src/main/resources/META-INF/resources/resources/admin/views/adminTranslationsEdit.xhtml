@@ -28,6 +28,8 @@
                             <h1 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h1>
                         </div>
 
+						<viewerComponent:adminBreadcrumbs />
+
                         <div class="admin__content-inner-content">
                             <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">
                                 <!-- INFO TEXT -->

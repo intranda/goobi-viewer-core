@@ -65,59 +65,72 @@ public enum PageType {
     userContentUpload("user/upload", "user__upload_content"),
     //admin
     admin("admin"),
-    adminDashboard("admin/"),
-    adminUsers("admin/users"),
-    adminUser("admin/users"),
-    adminUserNew("admin/users/new"),
-    adminUserGroups("admin/groups"),
-    adminUserGroup("admin/groups"),
-    adminUserGroupNew("admin/groups/new"),
-    adminIpRanges("admin/ipranges"),
-    adminIpRange("admin/ipranges"),
-    adminIpRangeNew("admin/ipranges/new"),
-    adminLicenseTypes("admin/licenses"),
-    adminLicenseType("admin/license"),
-    adminRights("admin/rights"),
-    adminRight("admin/rights"),
-    adminRightsNew("admin/rights/new"),
-    adminUserComments("admin/comments"),
-    adminUserCommentGroups("admin/comments"),
-    adminUserCommentGroupAll("admin/comments/all"),
-    adminUserCommentGroupNew("admin/comments/new"),
-    adminUserTerms("admin/userterms"),
-    adminCreateRecord("admin/record/new"),
-    adminThemes("admin/themes"),
-    adminClients("admin/clients"),
-    adminConfigEditor("admin/config"),
+    adminDashboard("admin/", "admin__dashboard"),
+    adminUsers("admin/users", "admin__users", adminDashboard),
+    adminUser("admin/users", "admin__user", adminUsers),
+    adminUserNew("admin/users/new", "admin__user_create_new", adminUsers),
+    adminUserEdit("admin/users/edit", "admin__user_edit", adminUsers),
+    adminUserGroups("admin/groups", "userGroups", adminDashboard),
+    adminUserGroupEdit("admin/groups/edit", "admin__group_edit", adminUserGroups),
+    adminUserGroupNew("admin/groups/new", "admin__group_create_new", adminUserGroups),
+    adminIpRanges("admin/ipranges", "admin__ip_ranges", adminDashboard),
+    adminIpRange("admin/ipranges", "admin__ip_range", adminIpRanges),
+    adminIpRangeNew("admin/ipranges/new", "admin__ip_range", adminIpRanges),
+    adminLicenseTypes("admin/licenses", "admin__licenses", adminDashboard),
+    adminLicenseType("admin/license", "admin__license", adminLicenseTypes),
+    adminRights("admin/rights", "admin__rights", adminDashboard),
+    adminRight("admin/rights", "admin__right", adminRights),
+    adminRightsNew("admin/rights/new", "admin__right", adminRights),
+    adminUserComments("admin/comments", "userComments", adminDashboard),
+    adminUserCommentGroups("admin/comments", "admin__comment_groups_title", adminDashboard),
+    adminUserCommentGroupAll("admin/comments/all", "admin__comment_groups_all_comments_title", adminUserCommentGroups),
+    adminUserCommentGroupNew("admin/comments/new", "admin__comment_group_create", adminUserCommentGroups),
+    adminUserTerms("admin/userterms", "admin__terms_of_use__title", adminDashboard),
+    adminCreateRecord("admin/record/new", "admin__create_record__title", adminDashboard),
+    adminThemes("admin/themes", "admin__themes__title", adminDashboard),
+    adminClients("admin/clients", "admin__clients", adminDashboard),
+    adminClientsEdit("admin/clients/edit", "admin__clients__edit__title", adminClients),
+    adminConfigEditor("admin/config", "admin__config_editor__title", adminDashboard),
     // admin/translations
-    adminTranslations("admin/translations"),
-    adminTranslationsNew("admin/translations/new"),
+    adminTranslations("admin/translations", "admin__translations", adminDashboard),
+    adminTranslationsNew("admin/translations/new", "translation__group_name_customer", adminTranslations),
     //admin/cms
-    adminCms("admin/cms"),
-    adminCmsOverview("admin/cms/pages"),
-    adminCmsWidgetsAdd("admin/cms/widgets/new"),
-    adminCmsSelectTemplate("admin/cms/pages/templates"),
-    adminCmsNewPage("admin/cms/pages/new"),
-    adminCmsCategories("admin/cms/categories"),
-    adminCmsNewCategory("admin/cms/categories/new"),
-    adminCmsStaticPages("admin/cms/pages/mapping"),
-    adminCmsMedia("admin/cms/media"),
-    adminCmsMenuItems("admin/cms/menus"),
-    adminCmsCollections("admin/cms/collections"),
-    adminCmsEditCollection("admin/cms/collections/edit"),
-    adminCmsGeoMaps("admin/cms/maps"),
-    adminCmsGeoMapEdit("admin/cms/maps/edit"),
-    adminCmsGeoMapNew("admin/cms/maps/new"),
-    adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural"),
-    adminCmsSliders("admin/cms/slider", "cms__sliders__title"),
-    adminCmsSidebarWidgets("admin/cms/widgets", "cms_widgets__title"),
-    adminCookieBanner("admin/legal/cookies", "label__cookie_banner"),
-    adminDisclaimer("admin/legal/disclaimer", "label__disclaimer"),
+    adminCms("admin/cms", "admin__cms", adminDashboard),
+    adminCmsOverview("admin/cms/pages", "cms_menu_pages", adminDashboard),
+    adminCmsSelectTemplate("admin/cms/pages/templates", "cms_createPage", adminCmsOverview),
+    adminCmsNewPage("admin/cms/pages/new", "cms_createPage", adminCmsSelectTemplate),
+    adminCmsEditPage("admin/cms/pages/edit", "cms_editPage", adminCmsOverview),
+    adminCmsTemplatesNew("admin/cms/pages/templates/new/", "cms_creatPage", adminCmsSelectTemplate),
+    adminCmsTemplatesEdit("/admin/cms/pages/templates/edit/", "cms_editPage", adminCmsSelectTemplate),
+    adminCmsSidebarWidgets("admin/cms/widgets", "cms_widgets__title", adminDashboard),
+    adminCmsWidgetsAdd("admin/cms/widgets/new", "cms__add_widget__title", adminCmsSidebarWidgets),
+    adminCmsWidgetsEdit("admin/cms/widgets/edit", "cms__edit_widget__title", adminCmsSidebarWidgets),
+    adminCmsCategories("admin/cms/categories", "admin__categories", adminDashboard),
+    adminCmsNewCategory("admin/cms/categories/new", "admin__category_new", adminCmsCategories),
+    adminCmsEditCategory("admin/cms/categories/edit", "admin__category_edit", adminCmsCategories),
+    adminCmsStaticPages("admin/cms/pages/mapping", "cms_staticPages", adminDashboard),
+    adminCmsMedia("admin/cms/media", "cms_overviewMedia", adminDashboard),
+    adminCmsMenuItems("admin/cms/menus", "cms_menu_heading", adminDashboard),
+    adminCmsCollections("admin/cms/collections", "admin__cms_collections", adminDashboard),
+    adminCmsEditCollection("admin/cms/collections/edit", "cms_collection_edit", adminCmsCollections),
+    adminCmsGeoMaps("admin/cms/maps", "cms__geomaps__title", adminDashboard),
+    adminCmsGeoMapEdit("admin/cms/maps/edit", "cms__geomaps__map__title", adminCmsGeoMaps),
+    adminCmsGeoMapNew("admin/cms/maps/new", "cms__geomaps__map__title", adminCmsGeoMaps),
+    adminCmsRecordNotes("admin/cms/recordnotes", "cms__record_notes__title_plural", adminDashboard),
+    adminCmsRecordNotesNew("admin/cms/recordnotes/new", "cms__record_notes__widget_user_interaction_add_note", adminCmsRecordNotes),
+    adminCmsRecordNotesEdit("admin/cms/recordnotes/edit", "cms__record_notes_edit__title", adminCmsRecordNotes),
+    adminCmsSliders("admin/cms/slider", "cms__sliders__title", adminDashboard),
+    adminCmsSlidersNew("admin/cms/slider/new", "cms__add_slider__title", adminCmsSliders),
+    adminCmsSlidersEdit("admin/cms/slider/edit", "cms__edit_slider__title", adminCmsSliders),
+    adminCookieBanner("admin/legal/cookies", "label__cookie_banner", adminDashboard),
+    adminDisclaimer("admin/legal/disclaimer", "label__disclaimer", adminDashboard),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing
-    adminCrowdsourcingAnnotations("admin/crowdsourcing/annotations"),
-    adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns"),
+    adminCrowdsourcingAnnotations("admin/crowdsourcing/annotations", "admin__crowdsourcing_annotations", adminDashboard),
+    adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns", "admin__crowdsourcing_campaigns", adminDashboard),
+    adminCrowdsourcingCampaignsNew("admin/crowdsourcing/campaigns/new", "admin__crowdsourcing_campaign_new", adminCrowdsourcingCampaigns),
+    adminCrowdsourcingCampaignsEdit("admin/crowdsourcing/campaigns/edit", "admin__crowdsourcing_campaign_edit", adminCrowdsourcingCampaigns),
     adminUserActivity("admin/user/activity/"),
     annotations("annotations"),
     editContent("crowd/editContent"),
@@ -145,29 +158,41 @@ public enum PageType {
     public final String path;
     private final String label;
     private final PageTypeHandling handling;
+    private final PageType parent;
 
     private PageType(String name) {
         this.path = name;
         this.label = name;
         this.handling = PageTypeHandling.none;
+        this.parent = null;
     }
 
     private PageType(String name, PageTypeHandling handling) {
         this.path = name;
         this.label = name;
         this.handling = handling;
+        this.parent = null;
     }
 
     private PageType(String path, String label) {
         this.path = path;
         this.label = label;
         this.handling = PageTypeHandling.none;
+        this.parent = null;
+    }
+    
+    private PageType(String path, String label, PageType parent) {
+        this.path = path;
+        this.label = label;
+        this.handling = PageTypeHandling.none;
+        this.parent = parent;
     }
 
     private PageType(String path, String label, PageTypeHandling handling) {
         this.path = path;
         this.label = label;
         this.handling = handling;
+        this.parent = null;
     }
 
     /**
@@ -179,6 +204,10 @@ public enum PageType {
      */
     public PageTypeHandling getHandling() {
         return this.handling;
+    }
+    
+    public PageType getParent() {
+        return parent;
     }
 
     /**
