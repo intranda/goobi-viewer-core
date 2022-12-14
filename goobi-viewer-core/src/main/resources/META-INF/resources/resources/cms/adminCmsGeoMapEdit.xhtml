@@ -11,7 +11,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin( (geoMapBean.currentMapId == null) ? 'adminCmsGeoMapEdit' : 'adminCmsGeoMapEdit')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin( (geoMapBean.currentMapId == null) ? 'adminCmsGeoMapNew' : 'adminCmsGeoMapEdit')}" />
         </f:metadata>
     </ui:define>
 
@@ -42,7 +42,7 @@
     
         <ui:fragment id="cmsGeoMaps" rendered="#{userBean.user.isHasCmsPrivilege('CMS_GEOMAPS')}">
             <div id="cmsGeoMaps">
-                <h1 class="admin__content-inner-title">#{msg.cms__geomaps__title}
+                <h1 class="admin__content-inner-title">#{geoMapBean.currentMapId == null ?  msg.cms__geomap_new__title : msg.cms__geomap_edit__title}
                 </h1>
                 
                 <viewerComponent:adminBreadcrumbs />
