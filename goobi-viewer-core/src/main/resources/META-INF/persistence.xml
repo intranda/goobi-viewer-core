@@ -151,9 +151,9 @@
         <class>io.goobi.viewer.model.cms.media.CMSMediaItemMetadata</class>
         <class>io.goobi.viewer.model.cms.pages.CMSPage</class>
         <class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
-        <class>io.goobi.viewer.model.cms.pages.CMSPageTemplateEnabled</class>
-        <class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+        <!-- PersistentCMSComponent and CMSContent must be listed in this order o_O -->
         <class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>

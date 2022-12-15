@@ -36,8 +36,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_content_search_facets")
-@DiscriminatorValue("search")
+@Table(name = "cms_content_searchfacets")
+@DiscriminatorValue("searchfacets")
 public class CMSSearchFacetsContent extends CMSContent implements PagedCMSContent {
 
     private static final String BACKEND_COMPONENT_NAME = "searchfacets";

@@ -3107,6 +3107,7 @@ public class JPADAO implements IDAO {
                 return true;
             } catch (PersistenceException e) {
                 handleException(em);
+                System.out.println(e);
                 return false;
             } finally {
                 close(em);
