@@ -19,72 +19,78 @@
 		<h:panelGroup id="cmsSelectTemplateAccessControl"
 			rendered="#{userBean.user.cmsAdmin}">
 			<div id="cmsSelectTemplate" class="cms-select-template">
-				<h1 class="admin__content-inner-title">#{msg.admin__cms__select_template}</h1>
 
-				<viewerComponent:adminBreadcrumbs />
 
-				<div class="admin__content-inner-content">
 					<h:form id="cmsSelectTemplateForm" prependId="false">
-
-						<div class="cms-create-page__choose-template-wrapper">
-							<ui:fragment
-								rendered="#{userBean.user.hasPriviledgeForAllTemplates()}">
-
-								<div class="cms-create-page__choose-template-box">
-									<div class="cms-create-page__choose-template-box-start">
-										<img
-											src="#{request.contextPath}/resources/images/backend/empty_template.jpg"
-											class="img-responsive" alt="Choose empty template" />
-									</div>
-
-									<div class="cms-create-page__choose-template-box-end">
-										<h2>#{msg.cms__create_empty_page_title}</h2>
-										<p>#{msg.lorem_ipsum__short}</p>
-										<h:commandLink action="pretty:adminCmsNewPage"
-											value="#{msg.cms__create_empty_page_button}"
-											styleClass="btn btn--full">
-										</h:commandLink>
-									</div>
+					
+								<div class="admin__title-bar">
+									<h1 class="admin__title">#{msg.admin__cms__select_template}</h1>
 								</div>
-								
-								<div class="cms-create-page__choose-template-box">
-									<div class="cms-create-page__choose-template-box-start">
-										<img
-											src="#{request.contextPath}/resources/images/backend/template_selection.jpg"
-											class="img-responsive" alt="Choose empty template" />
+					
+								<viewerComponent:adminBreadcrumbs />
+
+						<div class="admin__content-inner-content">
+
+							<div class="cms-create-page__choose-template-wrapper">
+								<ui:fragment
+									rendered="#{userBean.user.hasPriviledgeForAllTemplates()}">
+
+									<div class="cms-create-page__choose-template-box">
+										<div class="cms-create-page__choose-template-box-start">
+											<img
+												src="#{request.contextPath}/resources/images/backend/empty_template.jpg"
+												class="img-responsive" alt="Choose empty template" />
+										</div>
+
+										<div class="cms-create-page__choose-template-box-end">
+											<h2>#{msg.cms__create_empty_page_title}</h2>
+											<p>#{msg.lorem_ipsum__short}</p>
+											<h:commandLink action="pretty:adminCmsNewPage"
+												value="#{msg.cms__create_empty_page_button}"
+												styleClass="btn btn--full">
+											</h:commandLink>
+										</div>
 									</div>
 
-									<div class="cms-create-page__choose-template-box-end">
-										<h2>#{msg.cms__create_template_based_page_title}</h2>
-										<p>#{msg.cms__create_template_based_page_desc}</p>
-										<button data-trigger="showTemplateSelection" type="button" class="btn btn--default">
-											#{msg.cms__create_template_based_page_button}
-										</button>
-									</div>
-								</div>
+									<div class="cms-create-page__choose-template-box">
+										<div class="cms-create-page__choose-template-box-start">
+											<img
+												src="#{request.contextPath}/resources/images/backend/template_selection.jpg"
+												class="img-responsive" alt="Choose empty template" />
+										</div>
 
-
-								<div class="cms-create-page__choose-template-box">
-
-									<div class="cms-create-page__choose-template-box-start">
-										<img
-											src="#{request.contextPath}/resources/images/backend/predefined_template.jpg"
-											class="img-responsive" alt="Choose prefined template" />
+										<div class="cms-create-page__choose-template-box-end">
+											<h2>#{msg.cms__create_template_based_page_title}</h2>
+											<p>#{msg.cms__create_template_based_page_desc}</p>
+											<button data-trigger="showTemplateSelection" type="button"
+												class="btn btn--default">
+												#{msg.cms__create_template_based_page_button}</button>
+										</div>
 									</div>
 
-									<div class="cms-create-page__choose-template-box-end">
-										<h2>#{msg.cms__create_new_template_title}</h2>
-										<p>#{msg.lorem_ipsum__short}</p>
 
-										<h:commandLink action="pretty:adminCmsNewPageTemplate"
-											value="#{msg.cms__create_page_template_button}"
-											styleClass="btn btn--default">
-										</h:commandLink>
+									<div class="cms-create-page__choose-template-box">
+
+										<div class="cms-create-page__choose-template-box-start">
+											<img
+												src="#{request.contextPath}/resources/images/backend/predefined_template.jpg"
+												class="img-responsive" alt="Choose prefined template" />
+										</div>
+
+										<div class="cms-create-page__choose-template-box-end">
+											<h2>#{msg.cms__create_new_template_title}</h2>
+											<p>#{msg.lorem_ipsum__short}</p>
+
+											<h:commandLink action="pretty:adminCmsNewPageTemplate"
+												value="#{msg.cms__create_page_template_button}"
+												styleClass="btn btn--default">
+											</h:commandLink>
+										</div>
 									</div>
-								</div>
-							</ui:fragment>
+								</ui:fragment>
 
-						</div>
+							</div>
+
 
 						<div class="cms-select-template__wrapper">
 
@@ -95,19 +101,19 @@
 							<div class="cms-select-template__filters">
 								<button type="button"
 									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry', this)"
-									class="admin__content-component-option -active">#{msg.all}
+									class="admin__content-component-option -active">#{msg.cms__template_selection_option__all}
 								</button>
 								<button type="button"
 									onclick="setTemplateFilter('.admin__entry-list-grid .-published:not(.-legacy-template)', this)"
-									class="admin__content-component-option">#{msg.pubished}
+									class="admin__content-component-option">#{msg.cms__template_selection_option__published}
 								</button>
 								<button type="button"
 									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry:not(.-published)', this)"
-									class="admin__content-component-option">#{msg.not_published}
+									class="admin__content-component-option">#{msg.cms__template_selection_option__not_published}
 								</button>
 								<button type="button"
 									onclick="setTemplateFilter('.admin__entry-list-grid .-legacy-template', this)"
-									class="admin__content-component-option">#{msg.legacy}
+									class="admin__content-component-option">#{msg.cms__template_selection_option__legacy}
 								</button>
 
 								<script>
@@ -187,8 +193,8 @@
 								</ui:repeat>
 							</div>
 						</div>
+						</div>
 					</h:form>
-				</div>
 			</div>
 		</h:panelGroup>
 	</ui:define>
