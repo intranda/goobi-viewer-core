@@ -1351,7 +1351,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public boolean isFirstComponent(CMSComponent component) {
-        return this.getComponents().stream().filter(c -> c.isPageScope()).collect(Collectors.toList()).indexOf(component) == 0;
+        return this.getComponents().stream().filter(CMSComponent::isPageScope).collect(Collectors.toList()).indexOf(component) == 0;
     }
 
     public boolean isLastComponent(CMSComponent component) {

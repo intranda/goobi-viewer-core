@@ -1772,6 +1772,10 @@ public class CmsBean implements Serializable {
         }
         return "";
     }
+    
+    public CMSTemplateManager getTemplateManager() {
+        return templateManager;
+    }
 
 
 }

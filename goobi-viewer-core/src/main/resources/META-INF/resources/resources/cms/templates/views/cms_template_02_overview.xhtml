@@ -40,12 +40,12 @@
                 <!-- OVERVIEW LIST -->
                 <div class="tpl-news-overview__list">
                     <div class="row">
-                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.random, cc.attrs.paged)}">
+
+                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.random, cc.attrs.paged, cmsBean.templateManager)}">
 							
 							<div class="tpl-news-overview__list-item clearfix">
 							
 								<ui:repeat var="previewComponent" value="#{subPage.previewComponents}">
-									
 									<!-- IMAGE -->
 							       	<ui:fragment rendered="#{previewComponent.hasContent('image')}">
 								        <div class="col-12 col-sm-4">
