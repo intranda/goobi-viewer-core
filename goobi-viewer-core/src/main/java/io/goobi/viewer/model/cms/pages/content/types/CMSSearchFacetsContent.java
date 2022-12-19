@@ -32,14 +32,13 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
-import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("searchfacets")
-public class CMSSearchFacetsContent extends CMSContent implements PagedCMSContent {
+public class CMSSearchFacetsContent extends CMSContent {
     
     private static final Logger logger = LogManager.getLogger(CMSSearchFacetsContent.class);
 
