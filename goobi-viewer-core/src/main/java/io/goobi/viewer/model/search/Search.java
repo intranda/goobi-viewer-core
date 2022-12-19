@@ -371,8 +371,16 @@ public class Search implements Serializable {
         if (hitsCount == 0) {
             logger.debug("Final main query: {}", finalQuery);
 
-            // Search without range facet queries to determine absolute slider range
-            List<String> unfilteredFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
+            // Search without range facet queries to determine absolute slider range and permanent facets
+            List<String> unfilteredFacetFields = new ArrayList<>();
+            unfilteredFacetFields.addAll(DataManager.getInstance().getConfiguration().getRangeFacetFields());
+            // Collect facet fields with alwaysApplyToUnfilteredHits=true
+            for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
+                if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)) {
+                    unfilteredFacetFields.add(field);
+                }
+            }
+
             List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(false);
 
             // Add custom filter query
@@ -387,8 +395,10 @@ public class Search implements Serializable {
                             params);
             if (resp != null && resp.getFacetFields() != null) {
                 for (FacetField facetField : resp.getFacetFields()) {
-                    if (unfilteredFacetFields.contains(facetField.getName())) {
+                    String fieldName = facetField.getName();
+                    if (unfilteredFacetFields.contains(fieldName)) {
                         Map<String, Long> counts = new HashMap<>();
+
                         List<String> values = new ArrayList<>();
                         for (Count count : facetField.getValues()) {
                             if (count.getCount() > 0) {
@@ -397,7 +407,17 @@ public class Search implements Serializable {
                             }
                         }
                         if (!values.isEmpty()) {
-                            facets.populateAbsoluteMinMaxValuesForField(facetField.getName(), values);
+                            if (DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetField.getName())) {
+                                // Slider range
+                                facets.populateAbsoluteMinMaxValuesForField(fieldName, values);
+                            } else {
+                                // Facets where all values are permanently displayed, no matter the current filters
+                                facets.getAvailableFacets()
+                                        .put(fieldName,
+                                                FacetItem.generateFilterLinkList(fieldName, counts, hierarchicalFacetFields.contains(fieldName),
+                                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(fieldName), locale,
+                                                        facets.getLabelMap()));
+                            }
                         }
                     }
                 }
