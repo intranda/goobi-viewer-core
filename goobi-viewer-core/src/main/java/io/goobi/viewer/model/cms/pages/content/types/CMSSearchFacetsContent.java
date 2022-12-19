@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
@@ -33,12 +36,12 @@ import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cms_content_searchfacets")
 @DiscriminatorValue("searchfacets")
 public class CMSSearchFacetsContent extends CMSContent implements PagedCMSContent {
+    
+    private static final Logger logger = LogManager.getLogger(CMSSearchFacetsContent.class);
 
     private static final String BACKEND_COMPONENT_NAME = "searchfacets";
 
@@ -65,6 +68,7 @@ public class CMSSearchFacetsContent extends CMSContent implements PagedCMSConten
      * @param facetField the facetField to set
      */
     public void setFacetField(String facetField) {
+        logger.trace("setFacetField: {}", facetField);
         this.facetField = facetField;
     }
 
