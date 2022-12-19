@@ -336,28 +336,28 @@ public class SearchFacets implements Serializable {
      * @should not contain currently used facets
      */
     public List<IFacetItem> getLimitedFacetListForField(String field) {
-        return getAvailableFacetsForField(field, false, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field));
+        return getAvailableFacetsForField(field, false);
     }
-    
+
     /**
      * 
      * @param field
      * @param excludeSelected If true, selected facets will be removed from the list
-     * @param initialNumber Optional number of elements to trim to
      * @return
      */
-    public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected, int initialNumber) {
+    public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected) {
         List<IFacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
             return Collections.emptyList();
         }
-        
+
         // Remove currently used facets
         if (excludeSelected) {
             facetItems.removeAll(currentFacets);
         }
-        
+
         // Trim to initial number
+        int initialNumber = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
         if (!isFacetExpanded(field) && initialNumber != -1 && facetItems.size() > initialNumber) {
             return facetItems.subList(0, initialNumber);
         }

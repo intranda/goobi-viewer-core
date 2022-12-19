@@ -35,7 +35,7 @@
 					<div class="tpl-search-list-custom__list">
 					
 					    <ui:repeat
-					        value="#{searchBean.facets.getAvailableFacetsForField(cc.attrs.component.getContentItem('searchfacets').content.facetField, cc.attrs.component.getContentItem('searchfacets').content.excludeSelectedValues, cc.attrs.component.getContentItem('searchfacets').content.initialSize)}"
+					        value="#{searchBean.facets.getAvailableFacetsForField(cc.attrs.component.getContentItem('searchfacets').content.facetField, false)}"
 					        var="facet">
                             <ui:fragment>
                                 <h:outputLink

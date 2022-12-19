@@ -1747,6 +1747,26 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_PLACEPUBLISH"));
     }
 
+    /**
+     * @see Configuration#getGroupToLengthForFacetField(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getGroupToLengthForFacetField_shouldReturnCorrectValue() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see Configuration#isAlwaysApplyFacetFieldToUnfilteredHits(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isAlwaysApplyFacetFieldToUnfilteredHits_shouldReturnCorrectValue() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
     @Test
     public void getSortOrderTest() {
         Assert.assertEquals("numerical", DataManager.getInstance().getConfiguration().getSortOrder("YEAR"));

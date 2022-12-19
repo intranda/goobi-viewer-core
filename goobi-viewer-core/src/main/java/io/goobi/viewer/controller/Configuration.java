@@ -2654,11 +2654,23 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param facetField
      * @return
+     * @should return correct value
      */
     public int getGroupToLengthForFacetField(String facetField) {
         String value = getPropertyForFacetField(facetField, "[@groupToLength]", "-1");
         return Integer.parseInt(value);
     }
+    
+    /**
+    *
+    * @param facetField
+    * @return
+    * @should return correct value
+    */
+   public boolean isAlwaysApplyFacetFieldToUnfilteredHits(String facetField) {
+       String value = getPropertyForFacetField(facetField, "[@alwaysApplyToUnfilteredHits]", "false");
+       return Boolean.valueOf(value);
+   }
 
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
