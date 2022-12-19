@@ -133,7 +133,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(1, facetItems.size());
         Assert.assertEquals("new label", facetItems.get(0).getLabel());
     }
-    
+
     /**
      * @see SearchFacets#parseFacetString(String,List,Map)
      * @verifies parse wildcard facets correctly
@@ -148,17 +148,17 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getCurrentFacetString()
+     * @see SearchFacets#getActiveFacetString()
      * @verifies contain queries from all FacetItems
      */
     @Test
-    public void getCurrentFacetString_shouldContainQueriesFromAllFacetItems() throws Exception {
+    public void getActiveFacetString_shouldContainQueriesFromAllFacetItems() throws Exception {
         SearchFacets facets = new SearchFacets();
         for (int i = 0; i < 3; ++i) {
-            facets.getCurrentFacets().add(new FacetItem(new StringBuilder().append("FIELD").append(i).append(":value").append(i).toString(), false));
+            facets.getActiveFacets().add(new FacetItem(new StringBuilder().append("FIELD").append(i).append(":value").append(i).toString(), false));
         }
-        Assert.assertEquals(3, facets.getCurrentFacets().size());
-        String facetString = facets.getCurrentFacetString();
+        Assert.assertEquals(3, facets.getActiveFacets().size());
+        String facetString = facets.getActiveFacetString();
         try {
             facetString = URLDecoder.decode(facetString, SearchBean.URL_ENCODING);
         } catch (UnsupportedEncodingException e) {
@@ -173,13 +173,13 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#getCurrentFacetString()
+     * @see SearchFacets#getActiveFacetString()
      * @verifies return hyphen if currentFacets empty
      */
     @Test
-    public void getCurrentFacetString_shouldReturnHyphenIfCurrentFacetsEmpty() throws Exception {
+    public void getActiveFacetString_shouldReturnHyphenIfActiveFacetsEmpty() throws Exception {
         SearchFacets facets = new SearchFacets();
-        String facetString = facets.getCurrentFacetString();
+        String facetString = facets.getActiveFacetString();
         Assert.assertEquals("-", facetString);
     }
 
@@ -190,12 +190,12 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void removeFacetAction_shouldRemoveFacetCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:b;;");
-        Assert.assertEquals(3, facets.getCurrentFacets().size());
+        facets.setActiveFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:b;;");
+        Assert.assertEquals(3, facets.getActiveFacets().size());
         facets.removeFacetAction("MD_TITLE:b", null);
-        Assert.assertEquals(2, facets.getCurrentFacets().size());
+        Assert.assertEquals(2, facets.getActiveFacets().size());
         // Make sure only "MD_TITLE:b" is removed but not facets starting with "MD_TITLE:b"
-        Assert.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getCurrentFacetString());
+        Assert.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getActiveFacetString());
     }
 
     /**
@@ -205,40 +205,40 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void removeFacetAction_shouldRemoveFacetContainingReservedChars() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:{[b]};;");
-        Assert.assertEquals(3, facets.getCurrentFacets().size());
+        facets.setActiveFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:{[b]};;");
+        Assert.assertEquals(3, facets.getActiveFacets().size());
         facets.removeFacetAction("MD_TITLE:{[b]}", null);
-        Assert.assertEquals(2, facets.getCurrentFacets().size());
-        Assert.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getCurrentFacetString());
+        Assert.assertEquals(2, facets.getActiveFacets().size());
+        Assert.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getActiveFacetString());
     }
 
     /**
-     * @see SearchFacets#setCurrentFacetString(String)
+     * @see SearchFacets#setActiveFacetString(String)
      * @verifies create FacetItems from all links
      */
     @Test
-    public void setCurrentFacetString_shouldCreateFacetItemsFromAllLinks() throws Exception {
+    public void setActiveFacetString_shouldCreateFacetItemsFromAllLinks() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;FIELD3:c");
-        Assert.assertEquals(3, facets.getCurrentFacets().size());
-        Assert.assertEquals("FIELD1", facets.getCurrentFacets().get(0).getField());
-        Assert.assertEquals("a", facets.getCurrentFacets().get(0).getValue());
-        Assert.assertEquals("FIELD2", facets.getCurrentFacets().get(1).getField());
-        Assert.assertEquals("b", facets.getCurrentFacets().get(1).getValue());
-        Assert.assertEquals("FIELD3", facets.getCurrentFacets().get(2).getField());
-        Assert.assertEquals("c", facets.getCurrentFacets().get(2).getValue());
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;FIELD3:c");
+        Assert.assertEquals(3, facets.getActiveFacets().size());
+        Assert.assertEquals("FIELD1", facets.getActiveFacets().get(0).getField());
+        Assert.assertEquals("a", facets.getActiveFacets().get(0).getValue());
+        Assert.assertEquals("FIELD2", facets.getActiveFacets().get(1).getField());
+        Assert.assertEquals("b", facets.getActiveFacets().get(1).getValue());
+        Assert.assertEquals("FIELD3", facets.getActiveFacets().get(2).getField());
+        Assert.assertEquals("c", facets.getActiveFacets().get(2).getValue());
     }
 
     /**
-     * @see SearchFacets#setCurrentFacetString(String)
+     * @see SearchFacets#setActiveFacetString(String)
      * @verifies decode slashes and backslashes
      */
     @Test
-    public void setCurrentFacetString_shouldDecodeSlashesAndBackslashes() throws Exception {
+    public void setActiveFacetString_shouldDecodeSlashesAndBackslashes() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD:aU002FbU005Cc");
-        Assert.assertEquals(1, facets.getCurrentFacets().size());
-        Assert.assertEquals("a/b\\c", facets.getCurrentFacets().get(0).getValue());
+        facets.setActiveFacetString("FIELD:aU002FbU005Cc");
+        Assert.assertEquals(1, facets.getActiveFacets().size());
+        Assert.assertEquals("a/b\\c", facets.getActiveFacets().get(0).getValue());
     }
 
     /**
@@ -248,7 +248,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("MD_FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
+        facets.setActiveFacetString("MD_FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
         Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND YEAR:[c TO d]", facets.generateFacetFilterQuery(true));
     }
 
@@ -269,7 +269,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateFacetFilterQuery_shouldSkipRangeFacetFieldsIfSoRequested() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
         Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
     }
 
@@ -280,7 +280,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateFacetFilterQuery_shouldSkipSubelementFields() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":figure");
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":figure");
         Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
     }
 
@@ -291,7 +291,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateSubElementFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":article");
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":article");
         Assert.assertEquals("FACET_" + SolrConstants.DOCSTRCT_SUB + ":article", facets.generateSubElementFacetFilterQuery());
     }
 
@@ -419,14 +419,14 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         //create SearchFacets with GeoFacetItem
         GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
         SearchFacets facets = new SearchFacets();
-        facets.getCurrentFacets().add(item);
+        facets.getActiveFacets().add(item);
         facets.setGeoFacetFeature(geoJson);
 
         //facet string written to url (escaped in browser)
-        String urlFacetString = facets.getCurrentFacetString();
+        String urlFacetString = facets.getActiveFacetString();
         String browserFacetString = URLEncoder.encode(urlFacetString, "utf-8");
         //facet string set from url
-        facets.setCurrentFacetString(browserFacetString);
+        facets.setActiveFacetString(browserFacetString);
 
         String filterQueryString = facets.generateFacetFilterQueries(true).get(0);
         List<SearchHit> hits = SearchHelper.searchWithAggregation("BOOL_WKT_COORDS:*", 0, 100, null, null,

@@ -75,7 +75,7 @@
 			            itemCount="#{search.lastPage}" 
 			            itemActive="#{search.currentPage}" 
 			            urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
-			            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
+			            urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
 
                </div>
 
@@ -148,7 +148,7 @@
             itemCount="#{search.lastPage}" 
             itemActive="#{search.currentPage}" 
             urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
-            urlSuffix="#{search.sortString}/#{search.facets.currentFacetString}/" />
+            urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
         <div class="clearfix"></div>
 
     </div>

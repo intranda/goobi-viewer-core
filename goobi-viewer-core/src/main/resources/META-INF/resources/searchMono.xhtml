@@ -32,7 +32,7 @@
                     <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField('MD_TITLE')}" var="facet">
                         <ui:fragment>
                                 <h:outputLink
-									value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
+									value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                     <ui:fragment rendered="#{searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                         #{facet.label}
                                     </ui:fragment>

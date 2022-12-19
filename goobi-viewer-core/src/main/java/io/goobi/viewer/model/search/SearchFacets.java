@@ -58,12 +58,12 @@ public class SearchFacets implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(SearchFacets.class);
 
-    private final Object lock = new Object();
+    private final transient Object lock = new Object();
 
     /** Available regular facets for the current search result. */
     private final Map<String, List<IFacetItem>> availableFacets = new LinkedHashMap<>();
     /** Currently applied facets. */
-    private final List<IFacetItem> currentFacets = new ArrayList<>();
+    private final List<IFacetItem> activeFacets = new ArrayList<>();
 
     private final Map<String, Boolean> facetsExpanded = new HashMap<>();
 
@@ -93,8 +93,16 @@ public class SearchFacets implements Serializable {
      * resetCurrentFacets.
      * </p>
      */
+    public void resetActiveFacets() {
+        resetActiveFacetString();
+    }
+
+    /**
+     * @deprecated Use resetActiveFacets()
+     */
+    @Deprecated(since = "22.12")
     public void resetCurrentFacets() {
-        resetCurrentFacetString();
+        resetActiveFacets();
     }
 
     /**
@@ -129,7 +137,7 @@ public class SearchFacets implements Serializable {
         String regularQuery = generateFacetFilterQuery(includeRangeFacets);
         if (StringUtils.isNotEmpty(regularQuery)) {
             ret.add(regularQuery);
-            logger.trace("added facet query: " + regularQuery);
+            logger.trace("added facet query: {}", regularQuery);
         }
 
         return ret;
@@ -144,13 +152,13 @@ public class SearchFacets implements Serializable {
      * @should return null if facet list is empty
      */
     String generateHierarchicalFacetFilterQuery() {
-        if (currentFacets.isEmpty()) {
+        if (activeFacets.isEmpty()) {
             return null;
         }
 
         StringBuilder sbQuery = new StringBuilder();
         int count = 0;
-        for (IFacetItem facetItem : currentFacets) {
+        for (IFacetItem facetItem : activeFacets) {
             if (!facetItem.isHierarchial()) {
                 continue;
             }
@@ -184,12 +192,12 @@ public class SearchFacets implements Serializable {
      * @should skip subelement fields
      */
     String generateFacetFilterQuery(boolean includeRangeFacets) {
-        if (currentFacets.isEmpty()) {
+        if (activeFacets.isEmpty()) {
             return null;
         }
 
         StringBuilder sbQuery = new StringBuilder();
-        for (IFacetItem facetItem : currentFacets) {
+        for (IFacetItem facetItem : activeFacets) {
             if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
                     || (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField()))) {
                 continue;
@@ -213,8 +221,8 @@ public class SearchFacets implements Serializable {
     String generateSubElementFacetFilterQuery() {
         StringBuilder sbQuery = new StringBuilder();
 
-        if (!currentFacets.isEmpty()) {
-            for (IFacetItem facetItem : currentFacets) {
+        if (!activeFacets.isEmpty()) {
+            for (IFacetItem facetItem : activeFacets) {
                 if (facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)) {
                     if (sbQuery.length() > 0) {
                         sbQuery.append(" AND ");
@@ -229,30 +237,15 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Returns the first FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
-     *
-     * @param field The field name to match.
-     * @return a {@link io.goobi.viewer.model.search.FacetItem} object.
-     */
-    public IFacetItem getCurrentFacetForField(String field) {
-        List<IFacetItem> ret = getCurrentFacetsForField(field);
-        if (!ret.isEmpty()) {
-            return ret.get(0);
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a list of FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
+     * Returns a list of FacetItem objects in <code>activeFacets</code> where the field name matches the given field name.
      *
      * @param field The field name to match.
      * @return a {@link java.util.List} object.
      */
-    public List<IFacetItem> getCurrentFacetsForField(String field) {
+    public List<IFacetItem> getActiveFacetsForField(String field) {
         List<IFacetItem> ret = new ArrayList<>();
 
-        for (IFacetItem facet : currentFacets) {
+        for (IFacetItem facet : activeFacets) {
             if (facet.getField().equals(field)) {
                 ret.add(facet);
             }
@@ -262,13 +255,24 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * 
+     * @param field
+     * @return
+     * @deprecated Use getActiveFacetsForField(String)
+     */
+    @Deprecated(since = "22.12")
+    public List<IFacetItem> getCurrentFacetsForField(String field) {
+        return getActiveFacetsForField(field);
+    }
+
+    /**
      * Checks whether the given facet is currently in use.
      *
      * @param facet The facet to check.
      * @return a boolean.
      */
     public boolean isFacetCurrentlyUsed(IFacetItem facet) {
-        for (IFacetItem fi : getCurrentFacetsForField(facet.getField())) {
+        for (IFacetItem fi : getActiveFacetsForField(facet.getField())) {
             if (fi.getLink().equals(facet.getLink())) {
                 return true;
             }
@@ -312,14 +316,25 @@ public class SearchFacets implements Serializable {
 
     /**
      * <p>
-     * getCurrentFacetsSizeForField.
+     * getActiveFacetsSizeForField.
      * </p>
      *
-     * @return Size of <code>currentFacets</code>.
+     * @return Size of <code>activeFacets</code>.
      * @param field a {@link java.lang.String} object.
      */
+    public int getActiveFacetsSizeForField(String field) {
+        return getActiveFacetsForField(field).size();
+    }
+
+    /**
+     * 
+     * @param field
+     * @return
+     * @deprecated Use getActiveFacetsSizeForField(String)
+     */
+    @Deprecated(since = "22.12")
     public int getCurrentFacetsSizeForField(String field) {
-        return getCurrentFacetsForField(field).size();
+        return getActiveFacetsSizeForField(field);
     }
 
     /**
@@ -353,7 +368,7 @@ public class SearchFacets implements Serializable {
 
         // Remove currently used facets
         if (excludeSelected) {
-            facetItems.removeAll(currentFacets);
+            facetItems.removeAll(activeFacets);
         }
 
         // Trim to initial number
@@ -363,23 +378,6 @@ public class SearchFacets implements Serializable {
         }
 
         return facetItems;
-    }
-
-    /**
-     * If the facet for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as configured.
-     *
-     * @should return full facet size if expanded
-     * @should return default if collapsed
-     * @param field a {@link java.lang.String} object.
-     * @return a int.
-     * @deprecated Check whether still in use
-     */
-    @Deprecated
-    public int getFacetElementDisplayNumber(String field) {
-        if (isFacetExpanded(field) && availableFacets.get(field) != null) {
-            return availableFacets.get(field).size();
-        }
-        return DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
     }
 
     /**
@@ -435,34 +433,14 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Returns a URL encoded SSV string of facet fields and values from the elements in currentFacets (hyphen if empty).
+     * Returns a URL encoded SSV string of facet fields and values from the elements in <code>activeFacets</code> (hyphen if empty).
      *
      * @return SSV string of facet queries or "-" if empty
      * @should contain queries from all FacetItems
      * @should return hyphen if currentFacets empty
      */
-    public String getCurrentFacetString() {
-        String ret = generateFacetPrefix(new ArrayList<>(currentFacets), true);
-        if (StringUtils.isEmpty(ret)) {
-            ret = "-";
-        }
-        try {
-            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return ret;
-        }
-    }
-
-    /**
-     * <p>
-     * getCurrentFacetString.
-     * </p>
-     *
-     * @param urlEncode a boolean.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getCurrentFacetString(boolean urlEncode) {
-        String ret = generateFacetPrefix(new ArrayList<>(currentFacets), true);
+    public String getActiveFacetString() {
+        String ret = generateFacetPrefix(new ArrayList<>(activeFacets), true);
         if (StringUtils.isEmpty(ret)) {
             ret = "-";
         }
@@ -476,14 +454,34 @@ public class SearchFacets implements Serializable {
     /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
      *
-     * @param currentFacetString a {@link java.lang.String} object.
+     * @param activeFacetString a {@link java.lang.String} object.
      * @should create FacetItems from all links
      * @should decode slashes and backslashes
      * @should reset slider range if no slider field among current facets
      * @should not reset slider range if slider field among current facets
      */
+    public void setActiveFacetString(String activeFacetString) {
+        parseFacetString(activeFacetString, activeFacets, labelMap);
+    }
+
+    /**
+     * 
+     * @return
+     * @deprecated Use getActiveFacetString()
+     */
+    @Deprecated(since = "22.12")
+    public String getCurrentFacetString() {
+        return getActiveFacetString();
+    }
+
+    /**
+     * 
+     * @param currentFacetString
+     * @deprecated Use setActiveFacetString(String)
+     */
+    @Deprecated(since = "22.12")
     public void setCurrentFacetString(String currentFacetString) {
-        parseFacetString(currentFacetString, currentFacets, labelMap);
+        setActiveFacetString(currentFacetString);
     }
 
     /**
@@ -560,7 +558,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String updateFacetItem(String field, boolean hierarchical) {
-        updateFacetItem(field, tempValue, currentFacets, hierarchical);
+        updateFacetItem(field, tempValue, activeFacets, hierarchical);
 
         return "pretty:search6"; // TODO advanced search
     }
@@ -674,7 +672,7 @@ public class SearchFacets implements Serializable {
      */
     public String getCurrentMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         synchronized (lock) {
-            for (IFacetItem item : currentFacets) {
+            for (IFacetItem item : activeFacets) {
                 if (item.getField().equals(field)) {
                     logger.trace("currentMinRangeValue: {}", item.getValue());
                     return item.getValue();
@@ -697,7 +695,7 @@ public class SearchFacets implements Serializable {
      */
     public String getCurrentMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         synchronized (lock) {
-            for (IFacetItem item : currentFacets) {
+            for (IFacetItem item : activeFacets) {
                 if (item.getField().equals(field) && item.getValue2() != null) {
                     logger.trace("currentMaxRangeValue: {}", item.getValue());
                     return item.getValue2();
@@ -795,12 +793,20 @@ public class SearchFacets implements Serializable {
 
     /**
      * <p>
-     * resetCurrentFacetString.
+     * resetActiveFacetString.
      * </p>
      */
+    public void resetActiveFacetString() {
+        logger.trace("resetActivetFacetString");
+        setActiveFacetString("-");
+    }
+
+    /**
+     * @deprecated Use resetActiveFacetString()
+     */
+    @Deprecated(since = "22.12")
     public void resetCurrentFacetString() {
-        logger.trace("resetCurrentFacetString");
-        setCurrentFacetString("-");
+        resetActiveFacetString();
     }
 
     /**
@@ -809,8 +815,18 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      *
      */
+    public String getActiveFacetStringPrefix() {
+        return getActiveFacetStringPrefix(true);
+    }
+
+    /**
+     * 
+     * @return
+     * @deprecated Use getActiveFacetSearchPrefix()
+     */
+    @Deprecated(since = "22.12")
     public String getCurrentFacetStringPrefix() {
-        return getCurrentFacetStringPrefix(true);
+        return getActiveFacetStringPrefix();
     }
 
     /**
@@ -819,16 +835,16 @@ public class SearchFacets implements Serializable {
      * @param urlEncode
      * @return
      */
-    public String getCurrentFacetStringPrefix(boolean urlEncode) {
+    public String getActiveFacetStringPrefix(boolean urlEncode) {
         if (urlEncode) {
             try {
-                return URLEncoder.encode(generateFacetPrefix(new ArrayList<>(currentFacets), true), SearchBean.URL_ENCODING);
+                return URLEncoder.encode(generateFacetPrefix(new ArrayList<>(activeFacets), true), SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
                 logger.error(e.getMessage());
             }
         }
 
-        return generateFacetPrefix(currentFacets, true);
+        return generateFacetPrefix(activeFacets, true);
     }
 
     /**
@@ -869,10 +885,10 @@ public class SearchFacets implements Serializable {
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
         logger.trace("removeFacetAction: {}", facetQuery);
-        String currentFacetString = generateFacetPrefix(new ArrayList<>(currentFacets), false);
+        String currentFacetString = generateFacetPrefix(new ArrayList<>(activeFacets), false);
         if (currentFacetString.contains(facetQuery)) {
             currentFacetString = currentFacetString.replaceAll("(" + Pattern.quote(facetQuery) + ")(?=;|(?=/))", "").replace(";;;;", ";;");
-            setCurrentFacetString(currentFacetString);
+            setActiveFacetString(currentFacetString);
         }
 
         return ret;
@@ -923,7 +939,7 @@ public class SearchFacets implements Serializable {
 
         synchronized (lock) {
             //add current facets which have no hits. This may happen due to geomap faceting
-            List<IFacetItem> currentFacetsLocal = new ArrayList<>(currentFacets);
+            List<IFacetItem> currentFacetsLocal = new ArrayList<>(activeFacets);
             for (IFacetItem currentItem : currentFacetsLocal) {
                 // Make a copy of the list to avoid concurrent modification
                 List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
@@ -969,13 +985,23 @@ public class SearchFacets implements Serializable {
 
     /**
      * <p>
-     * Getter for the field <code>currentFacets</code>.
+     * Getter for the field <code>activeFacets</code>.
      * </p>
      *
-     * @return the currentFacets
+     * @return the activeFacets
      */
-    public synchronized List<IFacetItem> getCurrentFacets() {
-        return currentFacets;
+    public synchronized List<IFacetItem> getActiveFacets() {
+        return activeFacets;
+    }
+
+    /**
+     * 
+     * @return
+     * @deprecated Use getActiveFacets()
+     */
+    @Deprecated(since = "22.12")
+    public List<IFacetItem> getCurrentFacets() {
+        return getActiveFacets();
     }
 
     /**
@@ -1030,7 +1056,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getFacetValue(String field) {
-        return getCurrentFacets().stream().filter(facet -> facet.getField().equals(field)).map(SearchFacets::getFacetName).findFirst().orElse("");
+        return getActiveFacets().stream().filter(facet -> facet.getField().equals(field)).map(SearchFacets::getFacetName).findFirst().orElse("");
     }
 
     /**
@@ -1042,7 +1068,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getFacetDescription(String field) {
-        return getCurrentFacets().stream()
+        return getActiveFacets().stream()
                 .filter(facet -> facet.getField().equals(field))
                 .map(SearchFacets::getFacetDescription)
                 .findFirst()
@@ -1057,7 +1083,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getFirstHierarchicalFacetValue() {
-        return getCurrentFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetName).findFirst().orElse("");
+        return getActiveFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetName).findFirst().orElse("");
     }
 
     /**
@@ -1069,7 +1095,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getFirstHierarchicalFacetDescription(String field) {
-        return getCurrentFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetDescription).findFirst().orElse("");
+        return getActiveFacets().stream().filter(IFacetItem::isHierarchial).map(SearchFacets::getFacetDescription).findFirst().orElse("");
     }
 
     /**
@@ -1113,7 +1139,7 @@ public class SearchFacets implements Serializable {
      */
     public GeoFacetItem getGeoFacetting() {
         synchronized (lock) {
-            return new ArrayList<>(this.currentFacets)
+            return new ArrayList<>(this.activeFacets)
                     .stream()
                     .filter(GeoFacetItem.class::isInstance)
                     .map(GeoFacetItem.class::cast)
@@ -1132,11 +1158,11 @@ public class SearchFacets implements Serializable {
         item.setField(DataManager.getInstance().getConfiguration().getGeoFacetFields());
         synchronized (lock) {
             if (StringUtils.isBlank(feature)) {
-                this.currentFacets.remove(item);
+                this.activeFacets.remove(item);
             } else {
                 item.setFeature(feature);
-                if (!this.currentFacets.contains(item)) {
-                    this.currentFacets.add(item);
+                if (!this.activeFacets.contains(item)) {
+                    this.activeFacets.add(item);
                 }
             }
         }

@@ -22,7 +22,7 @@
                         <!-- FACETS -->
                         <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
                             <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
-                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and field.key != 'WKT_COORDS' and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getCurrentFacetsForField(field.key)) > 0)}">
+                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and field.key != 'YEAR' and field.key != 'WKT_COORDS' and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
                                 <div class="widget widget-search-facets__collection">
 
                                 <div class="widget-search-facets__topbar">
@@ -50,7 +50,7 @@
 
                                     <ul>
                                         <!-- ACTIVE FACETS -->
-                                        <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">
+                                        <ui:repeat value="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
                                             <li class="active">
                                                 <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                     <div class="row">
@@ -81,12 +81,12 @@
                                             <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                                 <li>
                                                     <h:outputLink rendered="#{configurationBean.isTranslateFacetFieldLabels(field.key)}"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})
                                                         <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg[facet.label]}" />
                                                     </h:outputLink>
                                                     <h:outputLink rendered="#{!configurationBean.isTranslateFacetFieldLabels(field.key)}"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                         #{facet.label} (#{facet.count})
                                                         <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
                                                     </h:outputLink>

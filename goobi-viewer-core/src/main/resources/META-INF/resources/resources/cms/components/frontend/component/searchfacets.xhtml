@@ -39,7 +39,7 @@
 					        var="facet">
                             <ui:fragment>
                                 <h:outputLink
-                                    value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                    value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                     <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                         #{facet.label}
                                     </ui:fragment>

@@ -480,12 +480,12 @@ public class NavigationHelper implements Serializable {
         }
 
     }
-    
+
     public void setAdminBreadcrumbs(PageType pageType) {
-        
+
         PageType breadcrumbType = pageType;
         List<LabeledLink> links = new ArrayList<>();
-        while(breadcrumbType != null) {
+        while (breadcrumbType != null) {
             links.add(
                     new LabeledLink(ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale),
                             BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + breadcrumbType.getName(),
@@ -1397,7 +1397,6 @@ public class NavigationHelper implements Serializable {
         PageType page = PageType.getByName(url);
         if (page != null && !page.equals(PageType.other)) {
             url = getUrl(page);
-        } else {
         }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         breadcrumbBean.updateBreadcrumbs(newLink);
@@ -1951,7 +1950,7 @@ public class NavigationHelper implements Serializable {
                             sb.getExactSearchString(),
                             sb.getCurrentPage(),
                             sb.getSortString(),
-                            sb.getFacets().getCurrentFacetString());
+                            sb.getFacets().getActiveFacetString());
                     try {
                         ViewerPath newPath =
                                 ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())

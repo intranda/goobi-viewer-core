@@ -97,13 +97,13 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
                 "{\"type\":\"rectangle\",\"vertices\":[[11.83273903383027,51.94656677497078],[11.83273903383027,53.48917317885388],[13.855459790711027,53.48917317885388],[13.855459790711027,51.94656677497078],[11.83273903383027,51.94656677497078]]}";
         GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
         SearchFacets facets = new SearchFacets();
-        facets.getCurrentFacets().add(item);
+        facets.getActiveFacets().add(item);
         facets.setGeoFacetFeature(geoJson);
 
-        String urlFacetString = facets.getCurrentFacetString();
+        String urlFacetString = facets.getActiveFacetString();
         String urlString = URLEncoder.encode(urlFacetString, "utf-8");
 
-        facets.setCurrentFacetString(urlString);
+        facets.setActiveFacetString(urlString);
 
         String filterQueryString = facets.generateFacetFilterQueries(true).get(0);
         String comparisonString =

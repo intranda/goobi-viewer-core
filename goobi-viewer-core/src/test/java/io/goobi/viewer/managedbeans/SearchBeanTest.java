@@ -88,7 +88,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() throws Exception {
         SearchBean searchBean = new SearchBean();
-        searchBean.getFacets().setCurrentFacetString("DC:col");
+        searchBean.getFacets().setActiveFacetString("DC:col");
 
         searchBean.resetAdvancedSearchParameters();
         Assert.assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
@@ -123,7 +123,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
 
-        sb.getFacets().setCurrentFacetString("DC:a");
+        sb.getFacets().setActiveFacetString("DC:a");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertEquals("a", item.getValue());
@@ -141,11 +141,11 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
 
-        sb.getFacets().setCurrentFacetString("DC:a");
+        sb.getFacets().setActiveFacetString("DC:a");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertEquals("a", item.getValue());
-        sb.getFacets().setCurrentFacetString("-");
+        sb.getFacets().setActiveFacetString("-");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertNull(item.getValue());
@@ -164,9 +164,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryItem item2 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
 
         item1.setField(SolrConstants.DC);
-        sb.getFacets().setCurrentFacetString("DC:a;;DC:b");
+        sb.getFacets().setActiveFacetString("DC:a;;DC:b");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals(2, sb.getFacets().getCurrentFacets().size());
+        Assert.assertEquals(2, sb.getFacets().getActiveFacets().size());
         Assert.assertEquals(SolrConstants.DC, item1.getField());
         Assert.assertEquals("a", item1.getValue());
         Assert.assertEquals(SolrConstants.DC, item2.getField());
@@ -187,7 +187,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         item1.setField("MD_TITLE");
         item1.setValue("text");
-        sb.getFacets().setCurrentFacetString("DC:a;;DC:b");
+        sb.getFacets().setActiveFacetString("DC:a;;DC:b");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertEquals("MD_TITLE", item1.getField());
         Assert.assertEquals("text", item1.getValue());
@@ -209,7 +209,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         item1.setField(SolrConstants.DC);
         item1.setValue("foo");
-        sb.getFacets().setCurrentFacetString("DC:foo;;DC:foo");
+        sb.getFacets().setActiveFacetString("DC:foo;;DC:foo");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         // There should be no second query item generated for the other DC:foo
         Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
@@ -370,7 +370,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+                bean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -378,10 +378,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add multiple facets for the same field correctly if field already in current facets
      */
     @Test
-    public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInCurrentFacets() throws Exception {
+    public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInActiveFacets() throws Exception {
         SearchBean bean = new SearchBean();
         bean.resetAdvancedSearchParameters();
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;"); // current facet string already contains this field
+        bean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;"); // current facet string already contains this field
 
         {
             SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -398,7 +398,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+                bean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -425,7 +425,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+                bean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -433,11 +433,11 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add more facets if field value combo already in current facets
      */
     @Test
-    public void generateAdvancedSearchString_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInCurrentFacets() throws Exception {
+    public void generateAdvancedSearchString_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInActiveFacets() throws Exception {
         SearchBean bean = new SearchBean();
         bean.resetAdvancedSearchParameters();
 
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;");
+        bean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;");
 
         {
             SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -454,7 +454,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+                bean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -467,7 +467,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.resetAdvancedSearchParameters();
 
         // Current facets are DC:foo and DC:bar
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
+        bean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
 
         // Passing DC:foo and DC:foo from the advanced search
         {
@@ -486,7 +486,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Only one DC:foo should be in the facets
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+                bean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -498,9 +498,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean bean = new SearchBean();
         bean.resetAdvancedSearchParameters();
 
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
-        Assert.assertEquals(2, bean.getFacets().getCurrentFacets().size());
-        Assert.assertTrue(bean.getFacets().getCurrentFacets().get(0).isHierarchial());
+        bean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
+        Assert.assertEquals(2, bean.getFacets().getActiveFacets().size());
+        Assert.assertTrue(bean.getFacets().getActiveFacets().get(0).isHierarchial());
 
         SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         item.setField(SolrConstants.DC);
@@ -509,7 +509,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.generateAdvancedSearchString();
 
         Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+                bean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -751,9 +751,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void searchSimple_shouldNotResetFacets() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.getFacets().setCurrentFacetString("foo:bar");
+        sb.getFacets().setActiveFacetString("foo:bar");
         sb.searchSimple();
-        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
+        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getActiveFacetString());
     }
 
     /**
@@ -763,9 +763,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void searchSimple_shouldNotResetFacetsIfResetFacetsFalse() throws Exception {
         SearchBean sb = new SearchBean();
-        sb.getFacets().setCurrentFacetString("foo:bar");
+        sb.getFacets().setActiveFacetString("foo:bar");
         sb.searchSimple(true, false);
-        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
+        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getActiveFacetString());
     }
 
     /**

@@ -372,7 +372,7 @@ public class Search implements Serializable {
             logger.debug("Final main query: {}", finalQuery);
 
             // Search without range facet queries to determine absolute slider range
-            List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
+            List<String> unfilteredFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
             List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(false);
 
             // Add custom filter query
@@ -383,11 +383,11 @@ public class Search implements Serializable {
 
             resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries,
+                    .search(finalQuery, 0, 0, null, unfilteredFacetFields, Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries,
                             params);
             if (resp != null && resp.getFacetFields() != null) {
                 for (FacetField facetField : resp.getFacetFields()) {
-                    if (rangeFacetFields.contains(facetField.getName())) {
+                    if (unfilteredFacetFields.contains(facetField.getName())) {
                         Map<String, Long> counts = new HashMap<>();
                         List<String> values = new ArrayList<>();
                         for (Count count : facetField.getValues()) {
