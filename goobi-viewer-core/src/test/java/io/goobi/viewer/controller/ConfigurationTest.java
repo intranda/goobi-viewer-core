@@ -1644,12 +1644,13 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        Assert.assertEquals(5, result.size());
+        Assert.assertEquals(6, result.size());
         Assert.assertEquals("DC", result.get(0));
         Assert.assertEquals("YEAR", result.get(1));
         Assert.assertEquals("MD_CREATOR", result.get(2));
         Assert.assertEquals("MD_PLACEPUBLISH", result.get(3));
         Assert.assertEquals("WKT_COORDS", result.get(4));
+        Assert.assertEquals("MD_PERSON", result.get(5));
     }
 
     /**
@@ -1657,8 +1658,8 @@ public class ConfigurationTest extends AbstractTest {
      * @verifies return all values
      */
     @Test
-    public void geFacetFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getFacetFields().size());
+    public void getFacetFields_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getFacetFields().size());
     }
 
     /**
@@ -1753,8 +1754,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getGroupToLengthForFacetField_shouldReturnCorrectValue() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField("MD_PERSON"));
     }
 
     /**
@@ -1763,8 +1763,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void isAlwaysApplyFacetFieldToUnfilteredHits_shouldReturnCorrectValue() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits("MD_PERSON"));
     }
 
     @Test
