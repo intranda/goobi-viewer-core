@@ -28,6 +28,73 @@
 		}
 	}
 
+	// ADMIN BREADCRUMBS LAYOUT
+	&__breadcrumbs-wrapper {
+		padding-left: 15px;
+	}
+	&__breadcrumbs-inner {
+	}
+	&__breadcrumbs-list {
+		display: flex;
+		gap: 0 0px;
+		padding: 0;
+		margin: 0;
+		list-style: none;
+		
+	}
+	&__breadcrumbs-crumb-point {
+		&:last-child {
+			.admin__breadcrumbs-crumb {
+				&:after,
+				&:before {
+					display: none;
+				}
+			}
+		}
+	}
+	&__breadcrumbs-crumb {
+		display: flex;
+		-webkit-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+		position: relative;
+		background: transparent;
+		padding: 5px 10px 5px 15px;
+		border: 1px solid #ccc;
+		line-height: 1;
+		background: transparent;
+		transition: background 0.2s ease;
+		&:hover,
+		&:focus,
+		&:active {
+			text-decoration: none;
+		}
+		&:after,
+		&:before {
+			background: #f2f3f4;
+			bottom: 0;
+			-webkit-clip-path: polygon(50% 50%, -50% -50%, 0 100%);
+			clip-path: polygon(50% 50%, -50% -50%, 0 100%);
+			content: "";
+			left: 100%;
+			position: absolute;
+			top: 0;
+			transition: background .2s ease;
+			width: 1em;
+			z-index: 1;
+		}
+		&:before {
+			background: #ccc;
+			margin-left: 1px;
+		}
+		&:hover {
+			background: #ebebeb;
+			&:after {
+				background: #ebebeb;
+			}
+		}
+	}
+
 	/* LAYOUT GENERAL */
 	&__content {
 		min-height: 100vh;
@@ -958,6 +1025,9 @@
 		padding-right: 15px;
 		padding-left: 15px;
 		border-top: 1px solid @white;
+	}
+	#additionalTemplateOptions {
+		display: none;
 	}
 	&__did-you-know-text {
 		margin-bottom: 0;

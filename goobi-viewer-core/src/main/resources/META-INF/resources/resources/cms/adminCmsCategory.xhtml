@@ -11,7 +11,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCategories')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin(cmsCategoriesBean.editing?'adminCmsEditCategory':'adminCmsNewCategory')}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
@@ -27,6 +27,8 @@
                         <h1 class="admin__title">#{msg.admin__category_edit}</h1>
                     </ui:fragment>
                 </div>
+                
+                <viewerComponent:adminBreadcrumbs />
 
                 <div class="admin__content-inner-content">
 

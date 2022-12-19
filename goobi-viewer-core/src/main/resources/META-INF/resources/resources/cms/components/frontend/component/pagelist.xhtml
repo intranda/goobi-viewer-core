@@ -37,7 +37,7 @@
 
 				<div class="tpl-news-overview__list">
 					<div class="row">
-						<ui:repeat var="subPage" value="#{cc.attrs.component.firstContentItem.content.getNestedPages(cc.attrs.random, cc.attrs.paged)}">
+						<ui:repeat var="subPage" value="#{cc.attrs.component.firstContentItem.content.getNestedPages(cc.attrs.random, cc.attrs.paged, cmsBean.templateManager)}">
 							<div class="tpl-news-overview__list-item clearfix">
 							
 								<ui:repeat var="previewItem" value="#{subPage.previewItems}">

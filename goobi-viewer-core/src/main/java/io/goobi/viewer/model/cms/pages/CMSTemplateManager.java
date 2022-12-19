@@ -186,6 +186,19 @@ public class CMSTemplateManager implements Serializable {
         this.reloadContentManager();
         this.updateTemplates(coreFolderPath.map(p -> p.resolve("legacy")), themeFolderPath.map(p -> p.resolve("legacy")));
     }
+    
+    public Optional<CMSPageTemplate> loadLegacyTemplate(String filename) {
+        Optional<Path> corePath = coreFolderPath.map(p -> p.resolve("legacy")).map(p -> p.resolve(filename));
+        if(corePath.isPresent()) {
+            return corePath.map(p -> CMSPageTemplate.loadFromXML(p));
+        } else {
+            Optional<Path> themePath = themeFolderPath.map(p -> p.resolve("legacy")).map(p -> p.resolve(filename));
+            if(themePath.isPresent()) {
+                return themePath.map(p -> CMSPageTemplate.loadFromXML(p));
+            }
+        }
+        return Optional.empty();
+    }
 
     public CMSPageContentManager getContentManager() {
         return contentManager;

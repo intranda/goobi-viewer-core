@@ -465,7 +465,7 @@ public class NavigationHelper implements Serializable {
      * @param pageName a {@link java.lang.String} object.
      */
     public void setCurrentPageAdmin(String pageName) {
-        breadcrumbBean.resetBreadcrumbs();
+        breadcrumbBean.resetBreadcrumbs(false);
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
             PageType pageType = PageType.getByName(pageName);
@@ -473,11 +473,30 @@ public class NavigationHelper implements Serializable {
                 this.currentPage = PageType.admin.name();
             } else {
                 this.currentPage = pageType.name();
+                setAdminBreadcrumbs(pageType);
             }
         } else {
             this.currentPage = "adminAllUsers";
         }
 
+    }
+    
+    public void setAdminBreadcrumbs(PageType pageType) {
+        
+        PageType breadcrumbType = pageType;
+        List<LabeledLink> links = new ArrayList<>();
+        while(breadcrumbType != null) {
+            links.add(
+                    new LabeledLink(ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale),
+                            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + breadcrumbType.getName(),
+                            0));
+            breadcrumbType = breadcrumbType.getParent();
+        }
+        Collections.reverse(links);
+        for (int i = 0; i < links.size(); i++) {
+            links.get(i).setWeight(i);
+        }
+        links.forEach(link -> breadcrumbBean.updateBreadcrumbs(link));
     }
 
     /**

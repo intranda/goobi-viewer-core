@@ -13,7 +13,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsNewPage')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin(cmsPageEditBean.editMode ? 'adminCmsEditPage' : 'adminCmsNewPage')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -52,6 +52,8 @@
 							data-placement="bottom" title="#{msg.admin__cms_back_to_page}"
 							aria-label="#{msg.admin__cms_back_to_page}"> </a>
 					</div>
+					
+					<viewerComponent:adminBreadcrumbs />
 
 					<div class="admin__content-inner-content">
 						<h:form id="create_page_form" prependId="false">
@@ -63,7 +65,7 @@
 									<div class="admin__content-wrapper">
 										<div class="admin__content-main -refreshHCsticky">
 											<!-- CREATE PAGE WRAPPER -->
-											<div class="cms-create-page__wrapper">
+											<h:panelGroup id="createPageContentArea" class="cms-create-page__wrapper">
 												<div>
 													<!-- NAV TABS -->
 													<ul class="nav nav-tabs">
@@ -77,7 +79,7 @@
 																	value="#{locale.getDisplayLanguage(navigationHelper.locale)}"
 																	action="#{page.setSelectedLocale(locale)}"
 																	actionListener="#{cmsPageEditBean.setPageEditState('CONTENT')}">
-																	<f:ajax render="@form :messages" execute="@form"></f:ajax>
+																	<f:ajax render="createPageContentArea :messages" execute="@form"></f:ajax>
 																</h:commandLink>
 															</li>
 														</ui:repeat>
@@ -86,7 +88,7 @@
 															<h:commandLink role="button"
 																value="#{msg.cms_pageSidebar}"
 																action="#{cmsPageEditBean.setPageEditState('SIDEBAR')}">
-																<f:ajax render="@form :messages" execute="@form"></f:ajax>
+																<f:ajax render="createPageContentArea :messages" execute="@form"></f:ajax>
 															</h:commandLink>
 														</li>
 													</ul>
@@ -254,12 +256,12 @@
 																						<ui:fragment rendered="#{!page.lockComponents}">
 																							<button class="admin__content-component-delete"
 																								data-require-confirmation="true"
-																								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
+																								data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__create_page__delete_component_confirmation, msg[cmsComponent.label])}"
 																								jsf:action="#{cmsPageEditBean.deleteComponent(cmsComponent)}">
 																								#{msg.delete}
 																								<f:ajax render="componentSelectionWrapper"
 																									onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
-																							</button>
+																							</button> 
 																						</ui:fragment>
 
 																					</div>
@@ -304,7 +306,7 @@
 																					jsf:action="#{cmsPageEditBean.addComponent()}"
 																					jsf:disabled="#{page.lockComponents}">
 																					#{msg.cms__page_add_component}
-																					<f:ajax execute="@form" render="@form :messages"></f:ajax>
+																					<f:ajax execute="@form" render="createPageContentArea :messages"></f:ajax>
 																				</button>
 																			</div>
 
@@ -330,47 +332,19 @@
 														</div>
 													</div>
 
-
-
-													<script>
-														$(document)
-																.ready(
-																		function() {
-																			if ($(
-																					'.admin__content-main')
-																					.height() > 1400) {
-																				$(
-																						'[data-target="revealOnScroll"]')
-																						.show();
-																				$(
-																						'.-refreshHCsticky')
-																						.hcSticky(
-																								'refresh',
-																								{});
-																			}
-																		});
-
-														// 												inputsFieldsAll = $('[data-target="watchedInput"]');
-
-														// 									            // listen to changes on input fields
-														// 									            inputsFieldsAll.on( 'change input paste', function() {
-														// 									                console.log('changed happened');
-														// 									                $('.admin__overlay-bar').fadeIn('');
-														// 									            });
-													</script>
-
 												</div>
-											</div>
+											</h:panelGroup>
 										</div>
 
 										<div class="admin__content-side -sticky">
+										
 											<!-- METADATA WRAPPER -->
 											<cmsComponent:cms_createPageMetadataItemWrapper
 												id="metadata_component" />
+												
 										</div>
 
-										<div class="admin__content-component-overlay-wrapper"
-											data-target="revealOnScroll">
+										<div class="admin__content-component-overlay-wrapper">
 											<div data-target="saveChangedPage"
 												class="admin__content-component-overlay-bar">
 												<!-- SHOW -->

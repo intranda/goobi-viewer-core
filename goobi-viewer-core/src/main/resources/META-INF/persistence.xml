@@ -103,7 +103,7 @@
 			<property name="logging.level" value="SEVERE" />
 			<property name="eclipselink.logging.level" value="SEVERE" />
             <property name="eclipselink.id-validation" value="NONE" />
-
+ 
 			<!-- disable logging to separate log file for now as the path can not be influenced in Goobi to go -->
 			<!-- <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" /> -->
 

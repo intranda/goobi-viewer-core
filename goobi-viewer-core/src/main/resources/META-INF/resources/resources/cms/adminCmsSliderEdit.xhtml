@@ -15,7 +15,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsSliders')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin(cmsSliderEditBean.newSlider?'adminCmsSlidersNew':'adminCmsSlidersEdit')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -32,6 +32,8 @@
 						<h1 class="admin__title">#{msg.cms__edit_slider__title}</h1>
 					</c:if>
 				</div>
+				
+				<viewerComponent:adminBreadcrumbs />
 
 				<h:form prependId="false">
 

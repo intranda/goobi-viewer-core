@@ -101,7 +101,7 @@ var viewerJS = ( function( viewer ) {
                     this.config.language = 'ru';
                     break;
             }
-			console.log("tinymce init ", this.config);
+			// console.log("tinymce init ", this.config);
             tinymce.init( this.config );
         },
         close: function() {

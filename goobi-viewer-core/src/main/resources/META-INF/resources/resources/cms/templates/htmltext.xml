@@ -20,4 +20,9 @@
 		<value label="50 %">50</value>
 		<value label="100 %" default="true">100</value>
 	</attribute>
+	
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
 </component>

@@ -13,7 +13,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsNewPage')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin(cmsPageTemplateEditBean.editMode ? 'adminCmsTemplatesEdit' : 'adminCmsTemplatesNew')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -49,6 +49,8 @@
 							data-placement="bottom" title="#{msg.admin__cms_back_to_page}"
 							aria-label="#{msg.admin__cms_back_to_page}"> </a>
 					</div>
+					
+					<viewerComponent:adminBreadcrumbs />
 
 					<div class="admin__content-inner-content">
 						<h:form id="create_page_form" prependId="false">
@@ -60,7 +62,7 @@
 									<div class="admin__content-wrapper">
 										<div class="admin__content-main -refreshHCsticky">
 											<!-- CREATE PAGE WRAPPER -->
-											<div class="cms-create-page__wrapper">
+											<h:panelGroup id="createPageTemplateContentArea" class="cms-create-page__wrapper">
 												<div>
 													<!-- NAV TABS -->
 													<ul class="nav nav-tabs">
@@ -72,7 +74,7 @@
 															<h:commandLink role="button"
 																value="#{msg.cms__template}"
 																action="#{cmsPageTemplateEditBean.setPageEditState('CONTENT')}">
-																<f:ajax render="@form" execute="@form"></f:ajax>
+																<f:ajax render="createPageTemplateContentArea" execute="@form"></f:ajax>
 															</h:commandLink>
 
 														</li>
@@ -83,7 +85,7 @@
 															<h:commandLink role="button"
 																value="#{msg.cms_pageSidebar}"
 																action="#{cmsPageTemplateEditBean.setPageEditState('SIDEBAR')}">
-																<f:ajax render="@form" execute="@form"></f:ajax>
+																<f:ajax render="createPageTemplateContentArea" execute="@form"></f:ajax>
 															</h:commandLink>
 														</li>
 													</ul>
@@ -263,7 +265,7 @@
 																				class="btn btn--full admin__content-component-add-area-button"
 																				jsf:action="#{cmsPageTemplateEditBean.addComponent()}">
 																				#{msg.cms__page_add_component}
-																				<f:ajax execute="@form" render="@form"></f:ajax>
+																				<f:ajax execute="@form" render="createPageTemplateContentArea :messages"></f:ajax>
 																			</button>
 
 																		</div>
@@ -287,41 +289,8 @@
 														</div>
 													</div>
 
-													<div
-														class="admin__content-component-additional-save-option"
-														data-target="revealOnScroll">
-
-														<div data-target="saveChangedPage"
-															class="admin__overlay-bar">
-															<div class="admin__overlay-bar-message">#{msg.admin__save_page}:</div>
-															<h:commandButton value="#{msg.save}"
-																styleClass="btn btn--success admin__overlay-bar-action"
-																action="#{cmsPageTemplateEditBean.saveSelectedTemplate()}" />
-														</div>
-
-													</div>
-
-													<script>
-
-												$(document).ready(function() {
-												  if ($('.admin__content-main').height() > 1400) {
-													    $('[data-target="revealOnScroll"]').show();
-														$('.-refreshHCsticky').hcSticky('refresh', {});
-													}
-												});
-												
-												inputsFieldsAll = $('[data-target="watchedInput"]');
-											
-									            // listen to changes on input fields
-									            inputsFieldsAll.on( 'change input paste', function() {
-									                console.log('changed happened');
-									                $('.admin__overlay-bar').fadeIn('');
-									            });
-
-											</script>
-
 												</div>
-											</div>
+											</h:panelGroup>
 										</div>
 
 										<div class="admin__content-side -sticky">
@@ -360,16 +329,6 @@
 												<div
 													class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-3">
 													<ul>
-														<li>
-															<!-- preview description text -->
-															<div id="previewDescription" class="alert alert-danger"
-																role="alert">
-																<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-																#{msg.cms_pagePreview_info}
-															</div> <!-- TODO: Create a sample page to preview the template -->
-
-
-														</li>
 														<ui:fragment rendered="#{page.id != null}">
 															<li>
 																<!-- delete page --> <a role="button" href="#"
@@ -418,7 +377,7 @@
 
 											<div class="admin__default-block">
 
-												<div id="additionalTemplateOptions">
+												<div id="lockTemplateOption">
 
 													<h2 class="mb-3">#{msg.label__cms_page_template__lock_components__label}</h2>
 

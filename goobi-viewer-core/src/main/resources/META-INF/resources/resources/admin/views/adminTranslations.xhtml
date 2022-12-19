@@ -26,11 +26,13 @@
                             <h1 class="admin__title">#{msg.admin__translations}</h1>
                             <!-- ADD NEW TRANSLATIONS -->
                             <ui:fragment rendered="#{adminBean.newMessageEntryModeAllowed and adminBean.hasAccessPermissingForTranslationFiles}">
-                                <a href="#{navigationHelper.getPageUrl('adminTranslationsNew')}/" class="btn btn--default admin__title-bar-action">
+                                <a href="#{navigationHelper.getPageUrl('adminTranslationsEdit')}/" class="btn btn--default admin__title-bar-action">
                                     #{msg.add}
                                 </a>
                             </ui:fragment>
                         </div>
+                        
+                        <viewerComponent:adminBreadcrumbs />
 
                         <div class="admin__content-inner-content">
                             <!-- INFO TEXT -->

@@ -23,6 +23,6 @@
 	</attribute>
 	
 	<attribute name="lightbox" label="cms__component_attribute__lightbox" type="toggle">
-		<value label="LightBoxButtonLabel">true</value>
+		<value label="cms_component__lightbox_button">true</value>
 	</attribute>
 </component>

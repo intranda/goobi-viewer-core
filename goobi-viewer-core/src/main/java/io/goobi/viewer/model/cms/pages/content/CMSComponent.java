@@ -197,10 +197,16 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public String getTemplateFilename() {
         return templateFilename;
     }
+    
+    public boolean isPageScope() {
+    	return CMSComponentScope.PAGEVIEW == this.scope;
+    }
 
     @Override
     public int compareTo(CMSComponent o) {
-        return Integer.compare(this.getOrder(), o.getOrder());
+    	int scopeCompare = Integer.compare(this.getScope().ordinal(), o.getScope().ordinal());
+    	int orderCompare = Integer.compare(this.getOrder(), o.getOrder());
+    	return scopeCompare * 100_000 + orderCompare;
     }
 
     public UIComponent getUiComponent() throws PresentationException {
