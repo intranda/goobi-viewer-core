@@ -255,6 +255,7 @@ public class FacetItem implements Serializable, IFacetItem {
             String useValue;
             if (groupToLength > 0 && entry.getKey().length() > groupToLength) {
                 useValue = entry.getKey().substring(0, groupToLength);
+                // logger.trace("value: {}", entry.getKey());
             } else {
                 useValue = entry.getKey();
             }

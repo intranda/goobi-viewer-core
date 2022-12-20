@@ -34,12 +34,17 @@
 					class="tpl-search-list-custom content-component__legacy-full-width">
 					<div class="tpl-search-list-custom__list">
 					
+                        <h:outputLink rendered="#{not empty searchBean.facets.activeFacets}"
+                            value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/-/">
+                            [X]
+                        </h:outputLink>
+					
 					    <ui:repeat
 					        value="#{searchBean.facets.getAvailableFacetsForField(cc.attrs.component.getContentItem('searchfacets').content.facetField, false)}"
 					        var="facet">
                             <ui:fragment>
                                 <h:outputLink
-                                    value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                    value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{facet.urlEscapedLink}/">
                                     <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                         #{facet.label}
                                     </ui:fragment>
@@ -50,7 +55,6 @@
                                 </h:outputLink>
                             </ui:fragment>
                         </ui:repeat>
-					
 				
 					</div>
 
