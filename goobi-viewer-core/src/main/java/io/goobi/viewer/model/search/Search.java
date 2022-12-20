@@ -375,7 +375,9 @@ public class Search implements Serializable {
                 activeFacetFilterQueries.add(customFilterQuery);
             }
 
-            // Search without range facet queries to determine absolute slider range and permanent facets
+            // Search without active facets to determine range facets min/max
+            populateRanges(finalQuery, facets, params);
+            // Search without active facets to populate unfiltered facets
             populateUnfilteredFacets(finalQuery, facets, params, locale);
 
             // Extra search for child element facet values
@@ -523,44 +525,32 @@ public class Search implements Serializable {
     }
 
     /**
-     * Populates facets that are applied to a raw, unfiltered search, such as total slider range and permanently displayed facets.
+     * Populates slider ranges for ranged facets.
      * 
      * @param finalQuery
      * @param facets
      * @param params
-     * @param locale
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private void populateUnfilteredFacets(String finalQuery, SearchFacets facets, Map<String, String> params, Locale locale)
+    private void populateRanges(String finalQuery, SearchFacets facets, Map<String, String> params)
             throws PresentationException, IndexUnreachableException {
-        List<String> unfilteredFacetFields = new ArrayList<>();
-        unfilteredFacetFields.addAll(DataManager.getInstance().getConfiguration().getRangeFacetFields());
-        // Collect facet fields with alwaysApplyToUnfilteredHits=true
-        for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
-            if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)) {
-                unfilteredFacetFields.add(SearchHelper.facetifyField(field));
-            }
-        }
-
+        List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
         List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(false);
         if (StringUtils.isNotEmpty(customFilterQuery)) {
             nonRangeFacetFilterQueries.add(customFilterQuery);
         }
 
-        logger.trace("final query: {}", finalQuery);
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, 0, 0, null, unfilteredFacetFields, Collections.singletonList(SolrConstants.IDDOC), null,
+                .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries,
                         params);
         if (resp == null || resp.getFacetFields() == null) {
             return;
         }
 
-        List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
         for (FacetField facetField : resp.getFacetFields()) {
-            logger.trace("FIELD: {}", facetField.getName());
-            if (!unfilteredFacetFields.contains(facetField.getName())) {
+            if (!rangeFacetFields.contains(facetField.getName())) {
                 continue;
             }
 
@@ -577,16 +567,63 @@ public class Search implements Serializable {
                 if (DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetField.getName())) {
                     // Slider range
                     facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, values);
-                } else {
-                    // Facets where all values are permanently displayed, no matter the current filters
-                    facets.getAvailableFacets()
-                            .put(defacetifiedFieldName,
-                                    FacetItem.generateFilterLinkList(defacetifiedFieldName, counts,
-                                            hierarchicalFacetFields.contains(defacetifiedFieldName),
-                                            DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
-                                            facets.getLabelMap()));
-                    logger.trace("Found unfiltered facet: {}", defacetifiedFieldName);
                 }
+            }
+        }
+    }
+
+    /**
+     * Populates facets that are applied to a raw, unfiltered search, such as total slider range and permanently displayed facets.
+     * 
+     * @param finalQuery
+     * @param facets
+     * @param params
+     * @param locale
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static void populateUnfilteredFacets(String finalQuery, SearchFacets facets, Map<String, String> params, Locale locale)
+            throws PresentationException, IndexUnreachableException {
+        List<String> unfilteredFacetFields = new ArrayList<>();
+        // Collect facet fields with alwaysApplyToUnfilteredHits=true
+        for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
+            if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)) {
+                unfilteredFacetFields.add(SearchHelper.facetifyField(field));
+            }
+        }
+
+        logger.trace("final query: {}", finalQuery);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .search(finalQuery, 0, 0, null, unfilteredFacetFields, Collections.singletonList(SolrConstants.IDDOC), null,
+                        params);
+        if (resp == null || resp.getFacetFields() == null) {
+            return;
+        }
+
+        List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
+        for (FacetField facetField : resp.getFacetFields()) {
+            if (!unfilteredFacetFields.contains(facetField.getName())) {
+                continue;
+            }
+
+            Map<String, Long> counts = new HashMap<>();
+            List<String> values = new ArrayList<>();
+            for (Count count : facetField.getValues()) {
+                if (count.getCount() > 0) {
+                    counts.put(count.getName(), count.getCount());
+                    values.add(count.getName());
+                }
+            }
+            if (!values.isEmpty()) {
+                String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
+                // Facets where all values are permanently displayed, no matter the current filters
+                facets.getAvailableFacets()
+                        .put(defacetifiedFieldName,
+                                FacetItem.generateFilterLinkList(defacetifiedFieldName, counts,
+                                        hierarchicalFacetFields.contains(defacetifiedFieldName),
+                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
+                                        facets.getLabelMap()));
             }
         }
     }
