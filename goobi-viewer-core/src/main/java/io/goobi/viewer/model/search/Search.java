@@ -582,7 +582,7 @@ public class Search implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private static void populateUnfilteredFacets(String finalQuery, SearchFacets facets, Map<String, String> params, Locale locale)
+    private void populateUnfilteredFacets(String finalQuery, SearchFacets facets, Map<String, String> params, Locale locale)
             throws PresentationException, IndexUnreachableException {
         List<String> unfilteredFacetFields = new ArrayList<>();
         // Collect facet fields with alwaysApplyToUnfilteredHits=true
@@ -592,10 +592,15 @@ public class Search implements Serializable {
             }
         }
 
+        List<String> activeFilterQueries = new ArrayList<>(1);
+        if (StringUtils.isNotEmpty(customFilterQuery)) {
+            activeFilterQueries.add(customFilterQuery);
+        }
+
         logger.trace("final query: {}", finalQuery);
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, 0, 0, null, unfilteredFacetFields, Collections.singletonList(SolrConstants.IDDOC), null,
+                .search(finalQuery, 0, 0, null, unfilteredFacetFields, Collections.singletonList(SolrConstants.IDDOC), activeFilterQueries,
                         params);
         if (resp == null || resp.getFacetFields() == null) {
             return;
