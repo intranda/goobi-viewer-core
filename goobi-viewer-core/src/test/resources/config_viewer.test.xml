@@ -1330,6 +1330,20 @@
         </nodeTypes>
     </archives>
     
+    
+    <!-- proxy/@enabled: If false, the proxy configuration will be ignored; default is false. -->
+    <proxy enabled="true">
+        <!-- proxyUrl: Proxy URL -->
+        <proxyUrl>my.proxy</proxyUrl>
+        <!-- proxyUrl: Proxy port -->
+        <proxyPort>9999</proxyPort>
+        <!-- whitelist: List of hosts not to be accessed via proxy -->
+        <whitelist>
+            <host>localhost</host>
+        </whitelist>
+    </proxy>
+    
+    
     <!-- Configuration for collecting usage statistics -->
     <statistics enabled="true"></statistics>
 

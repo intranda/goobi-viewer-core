@@ -45,8 +45,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
-import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
+import de.intranda.digiverso.normdataimporter.model.Record;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringConstants;
@@ -471,7 +471,7 @@ public class Metadata implements Serializable {
                                     normDataType = MetadataTools.findMetadataGroupType(options.get("NORM_TYPE"));
                                 } else {
                                     // Fetch MARCXML record and determine norm data set type from gndspec field 075$b
-                                    MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(value);
+                                    Record marcRecord = MetadataTools.getAuthorityDataRecord(url);
                                     if (marcRecord != null && !marcRecord.getNormDataList().isEmpty()) {
                                         for (NormData normData : marcRecord.getNormDataList()) {
                                             if ("NORM_TYPE".equals(normData.getKey())) {
