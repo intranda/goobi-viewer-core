@@ -154,6 +154,9 @@
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<activemq.version>5.17.2</activemq.version>
+        <spring.version>5.3.23</spring.version>
+        <reflections.version>0.10.2</reflections.version>
 	</properties>
 
 
@@ -659,6 +662,75 @@
 			<artifactId>swagger-integration</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+		<dependency>
+						<groupId>org.apache.activemq</groupId>
+						<artifactId>activemq-broker</artifactId>
+						<version>${activemq.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.activemq</groupId>
+						<artifactId>activemq-client</artifactId>
+						<version>${activemq.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.activemq</groupId>
+						<artifactId>activemq-kahadb-store</artifactId>
+						<version>${activemq.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+
+					<dependency>
+						<groupId>org.apache.activemq</groupId>
+						<artifactId>activemq-jaas</artifactId>
+						<version>${activemq.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.activemq</groupId>
+						<artifactId>activemq-stomp</artifactId>
+						<version>${activemq.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.activemq</groupId>
+						<artifactId>activemq-spring</artifactId>
+						<version>${activemq.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+
+
+
+					<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-beans</artifactId>
+						<version>${spring.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-context</artifactId>
+						<version>${spring.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-core</artifactId>
+						<version>${spring.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-expression</artifactId>
+						<version>${spring.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>${reflections.version}</version>
+        </dependency>
+		
+		
 	</dependencies>
 
 

@@ -137,12 +137,12 @@ public class Configuration extends AbstractConfiguration {
     public Configuration(String configFilePath) {
         // Load default config file
         builder =
-                new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
-                        .configure(new Parameters().properties()
-                                .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
-                                .setFileName(configFilePath)
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
-                                .setThrowExceptionOnMissing(false));
+                new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
+                .configure(new Parameters().properties()
+                        .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
+                        .setFileName(configFilePath)
+                        .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
+                        .setThrowExceptionOnMissing(false));
         if (builder.getFileHandler().getFile().exists()) {
             try {
                 builder.getConfiguration();
@@ -153,13 +153,13 @@ public class Configuration extends AbstractConfiguration {
             builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
                     new EventListener() {
 
-                        @Override
-                        public void onEvent(Event event) {
-                            if (builder.getReloadingController().checkForReloading(null)) {
-                                //
-                            }
-                        }
-                    });
+                @Override
+                public void onEvent(Event event) {
+                    if (builder.getReloadingController().checkForReloading(null)) {
+                        //
+                    }
+                }
+            });
         } else {
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
                     builder.getFileHandler().getBasePath());
@@ -168,11 +168,11 @@ public class Configuration extends AbstractConfiguration {
         // Load local config file
         File fileLocal = new File(getConfigLocalPath() + CONFIG_FILE_NAME);
         builderLocal =
-                new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
-                        .configure(new Parameters().properties()
-                                .setFileName(fileLocal.getAbsolutePath())
-                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
-                                .setThrowExceptionOnMissing(false));
+                new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
+                .configure(new Parameters().properties()
+                        .setFileName(fileLocal.getAbsolutePath())
+                        .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
+                        .setThrowExceptionOnMissing(false));
         if (builderLocal.getFileHandler().getFile().exists()) {
             try {
                 builderLocal.getConfiguration();
@@ -183,13 +183,13 @@ public class Configuration extends AbstractConfiguration {
             builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
                     new EventListener() {
 
-                        @Override
-                        public void onEvent(Event event) {
-                            if (builderLocal.getReloadingController().checkForReloading(null)) {
-                                //
-                            }
-                        }
-                    });
+                @Override
+                public void onEvent(Event event) {
+                    if (builderLocal.getReloadingController().checkForReloading(null)) {
+                        //
+                    }
+                }
+            });
         }
 
         // Load stopwords
@@ -197,7 +197,7 @@ public class Configuration extends AbstractConfiguration {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (
 
-        FileNotFoundException e) {
+                FileNotFoundException e) {
             logger.error(e.getMessage());
             stopwords = new HashSet<>(0);
         } catch (IOException | IllegalArgumentException e) {
@@ -5376,4 +5376,25 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList("proxy.whitelist.host");
     }
 
+    // active mq configuration //
+
+    public boolean isStartInternalMessageBroker() {
+        return getLocalBoolean("activeMQ[@enabled]", true);
+    }
+
+    public String getActiveMQConfigPath() {
+        return getLocalString("activeMQ", getConfigLocalPath() + "viewer_activemq.xml");
+    }
+
+    public int getNumberOfParallelMessages() {
+        return getLocalInt("",4);
+    }
+
+    public String getActiveMQUsername() {
+        return getLocalString("activeMQ.user", "");
+    }
+
+    public String getActiveMQPassword() {
+        return getLocalString("activeMQ.password", "");
+    }
 }
