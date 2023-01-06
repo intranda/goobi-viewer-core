@@ -33,11 +33,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -134,11 +135,8 @@ public class SearchFacets implements Serializable {
         }
 
         // Add regular facets
-        String regularQuery = generateFacetFilterQuery(includeRangeFacets);
-        if (StringUtils.isNotEmpty(regularQuery)) {
-            ret.add(regularQuery);
-            logger.trace("added facet query: {}", regularQuery);
-        }
+        List<String> queries = generateSimpleFacetFilterQueries(includeRangeFacets);
+        ret.addAll(queries);
 
         return ret;
     }
@@ -186,30 +184,38 @@ public class SearchFacets implements Serializable {
      *
      * @param includeRangeFacets
      * @return
-     * @should generate query correctly
-     * @should return null if facet list is empty
+     * @should generate queries correctly
+     * @should return empty list if facet list empty
      * @should skip range facet fields if so requested
      * @should skip subelement fields
+     * @should combine facet queries if field name same
      */
-    String generateFacetFilterQuery(boolean includeRangeFacets) {
+    List<String> generateSimpleFacetFilterQueries(boolean includeRangeFacets) {
         if (activeFacets.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
-        StringBuilder sbQuery = new StringBuilder();
+        List<String> ret = new ArrayList<>();
+        Map<String, StringBuilder> queries = new LinkedHashMap<>(activeFacets.size());
+
         for (IFacetItem facetItem : activeFacets) {
             if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
                     || (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField()))) {
                 continue;
             }
+            StringBuilder sbQuery = queries.computeIfAbsent(facetItem.getField(), k -> new StringBuilder());
             if (sbQuery.length() > 0) {
-                sbQuery.append(SolrConstants.SOLR_QUERY_AND);
+                sbQuery.append(' ');
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
-            logger.trace("Added facet: {}", facetItem.getQueryEscapedLink());
         }
 
-        return sbQuery.toString();
+        for (Entry<String, StringBuilder> entry : queries.entrySet()) {
+            ret.add(entry.getValue().toString());
+            logger.trace("Added facet: {}", entry.getValue());
+        }
+
+        return ret;
     }
 
     /**
@@ -496,6 +502,7 @@ public class SearchFacets implements Serializable {
      * @should set hierarchical status correctly
      * @should use label from labelMap if available
      * @should parse wildcard facets correctly
+     * @should create multiple items from multiple instances of same field
      */
     static void parseFacetString(String facetString, List<IFacetItem> facetItems, Map<String, String> labelMap) {
         if (facetItems == null) {

@@ -146,6 +146,24 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("A", facetItems.get(0).getLabel());
         Assert.assertEquals("A*", facetItems.get(0).getValue());
     }
+    
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies create multiple items from multiple instances of same field
+     */
+    @Test
+    public void parseFacetString_shouldCreateMultipleItemsFromMultipleInstancesOfSameField() throws Exception {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("YEAR:[a TO b];;YEAR:[c TO d]", facetItems, null);
+        Assert.assertEquals(2, facetItems.size());
+        Assert.assertEquals("YEAR", facetItems.get(0).getField());
+        Assert.assertEquals("YEAR", facetItems.get(1).getField());
+        Assert.assertEquals("a", facetItems.get(0).getValue());
+        Assert.assertEquals("b", facetItems.get(0).getValue2());
+        Assert.assertEquals("c", facetItems.get(1).getValue());
+        Assert.assertEquals("d", facetItems.get(1).getValue2());
+    }
 
     /**
      * @see SearchFacets#getActiveFacetString()
@@ -242,46 +260,71 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#generateFacetFilterQuery()
+     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
      * @verifies generate query correctly
      */
     @Test
-    public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
+    public void generateSimpleFacetFilterQueries_shouldGenerateQueriesCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("MD_FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FACET_FIELD1:a AND FIELD2:b AND YEAR:[c TO d]", facets.generateFacetFilterQuery(true));
+        List<String> result = facets.generateSimpleFacetFilterQueries(true);
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("FACET_FIELD1:a", result.get(0));
+        Assert.assertEquals("FIELD2:b", result.get(1));
+        Assert.assertEquals("YEAR:[c TO d]", result.get(2));
     }
 
     /**
-     * @see SearchFacets#generateFacetFilterQuery()
-     * @verifies return null if facet list is empty
+     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
+     * @verifies return empty list if facet list empty
      */
     @Test
-    public void generateFacetFilterQuery_shouldReturnNullIfFacetListIsEmpty() throws Exception {
+    public void generateSimpleFacetFilterQueries_shouldReturnEmptyListIfFacetListEmpty() throws Exception {
         SearchFacets facets = new SearchFacets();
-        Assert.assertNull(facets.generateFacetFilterQuery(true));
+        Assert.assertTrue(facets.generateSimpleFacetFilterQueries(true).isEmpty());
     }
 
     /**
-     * @see SearchFacets#generateFacetFilterQuery(boolean)
+     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
      * @verifies skip range facet fields if so requested
      */
     @Test
-    public void generateFacetFilterQuery_shouldSkipRangeFacetFieldsIfSoRequested() throws Exception {
+    public void generateSimpleFacetFilterQueries_shouldSkipRangeFacetFieldsIfSoRequested() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d]");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
+        List<String> result = facets.generateSimpleFacetFilterQueries(false);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("FIELD1:a", result.get(0));
+        Assert.assertEquals("FIELD2:b", result.get(1));
     }
 
     /**
-     * @see SearchFacets#generateFacetFilterQuery(boolean)
+     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
      * @verifies skip subelement fields
      */
     @Test
-    public void generateFacetFilterQuery_shouldSkipSubelementFields() throws Exception {
+    public void generateSimpleFacetFilterQueries_shouldSkipSubelementFields() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":figure");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b", facets.generateFacetFilterQuery(false));
+        List<String> result = facets.generateSimpleFacetFilterQueries(false);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("FIELD1:a", result.get(0));
+        Assert.assertEquals("FIELD2:b", result.get(1));
+    }
+
+    /**
+     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
+     * @verifies combine facet queries if field name same
+     */
+    @Test
+    public void generateSimpleFacetFilterQueries_shouldCombineFacetQueriesIfFieldNameSame() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d];;YEAR:[e TO f]");
+        List<String> result = facets.generateSimpleFacetFilterQueries(true);
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("FIELD1:a", result.get(0));
+        Assert.assertEquals("FIELD2:b", result.get(1));
+        Assert.assertEquals("YEAR:[c TO d] YEAR:[e TO f]", result.get(2));
     }
 
     /**
