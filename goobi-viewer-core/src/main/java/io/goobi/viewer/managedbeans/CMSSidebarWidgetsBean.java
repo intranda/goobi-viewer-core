@@ -40,7 +40,7 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
@@ -59,7 +59,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 @RequestScoped
 public class CMSSidebarWidgetsBean implements Serializable {
 
-    private HtmlPanelGroup sidebarGroup = null;
+    private transient HtmlPanelGroup sidebarGroup = null;
 
     private static final long serialVersionUID = -6039330925483238481L;
 
@@ -74,7 +74,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     public List<WidgetDisplayElement> getAllWidgets(boolean queryAdditionalInformation) throws DAOException {
 
-        List<WidgetDisplayElement> widgets = new ArrayList<WidgetDisplayElement>();
+        List<WidgetDisplayElement> widgets = new ArrayList<>();
 
         for (DefaultWidgetType widgetType : DefaultWidgetType.values()) {
             WidgetDisplayElement widget = new WidgetDisplayElement(
@@ -87,7 +87,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }
 
         for (AutomaticWidgetType widgetType : AutomaticWidgetType.values()) {
-            switch(widgetType) {
+            switch (widgetType) {
                 case WIDGET_CMSGEOMAP:
                     for (GeoMap geoMap : DataManager.getInstance().getDao().getAllGeoMaps()) {
                         WidgetDisplayElement widget = new WidgetDisplayElement(
@@ -106,7 +106,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
             WidgetDisplayElement element = new WidgetDisplayElement(
                     widget.getTitle(),
                     ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true),
-                    queryAdditionalInformation ? getEmbeddingPages(widget): Collections.emptyList(),
+                    queryAdditionalInformation ? getEmbeddingPages(widget) : Collections.emptyList(),
                     WidgetGenerationType.CUSTOM,
                     widget.getType(), widget.getId(), CustomWidgetType.WIDGET_FIELDFACETS.equals(widget.getType()) ? null : widget);
             widgets.add(element);
@@ -116,7 +116,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     }
 
-    private List<CMSPage> getEmbeddingPages(GeoMap geoMap) {
+    private static List<CMSPage> getEmbeddingPages(GeoMap geoMap) {
         try {
             return DataManager.getInstance().getDao().getPagesUsingMapInSidebar(geoMap);
         } catch (DAOException e) {
@@ -125,7 +125,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }
     }
 
-    private List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
+    private static List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
         try {
             return DataManager.getInstance().getDao().getPagesUsingWidget(widget);
         } catch (DAOException e) {
@@ -134,15 +134,14 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }
     }
 
-
     public void deleteWidget(Long id) throws DAOException {
         DataManager.getInstance().getDao().deleteCustomWidget(id);
     }
 
     public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements) {
-        if(elements != null && !elements.isEmpty()) {
+        if (elements != null && !elements.isEmpty()) {
             sidebarGroup = new HtmlPanelGroup();
-            elements.sort((e1,e2) -> Integer.compare(e1.getOrder(), e2.getOrder()));
+            elements.sort((e1, e2) -> Integer.compare(e1.getOrder(), e2.getOrder()));
             for (CMSSidebarElement element : elements) {
                 loadWidgetComponent(element, sidebarGroup);
             }
@@ -151,26 +150,27 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     public HtmlPanelGroup getSidebarGroup() {
-        List<CMSSidebarElement> elements = Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
-        return getSidebarGroup(new ArrayList<CMSSidebarElement>(elements));
+        List<CMSSidebarElement> elements =
+                Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
+        return getSidebarGroup(new ArrayList<>(elements));
     }
 
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
         this.sidebarGroup = sidebarGroup;
     }
 
-    private void loadWidgetComponent(CMSSidebarElement component, HtmlPanelGroup parent) {
+    private static void loadWidgetComponent(CMSSidebarElement component, HtmlPanelGroup parent) {
         DynamicContentBuilder builder = new DynamicContentBuilder();
         DynamicContent content = new DynamicContent(DynamicContentType.WIDGET, component.getContentType().getFilename());
         content.setId("sidebar_widget_" + component.getId());
-        if(component instanceof CMSSidebarElementCustom) {
+        if (component instanceof CMSSidebarElementCustom) {
             content.setAttributes(Map.of("widget", ((CMSSidebarElementCustom) component).getWidget()));
-        } else if(component instanceof CMSSidebarElementAutomatic) {
+        } else if (component instanceof CMSSidebarElementAutomatic) {
             content.setAttributes(Map.of("geoMap", ((CMSSidebarElementAutomatic) component).getMap()));
         }
         UIComponent widgetComponent = builder.build(content, parent);
-        if(widgetComponent == null) {
-            logger.error("Error loading widget " + component);
+        if (widgetComponent == null) {
+            logger.error("Error loading widget: {}", component);
         }
     }
 

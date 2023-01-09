@@ -1494,8 +1494,7 @@ public class SearchBean implements SearchInterface, Serializable {
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             facets.removeFacetAction(facetQuery, "pretty:browse4");
-            SearchFunctionality search = oPath.get().getCmsPage().getSearch();
-            search.redirectToSearchUrl(true);
+            oPath.get().getCmsPage().getSearch().ifPresent(search -> search.redirectToSearchUrl(true));
             return "";
         } else if (PageType.browse.equals(oPath.map(path -> path.getPageType()).orElse(PageType.other))) {
             return facets.removeFacetAction(facetQuery, "pretty:browse4");

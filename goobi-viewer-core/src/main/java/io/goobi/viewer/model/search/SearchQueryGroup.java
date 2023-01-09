@@ -66,6 +66,7 @@ public class SearchQueryGroup implements Serializable {
      * 
      * @param fieldConfigs
      * @should create and preselect visible fields
+     * @should only create allfields item if fieldConfigs null
      */
     public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs) {
         queryItems.clear();
@@ -89,6 +90,7 @@ public class SearchQueryGroup implements Serializable {
      * Replaces query items in this group with the given list.
      * 
      * @param items
+     * @should replace existing items with given
      */
     public void injectItems(List<SearchQueryItem> items) {
         queryItems.clear();
@@ -98,6 +100,8 @@ public class SearchQueryGroup implements Serializable {
     /**
      * 
      * @return true if none of the items has any value input; false otherwise
+     * @should return true if all items without value
+     * @should return false if at least one item has value
      */
     public boolean isBlank() {
         for (SearchQueryItem item : queryItems) {
@@ -114,6 +118,7 @@ public class SearchQueryGroup implements Serializable {
      * </p>
      *
      * @return a {@link java.util.List} object.
+     * @should return all enum values
      */
     public List<SearchQueryGroupOperator> getAvailableOperators() {
         return Arrays.asList(SearchQueryGroupOperator.values());
@@ -135,8 +140,8 @@ public class SearchQueryGroup implements Serializable {
      * addNewQueryItem.
      * </p>
      *
+     * @return true if operation successfuly; false otherwise
      * @should add item correctly
-     * @return a boolean.
      */
     public boolean addNewQueryItem() {
         return queryItems.add(new SearchQueryItem());

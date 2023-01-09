@@ -11,7 +11,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminUserGroup')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin( (adminBean.currentUserGroup.id != null) ? 'adminUserGroupEdit' : 'adminUserGroupNew')}" />
         </f:metadata>
     </ui:define>
 
@@ -28,6 +28,8 @@
                             <h1 class="admin__title">#{msg.admin__group_edit}</h1>
                         </h:panelGroup>
                     </div>
+                    
+                    <viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content" role="form">
                         <h:form id="editUserGroupGeneral" styleClass="form-horizontal" prependId="false">

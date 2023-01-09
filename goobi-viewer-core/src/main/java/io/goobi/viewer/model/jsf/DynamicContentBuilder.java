@@ -37,15 +37,18 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
+import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -54,14 +57,27 @@ import io.goobi.viewer.model.maps.GeoMap;
  */
 public class DynamicContentBuilder {
 
-    private final static Logger logger = LogManager.getLogger(DynamicContentBuilder.class);
+    private static final Logger logger = LogManager.getLogger(DynamicContentBuilder.class);
+
 
     private FacesContext context = FacesContext.getCurrentInstance();
     private Application application = context.getApplication();
     private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
-
-    public DynamicContentBuilder() {
-
+    
+    public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) throws PresentationException {
+        try {
+            UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
+            if(composite != null && attributes != null) {
+                for(Entry<String, Object> entry : attributes.entrySet()) {
+                    composite.getAttributes().put(entry.getKey(), entry.getValue());
+                }
+            }
+            return composite;
+        } catch(FaceletException e) {
+            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+".\nCause: " + e.getMessage());
+        } catch(Throwable e) {
+            throw new PresentationException("error building jsf custom component from file "+jsfComponent.toString()+". Please check if the file exists and is a valid jsf composite component");
+        }
     }
 
     public UIComponent build(DynamicContent content, UIComponent parent) {
@@ -135,7 +151,7 @@ public class DynamicContentBuilder {
         }
         return composite;
     }
-
+    
     /**
      * @param string2
      * @param string
@@ -164,7 +180,7 @@ public class DynamicContentBuilder {
         return composite;
     }
 
-    private UIComponent createTag(String name, Map<String, String> attributes) {
+    public UIComponent createTag(String name, Map<String, String> attributes) {
         UIComponent component = new UIComponentBase() {
 
             @Override

@@ -23,6 +23,7 @@ package io.goobi.viewer.model.cms.widgets.type;
 
 /**
  * Indicates how data for a sidebar widget is created and stored.
+ * 
  * @author florian
  *
  */

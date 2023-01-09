@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>text</name>
+	</jsfComponent>
+	<label>cms_component__text__label</label>
+	<description>cms_component__text__desc</description>
+	<icon>cms/components/frontend/component/icon/text.png</icon>
+</component>

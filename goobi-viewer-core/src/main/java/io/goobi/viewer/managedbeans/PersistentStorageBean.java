@@ -26,10 +26,20 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.omnifaces.cdi.Eager;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.dao.update.DatabaseUpdater;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * Used for application wide storage of objects accessible to other managed objects
@@ -37,7 +47,8 @@ import org.apache.commons.lang3.tuple.Pair;
  * @author florian
  *
  */
-@Named
+@Named("applicationBean")
+@Eager
 @ApplicationScoped
 public class PersistentStorageBean implements Serializable {
 
@@ -45,6 +56,20 @@ public class PersistentStorageBean implements Serializable {
 
     private Map<String, Pair<Object, Instant>> map = new HashMap<>();
 
+    @Inject 
+    transient private CMSTemplateManager templateManager;
+    private IDAO dao;
+    
+    @PostConstruct
+    public void startup() throws DAOException {
+        this.dao = DataManager.getInstance().getDao();
+        new DatabaseUpdater(dao, templateManager).update();
+    }
+    
+    @PreDestroy
+    public void shutdown() {
+        
+    }
 
     public synchronized Object get(String key) {
         return map.get(key).getLeft();
@@ -60,5 +85,13 @@ public class PersistentStorageBean implements Serializable {
 
     public boolean contains(String key) {
         return map.containsKey(key);
+    }
+    
+    public CMSTemplateManager getTemplateManager() {
+        return templateManager;
+    }
+    
+    public void setTemplateManager(CMSTemplateManager templateManager) {
+        this.templateManager = templateManager;
     }
 }

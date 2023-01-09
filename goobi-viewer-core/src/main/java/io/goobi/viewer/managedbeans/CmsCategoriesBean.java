@@ -81,7 +81,7 @@ public class CmsCategoriesBean implements Serializable {
             if (getSelectedCategory() != null) {
                 stream = stream.filter(cat -> !getSelectedCategory().equals(cat));
             }
-            return !stream.anyMatch(cat -> cat.getName().equalsIgnoreCase(getCategoryName()));
+            return stream.noneMatch(cat -> cat.getName().equalsIgnoreCase(getCategoryName()));
         }
 
         return false;
@@ -259,7 +259,7 @@ public class CmsCategoriesBean implements Serializable {
      * @return
      */
     public Long getSelectedCategoryId() {
-        if(selectedCategory != null) {
+        if (selectedCategory != null) {
             return selectedCategory.getId();
         }
 

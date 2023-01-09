@@ -35,7 +35,7 @@ import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 

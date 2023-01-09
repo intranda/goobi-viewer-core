@@ -14,7 +14,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdsourcingCampaigns')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin( crowdsourcingBean.editMode ? 'adminCrowdsourcingCampaignsEdit':'adminCrowdsourcingCampaignsNew')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -39,6 +39,9 @@
 							msg.admin__crowdsourcing_campaign_new}
 						</h1>
 					</div>
+					
+					<viewerComponent:adminBreadcrumbs />
+					
 					<div class="admin__content-inner-content">
 						<h:form id="createCampaignForm" prependId="true">
 							<div class="row">

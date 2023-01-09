@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -28,6 +29,7 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
@@ -43,5 +45,102 @@ public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
         Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(1).getField());
         Assert.assertEquals("MD_TITLE", group.getQueryItems().get(2).getField());
+    }
+
+    /**
+     * @see SearchQueryGroup#init(List)
+     * @verifies only create allfields item if fieldConfigs null
+     */
+    @Test
+    public void init_shouldOnlyCreateAllfieldsItemIfFieldConfigsNull() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null);
+        Assert.assertEquals(1, group.getQueryItems().size());
+        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+    }
+
+    /**
+     * @see SearchQueryGroup#injectItems(List)
+     * @verifies replace existing items with given
+     */
+    @Test
+    public void injectItems_shouldReplaceExistingItemsWithGiven() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        Assert.assertEquals(3, group.getQueryItems().size());
+
+        SearchQueryItem item = new SearchQueryItem();
+        item.setValue("foobar");
+        group.injectItems(Collections.singletonList(item));
+        Assert.assertEquals(1, group.getQueryItems().size());
+        Assert.assertEquals("foobar", group.getQueryItems().get(0).getValue());
+    }
+
+    /**
+     * @see SearchQueryGroup#isBlank()
+     * @verifies return true if all items without value
+     */
+    @Test
+    public void isBlank_shouldReturnTrueIfAllItemsWithoutValue() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        Assert.assertTrue(group.isBlank());
+    }
+
+    /**
+     * @see SearchQueryGroup#isBlank()
+     * @verifies return false if at least one item has value
+     */
+    @Test
+    public void isBlank_shouldReturnFalseIfAtLeastOneItemHasValue() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        Assert.assertEquals(3, group.getQueryItems().size());
+        group.getQueryItems().get(0).setValue("foobar");
+        Assert.assertFalse(group.isBlank());
+    }
+
+    /**
+     * @see SearchQueryGroup#getAvailableOperators()
+     * @verifies return all enum values
+     */
+    @Test
+    public void getAvailableOperators_shouldReturnAllEnumValues() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        List<SearchQueryGroupOperator> operators = group.getAvailableOperators();
+        Assert.assertTrue(operators.contains(SearchQueryGroupOperator.AND));
+        Assert.assertTrue(operators.contains(SearchQueryGroupOperator.OR));
+    }
+
+    /**
+     * @see SearchQueryGroup#addNewQueryItem()
+     * @verifies add item correctly
+     */
+    @Test
+    public void addNewQueryItem_shouldAddItemCorrectly() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null);
+        Assert.assertEquals(1, group.getQueryItems().size()); 
+        Assert.assertTrue(group.addNewQueryItem());
+        Assert.assertEquals(2, group.getQueryItems().size());        
+    }
+
+    /**
+     * @see SearchQueryGroup#removeQueryItem(SearchQueryItem)
+     * @verifies remove item correctly
+     */
+    @Test
+    public void removeQueryItem_shouldRemoveItemCorrectly() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
+        Assert.assertEquals(3, group.getQueryItems().size()); 
+        Assert.assertTrue(group.removeQueryItem(group.getQueryItems().get(0)));
+        Assert.assertEquals(2, group.getQueryItems().size()); 
+    }
+
+    /**
+     * @see SearchQueryGroup#removeQueryItem(SearchQueryItem)
+     * @verifies not remove last remaining item
+     */
+    @Test
+    public void removeQueryItem_shouldNotRemoveLastRemainingItem() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null);
+        Assert.assertEquals(1, group.getQueryItems().size()); 
+        Assert.assertFalse(group.removeQueryItem(group.getQueryItems().get(0)));
+        Assert.assertEquals(1, group.getQueryItems().size()); 
     }
 }

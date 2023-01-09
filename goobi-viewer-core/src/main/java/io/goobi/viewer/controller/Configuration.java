@@ -5023,10 +5023,7 @@ public class Configuration extends AbstractConfiguration {
         List<GeoMapMarker> markers = new ArrayList<>();
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.markers.marker");
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
-            GeoMapMarker marker = readGeoMapMarker(config);
-            if (marker != null) {
-                markers.add(marker);
-            }
+            markers.add(readGeoMapMarker(config));
         }
         return markers;
 
@@ -5055,8 +5052,9 @@ public class Configuration extends AbstractConfiguration {
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
             marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
             marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
+            return marker;
         }
-        return marker;
+        return new GeoMapMarker("");
     }
 
     /**

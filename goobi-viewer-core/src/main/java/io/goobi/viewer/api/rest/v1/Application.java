@@ -30,9 +30,11 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * <p>
@@ -50,6 +52,7 @@ public class Application extends ResourceConfig {
      */
     public Application(@Context ServletConfig servletConfig) {
         super();
+        PersistentStorageBean applicationBean = (PersistentStorageBean) BeanUtils.getBeanByName("applicationBean", PersistentStorageBean.class);
         AbstractBinder binder = new AbstractBinder() {
 
             @Override
@@ -57,6 +60,8 @@ public class Application extends ResourceConfig {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v1");
                 bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
+                CMSTemplateManager templateManager = applicationBean.getTemplateManager();
+                bind(templateManager).to(CMSTemplateManager.class);
             }
         };
         this.init(binder, servletConfig);
@@ -83,7 +88,6 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "io.swagger");
-
 
     }
 

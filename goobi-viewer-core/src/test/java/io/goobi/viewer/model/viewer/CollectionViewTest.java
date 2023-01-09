@@ -44,15 +44,16 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.managedbeans.CollectionViewBean;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
-import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -161,12 +162,15 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     public void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
         CMSPage page = new CMSPage();
         page.setId(1l);
-        CMSPageLanguageVersion lang = new CMSPageLanguageVersion("global");
-        lang.setOwnerPage(page);
-        CMSContentItem contentItem = new CMSContentItem();
-        contentItem.setCollectionField("DC");
-        contentItem.setOwnerPageLanguageVersion(lang);
-        CollectionView collection = contentItem.initializeCollection();
+        PersistentCMSComponent component = new PersistentCMSComponent();
+        component.setOwningPage(page);
+        CMSCollectionContent contentItem = new CMSCollectionContent();
+        contentItem.setSolrField("DC");
+        contentItem.setOwningComponent(component);
+        
+        CollectionViewBean collectionViewBean = new CollectionViewBean();
+        CollectionView collection = collectionViewBean.getCollection(contentItem, 0, false, false, false);
+        
         HierarchicalBrowseDcElement element = collection.getVisibleDcElements().stream().filter(ele -> ele.getName().equals("dcimage")).findAny().orElse(null);
         assertNotNull(element);
         assertNotNull(element.getInfo());

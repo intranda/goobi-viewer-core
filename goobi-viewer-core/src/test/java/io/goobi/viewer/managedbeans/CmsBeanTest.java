@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -48,10 +47,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.CMSTemplateManager;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants;
@@ -60,6 +58,9 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final Logger logger = LogManager.getLogger(CmsBeanTest.class);
 
+    private CMSTemplateManager templateManager;
+    private NavigationHelper navigationHelper;
+    
     /**
      * @throws java.lang.Exception
      */
@@ -69,10 +70,8 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();
-        //        if (webContentPath.startsWith("file:/")) {
-        //            webContentPath = webContentPath.replace("file:/", "");
-        //        }
-        CMSTemplateManager.getInstance(webContentPath, null);
+        templateManager = new CMSTemplateManager(webContentPath, null);
+        navigationHelper = new NavigationHelper();
     }
 
     /**
@@ -87,9 +86,9 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testPage() throws DAOException {
         CMSPage page = new CMSPage();
-        CmsBean bean = new CmsBean();
-        bean.setSelectedPage(page);
-        Assert.assertEquals(page, bean.getSelectedPage());
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        bean.setCurrentPage(page);
+        Assert.assertEquals(page, bean.getCurrentPage());
     }
 
     @Test
@@ -112,7 +111,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages();
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
-        Assert.assertEquals(3, allPages.size() - availablePages.size());
+        Assert.assertEquals(2, allPages.size() - availablePages.size());
     }
 
     @Test
@@ -120,7 +119,6 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();
-        page.setTemplateId("new");
         assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
 
         List<CMSStaticPage> staticPages = bean.getStaticPages();

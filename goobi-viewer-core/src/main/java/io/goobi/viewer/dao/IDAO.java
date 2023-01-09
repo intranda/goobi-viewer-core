@@ -38,17 +38,17 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
-import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
@@ -1417,15 +1417,6 @@ public interface IDAO {
     public boolean deleteUploadJob(UploadJob uploadJob) throws DAOException;
 
     // CMS
-
-    public CMSPageTemplateEnabled getCMSPageTemplateEnabled(String templateId) throws DAOException;
-
-    public boolean addCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
-
-    public boolean updateCMSPageTemplateEnabled(CMSPageTemplateEnabled o) throws DAOException;
-
-    public int saveCMSPageTemplateEnabledStatuses(List<CMSPageTemplate> templates) throws DAOException;
-
     /**
      * <p>
      * getAllCMSPages.
@@ -1442,7 +1433,7 @@ public interface IDAO {
      * </p>
      *
      * @param pageName a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException;
@@ -1459,7 +1450,7 @@ public interface IDAO {
      * @return a long.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getCMSPageCount(Map<String, String> filters, List<String> allowedTemplates, List<String> allowedSubthemes,
+    public long getCMSPageCount(Map<String, String> filters, List<Long> allowedTemplates, List<String> allowedSubthemes,
             List<String> allowedCategories) throws DAOException;
 
     /**
@@ -1479,7 +1470,7 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
-            List<String> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
+            List<Long> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException;
 
     /**
      * <p>
@@ -1513,11 +1504,10 @@ public interface IDAO {
      * @param pageSize a int.
      * @param fromDate a {@link java.time.LocalDateTime} object.
      * @param toDate a {@link java.time.LocalDateTime} object.
-     * @param templateIds Optional list of template IDs for filtering.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds)
+    public List<CMSPage> getCMSPagesWithRelatedPi(int first, int pageSize, LocalDateTime fromDate, LocalDateTime toDate)
             throws DAOException;
 
     /**
@@ -1545,7 +1535,7 @@ public interface IDAO {
      * @return a long.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate, List<String> templateIds) throws DAOException;
+    public long getCMSPageWithRelatedPiCount(LocalDateTime fromDate, LocalDateTime toDate) throws DAOException;
 
     /**
      *
@@ -1561,7 +1551,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getCMSPage(long id) throws DAOException;
@@ -1571,7 +1561,7 @@ public interface IDAO {
      * addCMSPage.
      * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1582,7 +1572,7 @@ public interface IDAO {
      * updateCMSPage.
      * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1593,12 +1583,19 @@ public interface IDAO {
      * deleteCMSPage.
      * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteCMSPage(CMSPage page) throws DAOException;
 
+    public List<CMSPageTemplate> getAllCMSPageTemplates() throws DAOException;
+    public CMSPageTemplate getCMSPageTemplate(Long id) throws DAOException;
+    public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException;
+    public boolean updateCMSPageTemplate(CMSPageTemplate template) throws DAOException;
+    public boolean removeCMSPageTemplate(CMSPageTemplate template) throws DAOException;
+    
+    
     /**
      * <p>
      * getAllCMSMediaItems.
@@ -1625,7 +1622,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSMediaItem getCMSMediaItem(long id) throws DAOException;
@@ -1636,7 +1633,7 @@ public interface IDAO {
      * </p>
      *
      * @param string a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     CMSMediaItem getCMSMediaItemByFilename(String string) throws DAOException;
@@ -1646,7 +1643,7 @@ public interface IDAO {
      * addCMSMediaItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1657,7 +1654,7 @@ public interface IDAO {
      * updateCMSMediaItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1668,22 +1665,12 @@ public interface IDAO {
      * deleteCMSMediaItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteCMSMediaItem(CMSMediaItem item) throws DAOException;
 
-    /**
-     * <p>
-     * getMediaOwners.
-     * </p>
-     *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<CMSPage> getMediaOwners(CMSMediaItem item) throws DAOException;
 
     /**
      * Get a list of all {@link CMSMediaItem}s which contain the given category
@@ -1753,7 +1740,7 @@ public interface IDAO {
      * getRelatedNavItem.
      * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1807,7 +1794,7 @@ public interface IDAO {
      * getStaticPageForCMSPage.
      * </p>
      *
-     * @param page a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2115,16 +2102,6 @@ public interface IDAO {
      */
     public void shutdown();
 
-    /**
-     * <p>
-     * getCMSPageForEditing.
-     * </p>
-     *
-     * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
-     * @throws io.goobi.view@Override er.exceptions.DAOException if any.
-     */
-    public CMSPage getCMSPageForEditing(long id) throws DAOException;
 
     /**
      * <p>
@@ -2153,7 +2130,7 @@ public interface IDAO {
      * addCMSCollection.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2164,7 +2141,7 @@ public interface IDAO {
      * updateCMSCollection.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2175,7 +2152,7 @@ public interface IDAO {
      * deleteCMSCollection.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2188,7 +2165,7 @@ public interface IDAO {
      *
      * @param solrField a {@link java.lang.String} object.
      * @param solrFieldValue a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
@@ -2581,6 +2558,7 @@ public interface IDAO {
 
     public Long getNumRecordsWithComments(User user) throws DAOException;
 
+    @SuppressWarnings("rawtypes")
     public List getNativeQueryResults(String query) throws DAOException;
 
     public int executeUpdate(String string) throws DAOException;
@@ -2671,5 +2649,10 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
+
+    public boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+    public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
 
 }

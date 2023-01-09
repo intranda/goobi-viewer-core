@@ -77,7 +77,7 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             assertNotNull("Should return user object as json", response.getEntity());
             String entity = response.readEntity(String.class);
             OrderedCollection<Activity> activities = new OrderedCollection<>();
-            activities = mapper.readValue(entity, activities.getClass());
+            activities = mapper.readValue(entity, OrderedCollection.class);
             assertTrue(activities.getTotalItems() > 0);
             Assert.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getId().toString());
             Assert.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build(), activities.getFirst().getId().toString());

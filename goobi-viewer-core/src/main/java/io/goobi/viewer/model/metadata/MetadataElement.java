@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,12 +47,16 @@ import io.goobi.viewer.solr.SolrConstants;
  * MetadataElement class.
  * </p>
  */
-public class MetadataElement {
+public class MetadataElement implements Serializable {
+
+    private static final long serialVersionUID = 222226787503688100L;
 
     /**
      * Wrapper class for the metadata type numerical value. Needed only for retrieving the proper message key for each type...
      */
-    public class MetadataType implements Comparable<MetadataType> {
+    public class MetadataType implements Comparable<MetadataType>, Serializable {
+
+        private static final long serialVersionUID = -2875502991726354737L;
 
         private static final String KEY_ROOT = "metadataTab";
 
@@ -130,7 +135,6 @@ public class MetadataElement {
         public String getTabName(int viewIndex) {
             String key = KEY_ROOT + "_" + viewIndex + "_" + type;
             if (ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
-                //            if(ViewerResourceBundle.getAllKeys().contains(key)) {
                 return key;
             }
 
@@ -138,6 +142,7 @@ public class MetadataElement {
         }
 
         public void setTabName(String tabName) {
+            //
         }
 
         /**

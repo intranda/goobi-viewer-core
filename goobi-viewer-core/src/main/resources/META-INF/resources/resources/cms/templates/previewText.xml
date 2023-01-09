@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<label>cms_component__previewltext__label</label>
+	<description>cms_component__previewtext__desc</description>
+	<icon>cms/components/frontend/component/icon/htmltext.png</icon>
+	<scope>preview</scope>
+	<content>
+		<item id="text">
+			<label>cms_component__htmltext_label</label>
+			<description>cms_component__htmltext_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>htmltext</name>
+			</jsfComponent>
+		</item>
+	</content>
+</component>
