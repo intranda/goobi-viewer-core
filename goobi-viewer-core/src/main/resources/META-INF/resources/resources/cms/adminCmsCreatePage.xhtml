@@ -138,6 +138,7 @@
 
 
 																	<ui:fragment rendered="#{page.isDefaultLocaleSelected()}">
+																	
 																	<!-- PAGE SORTING -->
 																	<div class="cms-module__option-group">
 																		<div class="cms-module__option-label">
@@ -151,8 +152,13 @@
 																			</h:inputText>
 																			<span class="cms-module__option-control-helptext">#{msg.help__cms_page_sortfield}</span>
 																		</div>
+		                                                                <div class="cms-module__option-help">
+		                                                                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+		                                                                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+		                                                                    </button>
+		                                                                </div>
 																	</div>
-																	
+
 																	</ui:fragment>
 
 																	<!-- CONTENT COMPONENTS ON THIS PAGE -->
