@@ -190,6 +190,7 @@ var viewerJS = ( function ( viewer ) {
 			if(this.mapTag) {
 				this.mapTag.forEach(tag => tag.unmount(true));
 			}
+			console.log("area layer", this.config.map.areaLayer)
 			this.mapTag = riot.mount(this.config.editMode.$editModeMap, "geomapsearch", {
 				inactive: false,
 				area : this.area,
@@ -198,6 +199,7 @@ var viewerJS = ( function ( viewer ) {
 				search_enabled: this.config.editMode.enableAddressSearch,
 				search_placeholder: this.config.editMode.addressSearchPlaceholder,
 				hitsLayer: this.config.map.hitsLayer,
+				areaLayer: this.config.map.areaLayer,
 				heatmap: this.config.heatmap,
 				onFeatureSelect: area => {
 					//console.log("Set facetting area", area);

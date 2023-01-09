@@ -1366,6 +1366,10 @@ public class ConfigurationBean implements Serializable {
     public GeoMapMarker getMarkerForMapSearch() {
         return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
     }
+    
+    public String getSelectionColorForMapSearch() {
+        return DataManager.getInstance().getConfiguration().getSelectionColorForMapSearch();
+    }
 
     public boolean useHeatmapForFacetting() {
         return DataManager.getInstance().getConfiguration().useHeatmapForFacetting();
@@ -1373,6 +1377,10 @@ public class ConfigurationBean implements Serializable {
 
     public GeoMapMarker getMarkerForFacetting() {
         return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
+    }
+    
+    public String getSelectionColorForFacetting() {
+        return DataManager.getInstance().getConfiguration().getSelectionColorForFacetting();
     }
 
     public boolean useHeatmapForCMSMaps() {
