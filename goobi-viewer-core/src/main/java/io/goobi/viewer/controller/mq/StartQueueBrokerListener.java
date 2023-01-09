@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.controller.mq;
 
 import java.io.IOException;
@@ -24,7 +45,6 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 
-
 @WebListener
 public class StartQueueBrokerListener implements ServletContextListener {
 
@@ -37,7 +57,6 @@ public class StartQueueBrokerListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             // JMX/RMI part taken from: https://vafer.org/blog/20061010091658/
@@ -81,15 +100,14 @@ public class StartQueueBrokerListener implements ServletContextListener {
             try {
                 for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
                     DefaultQueueListener listener = new DefaultQueueListener();
-                    listener.register(DataManager.getInstance().getConfiguration().getActiveMQUsername(), DataManager.getInstance().getConfiguration().getActiveMQPassword(), "viewer");
+                    listener.register(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
+                            DataManager.getInstance().getConfiguration().getActiveMQPassword(), "viewer");
                     listeners.add(listener);
                 }
 
-
                 dlqListener = new DLQListener();
-                dlqListener.register(DataManager.getInstance().getConfiguration().getActiveMQUsername(), DataManager.getInstance().getConfiguration().getActiveMQPassword(), "ActiveMQ.DLQ");
-
-
+                dlqListener.register(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
+                        DataManager.getInstance().getConfiguration().getActiveMQPassword(), "ActiveMQ.DLQ");
 
             } catch (JMSException e) {
                 log.error(e);
