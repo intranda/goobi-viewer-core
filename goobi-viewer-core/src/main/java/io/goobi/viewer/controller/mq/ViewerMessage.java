@@ -36,6 +36,10 @@ public class ViewerMessage {
 
     private String messageId;
 
+    public ViewerMessage() {
+
+    }
+
     public ViewerMessage(String taskName) {
         this.taskName = taskName;
     }

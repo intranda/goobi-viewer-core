@@ -34,12 +34,15 @@ import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.controller.DataManager;
 
 public class MessageGenerator {
-    private static Gson gson = new Gson();
+
+    private MessageGenerator() {
+    }
 
     public static ViewerMessage generateSimpleMessage(String ticketType) {
         return new ViewerMessage(ticketType);
@@ -52,8 +55,10 @@ public class MessageGenerator {
      * @param queueType
      * @return id of the generated message
      * @throws JMSException
+     * @throws JsonProcessingException
      */
-    public static String submitInternalMessage(Object ticket, String queueType, String ticketType, String identifier) throws JMSException {
+    public static String submitInternalMessage(Object ticket, String queueType, String ticketType, String identifier)
+            throws JMSException, JsonProcessingException {
 
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory();
         connFactory.setTrustedPackages(Arrays.asList("io.goobi.managedbeans", "io.goobi.viewer.model.job.mq"));
@@ -65,7 +70,8 @@ public class MessageGenerator {
         return messageId;
     }
 
-    private static String submitTicket(Object ticket, String queueName, Connection conn, String ticketType, String identifier) throws JMSException {
+    private static String submitTicket(Object ticket, String queueName, Connection conn, String ticketType, String identifier)
+            throws JMSException, JsonProcessingException {
         Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         final Destination dest = sess.createQueue(queueName);
         MessageProducer producer = sess.createProducer(dest);
@@ -75,7 +81,8 @@ public class MessageGenerator {
         // we still need a fifo queue for message deduplication, though.
         // See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-additional-fifo-queue-recommendations.html
         message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
-        message.setText(gson.toJson(ticket));
+
+        message.setText(new ObjectMapper().writeValueAsString(ticket));
         message.setStringProperty("JMSType", ticketType);
         message.setStringProperty("identifier", identifier);
         producer.send(message);

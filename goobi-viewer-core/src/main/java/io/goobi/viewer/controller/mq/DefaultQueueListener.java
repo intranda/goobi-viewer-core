@@ -45,13 +45,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DefaultQueueListener {
 
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);
 
-    private Gson gson = new Gson();
     private Thread thread;
     private ActiveMQConnection conn;
     private MessageConsumer consumer;
@@ -82,13 +82,13 @@ public class DefaultQueueListener {
                         Optional<ViewerMessage> optTicket = Optional.empty();
                         if (message instanceof TextMessage) {
                             TextMessage tm = (TextMessage) message;
-                            optTicket = Optional.of(gson.fromJson(tm.getText(), ViewerMessage.class));
+                            optTicket = Optional.of(new ObjectMapper().readValue(tm.getText(), ViewerMessage.class));
                         }
                         if (message instanceof BytesMessage) {
                             BytesMessage bm = (BytesMessage) message;
                             byte[] bytes = new byte[(int) bm.getBodyLength()];
                             bm.readBytes(bytes);
-                            optTicket = Optional.of(gson.fromJson(new String(bytes), ViewerMessage.class));
+                            optTicket = Optional.of(new ObjectMapper().readValue(new String(bytes), ViewerMessage.class));
                         }
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());
@@ -106,7 +106,7 @@ public class DefaultQueueListener {
                                 sess.recover();
                             }
                         }
-                    } catch (JMSException e) {
+                    } catch (JMSException | JsonProcessingException e) {
                         if (!shouldStop) {
                             // back off a little bit, maybe we have a problem with the connection or we are shutting down
                             try {
