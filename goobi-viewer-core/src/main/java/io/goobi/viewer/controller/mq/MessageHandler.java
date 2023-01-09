@@ -30,7 +30,7 @@ public interface MessageHandler<V> {
      * @return
      */
 
-    public V call(MessageTicket ticket);
+    public V call(ViewerMessage ticket);
 
     public String getTicketHandlerName();
 

@@ -24,56 +24,28 @@ package io.goobi.viewer.controller.mq;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessageTicket {
+public class ViewerMessage {
 
-    private Integer processId;
-    private String processName;
-
-    private Integer stepId;
-    private String stepName;
+    private String pi;
 
     private String taskType;
-    private String queueName = "goobi-default-queue";
+    private String queueName = "viewer";
     private int retryCount = 0;
 
     private Map<String, String> properties = new HashMap<>();
 
     private String messageId;
 
-    public MessageTicket(String taskType) {
+    public ViewerMessage(String taskType) {
         this.taskType = taskType;
     }
 
-    public Integer getProcessId() {
-        return processId;
+    public String getPi() {
+        return pi;
     }
 
-    public void setProcessId(Integer processId) {
-        this.processId = processId;
-    }
-
-    public String getProcessName() {
-        return processName;
-    }
-
-    public void setProcessName(String processName) {
-        this.processName = processName;
-    }
-
-    public Integer getStepId() {
-        return stepId;
-    }
-
-    public void setStepId(Integer stepId) {
-        this.stepId = stepId;
-    }
-
-    public String getStepName() {
-        return stepName;
-    }
-
-    public void setStepName(String stepName) {
-        this.stepName = stepName;
+    public void setPi(String pi) {
+        this.pi = pi;
     }
 
     public String getTaskType() {

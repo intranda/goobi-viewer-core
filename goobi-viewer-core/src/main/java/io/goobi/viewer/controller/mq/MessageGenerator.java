@@ -41,8 +41,8 @@ import io.goobi.viewer.controller.DataManager;
 public class MessageGenerator {
     private static Gson gson = new Gson();
 
-    public static MessageTicket generateSimpleTicket(String ticketType) {
-        return new MessageTicket(ticketType);
+    public static ViewerMessage generateSimpleMessage(String ticketType) {
+        return new ViewerMessage(ticketType);
     }
 
     /**
@@ -53,19 +53,19 @@ public class MessageGenerator {
      * @return id of the generated message
      * @throws JMSException
      */
-    public static String submitInternalTicket(Object ticket, String queueType, String ticketType, Integer processid) throws JMSException {
+    public static String submitInternalMessage(Object ticket, String queueType, String ticketType, String identifier) throws JMSException {
 
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory();
         connFactory.setTrustedPackages(Arrays.asList("org.goobi.managedbeans", "org.goobi.api.mq", "org.goobi.api.mq.ticket"));
 
         Connection conn = connFactory.createConnection(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
                 DataManager.getInstance().getConfiguration().getActiveMQPassword());
-        String messageId = submitTicket(ticket, queueType, conn, ticketType, processid);
+        String messageId = submitTicket(ticket, queueType, conn, ticketType, identifier);
         conn.close();
         return messageId;
     }
 
-    private static String submitTicket(Object ticket, String queueName, Connection conn, String ticketType, Integer processid) throws JMSException {
+    private static String submitTicket(Object ticket, String queueName, Connection conn, String ticketType, String identifier) throws JMSException {
         Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         final Destination dest = sess.createQueue(queueName);
         MessageProducer producer = sess.createProducer(dest);
@@ -77,7 +77,7 @@ public class MessageGenerator {
         message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
         message.setText(gson.toJson(ticket));
         message.setStringProperty("JMSType", ticketType);
-        message.setIntProperty("processid", processid);
+        message.setStringProperty("identifier", identifier);
         producer.send(message);
         return message.getJMSMessageID();
     }

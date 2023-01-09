@@ -79,16 +79,16 @@ public class DefaultQueueListener {
                 while (!shouldStop) {
                     try {
                         Message message = consumer.receive();
-                        Optional<MessageTicket> optTicket = Optional.empty();
+                        Optional<ViewerMessage> optTicket = Optional.empty();
                         if (message instanceof TextMessage) {
                             TextMessage tm = (TextMessage) message;
-                            optTicket = Optional.of(gson.fromJson(tm.getText(), MessageTicket.class));
+                            optTicket = Optional.of(gson.fromJson(tm.getText(), ViewerMessage.class));
                         }
                         if (message instanceof BytesMessage) {
                             BytesMessage bm = (BytesMessage) message;
                             byte[] bytes = new byte[(int) bm.getBodyLength()];
                             bm.readBytes(bytes);
-                            optTicket = Optional.of(gson.fromJson(new String(bytes), MessageTicket.class));
+                            optTicket = Optional.of(gson.fromJson(new String(bytes), ViewerMessage.class));
                         }
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());
@@ -130,7 +130,7 @@ public class DefaultQueueListener {
         thread.start();
     }
 
-    private ReturnValue handleTicket(MessageTicket ticket) {
+    private ReturnValue handleTicket(ViewerMessage ticket) {
         if (!instances.containsKey(ticket.getTaskType())) {
             getInstalledTicketHandler();
         }
