@@ -28,7 +28,7 @@ public class ViewerMessage {
 
     private String pi;
 
-    private String taskType;
+    private String taskName;
     private String queueName = "viewer";
     private int retryCount = 0;
 
@@ -36,8 +36,8 @@ public class ViewerMessage {
 
     private String messageId;
 
-    public ViewerMessage(String taskType) {
-        this.taskType = taskType;
+    public ViewerMessage(String taskName) {
+        this.taskName = taskName;
     }
 
     public String getPi() {
@@ -48,12 +48,12 @@ public class ViewerMessage {
         this.pi = pi;
     }
 
-    public String getTaskType() {
-        return taskType;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setTaskType(String taskType) {
-        this.taskType = taskType;
+    public void setTaskName(String taskType) {
+        this.taskName = taskType;
     }
 
     public String getQueueName() {

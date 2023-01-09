@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -59,6 +60,8 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.mq.MessageGenerator;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -104,10 +107,10 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_PDF_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @Operation(tags= {"downloads"}, summary="Return information about the PDF download job for the given PI and divId")
+    @Operation(tags = { "downloads" }, summary = "Return information about the PDF download job for the given PI and divId")
     public DownloadJob getPDFDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId)
+            @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
             throws DAOException, ContentNotFoundException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
@@ -133,11 +136,11 @@ public class DownloadResource {
     @DELETE
     @Path(ApiUrls.DOWNLOADS_PDF_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Delete a PDF download job from the database")
+    @Operation(tags = { "downloads" }, summary = "Delete a PDF download job from the database")
     @AuthorizationBinding
     public String deletePDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId)
+            @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
             throws DAOException, ContentLibException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
@@ -157,14 +160,29 @@ public class DownloadResource {
     @PUT
     @Path(ApiUrls.DOWNLOADS_PDF_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Get the PDF download job for the given PI and divId, creating it if neccessary",
-    description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+    @Operation(tags = { "downloads" }, summary = "Get the PDF download job for the given PI and divId, creating it if neccessary",
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
     public String putPDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
-            @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
-        return getOrCreateDownloadJob(pi, logId, email, PDFDownloadJob.LOCAL_TYPE);
+            @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId,
+            @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) {
+
+        ViewerMessage message = MessageGenerator.generateSimpleMessage("pdfDownload");
+        message.setPi(pi);
+        message.getProperties().put("email", email);
+        message.getProperties().put("logId", logId);
+
+        try {
+            String messageId = MessageGenerator.submitInternalMessage(message, "viewer", "pdfDownload", pi);
+        } catch (JMSException e) {
+            // mq is not reachable
+            logger.error(e);
+        }
+
+        // TODO forward to download page
+        return "";
+        // return getOrCreateDownloadJob(pi, logId, email, PDFDownloadJob.LOCAL_TYPE);
 
     }
 
@@ -181,12 +199,12 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_PDF_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @Operation(tags= {"downloads"}, summary="Return information about the PDF download job for the given PI")
+    @Operation(tags = { "downloads" }, summary = "Return information about the PDF download job for the given PI")
     public DownloadJob getPDFDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentNotFoundException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE)) {
+        if (downloadJob != null && PDFDownloadJob.LOCAL_TYPE.equalsIgnoreCase(downloadJob.getType())) {
             return downloadJob;
         } else {
             throw new ContentNotFoundException("No PDF download job found for identifier " + pi);
@@ -205,13 +223,13 @@ public class DownloadResource {
     @DELETE
     @Path(ApiUrls.DOWNLOADS_PDF_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Delete a PDF download job from the database")
+    @Operation(tags = { "downloads" }, summary = "Delete a PDF download job from the database")
     @AuthorizationBinding
     public String deletePDFDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentLibException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE)) {
+        if (downloadJob != null && PDFDownloadJob.LOCAL_TYPE.equalsIgnoreCase(downloadJob.getType())) {
             if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
                 return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
             } else {
@@ -225,8 +243,8 @@ public class DownloadResource {
     @PUT
     @Path(ApiUrls.DOWNLOADS_PDF_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Get the PDF download job for the given PI, creating it if neccessary",
-    description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+    @Operation(tags = { "downloads" }, summary = "Get the PDF download job for the given PI, creating it if neccessary",
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
 
     @DownloadBinding
     public String putPDFDownloadJob(
@@ -250,10 +268,10 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @Operation(tags= {"downloads"}, summary="Return information about the EPUB download job for the given PI and divId")
+    @Operation(tags = { "downloads" }, summary = "Return information about the EPUB download job for the given PI and divId")
     public DownloadJob getEPUBDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId)
+            @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
             throws DAOException, ContentNotFoundException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
@@ -279,11 +297,11 @@ public class DownloadResource {
     @DELETE
     @Path(ApiUrls.DOWNLOADS_EPUB_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Delete an EPUB download job from the database")
+    @Operation(tags = { "downloads" }, summary = "Delete an EPUB download job from the database")
     @AuthorizationBinding
     public String deleteEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId)
+            @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
             throws DAOException, ContentLibException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
@@ -303,12 +321,12 @@ public class DownloadResource {
     @PUT
     @Path(ApiUrls.DOWNLOADS_EPUB_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Get the EPUB download job for the given PI and divId, creating it if neccessary",
-    description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+    @Operation(tags = { "downloads" }, summary = "Get the EPUB download job for the given PI and divId, creating it if neccessary",
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
     public String putEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description="Identifier of the METS div for a logical section")@PathParam("divId") String logId,
+            @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {
         return getOrCreateDownloadJob(pi, logId, email, EPUBDownloadJob.LOCAL_TYPE);
 
@@ -327,12 +345,12 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @Operation(tags= {"downloads"}, summary="Return information about the EPUB download job for the given PI")
+    @Operation(tags = { "downloads" }, summary = "Return information about the EPUB download job for the given PI")
     public DownloadJob getEPUBDownloadInfo(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentNotFoundException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE)) {
+        if (downloadJob != null && EPUBDownloadJob.LOCAL_TYPE.equalsIgnoreCase(downloadJob.getType())) {
             return downloadJob;
         } else {
             throw new ContentNotFoundException("No EPUB download job found for identifier " + pi);
@@ -351,13 +369,13 @@ public class DownloadResource {
     @DELETE
     @Path(ApiUrls.DOWNLOADS_EPUB_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Delete an EPUB download job from the database")
+    @Operation(tags = { "downloads" }, summary = "Delete an EPUB download job from the database")
     @AuthorizationBinding
     public String deleteEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi)
             throws DAOException, ContentLibException {
         DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(pi);
-        if (downloadJob != null && downloadJob.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE)) {
+        if (downloadJob != null && EPUBDownloadJob.LOCAL_TYPE.equalsIgnoreCase(downloadJob.getType())) {
             if (!DataManager.getInstance().getDao().deleteDownloadJob(downloadJob)) {
                 return "{job: \"" + downloadJob.getIdentifier() + "\", deleted: false}";
             } else {
@@ -371,8 +389,8 @@ public class DownloadResource {
     @PUT
     @Path(ApiUrls.DOWNLOADS_EPUB_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Get the EPUB download job for the given PI, creating it if neccessary",
-    description="Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+    @Operation(tags = { "downloads" }, summary = "Get the EPUB download job for the given PI, creating it if neccessary",
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
     public String putEPUBDownloadJob(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
@@ -392,7 +410,7 @@ public class DownloadResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @Operation(tags= {"downloads"}, summary="Return information all download jobs")
+    @Operation(tags = { "downloads" }, summary = "Return information all download jobs")
     public List<DownloadJob> getAllDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
                 .getDao()
@@ -412,7 +430,7 @@ public class DownloadResource {
      */
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Delete all download jobs")
+    @Operation(tags = { "downloads" }, summary = "Delete all download jobs")
     @AuthorizationBinding
     public List<String> deleteAllDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
@@ -447,13 +465,13 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_PDF)
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @Operation(tags= {"downloads"}, summary="Return information all PDF download jobs")
+    @Operation(tags = { "downloads" }, summary = "Return information all PDF download jobs")
     public List<DownloadJob> getṔDFDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE))
+                .filter(job -> PDFDownloadJob.LOCAL_TYPE.equalsIgnoreCase(job.getType()))
                 .collect(Collectors.toList());
         return downloadJobs;
     }
@@ -469,7 +487,7 @@ public class DownloadResource {
     @DELETE
     @Path(ApiUrls.DOWNLOADS_PDF)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Delete all PDF download jobs")
+    @Operation(tags = { "downloads" }, summary = "Delete all PDF download jobs")
 
     @AuthorizationBinding
     public List<String> deletePDFDownloadJobs() throws DAOException, ContentLibException {
@@ -477,7 +495,7 @@ public class DownloadResource {
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(PDFDownloadJob.LOCAL_TYPE))
+                .filter(job -> PDFDownloadJob.LOCAL_TYPE.equalsIgnoreCase(job.getType()))
                 .collect(Collectors.toList());
         if (!downloadJobs.isEmpty()) {
             List<String> results = new ArrayList<>();
@@ -506,13 +524,13 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB)
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @Operation(tags= {"downloads"}, summary="Return information all EPUB download jobs")
+    @Operation(tags = { "downloads" }, summary = "Return information all EPUB download jobs")
     public List<DownloadJob> getDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE))
+                .filter(job -> EPUBDownloadJob.LOCAL_TYPE.equalsIgnoreCase(job.getType()))
                 .collect(Collectors.toList());
         return downloadJobs;
     }
@@ -528,14 +546,14 @@ public class DownloadResource {
     @DELETE
     @Path(ApiUrls.DOWNLOADS_EPUB)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"downloads"}, summary="Delete all EPUB download jobs")
+    @Operation(tags = { "downloads" }, summary = "Delete all EPUB download jobs")
     @AuthorizationBinding
     public List<String> deleteEPUBDownloadJobs() throws DAOException, ContentLibException {
         List<DownloadJob> downloadJobs = DataManager.getInstance()
                 .getDao()
                 .getAllDownloadJobs()
                 .stream()
-                .filter(job -> job.getType().equalsIgnoreCase(EPUBDownloadJob.LOCAL_TYPE))
+                .filter(job -> EPUBDownloadJob.LOCAL_TYPE.equalsIgnoreCase(job.getType()))
                 .collect(Collectors.toList());
         if (!downloadJobs.isEmpty()) {
             List<String> results = new ArrayList<>();
@@ -552,8 +570,6 @@ public class DownloadResource {
         }
     }
 
-
-
     /**
      * @param pi
      * @param logId
@@ -563,10 +579,10 @@ public class DownloadResource {
      * @throws ContentLibException
      */
     public String getOrCreateDownloadJob(String pi, String logId, String email, String type) throws ContentLibException {
-        if (email == null || email.equals("-")) {
+        if (email == null || "-".equals(email)) {
             email = "";
         }
-        if (logId == null || logId.equals("-")) {
+        if (logId == null || "-".equals(logId)) {
             logId = "";
         }
         try {
@@ -586,7 +602,7 @@ public class DownloadResource {
                 logger.debug("DAOException thrown here: {}", e.getMessage());
                 throw new ContentLibException("Error communicating with database", e);
             }
-//            return Response.temporaryRedirect(downloadPageUrl).build();
+            //            return Response.temporaryRedirect(downloadPageUrl).build();
         } catch (URISyntaxException | JsonProcessingException e) {
             throw new ContentLibException("Failed to create url to download page ", e);
         }

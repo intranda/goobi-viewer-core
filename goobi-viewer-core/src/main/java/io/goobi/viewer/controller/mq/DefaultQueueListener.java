@@ -93,7 +93,7 @@ public class DefaultQueueListener {
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());
                             try {
-                                ReturnValue result = handleTicket(optTicket.get());
+                                ReturnValue result = handleMessage(optTicket.get());
                                 if (result != ReturnValue.ERROR) {
                                     //acknowledge message, it is done
                                     message.acknowledge();
@@ -130,15 +130,15 @@ public class DefaultQueueListener {
         thread.start();
     }
 
-    private ReturnValue handleTicket(ViewerMessage ticket) {
-        if (!instances.containsKey(ticket.getTaskType())) {
+    private ReturnValue handleMessage(ViewerMessage message) {
+        if (!instances.containsKey(message.getTaskName())) {
             getInstalledTicketHandler();
         }
-        MessageHandler<ReturnValue> handler = instances.get(ticket.getTaskType());
+        MessageHandler<ReturnValue> handler = instances.get(message.getTaskName());
         if (handler == null) {
             return ReturnValue.ERROR;
         }
-        return handler.call(ticket);
+        return handler.call(message);
     }
 
     public void close() throws JMSException {
