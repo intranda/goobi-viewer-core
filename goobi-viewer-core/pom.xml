@@ -472,7 +472,6 @@
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
 			<version>${jersey.version}</version>
-			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>jakarta.ws.rs</groupId>
