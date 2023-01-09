@@ -818,14 +818,13 @@
                                 <ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
                                 <ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
-                                
                                 <ignoredUnusedDeclaredDependency>org.reflections:reflections</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>com.google.code.gson:gson</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.apache.geronimo.specs:geronimo-jms_1.1_spec</ignoredUnusedDeclaredDependency>
+                                <!-- end activemq libraries -->
 							</ignoredUnusedDeclaredDependencies>
 							<ignoredUsedUndeclaredDependencies>
+                                <!-- activemq libraries -->
                                 <ignoredUsedUndeclaredDependency>org.apache.geronimo.specs:geronimo-jms_1.1_spec</ignoredUsedUndeclaredDependency>
-                                <ignoredUsedUndeclaredDependency>com.google.code.gson:gson</ignoredUsedUndeclaredDependency>
+                                <!-- end activemq libraries -->
                             </ignoredUsedUndeclaredDependencies>
 						</configuration>
 					</execution>
