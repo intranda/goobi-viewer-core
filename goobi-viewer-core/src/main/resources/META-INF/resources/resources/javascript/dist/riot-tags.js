@@ -2434,6 +2434,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
 riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
+    console.log("mapsearch ", this.opts);
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
@@ -2470,11 +2471,7 @@ this.initMap = function() {
 
 this.initDrawLayer = function(map) {
     let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
-   	    style : {
-         	fillColor : "#d9534f",
-         	color : "#d9534f",
-         	fillOpacity : 0.3,
-        	}
+   	    style : this.opts.areaLayer.style
     });
 	return drawLayer;
 }.bind(this)

@@ -3181,4 +3181,41 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertEquals(1, result.getIcons().size());
         Assert.assertEquals("paragraph50.svg", result.getIcons().get(0));
     }
+
+    /**
+     * @see Configuration#isProxyEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isProxyEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isProxyEnabled());
+    }
+
+    /**
+     * @see Configuration#getProxyUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getProxyUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("my.proxy", DataManager.getInstance().getConfiguration().getProxyUrl());
+    }
+
+    /**
+     * @see Configuration#getProxyPort()
+     * @verifies return correct value
+     */
+    @Test
+    public void getProxyPort_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(9999, DataManager.getInstance().getConfiguration().getProxyPort());
+    }
+
+    /**
+     * @see Configuration#isHostProxyWhitelisted(String)
+     * @verifies return true if host whitelisted
+     */
+    @Test
+    public void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
+    }
+
 }
