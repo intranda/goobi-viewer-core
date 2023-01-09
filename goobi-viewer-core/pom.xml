@@ -731,9 +731,6 @@
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>
 								
-                                <!-- jersey-container-servlet-core is falsely declared as unused blocking maven install (windows developer system only) -->
-                                <ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet-core</ignoredUnusedDeclaredDependency>
-								
 								<!-- jersey client is falsely declared as unused blocking maven install (windows developer system only) -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
 
@@ -747,6 +744,10 @@
 								<!-- H2 is used as database for unit tests -->
 								<ignoredUnusedDeclaredDependency>com.h2database:h2</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
+							<ignoredNonTestScopedDependencies>
+							    <!-- jersey-container-servlet-core is falsely declared as unused blocking maven install (windows developer system only) -->
+							    <ignoredNonTestScopedDependency>org.glassfish.jersey.containers:jersey-container-servlet-core</ignoredNonTestScopedDependency>
+							</ignoredNonTestScopedDependencies>
 						</configuration>
 					</execution>
 				</executions>
