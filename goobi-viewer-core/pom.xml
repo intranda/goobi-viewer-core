@@ -657,79 +657,74 @@
 			<version>${swagger.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-integration</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-		<dependency>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activemq-broker</artifactId>
-						<version>${activemq.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activemq-client</artifactId>
-						<version>${activemq.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activemq-kahadb-store</artifactId>
-						<version>${activemq.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-
-					<dependency>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activemq-jaas</artifactId>
-						<version>${activemq.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activemq-stomp</artifactId>
-						<version>${activemq.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activemq-spring</artifactId>
-						<version>${activemq.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-
-
-
-					<dependency>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-beans</artifactId>
-						<version>${spring.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-context</artifactId>
-						<version>${spring.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-core</artifactId>
-						<version>${spring.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-expression</artifactId>
-						<version>${spring.version}</version>
-						<scope>runtime</scope>
-					</dependency>
-					<dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-integration</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>${activemq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>${activemq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-kahadb-store</artifactId>
+            <version>${activemq.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-jaas</artifactId>
+            <version>${activemq.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-stomp</artifactId>
+            <version>${activemq.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-spring</artifactId>
+            <version>${activemq.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>${reflections.version}</version>
-        </dependency>
-		
+    </dependency>
 		
 	</dependencies>
 
@@ -812,7 +807,26 @@
 								<!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
+								
+								<!-- activemq libraries -->
+								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-kahadb-store</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-jaas</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-stomp</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-spring</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework:spring-beans</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
+                                
+                                <ignoredUnusedDeclaredDependency>org.reflections:reflections</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>com.google.code.gson:gson</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.apache.geronimo.specs:geronimo-jms_1.1_spec</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
+							<ignoredUsedUndeclaredDependencies>
+                                <ignoredUsedUndeclaredDependency>org.apache.geronimo.specs:geronimo-jms_1.1_spec</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>com.google.code.gson:gson</ignoredUsedUndeclaredDependency>
+                            </ignoredUsedUndeclaredDependencies>
 						</configuration>
 					</execution>
 				</executions>
@@ -960,7 +974,7 @@
 				<artifactId>dependency-check-maven</artifactId>
 				<version>7.1.0</version>
 				<configuration>
-					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
+                    <!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<skipProvidedScope>true</skipProvidedScope>
 					<skipTestScope>true</skipTestScope>
