@@ -175,7 +175,7 @@ public class DownloadResource {
 
         try {
             String messageId = MessageGenerator.submitInternalMessage(message, "viewer", "pdfDownload", pi);
-        } catch (JMSException e) {
+        } catch (JMSException | JsonProcessingException e) {
             // mq is not reachable
             logger.error(e);
         }
