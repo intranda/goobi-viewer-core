@@ -32,6 +32,6 @@ public interface MessageHandler<V> {
 
     public V call(ViewerMessage ticket);
 
-    public String getTicketHandlerName();
+    public String getMessageHandlerName();
 
 }

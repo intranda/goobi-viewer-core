@@ -44,7 +44,7 @@ public class DLQListener {
 
     public void register(String username, String password, String queueType) throws JMSException {
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory("vm://localhost");
-        connFactory.setTrustedPackages(Arrays.asList("org.goobi.managedbeans", "org.goobi.api.mq", "org.goobi.api.mq.ticket"));
+        connFactory.setTrustedPackages(Arrays.asList("io.goobi.managedbeans", "io.goobi.viewer.model.job.mq"));
         conn = (ActiveMQConnection) connFactory.createConnection(username, password);
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);

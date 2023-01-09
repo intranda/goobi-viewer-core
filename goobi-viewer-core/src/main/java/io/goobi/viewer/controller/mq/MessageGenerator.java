@@ -56,7 +56,7 @@ public class MessageGenerator {
     public static String submitInternalMessage(Object ticket, String queueType, String ticketType, String identifier) throws JMSException {
 
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory();
-        connFactory.setTrustedPackages(Arrays.asList("org.goobi.managedbeans", "org.goobi.api.mq", "org.goobi.api.mq.ticket"));
+        connFactory.setTrustedPackages(Arrays.asList("io.goobi.managedbeans", "io.goobi.viewer.model.job.mq"));
 
         Connection conn = connFactory.createConnection(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
                 DataManager.getInstance().getConfiguration().getActiveMQPassword());

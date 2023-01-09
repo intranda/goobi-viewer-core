@@ -61,7 +61,7 @@ public class DefaultQueueListener {
 
     public void register(String username, String password, String queueType) throws JMSException {
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory("vm://localhost");
-        connFactory.setTrustedPackages(Arrays.asList("org.goobi.managedbeans", "org.goobi.api.mq", "org.goobi.api.mq.ticket"));
+        connFactory.setTrustedPackages(Arrays.asList("io.goobi.managedbeans", "io.goobi.viewer.model.job.mq"));
         conn = (ActiveMQConnection) connFactory.createConnection(username, password);
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
@@ -156,11 +156,11 @@ public class DefaultQueueListener {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static void getInstalledTicketHandler() {
         instances = new HashMap<>();
-        Set<Class<? extends MessageHandler>> ticketHandlers = new Reflections("org.goobi.api.mq.*").getSubTypesOf(MessageHandler.class);
+        Set<Class<? extends MessageHandler>> ticketHandlers = new Reflections("io.goobi.viewer.model.job.mq.*").getSubTypesOf(MessageHandler.class);
         for (Class<? extends MessageHandler> clazz : ticketHandlers) {
             try {
                 MessageHandler<ReturnValue> handler = clazz.getDeclaredConstructor().newInstance();
-                instances.put(handler.getTicketHandlerName(), handler);
+                instances.put(handler.getMessageHandlerName(), handler);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
                     | SecurityException e) {
                 log.error(e);
