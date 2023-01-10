@@ -427,7 +427,7 @@
 			<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical" translateLabels="false">MD_CREATOR</hierarchicalField>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
 			<geoField>WKT_COORDS</geoField>
-            <field groupToLength="1" alwaysApplyToUnfilteredHits="true">MD_PERSON</field>
+            <field groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_PERSON</field>
 			<!-- initialElementNumber: sets the initial number of facet elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>

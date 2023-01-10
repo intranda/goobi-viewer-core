@@ -939,7 +939,7 @@ public class SearchFacets implements Serializable {
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
 
         for (String field : allFacetFields) {
-            if (availableFacets.containsKey(field)) {
+            if (availableFacets.containsKey(field) && !DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget(field)) {
                 ret.put(field, availableFacets.get(field));
             }
         }

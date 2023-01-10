@@ -2673,6 +2673,17 @@ public class Configuration extends AbstractConfiguration {
        String value = getPropertyForFacetField(facetField, "[@alwaysApplyToUnfilteredHits]", "false");
        return Boolean.valueOf(value);
    }
+   
+   /**
+   *
+   * @param facetField
+   * @return
+   * @should return correct value
+   */
+  public boolean isFacetFieldSkipInWidget(String facetField) {
+      String value = getPropertyForFacetField(facetField, "[@skipInWidget]", "false");
+      return Boolean.valueOf(value);
+  }
 
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.

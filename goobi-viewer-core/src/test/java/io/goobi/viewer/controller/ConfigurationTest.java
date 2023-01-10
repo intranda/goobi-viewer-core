@@ -1765,6 +1765,15 @@ public class ConfigurationTest extends AbstractTest {
     public void isAlwaysApplyFacetFieldToUnfilteredHits_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits("MD_PERSON"));
     }
+    
+    /**
+     * @see Configuration#isFacetFieldSkipInWidget(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isFacetFieldSkipInWidget_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget("MD_PERSON"));;
+    }
 
     @Test
     public void getSortOrderTest() {
@@ -3217,5 +3226,4 @@ public class ConfigurationTest extends AbstractTest {
     public void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
     }
-
 }
