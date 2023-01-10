@@ -5381,7 +5381,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public String getActiveMQConfigPath() {
-        return getLocalString("activeMQ", getConfigLocalPath() + "viewer_activemq.xml");
+        return getLocalString("activeMQ.configuration", getConfigLocalPath() + "viewer_activemq.xml");
     }
 
     public int getNumberOfParallelMessages() {

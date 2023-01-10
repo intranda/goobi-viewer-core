@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,17 +38,21 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.ReturnValue;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.viewer.Dataset;
+import jakarta.mail.MessagingException;
 
 public class PdfMessageHandler implements MessageHandler<ReturnValue> {
 
     @Override
     public ReturnValue call(ViewerMessage message) {
-
 
         String pi = message.getPi();
 
@@ -62,15 +65,23 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
         }
 
         String cleanedPi = StringTools.cleanUserGeneratedData(pi);
-        String cleanedLogId = StringTools.cleanUserGeneratedData(logId);
 
-        String title = cleanedPi + "_" + cleanedLogId;
+        String id = DownloadJob.generateDownloadJobId("pdf", pi, logId);
 
         try {
+            DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(id);
+            // save pdf file
             Dataset work = DataFileTools.getDataset(cleanedPi);
-            Path pdfFile = Paths.get("/tmp/tmp.pdf"); // TODO
+
+            Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension()).toPath();
             createPdf(work, pdfFile);
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException e) {
+            // inform user and update DownloadJob
+
+            downloadJob.setStatus(JobStatus.READY);
+            downloadJob.notifyObservers(JobStatus.READY, "");
+            DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+
+        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException|MessagingException e) {
 
             return ReturnValue.ERROR;
         }

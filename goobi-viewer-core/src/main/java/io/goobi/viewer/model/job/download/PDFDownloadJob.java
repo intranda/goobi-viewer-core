@@ -28,12 +28,6 @@ import java.time.LocalDateTime;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -205,21 +199,8 @@ public class PDFDownloadJob extends DownloadJob {
      * @return a int.
      */
     public static int getPDFJobsInQueue(String identifier) {
-        StringBuilder url = new StringBuilder();
-        url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-        url.append("/viewerpdf/numJobsUntil/");
-        url.append(identifier);
-        ResponseHandler<String> handler = new BasicResponseHandler();
-        HttpGet httpGet = new HttpGet(url.toString());
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            CloseableHttpResponse response = httpclient.execute(httpGet);
-            String ret = handler.handleResponse(response);
-            logger.trace("TaskManager response: {}", ret);
-            return Integer.parseInt(ret);
-        } catch (Exception e) {
-            logger.warn("Error getting response from TaskManager: {}", e.toString());
-            return -1;
-        }
+        // TODO replace it with message count
+        return 1;
     }
 
     /* (non-Javadoc)
