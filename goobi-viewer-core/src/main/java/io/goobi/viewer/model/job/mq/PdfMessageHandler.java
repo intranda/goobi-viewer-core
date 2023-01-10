@@ -23,22 +23,33 @@
 package io.goobi.viewer.model.job.mq;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.ReturnValue;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.viewer.Work;
 
 public class PdfMessageHandler implements MessageHandler<ReturnValue> {
 
     @Override
     public ReturnValue call(ViewerMessage message) {
 
-        System.out.println("handle pdf download");
 
         String pi = message.getPi();
 
@@ -55,30 +66,35 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
 
         String title = cleanedPi + "_" + cleanedLogId;
 
+        try {
+            Work work = DataFileTools.getWorkData(cleanedPi);
+            Path pdfFile = Paths.get("/tmp/tmp.pdf"); // TODO
+            createPdf(work, pdfFile);
+        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException e) {
+
+            return ReturnValue.ERROR;
+        }
+
         return ReturnValue.FINISH;
     }
 
-    private File createPdf(File metsFile, File imageFolder, File inputPdfFolder, File altoFolder, File exportFile) throws IOException,
-            ContentLibException {
-        //        try (FileOutputStream fos = new FileOutputStream(exportFile)) {
-        //            Map<String, String> params = new HashMap<String, String>();
-        //            params.put("metsFile", metsFile.getAbsolutePath());
-        //            if (imageFolder != null) {
-        //                params.put("imageSource", imageFolder.toURI().toString());
-        //            }
-        //            if (inputPdfFolder != null && PdfCreationConfiguration.getInstance().isUsePdfDirectory()) {
-        //                params.put("pdfSource", inputPdfFolder.toURI().toString());
-        //            }
-        //            if (altoFolder != null && PdfCreationConfiguration.getInstance().isUseAltoDirectory()) {
-        //                params.put("altoSource", altoFolder.toURI().toString());
-        //            }
-        //            params.put("metsFileGroup", "LOCAL");
-        //            params.put("goobiMetsFile", "true");
-        //            GetMetsPdfAction action = new GetMetsPdfAction();
-        //            logger.debug("Calling GetMetsPdfAction with parameters: " + params);
-        //            action.writePdf(params, fos);
-        //        }
-        return exportFile;
+    private void createPdf(Work work, Path pdfFile) throws IOException, ContentLibException {
+        try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
+            Map<String, String> params = new HashMap<>();
+            params.put("metsFile", work.getMetadataFilePath().toString());
+            params.put("imageSource", work.getMediaFolderPath().toUri().toString());
+
+            if (work.getPdfFolderPath() != null) {
+                params.put("pdfSource", work.getPdfFolderPath().toUri().toString());
+            }
+            if (work.getAltoFolderPath() != null) {
+                params.put("altoSource", work.getAltoFolderPath().toUri().toString());
+            }
+            params.put("metsFileGroup", "LOCAL");
+            params.put("goobiMetsFile", "true");
+            GetMetsPdfAction action = new GetMetsPdfAction();
+            action.writePdf(params, fos);
+        }
     }
 
     @Override
