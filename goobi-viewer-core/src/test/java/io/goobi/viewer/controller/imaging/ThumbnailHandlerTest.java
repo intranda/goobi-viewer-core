@@ -43,7 +43,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.goobi.viewer.model.viewer.StructElement;

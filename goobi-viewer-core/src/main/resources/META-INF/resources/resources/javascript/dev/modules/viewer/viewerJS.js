@@ -321,7 +321,7 @@ var viewerJS = (function () {
 		    })
 		})
     }
-    
+   
     viewer.initTinyMCE  = function(event) {
         //trigger initializazion if either no event was given or if it is a jsf event in status 'success'
         if(!event || event.status == "success") {            
@@ -594,6 +594,14 @@ var viewerJS = (function () {
 	    } catch(error) {
 	        //no bootstrap defined
 	    }
+	});
+	
+	
+    // CONTENT ITEMS JS DRAFT
+	$(document).ready(function(){
+		if(typeof SimpleLightbox != "undefined" ) {			
+			new SimpleLightbox({elements: '[data-target="imageLightbox"]'});
+		}
 	});
 
 

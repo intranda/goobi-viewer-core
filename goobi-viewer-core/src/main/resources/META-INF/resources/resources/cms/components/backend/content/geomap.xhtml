@@ -1,0 +1,65 @@
+<ui:composition xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+
+	<composite:interface>
+		<composite:attribute name="contentItem" required="true"/>
+			
+	</composite:interface>
+
+	<composite:implementation>
+
+		<div class="admin__content-component-input-group">
+
+			<!-- LABEL -->
+			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.mapId}">
+				<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
+			</ui:fragment>
+			
+			<h:panelGroup layout="block" id="contentGeoMap" styleClass="admin__content-component-input-field">
+			
+			    <h:panelGroup id="contentGeoMapGroup" styleClass="admin__content-component-input-group" layout="block">
+			           
+			            <!-- AREA FOR AJAX REFRESH -->
+			            <h:panelGroup layout="block" id="geoMapGroup" styleClass="admin__content-component-input-field">
+			                <!-- VALIDATION MESSAGE -->
+			                <div class="cms-module__option-message">
+			                    <h:messages for="geoMapSelect" 
+			                        infoClass="cms-module__option-message-status success" 
+			                        warnClass="cms-module__option-message-status warning"
+			                        errorClass="cms-module__option-message-status danger" />
+			
+			                    <div class="cms-module__option-message-mark">
+			                        <i class="fa fa-check" aria-hidden="true"></i>
+			                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+			                    </div>
+			                </div>
+			                
+			                <!-- SELECT MENU -->
+			                <div class="custom-control custom-control--select">
+			                    <h:selectOneMenu 
+			                        id="geoMapSelect" 
+			                        styleClass="form-control" 
+			                        value="#{cc.attrs.contentItem.content.mapId}">
+			                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
+			                        <f:selectItems 
+			                            value="#{geoMapBean.allMaps}"
+			                            var="map"
+			                            itemValue="#{map.id}"
+			                            itemLabel="#{map.title}" />
+			                        <f:ajax event="change" render="geoMapGroup" />
+			                    </h:selectOneMenu>
+			                </div>
+			            </h:panelGroup>
+			    </h:panelGroup>
+			</h:panelGroup>
+		</div>
+
+	</composite:implementation>
+</ui:composition>

@@ -31,8 +31,8 @@ import org.junit.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.SimpleMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
 import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 

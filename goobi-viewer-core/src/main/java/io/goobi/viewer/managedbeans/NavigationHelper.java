@@ -77,8 +77,8 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -465,7 +465,7 @@ public class NavigationHelper implements Serializable {
      * @param pageName a {@link java.lang.String} object.
      */
     public void setCurrentPageAdmin(String pageName) {
-        breadcrumbBean.resetBreadcrumbs();
+        breadcrumbBean.resetBreadcrumbs(false);
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
             PageType pageType = PageType.getByName(pageName);
@@ -473,11 +473,30 @@ public class NavigationHelper implements Serializable {
                 this.currentPage = PageType.admin.name();
             } else {
                 this.currentPage = pageType.name();
+                setAdminBreadcrumbs(pageType);
             }
         } else {
             this.currentPage = "adminAllUsers";
         }
 
+    }
+    
+    public void setAdminBreadcrumbs(PageType pageType) {
+        
+        PageType breadcrumbType = pageType;
+        List<LabeledLink> links = new ArrayList<>();
+        while(breadcrumbType != null) {
+            links.add(
+                    new LabeledLink(ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale),
+                            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + breadcrumbType.getName(),
+                            0));
+            breadcrumbType = breadcrumbType.getParent();
+        }
+        Collections.reverse(links);
+        for (int i = 0; i < links.size(); i++) {
+            links.get(i).setWeight(i);
+        }
+        links.forEach(link -> breadcrumbBean.updateBreadcrumbs(link));
     }
 
     /**

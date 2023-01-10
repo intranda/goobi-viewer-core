@@ -649,7 +649,7 @@ public class Bookmark implements Serializable {
                             SearchHit.HitType.DOCSTRCT, 0, BeanUtils.getImageDeliveryBean().getThumbs());
                     this.browseElement = sh.getBrowseElement();
                 }
-            } catch (PresentationException | DAOException | ViewerConfigurationException e) {
+            } catch (PresentationException e) {
                 throw new IndexUnreachableException(e.toString());
             }
         }

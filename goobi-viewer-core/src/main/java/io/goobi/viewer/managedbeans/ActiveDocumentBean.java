@@ -78,7 +78,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
 import io.goobi.viewer.model.job.download.DownloadJob;

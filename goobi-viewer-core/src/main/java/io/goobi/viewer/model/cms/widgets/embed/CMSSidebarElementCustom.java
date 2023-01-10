@@ -21,23 +21,25 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
-import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Wrapper element for custom (user created) sidebar widgets. Linked to an instance of {@link CustomSidebarWidget} providing the data to display
+ * 
  * @author florian
  *
  */
 @Entity
 @DiscriminatorValue("CUSTOM")
 public class CMSSidebarElementCustom extends CMSSidebarElement {
+
+    private static final long serialVersionUID = -8790669781907905873L;
 
     @JoinColumn(name = "custom_widget_id")
     private CustomSidebarWidget widget;
@@ -50,6 +52,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
 
     /**
      * Default constructor for a {@link CustomSidebarWidget} providing the data and an owning {@link CMSPage}
+     * 
      * @param widget
      * @param owner
      */
@@ -57,18 +60,31 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
         super(widget.getType(), owner);
         this.widget = widget;
     }
+
+    public CMSSidebarElementCustom(CustomSidebarWidget widget, CMSPageTemplate owner) {
+        super(widget.getType(), owner);
+        this.widget = widget;
+    }
+
     /**
      * Cloning constructor with a CMSPage to set as owner
+     * 
      * @param orig
      * @param owner
      */
     public CMSSidebarElementCustom(CMSSidebarElementCustom orig, CMSPage owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
+        this.widget = orig.widget;
+    }
+
+    public CMSSidebarElementCustom(CMSSidebarElementCustom orig, CMSPageTemplate owner) {
+        super(orig, owner);
         this.widget = orig.widget;
     }
 
     /**
      * Get the {@link CustomSidebarWidget} providing the data
+     * 
      * @return the widget
      */
     public CustomSidebarWidget getWidget() {
@@ -85,6 +101,7 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
 
     /**
      * Get the title of the underlying widget
+     * 
      * @return the title
      */
     @Override

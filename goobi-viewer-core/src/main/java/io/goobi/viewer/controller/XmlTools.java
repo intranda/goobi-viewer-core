@@ -34,12 +34,18 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -52,8 +58,6 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPathBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -66,7 +70,7 @@ import io.goobi.viewer.model.xml.XMLError;
 public class XmlTools {
 
     private static final Logger logger = LogManager.getLogger(XmlTools.class);
-    
+
     private XmlTools() {
     }
 
@@ -169,6 +173,7 @@ public class XmlTools {
         try {
             byteArray = string.getBytes(encoding);
         } catch (UnsupportedEncodingException e) {
+            logger.trace(e.getMessage());
         }
         ByteArrayInputStream baos = new ByteArrayInputStream(byteArray);
 
@@ -237,6 +242,10 @@ public class XmlTools {
         return retList;
     }
 
+    public static Optional<Element> evaluateToFirstElement(String expr, Element element, List<Namespace> namespaces) {
+        return evaluateToElements(expr, element, namespaces).stream().findFirst();
+    }
+
     /**
      * XPath evaluation with a given return type filter.
      *
@@ -257,6 +266,32 @@ public class XmlTools {
         XPathExpression<Object> xpath = builder.compileWith(XPathFactory.instance());
         return xpath.evaluate(parent);
 
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> evaluateString(String expr, Object parent, List<Namespace> namespaces) {
+        XPathBuilder<Object> builder = new XPathBuilder(expr.trim().replace("\n", ""), Filters.element().or(Filters.attribute()));
+
+        if (namespaces != null && !namespaces.isEmpty()) {
+            builder.setNamespaces(namespaces);
+        }
+
+        XPathExpression<Object> xpath = builder.compileWith(XPathFactory.instance());
+        return xpath.evaluate(parent).stream().map(object -> {
+            if (object instanceof Element) {
+                return ((Element) object).getText();
+            } else if (object instanceof Attribute) {
+                return ((Attribute) object).getValue();
+            } else {
+                return null;
+            }
+        })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    public static Optional<String> evaluateToFirstElement(String expr, Object parent, List<Namespace> namespaces) {
+        return evaluateString(expr, parent, namespaces).stream().findFirst();
     }
 
     /**

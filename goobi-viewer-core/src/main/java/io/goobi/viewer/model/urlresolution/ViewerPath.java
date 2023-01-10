@@ -32,14 +32,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * Stores the url path of a http request organized by its logical parts so application url, application name, view type and parameter urls can be
  * retrieved independendly. If applicable, the {@link io.goobi.viewer.model.viewer.PageType} of the requested view and an associated
- * {@link io.goobi.viewer.model.cms.CMSPage} are also referenced
+ * {@link io.goobi.viewer.model.cms.pages.CMSPage} are also referenced
  * <p>
  * This information helps calling the correct url in different contexts and is also used to redirect to CMSPages and store a brief view history to
  * allow returning to a previous view The entire url always consists of the properties {@link #applicationUrl} + {@link #pagePath} +

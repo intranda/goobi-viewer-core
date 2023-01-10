@@ -165,7 +165,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getName() {
         return name;
     }
-    
+
     public String getField() {
         return field;
     }
@@ -175,7 +175,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * getLabel.
      * </p>
      *
-     * @return <code>CMSCollection</code> translation, if available; name otherwise
+     * @return <code>CMSCollection</code> translation, if ava ilable; name otherwise
      */
     public String getLabel() {
         if (getInfo() != null) {

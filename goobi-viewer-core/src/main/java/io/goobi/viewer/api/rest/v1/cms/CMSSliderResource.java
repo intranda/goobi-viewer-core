@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
@@ -38,10 +38,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -53,14 +53,12 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.iiif.search.parser.SolrSearchParser;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -86,7 +84,6 @@ public class CMSSliderResource {
     public CMSSliderResource(CMSSlider slider) {
         this.slider = slider;
     }
-
 
     @GET
     @javax.ws.rs.Path("/slides")
@@ -115,18 +112,18 @@ public class CMSSliderResource {
      */
     private List<URI> getPages(List<String> categories) {
         return categories.stream()
-        .map(this::getCategoryById)
-        .filter(category -> category != null)
-        .flatMap(category -> getPagesForCategory(category).stream())
-        .map(this::getApiUrl)
-        .collect(Collectors.toList());
+                .map(this::getCategoryById)
+                .filter(Objects::nonNull)
+                .flatMap(category -> getPagesForCategory(category).stream())
+                .map(this::getApiUrl)
+                .collect(Collectors.toList());
     }
 
     private CMSCategory getCategoryById(String idString) {
         try {
             Long id = Long.parseLong(idString);
             return DataManager.getInstance().getDao().getCategory(id);
-        } catch(NumberFormatException | DAOException e) {
+        } catch (NumberFormatException | DAOException e) {
             logger.error(e.toString(), e);
             return null;
         }
@@ -145,9 +142,9 @@ public class CMSSliderResource {
     private List<URI> getMedia(List<String> categories) {
         return categories.stream()
                 .map(this::getCategoryById)
-                .filter(category -> category != null)
+                .filter(Objects::nonNull)
                 .flatMap(category -> getMediaForCategory(category).stream())
-                .sorted( (item1,item2) -> Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder()))
+                .sorted((item1, item2) -> Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder()))
                 .map(this::getApiUrl)
                 .collect(Collectors.toList());
     }
@@ -166,15 +163,20 @@ public class CMSSliderResource {
     }
 
     private URI getApiUrl(CMSPage page) {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager()
-                .map(urls -> urls.path("/cms/pages/{pageId}").params(page.getId()).buildURI()).orElse(null);
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path("/cms/pages/{pageId}").params(page.getId()).buildURI())
+                .orElse(null);
     }
 
     private URI getApiUrl(CMSMediaItem media) {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager()
-                .map(urls -> urls.path(CMS_MEDIA, CMS_MEDIA_ITEM).params(media.getId()).buildURI()).orElse(null);
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(CMS_MEDIA, CMS_MEDIA_ITEM).params(media.getId()).buildURI())
+                .orElse(null);
     }
-
 
     /**
      * @param solrQuery
@@ -189,12 +191,15 @@ public class CMSSliderResource {
 
         List<URI> manifests = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
-        if(urls == null) {
+        if (urls == null) {
             return Collections.emptyList();
         }
 
         List<StringPair> sortFields = StringUtils.isBlank(sortField) ? null : SearchHelper.parseSortString(sortField, null);
-        SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().search(solrQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI)).getResults();
+        SolrDocumentList solrDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(solrQuery, 0, maxResults, sortFields, null, Arrays.asList(SolrConstants.PI))
+                .getResults();
         for (SolrDocument doc : solrDocs) {
             String pi = (String) SolrTools.getSingleFieldValue(doc, SolrConstants.PI);
             URI uri = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST).params(pi).query("mode", "simple").buildURI();
@@ -211,13 +216,13 @@ public class CMSSliderResource {
     private static List<URI> getCollections(List<String> collectionNames) {
         List<URI> collections = new ArrayList<>();
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
-        if(urls == null) {
+        if (urls == null) {
             return Collections.emptyList();
         }
         for (String collectionName : collectionNames) {
             String[] nameParts = collectionName.split("/");
-            if(nameParts.length != 2) {
-                logger.error("Collection name for slider source has wrong format: " + collectionName);
+            if (nameParts.length != 2) {
+                logger.error("Collection name for slider source has wrong format: {}", collectionName);
                 continue;
             }
             String field = nameParts[0];

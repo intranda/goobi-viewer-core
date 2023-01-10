@@ -149,8 +149,7 @@ public class TocFunctionality implements Functionality {
     private StructElement createDocStruct() throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotBlank(getPi())) {
             long topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(getPi());
-            StructElement struct = new StructElement(topDocumentIddoc);
-            return struct;
+            return new StructElement(topDocumentIddoc);
         }
 
         return new StructElement();
@@ -164,10 +163,10 @@ public class TocFunctionality implements Functionality {
      * @throws ViewerConfigurationException
      */
     private TOC createToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        TOC toc = new TOC();
-        toc.generate(getDocStruct(), false, getDocStruct().getMetadataValue(SolrConstants.MIMETYPE), currentPage);
-        toc.setCurrentPage(currentPage);
-        return toc;
+        TOC ret = new TOC();
+        ret.generate(getDocStruct(), false, getDocStruct().getMetadataValue(SolrConstants.MIMETYPE), currentPage);
+        ret.setCurrentPage(currentPage);
+        return ret;
     }
 
     /**

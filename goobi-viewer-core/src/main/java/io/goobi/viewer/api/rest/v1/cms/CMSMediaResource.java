@@ -99,8 +99,8 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -150,13 +150,13 @@ public class CMSMediaResource {
         if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
         }
+
         List<CMSMediaItem> items = DataManager.getInstance()
                 .getDao()
                 .getAllCMSMediaItems()
                 .stream()
-                .filter(
-                        item -> tagList.isEmpty() ||
-                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
+                .filter(item -> tagList.isEmpty() ||
+                        item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(tagList::contains))
                 .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
                 .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
                 .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
@@ -384,9 +384,10 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
-            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
-            throws DAOException {
+    public Response
+            uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
+                    @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
+                    throws DAOException {
 
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
@@ -489,7 +490,7 @@ public class CMSMediaResource {
      * </p>
      *
      * @param filePath a {@link java.nio.file.Path} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public CMSMediaItem createMediaItem(Path filePath) {
         CMSMediaItem item = new CMSMediaItem();

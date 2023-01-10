@@ -89,7 +89,7 @@ public class AdminBean implements Serializable {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(AdminBean.class);
 
-    static final int DEFAULT_ROWS_PER_PAGE = 15;
+    static final int DEFAULT_ROWS_PER_PAGE = 50;
 
     private static final Object TRANSLATION_LOCK = new Object();
 
@@ -121,7 +121,7 @@ public class AdminBean implements Serializable {
 
     private Role memberRole;
 
-    private Part uploadedAvatarFile;
+    private transient Part uploadedAvatarFile;
 
     /**
      * <p>
@@ -179,7 +179,7 @@ public class AdminBean implements Serializable {
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelUsers.setFilters("firstName_lastName_nickName_email");
     }
-
+//
     // User
 
     /**

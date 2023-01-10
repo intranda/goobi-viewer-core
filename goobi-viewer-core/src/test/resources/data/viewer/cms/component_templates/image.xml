@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>image</name>
+	</jsfComponent>
+	<label>cms_component__image__label</label>
+	<description>cms_component__image__desc</description>
+	<icon>cms/components/frontend/component/icon/image.png</icon>
+	<content>
+		<item id="image">
+			<label>cms_content__image__label</label>
+			<description>cms_content__image__desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>media</name>
+			</jsfComponent>
+		</item>
+	</content>
+	<attribute name="width" label="cms__component_attribute__width">
+		<value>25</value>
+		<value>50</value>
+		<value>75</value>
+		<value default="true">100</value>
+	</attribute>
+	<attribute name="lightbox" label="cms__component_attribute__lightbox" type="boolean">
+	</attribute>
+</component>

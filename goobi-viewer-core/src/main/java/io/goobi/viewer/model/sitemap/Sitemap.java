@@ -49,7 +49,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;

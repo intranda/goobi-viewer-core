@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -63,22 +64,16 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
-import io.goobi.viewer.model.cms.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion.CMSPageStatus;
-import io.goobi.viewer.model.cms.CMSPageTemplateEnabled;
-import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSingleRecordNote;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSSlider.SourceType;
 import io.goobi.viewer.model.cms.CMSStaticPage;
-import io.goobi.viewer.model.cms.CMSTemplateManager;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
@@ -127,10 +122,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
         String webContentPath = webContent.toURI().toString();
-        //        if (webContentPath.startsWith("file:/")) {
-        //            webContentPath = webContentPath.replace("file:/", "");
-        //        }
-        CMSTemplateManager.getInstance(webContentPath, null);
     }
 
     // Users
@@ -412,6 +403,14 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
         Assert.assertNotNull(userGroup);
         Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, null, null));
+
+        User user = DataManager.getInstance().getDao().getUser(2);
+        Assert.assertNotNull(user);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, null));
+
+        Role role = DataManager.getInstance().getDao().getRole(1);
+        Assert.assertNotNull(role);
+        Assert.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, role));
     }
 
     @Test
@@ -1237,8 +1236,28 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return correct row for name
+     */
     @Test
-    public void getBookmarkListByNameTest() throws DAOException {
+    public void getBookmarkList_shouldReturnCorrectRowForName() throws Exception {
+        BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList("bookmark list 1 name", null);
+        Assert.assertNotNull(bl);
+        Assert.assertEquals(Long.valueOf(1), bl.getId());
+        Assert.assertNotNull(bl.getOwner());
+        Assert.assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        Assert.assertEquals("bookmark list 1 name", bl.getName());
+        Assert.assertEquals("bookmark list 1 desc", bl.getDescription());
+        Assert.assertEquals(2, bl.getItems().size());
+    }
+
+    /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return correct row for name and user
+     */
+    @Test
+    public void getBookmarkList_shouldReturnCorrectRowForNameAndUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
         Assert.assertNotNull(user);
 
@@ -1253,6 +1272,15 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getBookmarkList(String,User)
+     * @verifies return null if no result found
+     */
+    @Test
+    public void getBookmarkList_shouldReturnNullIfNoResultFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getBookmarkList("notfound", null));
+    }
+
+    /**
      * @see JPADAO#getBookmarkListByShareKey(String)
      * @verifies return correct row
      */
@@ -1261,6 +1289,24 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkListByShareKey("c548e2ea6915acbfa17c3dc6f453f5b1");
         Assert.assertNotNull(bl);
         Assert.assertEquals(Long.valueOf(1), bl.getId());
+    }
+
+    /**
+     * @see JPADAO#getBookmarkListByShareKey(String)
+     * @verifies return null if no result found
+     */
+    @Test
+    public void getBookmarkListByShareKey_shouldReturnNullIfNoResultFound() throws Exception {
+        Assert.assertNull(DataManager.getInstance().getDao().getBookmarkListByShareKey("123"));
+    }
+
+    /**
+     * @see JPADAO#getBookmarkListByShareKey(String)
+     * @verifies throw IllegalArgumentException if shareKey empty
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getBookmarkListByShareKey_shouldThrowIllegalArgumentExceptionIfShareKeyEmpty() throws Exception {
+        DataManager.getInstance().getDao().getBookmarkListByShareKey("");
     }
 
     @Test
@@ -1513,10 +1559,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getLicenseTypes_shouldSortResultsCorrectly() throws Exception {
+        // asc
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", true, null);
         Assert.assertEquals(2, ret.size());
         Assert.assertEquals(Long.valueOf(6), ret.get(0).getId());
         Assert.assertEquals(Long.valueOf(4), ret.get(1).getId());
+        // desc
+        ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", false, null);
+        Assert.assertEquals(2, ret.size());
+        Assert.assertEquals(Long.valueOf(1), ret.get(0).getId());
+        Assert.assertEquals(Long.valueOf(2), ret.get(1).getId());
     }
 
     /**
@@ -1531,6 +1583,41 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, null, true, filterMap);
         Assert.assertEquals(1, ret.size());
         Assert.assertEquals("license type 2 name", ret.get(0).getName());
+    }
+
+    /**
+     * @see JPADAO#getCoreLicenseTypes(int,int,String,boolean,Map)
+     * @verifies sort results correctly
+     */
+    @Test
+    public void getCoreLicenseTypes_shouldSortResultsCorrectly() throws Exception {
+        // TODO add more core types to test DB
+
+        // asc
+        List<LicenseType> ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, "name", true, null);
+        Assert.assertEquals(1, ret.size());
+        Assert.assertEquals(Long.valueOf(5), ret.get(0).getId());
+        // desc
+        ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, "name", false, null);
+        Assert.assertEquals(1, ret.size());
+        Assert.assertEquals(Long.valueOf(5), ret.get(0).getId());
+    }
+
+    /**
+     * @see JPADAO#getCoreLicenseTypes(int,int,String,boolean,Map)
+     * @verifies filter results correctly
+     */
+    @Test
+    public void getCoreLicenseTypes_shouldFilterResultsCorrectly() throws Exception {
+        Map<String, String> filterMap = new HashMap<>();
+        filterMap.put("name", "cms");
+        filterMap.put("description", "cms");
+        List<LicenseType> ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, null, true, filterMap);
+        Assert.assertEquals(1, ret.size());
+        Assert.assertEquals("CMS", ret.get(0).getName());
+
+        filterMap.put("description", "notfound");
+        Assert.assertEquals(0, DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, null, true, filterMap).size());
     }
 
     /**
@@ -1736,22 +1823,13 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Arrays.asList("template_simple", "template_two"))
-                        .size());
-        // Wrong template
-        Assert.assertEquals(0,
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Collections.singletonList("wrong_tempalte"))
+                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0))
                         .size());
         // Wrong date range
         Assert.assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0),
-                                Collections.singletonList("template_simple"))
+                        .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0))
                         .size());
     }
 
@@ -1779,20 +1857,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
-                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Arrays.asList("template_simple", "template_two")));
-        // Wrong template
-        Assert.assertEquals(0,
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0),
-                                Collections.singletonList("wrong_template")));
-        // Wrong date range
-        Assert.assertEquals(0,
-                DataManager.getInstance()
-                        .getDao()
-                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0),
-                                Collections.singletonList("template_simple")));
+                        .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0)));
     }
 
     /**
@@ -1804,140 +1869,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSPage page = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord("PI_1");
         Assert.assertNotNull(page);
         Assert.assertEquals(Long.valueOf(3), page.getId());
-    }
-
-    /**
-     * @see JPADAO#getCMSPage(long)
-     * @verifies return correct page
-     */
-    @Test
-    public void getCMSPage_shouldReturnCorrectPage() throws Exception {
-        CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
-        Assert.assertNotNull(page);
-        Assert.assertEquals(Long.valueOf(1), page.getId());
-        Assert.assertEquals("template_simple", page.getTemplateId());
-        Assert.assertNotNull(page.getDateCreated());
-
-        Assert.assertEquals(2, page.getLanguageVersions().size());
-        Assert.assertEquals("de", page.getLanguageVersions().get(0).getLanguage());
-        Assert.assertEquals(CMSPageStatus.FINISHED, page.getLanguageVersions().get(0).getStatus());
-        Assert.assertEquals("Titel 1", page.getLanguageVersions().get(0).getTitle());
-        Assert.assertEquals("Menütitel 1", page.getLanguageVersions().get(0).getMenuTitle());
-        boolean lv1found = false;
-        for (CMSPageLanguageVersion lv : page.getLanguageVersions()) {
-            if (lv.getId() != null && lv.getId() == 1) {
-                lv1found = true;
-                //				Assert.assertEquals(3, page.getLanguageVersions().get(1).getContentItems().size());
-            }
-        }
-        Assert.assertTrue(lv1found);
-        Assert.assertEquals("C1", page.getLanguageVersions().get(0).getContentItems().get(0).getItemId());
-        Assert.assertEquals(CMSContentItemType.HTML, page.getLanguageVersions().get(0).getContentItems().get(0).getType());
-    }
-
-    /**
-     * @see JPADAO#addCMSPage(CMSPage)
-     * @verifies add page correctly
-     */
-    @Test
-    public void addCMSPage_shouldAddPageCorrectly() throws Exception {
-        CMSPage page = new CMSPage();
-        page.setTemplateId("template_id");
-        page.setDateCreated(LocalDateTime.now());
-        page.setPublished(true);
-        page.setUseDefaultSidebar(false);
-
-        CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
-        page.getCategories().add(cClass);
-
-        CMSPageLanguageVersion version = new CMSPageLanguageVersion();
-        version.setLanguage("en");
-        version.setOwnerPage(page);
-        version.setTitle("title");
-        version.setMenuTitle("menutitle");
-        version.setStatus(CMSPageStatus.REVIEW_PENDING);
-        page.getLanguageVersions().add(version);
-
-        CMSContentItem item = new CMSContentItem();
-        item.setOwnerPageLanguageVersion(version);
-        item.setItemId("I1");
-        item.setType(CMSContentItemType.SOLRQUERY);
-        item.setElementsPerPage(3);
-        item.setSolrQuery("PI:PPN517154005");
-        item.setSolrSortFields("SORT_TITLE,DATECREATED");
-        version.getContentItems().add(item);
-
-        CMSCategory news = DataManager.getInstance().getDao().getCategoryByName("news");
-        CMSCategory other = DataManager.getInstance().getDao().getCategoryByName("other");
-        item.addCategory(news);
-        item.addCategory(other);
-
-        // TODO add sidebar elements
-
-        Assert.assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
-        Assert.assertNotNull(page.getId());
-
-        Assert.assertEquals(4, DataManager.getInstance().getDao().getAllCMSPages().size());
-        CMSPage page2 = DataManager.getInstance().getDao().getCMSPage(page.getId());
-        Assert.assertNotNull(page2);
-        Assert.assertEquals(page.getTemplateId(), page2.getTemplateId());
-        Assert.assertEquals(page.getDateCreated(), page2.getDateCreated());
-        Assert.assertEquals(1, page2.getCategories().size());
-        Assert.assertEquals(cClass, page2.getCategories().get(0));
-        Assert.assertEquals(1, page.getLanguageVersions().size());
-        Assert.assertEquals(version.getLanguage(), page.getLanguageVersions().get(0).getLanguage());
-        Assert.assertEquals(version.getTitle(), page.getLanguageVersions().get(0).getTitle());
-        Assert.assertEquals(version.getMenuTitle(), page.getLanguageVersions().get(0).getMenuTitle());
-        Assert.assertEquals(version.getStatus(), page.getLanguageVersions().get(0).getStatus());
-        Assert.assertEquals(1, page.getLanguageVersions().get(0).getContentItems().size());
-        Assert.assertEquals(item.getItemId(), page.getLanguageVersions().get(0).getContentItems().get(0).getItemId());
-        Assert.assertEquals(item.getType(), page.getLanguageVersions().get(0).getContentItems().get(0).getType());
-        Assert.assertEquals(item.getElementsPerPage(), page.getLanguageVersions().get(0).getContentItems().get(0).getElementsPerPage());
-        Assert.assertEquals(item.getSolrQuery(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrQuery());
-        Assert.assertEquals(item.getSolrSortFields(), page.getLanguageVersions().get(0).getContentItems().get(0).getSolrSortFields());
-        Assert.assertEquals(2, item.getCategories().size());
-        Assert.assertTrue(item.getCategories().contains(news));
-    }
-
-    /**
-     * @see JPADAO#updateCMSPage(CMSPage)
-     * @verifies update page correctly
-     */
-    @Test
-    public void updateCMSPage_shouldUpdatePageCorrectly() throws Exception {
-        CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
-        page.createMissingLanguageVersions(Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN, Locale.FRENCH }));
-        Assert.assertNotNull(page);
-        page.getLanguageVersion("de").setTitle("Deutscher Titel");
-        page.getLanguageVersion("en").setTitle("English title");
-        page.getLanguageVersion("fr").setTitle("Titre français");
-        page.getLanguageVersions().remove(0);
-        page.getProperty("TEST_PROPERTY").setValue("true");
-
-        CMSCategory cClass = DataManager.getInstance().getDao().getCategoryByName("class");
-        page.getCategories().add(cClass);
-
-        LocalDateTime now = LocalDateTime.now();
-        page.setDateUpdated(now);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
-
-        CMSPage page2 = DataManager.getInstance().getDao().getCMSPage(1);
-        Assert.assertNotNull(page2);
-        Assert.assertEquals(page.getDateUpdated(), page2.getDateUpdated());
-        Assert.assertEquals("English title", page2.getLanguageVersion("en").getTitle());
-        Assert.assertEquals("Titre français", page2.getLanguageVersion("fr").getTitle());
-        Assert.assertEquals(2, page2.getLanguageVersions().size());
-        Assert.assertEquals(3, page2.getCategories().size());
-        Assert.assertTrue(page.getCategories().contains(cClass));
-        Assert.assertEquals(now, page2.getDateUpdated());
-        Assert.assertTrue(page2.getProperty("TEST_PROPERTY").getBooleanValue());
-
-        page.getLanguageVersion("fr").setTitle("");
-        page.removeCategory(cClass);
-        Assert.assertTrue(DataManager.getInstance().getDao().updateCMSPage(page));
-        Assert.assertEquals("", page.getLanguageVersion("fr").getTitle());
-        Assert.assertEquals(2, page.getCategories().size(), 0);
-        Assert.assertFalse(page.getCategories().contains(cClass));
     }
 
     /**
@@ -2349,9 +2280,9 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
         List<String> subThemes = Arrays.asList(new String[] { "s1" });
-        List<String> templates = Arrays.asList(new String[] { "t1", "t2" });
+        List<Long> templates = Arrays.asList(new Long[] { 1l, 2l });
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, subThemes, categories);
 
@@ -2363,8 +2294,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals("c2", params.get("cat2"));
         Assert.assertEquals("c3", params.get("cat3"));
         Assert.assertEquals("s1", params.get("thm1"));
-        Assert.assertEquals("t1", params.get("tpl1"));
-        Assert.assertEquals("t2", params.get("tpl2"));
+        Assert.assertEquals(1l, params.get("tpl1"));
+        Assert.assertEquals(2l, params.get("tpl2"));
 
     }
 
@@ -2374,7 +2305,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<String> categories = Arrays.asList(new String[] { "c1", "c2", "c3" });
         List<String> subThemes = Arrays.asList(new String[] { "s1" });
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String query = JPADAO.createCMSPageFilter(params, "p", null, subThemes, categories);
 
@@ -2391,17 +2322,17 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void testCreateCMSPageFilter_createValidQueryWithOneParam() throws AccessDeniedException {
 
-        List<String> templates = Arrays.asList(new String[] { "t1", "t2" });
+        List<Long> templates = Arrays.asList(new Long[] { 1l, 2l });
 
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String query = JPADAO.createCMSPageFilter(params, "p", templates, null, null);
 
         String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId)";
         Assert.assertEquals(shouldQuery, query);
 
-        Assert.assertEquals("t1", params.get("tpl1"));
-        Assert.assertEquals("t2", params.get("tpl2"));
+        Assert.assertEquals(1l, params.get("tpl1"));
+        Assert.assertEquals(2l, params.get("tpl2"));
     }
 
     /**
@@ -2900,17 +2831,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @see JPADAO#getCMSPageTemplateEnabled(String)
-     * @verifies return correct value
-     */
-    @Test
-    public void getCMSPageTemplateEnabled_shouldReturnCorrectValue() throws Exception {
-        CMSPageTemplateEnabled o = DataManager.getInstance().getDao().getCMSPageTemplateEnabled("template_disabled");
-        Assert.assertNotNull(o);
-        Assert.assertFalse(o.isEnabled());
-    }
-
-    /**
      * @see JPADAO#createFilterQuery(String,Map,Map)
      * @verifies build multikey filter query correctly
      */
@@ -2927,7 +2847,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void createFilterQuery_twoJoinedTables() throws Exception {
         Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String expectedFilterString = " LEFT JOIN a.b b LEFT JOIN a.c c WHERE (UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
@@ -2939,7 +2859,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void createFilterQuery_joinedTableAndField() throws Exception {
         Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
         String expectedFilterString = " LEFT JOIN a.c b WHERE (UPPER(a.B) LIKE :BcC OR UPPER(b.C) LIKE :BcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
@@ -3215,7 +3135,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(slider.getId());
         CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
         assertNotNull(loadedSlider);
-        assertFalse(loadedSlider == slider);
+        assertNotSame(loadedSlider, slider);
         assertEquals(loadedSlider.getId(), slider.getId());
         assertEquals(name, loadedSlider.getName());
     }
@@ -3251,7 +3171,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSSlider slider = DataManager.getInstance().getDao().getSlider(1l);
         List<CMSPage> pages = DataManager.getInstance().getDao().getPagesUsingSlider(slider);
         assertEquals(1, pages.size());
-        assertEquals(Long.valueOf(2l), pages.iterator().next().getId());
+        assertEquals(Long.valueOf(3l), pages.iterator().next().getId());
     }
 
     /**

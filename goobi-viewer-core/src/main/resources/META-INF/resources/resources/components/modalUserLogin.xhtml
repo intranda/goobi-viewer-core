@@ -108,7 +108,7 @@
 													rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
 													<div class="user-login-modal__form-row">
 															<h:inputText id="externalUserName"
-																styleClass="form-control user-login-modal__form-control" value="#{userBean.email}"
+																pt:autocomplete="username" styleClass="form-control user-login-modal__form-control" value="#{userBean.email}"
 																required="true"
 																requiredMessage="#{msg.loginEnterUserName}">
 																<f:passThroughAttribute name="aria-labelledby"
@@ -273,6 +273,7 @@
 														requiredMessage="#{msg.loginEnterEmail}">
 														<f:validator validatorId="emailValidator" />
 														<f:validator validatorId="emailAvailableValidator" />
+														<f:passThroughAttribute name="autocomplete" value="new-username" />
 													</h:inputText>
 												</div>
 
@@ -280,10 +281,12 @@
 													<label for="userCreateAccountPW1"
 														class="col-12 col-lg-3 control-label">#{msg.newUserPasswordOne}:</label>
 													<h:inputSecret id="userCreateAccountPW1"
+													
 														styleClass="col-12 col-lg-9 form-control" type="password"
 														value="#{userBean.passwordOne}" required="true"
 														requiredMessage="#{msg.newUserPasswordOneRequired}">
 														<f:validator validatorId="passwordValidator" />
+														<f:passThroughAttribute name="autocomplete" value="new-password" />
 													</h:inputSecret>
 												</div>
 

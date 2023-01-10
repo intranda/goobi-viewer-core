@@ -1,1 +1,1 @@
-{"date":"2022-07-04","records":[{"counts":[3,1,0,0,0,0],"pi":"PI_02"},{"counts":[9,2,0,0,0,0],"pi":"PI_01"},{"counts":[4,1,0,0,0,0],"pi":"PI_03"}],"viewer-name":"viewer-test"}
+{"date":"2022-07-04","records":[{"counts":[3,1,0,0],"pi":"PI_02"},{"counts":[9,2,0,0],"pi":"PI_01"},{"counts":[4,1,0,0],"pi":"PI_03"}],"viewer-name":"viewer-test"}
