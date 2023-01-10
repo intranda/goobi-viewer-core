@@ -25,7 +25,7 @@ package io.goobi.viewer.model.viewer;
 import java.nio.file.Path;
 import java.util.List;
 
-public class Work {
+public class Dataset {
 
     /** document identifier */
     private String pi;

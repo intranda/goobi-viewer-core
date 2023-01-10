@@ -43,7 +43,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
-import io.goobi.viewer.model.viewer.Work;
+import io.goobi.viewer.model.viewer.Dataset;
 
 public class PdfMessageHandler implements MessageHandler<ReturnValue> {
 
@@ -67,7 +67,7 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
         String title = cleanedPi + "_" + cleanedLogId;
 
         try {
-            Work work = DataFileTools.getWorkData(cleanedPi);
+            Dataset work = DataFileTools.getDataset(cleanedPi);
             Path pdfFile = Paths.get("/tmp/tmp.pdf"); // TODO
             createPdf(work, pdfFile);
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException e) {
@@ -78,7 +78,7 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
         return ReturnValue.FINISH;
     }
 
-    private void createPdf(Work work, Path pdfFile) throws IOException, ContentLibException {
+    private void createPdf(Dataset work, Path pdfFile) throws IOException, ContentLibException {
         try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
             Map<String, String> params = new HashMap<>();
             params.put("metsFile", work.getMetadataFilePath().toString());

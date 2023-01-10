@@ -49,9 +49,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.model.viewer.Work;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -506,24 +506,24 @@ public class DataFileTools {
     }
 
     /**
-     * creates a work object, containing all relevant file paths
+     * creates a Dataset object, containing all relevant file paths
      * 
      * @param pi a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.viewer.Work} object.
+     * @return a {@link io.goobi.viewer.model.viewer.Dataset} object.
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws RecordNotFoundException
      * @throws IOException
      */
 
-    public static Work getWorkData(String pi) throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
+    public static Dataset getDataset(String pi) throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
 
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
         if (doc == null) {
             throw new RecordNotFoundException(pi);
         }
 
-        Work work = new Work();
+        Dataset work = new Dataset();
         work.setPi(pi);
 
         long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
