@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -347,12 +349,17 @@ public class CmsPageEditBean implements Serializable {
      * @throws PresentationException
      */
     public String createAndOpenNewPage(String title, String relatedPI) throws PresentationException, IndexUnreachableException, DAOException {
-        CMSPage page = new CMSPage();
-        page.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
-        page.setRelatedPI(relatedPI);
-        setUserRestrictedValues(page, userBean.getUser());
-        setSelectedPage(page);
-        return "pretty:adminCmsNewPage";
+        
+        String createPageUrl = PrettyUrlTools.getAbsolutePageUrl("adminCmsNewPage");
+        URI uri = UriBuilder.fromUri(createPageUrl).queryParam("title", title).queryParam("relatedPi", relatedPI).build();
+        return uri.toString();
+        
+//        CMSPage page = new CMSPage();
+//        page.getTitleTranslations().setValue(title, IPolyglott.getDefaultLocale());
+//        page.setRelatedPI(relatedPI);
+//        setUserRestrictedValues(page, userBean.getUser());
+//        setSelectedPage(page);
+//        return "pretty:adminCmsNewPage";
     }
 
     private static void setSidebarElementOrder(CMSPage page) {
