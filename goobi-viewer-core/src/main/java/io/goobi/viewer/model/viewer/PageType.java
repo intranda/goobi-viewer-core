@@ -94,7 +94,7 @@ public enum PageType {
     adminConfigEditor("admin/config", "admin__config_editor__title", adminDashboard),
     // admin/translations
     adminTranslations("admin/translations", "admin__translations", adminDashboard),
-    adminTranslationsEdit("admin/translations/new", "admin__translations_translate", adminTranslations),
+    adminTranslationsEdit("admin/translations/new", "admin__translations__add_new_entry", adminTranslations),
     //admin/cms
     adminCms("admin/cms", "admin__cms", adminDashboard),
     adminCmsOverview("admin/cms/pages", "cms_menu_pages", adminDashboard),

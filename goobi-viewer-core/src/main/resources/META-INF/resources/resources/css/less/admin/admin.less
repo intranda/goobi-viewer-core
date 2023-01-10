@@ -31,8 +31,7 @@
 	// ADMIN BREADCRUMBS LAYOUT
 	&__breadcrumbs-wrapper {
 		padding-left: 15px;
-	}
-	&__breadcrumbs-inner {
+		margin-bottom: 15px;
 	}
 	&__breadcrumbs-list {
 		display: flex;
@@ -40,7 +39,6 @@
 		padding: 0;
 		margin: 0;
 		list-style: none;
-		
 	}
 	&__breadcrumbs-crumb-point {
 		&:last-child {
@@ -54,13 +52,8 @@
 	}
 	&__breadcrumbs-crumb {
 		display: flex;
-		-webkit-box-align: center;
-		-ms-flex-align: center;
 		align-items: center;
 		position: relative;
-		background: transparent;
-		padding: 5px 10px 5px 15px;
-		border: 1px solid #ccc;
 		line-height: 1;
 		background: transparent;
 		transition: background 0.2s ease;
@@ -69,29 +62,13 @@
 		&:active {
 			text-decoration: none;
 		}
-		&:after,
-		&:before {
-			background: #f2f3f4;
-			bottom: 0;
-			-webkit-clip-path: polygon(50% 50%, -50% -50%, 0 100%);
-			clip-path: polygon(50% 50%, -50% -50%, 0 100%);
-			content: "";
-			left: 100%;
-			position: absolute;
-			top: 0;
-			transition: background .2s ease;
-			width: 1em;
-			z-index: 1;
-		}
-		&:before {
-			background: #ccc;
-			margin-left: 1px;
-		}
-		&:hover {
-			background: #ebebeb;
-			&:after {
-				background: #ebebeb;
-			}
+		&:after {
+			font: normal normal normal 14px/1 FontAwesome;
+			content: "\f0da";
+			display: block;
+			margin: 0 8px;
+			color: #222;
+			margin-top: 1px;
 		}
 	}
 
