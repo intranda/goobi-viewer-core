@@ -22,9 +22,16 @@
 
 package io.goobi.viewer.model.job.mq;
 
+import java.io.File;
+import java.io.IOException;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.ReturnValue;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.model.job.download.PDFDownloadJob;
 
 public class PdfMessageHandler implements MessageHandler<ReturnValue> {
 
@@ -33,14 +40,45 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
 
         System.out.println("handle pdf download");
 
-        String identifier = message.getPi();
+        String pi = message.getPi();
 
         String logId = message.getProperties().get("logId");
         String email = message.getProperties().get("email");
 
-        // TODO
+        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
+        if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
+            return ReturnValue.ERROR;
+        }
+
+        String cleanedPi = StringTools.cleanUserGeneratedData(pi);
+        String cleanedLogId = StringTools.cleanUserGeneratedData(logId);
+
+        String title = cleanedPi + "_" + cleanedLogId;
 
         return ReturnValue.FINISH;
+    }
+
+    private File createPdf(File metsFile, File imageFolder, File inputPdfFolder, File altoFolder, File exportFile) throws IOException,
+            ContentLibException {
+        //        try (FileOutputStream fos = new FileOutputStream(exportFile)) {
+        //            Map<String, String> params = new HashMap<String, String>();
+        //            params.put("metsFile", metsFile.getAbsolutePath());
+        //            if (imageFolder != null) {
+        //                params.put("imageSource", imageFolder.toURI().toString());
+        //            }
+        //            if (inputPdfFolder != null && PdfCreationConfiguration.getInstance().isUsePdfDirectory()) {
+        //                params.put("pdfSource", inputPdfFolder.toURI().toString());
+        //            }
+        //            if (altoFolder != null && PdfCreationConfiguration.getInstance().isUseAltoDirectory()) {
+        //                params.put("altoSource", altoFolder.toURI().toString());
+        //            }
+        //            params.put("metsFileGroup", "LOCAL");
+        //            params.put("goobiMetsFile", "true");
+        //            GetMetsPdfAction action = new GetMetsPdfAction();
+        //            logger.debug("Calling GetMetsPdfAction with parameters: " + params);
+        //            action.writePdf(params, fos);
+        //        }
+        return exportFile;
     }
 
     @Override
