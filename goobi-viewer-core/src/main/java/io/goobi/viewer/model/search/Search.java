@@ -335,9 +335,7 @@ public class Search implements Serializable {
         }
         String currentQuery = SearchHelper.prepareQuery(this.query);
 
-        // Collect regular and hierarchical facet field names and combine them into one list
-        List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalFacetFields();
-        List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
+        List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
         if (facets.getGeoFacetting().isActive()) {
@@ -407,7 +405,8 @@ public class Search implements Serializable {
                         facets.getAvailableFacets()
                                 .put(fieldName,
                                         FacetItem
-                                                .generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName),
+                                                .generateFilterLinkList(fieldName, facetResult,
+                                                        DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(fieldName),
                                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(fieldName),
                                                         locale, facets.getLabelMap()));
                         allFacetFields.remove(facetField.getName());
@@ -480,7 +479,7 @@ public class Search implements Serializable {
                 facets.getAvailableFacets()
                         .put(defacetifiedFieldName,
                                 FacetItem.generateFilterLinkList(defacetifiedFieldName, facetResult,
-                                        hierarchicalFacetFields.contains(defacetifiedFieldName),
+                                        DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(defacetifiedFieldName),
                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
                                         facets.getLabelMap()));
             }
@@ -564,8 +563,9 @@ public class Search implements Serializable {
             }
             if (!values.isEmpty()) {
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
-                if (DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetField.getName())) {
+                if (rangeFacetFields.contains(facetField.getName())) {
                     // Slider range
+
                     facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, values);
                 }
             }

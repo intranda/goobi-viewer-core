@@ -362,6 +362,17 @@ public class SearchFacets implements Serializable {
 
     /**
      * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public boolean isHasChronologyFacets() throws PresentationException, IndexUnreachableException {
+        return !getLimitedFacetListForField(SolrConstants.YEAR).isEmpty()
+                && !getAbsoluteMinRangeValue(SolrConstants.YEAR).equals(getAbsoluteMaxRangeValue(SolrConstants.YEAR));
+    }
+
+    /**
+     * 
      * @param field
      * @param excludeSelected If true, selected facets will be removed from the list
      * @return
@@ -604,8 +615,8 @@ public class SearchFacets implements Serializable {
             }
         }
         if (fieldItem == null) {
-            String geoFacetField = DataManager.getInstance().getConfiguration().getGeoFacetFields();
-            if (geoFacetField != null && geoFacetField.equals(field)) {
+            List<String> geoFacetFields = DataManager.getInstance().getConfiguration().getGeoFacetFields();
+            if (!geoFacetFields.isEmpty() && geoFacetFields.get(0).equals(field)) {
                 fieldItem = new GeoFacetItem(field);
                 fieldItem.setValue(updateValue);
             } else {
@@ -771,7 +782,7 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        if (!SolrConstants.CALENDAR_YEAR.equals(field) && !field.startsWith("MDNUM_")) {
+        if (!SolrConstants.CALENDAR_YEAR.equals(field) && !field.startsWith(SolrConstants.PREFIX_MDNUM)) {
             logger.info("{} is not an integer type field, cannot use with a range query", field);
             return;
         }
@@ -1146,12 +1157,13 @@ public class SearchFacets implements Serializable {
      */
     public GeoFacetItem getGeoFacetting() {
         synchronized (lock) {
+            List<String> geoFacetFields = DataManager.getInstance().getConfiguration().getGeoFacetFields();
             return new ArrayList<>(this.activeFacets)
                     .stream()
                     .filter(GeoFacetItem.class::isInstance)
                     .map(GeoFacetItem.class::cast)
                     .findAny()
-                    .orElse(new GeoFacetItem(DataManager.getInstance().getConfiguration().getGeoFacetFields()));
+                    .orElse(new GeoFacetItem(!geoFacetFields.isEmpty() ? geoFacetFields.get(0) : null));
         }
     }
 
@@ -1162,7 +1174,8 @@ public class SearchFacets implements Serializable {
      */
     public void setGeoFacetFeature(String feature) {
         GeoFacetItem item = getGeoFacetting();
-        item.setField(DataManager.getInstance().getConfiguration().getGeoFacetFields());
+        List<String> geoFacetFields = DataManager.getInstance().getConfiguration().getGeoFacetFields();
+        item.setField(!geoFacetFields.isEmpty() ? geoFacetFields.get(0) : null);
         synchronized (lock) {
             if (StringUtils.isBlank(feature)) {
                 this.activeFacets.remove(item);

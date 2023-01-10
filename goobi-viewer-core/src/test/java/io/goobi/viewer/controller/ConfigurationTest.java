@@ -1654,21 +1654,22 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getFacetFields()
-     * @verifies return all values
-     */
-    @Test
-    public void getFacetFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getFacetFields().size());
-    }
-
-    /**
      * @see Configuration#getHierarchicalFacetFields()
      * @verifies return all values
      */
     @Test
     public void getHierarchicalFacetFields_shouldReturnAllValues() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().size());
+    }
+    
+
+    /**
+     * @see Configuration#getRangeFacetFields()
+     * @verifies return all values
+     */
+    @Test
+    public void getRangeFacetFields_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
     }
 
     /**
@@ -1765,14 +1766,15 @@ public class ConfigurationTest extends AbstractTest {
     public void isAlwaysApplyFacetFieldToUnfilteredHits_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits("MD_PERSON"));
     }
-    
+
     /**
      * @see Configuration#isFacetFieldSkipInWidget(String)
      * @verifies return correct value
      */
     @Test
     public void isFacetFieldSkipInWidget_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget("MD_PERSON"));;
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget("MD_PERSON"));
+        ;
     }
 
     @Test

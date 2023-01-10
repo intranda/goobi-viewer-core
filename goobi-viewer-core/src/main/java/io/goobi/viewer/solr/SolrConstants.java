@@ -284,6 +284,9 @@ public class SolrConstants {
     /** Constant <code>OPEN_ACCESS_VALUE="OPENACCESS"</code> */
     public static final String OPEN_ACCESS_VALUE = "OPENACCESS";
 
+    /** Constant <code>PREFIX_BOOL="BOOL_"</code> */
+    public static final String PREFIX_BOOL = "BOOL_";
+    /** Constant <code>PREFIX_FACET="FACET_"</code> */
     public static final String PREFIX_FACET = "FACET_";
     /** Constant <code>PREFIX_MDNUM="MDNUM_"</code> */
     public static final String PREFIX_MDNUM = "MDNUM_";
@@ -291,6 +294,8 @@ public class SolrConstants {
     public static final String PREFIX_GROUPID = "GROUPID_";
     /** Constant <code>PREFIX_GROUPORDER="GROUPORDER_"</code> */
     public static final String PREFIX_GROUPORDER = "GROUPORDER_";
+    /** Constant <code>PREFIX_SORT="SORT_"</code> */
+    public static final String PREFIX_SORT = "SORT_";
     /** Constant <code>MIDFIX_LANG="_LANG_"</code> */
     public static final String MIDFIX_LANG = "_LANG_";
     /** Constant <code>SUFFIX_UNTOKENIZED="_UNTOKENIZED"</code> */
