@@ -9,7 +9,7 @@
     <icon>cms/components/frontend/component/icon/text.png</icon>
     <content>
         <item id="searchfacets">
-            <label>FACETS</label>
+            <label>cms_component__searchfacets_label</label>
             <description></description>
             <className>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</className>
             <jsfComponent>
@@ -22,11 +22,6 @@
             </attributes>
         </item>
     </content>
-
-    <attribute name="width">
-        <value label="50 %">50</value>
-        <value label="100 %" default="true">100</value>
-    </attribute>
 
     <attribute name="hideOnScreenSizes" type="toggle">
         <value label="Hide on desktop">hideDesktop</value>
