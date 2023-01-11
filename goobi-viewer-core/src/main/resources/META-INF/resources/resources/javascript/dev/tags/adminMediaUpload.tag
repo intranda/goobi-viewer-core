@@ -136,6 +136,8 @@
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
             
+            //console.log("uploading files", this.files);
+            
             for (i = 0; i < this.files.length; i++) {
                 uploads.push(this.uploadFile(i));
             }

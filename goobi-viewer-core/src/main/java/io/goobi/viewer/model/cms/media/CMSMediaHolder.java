@@ -52,12 +52,18 @@ public interface CMSMediaHolder {
 
     /**
      * <p>
-     * getMediaFilter.
+     * A regular expression determining which filenames are shown in the media list and may be uploaded
      * </p>
      *
      * @return a {@link java.lang.String} object.
      */
     public String getMediaFilter();
+    
+    /**
+     * A string representing the allowed media formates for a user. Should be a comma separated list of format names or filename suffixes
+     * @return
+     */
+    public String getMediaTypes();
 
     /**
      * <p>

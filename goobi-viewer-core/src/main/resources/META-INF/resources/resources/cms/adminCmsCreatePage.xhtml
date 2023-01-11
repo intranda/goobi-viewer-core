@@ -443,6 +443,8 @@
 								<ui:include src="/resources/cms/includes/mediaSelect.xhtml">
 									<ui:param name="mediaDisplayPanel"
 										value="@form create_page_form" />
+										<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+        							<ui:param name="fileTypeValidator" value="#{cmsBean.selectedMediaHolder.mediaFilter}"/>
 								</ui:include>
 							</div>
 						</ui:fragment>

@@ -1601,6 +1601,10 @@ public class CmsBean implements Serializable {
             }
         });
     }
+    
+    public CMSMediaHolder getSelectedMediaHolder() {
+        return selectedMediaHolder.orElse(null);
+    }
 
     /**
      * Set the given (wrapped) {@link io.goobi.viewer.model.cms.media.CMSMediaItem} to Media holder set by {@link #setSelectedMediaHolder}
