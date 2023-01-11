@@ -945,7 +945,7 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
-        return getAvailableFacets(null);
+        return getAvailableFacets(Arrays.asList("", "hierarchical"));
     }
 
     /**
@@ -954,12 +954,21 @@ public class SearchFacets implements Serializable {
      * @return
      */
     public Map<String, List<IFacetItem>> getAvailableFacets(String type) {
+        return getAvailableFacets(Collections.singletonList(type));
+    }
+
+    /**
+     * 
+     * @param types
+     * @return
+     */
+    Map<String, List<IFacetItem>> getAvailableFacets(List<String> types) {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
         for (String field : allFacetFields) {
             if (availableFacets.containsKey(field) && !DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget(field)
-                    && (type == null || type.equals(DataManager.getInstance().getConfiguration().getFacetFieldType(field)))) {
+                    && (types == null || types.contains(DataManager.getInstance().getConfiguration().getFacetFieldType(field)))) {
                 ret.put(field, availableFacets.get(field));
             }
         }
