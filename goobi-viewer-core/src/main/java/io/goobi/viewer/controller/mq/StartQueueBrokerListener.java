@@ -113,6 +113,7 @@ public class StartQueueBrokerListener implements ServletContextListener {
                 log.error(e);
             }
         }
+        sce.getServletContext().setAttribute("BrokerService", this);
     }
 
     @Override
@@ -133,6 +134,10 @@ public class StartQueueBrokerListener implements ServletContextListener {
         } catch (Exception e) {
             log.error(e);
         }
+    }
+
+    public BrokerService getBroker() {
+        return broker;
     }
 
 }
