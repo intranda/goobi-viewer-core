@@ -226,8 +226,8 @@ public class GeoFacetItem implements IFacetItem {
         this.feature = new GeoCoordinateFeature(GeoCoordinateFeature.getGeoSearchPoints(value), searchPredicate, searchShape);
     }
 
-    private static String getDefaultSearchPredicate() {
-        return DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate();
+    private String getDefaultSearchPredicate() {
+        return DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate(solrField);
     }
 
     /* (non-Javadoc)

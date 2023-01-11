@@ -1,5 +1,6 @@
 <ui:composition 
     xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core" 
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
@@ -13,66 +14,65 @@
         
         <!--  WIDGET CHRONOLOGY -->
         <ui:fragment rendered="#{searchBean.facets.hasChronologyFacets}">
-        <div class="widget widget-chronology-slider">
-			<div class="widget-chronology-slider__topbar">
-				<div class="widget-chronology-slider__item chronology-slider-label">
-					<h2>#{msg.widgetChronology_label}</h2>
-				</div>
-				<div
-					class="widget-chronology-slider__item chronology-slider-actions">
-					<div
-						class="widget-chronology-slider__item chronology-slider-action-loader">
-						<img
-							src="#{request.contextPath}/resources/images/infinity_loader.svg"
-							alt="Chrono Slider Loader" />
-					</div>
-					<div
-						class="widget-chronology-slider__item chronology-slider-action-reset">
-						<button type="button" class="widget-chronology-slider__action-reset-button"
-							title="#{msg.removeFacet}" data-toggle="tooltip"
-							data-placement="top" data-reset="chrono-slider">
-							<i class="fa fa-times" aria-hidden="true"></i>
-						</button>
-					</div>
-				</div>
-			</div>
+            <c:forEach var="field" items="#{searchBean.facets.getAvailableFacets('range').entrySet().toArray()}" varStatus="status">
+                <div class="widget widget-chronology-slider">
+                    <div class="widget-chronology-slider__topbar">
+				        <div class="widget-chronology-slider__item chronology-slider-label">
+                            <h2>#{msg.widgetChronology_label}: #{msg[field.key]}</h2>
+                        </div>
+                        <div class="widget-chronology-slider__item chronology-slider-actions">
+                            <div class="widget-chronology-slider__item chronology-slider-action-loader">
+                                <img src="#{request.contextPath}/resources/images/infinity_loader.svg" alt="Chrono Slider Loader" />
+                            </div>
+                            <div class="widget-chronology-slider__item chronology-slider-action-reset">
+                                <button type="button" class="widget-chronology-slider__action-reset-button"
+                                    title="#{msg.removeFacet}" data-toggle="tooltip"
+                                    data-placement="top" data-reset="chrono-slider">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 			
-			<div class="widget-chronology-slider__body widget__body">
-				<!-- START/END YEAR -->
-				<div class="widget-chronology-slider__item chronology-slider-start">
-		            <input data-input='number' class="widget-chronology-slider__item-input -no-outline -active-border"
-		            	value="#{searchBean.facets.getCurrentMinRangeValue('YEAR')}" title="#{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.enterYear}"></input>
-				</div>
-				<div class="widget-chronology-slider__item chronology-slider-end" >
-		            <input data-input='number' class="widget-chronology-slider__item-input -no-outline -active-border"
-		            	value="#{searchBean.facets.getCurrentMaxRangeValue('YEAR')}" title="#{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="#{msg.enterYear}"></input>
-	            </div>
+                    <div class="widget-chronology-slider__body widget__body">
+                        <!-- START/END YEAR -->
+                        <div class="widget-chronology-slider__item chronology-slider-start">
+                            <input data-input='number' class="widget-chronology-slider__item-input -no-outline -active-border"
+                                value="#{searchBean.facets.getCurrentMinRangeValue(field.key)}" title="#{msg.enterYear}"
+                                data-toggle="tooltip" data-placement="top" aria-label="#{msg.enterYear}"></input>
+                        </div>
+                        <div class="widget-chronology-slider__item chronology-slider-end">
+                            <input data-input='number' class="widget-chronology-slider__item-input -no-outline -active-border"
+                                value="#{searchBean.facets.getCurrentMaxRangeValue(field.key)}" title="#{msg.enterYear}"
+                                data-toggle="tooltip" data-placement="top" aria-label="#{msg.enterYear}"></input>
+                        </div>
 	            	            
-	            <!-- RANGE SLIDER -->
-	            <div class="widget-chronology-slider__item chronology-slider">
-	                <div id="chronoSlider"></div>
-	            </div>
-            </div>
+                        <!-- RANGE SLIDER -->
+                        <div class="widget-chronology-slider__item chronology-slider">
+                            <div id="chronoSlider-#{status.count}"></div>
+                        </div>
+                    </div>
             
-            <!-- HIDDEN FORM TO UPDATE SEARCHHITS -->
-            <h:form id="chronologySliderForm" prependId="false" styleClass="hidden">
-                <h:inputHidden id="chronologySliderInput" value="#{searchBean.facets.tempValue}" />
-                <h:commandButton id="chronologySliderSet" action="#{searchBean.updateFacetItem('YEAR', false)}" />
-                <h:commandLink id="chronologySliderReset" action="#{searchBean.removeChronologyFacetAction()}" value="reset"/>
-            </h:form>
+                    <!-- HIDDEN FORM TO UPDATE SEARCHHITS -->
+                    <h:form id="chronologySliderForm" prependId="false" styleClass="hidden">
+                        <h:inputHidden id="chronologySliderInput-#{status.count}" value="#{searchBean.facets.tempValue}" />
+                        <h:commandButton id="chronologySliderSet-#{status.count}" action="#{searchBean.updateFacetItem(field.key, false)}" />
+                        <h:commandLink id="chronologySliderReset-#{status.count}" action="#{searchBean.removeChronologyFacetAction()}" value="reset"/>
+                    </h:form>
     
-            <script type="text/javascript">
-            	var chronoSliderConfig = {
-                	yearList: #{searchBean.facets.getValueRange("YEAR")},            		
-                	startValue: parseInt( $( ".chronology-slider-start input" ).val() ),
-                	endValue: parseInt( $( ".chronology-slider-end input" ).val() ),
-                	currentMinRangeValue: #{searchBean.facets.getCurrentMinRangeValue("YEAR")},
-                    currentMaxRangeValue: #{searchBean.facets.getCurrentMaxRangeValue("YEAR")},
-            	};
-            	
-            	viewerJS.chronoSlider.init( chronoSliderConfig );
-            </script>
-        </div>
+                    <script type="text/javascript">
+                        var chronoSliderConfig = {
+                	        yearList: #{searchBean.facets.getValueRange('#{field.key}')},            		
+                	        startValue: parseInt( $( ".chronology-slider-start input" ).val() ),
+                	        endValue: parseInt( $( ".chronology-slider-end input" ).val() ),
+                	        currentMinRangeValue: #{searchBean.facets.getCurrentMinRangeValue('#{field.key}')},
+                            currentMaxRangeValue: #{searchBean.facets.getCurrentMaxRangeValue('#{field.key}')},
+            	        };
+            	    
+            	        viewerJS.chronoSlider.init( chronoSliderConfig );
+            	    </script>
+                </div>
+            </c:forEach>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>

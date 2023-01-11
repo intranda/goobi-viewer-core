@@ -446,7 +446,7 @@ public class Search implements Serializable {
                             .getValues()
                             .stream()
                             .anyMatch(c -> c.getName().equalsIgnoreCase("true"));
-                    if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap()) {
+                    if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap(facets.getGeoFacetting().getField())) {
                         this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                         this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
                     }
@@ -565,7 +565,6 @@ public class Search implements Serializable {
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (rangeFacetFields.contains(facetField.getName())) {
                     // Slider range
-
                     facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, values);
                 }
             }

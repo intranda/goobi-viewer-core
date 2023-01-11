@@ -2580,15 +2580,24 @@ public class Configuration extends AbstractConfiguration {
         return ret;
     }
 
-    public String getGeoFacetFieldPredicate() {
-        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
+    /**
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public String getGeoFacetFieldPredicate(String facetField) {
+        return getPropertyForFacetField(facetField, "[@predicate]", "ISWITHIN");
+        
     }
 
     /**
+     * @param facetField
      * @return
+     * @should return correct value
      */
-    public boolean isShowSearchHitsInGeoFacetMap() {
-        return getLocalBoolean("search.facets.geoField[@displayResultsOnMap]", true);
+    public boolean isShowSearchHitsInGeoFacetMap(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@displayResultsOnMap]", "true");
+        return Boolean.valueOf(value.trim());
     }
 
     /**
@@ -2699,7 +2708,12 @@ public class Configuration extends AbstractConfiguration {
         return Boolean.valueOf(value);
     }
 
-    String getFacetFieldType(String facetField) {
+    /**
+     * 
+     * @param facetField
+     * @return
+     */
+    public String getFacetFieldType(String facetField) {
         return getPropertyForFacetField(facetField, "[@type]", null);
     }
 

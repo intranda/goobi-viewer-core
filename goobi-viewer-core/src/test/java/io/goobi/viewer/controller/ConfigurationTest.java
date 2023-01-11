@@ -1661,7 +1661,6 @@ public class ConfigurationTest extends AbstractTest {
     public void getHierarchicalFacetFields_shouldReturnAllValues() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().size());
     }
-    
 
     /**
      * @see Configuration#getRangeFacetFields()
@@ -1774,7 +1773,24 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void isFacetFieldSkipInWidget_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget("MD_PERSON"));
-        ;
+    }
+
+    /**
+     * @see Configuration#getGeoFacetFieldPredicate()
+     * @verifies return correct value
+     */
+    @Test
+    public void getGeoFacetFieldPredicate_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("CUSTOM_PREDICATE", DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate("WKT_COORDS"));
+    }
+
+    /**
+     * @see Configuration#isShowSearchHitsInGeoFacetMap()
+     * @verifies return correct value
+     */
+    @Test
+    public void isShowSearchHitsInGeoFacetMap_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap("WKT_COORDS"));
     }
 
     @Test

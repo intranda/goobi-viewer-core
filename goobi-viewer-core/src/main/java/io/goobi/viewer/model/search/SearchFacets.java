@@ -545,7 +545,7 @@ public class SearchFacets implements Serializable {
                 facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
             }
             String facetField = facetLink.substring(0, facetLink.indexOf(":"));
-            if (facetField.equals(DataManager.getInstance().getConfiguration().getGeoFacetFields())) {
+            if (DataManager.getInstance().getConfiguration().getGeoFacetFields().contains(facetField)) {
                 GeoFacetItem item = new GeoFacetItem(facetField);
                 item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                 facetItems.add(item);
@@ -945,12 +945,21 @@ public class SearchFacets implements Serializable {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
+        return getAvailableFacets(null);
+    }
+
+    /**
+     * 
+     * @param type
+     * @return
+     */
+    public Map<String, List<IFacetItem>> getAvailableFacets(String type) {
         Map<String, List<IFacetItem>> ret = new LinkedHashMap<>();
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
-
         for (String field : allFacetFields) {
-            if (availableFacets.containsKey(field) && !DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget(field)) {
+            if (availableFacets.containsKey(field) && !DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget(field)
+                    && (type == null || type.equals(DataManager.getInstance().getConfiguration().getFacetFieldType(field)))) {
                 ret.put(field, availableFacets.get(field));
             }
         }

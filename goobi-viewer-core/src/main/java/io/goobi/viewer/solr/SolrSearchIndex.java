@@ -1273,7 +1273,7 @@ public class SolrSearchIndex {
             }
             sbValueQuery.append(')');
 
-            logger.trace("label query: {}{}", queryRoot, sbValueQuery.toString());
+            // logger.trace("label query: {}{}", queryRoot, sbValueQuery.toString());
 
             SolrDocumentList result = search(queryRoot + sbValueQuery.toString(), Arrays.asList(fields));
             for (SolrDocument doc : result) {
