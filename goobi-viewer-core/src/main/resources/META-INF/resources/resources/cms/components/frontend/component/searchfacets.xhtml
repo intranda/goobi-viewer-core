@@ -18,7 +18,7 @@
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
 
 			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
-			<div class="content-component content-component__search-hitlist
+			<div class="content-component content-component__search-facets
 						-width-100 #{cc.attrs.hideOnScreenSizes}
 						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
 						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}
@@ -30,20 +30,15 @@
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
 
-				<div id="templateSearchListCustom"
-					class="tpl-search-list-custom content-component__legacy-full-width">
-					<div class="tpl-search-list-custom__list">
-					
-                        <h:outputLink rendered="#{not empty searchBean.facets.activeFacets}"
-                            value="#{cmsBean.currentPage.pageUrl}-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/-/">
-                            [X]
-                        </h:outputLink>
-					
+				<div class="tpl-search-list-custom content-component__legacy-full-width">
+						<nav class="content-component__search-facets-wrapper">
+						<ul class="content-component__search-facets-list">
 					    <ui:repeat
 					        value="#{searchBean.facets.getAvailableFacetsForField(cc.attrs.component.getContentItem('searchfacets').content.facetField, false)}"
 					        var="facet">
+					        <li class="content-component__search-facets-list-entry">
                             <ui:fragment>
-                                <h:outputLink
+                                <h:outputLink styleClass="content-component__search-facets-link"
                                     value="#{cmsBean.currentPage.pageUrl}-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{facet.urlEscapedLink}/">
                                     <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                         #{facet.label}
@@ -54,10 +49,14 @@
                                     <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
                                 </h:outputLink>
                             </ui:fragment>
+                            </li>
                         </ui:repeat>
-				
-					</div>
-
+	                        <h:outputLink rendered="#{not empty searchBean.facets.activeFacets}" styleClass="content-component__search-facets-reset"
+	                            value="#{cmsBean.currentPage.pageUrl}-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/-/">
+								#{msg.reset}
+	                        </h:outputLink>
+                        </ul>
+                        </nav>
 				</div>
 
 			</div>
