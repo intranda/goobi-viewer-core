@@ -35,7 +35,7 @@
 					<div class="tpl-search-list-custom__list">
 					
                         <h:outputLink rendered="#{not empty searchBean.facets.activeFacets}"
-                            value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/-/">
+                            value="#{cmsBean.currentPage.pageUrl}-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/-/">
                             [X]
                         </h:outputLink>
 					
@@ -44,7 +44,7 @@
 					        var="facet">
                             <ui:fragment>
                                 <h:outputLink
-                                    value="#{cmsBean.currentPage.url}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{facet.urlEscapedLink}/">
+                                    value="#{cmsBean.currentPage.pageUrl}-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{facet.urlEscapedLink}/">
                                     <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
                                         #{facet.label}
                                     </ui:fragment>
