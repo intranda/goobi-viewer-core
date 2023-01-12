@@ -1781,7 +1781,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getGeoFacetFieldPredicate_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("CUSTOM_PREDICATE", DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate("WKT_COORDS"));
+        Assert.assertEquals("ISWITHIN", DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate("WKT_COORDS"));
     }
 
     /**
