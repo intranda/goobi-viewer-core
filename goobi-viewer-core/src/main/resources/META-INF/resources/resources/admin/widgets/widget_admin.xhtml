@@ -119,6 +119,14 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
+                        
+                        <li class="#{navigationHelper.currentPage == 'adminMessageQueue' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.getPageUrl('adminMessageQueue')}/">
+                                <i class="fa fa-spinner" aria-hidden="true"></i>
+                                <span>#{msg.admin__messageQueue}</span>
+                            </h:outputLink>
+                        </li>
+                        
                     </ui:fragment>
 
 				</ul>

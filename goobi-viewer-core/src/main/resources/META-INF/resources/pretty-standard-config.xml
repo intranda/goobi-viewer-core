@@ -912,6 +912,7 @@
         <pattern value="/admin/legal/disclaimer/" />
         <view-id value="/resources/admin/views/adminDisclaimer.xhtml" />
     </url-mapping>
+    
 
 	<!-- THEME CONFIGS -->
     <url-mapping id="adminThemes">
@@ -933,6 +934,11 @@
     <url-mapping id="adminConfigEditorFilename">
         <pattern value="/admin/config/edit/#{currentFileName:adminConfigEditorBean.currentFileName}/" />
         <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
+    </url-mapping>
+
+    <url-mapping id="adminMessageQueue">
+        <pattern value="/admin/message_queue/" />
+        <view-id value="/resources/admin/views/adminMessageQueue.xhtml" />
     </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->

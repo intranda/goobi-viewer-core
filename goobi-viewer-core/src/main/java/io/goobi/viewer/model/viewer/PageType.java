@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -92,6 +92,9 @@ public enum PageType {
     adminClients("admin/clients", "admin__clients", adminDashboard),
     adminClientsEdit("admin/clients/edit", "admin__clients__edit__title", adminClients),
     adminConfigEditor("admin/config", "admin__config_editor__title", adminDashboard),
+
+    adminMessageQueue("admin/message_queue", "admin__message_queue__title", adminDashboard),
+
     // admin/translations
     adminTranslations("admin/translations", "admin__translations", adminDashboard),
     adminTranslationsEdit("admin/translations/new", "admin__translations_translate", adminTranslations),
@@ -181,7 +184,7 @@ public enum PageType {
         this.handling = PageTypeHandling.none;
         this.parent = null;
     }
-    
+
     private PageType(String path, String label, PageType parent) {
         this.path = path;
         this.label = label;
@@ -206,7 +209,7 @@ public enum PageType {
     public PageTypeHandling getHandling() {
         return this.handling;
     }
-    
+
     public PageType getParent() {
         return parent;
     }
