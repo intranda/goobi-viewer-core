@@ -5385,7 +5385,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public int getNumberOfParallelMessages() {
-        return getLocalInt("",4);
+        return getLocalInt("activeMQ[@numberOfParallelMessages]",1);
     }
 
     public String getActiveMQUsername() {
