@@ -19,7 +19,7 @@
     <composite:implementation>
     	<ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.document != null and cc.attrs.component.hasAccess(userBean.user)}">
 
-				<div class="tpl-overviewpage__literature">
+				<div class="document_container" style="flex:0 0 100%; max-width:100%;" >
 					<img id="literatureLoader"
 						src="#{request.contextPath}/resources/images/infinity_loader.gif" />
 					<h:outputText id="literature" escape="false" />

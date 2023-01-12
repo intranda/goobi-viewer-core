@@ -103,13 +103,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
+            	if(this.opts.fileTypeValidator) {
+            		let regex = this.opts.fileTypeValidator;
+            		if(!this.files[i]?.name?.match(regex)) {
+	            		let errormessage = "File " + this.files[i].name + " is not allowed for upload";
+	            		console.log(errormessage)
+	            		uploads.push(Promise.reject(errormessage));
+	            		continue;
+            		}
+            	}
                 uploads.push(this.uploadFile(i));
             }
 
             return Promise.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-
                      if (result.status === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
@@ -147,6 +155,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.fileUploadError = function(responseText) {
+        	console.log("fileUploadError", responseText);
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
         	if (responseText) {
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
