@@ -24,17 +24,42 @@ package io.goobi.viewer.controller.mq;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "mq_messages")
 public class ViewerMessage {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "identifier", nullable = true)
     private String pi;
 
+    @Column(name = "message_type", nullable = false)
     private String taskName;
-    private String queueName = "viewer";
-    private int retryCount = 0;
+
+    @Column(name = "message_id", nullable = false)
+    private String messageId;
+
+    @ElementCollection
+    @CollectionTable(name = "mq_message_properties",
+            joinColumns = { @JoinColumn(name = "message_id", referencedColumnName = "id") })
+    @MapKeyColumn(name = "name")
+    @Column(name = "value")
 
     private Map<String, String> properties = new HashMap<>();
-
-    private String messageId;
 
     public ViewerMessage() {
 
@@ -58,22 +83,6 @@ public class ViewerMessage {
 
     public void setTaskName(String taskType) {
         this.taskName = taskType;
-    }
-
-    public String getQueueName() {
-        return queueName;
-    }
-
-    public void setQueueName(String queueName) {
-        this.queueName = queueName;
-    }
-
-    public int getRetryCount() {
-        return retryCount;
-    }
-
-    public void setRetryCount(int retryCount) {
-        this.retryCount = retryCount;
     }
 
     public Map<String, String> getProperties() {

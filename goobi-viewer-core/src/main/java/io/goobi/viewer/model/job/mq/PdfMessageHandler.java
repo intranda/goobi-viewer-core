@@ -57,7 +57,6 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
         String pi = message.getPi();
 
         String logId = message.getProperties().get("logId");
-        String email = message.getProperties().get("email");
 
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
@@ -73,7 +72,8 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
             // save pdf file
             Dataset work = DataFileTools.getDataset(cleanedPi);
 
-            Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension()).toPath();
+            Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
+                    .toPath();
             createPdf(work, pdfFile);
             // inform user and update DownloadJob
 
@@ -81,7 +81,8 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
             downloadJob.notifyObservers(JobStatus.READY, "");
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
 
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException|MessagingException e) {
+        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException
+                | MessagingException e) {
 
             return ReturnValue.ERROR;
         }
