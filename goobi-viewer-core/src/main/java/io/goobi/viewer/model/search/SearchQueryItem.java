@@ -46,6 +46,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Field/operator/value tuple for the advanced search.
@@ -384,7 +385,7 @@ public class SearchQueryItem implements Serializable {
                         displaySelectItems = false;
                     }
                 } catch (PresentationException | IndexUnreachableException e) {
-                    logger.error(e.getMessage());
+                    logger.error(SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
                     displaySelectItems = false;
                 }
         }

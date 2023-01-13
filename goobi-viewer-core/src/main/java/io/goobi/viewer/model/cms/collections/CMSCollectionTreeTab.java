@@ -30,12 +30,15 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Object representing tab status for a collection tree.
@@ -70,8 +73,10 @@ public class CMSCollectionTreeTab implements IPolyglott, Serializable {
                             logger.trace("translation status {}: {}", locale, translationStatus);
                         }
                     }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                } catch (IndexUnreachableException e) {
+                    logger.error("Solr error: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+                } catch (PresentationException e) {
+                    logger.error(e.getMessage());
                 }
             }
         }
