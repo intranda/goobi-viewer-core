@@ -69,7 +69,7 @@ Clear</button>
                                         <!-- SORTING -->
                                         <viewerComponent:sortingArrow
                                             filterType="email"
-                                            colHeading="#{msg.admin_message_queue__message_type}"
+                                            colHeading="#{msg.admin__message_queue__message_type}"
                                             list="#{adminBean.lazyModelUsers}" />
                                     </div>
                                     <!-- LAST LOGIN COL -->
@@ -77,7 +77,7 @@ Clear</button>
                                         <!-- SORTING -->
                                         <viewerComponent:sortingArrow
                                             filterType="lastLogin"
-                                            colHeading="#{msg.admin_message_queue__message_count}"
+                                            colHeading="#{msg.admin__message_queue__message_count}"
                                             list="#{adminBean.lazyModelUsers}" />
                                     </div>
                                     <!-- USER GROUPS COL -->
@@ -96,7 +96,7 @@ Clear</button>
                                         role="row">
                                         <!-- message type -->
                                         <div class="col-6 d-flex">
-                                            <h:outputText value="#{entry.key}" />
+                                            <h:outputText value="#{msg[entry.key]}" />
                                         </div>
 
                                         <!-- number of messages -->
@@ -110,8 +110,8 @@ Clear</button>
                                         <div
                                             class="col-3 d-flex align-items-center align-content-center flex-wrap"
                                             role="gridcell">
-                                            clear all messages
-                                            show details
+                                            <button>clear all messages</button>
+                                            <button>show individual messages</button>
                                         </div>
                                     </div>
                                 </ui:repeat>

@@ -138,6 +138,8 @@ public class DefaultQueueListener {
         if (handler == null) {
             return ReturnValue.ERROR;
         }
+
+        // TODO create database entry with message id, type, status
         return handler.call(message);
     }
 
