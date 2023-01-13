@@ -31,8 +31,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -46,6 +46,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ImageManagerException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceUnavailableException;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Copied from ContentServer to catch ContentServer exceptions
@@ -96,7 +97,7 @@ public class ContentExceptionMapper implements ExceptionMapper<ContentLibExcepti
         if(printStackTrace) { 
             logger.error("Error on request {}: {}", request.getRequestURI(), e.toString());
         } else {
-            logger.debug("Faulty request {}: {}", request.getRequestURI(), e.getMessage());
+            logger.debug("Faulty request {}: {}", request.getRequestURI(), SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
         }
 
         String mediaType = MediaType.APPLICATION_JSON;
