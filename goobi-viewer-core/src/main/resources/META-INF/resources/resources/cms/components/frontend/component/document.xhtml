@@ -19,12 +19,11 @@
     <composite:implementation>
     	<ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.document != null and cc.attrs.component.hasAccess(userBean.user)}">
 
-				<div class="document_container" style="flex:0 0 100%; max-width:100%;" >
-					<img id="literatureLoader"
+				<div class="content-component content-component__document">
+					<img id="documentLoader_#{cc.clientId}" class="content-component__loader"
 						src="#{request.contextPath}/resources/images/infinity_loader.gif" />
-					<h:outputText id="literature" escape="false" />
-					
-					<pdfDocument data="#{cc.attrs.cmsContent.url}"/>
+					<h:outputText id="content-component__document__html" escape="false" />
+					<div id="documentWrapper_#{cc.clientId}" class="content-component__document__pdf" />
 				</div>
 				
 				<script type="text/javascript">
@@ -32,9 +31,10 @@
 			var url = "#{cc.attrs.cmsContent.url}";
                 if ( url ) {
                     if ( url.toLowerCase().endsWith( ".pdf" ) ) {
-                        
-                        riot.mount( 'pdfDocument' );
-
+                        riot.mount( "#documentWrapper_#{cc.clientId}", 'pdfdocument', {
+                        	data:"#{cc.attrs.cmsContent.url}",
+                        	loaderSelector: "#documentLoader_#{cc.clientId}"
+                        } );
                     }
                     else {
                         $.ajax( {
@@ -43,12 +43,12 @@
                             datatype: "HTML"
                         } ).then( function( data ) {
                             document.getElementById('literature').innerHTML = data;
-                            $( '#literatureLoader' ).hide();
+                            $( '#documentLoader_#{cc.clientId}' ).hide();
                         } );
                     }
                 }
                 else {
-                    $( '#literatureLoader' ).hide();
+                    $( '#documentLoader_#{cc.clientId}' ).hide();
                 }
                 
               //]]>
