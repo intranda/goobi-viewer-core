@@ -5,7 +5,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
 
     <ui:define name="metadata">
         <f:metadata>
@@ -28,15 +29,30 @@
 
 
                     <viewerComponent:adminBreadcrumbs />
-<button>
-Pause
-</button>
 
-<button>
-Resume</button>
+                    <button
+                        jsf:action="#{messageQueueBean.pauseQueue}"
+                        jsf:id="pauseButton"
+                        class="#{!messageQueueBean.paused ? 'active' : ''} btn">
+                        <i class="fa fa-pause"></i>
+                    </button>
 
-<button>
-Clear</button>
+                    <button
+                        jsf:action="#{messageQueueBean.resumeQueue}"
+                        jsf:id="resumeButton"
+                        class="#{messageQueueBean.paused ? 'active' : ''} btn">
+                        <i class="fa fa-play"></i>
+                    </button>
+
+
+                    <button
+                        jsf:action="#{messageQueueBean.clearQueue}"
+                        jsf:id="clearButton"
+                        class="btn">
+                        <i class="fa fa-trash"></i>
+                    </button>
+
+
                     <ui:fragment rendered="#{!messageQueueBean.messageBrokerStart}">
                         <h:outputText value="#{msgs.admin__message_queue__queues_switched_off}" />
                     </ui:fragment>
@@ -103,7 +119,7 @@ Clear</button>
                                         <div
                                             class="col-3 d-flex align-items-center"
                                             role="gridcell">
-                                             <h:outputText value="#{entry.value}" />
+                                            <h:outputText value="#{entry.value}" />
                                         </div>
 
                                         <!-- actions -->
@@ -122,16 +138,16 @@ Clear</button>
             </h:panelGroup>
         </div>
         <script type="text/javascript">
-                                    var dataTableConfig = {
-                                        dataTablePaginator: "#dataTablePaginator",
-                                        txtField1: "#txtMoveTo1",
-                                        txtField2: "#txtMoveTo2",
-                                        totalCount: "#totalCount",
-                                        reloadBtn: 'input[id*="cmdMoveTo"]',
-                                    };
-                                    
-                                    viewerJS.dataTable.init( dataTableConfig );
-                                </script>
+									var dataTableConfig = {
+										dataTablePaginator : "#dataTablePaginator",
+										txtField1 : "#txtMoveTo1",
+										txtField2 : "#txtMoveTo2",
+										totalCount : "#totalCount",
+										reloadBtn : 'input[id*="cmdMoveTo"]',
+									};
+
+									viewerJS.dataTable.init(dataTableConfig);
+								</script>
     </ui:define>
 
 </ui:composition>

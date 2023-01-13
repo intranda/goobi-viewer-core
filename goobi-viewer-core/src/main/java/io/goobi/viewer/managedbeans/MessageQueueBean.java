@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.jms.JMSException;
@@ -62,7 +62,7 @@ import io.goobi.viewer.controller.mq.StartQueueBrokerListener;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 
 @Named
-@SessionScoped
+@ApplicationScoped
 public class MessageQueueBean implements Serializable {
 
     private static final Logger log = LogManager.getLogger(MessageQueueBean.class);
@@ -75,6 +75,8 @@ public class MessageQueueBean implements Serializable {
     private boolean messageBrokerStart;
 
     private String messageType;
+
+    private boolean paused;
 
     public MessageQueueBean() {
         this.initMessageBrokerStart();
@@ -139,6 +141,7 @@ public class MessageQueueBean implements Serializable {
                 QueueViewMBean mbean =
                         (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
                 mbean.pause();
+                paused = true;
             } catch (MalformedObjectNameException e) {
                 log.error(e);
             }
@@ -160,6 +163,7 @@ public class MessageQueueBean implements Serializable {
                 QueueViewMBean mbean =
                         (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
                 mbean.resume();
+                paused = false;
             } catch (MalformedObjectNameException e) {
                 log.error(e);
             }
@@ -286,6 +290,10 @@ public class MessageQueueBean implements Serializable {
 
     public boolean isMessageBrokerStart() {
         return messageBrokerStart;
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 
 }
