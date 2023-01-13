@@ -24,10 +24,15 @@ package io.goobi.viewer.controller.mq;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.persistence.annotations.PrivateOwned;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -53,13 +58,21 @@ public class ViewerMessage {
     @Column(name = "message_id", nullable = false)
     private String messageId;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "mq_message_properties",
-            joinColumns = { @JoinColumn(name = "message_id", referencedColumnName = "id") })
-    @MapKeyColumn(name = "name")
-    @Column(name = "value")
+            joinColumns = @JoinColumn(name = "message_id"))
+    @MapKeyColumn(name = "property_name")
+    @Column(name = "property_value", nullable = true)
+    @PrivateOwned
 
     private Map<String, String> properties = new HashMap<>();
+
+    @Column(name = "message_status")
+    @Enumerated(EnumType.STRING)
+    private MessageStatus messageStatus = MessageStatus.WAIT;
+
+    @Column(name = "retry_count")
+    private int retryCount = 0;
 
     public ViewerMessage() {
 
@@ -67,6 +80,14 @@ public class ViewerMessage {
 
     public ViewerMessage(String taskName) {
         this.taskName = taskName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getPi() {
@@ -81,8 +102,16 @@ public class ViewerMessage {
         return taskName;
     }
 
-    public void setTaskName(String taskType) {
-        this.taskName = taskType;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public Map<String, String> getProperties() {
@@ -93,12 +122,20 @@ public class ViewerMessage {
         this.properties = properties;
     }
 
-    public String getMessageId() {
-        return messageId;
+    public MessageStatus getMessageStatus() {
+        return messageStatus;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
+    public void setMessageStatus(MessageStatus messageStatus) {
+        this.messageStatus = messageStatus;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
     }
 
 }

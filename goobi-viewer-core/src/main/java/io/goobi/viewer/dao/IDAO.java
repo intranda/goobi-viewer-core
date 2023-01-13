@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
@@ -1590,12 +1591,15 @@ public interface IDAO {
     public boolean deleteCMSPage(CMSPage page) throws DAOException;
 
     public List<CMSPageTemplate> getAllCMSPageTemplates() throws DAOException;
+
     public CMSPageTemplate getCMSPageTemplate(Long id) throws DAOException;
+
     public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException;
+
     public boolean updateCMSPageTemplate(CMSPageTemplate template) throws DAOException;
+
     public boolean removeCMSPageTemplate(CMSPageTemplate template) throws DAOException;
-    
-    
+
     /**
      * <p>
      * getAllCMSMediaItems.
@@ -1670,7 +1674,6 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean deleteCMSMediaItem(CMSMediaItem item) throws DAOException;
-
 
     /**
      * Get a list of all {@link CMSMediaItem}s which contain the given category
@@ -2101,7 +2104,6 @@ public interface IDAO {
      * </p>
      */
     public void shutdown();
-
 
     /**
      * <p>
@@ -2651,8 +2653,20 @@ public interface IDAO {
     void handleException(EntityManager em);
 
     public boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+
     public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+
     public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
 
+    public boolean deleteViewerMessagge(ViewerMessage message) throws DAOException;
+
+    public boolean addViewerMessagge(ViewerMessage message) throws DAOException;
+
+    public boolean updateViewerMessagge(ViewerMessage message) throws DAOException;
+
+    public ViewerMessage getViewerMessage(Long id) throws DAOException;
+
+    public ViewerMessage getViewerMessageByMessageID(String id) throws DAOException;
 }

@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.controller.mq;
 
-public enum ReturnValue {
+public enum MessageStatus {
 
     FINISH,
     ERROR,

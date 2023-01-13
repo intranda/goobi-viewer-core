@@ -112,7 +112,7 @@ public class DownloadResource {
     @Operation(tags = { "downloads" }, summary = "Return information about the PDF download job for the given PI and divId")
     public DownloadJob getPDFDownloadInfo(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
-                    throws DAOException, ContentNotFoundException {
+            throws DAOException, ContentNotFoundException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
@@ -141,7 +141,7 @@ public class DownloadResource {
     @AuthorizationBinding
     public String deletePDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
-                    throws DAOException, ContentLibException {
+            throws DAOException, ContentLibException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
@@ -161,27 +161,29 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_PDF_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "downloads" }, summary = "Get the PDF download job for the given PI and divId, creating it if neccessary",
-    description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
     public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
-                    throws DAOException, URISyntaxException, JsonProcessingException {
+            throws DAOException, URISyntaxException, JsonProcessingException {
 
+        ViewerMessage message = MessageGenerator.generateSimpleMessage("pdfDownload");
+        message.setPi(pi);
         // create new downloadjob
 
         DownloadJob job = new PDFDownloadJob(pi, logId, LocalDateTime.now(), DownloadBean.getTimeToLive());
         if (StringUtils.isNotBlank(email)) {
             job.getObservers().add(email.toLowerCase());
+            message.getProperties().put("email", email.toLowerCase());
+        } else {
+            message.getProperties().put("email", "");
         }
         job.setStatus(JobStatus.WAITING);
         DataManager.getInstance().getDao().addDownloadJob(job);
 
         // create new activemq message
 
-        ViewerMessage message = MessageGenerator.generateSimpleMessage("pdfDownload");
-        message.setPi(pi);
-        message.getProperties().put("email", email);
         message.getProperties().put("logId", logId);
 
         try {
@@ -253,7 +255,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_PDF_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "downloads" }, summary = "Get the PDF download job for the given PI, creating it if neccessary",
-    description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
 
     @DownloadBinding
     public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
@@ -279,7 +281,7 @@ public class DownloadResource {
     @Operation(tags = { "downloads" }, summary = "Return information about the EPUB download job for the given PI and divId")
     public DownloadJob getEPUBDownloadInfo(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
-                    throws DAOException, ContentNotFoundException {
+            throws DAOException, ContentNotFoundException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
@@ -308,7 +310,7 @@ public class DownloadResource {
     @AuthorizationBinding
     public String deleteEPUBDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId)
-                    throws DAOException, ContentLibException {
+            throws DAOException, ContentLibException {
         if (StringUtils.isBlank(logId.replaceAll("(?i)[-(null)]", ""))) {
             logId = null;
         }
@@ -328,7 +330,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB_SECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "downloads" }, summary = "Get the EPUB download job for the given PI and divId, creating it if neccessary",
-    description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
     public String putEPUBDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId,
@@ -393,7 +395,7 @@ public class DownloadResource {
     @Path(ApiUrls.DOWNLOADS_EPUB_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "downloads" }, summary = "Get the EPUB download job for the given PI, creating it if neccessary",
-    description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
+            description = "Returns a json object with properties 'url', containing the URL to the download page, and 'job' containing job information")
     @DownloadBinding
     public String putEPUBDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email) throws ContentLibException {

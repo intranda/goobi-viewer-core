@@ -48,6 +48,9 @@ import org.reflections.Reflections;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+
 public class DefaultQueueListener {
 
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);
@@ -57,7 +60,7 @@ public class DefaultQueueListener {
     private MessageConsumer consumer;
     private volatile boolean shouldStop = false;
 
-    private static Map<String, MessageHandler<ReturnValue>> instances = new HashMap<>();
+    private static Map<String, MessageHandler<MessageStatus>> instances = new HashMap<>();
 
     public void register(String username, String password, String queueType) throws JMSException {
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory("vm://localhost");
@@ -92,9 +95,22 @@ public class DefaultQueueListener {
                         }
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());
+                            ViewerMessage ticket = optTicket.get();
+
                             try {
-                                ReturnValue result = handleMessage(optTicket.get());
-                                if (result != ReturnValue.ERROR) {
+                                ViewerMessage retry = DataManager.getInstance().getDao().getViewerMessageByMessageID(message.getJMSMessageID());
+                                if (retry != null) {
+                                    ticket = retry;
+                                    ticket.setRetryCount(ticket.getRetryCount() + 1);
+                                }
+                            } catch (DAOException e) {
+                                log.error(e);
+                            }
+
+                            ticket.setMessageId(message.getJMSMessageID());
+                            try {
+                                MessageStatus result = handleMessage(ticket);
+                                if (result != MessageStatus.ERROR) {
                                     //acknowledge message, it is done
                                     message.acknowledge();
                                 } else {
@@ -130,16 +146,30 @@ public class DefaultQueueListener {
         thread.start();
     }
 
-    private ReturnValue handleMessage(ViewerMessage message) {
+    private MessageStatus handleMessage(ViewerMessage message) {
         if (!instances.containsKey(message.getTaskName())) {
             getInstalledTicketHandler();
         }
-        MessageHandler<ReturnValue> handler = instances.get(message.getTaskName());
+        MessageHandler<MessageStatus> handler = instances.get(message.getTaskName());
         if (handler == null) {
-            return ReturnValue.ERROR;
+            return MessageStatus.ERROR;
         }
 
-        // TODO create database entry with message id, type, status
+        // create database entry
+
+        MessageStatus rv = handler.call(message);
+        message.setMessageStatus(rv);
+
+        try {
+            if (message.getId() == null) {
+                DataManager.getInstance().getDao().addViewerMessagge(message);
+            } else {
+                DataManager.getInstance().getDao().updateViewerMessagge(message);
+            }
+        } catch (DAOException e) {
+            log.error(e);
+        }
+
         return handler.call(message);
     }
 
@@ -161,7 +191,7 @@ public class DefaultQueueListener {
         Set<Class<? extends MessageHandler>> ticketHandlers = new Reflections("io.goobi.viewer.model.job.mq.*").getSubTypesOf(MessageHandler.class);
         for (Class<? extends MessageHandler> clazz : ticketHandlers) {
             try {
-                MessageHandler<ReturnValue> handler = clazz.getDeclaredConstructor().newInstance();
+                MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
                 instances.put(handler.getMessageHandlerName(), handler);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
                     | SecurityException e) {

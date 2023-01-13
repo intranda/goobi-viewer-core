@@ -45,6 +45,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
 import io.goobi.viewer.controller.AlphabetIterator;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -4871,16 +4872,16 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            StringBuilder query = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
             if (page != null) {
-                query += " AND a.targetPageOrder = :page";
+                query.append(" AND a.targetPageOrder = :page");
             } else {
-                query += " AND a.targetPageOrder IS NULL";
+                query.append(" AND a.targetPageOrder IS NULL");
             }
             if (StringUtils.isNotBlank(motivation)) {
-                query += " AND a.motivation =  + :motivation";
+                query.append(" AND a.motivation =  + :motivation");
             }
-            Query q = em.createQuery(query);
+            Query q = em.createQuery(query.toString());
             q.setParameter("pi", pi);
             if (page != null) {
                 q.setParameter("page", page);
@@ -4902,13 +4903,13 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            StringBuilder query = new StringBuilder("SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
             if (page != null) {
-                query += " AND a.targetPageOrder = :page";
+                query.append(" AND a.targetPageOrder = :page");
             } else {
-                query += " AND a.targetPageOrder IS NULL";
+                query.append(" AND a.targetPageOrder IS NULL");
             }
-            Query q = em.createQuery(query);
+            Query q = em.createQuery(query.toString());
             q.setParameter("pi", pi);
             if (page != null) {
                 q.setParameter("page", page);
@@ -6107,11 +6108,11 @@ public class JPADAO implements IDAO {
                 }
                 whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
             }
-            String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
+            StringBuilder filterQuery = new StringBuilder().append(joinStatements.stream().collect(Collectors.joining(" ")));
             if (!whereStatements.isEmpty()) {
-                filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+                filterQuery.append(" WHERE (").append(whereStatements.stream().collect(Collectors.joining(" OR "))).append(")");
             }
-            q.append(filterQuery);
+            q.append(filterQuery.toString());
         }
 
         return q.toString();
@@ -6188,14 +6189,14 @@ public class JPADAO implements IDAO {
                     sbOtherStatements.append(whereStatement);
                 }
             }
-            String filterQuery = QUERY_ELEMENT_WHERE + (sbOwner.length() > 0 ? sbOwner.toString() : "");
+            StringBuilder filterQuery = new StringBuilder(QUERY_ELEMENT_WHERE).append(sbOwner.length() > 0 ? sbOwner.toString() : "");
             if (sbOwner.length() > 0 && sbOtherStatements.length() > 0) {
-                filterQuery += QUERY_ELEMENT_AND;
+                filterQuery.append(QUERY_ELEMENT_AND);
             }
             if (sbOtherStatements.length() > 0) {
-                filterQuery += ("(" + sbOtherStatements.toString() + ")");
+                filterQuery.append("(").append(sbOtherStatements.toString()).append(")");
             }
-            q.append(filterQuery);
+            q.append(filterQuery.toString());
         }
 
         return q.toString();
@@ -6291,21 +6292,22 @@ public class JPADAO implements IDAO {
                     sbOtherStatements.append(whereStatement);
                 }
             }
-            String filterQuery = QUERY_ELEMENT_WHERE + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
+            StringBuilder filterQuery =
+                    new StringBuilder(QUERY_ELEMENT_WHERE).append(sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
 
             if (sbCreatorReviewer.length() > 0 && (sbGenerator.length() > 0 || sbOtherStatements.length() > 0)) {
-                filterQuery += QUERY_ELEMENT_AND;
+                filterQuery.append(QUERY_ELEMENT_AND);
             }
             if (sbGenerator.length() > 0) {
-                filterQuery += "(" + sbGenerator.toString() + ")";
+                filterQuery.append("(").append(sbGenerator.toString()).append(")");
                 if (sbOtherStatements.length() > 0) {
-                    filterQuery += QUERY_ELEMENT_AND;
+                    filterQuery.append(QUERY_ELEMENT_AND);
                 }
             }
             if (sbOtherStatements.length() > 0) {
-                filterQuery += "(" + sbOtherStatements.toString() + ")";
+                filterQuery.append("(").append(sbOtherStatements.toString()).append(")");
             }
-            q.append(filterQuery);
+            q.append(filterQuery.toString());
         }
 
         return q.toString();
@@ -6684,6 +6686,103 @@ public class JPADAO implements IDAO {
             logger.error(e);
             handleException(em);
             return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addViewerMessagge(ViewerMessage message) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(message);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error adding ViewerMessage to database", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteViewerMessagge(ViewerMessage message) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                ViewerMessage o = em.getReference(ViewerMessage.class, message.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error deleting ViewerMessage component", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ViewerMessage getViewerMessage(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(ViewerMessage.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateViewerMessagge(ViewerMessage message) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(message);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public ViewerMessage getViewerMessageByMessageID(String messageId) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a WHERE a.messageId = :messageId");
+
+            Query q = em.createQuery(sbQuery.toString());
+
+            q.setParameter("messageId", messageId);
+            return (ViewerMessage) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return null;
         } finally {
             close(em);
         }

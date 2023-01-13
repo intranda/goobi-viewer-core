@@ -36,7 +36,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.MessageHandler;
-import io.goobi.viewer.controller.mq.ReturnValue;
+import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -49,10 +49,10 @@ import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 
-public class PdfMessageHandler implements MessageHandler<ReturnValue> {
+public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
     @Override
-    public ReturnValue call(ViewerMessage message) {
+    public MessageStatus call(ViewerMessage message) {
 
         String pi = message.getPi();
 
@@ -60,7 +60,7 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
 
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
-            return ReturnValue.ERROR;
+            return MessageStatus.ERROR;
         }
 
         String cleanedPi = StringTools.cleanUserGeneratedData(pi);
@@ -84,10 +84,10 @@ public class PdfMessageHandler implements MessageHandler<ReturnValue> {
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException
                 | MessagingException e) {
 
-            return ReturnValue.ERROR;
+            return MessageStatus.ERROR;
         }
 
-        return ReturnValue.FINISH;
+        return MessageStatus.FINISH;
     }
 
     private void createPdf(Dataset work, Path pdfFile) throws IOException, ContentLibException {
