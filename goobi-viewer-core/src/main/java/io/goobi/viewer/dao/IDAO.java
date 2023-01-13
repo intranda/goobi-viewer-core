@@ -2660,13 +2660,41 @@ public interface IDAO {
 
     public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
 
-    public boolean deleteViewerMessagge(ViewerMessage message) throws DAOException;
+    public boolean deleteViewerMessage(ViewerMessage message) throws DAOException;
 
-    public boolean addViewerMessagge(ViewerMessage message) throws DAOException;
+    public boolean addViewerMessage(ViewerMessage message) throws DAOException;
 
-    public boolean updateViewerMessagge(ViewerMessage message) throws DAOException;
+    public boolean updateViewerMessage(ViewerMessage message) throws DAOException;
 
     public ViewerMessage getViewerMessage(Long id) throws DAOException;
 
     public ViewerMessage getViewerMessageByMessageID(String id) throws DAOException;
+
+    /**
+     * <p>
+     * getViewerMessages.
+     * </p>
+     *
+     * @param first a int.
+     * @param pageSize a int.
+     * @param sortField a {@link java.lang.String} object.
+     * @param descending a boolean.
+     * @param filters a {@link java.util.Map} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<ViewerMessage> getViewerMessages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+
+    /**
+     * <p>
+     * getViewerMessageCount.
+     * </p>
+     *
+     * @param filters a {@link java.util.Map} object.
+     * @return a long.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getViewerMessageCount(Map<String, String> filters) throws DAOException;
+
 }

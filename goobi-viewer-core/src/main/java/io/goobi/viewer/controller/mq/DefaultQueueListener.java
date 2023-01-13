@@ -162,9 +162,9 @@ public class DefaultQueueListener {
 
         try {
             if (message.getId() == null) {
-                DataManager.getInstance().getDao().addViewerMessagge(message);
+                DataManager.getInstance().getDao().addViewerMessage(message);
             } else {
-                DataManager.getInstance().getDao().updateViewerMessagge(message);
+                DataManager.getInstance().getDao().updateViewerMessage(message);
             }
         } catch (DAOException e) {
             log.error(e);

@@ -189,7 +189,7 @@
                                         <div
                                             class="col-3 d-flex -sorting-arrow-trigger"
                                             role="columnheader">
-                                            <h:outputText value="#{msgs.admin__message_queue__properties}" />
+                                            <h:outputText value="#{msg.admin__message_queue__properties}" />
                                         </div>
                                         <div
                                             class="col-2 d-flex"
@@ -237,6 +237,130 @@
                             </ui:fragment>
                         </h:panelGroup>
 
+
+
+                        <h:panelGroup
+                            id="history"
+                            layout="block"
+                            styleClass="message-history">
+
+#{msg.admin__message_queue__history}
+                            <div class="admin__table-tools flex-wrap">
+                                <!-- PAGINATOR -->
+                                <div class="admin__table-paginator">
+                                    <viewerComponent:dataTablePaginator tableValues="#{messageQueueBean.lazyModelViewerHistory}" />
+                                </div>
+                                <!-- FILTER -->
+                                <div class="admin__table-filter b-3 mb-sm-0">
+                                    <!-- TODO: ADD FILTER FOR targetPI, TOO 
+                                        <viewerComponent:dataTableColumnFilter
+                                            key="admin__comment_search"
+                                            filter="#{messageQueueBean.lazyModelViewerHistory.getFilter('targetPI_body_campaign_dateCreated')}" />-->
+                                </div>
+                            </div>
+
+
+                            <!-- ALL USER COMMENTS TABLE -->
+                            <div
+                                id="messagesHistoryTable"
+                                class="admin__table-content"
+                                role="grid"
+                                aria-label="#{msg.messagesHistoryTable}">
+
+                                <!-- TITLE ROW -->
+                                <div
+                                    class="row no-gutters admin__table-title"
+                                    role="row">
+
+
+                                    <div
+                                        class="col-2 d-flex -sorting-arrow-trigger"
+                                        role="columnheader">
+                                        <h:outputText value="#{msg.admin__message_queue__message_id}" />
+                                    </div>
+                                    <div
+                                        class="col-2 d-flex -sorting-arrow-trigger"
+                                        role="columnheader">
+                                        <h:outputText value="#{msg.admin__message_queue__message_type}" />
+                                    </div>
+                                    <div
+                                        class="col-2 d-flex -sorting-arrow-trigger"
+                                        role="columnheader">
+                                        <h:outputText value="#{msg.admin__message_queue__pi}" />
+                                    </div>
+                                    <div
+                                        class="col-2 d-flex -sorting-arrow-trigger"
+                                        role="columnheader">
+                                        <h:outputText value="#{msg.admin__message_queue__properties}" />
+                                    </div>
+                                    <div
+                                        class="col-2 d-flex"
+                                        role="columnheader"><h:outputText value="#{msg.admin__message_queue__status}"></h:outputText></div>
+
+                                    <div
+                                        class="col-2 d-flex"
+                                        role="columnheader"><h:outputText value="#{msg.admin__message_queue__retries}"></h:outputText></div>
+                                </div>
+
+                                <div
+                                    class="user-comments__table-body"
+                                    role="presentation">
+
+                                    <!-- INDIVIDUAL COMMENTS ROWS -->
+                                    <ui:repeat
+                                        var="message"
+                                        value="#{messageQueueBean.lazyModelViewerHistory.paginatorList}">
+                                        <div
+                                            class="row no-gutters admin__table-entry"
+                                            role="row">
+
+
+                                            <div class="col-2 d-flex">
+                                                <h:outputText value="#{message.messageId}" />
+                                            </div>
+
+                                            <div class="col-2 d-flex">
+                                                <h:outputText value="#{msg[message.taskName]}" />
+                                            </div>
+                                            <div class="col-2 d-flex">
+                                                <h:outputText value="#{message.pi}" />
+                                            </div>
+                                            <div class="col-2 d-flex">
+                                                <ui:repeat
+                                                    var="prop"
+                                                    value="#{message.properties.keySet()}">
+                                                    <h:outputText value="#{prop}: #{ticket.properties[prop]} " />
+                                                    <br />
+                                                </ui:repeat>
+                                            </div>
+                                            <div class="col-2 d-flex">
+                                                <h:outputText value="#{message.messageStatus}" />
+                                            </div>
+
+                                            <div class="col-2 d-flex">
+                                                <h:outputText value="#{message.retryCount}" />
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                </div>
+
+                                <script>
+                        $(document).ready(() => {
+                            riot.mount( "annotationBody", {
+                                    currentlang: "#{navigationHelper.localeString}",
+                                    resturl: "#{configurationBean.restApiUrlV1}",
+                                    geomap : {
+                                        initialView : {
+                                            zoom: #{configurationBean.geomapAnnotationZoom},
+                                        },
+                                    }
+                            } );
+                        });
+            </script>
+
+                            </div>
+
+                        </h:panelGroup>
 
                     </ui:fragment>
                 </h:form>

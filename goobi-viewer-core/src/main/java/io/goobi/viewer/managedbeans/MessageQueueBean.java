@@ -25,11 +25,14 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
@@ -60,6 +63,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.StartQueueBrokerListener;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 
 @Named
 @ApplicationScoped
@@ -78,8 +85,15 @@ public class MessageQueueBean implements Serializable {
 
     private boolean paused;
 
+    private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
+
     public MessageQueueBean() {
         this.initMessageBrokerStart();
+
+    }
+
+    @PostConstruct
+    public void init() throws DAOException {
 
         if (this.messageBrokerStart) {
 
@@ -94,7 +108,11 @@ public class MessageQueueBean implements Serializable {
             } catch (JMSException e) {
                 log.error(e);
             }
+            if (lazyModelViewerHistory == null) {
+                lazyModelViewerHistory = initLazyModel();
+            }
         }
+
     }
 
     public Map<String, Integer> getQueueContent() {
@@ -294,6 +312,52 @@ public class MessageQueueBean implements Serializable {
 
     public boolean isPaused() {
         return paused;
+    }
+
+    private TableDataProvider<ViewerMessage> initLazyModel() {
+        TableDataProvider<ViewerMessage> model = new TableDataProvider<>(new TableDataSource<ViewerMessage>() {
+
+            private Optional<Long> numCreatedPages = Optional.empty();
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public List<ViewerMessage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                    Map<String, String> filters) {
+                if (StringUtils.isBlank(sortField)) {
+                    sortField = "id";
+                    sortOrder = SortOrder.DESCENDING;
+                }
+                List<ViewerMessage> ret;
+                try {
+                    ret = DataManager.getInstance().getDao().getViewerMessages(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                } catch (DAOException e) {
+                    log.error(e);
+                    return Collections.emptyList();
+                }
+
+                return ret;
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                try {
+                    return DataManager.getInstance().getDao().getViewerMessageCount(filters);
+                } catch (DAOException e) {
+                    return 0;
+                }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
+                numCreatedPages = Optional.empty();
+            }
+        });
+        model.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
+        return model;
+    }
+
+    public TableDataProvider<ViewerMessage> getLazyModelViewerHistory() {
+        return lazyModelViewerHistory;
     }
 
 }

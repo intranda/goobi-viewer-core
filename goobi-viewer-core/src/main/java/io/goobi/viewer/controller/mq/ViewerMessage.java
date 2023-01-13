@@ -72,7 +72,7 @@ public class ViewerMessage {
     private MessageStatus messageStatus = MessageStatus.WAIT;
 
     @Column(name = "retry_count")
-    private int retryCount = 0;
+    private int retryCount = 1;
 
     public ViewerMessage() {
 

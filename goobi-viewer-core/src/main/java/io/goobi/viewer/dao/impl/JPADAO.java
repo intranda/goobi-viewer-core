@@ -6693,7 +6693,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addViewerMessagge(ViewerMessage message) throws DAOException {
+    public boolean addViewerMessage(ViewerMessage message) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
@@ -6715,7 +6715,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean deleteViewerMessagge(ViewerMessage message) throws DAOException {
+    public boolean deleteViewerMessage(ViewerMessage message) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
@@ -6751,7 +6751,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateViewerMessagge(ViewerMessage message) throws DAOException {
+    public boolean updateViewerMessage(ViewerMessage message) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -6787,4 +6787,61 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ViewerMessage> getViewerMessages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a");
+            Map<String, String> params = new HashMap<>();
+
+            if (filters != null) {
+                String filterValue = filters.values().stream().findFirst().orElse("");
+                if (StringUtils.isNotBlank(filterValue)) {
+                    String filterQuery = getUsersFilterQuery("value");
+                    params.put("value", sanitizeQueryParam(filterValue, true));
+                    sbQuery.append(filterQuery);
+                }
+            }
+
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    sbQuery.append(QUERY_ELEMENT_DESC);
+                }
+            }
+            logger.trace(sbQuery);
+            Query q = em.createQuery(sbQuery.toString());
+            for (Entry<String, String> entry : params.entrySet()) {
+                q.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getViewerMessageCount(Map<String, String> filters) throws DAOException {
+        String filterQuery = "";
+        Map<String, String> params = new HashMap<>();
+        if (filters != null) {
+            String filterValue = filters.values().stream().findFirst().orElse("");
+            if (StringUtils.isNotBlank(filterValue)) {
+                filterQuery = getUsersFilterQuery("value");
+                params.put("value", sanitizeQueryParam(filterValue, true));
+            }
+        }
+        return getFilteredRowCount("ViewerMessage", filterQuery, params);
+    }
+
 }
