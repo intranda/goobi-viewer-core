@@ -21,10 +21,17 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.viewer.LabeledLink;
+import io.goobi.viewer.model.viewer.PageType;
 
 public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
 
@@ -147,5 +154,27 @@ public class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("dValue");
         Assert.assertEquals("dValue", nh.getStatusMapValue(NavigationHelper.KEY_SUBTHEME_DISCRIMINATOR_VALUE));
+    }
+    
+    @Test
+    public void test_createAdminBreadcrumbs() {
+        NavigationHelper nh = new NavigationHelper();
+        PageType pageType = PageType.getByName("adminTranslationsEdit");
+        List<List<String>> labels = List.of(List.of("adminTranslationsEdit", "Sammlungsnamen"), List.of("foobar"));
+        List<LabeledLink> breadcrumbs = nh.createAdminBreadcrumbs(pageType, labels);
+        
+        assertEquals(3, breadcrumbs.size());
+        
+        LabeledLink first = breadcrumbs.get(0);
+        assertEquals(ViewerResourceBundle.getTranslation(PageType.adminDashboard.getLabel(), nh.getLocale()), first.getName());
+        assertEquals("/" + PageType.adminDashboard.getName(), first.getUrl());
+        
+        LabeledLink second = breadcrumbs.get(1);
+        assertEquals("/" + PageType.adminTranslations.getName(), second.getUrl());
+        assertEquals("foobar", second.getName());
+        
+        LabeledLink third = breadcrumbs.get(2);
+        String label = ViewerResourceBundle.getTranslationWithParameters("adminTranslationsEdit", nh.getLocale(), "Sammlungsnamen");
+        assertEquals(label, third.getName());
     }
 }

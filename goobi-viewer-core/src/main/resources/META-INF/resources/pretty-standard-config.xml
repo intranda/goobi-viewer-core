@@ -975,6 +975,8 @@
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <query-param name="templateId" onPostback="false" >#{templateId}</query-param>
+        <query-param name="title" onPostback="false" >#{title}</query-param>
+        <query-param name="relatedPi" onPostback="false" >#{relatedPi}</query-param>
     </url-mapping>
     <url-mapping id="adminCmsEditPageTemplate">
         <pattern value="/admin/cms/pages/templates/edit/#{templateId}/" />

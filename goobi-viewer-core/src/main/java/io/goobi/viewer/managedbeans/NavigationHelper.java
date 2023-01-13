@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -465,6 +467,10 @@ public class NavigationHelper implements Serializable {
      * @param pageName a {@link java.lang.String} object.
      */
     public void setCurrentPageAdmin(String pageName) {
+        setCurrentPageAdmin(pageName, Collections.emptyList());
+    }
+    
+    public void setCurrentPageAdmin(String pageName, List<List<String>> labels) {
         breadcrumbBean.resetBreadcrumbs(false);
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
@@ -473,21 +479,35 @@ public class NavigationHelper implements Serializable {
                 this.currentPage = PageType.admin.name();
             } else {
                 this.currentPage = pageType.name();
-                setAdminBreadcrumbs(pageType);
+                List<LabeledLink> breadcrumbs = createAdminBreadcrumbs(pageType, labels);
+                breadcrumbs.forEach(link -> breadcrumbBean.updateBreadcrumbs(link));
+
             }
         } else {
             this.currentPage = "adminAllUsers";
         }
 
     }
+
     
-    public void setAdminBreadcrumbs(PageType pageType) {
+    
+    protected List<LabeledLink> createAdminBreadcrumbs(PageType pageType, List<List<String>> labels) {
         
         PageType breadcrumbType = pageType;
         List<LabeledLink> links = new ArrayList<>();
+        Iterator<List<String>> labelIterator = labels.iterator();
         while(breadcrumbType != null) {
+            String label;
+            if(labelIterator.hasNext()) {
+                List<String> labelArray = labelIterator.next();
+                String key = labelArray.get(0);
+                String[] params = labelArray.subList(1, labelArray.size()).toArray(new String[labelArray.size()-1]);
+                label = ViewerResourceBundle.getTranslationWithParameters(key, locale, params);
+            } else {
+                label = ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale);
+            }
             links.add(
-                    new LabeledLink(ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale),
+                    new LabeledLink(label,
                             BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + breadcrumbType.getName(),
                             0));
             breadcrumbType = breadcrumbType.getParent();
@@ -496,7 +516,7 @@ public class NavigationHelper implements Serializable {
         for (int i = 0; i < links.size(); i++) {
             links.get(i).setWeight(i);
         }
-        links.forEach(link -> breadcrumbBean.updateBreadcrumbs(link));
+        return links;
     }
 
     /**
