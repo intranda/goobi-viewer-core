@@ -1309,6 +1309,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .flatMap(c -> c.getContentItems().stream())
                 .filter(CMSSearchContent.class::isInstance)
                 .map(content -> ((CMSSearchContent) content).getSearch())
+                .filter(Objects::nonNull)
                 .findAny();
     }
 
