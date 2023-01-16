@@ -4,6 +4,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <!-- INTERFACE OPTIONS -->
@@ -25,11 +27,14 @@
                                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" alt="Chrono Slider Loader" />
                             </div>
                             <div class="widget-chronology-slider__item chronology-slider-action-reset">
-                                <button type="button" class="widget-chronology-slider__action-reset-button"
-                                    title="#{msg.removeFacet}" data-toggle="tooltip"
-                                    data-placement="top" data-reset="chrono-slider">
-                                    <i class="fa fa-times" aria-hidden="true"></i>
-                                </button>
+                                <h:form>
+	                                <button class="widget-chronology-slider__action-reset-button"
+	                                    title="#{msg.removeFacet}" data-toggle="tooltip"
+	                                    data-placement="top" data-reset="chrono-slider"
+	                                    jsf:action="#{searchBean.removeChronologyFacetAction()}">
+	                                    <i class="fa fa-times" aria-hidden="true"></i>
+	                                </button>
+                                </h:form>
                             </div>
                         </div>
                     </div>
@@ -54,20 +59,20 @@
                     </div>
                     
                     <chronoSlider 
-                    	year-list="#{searchBean.facets.getValueRange('#{field.key}')}" 
+                    	year-list="#{searchBean.facets.getValueRange(field.key)}" 
                     	start-year="#{searchBean.facets.getCurrentMinRangeValue(field.key)}"
                     	end-year="#{searchBean.facets.getCurrentMaxRangeValue(field.key)}"
-                    	value-input="chronologySliderInput-#{status.count}"
-                    	update-facet="chronologySliderSet-#{status.count}"
-                    	remove-facet="chronologySliderReset-#{status.count}"
+                    	value-input="#{cc.clientId}:chronologySliderForm:chronologySliderInput"
+                    	update-facet="#{cc.clientId}:chronologySliderForm:chronologySliderSet"
+                    	remove-facet="#{cc.clientId}:chronologySliderForm:chronologySliderReset"
                     	loader="chronologyLoader-#{status.count}"
                     	/>
             
                     <!-- HIDDEN FORM TO UPDATE SEARCHHITS -->
-                    <h:form id="chronologySliderForm" prependId="false" styleClass="hidden">
-                        <h:inputHidden id="chronologySliderInput-#{status.count}" value="#{searchBean.facets.tempValue}" />
-                        <h:commandButton id="chronologySliderSet-#{status.count}" action="#{searchBean.updateFacetItem(field.key, false)}" />
-                        <h:commandLink id="chronologySliderReset-#{status.count}" action="#{searchBean.removeChronologyFacetAction()}" value="reset"/>
+                    <h:form id="chronologySliderForm" styleClass="hidden">
+                        <h:inputHidden id="chronologySliderInput" value="#{searchBean.facets.tempValue}" />
+                        <h:commandButton id="chronologySliderSet" action="#{searchBean.updateFacetItem(field.key, false)}" />
+                        <h:commandLink id="chronologySliderReset" action="#{searchBean.removeChronologyFacetAction()}" value="reset"/>
                     </h:form>
     
                     <script type="text/javascript">
