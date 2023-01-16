@@ -497,8 +497,10 @@ public class CmsBean implements Serializable {
      */
     public String getUrl(CMSPage page, boolean pretty) {
         try {
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/")
-                    .append(page.getRelativeUrlPath(pretty))
+            String host = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+            String prettyPath = page.getRelativeUrlPath(pretty);
+            return new StringBuilder(host).append("/")
+                    .append(prettyPath)
                     .toString();
         } catch (NullPointerException e) {
             return "pretty:index";
@@ -659,11 +661,16 @@ public class CmsBean implements Serializable {
      */
     public void setCurrentPage(CMSPage currentPage) {
         if (currentPage != null) {
-            this.currentPage = new CMSPage(currentPage);
-            this.currentPage.initialiseCMSComponents(templateManager);
-            this.currentPage.setListPage(1);
-            navigationHelper.setCmsPage(true);
-            logger.trace("Set current cms page to {}", this.currentPage.getTitle());
+//            
+//            if(String.valueOf(currentPage.getId()).equals(getCurrentPageId())) {
+//                //do nothing
+//            } else {
+                this.currentPage = new CMSPage(currentPage);
+                this.currentPage.initialiseCMSComponents(templateManager);
+                this.currentPage.setListPage(1);
+                navigationHelper.setCmsPage(true);
+                logger.trace("Set current cms page to {}", this.currentPage.getTitle());                
+//            }
         } else {
             this.currentPage = null;
         }
