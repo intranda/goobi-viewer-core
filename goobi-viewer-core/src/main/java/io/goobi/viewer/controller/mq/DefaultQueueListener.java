@@ -23,6 +23,7 @@
 package io.goobi.viewer.controller.mq;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,6 +111,7 @@ public class DefaultQueueListener {
                             ticket.setMessageId(message.getJMSMessageID());
                             try {
                                 MessageStatus result = handleMessage(ticket);
+
                                 if (result != MessageStatus.ERROR) {
                                     //acknowledge message, it is done
                                     message.acknowledge();
@@ -159,7 +161,7 @@ public class DefaultQueueListener {
 
         MessageStatus rv = handler.call(message);
         message.setMessageStatus(rv);
-
+        message.setLastUpdateTime(LocalDateTime.now());
         try {
             if (message.getId() == null) {
                 DataManager.getInstance().getDao().addViewerMessage(message);

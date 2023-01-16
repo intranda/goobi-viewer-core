@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller.mq;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,6 +74,9 @@ public class ViewerMessage {
 
     @Column(name = "retry_count")
     private int retryCount = 1;
+
+    @Column(name = "last_update_time")
+    private LocalDateTime lastUpdateTime = LocalDateTime.now();
 
     public ViewerMessage() {
 
@@ -136,6 +140,14 @@ public class ViewerMessage {
 
     public void setRetryCount(int retryCount) {
         this.retryCount = retryCount;
+    }
+
+    public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public LocalDateTime getLastUpdateTime() {
+        return lastUpdateTime;
     }
 
 }
