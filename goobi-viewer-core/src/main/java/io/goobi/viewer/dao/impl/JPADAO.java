@@ -6814,8 +6814,6 @@ public class JPADAO implements IDAO {
                 }
             } else {
                 sbQuery.append(" ORDER BY a.lastUpdateTime desc").append(QUERY_ELEMENT_DESC);
-                ;
-
             }
             logger.trace(sbQuery);
             Query q = em.createQuery(sbQuery.toString());

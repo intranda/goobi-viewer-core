@@ -36,6 +36,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.controller.DataManager;
 
@@ -82,7 +83,7 @@ public class MessageGenerator {
         // See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-additional-fifo-queue-recommendations.html
         message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
 
-        message.setText(new ObjectMapper().writeValueAsString(ticket));
+        message.setText(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(ticket));
         message.setStringProperty("JMSType", ticketType);
         message.setStringProperty("identifier", identifier);
         producer.send(message);

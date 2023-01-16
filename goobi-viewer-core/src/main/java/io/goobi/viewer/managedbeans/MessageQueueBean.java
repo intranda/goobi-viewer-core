@@ -59,6 +59,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.StartQueueBrokerListener;
@@ -239,7 +240,8 @@ public class MessageQueueBean implements Serializable {
                 Enumeration<?> messagesInQueue = browser.getEnumeration();
                 while (messagesInQueue.hasMoreElements() && answer.size() < 100) {
                     ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
-                    ViewerMessage ticket = new ObjectMapper().readValue(queueMessage.getText(), ViewerMessage.class);
+                    ViewerMessage ticket =
+                            new ObjectMapper().registerModule(new JavaTimeModule()).readValue(queueMessage.getText(), ViewerMessage.class);
                     ticket.setMessageId(queueMessage.getJMSMessageID());
 
                     answer.add(ticket);

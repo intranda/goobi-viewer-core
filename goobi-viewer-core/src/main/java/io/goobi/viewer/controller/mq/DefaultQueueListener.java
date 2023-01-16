@@ -48,6 +48,7 @@ import org.reflections.Reflections;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -86,13 +87,15 @@ public class DefaultQueueListener {
                         Optional<ViewerMessage> optTicket = Optional.empty();
                         if (message instanceof TextMessage) {
                             TextMessage tm = (TextMessage) message;
-                            optTicket = Optional.of(new ObjectMapper().readValue(tm.getText(), ViewerMessage.class));
+                            optTicket =
+                                    Optional.of(new ObjectMapper().registerModule(new JavaTimeModule()).readValue(tm.getText(), ViewerMessage.class));
                         }
                         if (message instanceof BytesMessage) {
                             BytesMessage bm = (BytesMessage) message;
                             byte[] bytes = new byte[(int) bm.getBodyLength()];
                             bm.readBytes(bytes);
-                            optTicket = Optional.of(new ObjectMapper().readValue(new String(bytes), ViewerMessage.class));
+                            optTicket = Optional
+                                    .of(new ObjectMapper().registerModule(new JavaTimeModule()).readValue(new String(bytes), ViewerMessage.class));
                         }
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());

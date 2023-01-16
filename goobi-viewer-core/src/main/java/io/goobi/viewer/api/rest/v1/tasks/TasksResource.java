@@ -26,8 +26,10 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.TASKS_TASK;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -40,8 +42,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -52,8 +56,9 @@ import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageGenerator;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
-import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -69,7 +74,6 @@ public class TasksResource {
     private static final Logger logger = LogManager.getLogger(TasksResource.class);
     private final HttpServletRequest request;
 
-
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;
     }
@@ -83,11 +87,25 @@ public class TasksResource {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
         if (isAuthorized(desc.type, Optional.empty(), request)) {
-            Task job = new Task(desc, TaskManager.createTask(desc.type));
-            logger.debug("Created new task REST API task '{}'", job);
-            DataManager.getInstance().getRestApiJobManager().addTask(job);
-            DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
-            return job;
+
+            if (desc.type == TaskType.NOTIFY_SEARCH_UPDATE) {
+                ViewerMessage message = MessageGenerator.generateSimpleMessage("NOTIFY_SEARCH_UPDATE");
+                String identifier = UUID.randomUUID().toString();
+                message.setPi(identifier);
+                try {
+                    MessageGenerator.submitInternalMessage(message, "viewer", "NOTIFY_SEARCH_UPDATE", identifier);
+                } catch (JMSException | JsonProcessingException e) {
+                    // mq is not reachable
+                    logger.error(e);
+                }
+                return null;
+            } else {
+                Task job = new Task(desc, TaskManager.createTask(desc.type));
+                logger.debug("Created new task REST API task '{}'", job);
+                DataManager.getInstance().getRestApiJobManager().addTask(job);
+                DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
+                return job;
+            }
         }
 
         throw new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
