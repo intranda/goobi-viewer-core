@@ -312,6 +312,10 @@ public class SearchBean implements SearchInterface, Serializable {
         generateSimpleSearchString(searchString);
         return "pretty:newSearch5";
     }
+    
+    public String simpleSearch(SearchInterface search) {
+        return search.searchSimple();
+    }
 
     /**
      * Same as <code>searchSimple()</code> but resets the current facets.

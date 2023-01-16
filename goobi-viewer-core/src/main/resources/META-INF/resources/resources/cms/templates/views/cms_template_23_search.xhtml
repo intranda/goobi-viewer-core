@@ -30,8 +30,7 @@
 
 			<!-- SEARCH HEADER -->
 			<ui:include src="/resources/includes/search/searchHeader.xhtml">
-				<ui:param name="search"
-					value="#{cc.attrs.component.getContentItem('search').content.functionality}" />
+				<ui:param name="search" value="#{sessionBean.get('cmsSearch')}" />
 				<ui:param name="searchType" value="0"></ui:param>
 
 				<ui:param name="renderOnSearchTypeChange" value="#{cmsTextContent}"></ui:param>
