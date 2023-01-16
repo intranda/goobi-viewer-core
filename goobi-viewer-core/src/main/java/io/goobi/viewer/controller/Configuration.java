@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -138,11 +137,11 @@ public class Configuration extends AbstractConfiguration {
         // Load default config file
         builder =
                 new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
-                .configure(new Parameters().properties()
-                        .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
-                        .setFileName(configFilePath)
-                        .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
-                        .setThrowExceptionOnMissing(false));
+                        .configure(new Parameters().properties()
+                                .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
+                                .setFileName(configFilePath)
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
+                                .setThrowExceptionOnMissing(false));
         if (builder.getFileHandler().getFile().exists()) {
             try {
                 builder.getConfiguration();
@@ -153,13 +152,13 @@ public class Configuration extends AbstractConfiguration {
             builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
                     new EventListener() {
 
-                @Override
-                public void onEvent(Event event) {
-                    if (builder.getReloadingController().checkForReloading(null)) {
-                        //
-                    }
-                }
-            });
+                        @Override
+                        public void onEvent(Event event) {
+                            if (builder.getReloadingController().checkForReloading(null)) {
+                                //
+                            }
+                        }
+                    });
         } else {
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
                     builder.getFileHandler().getBasePath());
@@ -169,10 +168,10 @@ public class Configuration extends AbstractConfiguration {
         File fileLocal = new File(getConfigLocalPath() + CONFIG_FILE_NAME);
         builderLocal =
                 new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
-                .configure(new Parameters().properties()
-                        .setFileName(fileLocal.getAbsolutePath())
-                        .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
-                        .setThrowExceptionOnMissing(false));
+                        .configure(new Parameters().properties()
+                                .setFileName(fileLocal.getAbsolutePath())
+                                .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
+                                .setThrowExceptionOnMissing(false));
         if (builderLocal.getFileHandler().getFile().exists()) {
             try {
                 builderLocal.getConfiguration();
@@ -183,13 +182,13 @@ public class Configuration extends AbstractConfiguration {
             builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
                     new EventListener() {
 
-                @Override
-                public void onEvent(Event event) {
-                    if (builderLocal.getReloadingController().checkForReloading(null)) {
-                        //
-                    }
-                }
-            });
+                        @Override
+                        public void onEvent(Event event) {
+                            if (builderLocal.getReloadingController().checkForReloading(null)) {
+                                //
+                            }
+                        }
+                    });
         }
 
         // Load stopwords
@@ -197,7 +196,7 @@ public class Configuration extends AbstractConfiguration {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (
 
-                FileNotFoundException e) {
+        FileNotFoundException e) {
             logger.error(e.getMessage());
             stopwords = new HashSet<>(0);
         } catch (IOException | IllegalArgumentException e) {
@@ -489,8 +488,7 @@ public class Configuration extends AbstractConfiguration {
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
@@ -529,9 +527,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<Metadata> ret = new ArrayList<>(elements.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = elements.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
-
+        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
             Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
             if (md != null) {
                 ret.add(md);
@@ -574,8 +570,7 @@ public class Configuration extends AbstractConfiguration {
         List<MetadataParameter> paramList = null;
         if (params != null) {
             paramList = new ArrayList<>(params.size());
-            for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = params.iterator(); it2.hasNext();) {
-                HierarchicalConfiguration<ImmutableNode> sub2 = it2.next();
+            for (HierarchicalConfiguration<ImmutableNode> sub2 : params) {
                 paramList.add(MetadataParameter.createFromConfig(sub2, topstructValueFallbackDefaultValue));
             }
         }
@@ -621,8 +616,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
@@ -782,8 +776,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<CitationLink> ret = new ArrayList<>();
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = links.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : links) {
             String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
             String level = sub.getString("[@for]");
             String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
@@ -892,8 +885,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<BrowsingMenuFieldConfig> ret = new ArrayList<>(fields.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fields.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : fields) {
             String field = sub.getString(".");
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
@@ -959,8 +951,7 @@ public class Configuration extends AbstractConfiguration {
             return null;
         }
 
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = collectionList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : collectionList) {
             if (subElement.getString("[@field]").equals(field)) {
                 return subElement;
 
@@ -1291,8 +1282,7 @@ public class Configuration extends AbstractConfiguration {
         if (values.isEmpty()) {
             return 10;
         }
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = values.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : values) {
             if (sub.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)) {
                 return sub.getInt(".");
             }
@@ -1340,8 +1330,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             String field = subElement.getString(".");
             if (StringUtils.isEmpty(field)) {
                 logger.warn("No advanced search field name defined, skipping.");
@@ -1499,8 +1488,7 @@ public class Configuration extends AbstractConfiguration {
             return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
         }
 
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
                 return subElement.getInt("[@displaySelectItemsThreshold]", AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD);
             }
@@ -1524,8 +1512,7 @@ public class Configuration extends AbstractConfiguration {
             return null;
         }
 
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
                 return subElement.getString(XML_PATH_ATTRIBUTE_LABEL, "");
             }
@@ -1546,8 +1533,7 @@ public class Configuration extends AbstractConfiguration {
             return false;
         }
 
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
                 return subElement.getBoolean("[@" + attribute + "]", false);
             }
@@ -2481,7 +2467,7 @@ public class Configuration extends AbstractConfiguration {
         if (docStructTypes != null) {
             String[] docStructTypesSplit = docStructTypes.split(";");
             for (String dst : docStructTypesSplit) {
-                if (dst.equals("_ALL") || dst.equals(docStructType)) {
+                if ("_ALL".equals(dst) || dst.equals(docStructType)) {
                     logger.trace("Tree view for {} allowed", docStructType);
                     return true;
                 }
@@ -2593,7 +2579,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         String value = getPropertyForFacetField(facetField, "[@initialElementNumber]", "-1");
-        return Integer.valueOf(value.trim());
+        return Integer.parseInt(value.trim());
     }
 
     /**
@@ -2649,7 +2635,7 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
         String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
-        return Boolean.valueOf(value);
+        return Boolean.parseBoolean(value);
     }
 
     /**
@@ -2672,7 +2658,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
+                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -2687,7 +2673,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
+                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -3709,8 +3695,7 @@ public class Configuration extends AbstractConfiguration {
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
@@ -3796,8 +3781,7 @@ public class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             String templateName = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (templateName != null) {
                 if (templateName.equals(template)) {
@@ -3823,8 +3807,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<StringPair> ret = new ArrayList<>(fields.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = fields.iterator(); it2.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it2.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : fields) {
             String field = sub.getString(".");
             String order = sub.getString("[@order]");
             ret.add(new StringPair(field, "desc".equals(order) ? "desc" : "asc"));
@@ -3847,8 +3830,7 @@ public class Configuration extends AbstractConfiguration {
             return null;
         }
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             String templateName = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (templateName != null) {
                 if (templateName.equals(template)) {
@@ -4093,8 +4075,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<Map<String, String>> ret = new ArrayList<>(elements.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = elements.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
             Map<String, String> fieldConfig = new HashMap<>();
             fieldConfig.put("jsonField", sub.getString("[@jsonField]", null));
             fieldConfig.put("luceneField", sub.getString("[@solrField]", null)); // deprecated
@@ -5381,11 +5362,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public String getActiveMQConfigPath() {
-        return getLocalString("activeMQ.configuration", getConfigLocalPath() + "viewer_activemq.xml");
+        return getLocalString("activeMQ.configuration", getConfigLocalPath() + "config_activemq.xml");
     }
 
     public int getNumberOfParallelMessages() {
-        return getLocalInt("activeMQ[@numberOfParallelMessages]",1);
+        return getLocalInt("activeMQ[@numberOfParallelMessages]", 1);
     }
 
     public String getActiveMQUsername() {
