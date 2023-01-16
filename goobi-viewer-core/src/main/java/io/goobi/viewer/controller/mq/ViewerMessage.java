@@ -70,7 +70,7 @@ public class ViewerMessage {
 
     @Column(name = "message_status")
     @Enumerated(EnumType.STRING)
-    private MessageStatus messageStatus = MessageStatus.WAIT;
+    private MessageStatus messageStatus = MessageStatus.NEW;
 
     @Column(name = "retry_count")
     private int retryCount = 1;

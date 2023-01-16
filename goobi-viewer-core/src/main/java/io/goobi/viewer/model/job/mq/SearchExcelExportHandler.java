@@ -19,13 +19,29 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller.mq;
 
-public enum MessageStatus {
+package io.goobi.viewer.model.job.mq;
 
-    FINISH,
-    ERROR,
-    WAIT,
-    NEW;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.mq.MessageHandler;
+import io.goobi.viewer.controller.mq.MessageStatus;
+import io.goobi.viewer.controller.mq.ViewerMessage;
+
+public class SearchExcelExportHandler implements MessageHandler<MessageStatus> {
+
+    private static final Logger logger = LogManager.getLogger(SearchExcelExportHandler.class);
+
+    @Override
+    public MessageStatus call(ViewerMessage message) {
+        // TODO add logic, seems to be ignored so far
+        return MessageStatus.FINISH;
+    }
+
+    @Override
+    public String getMessageHandlerName() {
+        return "SEARCH_EXCEL_EXPORT";
+    }
 
 }

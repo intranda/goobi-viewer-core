@@ -72,7 +72,7 @@
 
                             </div>
 
-                            <!-- All MESSAGE TYPE TABLE -->
+                            <!-- show all active message types -->
                             <div
                                 id="new-table-adminallmessagetypes"
                                 class="admin__table-content"
@@ -155,11 +155,14 @@
                             </div>
                         </div>
 
+
+                        <!-- show all active message for a given type -->
+
                         <h:panelGroup id="details">
                             <br />
                             <ui:fragment rendered="#{messageQueueBean.messageType != null}">
 
-#{msg.admin__message_queue__details}
+                                <h:outputText value="#{msg.admin__message_queue__details}" />
 
                                 <div
                                     id="messagedetails"
@@ -237,14 +240,14 @@
                             </ui:fragment>
                         </h:panelGroup>
 
-
+                        <!--  history table -->
 
                         <h:panelGroup
                             id="history"
                             layout="block"
                             styleClass="message-history">
 
-#{msg.admin__message_queue__history}
+                            <h:outputText value="#{msg.admin__message_queue__history}" />
                             <div class="admin__table-tools flex-wrap">
                                 <!-- PAGINATOR -->
                                 <div class="admin__table-paginator">
@@ -295,11 +298,15 @@
                                     </div>
                                     <div
                                         class="col-2 d-flex"
-                                        role="columnheader"><h:outputText value="#{msg.admin__message_queue__status}"></h:outputText></div>
+                                        role="columnheader">
+                                        <h:outputText value="#{msg.admin__message_queue__status}" />
+                                    </div>
 
                                     <div
                                         class="col-2 d-flex"
-                                        role="columnheader"><h:outputText value="#{msg.admin__message_queue__retries}"></h:outputText></div>
+                                        role="columnheader">
+                                        <h:outputText value="#{msg.admin__message_queue__retries}" />
+                                    </div>
                                 </div>
 
                                 <div
@@ -327,14 +334,14 @@
                                             </div>
                                             <div class="col-2 d-flex">
                                                 <ui:repeat
-                                                    var="prop"
-                                                    value="#{message.properties.keySet()}">
-                                                    <h:outputText value="#{prop}: #{ticket.properties[prop]} " />
+                                                    var="entry"
+                                                    value="#{message.properties.entrySet().toArray()}">
+                                                    <h:outputText value="#{msg[entry.key]}: #{msg[entry.value]} " />
                                                     <br />
                                                 </ui:repeat>
                                             </div>
                                             <div class="col-2 d-flex">
-                                                <h:outputText value="#{message.messageStatus}" />
+                                                <h:outputText value="#{msg[message.messageStatus]}" />
                                             </div>
 
                                             <div class="col-2 d-flex">

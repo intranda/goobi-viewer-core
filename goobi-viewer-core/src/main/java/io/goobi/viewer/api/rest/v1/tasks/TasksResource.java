@@ -42,6 +42,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,6 +52,8 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
+import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
@@ -59,6 +62,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageGenerator;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -74,6 +78,9 @@ public class TasksResource {
     private static final Logger logger = LogManager.getLogger(TasksResource.class);
     private final HttpServletRequest request;
 
+    @Context
+    private HttpServletRequest httpRequest;
+
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;
     }
@@ -88,16 +95,75 @@ public class TasksResource {
         }
         if (isAuthorized(desc.type, Optional.empty(), request)) {
 
-            if (desc.type == TaskType.NOTIFY_SEARCH_UPDATE) {
-                ViewerMessage message = MessageGenerator.generateSimpleMessage("NOTIFY_SEARCH_UPDATE");
+            if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+                ViewerMessage message = null;
+                switch (desc.type) {
+                    case NOTIFY_SEARCH_UPDATE:
+                        message = MessageGenerator.generateSimpleMessage("NOTIFY_SEARCH_UPDATE");
+                        break;
+
+                    case PURGE_EXPIRED_DOWNLOAD_TICKETS:
+                        message = MessageGenerator.generateSimpleMessage("PURGE_EXPIRED_DOWNLOAD_TICKETS");
+                        break;
+                    case SEARCH_EXCEL_EXPORT:
+                        message = MessageGenerator.generateSimpleMessage("SEARCH_EXCEL_EXPORT");
+                        break;
+                    case UPDATE_SITEMAP:
+                        message = MessageGenerator.generateSimpleMessage("UPDATE_SITEMAP");
+
+                        SitemapRequestParameters params = Optional.ofNullable(desc)
+                                .filter(SitemapRequestParameters.class::isInstance)
+                                .map(SitemapRequestParameters.class::cast)
+                                .orElse(null);
+
+                        String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+                        String outputPath = request.getServletContext().getRealPath("/");
+                        if (params != null && StringUtils.isNotBlank(params.getOutputPath())) {
+                            outputPath = params.getOutputPath();
+                        }
+                        message.getProperties().put("viewerRootUrl", viewerRootUrl);
+                        message.getProperties().put("baseurl", outputPath);
+
+                        break;
+                    case UPDATE_DATA_REPOSITORY_NAMES:
+
+                        ToolsRequestParameters tools = Optional.ofNullable(desc)
+                                .filter(ToolsRequestParameters.class::isInstance)
+                                .map(ToolsRequestParameters.class::cast)
+                                .orElse(null);
+                        if (tools == null) {
+                            return null;
+                        }
+
+                        message = MessageGenerator.generateSimpleMessage("UPDATE_DATA_REPOSITORY_NAMES");
+                        String identifier = tools.getPi();
+                        String dataRepositoryName = tools.getDataRepositoryName();
+
+                        message.getProperties().put("identifier", identifier);
+                        message.getProperties().put("dataRepositoryName", dataRepositoryName);
+
+                        break;
+                    case UPDATE_UPLOAD_JOBS:
+                        message = MessageGenerator.generateSimpleMessage("UPDATE_UPLOAD_JOBS");
+                        break;
+                    case INDEX_USAGE_STATISTICS:
+                        message = MessageGenerator.generateSimpleMessage("INDEX_USAGE_STATISTICS");
+                        break;
+                    default:
+                        // unknown type
+                        return null;
+                }
+
                 String identifier = UUID.randomUUID().toString();
                 message.setPi(identifier);
                 try {
-                    MessageGenerator.submitInternalMessage(message, "viewer", "NOTIFY_SEARCH_UPDATE", identifier);
+                    MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName(), identifier);
                 } catch (JMSException | JsonProcessingException e) {
                     // mq is not reachable
                     logger.error(e);
                 }
+
+                // TODO create useful response, containing the message id
                 return null;
             } else {
                 Task job = new Task(desc, TaskManager.createTask(desc.type));
