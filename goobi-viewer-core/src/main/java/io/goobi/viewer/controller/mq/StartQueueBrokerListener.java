@@ -53,7 +53,6 @@ public class StartQueueBrokerListener implements ServletContextListener {
     private RMIConnectorServer rmiServer;
     private BrokerService broker;
     private List<DefaultQueueListener> listeners = new ArrayList<>();
-    private DLQListener dlqListener;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -105,10 +104,6 @@ public class StartQueueBrokerListener implements ServletContextListener {
                     listeners.add(listener);
                 }
 
-                dlqListener = new DLQListener();
-                dlqListener.register(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
-                        DataManager.getInstance().getConfiguration().getActiveMQPassword(), "ActiveMQ.DLQ");
-
             } catch (JMSException e) {
                 log.error(e);
             }
@@ -125,8 +120,6 @@ public class StartQueueBrokerListener implements ServletContextListener {
             for (DefaultQueueListener l : listeners) {
                 l.close();
             }
-
-            dlqListener.close();
 
             if (broker != null) {
                 broker.stop();
