@@ -21,7 +21,7 @@
                             <h2>#{msg.widgetChronology_label}: #{msg[field.key]}</h2>
                         </div>
                         <div class="widget-chronology-slider__item chronology-slider-actions">
-                            <div class="widget-chronology-slider__item chronology-slider-action-loader">
+                            <div id="chronologyLoader-#{status.count}" class="widget-chronology-slider__item chronology-slider-action-loader">
                                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" alt="Chrono Slider Loader" />
                             </div>
                             <div class="widget-chronology-slider__item chronology-slider-action-reset">
@@ -52,6 +52,16 @@
                             <div id="chronoSlider-#{status.count}"></div>
                         </div>
                     </div>
+                    
+                    <chronoSlider 
+                    	year-list="#{searchBean.facets.getValueRange('#{field.key}')}" 
+                    	start-year="#{searchBean.facets.getCurrentMinRangeValue(field.key)}"
+                    	end-year="#{searchBean.facets.getCurrentMaxRangeValue(field.key)}"
+                    	value-input="chronologySliderInput-#{status.count}"
+                    	update-facet="chronologySliderSet-#{status.count}"
+                    	remove-facet="chronologySliderReset-#{status.count}"
+                    	loader="chronologyLoader-#{status.count}"
+                    	/>
             
                     <!-- HIDDEN FORM TO UPDATE SEARCHHITS -->
                     <h:form id="chronologySliderForm" prependId="false" styleClass="hidden">
@@ -70,9 +80,18 @@
             	        };
             	    
             	        viewerJS.chronoSlider.init( chronoSliderConfig );
+            	        
+
             	    </script>
                 </div>
             </c:forEach>
+            <script>
+	        riot.mount("chronoSlider", {
+	        	msg: {
+	        		enterYear: "#{msg.enterYear}"
+	        	}
+	        })
+            </script>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>

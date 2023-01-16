@@ -785,6 +785,82 @@ this.msg = function(key) {
 }.bind(this)
 
 });
+riot.tag2('chronoslider', '<div class="widget-chronology-slider__body widget__body"><div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div ref="slider"></div></div></div>', '', '', function(opts) {
+
+this.msg={}
+this.on("mount", () => {
+	console.log("init chrono slider with ", opts);
+	this.startYear = opts.startYear;
+	this.endYear = opts.endYear;
+	this.yearList = JSON.parse(opts.yearList).sort();
+	this.minYear = this.yearList[0];
+	this.maxYear = this.yearList[this.yearList.length];
+	this.valueInput = document.getElementById(opts.valueInput);
+	this.updateFacet = document.getElementById(opts.updateFacet);
+	this.removeFacet = document.getElementById(opts.removeFacet);
+	this.loader = document.getElementById(opts.loader);
+	this.msg = opts.msg;
+	this.rtl = $( this.slider ).closest('[dir="rtl"]').length > 0;
+	this.initSlider();
+	this.update();
+});
+
+this.initSlider = function() {
+
+	let options = {
+			range: true,
+			isRTL: this.rtl,
+			min: this.minYear,
+			max: this.maxYear,
+			values: [ this.yearList.indexOf( this.startYear ), this.yearList.indexOf( this.endYear ) ],
+			slide: function( event, ui ) {
+
+				$( this.refs.inputStart ).val( this.yearList[ ui.values[ 0 ] ] );
+				$( this.refs.inputStart ).val( this.yearList[ ui.values[ 1 ] ] );
+
+				if (rtl) {
+
+					if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-right', '0px');
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '-10px');
+		        	}	else {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '0px');
+					}
+
+					$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-left', '-10px');
+
+				}
+				else {
+
+					$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', -1 * $(this.refs.slider).find( ".ui-slider-handle" ).last().width() * ($( this.refs.slider ).slider( "values", 1 ) / $( this.refs.slider ).slider('option', 'max')));
+					$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-left', -1 * $(this.refs.slider).find( ".ui-slider-handle" ).first().width() * ($( this.refs.slider ).slider( "values", 0 ) / $( this.refs.slider ).slider('option', 'max')));
+				}
+
+			},
+			change: function( event, ui ) {
+				var startDate = parseInt( $( this.refs.inputStart ).val() );
+				var endDate = parseInt( $( this.refs.inputEnd ).val() );
+
+				startDate =  this.yearList[ui.values[0]];
+				endDate =  this.yearList[ui.values[1]];
+
+				if(endDate >= startDate) {
+
+				    $( this.loader ).addClass( 'active' );
+
+				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
+				    $( this.valueInput ).val(value);
+
+				    $( this.updateFacet ).click();
+				}
+			},
+		}
+	console.log("slider options ", options)
+
+    $( this.refs.slider ).slider(options);
+}.bind(this)
+
+});
 riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
 
 riot.tag('raw', '', function(opts) {
