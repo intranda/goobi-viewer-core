@@ -914,6 +914,8 @@ public class CmsBean implements Serializable {
      * @return
      */
     private static List<String> getMetadataValues(SearchHit hit, String solrField) {
+
+        
         SolrDocument doc = hit.getSolrDoc();
         if (doc != null) {
             Collection<Object> values = doc.getFieldValues(solrField);
