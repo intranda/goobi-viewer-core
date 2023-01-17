@@ -93,7 +93,9 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
+
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />

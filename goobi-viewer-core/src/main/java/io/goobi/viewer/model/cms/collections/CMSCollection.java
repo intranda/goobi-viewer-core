@@ -54,6 +54,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -668,6 +670,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     @Override
     public String getMediaFilter() {
         return CmsMediaBean.getImageFilter();
+    }
+    
+    @Override
+    public String getMediaTypes() {
+        return CmsMediaBean.getImageTypes();
     }
 
     /* (non-Javadoc)

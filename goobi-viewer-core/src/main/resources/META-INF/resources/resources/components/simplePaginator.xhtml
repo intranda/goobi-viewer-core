@@ -33,6 +33,7 @@
 	</composite:interface>
 
 <composite:implementation>
+
     <h:panelGroup rendered="#{cc.attrs.itemCount > 1}"
         styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'} #{cc.attrs.classSuffix}"
         layout="block" id="#{cc.clientId}">

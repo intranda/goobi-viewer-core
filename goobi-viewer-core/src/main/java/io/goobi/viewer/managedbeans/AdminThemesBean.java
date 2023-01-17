@@ -55,28 +55,26 @@ public class AdminThemesBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(AdminThemesBean.class);
 
-
     private final String mainThemeName;
     private final List<String> subThemeNames;
     private List<ThemeConfiguration> configuredThemes;
 
     public AdminThemesBean() {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
-            subThemeNames = getExistingSubThemes();
-            configuredThemes = getConfiguredThemes();
-
+        subThemeNames = getExistingSubThemes();
+        configuredThemes = getConfiguredThemes();
 
     }
 
     private List<ThemeConfiguration> getConfiguredThemes() {
         try {
             return DataManager.getInstance()
-                .getDao()
-                .getConfiguredThemes()
-                .stream()
-                .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
-                .collect(Collectors.toList());
-        } catch(DAOException e) {
+                    .getDao()
+                    .getConfiguredThemes()
+                    .stream()
+                    .filter(t -> subThemeNames.contains(t.getName()) || t.getName().equals(mainThemeName))
+                    .collect(Collectors.toList());
+        } catch (DAOException e) {
             logger.error("Unable to load configured themes: {}", e.toString());
             return Collections.emptyList();
         }
@@ -85,8 +83,8 @@ public class AdminThemesBean implements Serializable {
     private static List<String> getExistingSubThemes() {
         try {
             return SolrTools.getExistingSubthemes();
-        } catch(IndexUnreachableException | PresentationException e) {
-            logger.error("Unable to load subtheme names from Index: {}", e.toString());
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.error("Unable to load subtheme names from Index: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
             return Collections.emptyList();
         }
     }
@@ -223,7 +221,7 @@ public class AdminThemesBean implements Serializable {
         if (StringUtils.isNotBlank(styleSheet)) {
             return "<style>" + styleSheet + "</style>";
         }
-        
+
         return "";
     }
 }

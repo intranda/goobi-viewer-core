@@ -45,8 +45,8 @@ public class RecordsRequestParameters {
     public String sortOrder = "asc";
     @Schema(description = "If this has the value 'datecentric', the results will be grouped by their import date in their JSON representation", example="recordcentric")
     public String jsonFormat = "";
-    @Schema(description = "The maximum number of results to return", example="10")
-    public int count = 0;
+    @Schema(description = "The maximum number of results to return. Negative values don't set a limit", example="10")
+    public int count = -1;
     @Schema(description = "The absolute index of the first result to return", example="0")
     public int offset = 0;
     @Schema(description = "Set to 'true' to randomize all results. If used in conjuction with sortFields, randomization only applies to results with identical values in the sortFields", example="false")

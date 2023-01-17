@@ -11,15 +11,15 @@
 		this.pages = [];
 	
 		var loadingTask = pdfjsLib.getDocument( this.opts.data );
-	    loadingTask.promise.then( function( pdf ) {
+	    loadingTask.promise.then( ( pdf ) => {
 	        var pageLoadingTasks = [];
 	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
    		        var page = pdf.getPage(pageNo);
    		        pageLoadingTasks.push(page);
    		    }
    		    return Promise.allSettled(pageLoadingTasks);
-	    }.bind(this))
-	    .then(function(results) {
+	    })
+	    .then( (results) => {
 			results.forEach(result => {
 			    if (result.status === "fulfilled") {
                 	var page = result.value;
@@ -29,10 +29,11 @@
                 }
 			});
 			this.update();
-        }.bind(this))
-	    .then( function() {
+        })
+	    .then( () => {
 			$(".pdf-container").show();
-            $( '#literatureLoader' ).hide();
+			console.log("loader", this.opts.loaderSelector);
+            $(this.opts.loaderSelector).hide();
 		} );
 	
 	</script>

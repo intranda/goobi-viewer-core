@@ -71,10 +71,11 @@
 							</div>
 						</ui:repeat>
 						<!-- PAGINATOR -->
+						
 						<viewerComponent:simplePaginator
 							itemCount="#{cc.attrs.component.firstContentItem.content.nestedPagesCount}"
 							itemActive="#{cc.attrs.component.owningPage.listPage}"
-							urlPrefix="#{cmsBean.getUrl(subPage)}" />
+							urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
 					</div>
 				</div>
 

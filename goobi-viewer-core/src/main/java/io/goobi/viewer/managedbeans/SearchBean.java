@@ -312,6 +312,10 @@ public class SearchBean implements SearchInterface, Serializable {
         generateSimpleSearchString(searchString);
         return "pretty:newSearch5";
     }
+    
+    public String simpleSearch(SearchInterface search) {
+        return search.searchSimple();
+    }
 
     /**
      * Same as <code>searchSimple()</code> but resets the current facets.
@@ -1493,10 +1497,11 @@ public class SearchBean implements SearchInterface, Serializable {
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
-            facets.removeFacetAction(facetQuery, "pretty:browse4");
-            oPath.get().getCmsPage().getSearch().ifPresent(search -> search.redirectToSearchUrl(true));
+            facets.removeFacetAction(facetQuery, "");
+            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(), this.getFacets().getCurrentFacetString());
+            PrettyUrlTools.redirectToUrl(url);
             return "";
-        } else if (PageType.browse.equals(oPath.map(path -> path.getPageType()).orElse(PageType.other))) {
+        } else if (PageType.browse.equals(oPath.map(ViewerPath::getPageType).orElse(PageType.other))) {
             return facets.removeFacetAction(facetQuery, "pretty:browse4");
         } else {
             return facets.removeFacetAction(facetQuery,

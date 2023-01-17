@@ -111,7 +111,8 @@
     <script type="text/javascript">
 		var adminMediaConfig = {
 			postUrl : '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
-			fileTypes: "#{msg.admin__media_upload_filetypes}",
+			fileTypes: "#{fileTypes}",
+        	fileTypeValidator: /#{fileTypeValidator.replace("(?i)", "")}/,
 			msg : {
 				buttonUpload : "#{msg.button__upload}",
 				uploadText : "#{msg.admin__media_upload_text}",
@@ -121,7 +122,8 @@
 				mediaError : "#{msg.admin__media_upload_error}",
 				bulkDeleteConfirm: "#{msg.admin__media_bulk_delete_confirm}"
 			},
-			onUploadComplete : function() {
+			onUploadSuccess : function() {
+				console.log("upload successful");
 				$("#reloadButton").click();
 				$("[aria-controls='fileSelect']").click();
 			},
