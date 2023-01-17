@@ -96,7 +96,12 @@ public class CMSMediaContent extends CMSContent implements CMSMediaHolder {
 
     @Override
     public String getMediaFilter() {
-        return CmsMediaBean.getImageFilter();
+        return String.format("(%s)|(%s)", CmsMediaBean.getImageFilter(), CmsMediaBean.getVideoFilter());
+    }
+    
+    @Override
+    public String getMediaTypes() {
+        return CmsMediaBean.getImageTypes() + ", " + CmsMediaBean.getVideoTypes();
     }
 
     @Override

@@ -112,7 +112,7 @@
 						src="#{request.contextPath}/resources/images/infinity_loader.gif" />
 					<h:outputText id="literature" escape="false" />
 					
-					<pdfDocument data="#{cc.attrs.literatureItem.content.url}"/>
+					<pdfDocument data="#{cc.attrs.literatureItem.content.url}" loaderSelector="#literatureLoader"/>
 				</div>
 			</div>
 

@@ -94,6 +94,24 @@
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
+		<class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -209,6 +227,24 @@
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
+		<class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
 		
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />

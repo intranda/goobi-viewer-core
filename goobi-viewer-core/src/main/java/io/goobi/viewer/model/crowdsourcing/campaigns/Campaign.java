@@ -1734,6 +1734,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     public String getMediaFilter() {
         return CmsMediaBean.getImageFilter();
     }
+    
+
+    @Override
+    @JsonIgnore
+    public String getMediaTypes() {
+        return CmsMediaBean.getImageTypes();
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#hasMediaItem()
@@ -1914,5 +1921,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     public String getAccessConditionValue() {
         return getTitle(IPolyglott.getDefaultLocale().getLanguage());
     }
+
 
 }

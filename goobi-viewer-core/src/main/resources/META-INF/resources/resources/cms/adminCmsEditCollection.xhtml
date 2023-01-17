@@ -173,6 +173,8 @@
                             <div class="admin-cms-media__select">                            
                                  <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
                                  	<ui:param name="mediaDisplayPanel" value="mediaGroup" />
+                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+        							<ui:param name="fileTypeValidator" value="#{cmsCollectionsBean.currentCollection.getMediaFilter()}"/>
                                 </ui:include>
                             </div>
 	                   </div>

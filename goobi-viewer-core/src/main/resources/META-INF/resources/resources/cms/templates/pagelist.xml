@@ -18,10 +18,10 @@
 			</jsfComponent>
 		</item>
 	</content>
-	<attribute name="randomizeItems" display="false" boolean="true">
+	<attribute name="random" display="false" boolean="true">
 		<value>false</value>
 	</attribute>
-	<attribute name="usePagination" display="false" boolean="true">
+	<attribute name="paged" display="false" boolean="true">
 		<value>true</value>
 	</attribute>
 </component>

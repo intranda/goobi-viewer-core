@@ -79,7 +79,17 @@ public class CmsMediaBean implements Serializable {
 
     private static final String GENERAL_FILTER = "GENERAL";
     private static final String FILENAME_FILTER = "FILENAME";
-
+    
+    private static final String[] IMAGE_FILE_TYPES = {"png", "jpeg", "gif", "tiff", "jp2", "svg", "ico"};
+    private static final String IMAGE_FILE_TYPE_VALIDATION_REGEX = "png|jpe?g|gif|tiff?|jp2|svg|ico";
+    private static final String[] VIDEO_FILE_TYPES = {"mpeg4", "avi", "mov", "wmv"};
+    private static final String VIDEO_FILE_TYPE_VALIDATION_REGEX = "mp4|mpeg4|avi|mov|wmv";
+    private static final String[] AUDIO_FILE_TYPES = {"mp3", "mpeg", "wav", "ogg", "wma"};
+    private static final String AUDIO_FILE_TYPE_VALIDATION_REGEX = "mp3|mpeg|wav|ogg|wma";
+    private static final String[] DOCUMENT_FILE_TYPES = {"pdf"};
+    private static final String DOCUMENT_FILE_TYPE_VALIDATION_REGEX = "pdf";
+    private static final String FILE_TYPE_REGEX_TEMPLATE = "(?i).*\\.(%s)";
+    
     private static final int ENTRIES_PER_PAGE = 40;
 
     private static final long serialVersionUID = 1156829371382069634L;
@@ -678,26 +688,44 @@ public class CmsMediaBean implements Serializable {
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      */
     public static String getImageFilter() {
-        return "(?i).*\\.(png|jpe?g|gif|tiff?|jp2|svg|ico)";
+        return String.format(FILE_TYPE_REGEX_TEMPLATE, IMAGE_FILE_TYPE_VALIDATION_REGEX);
     }
 
     public static String getVideoFilter() {
-        return "(?i).*\\.(mp4|mpeg4|avi|mov|wmv)";
+        return String.format(FILE_TYPE_REGEX_TEMPLATE, VIDEO_FILE_TYPE_VALIDATION_REGEX);
     }
 
     public static String getAudioFilter() {
-        return "(?i).*\\.(mp3|mpeg|wav|ogg|wma)";
+        return String.format(FILE_TYPE_REGEX_TEMPLATE, AUDIO_FILE_TYPE_VALIDATION_REGEX);
     }
-
-    /**
-     * <p>
-     * getDocumentFilter.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
+    
     public static String getDocumentFilter() {
-        return "(?i).*\\.(docx?|rtf|x?h?tml|txt|pdf)";
+        return String.format(FILE_TYPE_REGEX_TEMPLATE, DOCUMENT_FILE_TYPE_VALIDATION_REGEX);
+    }
+    
+    public static String getMediaFilter() {
+        return String.format("(%s)|(%s)|(%s)|(%s)", getImageFilter(), getVideoFilter(), getAudioFilter(), getDocumentFilter());
+    }
+    
+    
+    public static String getImageTypes() {
+        return Stream.of(IMAGE_FILE_TYPES).collect(Collectors.joining(", "));
+    }
+    
+    public static String getVideoTypes() {
+        return Stream.of(VIDEO_FILE_TYPES).collect(Collectors.joining(", "));
+    }
+    
+    public static String getAudioTypes() {
+        return Stream.of(AUDIO_FILE_TYPES).collect(Collectors.joining(", "));
+    }
+    
+    public static String getDocumentTypes() {
+        return Stream.of(DOCUMENT_FILE_TYPES).collect(Collectors.joining(", "));
+    }
+    
+    public static String getAllTypes() {
+        return Stream.of(getImageTypes(), getVideoTypes(), getAudioTypes(), getDocumentTypes()).collect(Collectors.joining(", "));
     }
 
     /**

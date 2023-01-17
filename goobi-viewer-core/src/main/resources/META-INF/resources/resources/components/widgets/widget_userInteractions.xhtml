@@ -9,7 +9,7 @@
 
     <composite:implementation>
         <h:panelGroup
-            rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded and (userBean.user.superuser or (configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS') or userBean.user.hasPrivilegesForTemplate('templateOverviewPage'))}">
+            rendered="#{userBean.loggedIn and activeDocumentBean.recordLoaded and (userBean.user.superuser or (configurationBean.transkribusEnabled and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS') or userBean.user.cmsAdmin)}">
             <div id="widgetUserInteractions" class="widget widget-user-interactions">
                 <h:form id="widgetUserInteractionsStandardForm" prependId="false">
                     <h2 >#{msg.menuUser_workInteractions}</h2>

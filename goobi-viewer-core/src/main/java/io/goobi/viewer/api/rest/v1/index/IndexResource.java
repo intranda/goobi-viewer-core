@@ -195,7 +195,7 @@ public class IndexResource {
         logger.trace("query: {}", query);
 
         int count = params.count;
-        if (count <= 0) {
+        if (count < 0) {
             count = SolrSearchIndex.MAX_HITS;
         }
 

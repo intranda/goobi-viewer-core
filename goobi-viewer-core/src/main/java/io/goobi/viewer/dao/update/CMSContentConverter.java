@@ -34,6 +34,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
@@ -75,10 +76,15 @@ public class CMSContentConverter {
 
     public CMSMediaContent createMediaContent(Map<String, Object> legacyItem) throws DAOException {
         Long mediaItemId = (Long) legacyItem.get("media_item_id");
-        CMSMediaContent content = new CMSMediaContent();
         if (mediaItemId != null) {
             CMSMediaItem media = dao.getCMSMediaItem(mediaItemId);
             if (media != null) {
+                CMSMediaContent content;
+                if (media.getFileName().matches("(?i).*\\.(pdf|html)")) {
+                    content = new CMSDocumentContent();
+                } else {
+                    content = new CMSMediaContent();
+                }
                 content.setMediaItem(media);
                 return content;
             }
