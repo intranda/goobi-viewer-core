@@ -311,7 +311,7 @@ public class SearchBean implements SearchInterface, Serializable {
         generateSimpleSearchString(searchString);
         return "pretty:newSearch5";
     }
-    
+
     public String simpleSearch(SearchInterface search) {
         return search.searchSimple();
     }
@@ -1474,12 +1474,18 @@ public class SearchBean implements SearchInterface, Serializable {
      * 
      * @return
      */
+    @Deprecated(since = "2023.01")
     public String removeChronologyFacetAction() {
         String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
         facets.setTempValue("");
         return removeFacetAction(facet);
     }
 
+    /**
+     * 
+     * @param field
+     * @return
+     */
     public String removeRangeFacetAction(String field) {
         return facets.getActiveFacetsForField(field).stream().findAny().map(item -> {
             String facet = item.getQueryEscapedLink();
@@ -1487,8 +1493,7 @@ public class SearchBean implements SearchInterface, Serializable {
             return removeFacetAction(facet);
         }).orElse("");
     }
-    
-    
+
     /**
      * <p>
      * removeFacetAction.
@@ -1499,13 +1504,16 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String removeFacetAction(String facetQuery) {
+        logger.trace("removeFacetAction: {}", facetQuery);
         //reset the search result list to page one since the result list will necessarily change when removing the facet
         setCurrentPage(1);
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             facets.removeFacetAction(facetQuery, "");
-            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(), this.getFacets().getCurrentFacetString());
+            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:cmsOpenPage6", oPath.get().getCmsPage().getId(), this.getExactSearchString(),
+                    oPath.get().getCmsPage().getListPage(), this.getSortString(), this.getFacets().getActiveFacetString());
+            logger.trace("redirecting to url: {}", url);
             PrettyUrlTools.redirectToUrl(url);
             return "";
         } else if (PageType.browse.equals(oPath.map(ViewerPath::getPageType).orElse(PageType.other))) {
