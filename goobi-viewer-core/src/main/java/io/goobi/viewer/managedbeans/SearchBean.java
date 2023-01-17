@@ -1480,6 +1480,15 @@ public class SearchBean implements SearchInterface, Serializable {
         return removeFacetAction(facet);
     }
 
+    public String removeRangeFacetAction(String field) {
+        return facets.getActiveFacetsForField(field).stream().findAny().map(item -> {
+            String facet = item.getQueryEscapedLink();
+            facets.setTempValue("");
+            return removeFacetAction(facet);
+        }).orElse("");
+    }
+    
+    
     /**
      * <p>
      * removeFacetAction.
