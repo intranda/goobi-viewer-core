@@ -1425,7 +1425,6 @@ public class AdminBean implements Serializable {
      *
      */
     public void updateHotfolderFileCount() {
-        logger.trace("updateHotfolderFileCount");
         hotfolderFileCount.send("update");
     }
 

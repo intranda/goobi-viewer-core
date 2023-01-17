@@ -318,8 +318,8 @@ public class SolrSearchIndex {
             if (SolrTools.isQuerySyntaxError(e)) {
                 throw new PresentationException("Bad query: " + e.getMessage());
             }
-            logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
-            logger.error(e.toString(), e);
+            logger.error("{} (this usually means Solr is returning 403); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
+                    solrQuery.getQuery());
             throw new IndexUnreachableException(e.getMessage());
         } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());
@@ -950,7 +950,7 @@ public class SolrSearchIndex {
                 SolrPingResponse ping = client.ping();
                 return ping.getStatus() < 400;
             } catch (SolrException | SolrServerException | IOException e) {
-                logger.trace("Ping to solr failed: {}", e.getMessage());
+                logger.trace("Ping to solr failed: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
                 return false;
             }
         }
@@ -1027,7 +1027,8 @@ public class SolrSearchIndex {
                 logger.error("{}; Query: {}", e.getMessage(), solrQuery.getQuery());
                 throw new PresentationException("Bad query.");
             }
-            logger.error("{} (this usually means Solr is returning 403); Query: {}", e.getMessage(), solrQuery.getQuery());
+            logger.error("{} (this usually means Solr is returning an error); Query: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()),
+                    solrQuery.getQuery());
             throw new IndexUnreachableException(e.getMessage());
         } catch (IOException e) {
             throw new IndexUnreachableException(e.getMessage());
