@@ -817,6 +817,62 @@ this.on("updated", () => {
 	this.setHandlePositions();
 });
 
+this.initSlider = function() {
+	let options = {
+			range: true,
+			isRTL: this.rtl,
+			min: 0,
+			max: this.yearList.length - 1,
+			values: [ this.yearList.indexOf( this.startYear ), this.yearList.indexOf( this.endYear ) ],
+			slide: ( event, ui ) => {
+
+				$( this.refs.inputStart ).val( this.yearList[ ui.values[ 0 ] ] );
+				$( this.refs.inputEnd ).val( this.yearList[ ui.values[ 1 ] ] );
+
+				if (this.rtl) {
+
+					if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-right', '0px');
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '-10px');
+		        	}	else {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '0px');
+					}
+
+					$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-left', '-10px');
+
+				}
+				else {
+
+	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+
+	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
+
+				}
+
+			},
+			change: ( event, ui ) => {
+				var startDate = parseInt( $( this.refs.inputStart ).val() );
+				var endDate = parseInt( $( this.refs.inputEnd ).val() );
+
+				startDate =  this.yearList[ui.values[0]];
+				endDate =  this.yearList[ui.values[1]];
+
+				if(endDate >= startDate) {
+
+				    $( this.loader ).addClass( 'active' );
+
+				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
+				    $( this.valueInput ).val(value);
+
+				}
+				console.log('something changed');
+				console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+			},
+		}
+	console.log("init slider", this.opts, options);
+    $( this.refs.slider ).slider(options);
+}.bind(this)
+
 this.setHandlePositions = function() {
 
 	let firstHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:first" ).css('left') );
@@ -855,59 +911,6 @@ this.initChangeEvents = function() {
           $(this.refs.slider).slider( "values", 1, yearIndex );
       }
   })
-}.bind(this)
-
-this.initSlider = function() {
-	let options = {
-			range: true,
-			isRTL: this.rtl,
-			min: 0,
-			max: this.yearList.length - 1,
-			values: [ this.yearList.indexOf( this.startYear ), this.yearList.indexOf( this.endYear ) ],
-			slide: ( event, ui ) => {
-
-				$( this.refs.inputStart ).val( this.yearList[ ui.values[ 0 ] ] );
-				$( this.refs.inputEnd ).val( this.yearList[ ui.values[ 1 ] ] );
-
-				if (this.rtl) {
-
-					if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
-		        		$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-right', '0px');
-		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '-10px');
-		        	}	else {
-		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '0px');
-					}
-
-					$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-left', '-10px');
-
-				}
-				else {
-
-	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
-	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
-				}
-
-			},
-			change: ( event, ui ) => {
-				var startDate = parseInt( $( this.refs.inputStart ).val() );
-				var endDate = parseInt( $( this.refs.inputEnd ).val() );
-
-				startDate =  this.yearList[ui.values[0]];
-				endDate =  this.yearList[ui.values[1]];
-
-				if(endDate >= startDate) {
-
-				    $( this.loader ).addClass( 'active' );
-
-				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
-				    $( this.valueInput ).val(value);
-
-				    $( this.updateFacet ).click();
-				}
-			},
-		}
-	console.log("init slider", this.opts, options);
-    $( this.refs.slider ).slider(options);
 }.bind(this)
 
 this.getClosestYearIndexAbove = function(value, years) {

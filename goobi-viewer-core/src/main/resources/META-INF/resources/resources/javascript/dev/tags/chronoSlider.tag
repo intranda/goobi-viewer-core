@@ -43,49 +43,6 @@ this.on("updated", () => {
 });
 
 
-setHandlePositions() {
-	// set handler position
-	let firstHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:first" ).css('left') );
-	let lastHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:last" ).css('left') );
-	
-	if (this.rtl) {
-		
-		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', '-10px');
-		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '0px');
-    	
-    	if ( firstHandlePos == lastHandlePos ) {
-    		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '-10px');	
-    	}
-    	
-    	// NOT PERFECTLY WORKING YET
-    	// $( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).last().width() * ($( "#chronoSlider" ).slider( "values", 1 ) / $( "#chronoSlider" ).slider('option', 'max')));
-		// $( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).first().width() * ($( "#chronoSlider" ).slider( "values", 0 ) / $( "#chronoSlider" ).slider('option', 'max')));
-	} else {
-		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).last().width() * ($(this.refs.slider).slider( "values", 1 ) / $(this.refs.slider).slider('option', 'max')));
-		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).first().width() * ($(this.refs.slider).slider( "values", 0 ) / $(this.refs.slider).slider('option', 'max')));
-	}
-}
-
-initChangeEvents() {
-	$(this.refs.inputStart).on("change", (event) => {
-//      console.log("change event ", event);
-      let value = parseInt(event.target.value);
-      if(!isNaN(value)) {                    
-          let yearIndex = this.getClosestYearIndexAbove(value, this.yearList);
-//          console.log("changed start ", value, yearIndex);
-          $(this.refs.slider).slider( "values", 0, yearIndex );
-      }
-  })
-  $(this.refs.inputEnd).on("change", (event) => {
-      let value = parseInt(event.target.value);
-      if(!isNaN(value)) {                    
-          let yearIndex = this.getClosestYearIndexBelow(value, this.yearList);
-//          console.log("changed end ", value, yearIndex);
-          $(this.refs.slider).slider( "values", 1, yearIndex );
-      }
-  })
-}
-
 initSlider() {
 	let options = {
 			range: true,
@@ -122,7 +79,23 @@ initSlider() {
 	    			// set handler position
 	    			//console.log("setup right handle", this.$getLastHandle(), this.$getLastHandle().width(), this.$getSlider().slider( "values", 1 ), this.$getSlider().slider('option', 'max'));
 	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+	    			
+// 	    			console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+	    			
+// 	    			console.log('------------- LAST -----------------');
+// 	    			console.log('handle width: ' + this.$getLastHandle().width());
+// 	    			console.log('handle value: ' + this.$getSlider().slider( "values", 1 ));
+// 	    			console.log('slider max: ' + this.$getSlider().slider('option', 'max'));
+	    			
 	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
+	    			
+	    			// console.log(-1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
+	    			
+// 	    			console.log('---------- FIRST --------------------');
+// 	    			console.log('handle width: ' + this.$getFirstHandle().width());
+// 	    			console.log('handle value: ' + this.$getSlider().slider( "values", 0 ));
+// 	    			console.log('slider max: ' + this.$getSlider().slider('option', 'max'));
+	    			
 				}
 
 			},
@@ -142,12 +115,59 @@ initSlider() {
 				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
 				    $( this.valueInput ).val(value);
 				    // submit form
-				    $( this.updateFacet ).click();
+				   // $( this.updateFacet ).click();
 				}
+				console.log('something changed');
+				console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
 			},
 		}
 	console.log("init slider", this.opts, options);
     $( this.refs.slider ).slider(options);
+}
+
+
+
+setHandlePositions() {
+	// set handler position
+	let firstHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:first" ).css('left') );
+	let lastHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:last" ).css('left') );
+	
+	if (this.rtl) {
+		
+		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', '-10px');
+		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '0px');
+    	
+    	if ( firstHandlePos == lastHandlePos ) { 
+    		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '-10px');	
+    	}
+    	
+    	// NOT PERFECTLY WORKING YET
+    	// $( "#chronoSlider .ui-slider-handle" ).first().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).last().width() * ($( "#chronoSlider" ).slider( "values", 1 ) / $( "#chronoSlider" ).slider('option', 'max')));
+		// $( "#chronoSlider .ui-slider-handle" ).last().css('margin-left', 1 * $( "#chronoSlider .ui-slider-handle" ).first().width() * ($( "#chronoSlider" ).slider( "values", 0 ) / $( "#chronoSlider" ).slider('option', 'max')));
+	} else {
+		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).last().width() * ($(this.refs.slider).slider( "values", 1 ) / $(this.refs.slider).slider('option', 'max')));
+		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).first().width() * ($(this.refs.slider).slider( "values", 0 ) / $(this.refs.slider).slider('option', 'max')));
+	}
+}
+
+initChangeEvents() {
+	$(this.refs.inputStart).on("change", (event) => {
+//      console.log("change event ", event);
+      let value = parseInt(event.target.value);
+      if(!isNaN(value)) {                    
+          let yearIndex = this.getClosestYearIndexAbove(value, this.yearList);
+//          console.log("changed start ", value, yearIndex);
+          $(this.refs.slider).slider( "values", 0, yearIndex );
+      }
+  })
+  $(this.refs.inputEnd).on("change", (event) => {
+      let value = parseInt(event.target.value);
+      if(!isNaN(value)) {                    
+          let yearIndex = this.getClosestYearIndexBelow(value, this.yearList);
+//          console.log("changed end ", value, yearIndex);
+          $(this.refs.slider).slider( "values", 1, yearIndex );
+      }
+  })
 }
 
 getClosestYearIndexAbove(value, years) {
