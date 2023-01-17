@@ -113,7 +113,6 @@ public class CmsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CmsBean.class);
 
-
     @Inject
     private transient NavigationHelper navigationHelper;
     @Inject
@@ -140,14 +139,14 @@ public class CmsBean implements Serializable {
     private List<String> luceneFields = null;
 
     public CmsBean() {
-        
+
     }
-    
+
     public CmsBean(CMSTemplateManager templateManager, NavigationHelper navigationHelper) {
         this.templateManager = templateManager;
         this.navigationHelper = navigationHelper;
     }
-    
+
     /**
      * <p>
      * init.
@@ -404,8 +403,10 @@ public class CmsBean implements Serializable {
         if (user == null) {
             return Collections.emptyList();
         }
-        return user.getAllowedTemplates(getTemplates()).stream()
-                .map(CMSPageTemplate::new).collect(Collectors.toList());
+        return user.getAllowedTemplates(getTemplates())
+                .stream()
+                .map(CMSPageTemplate::new)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -442,7 +443,6 @@ public class CmsBean implements Serializable {
     public TableDataProvider<CMSPage> getLazyModelPages() {
         return lazyModelPages;
     }
-
 
     /**
      * Returns the URL to the CMS template of the given page. This URL will only resolve if the page has been published or the current user is CMS
@@ -497,8 +497,10 @@ public class CmsBean implements Serializable {
      */
     public String getUrl(CMSPage page, boolean pretty) {
         try {
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/")
-                    .append(page.getRelativeUrlPath(pretty))
+            String host = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+            String prettyPath = page.getRelativeUrlPath(pretty);
+            return new StringBuilder(host).append("/")
+                    .append(prettyPath)
                     .toString();
         } catch (NullPointerException e) {
             return "pretty:index";
@@ -573,7 +575,6 @@ public class CmsBean implements Serializable {
         return false;
     }
 
-
     /**
      * <p>
      * isLinkedFromNavBar.
@@ -631,11 +632,6 @@ public class CmsBean implements Serializable {
         return null;
     }
 
-
-
-
-
-
     /**
      * <p>
      * Getter for the field <code>currentPage</code>.
@@ -658,12 +654,12 @@ public class CmsBean implements Serializable {
      * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public void setCurrentPage(CMSPage currentPage) {
-        if (currentPage != null) {
-            this.currentPage = new CMSPage(currentPage);
-            this.currentPage.initialiseCMSComponents(templateManager);
-            this.currentPage.setListPage(1);
-            navigationHelper.setCmsPage(true);
-            logger.trace("Set current cms page to {}", this.currentPage.getTitle());
+        if (currentPage != null) {            
+                this.currentPage = new CMSPage(currentPage);
+                this.currentPage.initialiseCMSComponents(templateManager);
+                this.currentPage.setListPage(1);
+                navigationHelper.setCmsPage(true);
+                logger.trace("Set current cms page to {}", this.currentPage.getTitle());                
         } else {
             this.currentPage = null;
         }
@@ -712,7 +708,6 @@ public class CmsBean implements Serializable {
             throw new ContentNotFoundException("There is no CMS page with id " + page.getId() + " related to PI " + getCurrentWorkPi());
         }
     }
-
 
     /**
      * <p>
@@ -836,7 +831,7 @@ public class CmsBean implements Serializable {
                 }
             }
         }
-        
+
         //Execute all page loading reoutines of content items.
         //If one returns a redirect url, return that, otherwise an empty string
         return currentPage.getComponents()
@@ -852,7 +847,8 @@ public class CmsBean implements Serializable {
                     }
                 })
                 .filter(StringUtils::isNotBlank)
-                .findAny().orElse("");
+                .findAny()
+                .orElse("");
 
     }
 
@@ -914,6 +910,8 @@ public class CmsBean implements Serializable {
      * @return
      */
     private static List<String> getMetadataValues(SearchHit hit, String solrField) {
+
+        
         SolrDocument doc = hit.getSolrDoc();
         if (doc != null) {
             Collection<Object> values = doc.getFieldValues(solrField);
@@ -964,8 +962,6 @@ public class CmsBean implements Serializable {
         }
         return Collections.emptyList();
     }
-
-
 
     /**
      * <p>
@@ -1769,7 +1765,6 @@ public class CmsBean implements Serializable {
         return Arrays.asList(Sorting.values());
     }
 
-
     public String getCurrentPageUrl() {
         if (this.currentPage != null) {
             return "cmsPage.xhtml";
@@ -1780,6 +1775,5 @@ public class CmsBean implements Serializable {
     public CMSTemplateManager getTemplateManager() {
         return templateManager;
     }
-
 
 }

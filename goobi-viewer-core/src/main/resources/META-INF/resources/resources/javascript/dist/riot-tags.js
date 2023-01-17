@@ -103,13 +103,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
+            	if(this.opts.fileTypeValidator) {
+            		let regex = this.opts.fileTypeValidator;
+            		if(!this.files[i]?.name?.match(regex)) {
+	            		let errormessage = "File " + this.files[i].name + " is not allowed for upload";
+	            		console.log(errormessage)
+	            		uploads.push(Promise.reject(errormessage));
+	            		continue;
+            		}
+            	}
                 uploads.push(this.uploadFile(i));
             }
 
             return Promise.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-
                      if (result.status === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
@@ -147,6 +155,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.fileUploadError = function(responseText) {
+        	console.log("fileUploadError", responseText);
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
         	if (responseText) {
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
@@ -822,6 +831,155 @@ this.on( 'mount', function() {
 	this.chart = new Chart(chartElement, this.chartConfig);
 
 })
+
+});
+riot.tag2('chronoslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
+
+this.msg={}
+this.on("mount", () => {
+	this.yearList = JSON.parse(opts.yearList);
+	this.startYear = parseInt(opts.startYear);
+	this.endYear = parseInt(opts.endYear);
+	this.minYear = this.yearList[0];
+	this.maxYear = this.yearList[this.yearList.length - 1];
+	this.valueInput = document.getElementById(opts.valueInput);
+	this.updateFacet = document.getElementById(opts.updateFacet);
+	this.loader = document.getElementById(opts.loader);
+	this.msg = opts.msg;
+	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+	this.update();
+});
+
+this.on("updated", () => {
+	this.initSlider();
+	this.initChangeEvents();
+	this.setHandlePositions();
+});
+
+this.setHandlePositions = function() {
+
+	let firstHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:first" ).css('left') );
+	let lastHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:last" ).css('left') );
+
+	if (this.rtl) {
+
+		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', '-10px');
+		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '0px');
+
+    	if ( firstHandlePos == lastHandlePos ) {
+    		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '-10px');
+    	}
+
+	} else {
+		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).last().width() * ($(this.refs.slider).slider( "values", 1 ) / $(this.refs.slider).slider('option', 'max')));
+		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).first().width() * ($(this.refs.slider).slider( "values", 0 ) / $(this.refs.slider).slider('option', 'max')));
+	}
+}.bind(this)
+
+this.initChangeEvents = function() {
+	$(this.refs.inputStart).on("change", (event) => {
+
+      let value = parseInt(event.target.value);
+      if(!isNaN(value)) {
+          let yearIndex = this.getClosestYearIndexAbove(value, this.yearList);
+
+          $(this.refs.slider).slider( "values", 0, yearIndex );
+      }
+  })
+  $(this.refs.inputEnd).on("change", (event) => {
+      let value = parseInt(event.target.value);
+      if(!isNaN(value)) {
+          let yearIndex = this.getClosestYearIndexBelow(value, this.yearList);
+
+          $(this.refs.slider).slider( "values", 1, yearIndex );
+      }
+  })
+}.bind(this)
+
+this.initSlider = function() {
+	let options = {
+			range: true,
+			isRTL: this.rtl,
+			min: 0,
+			max: this.yearList.length - 1,
+			values: [ this.yearList.indexOf( this.startYear ), this.yearList.indexOf( this.endYear ) ],
+			slide: ( event, ui ) => {
+
+				$( this.refs.inputStart ).val( this.yearList[ ui.values[ 0 ] ] );
+				$( this.refs.inputEnd ).val( this.yearList[ ui.values[ 1 ] ] );
+
+				if (this.rtl) {
+
+					if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-right', '0px');
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '-10px');
+		        	}	else {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '0px');
+					}
+
+					$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-left', '-10px');
+
+				}
+				else {
+
+	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
+				}
+
+			},
+			change: ( event, ui ) => {
+				var startDate = parseInt( $( this.refs.inputStart ).val() );
+				var endDate = parseInt( $( this.refs.inputEnd ).val() );
+
+				startDate =  this.yearList[ui.values[0]];
+				endDate =  this.yearList[ui.values[1]];
+
+				if(endDate >= startDate) {
+
+				    $( this.loader ).addClass( 'active' );
+
+				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
+				    $( this.valueInput ).val(value);
+
+				    $( this.updateFacet ).click();
+				}
+			},
+		}
+	console.log("init slider", this.opts, options);
+    $( this.refs.slider ).slider(options);
+}.bind(this)
+
+this.getClosestYearIndexAbove = function(value, years) {
+    for (var i = 0; i < years.length; i++) {
+        let year = years[i];
+        if(year >= value) {
+            return i;
+        }
+    }
+    return years.length-1;
+}.bind(this)
+
+this.getClosestYearIndexBelow = function(value, years) {
+    for (var i = years.length; i > -1 ; i--) {
+        let year = years[i];
+        if(year <= value) {
+            return i;
+        }
+    }
+    return 0;
+}.bind(this)
+
+this.$getFirstHandle = function() {
+	return $(this.refs.slider).find( ".ui-slider-handle" ).first();
+}.bind(this)
+
+this.$getLastHandle = function() {
+	return $(this.refs.slider).find( ".ui-slider-handle" ).last();
+}.bind(this)
+
+this.$getSlider = function() {
+	return $(this.refs.slider);
+}.bind(this)
 
 });
 riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
@@ -3045,15 +3203,15 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
 		this.pages = [];
 
 		var loadingTask = pdfjsLib.getDocument( this.opts.data );
-	    loadingTask.promise.then( function( pdf ) {
+	    loadingTask.promise.then( ( pdf ) => {
 	        var pageLoadingTasks = [];
 	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
    		        var page = pdf.getPage(pageNo);
    		        pageLoadingTasks.push(page);
    		    }
    		    return Promise.allSettled(pageLoadingTasks);
-	    }.bind(this))
-	    .then(function(results) {
+	    })
+	    .then( (results) => {
 			results.forEach(result => {
 			    if (result.status === "fulfilled") {
                 	var page = result.value;
@@ -3063,10 +3221,11 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
                 }
 			});
 			this.update();
-        }.bind(this))
-	    .then( function() {
+        })
+	    .then( () => {
 			$(".pdf-container").show();
-            $( '#literatureLoader' ).hide();
+			console.log("loader", this.opts.loaderSelector);
+            $(this.opts.loaderSelector).hide();
 		} );
 
 });

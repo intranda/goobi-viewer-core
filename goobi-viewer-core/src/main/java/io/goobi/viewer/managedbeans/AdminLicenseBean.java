@@ -65,6 +65,7 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import jakarta.mail.MessagingException;
 
 /**
@@ -919,8 +920,18 @@ public class AdminLicenseBean implements Serializable {
      * @throws PresentationException
      * @throws DAOException
      */
-    public List<String> getNotConfiguredAccessConditions() throws IndexUnreachableException, PresentationException, DAOException {
-        List<String> accessConditions = getPossibleAccessConditions();
+    public List<String> getNotConfiguredAccessConditions() throws PresentationException, DAOException {
+        List<String> accessConditions;
+        try {
+            accessConditions = getPossibleAccessConditions();
+        } catch (IndexUnreachableException e) {
+            logger.error("Solr error: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+            return Collections.emptyList();
+        } catch (PresentationException e) {
+            logger.error(e.getMessage());
+            return Collections.emptyList();
+        }
+
         if (accessConditions.isEmpty()) {
             return Collections.emptyList();
         }

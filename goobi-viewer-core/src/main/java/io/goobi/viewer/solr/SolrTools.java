@@ -35,11 +35,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -47,8 +51,6 @@ import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -514,6 +516,28 @@ public class SolrTools {
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")
                 || e.getMessage().contains("can not sort on multivalued field"));
+    }
+
+    /**
+     * 
+     * @param exceptionMessage
+     * @return
+     * @should return empty string if exceptionMessage empty
+     * @should return exceptionMessage if no pattern match found
+     * @should return title content correctly
+     */
+    public static String extractExceptionMessageHtmlTitle(String exceptionMessage) {
+        if (StringUtils.isEmpty(exceptionMessage)) {
+            return "";
+        }
+
+        Pattern p = Pattern.compile("<title>(.*)</title>");
+        Matcher m = p.matcher(exceptionMessage);
+        if (m.find()) {
+            return m.group(1);
+        }
+
+        return exceptionMessage;
     }
 
     /**

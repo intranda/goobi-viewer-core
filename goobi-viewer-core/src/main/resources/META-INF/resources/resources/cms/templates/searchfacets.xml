@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+    <jsfComponent>
+        <library>cms/components/frontend/component</library>
+        <name>searchfacets</name>
+    </jsfComponent>
+    <label>cms_component__searchfacets_label</label>
+    <description>cms_component__searchfacets_desc</description>
+    <icon>cms/components/frontend/component/icon/text.png</icon>
+    <content>
+        <item id="searchfacets">
+            <label>cms_component__searchfacets_label</label>
+            <description></description>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>searchfacets</name>
+            </jsfComponent>
+            <attributes>
+                <attribute name="type" value="heading"/>
+                <attribute name="level" value="h2"/>
+            </attributes>
+        </item>
+    </content>
+
+    <attribute name="hideOnScreenSizes" type="toggle">
+        <value label="Hide on desktop">hideDesktop</value>
+        <value label="Hide on mobile">hideMobile</value>
+    </attribute>
+    
+</component>

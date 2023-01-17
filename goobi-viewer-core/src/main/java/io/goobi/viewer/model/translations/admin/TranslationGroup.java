@@ -34,8 +34,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Translation group configuration item.
@@ -391,7 +394,12 @@ public class TranslationGroup {
                     if (item.getEntries() != null) {
                         retSet.addAll(item.getEntries());
                     }
-                } catch (Exception e) {
+                } catch (IndexUnreachableException e) {
+                    logger.error("Solr error: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+                    loadError = true;
+                    allEntries = Collections.emptyList();
+                    return allEntries;
+                } catch (PresentationException e) {
                     logger.error(e.getMessage());
                     loadError = true;
                     allEntries = Collections.emptyList();

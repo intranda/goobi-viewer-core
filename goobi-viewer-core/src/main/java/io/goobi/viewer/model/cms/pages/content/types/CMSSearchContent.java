@@ -124,6 +124,9 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     public String handlePageLoad(boolean resetResults) throws PresentationException {
         if (this.search == null) {
             this.search = initSearch();
+            //store search in session bean so it will be available when reloading a page
+            //otherwise "submitSearch" button will not work properly because search isn't available anymore
+            BeanUtils.getSessionBean().put("cmsSearch", this.search);
         }
         try {
             SearchBean searchBean = BeanUtils.getSearchBean();
@@ -134,7 +137,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
                 }
                 if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                     return searchAction();
-                } else if (this.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
+                } else if (this.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getActiveFacetString())) {
                     String searchString = StringUtils.isNotBlank(this.search.getQueryString().replace("-", "")) ? this.search.getQueryString() : "";
                     searchBean.setExactSearchString(searchString);
                     return searchAction();

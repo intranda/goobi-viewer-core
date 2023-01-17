@@ -44,7 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -77,7 +76,7 @@ public class CMSPageTemplateEditBean implements Serializable {
     transient CmsNavigationBean navigationBean;
     @Inject
     transient CMSSidebarWidgetsBean widgetsBean;
-    @Inject 
+    @Inject
     transient CollectionViewBean collectionViewBean;
     @Inject
     transient FacesContext facesContext;
@@ -87,7 +86,6 @@ public class CMSPageTemplateEditBean implements Serializable {
     private boolean editMode = false;
     private CMSPageEditState pageEditState = CMSPageEditState.CONTENT;
     private String selectedComponent = "";
-
 
     @PostConstruct
     public void setup() {
@@ -149,6 +147,7 @@ public class CMSPageTemplateEditBean implements Serializable {
                 .sorted((c1, c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale),
                         ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
                 .collect(Collectors.toList());
+        // TODO StringIndexOutOfBoundsException is thrown here if component label is empty
         Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,
                 component -> ViewerResourceBundle.getTranslation(component.getLabel(), locale));
         return SelectItemBuilder.getAsGroupedSelectItems(sortedMap, CMSComponent::getTemplateFilename,
@@ -202,9 +201,9 @@ public class CMSPageTemplateEditBean implements Serializable {
     public void setSelectedComponent(String selectedComponent) {
         this.selectedComponent = selectedComponent;
     }
-    
+
     public void addComponent() {
-        if(addComponent(getSelectedTemplate(), getSelectedComponent())) {
+        if (addComponent(getSelectedTemplate(), getSelectedComponent())) {
             setSelectedComponent(null);
         }
     }
@@ -231,7 +230,7 @@ public class CMSPageTemplateEditBean implements Serializable {
 
     public void saveTemplateAndForwardToEdit() throws DAOException {
         this.saveSelectedTemplate();
-        if(this.selectedTemplate.getId() != null) {            
+        if (this.selectedTemplate.getId() != null) {
             String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsEditPageTemplate", this.selectedTemplate.getId());
             try {
                 facesContext.getExternalContext().redirect(url);
@@ -240,7 +239,7 @@ public class CMSPageTemplateEditBean implements Serializable {
             }
         }
     }
-    
+
     public void saveSelectedTemplate() throws DAOException {
         logger.trace("saveSelectedPage");
         if (userBean == null || !userBean.getUser().isCmsAdmin() || selectedTemplate == null) {
@@ -277,14 +276,13 @@ public class CMSPageTemplateEditBean implements Serializable {
     }
 
     public String deleteSelectedTemplate() throws DAOException {
-        if(deleteTemplate(this.selectedTemplate)) {
+        if (deleteTemplate(this.selectedTemplate)) {
             this.selectedTemplate = null;
             return "pretty:adminCmsSelectTemplate";
-        } else {
-            return "";
         }
+        return "";
     }
-    
+
     /**
      * Deletes given CMS page from the database.
      *
@@ -297,14 +295,12 @@ public class CMSPageTemplateEditBean implements Serializable {
             if (dao.removeCMSPageTemplate(template)) {
                 Messages.info("cms_deletePageTemplate_success");
                 return true;
-            } else {
-                logger.error("Failed to delete page");
-                Messages.error("cms_deletePageTemplate_failure");
-                return false;
             }
-        } else {
+            logger.error("Failed to delete page");
+            Messages.error("cms_deletePageTemplate_failure");
             return false;
         }
+        return false;
     }
 
 }

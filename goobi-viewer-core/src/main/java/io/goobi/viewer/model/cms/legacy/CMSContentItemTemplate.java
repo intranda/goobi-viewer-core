@@ -29,6 +29,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
 import io.goobi.viewer.model.cms.pages.content.ContentItemMode;
 import io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent;
@@ -264,7 +265,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
 
     public CMSContentItem createCMSContentItem(CMSComponent component) {
 
-        CMSContent content = createCMSContent(this.type);
+        CMSContent content = createCMSContent(this.type, this.mediaFilter);
         if (content != null) {
             JsfComponent jsf = new JsfComponent("cms/components/backend/content", content.getBackendComponentName());
             return new CMSContentItem(this.itemId, content, this.itemLabel, this.inlineHelp, jsf, component, this.isMandatory());
@@ -277,7 +278,7 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
      * @param type
      * @return
      */
-    private static CMSContent createCMSContent(CMSContentItemType type) {
+    private static CMSContent createCMSContent(CMSContentItemType type, String mediaFilter) {
         switch (type.name()) {
             case "TEXT":
                 return new CMSShortTextContent();
@@ -298,7 +299,11 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
             case "GLOSSARY":
                 return new CMSGlossaryContent();
             case "MEDIA":
-                return new CMSMediaContent();
+                if(StringUtils.isNotBlank(mediaFilter) && mediaFilter.toLowerCase().contains(".pdf")) {
+                    return new CMSDocumentContent();
+                } else {                    
+                    return new CMSMediaContent();
+                }
             case "METADATA":
                 return new CMSMetadataContent();
             case "GEOMAP":

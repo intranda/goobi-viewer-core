@@ -663,7 +663,7 @@ public class CalendarBean implements Serializable {
         searchBean.resetSearchResults();
         searchBean.setCurrentPage(1);
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        searchBean.getFacets().setCurrentFacetString("-");
+        searchBean.getFacets().setActiveFacetString("-");
         searchBean.setExactSearchString(builder.toString());
         searchBean.executeSearch();
         return "pretty:newSearch5";

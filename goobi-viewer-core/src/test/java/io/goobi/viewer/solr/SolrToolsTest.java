@@ -226,4 +226,33 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
         Assert.assertTrue(result.contains("subtheme1"));
         Assert.assertTrue(result.contains("subtheme2"));
     }
+
+    /**
+     * @see SolrTools#extractExceptionMessageHtmlTitle(String)
+     * @verifies return empty string if exceptionMessage empty
+     */
+    @Test
+    public void extractExceptionMessageHtmlTitle_shouldReturnEmptyStringIfExceptionMessageEmpty() throws Exception {
+        Assert.assertEquals("", SolrTools.extractExceptionMessageHtmlTitle(null));
+    }
+
+    /**
+     * @see SolrTools#extractExceptionMessageHtmlTitle(String)
+     * @verifies return exceptionMessage if no pattern match found
+     */
+    @Test
+    public void extractExceptionMessageHtmlTitle_shouldReturnExceptionMessageIfNoPatternMatchFound() throws Exception {
+        String html = "<html><head></head><body><h1>foo</h1></body</html>";
+        Assert.assertEquals(html, SolrTools.extractExceptionMessageHtmlTitle(html));
+    }
+
+    /**
+     * @see SolrTools#extractExceptionMessageHtmlTitle(String)
+     * @verifies return title content correctly
+     */
+    @Test
+    public void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() throws Exception {
+        String html = "<html><head><title>foo bar</title></head><body><h1>foo</h1></body</html>";
+        Assert.assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
+    }
 }

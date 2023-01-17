@@ -111,11 +111,6 @@ public final class SearchHelper {
 
     private static final Logger logger = LogManager.getLogger(SearchHelper.class);
 
-    /**
-     * All configured facet fields. Used for {@link #defacetifyField(String)} and stored here for quick access
-     */
-    private static final List<String> CONFIGURED_FACET_FIELDS = DataManager.getInstance().getConfiguration().getFacetFields();
-
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX="[ ]|[,]|[-]"</code> */
@@ -172,8 +167,7 @@ public final class SearchHelper {
     /** Constant <code>patternHyperlink</code> */
     public static Pattern patternHyperlink = Pattern.compile("(<a .*<\\/a>)");
 
-
-    public static final Pattern patternAllItems =Pattern.compile(
+    public static final Pattern patternAllItems = Pattern.compile(
             "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
 
     public static final Pattern patternRegularItems = Pattern.compile("([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)");
@@ -182,11 +176,12 @@ public final class SearchHelper {
     public static final Pattern patternPhraseItems = Pattern.compile("([+-]*)\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)++\\)");
     public static final Pattern patternPhrasePairs = Pattern.compile("(\\w+:\"[\\wäáàâöóòôüúùûëéèêßñ ]+\")");
 
-    public static final Pattern patternRangeItems = Pattern.compile("([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)");
+    public static final Pattern patternRangeItems =
+            Pattern.compile("([+-]*)\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *)\\)");
     public static final Pattern patternRangePairs = Pattern.compile("(\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\))");
 
     public static final Pattern patternFacetString = Pattern.compile("(\\w+:\\w+);;");
-    
+
     /**
      * 
      */
@@ -2453,8 +2448,12 @@ public final class SearchHelper {
      * @should leave year month day fields unaltered
      */
     public static String facetifyField(String fieldName) {
-        if (fieldName != null && (fieldName.startsWith("BOOL_") || fieldName.equals(SolrConstants.CALENDAR_YEAR)
-                || fieldName.equals(SolrConstants.CALENDAR_MONTH) || fieldName.equals(SolrConstants.CALENDAR_DAY))) {
+        if (fieldName == null) {
+            throw new IllegalArgumentException("fieldNamemae not be null");
+        }
+
+        if (fieldName.startsWith(SolrConstants.PREFIX_BOOL) || fieldName.startsWith(SolrConstants.PREFIX_MDNUM) || fieldName.equals(SolrConstants.CALENDAR_YEAR)
+                || fieldName.equals(SolrConstants.CALENDAR_MONTH) || fieldName.equals(SolrConstants.CALENDAR_DAY)) {
             return fieldName;
         }
         return adaptField(fieldName, SolrConstants.PREFIX_FACET);
@@ -2470,7 +2469,7 @@ public final class SearchHelper {
      * @should sortify correctly
      */
     public static String sortifyField(String fieldName) {
-        return adaptField(fieldName, "SORT_");
+        return adaptField(fieldName, SolrConstants.PREFIX_SORT);
     }
 
     /**
@@ -2482,7 +2481,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      */
     public static String boolifyField(String fieldName) {
-        return adaptField(fieldName, "BOOL_");
+        return adaptField(fieldName, SolrConstants.PREFIX_BOOL);
     }
 
     /**
@@ -2521,7 +2520,7 @@ public final class SearchHelper {
             case SolrConstants.CALENDAR_YEAR:
             case SolrConstants.CALENDAR_MONTH:
             case SolrConstants.CALENDAR_DAY:
-                if ("SORT_".equals(prefix)) {
+                if (SolrConstants.PREFIX_SORT.equals(prefix)) {
                     return "SORTNUM_" + fieldName;
                 }
                 fieldName = applyPrefix(fieldName, prefix);
@@ -2552,19 +2551,29 @@ public final class SearchHelper {
         if (fieldName.startsWith("MD_")) {
             fieldName = fieldName.replace("MD_", prefix);
         } else if (fieldName.startsWith("MD2_")) {
-            fieldName = fieldName.replace("MD2_", prefix);
+            if (SolrConstants.PREFIX_FACET.equals(prefix)) {
+                fieldName = SolrConstants.PREFIX_FACET + fieldName;
+            } else {
+                fieldName = fieldName.replace("MD2_", prefix);
+            }
         } else if (fieldName.startsWith(SolrConstants.PREFIX_MDNUM)) {
-            if ("SORT_".equals(prefix)) {
+            if (SolrConstants.PREFIX_SORT.equals(prefix)) {
                 fieldName = fieldName.replace(SolrConstants.PREFIX_MDNUM, "SORTNUM_");
+            } else if (SolrConstants.PREFIX_FACET.equals(prefix)) {
+                fieldName = SolrConstants.PREFIX_FACET + fieldName;
             } else {
                 fieldName = fieldName.replace(SolrConstants.PREFIX_MDNUM, prefix);
             }
         } else if (fieldName.startsWith("NE_")) {
-            fieldName = fieldName.replace("NE_", prefix);
-        } else if (fieldName.startsWith("BOOL_")) {
-            fieldName = fieldName.replace("BOOL_", prefix);
-        } else if (fieldName.startsWith("SORT_")) {
-            fieldName = fieldName.replace("SORT_", prefix);
+            if (SolrConstants.PREFIX_FACET.equals(prefix)) {
+                fieldName = SolrConstants.PREFIX_FACET + fieldName;
+            } else {
+                fieldName = fieldName.replace("NE_", prefix);
+            }
+        } else if (fieldName.startsWith(SolrConstants.PREFIX_BOOL)) {
+            fieldName = fieldName.replace(SolrConstants.PREFIX_BOOL, prefix);
+        } else if (fieldName.startsWith(SolrConstants.PREFIX_SORT)) {
+            fieldName = fieldName.replace(SolrConstants.PREFIX_SORT, prefix);
         }
 
         return fieldName;
@@ -2587,7 +2596,7 @@ public final class SearchHelper {
         /**
          * If the given fieldname is a facetified version of a configured facet field, return the configured field
          */
-        for (String field : CONFIGURED_FACET_FIELDS) {
+        for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
             String facetField = facetifyField(field);
             if (fieldName.equals(facetField)) {
                 return field;
@@ -2605,6 +2614,10 @@ public final class SearchHelper {
                 return fieldName.substring(6);
             default:
                 if (fieldName.startsWith(SolrConstants.PREFIX_FACET)) {
+                    if (fieldName.startsWith(SolrConstants.PREFIX_FACET + "MD2_")
+                            || fieldName.startsWith(SolrConstants.PREFIX_FACET + SolrConstants.PREFIX_MDNUM)) {
+                        return fieldName.substring(6);
+                    }
                     return fieldName.replace(SolrConstants.PREFIX_FACET, "MD_");
                 }
                 return fieldName;
@@ -3143,24 +3156,6 @@ public final class SearchHelper {
 
     /**
      * <p>
-     * getAllFacetFields.
-     * </p>
-     *
-     * @param hierarchicalFacetFields a {@link java.util.List} object.
-     * @return a {@link java.util.List} object.
-     */
-    public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
-        List<String> facetFields = DataManager.getInstance().getConfiguration().getFacetFields();
-        Optional<String> geoFacetField = Optional.ofNullable(DataManager.getInstance().getConfiguration().getGeoFacetFields());
-        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size() + (geoFacetField.isPresent() ? 1 : 0));
-        allFacetFields.addAll(hierarchicalFacetFields);
-        allFacetFields.addAll(facetFields);
-        geoFacetField.ifPresent(field -> allFacetFields.add(field));
-        return SearchHelper.facetifyList(allFacetFields);
-    }
-
-    /**
-     * <p>
      * parseSortString.
      * </p>
      *
@@ -3181,8 +3176,8 @@ public final class SearchHelper {
                 ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
                 logger.trace("Added sort field: {}", field);
                 // add translated sort fields
-                if (navigationHelper != null && field.startsWith("SORT_")) {
-                    Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
+                if (navigationHelper != null && field.startsWith(SolrConstants.PREFIX_SORT)) {
+                    Iterable<Locale> locales = navigationHelper::getSupportedLocales;
                     StreamSupport.stream(locales.spliterator(), false)
                             .sorted(new LocaleComparator(BeanUtils.getLocale()))
                             .map(locale -> field + SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase())
