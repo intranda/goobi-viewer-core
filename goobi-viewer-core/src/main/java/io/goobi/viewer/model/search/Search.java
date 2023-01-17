@@ -33,29 +33,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -73,6 +65,14 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * Persistable search query.
@@ -553,7 +553,7 @@ public class Search implements Serializable {
                 continue;
             }
 
-            Map<String, Long> counts = new HashMap<>();
+            SortedMap<String, Long> counts = new TreeMap<>();
             List<String> values = new ArrayList<>();
             for (Count count : facetField.getValues()) {
                 if (count.getCount() > 0) {
@@ -565,7 +565,7 @@ public class Search implements Serializable {
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (rangeFacetFields.contains(facetField.getName())) {
                     // Slider range
-                    facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, values);
+                    facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, counts);
                 }
             }
         }
