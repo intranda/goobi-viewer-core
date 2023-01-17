@@ -768,12 +768,13 @@ public class SearchFacets implements Serializable {
         }
         return valueRanges.get(field);
     }
-    
+
     public boolean isRangeFacetActive(String field) {
-        try {            
+        try {
             List<Integer> range = getValueRange(field);
-            return Integer.parseInt(getCurrentMinRangeValue(field)) > range.get(0) || Integer.parseInt(getCurrentMaxRangeValue(field)) < range.get(range.size()-1);
-        } catch(PresentationException | IndexUnreachableException | NullPointerException | NumberFormatException e) {
+            return Integer.parseInt(getCurrentMinRangeValue(field)) > range.get(0)
+                    || Integer.parseInt(getCurrentMaxRangeValue(field)) < range.get(range.size() - 1);
+        } catch (PresentationException | IndexUnreachableException | NullPointerException | NumberFormatException e) {
             logger.warn("Unable to parse range values of range slider for field {}: {}", field, e.toString());
             return false;
         }
@@ -948,7 +949,7 @@ public class SearchFacets implements Serializable {
 
     /**
      * <p>
-     * getAllAvailableFacets.
+     * Returns configured facet fields of regular and hierarchical type only.
      * </p>
      *
      * @should return all facet items in correct order
@@ -987,11 +988,13 @@ public class SearchFacets implements Serializable {
             //add current facets which have no hits. This may happen due to geomap faceting
             List<IFacetItem> currentFacetsLocal = new ArrayList<>(activeFacets);
             for (IFacetItem currentItem : currentFacetsLocal) {
-                // Make a copy of the list to avoid concurrent modification
-                List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
-                if (!availableFacetItems.contains(currentItem)) {
-                    availableFacetItems.add(currentItem);
-                    ret.put(currentItem.getField(), availableFacetItems);
+                if ("geo".equals(DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField()))) {
+                    // Make a copy of the list to avoid concurrent modification
+                    List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
+                    if (!availableFacetItems.contains(currentItem)) {
+                        availableFacetItems.add(currentItem);
+                        ret.put(currentItem.getField(), availableFacetItems);
+                    }
                 }
             }
 
