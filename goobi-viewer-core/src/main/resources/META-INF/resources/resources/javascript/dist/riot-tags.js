@@ -794,19 +794,17 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronoslider', '<div class="widget-chronology-slider__body widget__body"><div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div ref="slider"></div></div></div>', '', '', function(opts) {
+riot.tag2('chronoslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
 
 this.msg={}
 this.on("mount", () => {
-	console.log("init chrono slider with ", opts);
+	this.yearList = JSON.parse(opts.yearList);
 	this.startYear = parseInt(opts.startYear);
 	this.endYear = parseInt(opts.endYear);
-	this.yearList = JSON.parse(opts.yearList);
 	this.minYear = this.yearList[0];
 	this.maxYear = this.yearList[this.yearList.length - 1];
 	this.valueInput = document.getElementById(opts.valueInput);
 	this.updateFacet = document.getElementById(opts.updateFacet);
-	this.removeFacet = document.getElementById(opts.removeFacet);
 	this.loader = document.getElementById(opts.loader);
 	this.msg = opts.msg;
 	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
@@ -817,24 +815,13 @@ this.on("updated", () => {
 	this.initSlider();
 	this.initChangeEvents();
 	this.setHandlePositions();
-	this.initSliderReset();
 });
-
-this.initSliderReset = function() {
-	if ( this.startYear > this.yearList[ 0 ] || this.endYear < this.yearList[ this.yearList.length - 1 ] ) {
-		$( '.chronology-slider-action-reset' ).addClass( 'active' );
-		$( '[data-reset="chrono-slider"]' ).on( 'click', function() {
-    		this.resetChronoSlider( this.yearList );
-    	} );
-	}
-}.bind(this)
 
 this.setHandlePositions = function() {
 
 	let firstHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:first" ).css('left') );
 	let lastHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:last" ).css('left') );
 
-	console.log("set handle positions ", firstHandlePos, lastHandlePos);
 	if (this.rtl) {
 
 		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', '-10px');
@@ -851,7 +838,7 @@ this.setHandlePositions = function() {
 }.bind(this)
 
 this.initChangeEvents = function() {
-	$(this.refs.slider).find( '.chronology-slider-start input' ).on("change", (event) => {
+	$(this.refs.inputStart).on("change", (event) => {
 
       let value = parseInt(event.target.value);
       if(!isNaN(value)) {
@@ -860,7 +847,7 @@ this.initChangeEvents = function() {
           $(this.refs.slider).slider( "values", 0, yearIndex );
       }
   })
-  $(this.refs.slider).find( '.chronology-slider-end input' ).on("change", (event) => {
+  $(this.refs.inputEnd).on("change", (event) => {
       let value = parseInt(event.target.value);
       if(!isNaN(value)) {
           let yearIndex = this.getClosestYearIndexBelow(value, this.yearList);
@@ -871,12 +858,11 @@ this.initChangeEvents = function() {
 }.bind(this)
 
 this.initSlider = function() {
-	console.log("init slider", this);
 	let options = {
 			range: true,
 			isRTL: this.rtl,
-			min: this.minYear,
-			max: this.maxYear,
+			min: 0,
+			max: this.yearList.length - 1,
 			values: [ this.yearList.indexOf( this.startYear ), this.yearList.indexOf( this.endYear ) ],
 			slide: ( event, ui ) => {
 
@@ -915,15 +901,12 @@ this.initSlider = function() {
 
 				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
 				    $( this.valueInput ).val(value);
-				    console.log("set slider value ", this, this.valueInput, value)
 
 				    $( this.updateFacet ).click();
-				    console.log("submit", $( this.updateFacet ));
 				}
 			},
 		}
-	console.log("slider options ", options)
-
+	console.log("init slider", this.opts, options);
     $( this.refs.slider ).slider(options);
 }.bind(this)
 
@@ -945,16 +928,6 @@ this.getClosestYearIndexBelow = function(value, years) {
         }
     }
     return 0;
-}.bind(this)
-
-this.resetChronoSlider = function( years ) {
-
-	$(this.refs.slider).slider( {
-		min: 0,
-		max: years.length - 1
-	} );
-
-	$( this.removeFacet ).click();
 }.bind(this)
 
 this.$getFirstHandle = function() {

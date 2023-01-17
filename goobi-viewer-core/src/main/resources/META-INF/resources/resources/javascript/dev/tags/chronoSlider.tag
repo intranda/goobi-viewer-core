@@ -1,6 +1,5 @@
 <chronoSlider>
 
-<div class="widget-chronology-slider__body widget__body">
 	<!-- START/END YEAR -->
 	<div class="widget-chronology-slider__item chronology-slider-start">
 		<input ref="inputStart" data-input='number'
@@ -17,23 +16,20 @@
 
 	<!-- RANGE SLIDER -->
 	<div class="widget-chronology-slider__item chronology-slider">
-		<div ref="slider"></div>
+		<div class="widget-chronology-slider__slider" ref="slider"></div>
 	</div>
-</div>
 
 <script>
 
 this.msg={}
 this.on("mount", () => {
-	console.log("init chrono slider with ", opts);
+	this.yearList = JSON.parse(opts.yearList);
 	this.startYear = parseInt(opts.startYear);
 	this.endYear = parseInt(opts.endYear);
-	this.yearList = JSON.parse(opts.yearList);
 	this.minYear = this.yearList[0];
 	this.maxYear = this.yearList[this.yearList.length - 1];
 	this.valueInput = document.getElementById(opts.valueInput);
 	this.updateFacet = document.getElementById(opts.updateFacet);
-	this.removeFacet = document.getElementById(opts.removeFacet);
 	this.loader = document.getElementById(opts.loader);	
 	this.msg = opts.msg;
 	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
@@ -44,25 +40,14 @@ this.on("updated", () => {
 	this.initSlider();
 	this.initChangeEvents();
 	this.setHandlePositions();
-	this.initSliderReset();
 });
 
-
-initSliderReset() {
-	if ( this.startYear > this.yearList[ 0 ] || this.endYear < this.yearList[ this.yearList.length - 1 ] ) {
-		$( '.chronology-slider-action-reset' ).addClass( 'active' );
-		$( '[data-reset="chrono-slider"]' ).on( 'click', function() {
-    		this.resetChronoSlider( this.yearList );
-    	} );
-	}
-}
 
 setHandlePositions() {
 	// set handler position
 	let firstHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:first" ).css('left') );
 	let lastHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:last" ).css('left') );
 	
-	console.log("set handle positions ", firstHandlePos, lastHandlePos);
 	if (this.rtl) {
 		
 		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', '-10px');
@@ -82,7 +67,7 @@ setHandlePositions() {
 }
 
 initChangeEvents() {
-	$(this.refs.slider).find( '.chronology-slider-start input' ).on("change", (event) => {
+	$(this.refs.inputStart).on("change", (event) => {
 //      console.log("change event ", event);
       let value = parseInt(event.target.value);
       if(!isNaN(value)) {                    
@@ -91,7 +76,7 @@ initChangeEvents() {
           $(this.refs.slider).slider( "values", 0, yearIndex );
       }
   })
-  $(this.refs.slider).find( '.chronology-slider-end input' ).on("change", (event) => {
+  $(this.refs.inputEnd).on("change", (event) => {
       let value = parseInt(event.target.value);
       if(!isNaN(value)) {                    
           let yearIndex = this.getClosestYearIndexBelow(value, this.yearList);
@@ -102,12 +87,11 @@ initChangeEvents() {
 }
 
 initSlider() {
-	console.log("init slider", this);
 	let options = {
 			range: true,
 			isRTL: this.rtl,
-			min: this.minYear,
-			max: this.maxYear,
+			min: 0,
+			max: this.yearList.length - 1,
 			values: [ this.yearList.indexOf( this.startYear ), this.yearList.indexOf( this.endYear ) ],
 			slide: ( event, ui ) => {
 				
@@ -157,15 +141,12 @@ initSlider() {
 				    // set query to hidden input
 				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
 				    $( this.valueInput ).val(value);
-				    console.log("set slider value ", this, this.valueInput, value)
 				    // submit form
 				    $( this.updateFacet ).click();
-				    console.log("submit", $( this.updateFacet ));
 				}
 			},
 		}
-	console.log("slider options ", options)
-	
+	console.log("init slider", this.opts, options);
     $( this.refs.slider ).slider(options);
 }
 
@@ -188,19 +169,6 @@ getClosestYearIndexBelow(value, years) {
     }
     return 0;
 }
-
-resetChronoSlider( years ) {
-	
-	
-	$(this.refs.slider).slider( {
-		min: 0,
-		max: years.length - 1
-	} );
-	
-//	$( '[id*="chronologySliderInput"]' ).val( '[' + years[ 0 ] + ' TO ' + years[years.length - 1] + ']' );
-//	$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
-	$( this.removeFacet ).click();
-}  
 
 $getFirstHandle() {
 	return $(this.refs.slider).find( ".ui-slider-handle" ).first();	
