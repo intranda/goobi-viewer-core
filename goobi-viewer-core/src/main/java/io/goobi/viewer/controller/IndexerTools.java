@@ -44,7 +44,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.serialization.AnnotationIndexAugmenter;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -64,6 +64,9 @@ public class IndexerTools {
     public static final String SUFFIX_USER_GENERATED_CONTENT = "_ugc";
     /** Constant <code>SUFFIX_CMS="_cms"</code> */
     public static final String SUFFIX_CMS = "_cms";
+
+    private IndexerTools() {
+    }
 
     /**
      * Re-index in background thread to significantly decrease saving times.
@@ -88,7 +91,7 @@ public class IndexerTools {
                         Messages.info("reIndexRecordSuccess");
                     }
                 } catch (DAOException | RecordNotFoundException e) {
-                    logger.error("Failed to reindex record " + pi + ": " + e.getMessage(), e);
+                    logger.error("Failed to reindex record {}: {}", pi, e.getMessage(), e);
                     Messages.error("reIndexRecordFailure");
                 }
             }
@@ -134,7 +137,7 @@ public class IndexerTools {
             SolrDocument doc = DataManager.getInstance()
                     .getSearchIndex()
                     .getFirstDoc(SolrConstants.PI + ":" + pi,
-                            Arrays.asList(new String[] { SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT }));
+                            Arrays.asList(SolrConstants.DATAREPOSITORY, SolrConstants.SOURCEDOCFORMAT));
             if (doc == null) {
                 throw new RecordNotFoundException("Record not found in index: " + pi);
             }
@@ -157,31 +160,28 @@ public class IndexerTools {
         logger.info("Preparing to re-index record: {}", recordXmlFile.getAbsolutePath());
         StringBuilder sbNamingScheme = new StringBuilder(pi);
 
-        {
-            // If the same record is already being indexed, use an alternative naming scheme
-            File fulltextDir =
-                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
-            File altoDir =
-                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
-            File annotationsDir =
-                    new File(DataManager.getInstance().getConfiguration().getHotfolder(),
-                            sbNamingScheme.toString() + AnnotationIndexAugmenter.SUFFIX_ANNOTATIONS);
-            File cmsDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_CMS);
+        // If the same record is already being indexed, use an alternative naming scheme
+        File fulltextDir =
+                new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
+        File altoDir =
+                new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
+        File annotationsDir =
+                new File(DataManager.getInstance().getConfiguration().getHotfolder(),
+                        sbNamingScheme.toString() + AnnotationIndexAugmenter.SUFFIX_ANNOTATIONS);
+        File cmsDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_CMS);
 
-            File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
-            if (recordXmlFileInHotfolder.exists() || fulltextDir.exists() || altoDir.exists() || annotationsDir.exists() || cmsDir.exists()) {
-                logger.info("'{}' is already being indexed, looking for an alternative naming scheme...", sbNamingScheme.toString());
-                long iteration = System.currentTimeMillis();
-                // Just checking for the presence of the record XML file at this
-                // point, because this method is synchronized and no two
-                // instances should be running at the same time.
-                while ((recordXmlFileInHotfolder =
-                        new File(DataManager.getInstance().getConfiguration().getHotfolder(), pi + "#" + iteration + ".xml")).exists()) {
-                    iteration = System.currentTimeMillis();
-                }
-                sbNamingScheme.append('#').append(iteration);
-                logger.info("Alternative naming scheme: {}", sbNamingScheme.toString());
+        File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
+        if (recordXmlFileInHotfolder.exists() || fulltextDir.exists() || altoDir.exists() || annotationsDir.exists() || cmsDir.exists()) {
+            logger.info("'{}' is already being indexed, looking for an alternative naming scheme...", sbNamingScheme);
+            long iteration = System.currentTimeMillis();
+            // Just checking for the presence of the record XML file at this
+            // point, because this method is synchronized and no two
+            // instances should be running at the same time.
+            while ((new File(DataManager.getInstance().getConfiguration().getHotfolder(), pi + "#" + iteration + ".xml")).exists()) {
+                iteration = System.currentTimeMillis();
             }
+            sbNamingScheme.append('#').append(iteration);
+            logger.info("Alternative naming scheme: {}", sbNamingScheme);
         }
 
         // Export related CMS page contents
@@ -243,11 +243,11 @@ public class IndexerTools {
     private static Collection<? extends IndexAugmenter> getAllAugmenters(String pi, Integer page) throws DAOException {
         List<IndexAugmenter> augmenters = new ArrayList<>();
         augmenters.addAll(DataManager.getInstance().getModules());
-        
+
         //Don't index crowdsourcing campaign annotations. At least some (authority data) cause an exception when indexing
-//        List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
-//        IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
-//        augmenters.add(annoAugmenter);
+        //        List annos = DataManager.getInstance().getDao().getAnnotationsForTarget(pi, page);
+        //        IndexAugmenter annoAugmenter = new AnnotationIndexAugmenter(annos);
+        //        augmenters.add(annoAugmenter);
 
         if (page != null) {
             // Only add comments if a page number is given, or else NPE
@@ -273,7 +273,7 @@ public class IndexerTools {
      * @throws java.io.IOException if any.
      */
     public static synchronized boolean reIndexPage(String pi, int page, Collection<? extends IndexAugmenter> augmenters)
-            throws DAOException, PresentationException, IndexUnreachableException, IOException {
+            throws PresentationException, IndexUnreachableException, IOException {
         logger.trace("reIndexPage: {}/{}", pi, page);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
@@ -300,7 +300,7 @@ public class IndexerTools {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(query,
-                        Arrays.asList(new String[] { SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+                        Arrays.asList(SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);

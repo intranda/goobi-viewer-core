@@ -16,7 +16,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <div id="cmsOverview">
+        <div id="cmsOverview" class="cms-pages-overview">
             <h:panelGroup id="cmsOverviewAccessControl" rendered="#{userBean.user.cmsAdmin}">
                 <h:form id="cmsOverviewForm" prependId="false">
 
@@ -30,7 +30,8 @@
                             </a>
                         </ui:fragment>
                     </div>
-
+                    
+                    <viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content">
                         <div class="admin__table-tools">
@@ -38,6 +39,7 @@
                             <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
                             </div>
+                            
                             <!-- FILTER -->
                             <!-- TODO add categories and subtheme to this filter, too -->
                             <div class="admin__table-filter">
@@ -67,26 +69,20 @@
                                 <!-- TRANSLATIONS COL -->
                                 <div class="col-2">
 	                                <div class="row no-gutters" role="columnheader" aria-label="Shows available language versions of a page">
-	                                    <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-	                                        <div class="col-2 d-flex">#{locale.language}</div>
-	                                    </c:forEach>
+
+	                                        <div class=" d-flex">#{msg.admin__translations}</div>
+	                                    
+	                                    
+	                                    
+	                                    
 	                                </div>
                                 </div>
                             </div>
 
-
                             <!-- INDIVIDUAL PAGE ROWS -->
                             <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                <div class="row no-gutters admin__table-entry #{page.validityStatus == 'VALID' ? '' : 'invalid_template'} #{page.published == true ? '' : '-unpublished'}" role="row">
+                                <div class="row no-gutters admin__table-entry #{page.published == true ? '' : '-unpublished'}" role="row">
                                     <div class="col-6 d-flex">
-                                        <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
-                                        	<div class="admin__table-img align-self-center" role="presentation">
-                                            	<img alt="#{page.template.name}" src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
-                                            </div>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{page.validityStatus != 'VALID'}" role="gridcell">
-                                            <img class="admin__table-img align-self-center" alt="#{msg.cms_invalid_no_template}" src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
-                                        </ui:fragment>
 
                                         <div class="admin__table-data" role="gridcell">
                                             <span class="admin__table-name #{page.published == true ? '' : '-unpublished'}">#{page.title}</span>
@@ -112,7 +108,7 @@
 	                                               data-require-confirmation="true"
 	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_pageMetadata_delete, page.title)}"
 	                                               jsf:rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}"
-	                                               jsf:action="#{cmsBean.deletePage(page)}"
+	                                               jsf:action="#{cmsPageEditBean.deletePage(page)}"
 	                                               aria-label="#{msg.delete}" >
 	                                               #{msg.delete}
 	                                                <f:ajax render="@all" />
@@ -141,23 +137,16 @@
                                     </div>
                                     <div class="col-2 d-flex flex-column justify-content-center" role="gridcell" aria-label="#{cmsBean.getAllLocales()}">
 	                                    <div class="row no-gutters" role="presentation">
-	                                        <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
-	                                            <div class="col-2">
-	                                                <!-- LANGUAGE COMPLETE -->
-	                                                <ui:fragment rendered="#{page.isLanguageComplete(locale)}">
-	                                                    <i class="fa fa-check-square-o" aria-hidden="true"></i>
-	                                                </ui:fragment>
+	                                    
+	                                    <div class="cms-pages-overview__single-row-translation-indicator">
+	                                    	<viewerComponent:translationState object="#{page}" styleClass="nav nav-tabs admin__translation-indicator-list" />
+	                                    </div>
 
-	                                                <!-- LANGUAGE INCOMPLETE -->
-	                                                <ui:fragment rendered="#{!page.isLanguageComplete(locale)}">
-	                                                    <i class="fa fa-square-o" aria-hidden="true"></i>
-	                                                </ui:fragment>
-	                                            </div>
-	                                        </c:forEach>
 	                                    </div>
                                     </div>
                                 </div>
                             </ui:repeat>
+                            
 
 
                             <!-- delete page modal -->
@@ -191,6 +180,14 @@
                                 </div>
                             </div>
                         </div>
+                       
+                        <div class="admin__table-tools">
+                            <!-- BOTTOM PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
+                            </div>
+                        </div>
+                        
                     </div>
                 </h:form>
             </h:panelGroup>

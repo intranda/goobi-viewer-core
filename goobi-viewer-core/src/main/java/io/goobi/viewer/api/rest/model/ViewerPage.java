@@ -25,12 +25,11 @@ import java.net.URI;
 
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * Simple template to create a json-representation of a viewer page, typically a CMS-Page.
- * Used to provide slides to sliders
+ * Simple template to create a json-representation of a viewer page, typically a CMS-Page. Used to provide slides to sliders
  *
  * @author florian
  *
@@ -40,7 +39,7 @@ public class ViewerPage {
     public final URI link;
     public final IContent image;
     public final IMetadataValue label;
-    public final IMetadataValue description;
+
     /**
      * @param link
      * @param image
@@ -52,17 +51,19 @@ public class ViewerPage {
         this.link = link;
         this.image = image;
         this.label = label;
-        this.description = description;
     }
 
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();
-        this.description = page.getPreviewTranslations();
         this.link = URI.create(page.getUrl());
-        this.image = page.getGlobalContentItems().stream()
-                .filter(item -> CMSContentItemType.MEDIA.equals(item.getType()))
+        this.image = page.getPersistentComponents()
+                .stream()
+                .flatMap(c -> c.getContentItems().stream())
+                .filter(CMSMediaHolder.class::isInstance)
                 .sorted()
+                .map(CMSMediaHolder.class::cast)
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 }

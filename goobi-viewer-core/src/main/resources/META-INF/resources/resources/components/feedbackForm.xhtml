@@ -4,19 +4,21 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 	
-	<composite:interface />
+	<composite:interface>
+		<composite:attribute name="bean" required="false" default="#{feedbackBean}"/>
+	</composite:interface>
 
     <composite:implementation>
 
 
-			<h:form id="feedbackForm" styleClass="form-horizontal" prependId="false">
+			<h:form id="feedbackForm" styleClass="form-horizontal">
 			  <div id="feedback" class="view-feedback">
 			
 				<!-- NAME -->
                 <div class="form-group form-row">
 					<label id="labelFeedbackName" for="feedbackName" class="col-lg-3 control-label">#{msg.name}:</label>
 					<div class="col-12 col-lg-9">
-						<h:inputText id="feedbackName" styleClass="form-control" value="#{userBean.feedback.name}" required="true" requiredMessage="#{msg.errFeedbackNameRequired}">
+						<h:inputText id="feedbackName" styleClass="form-control" value="#{cc.attrs.bean.feedback.name}" required="true" requiredMessage="#{msg.errFeedbackNameRequired}">
 							<f:passThroughAttribute name="aria-labelledby" value="labelFeedbackName"/>
 						</h:inputText>
 					</div>
@@ -24,14 +26,14 @@
 				<!-- LAST NAME -->
                 <div class="form-group form-row lastname">
                     <label id="labelFeedbackLastName" for="feedbackLastName" class="control-label">#{msg.nameLast}:</label>
-                        <h:inputText id="feedbackLastName" styleClass="form-control" value="#{userBean.lastName}">
+                        <h:inputText id="feedbackLastName" styleClass="form-control" value="#{cc.attrs.bean.lastName}">
                         <f:passThroughAttribute name="aria-labelledby" value="labelFeedbackLastName"/>
                     </h:inputText>
                 </div>
 
 
 					<!-- E-MAIL FOR NOT LOGGED IN USERS -->
-	                <h:panelGroup rendered="#{!userBean.loggedIn}" layout="block" styleClass="form-group form-row" id="emailGroup">
+	                <h:panelGroup rendered="#{!cc.attrs.bean.loggedIn}" layout="block" styleClass="form-group form-row" id="emailGroup">
 	                    <label id="labelFeedbackEmail" for="feedbackEmail" class="col-lg-3 control-label">#{msg.email}:</label>
 	                    <div class="cms-module__option-control col-12 col-lg-9">
 	                    	<div class="cms-module__option-message">
@@ -45,7 +47,7 @@
 								</div>	    
 							</div>                    
 					 <h:inputText
-						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{userBean.feedback.senderAddress}"
+						 id="feedbackEmail" label="feedbackEmail" immediate="true" required="true" value="#{cc.attrs.bean.feedback.senderAddress}"
 						 styleClass="form-control">
 						 <f:validator validatorId="emailValidator" for="feedbackEmail" />
 						 <f:ajax render="emailGroup" />
@@ -55,7 +57,7 @@
 	                </h:panelGroup>
 	                
 					<!-- E-MAIL FOR LOGGED IN USERS -->
-	                <h:panelGroup rendered="#{userBean.loggedIn}" layout="block" styleClass="form-group form-row" id="emailGroup2">
+	                <h:panelGroup rendered="#{cc.attrs.bean.loggedIn}" layout="block" styleClass="form-group form-row" id="emailGroup2">
 	                    <label id="labelFeedbackEmail2" for="feedbackEmail2" class="col-lg-3 control-label">#{msg.email}:</label>
 	                    <div class="cms-module__option-control col-12 col-lg-9">
 	                    	<div class="cms-module__option-message">
@@ -69,7 +71,7 @@
 								</div>
 							</div>                    
 					 <h:inputText
-						 id="feedbackEmail2" label="feedbackEmail2" immediate="true" required="true"  disabled="true" value="#{userBean.feedback.senderAddress}"
+						 id="feedbackEmail2" label="feedbackEmail2" immediate="true" required="true"  disabled="true" value="#{cc.attrs.bean.feedback.senderAddress}"
 						 styleClass="form-control">
 						 <f:passThroughAttribute name="aria-labelledby" value="labelFeedbackEmail2"/>
 						 <f:validator validatorId="emailValidator" for="feedbackEmail2" />
@@ -83,7 +85,7 @@
                 <div class="form-group form-row">
                     <label id="labelFeedbackRecipient" for="feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
                     <div class="col-12 col-lg-9">
-					   <h:selectOneMenu id="feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true" styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown">
+					   <h:selectOneMenu id="feedbackRecipient" value="#{cc.attrs.bean.feedback.recipientAddress}" immediate="true" styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown">
 					       <f:selectItems var="recipient" value="#{configurationBean.feedbackEmailRecipients}"
 					           itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}">
 					       </f:selectItems>
@@ -96,7 +98,7 @@
 				<div class="form-group form-row hidden">
 					<label id="labelFeedbackURL" for="feedbackURL" class="col-lg-3 control-label">URL:</label>
 					<div class="col-12 col-lg-9">
-						<h:inputText id="feedbackURL" styleClass="form-control" value="#{userBean.feedback.url}" required="true" disabled="true">
+						<h:inputText id="feedbackURL" styleClass="form-control" value="#{cc.attrs.bean.feedback.url}" required="true" disabled="true">
 							<f:passThroughAttribute name="aria-labelledby" value="labelFeedbackURL"/>
 						</h:inputText>
 					</div>
@@ -106,18 +108,18 @@
 				<div class="form-group form-row">
 					<label id="labelFeedbackMessage" for="feedbackMessage" class="col-lg-3 control-label">#{msg.message}:</label>
 					<div class="col-12 col-lg-9">
-						<h:inputTextarea id="feedbackMessage" styleClass="form-control" value="#{userBean.feedback.message}" required="true" requiredMessage="#{msg.errFeedbackMessageRequired}">
+						<h:inputTextarea id="feedbackMessage" styleClass="form-control" value="#{cc.attrs.bean.feedback.message}" required="true" requiredMessage="#{msg.errFeedbackMessageRequired}">
 							<f:passThroughAttribute name="aria-labelledby" value="labelFeedbackMessage"/>
 						</h:inputTextarea>
 					</div>
 				</div>
 				
                <!-- SECURITY QUESTION -->
-               <ui:fragment rendered="#{captchaBean.resetSecurityQuestion() and captchaBean.securityQuestion != null}">
+               <ui:fragment rendered="#{cc.attrs.bean.captchaBean.resetSecurityQuestion() and cc.attrs.bean.captchaBean.securityQuestion != null}">
                     <div class="form-group form-row mb-0">
                     	<label id="feedbackSecurityQuestion" class="col-lg-3 control-label">#{msg.user__security_question}:</label>
                         <div class="col-12 col-12 col-lg-9 composite-control pt-0">
-                        <span class="control-label d-block pb-1">#{msg[captchaBean.securityQuestion.questionKey]}:</span>
+                        <span class="control-label d-block pb-1">#{msg[cc.attrs.bean.captchaBean.securityQuestion.questionKey]}:</span>
                         <h:messages for="feedbackSecurityQuestion" styleClass="m-0 p-0 pb-1 list-unstyled" 
                             infoClass="cms-module__option-message-status success" 
                             warnClass="cms-module__option-message-status warning"
@@ -126,7 +128,7 @@
                                 id="feedbackSecurityQuestion" 
                                 styleClass="form-control"
                                 autocomplete="off"
-                                value="#{captchaBean.securityAnswer}" 
+                                value="#{cc.attrs.bean.captchaBean.securityAnswer}" 
                                 required="true"
                                 requiredMessage="#{msg.user__security_question_required_msg}">
                             <f:passThroughAttribute name="aria-labelledby" value="feedbackSecurityQuestion" />
@@ -140,7 +142,7 @@
                 <!-- ACTION -->
 				<div class="form-group form-row">
 					<div class="col-sm-12 d-flex justify-content-end">
-                        <h:commandButton styleClass="btn btn--full" value="#{msg.submit}" action="#{userBean.submitFeedbackAction(false)}">
+                        <h:commandButton id="button2" styleClass="btn btn--full" value="#{msg.submit}" action="#{cc.attrs.bean.submitFeedbackAction(false)}">
                         </h:commandButton>
 					</div>
 				</div>

@@ -96,12 +96,12 @@
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
                                     <i class="fa fa-exchange" aria-hidden="true"></i>
                                     <span>#{msg.admin__translations__link}</span>
-                                    <c:if test="#{adminBean.configuredTranslationGroupsCount gt 0}">
+                                    <ui:fragment rendered="#{adminBean.configuredTranslationGroupsCount gt 0}">
                                 	    <span class="admin-widget__counter">#{adminBean.configuredTranslationGroupsCount}</span>
-								    </c:if>
-                                    <c:if test="#{!adminBean.hasAccessPermissingForTranslationFiles}">
+								    </ui:fragment>
+                                    <ui:fragment rendered="#{!adminBean.hasAccessPermissingForTranslationFiles}">
                                         <span class="admin-widget__counter -redMark"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
-								    </c:if>
+								    </ui:fragment>
                                 </h:outputLink>
                             </li>
                         </ui:fragment>

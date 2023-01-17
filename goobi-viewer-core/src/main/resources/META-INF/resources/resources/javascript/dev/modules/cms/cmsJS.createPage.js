@@ -152,7 +152,8 @@ var cmsJS = ( function( cms ) {
             sessionStorage.setItem( 'previewStatus', 'true' );
         },
     };
-    
+
+
     return cms;
     
 } )( cmsJS || {}, jQuery );

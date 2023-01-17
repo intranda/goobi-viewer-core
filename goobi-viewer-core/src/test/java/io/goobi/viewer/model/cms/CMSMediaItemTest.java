@@ -24,7 +24,8 @@ package io.goobi.viewer.model.cms;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.goobi.viewer.model.cms.CMSMediaItem.Priority;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem.Priority;
 
 public class CMSMediaItemTest {
 

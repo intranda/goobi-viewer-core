@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.solr.common.SolrDocumentList;
+
+import de.intranda.digiverso.normdataimporter.NormDataImporter;
+import de.intranda.digiverso.normdataimporter.model.Record;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -609,5 +614,31 @@ public class MetadataTools {
 
         // logger.trace("getGroupedMetadata query: {}", sbQuery.toString());
         return DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, null);
+    }
+
+    /**
+     * Retrieves authority data record from the given URL, using proxy configuration, if configured.
+     * 
+     * @param url Authority data record URL
+     * @return {@link Record} if found; null otherwise
+     */
+    public static Record getAuthorityDataRecord(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return null;
+        }
+
+        String proxyUrl = null;
+        int proxyPort = 0;
+        try {
+            if (DataManager.getInstance().getConfiguration().isProxyEnabled()
+                    && !DataManager.getInstance().getConfiguration().isHostProxyWhitelisted(url)) {
+                proxyUrl = DataManager.getInstance().getConfiguration().getProxyUrl();
+                proxyPort = DataManager.getInstance().getConfiguration().getProxyPort();
+            }
+        } catch (MalformedURLException e) {
+            logger.error(e.getMessage());
+        }
+
+        return NormDataImporter.getSingleRecord(url, proxyUrl, proxyPort);
     }
 }

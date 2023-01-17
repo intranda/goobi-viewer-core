@@ -5,7 +5,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
         }
         this.isDragover = false;
 
@@ -103,13 +103,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
+            	if(this.opts.fileTypeValidator) {
+            		let regex = this.opts.fileTypeValidator;
+            		if(!this.files[i]?.name?.match(regex)) {
+	            		let errormessage = "File " + this.files[i].name + " is not allowed for upload";
+	            		console.log(errormessage)
+	            		uploads.push(Promise.reject(errormessage));
+	            		continue;
+            		}
+            	}
                 uploads.push(this.uploadFile(i));
             }
 
             return Promise.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-
                      if (result.status === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
@@ -147,6 +155,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.fileUploadError = function(responseText) {
+        	console.log("fileUploadError", responseText);
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
         	if (responseText) {
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
@@ -2434,6 +2443,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
 riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
+    console.log("mapsearch ", this.opts);
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
@@ -2470,11 +2480,7 @@ this.initMap = function() {
 
 this.initDrawLayer = function(map) {
     let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
-   	    style : {
-         	fillColor : "#d9534f",
-         	color : "#d9534f",
-         	fillOpacity : 0.3,
-        	}
+   	    style : this.opts.areaLayer.style
     });
 	return drawLayer;
 }.bind(this)
@@ -3009,15 +3015,15 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
 		this.pages = [];
 
 		var loadingTask = pdfjsLib.getDocument( this.opts.data );
-	    loadingTask.promise.then( function( pdf ) {
+	    loadingTask.promise.then( ( pdf ) => {
 	        var pageLoadingTasks = [];
 	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
    		        var page = pdf.getPage(pageNo);
    		        pageLoadingTasks.push(page);
    		    }
    		    return Promise.allSettled(pageLoadingTasks);
-	    }.bind(this))
-	    .then(function(results) {
+	    })
+	    .then( (results) => {
 			results.forEach(result => {
 			    if (result.status === "fulfilled") {
                 	var page = result.value;
@@ -3027,10 +3033,11 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
                 }
 			});
 			this.update();
-        }.bind(this))
-	    .then( function() {
+        })
+	    .then( () => {
 			$(".pdf-container").show();
-            $( '#literatureLoader' ).hide();
+			console.log("loader", this.opts.loaderSelector);
+            $(this.opts.loaderSelector).hide();
 		} );
 
 });

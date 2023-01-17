@@ -42,7 +42,7 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 /**
  * @author florian

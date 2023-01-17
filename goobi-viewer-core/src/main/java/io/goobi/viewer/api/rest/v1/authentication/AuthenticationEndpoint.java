@@ -67,10 +67,15 @@ public class AuthenticationEndpoint {
 
     private static final Logger logger = LogManager.getLogger(AuthenticationEndpoint.class);
 
+    static final String REASON_PHRASE_ILLEGAL_REDIRECT_URL = "Illegal redirect URL or URL cannot be checked.";
+    static final String REASON_PHRASE_NO_PROVIDERS_CONFIGURED = "No authentication providers of type 'httpHeader' configured.";
+    static final String REASON_PHRASE_NO_PROVIDER_FOUND = "No matching provider found.";
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+   
 
     /**
      * <p>
@@ -131,8 +136,16 @@ public class AuthenticationEndpoint {
         return email;
     }
 
+    /**
+     * 
+     * @param redirectUrl
+     * @return
+     * @should return status 403 if redirectUrl external
+     * @should return status 403 if no httpHeader type provider configured
+     * @should return status 403 if no matching provider found
+     */
     @GET
-    @Path("/header")
+    @Path(ApiUrls.AUTH_HEADER)
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "500", description = "Internal error")
@@ -140,7 +153,7 @@ public class AuthenticationEndpoint {
         logger.debug("headerParameterLogin");
         NavigationHelper nh = BeanUtils.getNavigationHelper();
         if (redirectUrl != null && (nh == null || !redirectUrl.startsWith(nh.getApplicationUrl()))) {
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Illegal redirect URL or URL cannot be checked.")
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
         }
 
@@ -164,7 +177,7 @@ public class AuthenticationEndpoint {
             }
             if (providers.isEmpty()) {
                 logger.warn("No providers configured.");
-                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No authentication providers of type 'httpHeader' configured.")
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDERS_CONFIGURED)
                         .build();
             }
 
@@ -187,7 +200,7 @@ public class AuthenticationEndpoint {
 
         if (useProvider == null) {
             logger.warn("No matching authentication provider found.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No matching provider found.").build();
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDER_FOUND).build();
         }
         logger.debug("Provider selected: {}", useProvider.getName());
 

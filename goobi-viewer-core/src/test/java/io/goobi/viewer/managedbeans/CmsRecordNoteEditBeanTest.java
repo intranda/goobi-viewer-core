@@ -37,8 +37,8 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSingleRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**

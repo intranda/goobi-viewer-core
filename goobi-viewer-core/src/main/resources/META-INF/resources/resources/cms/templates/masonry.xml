@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>masonry</name>
+	</jsfComponent>
+	<label>cms_component__masonry__label</label>
+	<description>cms_component__masonry__desc</description>
+	<icon>cms/components/frontend/component/icon/imagelist.png</icon>
+	<content>
+		<item id="pagelist">
+			<label>cms_content__imagelist_label</label>
+			<description>cms_content__imagelist_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>imagelist</name>
+			</jsfComponent>
+		</item>
+	</content>
+</component>

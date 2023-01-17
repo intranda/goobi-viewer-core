@@ -10,7 +10,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslations')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslationsEdit', [[ adminBean.currentTranslationGroup.selectedEntry.newEntryMode ? 'admin__translations__add_new_entry':'admin__translations__translate_field', msg[adminBean.currentTranslationGroup.name]]])}" />
             <!-- reset TranslationGroup#fullyTranslatedEntryCount and TranslationGroup#untranslatedEntryCount to update progress bar. Gets called at every page reload and ajax call -->
             <f:event type="preRenderView" listener="#{adminBean.currentTranslationGroup.resetStatusCount()}" />
         </f:metadata>
@@ -20,13 +20,13 @@
         <f:view contentType="text/html" encoding="utf-8">
             <div id="adminTranslationsEdit">
                 <h:outputText rendered="#{userBean.admin and adminBean.translationLocked}" value="#{msg.admin__translation_locked}" />
-
                 <h:panelGroup rendered="#{userBean.admin and !adminBean.translationLocked}">
                     <h:form id="adminTranslationsEditForm" prependId="false">
                         <div class="admin__title-bar">
                             <!-- TITLE -->
                             <h1 class="admin__title">#{msg[adminBean.currentTranslationGroup.name]}</h1>
                         </div>
+						<viewerComponent:adminBreadcrumbs />
 
                         <div class="admin__content-inner-content">
                             <ui:fragment rendered="#{!adminBean.currentTranslationGroup.selectedEntry.newEntryMode}">

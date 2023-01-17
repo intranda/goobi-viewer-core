@@ -65,7 +65,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.License;
@@ -720,7 +720,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         return allLicenses.stream()
                 .anyMatch(license -> LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName()) && license.isPrivCmsAllTemplates());
     }
-
+    
     /**
      * <p>
      * hasPrivilegesForTemplate.
@@ -730,7 +730,11 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
      *         user of a usergroup she is in
      */
-    public boolean hasPrivilegesForTemplate(String templateId) {
+    public boolean hasPrivilegesForTemplate(CMSPageTemplate template) {
+        //if there is no template, assume you have all privileges
+        if(template == null) {
+            return true;
+        }
         // Abort if user not a CMS admin
         if (!isCmsAdmin()) {
             return false;
@@ -745,7 +749,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
-            if (license.getAllowedCmsTemplates().contains(templateId)) {
+            if (license.getAllowedCmsTemplates().contains(template)) {
                 return true;
             }
         }
@@ -757,7 +761,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                     if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                         continue;
                     }
-                    if (license.getAllowedCmsTemplates().contains(templateId)) {
+                    if (license.getAllowedCmsTemplates().contains(template)) {
                         return true;
                     }
                 }
@@ -767,6 +771,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
         return false;
     }
+
 
     /**
      * <p>
@@ -789,7 +794,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             return allTemplates;
         }
 
-        Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
+        Set<CMSPageTemplate> allowedTemplates = new HashSet<>(allTemplates.size());
         // Check user licenses
         for (License license : licenses) {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
@@ -800,7 +805,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                 return allTemplates;
             }
             if (!license.getAllowedCmsTemplates().isEmpty()) {
-                allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+                allowedTemplates.addAll(license.getAllowedCmsTemplates());
             }
         }
         // Check user group licenses
@@ -815,7 +820,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                         return allTemplates;
                     }
                     if (!license.getAllowedCmsTemplates().isEmpty()) {
-                        allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+                        allowedTemplates.addAll(license.getAllowedCmsTemplates());
                     }
                 }
             }
@@ -823,13 +828,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             logger.error(e.getMessage(), e);
         }
         // allowedTemplateIds.add("template_general_generic");
-        if (allowedTemplateIds.isEmpty()) {
+        if (allowedTemplates.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
         for (CMSPageTemplate template : allTemplates) {
-            if (allowedTemplateIds.contains(template.getId())) {
+            if (allowedTemplates.contains(template)) {
                 ret.add(template);
             }
         }

@@ -38,11 +38,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
@@ -56,6 +56,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -119,7 +120,7 @@ public class AuthorityResource {
             }
         }
 
-        Record rec = NormDataImporter.getSingleRecord(url);
+        Record rec = MetadataTools.getAuthorityDataRecord(url);
         if (rec == null) {
             logger.trace("Record not found");
             throw new ContentNotFoundException("Resource not found");

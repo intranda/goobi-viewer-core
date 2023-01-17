@@ -84,9 +84,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSMediaHolder;
-import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.ILicenseType;
@@ -1734,6 +1734,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     public String getMediaFilter() {
         return CmsMediaBean.getImageFilter();
     }
+    
+
+    @Override
+    @JsonIgnore
+    public String getMediaTypes() {
+        return CmsMediaBean.getImageTypes();
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSMediaHolder#hasMediaItem()
@@ -1914,5 +1921,6 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     public String getAccessConditionValue() {
         return getTitle(IPolyglott.getDefaultLocale().getLanguage());
     }
+
 
 }

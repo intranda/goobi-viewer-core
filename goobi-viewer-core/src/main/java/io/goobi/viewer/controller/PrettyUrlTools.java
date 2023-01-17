@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
 import com.ocpsoft.pretty.PrettyContext;
@@ -44,6 +47,8 @@ import io.goobi.viewer.solr.SolrTools;
  *
  */
 public class PrettyUrlTools {
+    
+    private static final Logger logger = LogManager.getLogger(PrettyUrlTools.class);
 
     public static String getRecordUrl(SolrDocument doc, PageType pageType) {
         String pi = doc.containsKey(SolrConstants.PI_TOPSTRUCT) ? doc.getFirstValue(SolrConstants.PI_TOPSTRUCT).toString() : "";
@@ -139,5 +144,20 @@ public class PrettyUrlTools {
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(pi, imageNo, logId);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
+    }
+
+
+    public static void redirectToUrl(String url) {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        if(context != null) {            
+            try {
+                context.getExternalContext().redirect(url);
+            } catch (IOException e) {
+                logger.error("Failed to redirect to url", e);
+            }
+        } else {
+            logger.error("Failed to redirect to url: No FacesContext available");
+        }
+        
     }
 }

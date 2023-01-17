@@ -31,7 +31,6 @@
                     <div class="search-advanced__entry-area">
                         <!-- AJAX LOADER -->
                         <div class="search-advanced__loader"></div>
-
                         <!-- SEARCH ADVANCED INPUT GROUP -->
                         <c:forEach var="queryItem" items="#{searchBean.advancedSearchQueryGroup.queryItems}" varStatus="status">
                             <div id="searchAdvancedInputGroup-0-#{status.count}" class="search-advanced__input-group">
@@ -150,7 +149,7 @@
 						<div class="search-advanced__fuzzy-search-option-wrapper">
 							<span class="search-advanced__fuzzy-search-option-label">#{msg.search__fuzzy_search}:</span> 
 							
-							<div class="admin__radio-switch" id="abc">
+							<div class="admin__radio-switch" id="searchAdvancedFuzzyToggle">
 								<h:selectOneRadio group="fuzzeSearchToggle"
 									value="#{searchBean.fuzzySearchEnabled}" disabled="#{false}">
 									<f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />

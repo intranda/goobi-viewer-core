@@ -959,22 +959,27 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.loadTemplates}</action>
 	</url-mapping>
-    <url-mapping id="adminCmsManageTemplates">
-        <pattern value="/admin/cms/pages/templates/manage/" />
-        <view-id value="/resources/cms/adminCmsManageTemplates.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.loadTemplates}</action>
-    </url-mapping>
     <url-mapping id="adminCmsEditPage">
         <pattern value="/admin/cms/pages/edit/#{selectedPageId}/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
-        <action onPostback="false">#{cmsBean.setEditMode(true)}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.setSelectedPageId(selectedPageId)}</action>
     </url-mapping>
     <url-mapping id="adminCmsNewPage">
         <pattern value="/admin/cms/pages/new/" />
         <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <query-param name="templateId" onPostback="false" >#{templateId}</query-param>
+        <query-param name="title" onPostback="false" >#{title}</query-param>
+        <query-param name="relatedPi" onPostback="false" >#{relatedPi}</query-param>
+    </url-mapping>
+    <url-mapping id="adminCmsEditPageTemplate">
+        <pattern value="/admin/cms/pages/templates/edit/#{templateId}/" />
+        <view-id value="/resources/cms/adminCmsCreatePageTemplate.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsNewPageTemplate">
+        <pattern value="/admin/cms/pages/templates/new/" />
+        <view-id value="/resources/cms/adminCmsCreatePageTemplate.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 	<url-mapping id="adminCmsStaticPages">
@@ -1164,7 +1169,7 @@
     </url-mapping>
     <url-mapping id="cmsOpenPage6">
         <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/-/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+            value="/cms/#{page:cmsBean.currentPageId}/-/#{query:searchBean.exactSearchString}/#{page:cmsBean.currentPage.listPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>

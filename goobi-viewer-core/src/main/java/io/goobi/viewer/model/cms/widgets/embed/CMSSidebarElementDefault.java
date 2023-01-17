@@ -21,23 +21,24 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
-import io.goobi.viewer.model.cms.widgets.type.DefaultWidgetType;
-import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
-
 /**
- * Wrapper element for default (static) sidebar widgets. These contain no data since they are entirely described by
- * the xhtml component given by the {@link WidgetContentType content type}
+ * Wrapper element for default (static) sidebar widgets. These contain no data since they are entirely described by the xhtml component given by the
+ * {@link WidgetContentType content type}
+ * 
  * @author florian
  *
  */
 @Entity
 @DiscriminatorValue("DEFAULT")
 public class CMSSidebarElementDefault extends CMSSidebarElement {
+
+    private static final long serialVersionUID = 3406687346141124347L;
 
     /**
      * Empty constructor for the DAO
@@ -47,6 +48,7 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
 
     /**
      * Default constructor for a {@link WidgetContentType} determining the xhtml component to use and an owning {@link CMSPage}
+     * 
      * @param type
      * @param owner
      */
@@ -54,13 +56,22 @@ public class CMSSidebarElementDefault extends CMSSidebarElement {
         super(type, owner);
     }
 
+    public CMSSidebarElementDefault(WidgetContentType orig, CMSPageTemplate owner) {
+        super(orig, owner);
+    }
+
     /**
      * Cloning constructor with a CMSPage to set as owner
+     * 
      * @param orig
      * @param owner
      */
     public CMSSidebarElementDefault(CMSSidebarElementDefault orig, CMSPage owner) {
-        super(orig.getContentType(), owner);
+        super(orig, owner);
+    }
+
+    public CMSSidebarElementDefault(CMSSidebarElementDefault orig, CMSPageTemplate owner) {
+        super(orig, owner);
     }
 
 }

@@ -62,6 +62,7 @@ public enum CustomWidgetType implements WidgetContentType {
 
     /**
      * A message key for a description of ths widget type
+     * 
      * @return
      */
     public String getDescription() {

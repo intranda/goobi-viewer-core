@@ -24,12 +24,15 @@ package io.goobi.viewer.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -41,12 +44,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.jsoup.Jsoup;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -57,7 +60,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -65,8 +67,12 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -94,34 +100,22 @@ public class SearchHit implements Comparable<SearchHit> {
         GROUP, // convolute/series
         CMS; // CMS page type for search hits
 
+        /**
+         * 
+         * @param name
+         * @return
+         * @should return all known types correctly
+         * @should return null if name unknown
+         */
         public static HitType getByName(String name) {
             if (name != null) {
-                switch (name) {
-                    case "ACCESSDENIED":
-                        return ACCESSDENIED;
-                    case "DOCSTRCT":
-                        return DOCSTRCT;
-                    case "PAGE":
-                        return PAGE;
-                    case "EVENT":
-                        return EVENT;
-                    case "CMS":
-                    case "OVERVIEWPAGE":
-                        return CMS;
-                    case "UGC":
-                        return UGC;
-                    case "METADATA":
-                        return METADATA;
-                    case "PERSON":
-                        return PERSON;
-                    case "CORPORATION":
-                        return CORPORATION;
-                    case "ADDRESS":
-                        return ADDRESS;
-                    case "COMMENT":
-                        return COMMENT;
-                    default:
-                        return null;
+                if ("OVERVIEWPAGE".equals(name)) {
+                    return HitType.CMS;
+                }
+                for (HitType type : HitType.values()) {
+                    if (type.name().equals(name)) {
+                        return type;
+                    }
                 }
             }
 
@@ -157,7 +151,7 @@ public class SearchHit implements Comparable<SearchHit> {
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
-    private final Map<HitType, Integer> hitTypeCounts = new HashMap<>();
+    private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
     /** Metadata for Excel export. */
     @JsonIgnore
     private final Map<String, String> exportMetadata = new HashMap<>();
@@ -169,7 +163,7 @@ public class SearchHit implements Comparable<SearchHit> {
     private int proximitySearchDistance = 0;
 
     /**
-     * Private constructor. Use createSearchHit() from other classes.
+     * Package-private constructor. Use createSearchHit() from other classes.
      *
      * @param type
      * @param browseElement
@@ -177,7 +171,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param searchTerms
      * @param locale
      */
-    private SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale) {
+    SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale) {
         this.type = type;
         this.translatedType = type != null ? ViewerResourceBundle.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale) : null;
         this.browseElement = browseElement;
@@ -232,18 +226,18 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param overrideType a {@link io.goobi.viewer.model.search.SearchHit.HitType} object.
      * @param proximitySearchDistance
      * @param thumbnailHandler
-     * @should add export fields correctly
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should add export fields correctly
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Set<String> ownerAlreadyHasMetadata,
             Locale locale, String fulltext, Map<String, Set<String>> searchTerms, List<String> exportFields,
             List<StringPair> sortFields, Set<String> ignoreAdditionalFields, Set<String> translateAdditionalFields,
             Set<String> oneLineAdditionalFields, HitType overrideType, int proximitySearchDistance, ThumbnailHandler thumbnailHandler)
-            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException {
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
                         DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true, proximitySearchDistance);
@@ -318,14 +312,14 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return
      */
     private static Map<String, Set<String>> getActualSearchTerms(Map<String, Set<String>> origTerms, Map<String, List<String>> resultFields) {
-        String foundValues = resultFields.values().stream().flatMap(l -> l.stream()).collect(Collectors.joining(" "));
+        String foundValues = resultFields.values().stream().flatMap(Collection::stream).collect(Collectors.joining(" "));
         Map<String, Set<String>> newFieldTerms = new HashMap<>();
         if (origTerms == null) {
             return newFieldTerms;
         }
-        for (String solrField : origTerms.keySet()) {
-            Set<String> newTerms = new HashSet<String>();
-            Set<String> terms = origTerms.get(solrField);
+        for (Entry<String, Set<String>> entry : origTerms.entrySet()) {
+            Set<String> newTerms = new HashSet<>();
+            Set<String> terms = entry.getValue();
             for (String term : terms) {
                 term = term.replaceAll("(^\\()|(\\)$)", "");
                 term = StringTools.removeDiacriticalMarks(term);
@@ -342,7 +336,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     newTerms.add(term);
                 }
             }
-            newFieldTerms.put(solrField, newTerms);
+            newFieldTerms.put(entry.getKey(), newTerms);
         }
         return newFieldTerms;
     }
@@ -350,7 +344,9 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * First truncate and unescape the label, then add highlighting (overrides BrowseElement.labelShort).
      *
-     * @should modify label correctly
+     * @should modify label correctly from default
+     * @should modify label correctly from title
+     * @should do nothing if searchTerms null
      */
     void addLabelHighlighting() {
         if (searchTerms == null) {
@@ -358,9 +354,9 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         IMetadataValue labelShort = new MultiLanguageMetadataValue();
-        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+        for (Locale loc : ViewerResourceBundle.getAllLocales()) {
 
-            String label = browseElement.getLabel(locale);
+            String label = browseElement.getLabel(loc);
 
             if (searchTerms.get(SolrConstants.DEFAULT) != null) {
                 label = SearchHelper.applyHighlightingToPhrase(label, searchTerms.get(SolrConstants.DEFAULT));
@@ -374,7 +370,7 @@ public class SearchHit implements Comparable<SearchHit> {
             // Then replace highlighting placeholders with HTML tags
             label = SearchHelper.replaceHighlightingPlaceholders(label);
 
-            labelShort.setValue(label, locale);
+            labelShort.setValue(label, loc);
         }
 
         browseElement.setLabelShort(labelShort);
@@ -384,6 +380,8 @@ public class SearchHit implements Comparable<SearchHit> {
      * Creates child hit elements for each hit matching a CMS page text, if CMS page texts were also searched.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should do nothing if searchTerms do not contain key
+     * @should do nothing if no cms pages for record found
      */
     public void addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
@@ -396,99 +394,76 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         SortedMap<CMSPage, List<String>> hitPages = new TreeMap<>();
-        try {
-            // Collect relevant texts
-            for (CMSPage page : cmsPages) {
-                if (page.getDefaultLanguage() == null) {
-                    continue;
-                }
-
-                // Iterate over all default and global language version items
-                List<CMSContentItem> items = page.getDefaultLanguage().getContentItems();
-                items.addAll(page.getGlobalContentItems());
-                if (items.isEmpty()) {
-                    continue;
-                }
-                for (CMSContentItem item : items) {
-                    if (item.getType() == null) {
-                        continue;
-                    }
-                    String value = null;
-                    switch (item.getType()) {
-                        case HTML:
-                        case TEXT:
-                            if (StringUtils.isEmpty(item.getHtmlFragment())) {
-                                continue;
-                            }
-                            value = item.getHtmlFragment();
-                            break;
-                        case MEDIA:
-                            if (item.getMediaItem() == null || !item.getMediaItem().isHasExportableText()) {
-                                continue;
-                            }
-                            try {
-                                value = CmsMediaBean.getMediaFileAsString(item.getMediaItem());
-                            } catch (ViewerConfigurationException e) {
-                                logger.error(e.getMessage(), e);
-                            }
-                            break;
-                        default:
-                            continue;
-                    }
-                    if (StringUtils.isEmpty(value)) {
-                        continue;
-                    }
-
-                    value = Jsoup.parse(value).text();
-                    String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.CMS_TEXT_ALL));
-                    if (!highlightedValue.equals(value)) {
-                        List<String> truncatedStrings = hitPages.get(page);
-                        if (truncatedStrings == null) {
-                            truncatedStrings = new ArrayList<>();
-                            hitPages.put(page, truncatedStrings);
+        // Collect relevant texts
+        for (CMSPage page : cmsPages) {
+            List<String> texts = new ArrayList<>();
+            for (PersistentCMSComponent component : page.getPersistentComponents()) {
+                for (CMSContent content : component.getContentItems()) {
+                    if (content instanceof TranslatableCMSContent) {
+                        TranslatableCMSContent trCont = (TranslatableCMSContent) content;
+                        for (Locale loc : trCont.getText().getLocales()) {
+                            texts.add(trCont.getText().getText(loc));
                         }
-                        truncatedStrings.addAll(SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
-                                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true, proximitySearchDistance));
+                    } else if (content instanceof CMSMediaHolder) {
+                        CMSMediaItem media = ((CMSMediaHolder) content).getMediaItem();
+                        if (media != null && media.isHasExportableText()) {
+                            texts.add(CmsMediaBean.getMediaFileAsString(media));
 
+                        }
                     }
                 }
             }
+            List<String> truncatedStrings = texts.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .map(s -> {
+                        String value = Jsoup.parse(s).text();
+                        String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.CMS_TEXT_ALL));
+                        if (!highlightedValue.equals(value)) {
+                            return SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.CMS_TEXT_ALL), highlightedValue,
+                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true, proximitySearchDistance);
+                        }
+                        return new ArrayList<String>();
+                    })
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+            hitPages.put(page, truncatedStrings);
+        }
 
-            // Add hits (one for each page)
-            if (!hitPages.isEmpty()) {
-                for (CMSPage page : hitPages.keySet()) {
-                    int count = 0;
-                    SearchHit cmsPageHit = new SearchHit(HitType.CMS,
-                            new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation(page.getMenuTitle(), locale), null,
-                                    locale, null, page.getRelativeUrlPath()),
-                            null,
-                            searchTerms, locale);
-                    children.add(cmsPageHit);
-                    for (String text : hitPages.get(page)) {
-                        cmsPageHit.getChildren()
-                                .add(new SearchHit(HitType.CMS,
-                                        new BrowseElement(browseElement.getPi(), 1, page.getMenuTitle(), text, locale, null,
-                                                page.getRelativeUrlPath()),
-                                        null, searchTerms, locale));
-                        count++;
-                    }
-                    hitTypeCounts.put(HitType.CMS, count);
-                    logger.trace("Added {} CMS page child hits", count);
+        // Add hits (one for each page)
+        if (!hitPages.isEmpty()) {
+            for (Entry<CMSPage, List<String>> entry : hitPages.entrySet()) {
+                int count = 0;
+                SearchHit cmsPageHit = new SearchHit(HitType.CMS,
+                        new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation(entry.getKey().getMenuTitle(), locale), null,
+                                locale, null, entry.getKey().getRelativeUrlPath()),
+                        null,
+                        searchTerms, locale);
+                children.add(cmsPageHit);
+                for (String text : entry.getValue()) {
+                    cmsPageHit.getChildren()
+                            .add(new SearchHit(HitType.CMS,
+                                    new BrowseElement(browseElement.getPi(), 1, entry.getKey().getMenuTitle(), text, locale, null,
+                                            entry.getKey().getRelativeUrlPath()),
+                                    null, searchTerms, locale));
+                    count++;
                 }
+                hitTypeCounts.put(HitType.CMS, count);
+                logger.trace("Added {} CMS page child hits", count);
             }
-        } catch (CmsElementNotFoundException e) {
-            logger.error(e.getMessage(), e);
         }
     }
 
     /**
      * Creates a child hit element for TEI full-texts, with child hits of its own for each truncated fragment containing search terms.
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param doc Solr page doc
      * @param language a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should throw IllegalArgumentException if doc null
+     * @should do nothing if searchTerms does not contain fulltext
+     * @should do nothing if tei file name not found
      */
     public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (doc == null) {
@@ -549,9 +524,7 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (JDOMException e) {
+        } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
     }
@@ -682,10 +655,8 @@ public class SearchHit implements Comparable<SearchHit> {
                                 }
                             }
                         }
-                        //                                if (!(DocType.METADATA.equals(docType))) {
                         ownerHit.getChildren().add(childHit);
                         populateHit = true;
-                        //                                }
                         if (populateHit) {
                             hitsPopulated++;
                         }
@@ -744,12 +715,12 @@ public class SearchHit implements Comparable<SearchHit> {
             return;
         }
 
-        for (String termsFieldName : searchTerms.keySet()) {
+        for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
             // Skip fields that are in the ignore list
-            if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
+            if (ignoreFields != null && ignoreFields.contains(entry.getKey())) {
                 continue;
             }
-            switch (termsFieldName) {
+            switch (entry.getKey()) {
                 case SolrConstants.DEFAULT:
                 case SolrConstants.NORMDATATERMS:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
@@ -784,11 +755,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if (fieldValue.equals(browseElement.getLabel())) {
                                     continue;
                                 }
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(termsFieldName)
-                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
                                         String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
@@ -814,11 +785,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if (fieldValue.equals(browseElement.getLabel())) {
                                     continue;
                                 }
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(termsFieldName)
-                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
                                         String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
@@ -837,10 +808,10 @@ public class SearchHit implements Comparable<SearchHit> {
                     break;
                 default:
                     // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
-                    if (doc.containsKey(termsFieldName)) {
-                        List<String> fieldValues = SolrTools.getMetadataValues(doc, termsFieldName);
+                    if (doc.containsKey(entry.getKey())) {
+                        List<String> fieldValues = SolrTools.getMetadataValues(doc, entry.getKey());
 
-                        if (oneLineFields != null && oneLineFields.contains(termsFieldName)) {
+                        if (oneLineFields != null && oneLineFields.contains(entry.getKey())) {
                             // All values into a single field value
                             StringBuilder sb = new StringBuilder();
                             for (String fieldValue : fieldValues) {
@@ -862,11 +833,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                     }
                                 }
 
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(termsFieldName)
-                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
                                         String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
@@ -879,7 +850,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 }
                             }
                             if (sb.length() > 0) {
-                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), sb.toString()));
+                                foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), sb.toString()));
                                 // logger.trace("found metadata: {}:{}", docFieldName, fieldValue);
                             }
 
@@ -903,17 +874,17 @@ public class SearchHit implements Comparable<SearchHit> {
                                     }
                                 }
 
-                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
+                                String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, entry.getValue());
                                 if (!highlightedValue.equals(fieldValue)) {
                                     // Translate values for certain fields, keeping the highlighting
-                                    if (translateFields != null && (translateFields.contains(termsFieldName)
-                                            || translateFields.contains(SearchHelper.adaptField(termsFieldName, null)))) {
+                                    if (translateFields != null && (translateFields.contains(entry.getKey())
+                                            || translateFields.contains(SearchHelper.adaptField(entry.getKey(), null)))) {
                                         String translatedValue = ViewerResourceBundle.getTranslation(fieldValue, locale);
                                         highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
                                                 "$1" + translatedValue + "$3");
                                     }
                                     highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(termsFieldName, locale), highlightedValue));
+                                    foundMetadata.add(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), highlightedValue));
                                 }
                             }
                         }
@@ -922,57 +893,6 @@ public class SearchHit implements Comparable<SearchHit> {
             }
 
         }
-    }
-
-    /**
-     *
-     * @param pi
-     * @param order
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     */
-    @Deprecated
-    List<SolrDocument> getUgcDocsForPage(String pi, int order) throws PresentationException, IndexUnreachableException {
-        String ugcQuery = new StringBuilder().append(SolrConstants.DOCTYPE)
-                .append(':')
-                .append(DocType.UGC.name())
-                .append(" AND ")
-                .append(SolrConstants.PI_TOPSTRUCT)
-                .append(':')
-                .append(pi)
-                .append(" AND ")
-                .append(SolrConstants.ORDER)
-                .append(':')
-                .append(order)
-                .toString();
-        logger.trace("ugc query: {}", ugcQuery);
-        SolrDocumentList ugcDocList = DataManager.getInstance().getSearchIndex().search(ugcQuery);
-        if (!ugcDocList.isEmpty()) {
-            List<SolrDocument> ret = new ArrayList<>(ugcDocList.size());
-            for (SolrDocument doc : ugcDocList) {
-                boolean added = false;
-                for (String field : doc.getFieldNames()) {
-                    if (added) {
-                        break;
-                    }
-                    String value = SolrTools.getSingleFieldStringValue(doc, field);
-                    if (value != null) {
-                        for (String term : searchTerms.get(SolrConstants.UGCTERMS)) {
-                            if (value.toLowerCase().contains(term)) {
-                                ret.add(doc);
-                                added = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            logger.trace("Found {} UGC documents for page {}", ret.size(), order);
-            return ret;
-        }
-
-        return Collections.emptyList();
     }
 
     /**
@@ -1100,8 +1020,8 @@ public class SearchHit implements Comparable<SearchHit> {
      * @return a boolean.
      */
     public boolean isHasHitCount() {
-        for (HitType key : hitTypeCounts.keySet()) {
-            if (hitTypeCounts.get(key) > 0) {
+        for (Entry<HitType, Integer> entry : hitTypeCounts.entrySet()) {
+            if (entry.getValue() > 0) {
                 return true;
             }
         }
@@ -1237,20 +1157,12 @@ public class SearchHit implements Comparable<SearchHit> {
      *
      * @param count a int.
      * @return a {@link java.lang.String} object.
+     * @should generate fragment correctly
      */
     public String generateNotificationFragment(int count) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<tr><td>")
-                .append(count)
-                .append(".</td><td><img src=\"")
-                .append(browseElement.getThumbnailUrl())
-                .append("\" alt=\"")
-                .append(browseElement.getLabel())
-                .append("\" /></td><td>")
-                .append(browseElement.getLabel())
-                .append("</td></tr>");
-
-        return sb.toString();
+        return "<tr><td>" + count + ".</td><td><img src=\"" + browseElement.getThumbnailUrl() + "\" alt=\"" + browseElement.getLabel()
+                + "\" /></td><td>" + browseElement.getLabel()
+                + "</td></tr>";
     }
 
     /**

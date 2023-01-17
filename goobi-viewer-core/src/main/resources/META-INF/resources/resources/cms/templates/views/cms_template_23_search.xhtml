@@ -1,75 +1,51 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/template.html">
-	
-	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
-	
-    <!-- METADATA -->
-    <ui:define name="metadata">
-	    <f:metadata> 
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />            
-        </f:metadata>
-    </ui:define>
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
-    <!-- CONTENT -->
-    <ui:define name="content">
-		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
-        <f:view contentType="text/html" encoding="utf-8">
-			<div id="templateSearch" class="tpl-search #{cmsPage.wrapperElementClass}">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
-                </ui:fragment>
-                
-                <!-- PAGE UNPUBLISHED -->
-                <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">
-                        #{msg.cms_pagePreviewNotPublished}
-                    </div>
-                </h:panelGroup>
+	<composite:interface>
+		<composite:attribute name="component" required="true" />
+	</composite:interface>
 
-                <div class="tpl-search__content">
-    				<ui:fragment rendered="#{navigationHelper.currentPage != 'search'}">
-						<h1 >#{cmsPage.title}</h1>
-					</ui:fragment>
-					
-					<!-- TEXT -->
-					<h:panelGroup id="cmsTextContent">
-                        <ui:fragment rendered="#{cmsPage.hasContent('text') and searchBean.activeSearchType != 0}">
-                        	<div class="tpl-search__text">
-	    	                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
-                        	</div>
-    					</ui:fragment>
-					</h:panelGroup>
-                    
-                    <!-- SEARCH HEADER -->
-                     <ui:include src="/resources/includes/search/searchHeader.xhtml">
-                        <ui:param name="search" value="#{cmsPage.getContentItem('search').functionality}"/>
-                        <ui:param name="searchType" value="0"></ui:param>
-				    	<ui:param name="renderOnSearchTypeChange" value="#{cmsTextContent}"></ui:param> 
-				 		<ui:param name="title" value="#{cmsPage.getContentItemText('text')}"></ui:param>
-                     </ui:include>
+	<composite:implementation>
 
-                    <!-- SEARCH LIST -->
-                    <div class="search-list">
-                        <ui:include src="/resources/includes/search/searchHitList.xhtml">
-                            <ui:param name="searchParam" value="#{cmsPage.getContentItem('search').functionality}"/>
-                        </ui:include>
-                    </div>
-                </div>
-            </div>
-        </f:view>
-    </ui:define>
-    
-    <!-- SIDEBAR -->
-	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-    </ui:define>
+		<div id="templateSearch" class="tpl-search content-component__legacy-full-width">
+
+			<!-- TEXT -->
+			<h:panelGroup id="cmsTextContent">
+				<ui:fragment
+					rendered="#{cc.attrs.component.hasContent('text') and searchBean.activeSearchType != 0}">
+					<div class="tpl-search__text">
+						<h:outputText escape="false"
+							value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
+					</div>
+				</ui:fragment>
+			</h:panelGroup>
+
+			<!-- SEARCH HEADER -->
+			<ui:include src="/resources/includes/search/searchHeader.xhtml">
+				<ui:param name="search" value="#{sessionBean.get('cmsSearch')}" />
+				<ui:param name="searchType" value="0"></ui:param>
+
+				<ui:param name="renderOnSearchTypeChange" value="#{cmsTextContent}"></ui:param>
+				<ui:param name="title"
+					value="#{cc.attrs.component.getContentData('text')}"></ui:param>
+			</ui:include>
+
+			<!-- SEARCH LIST -->
+			<div class="search-list">
+				<ui:include src="/resources/includes/search/searchHitList.xhtml">
+					<ui:param name="searchParam"
+						value="#{cc.attrs.component.getContentItem('search').content.functionality}" />
+				</ui:include>
+			</div>
+
+		</div>
+	</composite:implementation>
 </ui:composition>

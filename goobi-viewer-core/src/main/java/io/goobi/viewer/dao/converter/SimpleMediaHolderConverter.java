@@ -29,8 +29,8 @@ import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.SimpleMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 @Converter
 public class SimpleMediaHolderConverter implements AttributeConverter<SimpleMediaHolder, Long> {

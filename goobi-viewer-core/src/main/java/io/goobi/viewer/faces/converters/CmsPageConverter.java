@@ -28,7 +28,7 @@ import javax.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  * <p>

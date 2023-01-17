@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -5004,6 +5006,14 @@ public class Configuration extends AbstractConfiguration {
         return readGeoMapMarker(config);
     }
 
+    public String getSelectionColorForMapSearch() {
+        return getLocalString("maps.search.selection[@color]", "#d9534f");
+    }
+
+    public String getSelectionColorForFacetting() {
+        return getLocalString("maps.facet.selection[@color]", "#d9534f");
+    }
+
     public boolean includeCoordinateFieldsFromMetadataDocs() {
         return getLocalBoolean("maps.coordinateFields[@includeMetadataDocs]", false);
     }
@@ -5013,10 +5023,7 @@ public class Configuration extends AbstractConfiguration {
         List<GeoMapMarker> markers = new ArrayList<>();
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.markers.marker");
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
-            GeoMapMarker marker = readGeoMapMarker(config);
-            if (marker != null) {
-                markers.add(marker);
-            }
+            markers.add(readGeoMapMarker(config));
         }
         return markers;
 
@@ -5045,8 +5052,9 @@ public class Configuration extends AbstractConfiguration {
             marker.setShadow(config.getBoolean("[@shadow]", marker.isShadow()));
             marker.setUseDefault(config.getBoolean("[@useDefaultIcon]", marker.isUseDefault()));
             marker.setHighlightIcon(config.getString("[@highlightIcon]", marker.getHighlightIcon()));
+            return marker;
         }
-        return marker;
+        return new GeoMapMarker("");
     }
 
     /**
@@ -5318,4 +5326,52 @@ public class Configuration extends AbstractConfiguration {
     public List<String> getConfigEditorDirectories() {
         return getLocalList("configEditor.directory", Collections.emptyList());
     }
+
+    /**
+     * 
+     * @return true if enabled; false otherwise
+     * @should return correct value
+     */
+    public boolean isProxyEnabled() {
+        return getLocalBoolean("proxy[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getProxyUrl() {
+        return getLocalString("proxy.proxyUrl");
+    }
+
+    /**
+     * 
+     * @return Configured port number; 0 if none found
+     * @should return correct value
+     */
+    public int getProxyPort() {
+        return getLocalInt("proxy.proxyPort", 0);
+    }
+
+    /**
+     * 
+     * @param url
+     * @return
+     * @throws MalformedURLException
+     * @should return true if host whitelisted
+     */
+    public boolean isHostProxyWhitelisted(String url) throws MalformedURLException {
+        URL urlAsURL = new URL(url);
+        return getProxyWhitelist().contains(urlAsURL.getHost());
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public List<String> getProxyWhitelist() {
+        return getLocalList("proxy.whitelist.host");
+    }
+
 }

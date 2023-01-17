@@ -9,7 +9,7 @@
     xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-
+ 
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminClients')}" />
@@ -22,6 +22,8 @@
       <div class="admin__title-bar">
         <h1 class="admin__title">#{msg.admin__clients__title}</h1>
       </div>
+      
+      <viewerComponent:adminBreadcrumbs />
 
       <div id="adminClients" class="admin__content-inner-content">
 

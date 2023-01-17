@@ -47,43 +47,10 @@
                 	<viewerComponent:autocomplete value="#{search.searchString}" items="#{search.autocomplete}" placeholder="#{msg.search}">
                 	</viewerComponent:autocomplete>
                 </div>
-
                	<h:commandButton id="submitSearch" type="submit" styleClass="btn btn--full" action="#{search.searchSimple}" value="#{msg.search}">
                    	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
                	</h:commandButton>
 			</div>
-                
-                
-<!--                     <p:autoComplete id="pfAutocomplete" inputStyleClass="-no-outline -active-border" completeMethod="#{search.autocomplete}" value="#{search.searchString}" maxResults="15" minQueryLength="3" -->
-<!--                         autoHighlight="false"> -->
-<!--                         <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" /> -->
-<!--                         <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__search_form}" /> -->
-<!--                     </p:autoComplete> -->
-
-            <!-- SEARCH STANDARD FILTER -->
-<!--             <div class="search-standard__filter"> -->
-<!--                     <div class="search-standard__filter-link"> -->
-<!--                         <h:commandLink rendered="#{navigationHelper.cmsPage}" value="#{msg.searchAdvanced}" action="#{searchBean.setActiveSearchType(1)}"> -->
-<!--                             <f:ajax render="searchArea #{renderOnSearchTypeChange}" /> -->
-<!--                         </h:commandLink> -->
-<!--                         <ui:fragment rendered="#{!navigationHelper.cmsPage}"> -->
-<!--                             <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a> -->
-<!--                         </ui:fragment> -->
-<!--                     </div> -->
-<!--             </div> -->
-
-            <!-- SEARCH STANDARD ACTION -->
-<!--             <div class="search-standard__action"> -->
-<!--                 <h:commandButton id="submitSearch" type="submit" styleClass="btn btnfull" action="#{search.searchSimple}" value="#{msg.search}"> -->
-<!--                     <f:setPropertyActionListener target="#{search.activeSearchType}" value="0" /> -->
-<!--                 </h:commandButton> -->
-<!--                 <button -->
-<!-- 					type="submit" -->
-<!-- 					class="btn btndefault" -->
-<!-- 					jsf:action="#{search.resetSearch}"> -->
-<!-- 					#{msg.reset} -->
-<!-- 				</button> -->
-<!--             </div> -->
         </h:form>
     </div>
 

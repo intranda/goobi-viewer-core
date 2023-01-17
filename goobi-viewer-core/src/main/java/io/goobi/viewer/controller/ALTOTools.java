@@ -43,11 +43,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
@@ -59,8 +59,8 @@ import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
-import io.goobi.viewer.model.search.FuzzySearchTerm;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
+import io.goobi.viewer.model.search.FuzzySearchTerm;
 
 /**
  * <p>

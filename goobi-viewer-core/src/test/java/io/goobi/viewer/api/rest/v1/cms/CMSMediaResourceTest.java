@@ -22,13 +22,14 @@
 package io.goobi.viewer.api.rest.v1.cms;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Equator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +40,8 @@ import io.goobi.viewer.api.rest.v1.cms.CMSMediaResource.MediaList;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 
 /**
  * @author florian
@@ -119,14 +120,51 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void testGetItemsRandom() throws DAOException {
-        MediaList list = resource.getAllMedia("unitTest", null, null, true);
-        assertEquals(numItems, list.getMediaItems().size());
-        assertFalse("order not random",
-                "1".equals(getLabel(list, 0))
-                        && "2".equals(getLabel(list, 1))
-                        && "3".equals(getLabel(list, 2)));
+       
+        List<MediaList> resultsOrdered = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            MediaList list = resource.getAllMedia("unitTest", null, null, false);
+            if(resultsOrdered.isEmpty() || isEquals(list, resultsOrdered.get(0), new ListEquator())) {                
+                resultsOrdered.add(list);
+            }
+        }
+       assertEquals(20, resultsOrdered.size());
+        
+        List<MediaList> resultsRandom = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            MediaList list = resource.getAllMedia("unitTest", null, null, true);
+            if(resultsRandom.isEmpty() || isEquals(list, resultsRandom.get(0), new ListEquator())) {                
+                resultsRandom.add(list);
+            }
+        }
+       assertEquals(1, resultsRandom.size());
     }
 
+    private boolean isEquals(MediaList list1, MediaList list2, ListEquator equator) {
+        if(list1.getMediaItems().size() == list2.getMediaItems().size()) {
+            for (int i = 0; i < list1.getMediaItems().size(); i++) {
+                boolean same = getLabel(list1, i).equals(getLabel(list2, i));
+                if(!same) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private class ListEquator implements Equator<MediaItem> {
+
+        @Override
+        public boolean equate(MediaItem o1, MediaItem o2) {
+            return o1.getLabel().getValue("en").equals(o2.getLabel().getValue("en"));
+        }
+
+        @Override
+        public int hash(MediaItem o) {
+            return o.getId().hashCode();
+        }
+        
+    }
 
     @Test
     public void testGetItemsLimitCount() throws DAOException {
