@@ -772,12 +772,14 @@ public class SearchFacets implements Serializable {
     public boolean isRangeFacetActive(String field) {
         try {
             List<Integer> range = getValueRange(field);
-            return Integer.parseInt(getCurrentMinRangeValue(field)) > range.get(0)
-                    || Integer.parseInt(getCurrentMaxRangeValue(field)) < range.get(range.size() - 1);
+            if(!range.isEmpty()) {                
+                return Integer.parseInt(getCurrentMinRangeValue(field)) > range.get(0)
+                        || Integer.parseInt(getCurrentMaxRangeValue(field)) < range.get(range.size() - 1);
+            }
         } catch (PresentationException | IndexUnreachableException | NullPointerException | NumberFormatException e) {
             logger.warn("Unable to parse range values of range slider for field {}: {}", field, e.toString());
-            return false;
         }
+        return false;
     }
 
     /**
