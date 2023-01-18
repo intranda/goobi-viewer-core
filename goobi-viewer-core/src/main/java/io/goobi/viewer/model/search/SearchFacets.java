@@ -815,8 +815,8 @@ public class SearchFacets implements Serializable {
         }
         if (!intValues.isEmpty()) {
             valueRanges.put(field, intValues);
-            minValues.put(field, String.valueOf(intValues.get(0)));
-            maxValues.put(field, String.valueOf(intValues.get(intValues.size() - 1)));
+            minValues.put(field, String.valueOf(intValues.firstKey()));
+            maxValues.put(field, String.valueOf(intValues.lastKey()));
             logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));
         }
     }
