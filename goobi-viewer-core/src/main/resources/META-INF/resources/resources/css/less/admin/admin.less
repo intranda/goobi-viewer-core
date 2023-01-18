@@ -1956,6 +1956,123 @@
 	&__comment_greyed_out {
 		opacity: 0.35;
 	}
+	&__msg-queue-status {
+	}
+	&__msg-queue-icon-wrapper {
+		position: relative;
+		display: flex;
+		cursor: pointer;
+		.fa {
+			transition: all 0.2s ease;
+		}
+		.fa-play {
+			margin-left: 2px;
+		}
+		&:hover {
+			.fa {
+				transform: translateY(-1px);
+			}
+		}
+		&.-paused {
+				.admin__msg-queue-button-pause {
+					display: none;
+				}
+				.admin__msg-queue-button-play {
+					display: block;
+				}	
+			.admin__msg-queue-icon-loader {
+				background: rgba(255, 111, 0, 0.2);
+				animation-play-state: paused;
+				border: 3px solid #ff6f00;
+			}
+		}
+		&.-stoppingStatus {
+			.admin__msg-queue-icon-loader {
+				background: #e2ffe2;
+				border: 3px solid @greenBar;
+				border-bottom-color: #f2f3f4;
+				opacity: 0.8;
+			}
+			.admin__msg-queue-icon {
+				opacity: 0.8;
+			}
+		}
+	}
+	&__msg-queue-icon {
+		position: absolute;
+		top: 50%;
+		right: 50%;
+		transform: translate(50%,-50%);
+		font-size: 14px;
+		color: #1a321a;
+	}
+	&__msg-queue-button-play {
+		display: block;
+		&.-hidden {
+			display: none;
+		}
+	}
+	&__msg-queue-button-pause {
+		display: block;
+		&.-hidden {
+			display: none;
+		}
+	}
+	&__msg-queue-button-trash {
+		
+	}
+	&__msg-queue-icon-loader {
+		background: #e2ffe2;
+		width: 32px;
+		height: 32px;
+		border: 3px solid @greenBar;
+		border-bottom-color: #f2f3f4;
+		border-radius: 50%;
+		display: inline-block;
+		position: relative;
+		box-sizing: border-box;
+		animation: msgQrotation 1.85s linear infinite;
+	}
+	[data-target="resumeButton"], [data-target="pauseButton"], [data-target="clearButton"] {
+		display: none;
+	}
+	&__msg-queue-title-wrapper {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		margin-bottom: 10px;
+	}
+	&__content-inner-content {
+		.admin__msg-queue-title-wrapper {
+			h2 {
+				margin-bottom: 0;
+			}
+		}
+	}
+	&__msg-queue-clear-all {
+		background: rgba(244, 67, 54, 0.2);
+		width: 32px;
+		height: 32px;
+		border: 3px solid @redBar;
+		border-radius: 50%;
+		display: inline-block; 
+		position: relative;
+		box-sizing: border-box;
+	}
+	&__msg-queue-single-job-wrapper {
+		
+	}
+	 
+	@keyframes msgQrotation {
+	  0% {
+	    transform: rotate(0deg);
+	  }
+	  100% {
+	    transform: rotate(360deg);
+	  }
+	}
+	
+	
 	// BASIC STRUCTURES
 	&__content-wrapper {
 		display: flex;

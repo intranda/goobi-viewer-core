@@ -29,26 +29,76 @@
 
 
                     <viewerComponent:adminBreadcrumbs />
+                    
+                    <div class="admin__content-inner-content">
+                    
+                    <div class="admin__msg-queue-title-wrapper">
+                    
+	                    <h2>Pending jobs</h2>
+	                    
+	                    <div class="admin__msg-queue-status">
+<!-- 							<div class="admin__msg-queue-icon-text">Status: #{messageQueueBean.paused ? 'stopped' : 'running'}</div> -->
+							
+							<div class="admin__msg-queue-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}" data-trigger="#{messageQueueBean.paused ? 'resumeButton' : 'pauseButton'}">
+							<div class="admin__msg-queue-icon-loader"></div>
+								<div class="admin__msg-queue-icon">
+									<div class="admin__msg-queue-button-pause #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-pause"></i></div>
+		                        	<div class="admin__msg-queue-button-play #{messageQueueBean.paused ? '-active' : '-hidden'}"><i class="fa fa-play"></i></div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="admin__msg-queue-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}" data-trigger="clearAllButton">
+						<div class="admin__msg-queue-clear-all"></div>
+							<div class="admin__msg-queue-icon">
+								<div class="admin__msg-queue-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-times"></i></div>
+							</div>
+						</div>
+
+					</div>
+
+
+						<script>
+						$('[data-trigger="resumeButton"]').on('click', function() {
+							$('.admin__msg-queue-icon-wrapper').toggleClass('-paused');
+						    $('[ data-target="resumeButton"]').click();
+						    $('.admin__msg-queue-button-pause, .admin__msg-queue-button-play').toggleClass('-hidden');
+						});
+						
+						$('[data-trigger="pauseButton"]').on('click', function() {
+							$('.admin__msg-queue-icon-wrapper').toggleClass('-paused');
+							$('.admin__msg-queue-icon-wrapper').addClass('-stoppingStatus');
+						    $('[ data-target="pauseButton"]').click();
+						    $('.admin__msg-queue-button-pause, .admin__msg-queue-button-play').toggleClass('-hidden');
+						});
+						
+						$('[data-trigger="clearAllButton"]').on('click', function() {
+						    $('[ data-target="clearButton"]').click();
+						});
+	
+						</script>
 
 
                     <!-- TODO style buttons, increase in size, add tooltip, change color of active button -->
                     <button
                         jsf:action="#{messageQueueBean.pauseQueue}"
                         jsf:id="pauseButton"
-                        class="#{!messageQueueBean.paused ? 'active' : ''} btn">
+                        data-target="pauseButton"
+                        class="btn">
                         <i class="fa fa-pause"></i>
                     </button>
 
                     <button
                         jsf:action="#{messageQueueBean.resumeQueue}"
                         jsf:id="resumeButton"
-                        class="#{messageQueueBean.paused ? 'active' : ''} btn">
+                        data-target="resumeButton"
+                        class="btn">
                         <i class="fa fa-play"></i>
                     </button>
 
-
                     <button
                         jsf:action="#{messageQueueBean.clearQueue}"
+                        data-target="clearButton"
                         jsf:id="clearButton"
                         class="btn">
                         <i class="fa fa-trash"></i>
@@ -59,11 +109,95 @@
                         <h:outputText value="#{msgs.admin__message_queue__queues_switched_off}" />
                     </ui:fragment>
 
+
                     <ui:fragment rendered="#{messageQueueBean.messageBrokerStart}">
+                                <!-- INDIVIDUAL ROWS -->
+                                <ui:repeat
+                                    var="entry"
+                                    value="#{messageQueueBean.queueContent}">
+                                    
+                                    <div class="admin__boxed-entry">
+                                    
+
+						
+								<h:outputText value="#{msg[entry.key]}" />
+						
+								<h:outputText value="#{entry.value}" />
+
+                                 <button
+                                     jsf:action="#{messageQueueBean.removeMessagesFromQueue}"
+                                     class="btn">
+                                     <i class="fa fa-trash-o" />
+                                     <f:setPropertyActionListener
+                                         target="#{messageQueueBean.messageType}"
+                                         value="#{entry.key}" />
+                                 </button>
+
+                                 <button
+                                     jsf:id="displayDetails"
+                                     class="btn">
+                                     <i class="fa fa-info" />
+                                     <f:setPropertyActionListener
+                                         target="#{messageQueueBean.messageType}"
+                                         value="#{entry.key}" />
+                                     <f:ajax render="details" />
+                                 </button>
+                                 
+                                 </div>
+                                 
+                                 
+                                    <ui:repeat
+                                        var="msgqueueticket"
+                                        value="#{messageQueueBean.activeQueryMesssages}">
+
+                                        <div
+                                            class="row no-gutters admin__table-entry"
+                                            role="row">
+
+                                            <div class="col-2 d-flex">
+                                                <h:outputText value="#{msgqueueticket.messageId}" />
+                                            </div>
+
+                                            <div class="col-2 d-flex">
+                                                <h:outputText value="#{msg[msgqueueticket.taskName]}" />
+                                            </div>
+                                            <div class="col-3 d-flex">
+                                                <h:outputText value="#{msgqueueticket.pi}" />
+                                            </div>
+                                            <div class="col-3 d-flex">
+                                                <ui:repeat
+                                                    var="prop"
+                                                    value="#{msgqueueticket.properties.keySet()}">
+                                                    <h:outputText value="#{prop}: #{msgqueueticket.properties[prop]} " />
+                                                    <br />
+                                                </ui:repeat>
+                                            </div>
+                                            <div class="col-2 d-flex">
+                                                <button
+                                                    jsf:action="#{messageQueueBean.deleteMessage(msgqueueticket)}"
+                                                    class="btn">
+                                                    <i class="fa fa-trash-o" />
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    </ui:repeat>
+                                 
+
+                                </ui:repeat>
 
 
 
-                        <div class="admin__content-inner-content">
+
+
+
+
+
+
+
+
+
+
                             <div class="admin__table-tools">
                                 <!-- PAGINATOR -->
                                 <div class="admin__table-paginator">
@@ -153,7 +287,7 @@
                                     </div>
                                 </ui:repeat>
                             </div>
-                        </div>
+
 
 
                         <!-- show all active message for a given type -->
@@ -370,6 +504,8 @@
                         </h:panelGroup>
 
                     </ui:fragment>
+                    </div>
+                    
                 </h:form>
             </h:panelGroup>
         </div>
