@@ -843,9 +843,9 @@ this.initSlider = function() {
 				}
 				else {
 
-	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( ui.values[ 1 ] / this.$getSlider().slider('option', 'max')));
 
-	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
+	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( ui.values[ 0 ] / this.$getSlider().slider('option', 'max')));
 
 				}
 
@@ -864,9 +864,9 @@ this.initSlider = function() {
 				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
 				    $( this.valueInput ).val(value);
 
+				   $( this.updateFacet ).click();
 				}
-				console.log('something changed');
-				console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+
 			},
 		}
 	console.log("init slider", this.opts, options);

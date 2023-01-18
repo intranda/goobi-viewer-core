@@ -78,23 +78,15 @@ initSlider() {
 					// working JS calculation method for handling slider handle positions (jQuery slider)
 	    			// set handler position
 	    			//console.log("setup right handle", this.$getLastHandle(), this.$getLastHandle().width(), this.$getSlider().slider( "values", 1 ), this.$getSlider().slider('option', 'max'));
-	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
-	    			
-// 	    			console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
-	    			
-// 	    			console.log('------------- LAST -----------------');
-// 	    			console.log('handle width: ' + this.$getLastHandle().width());
-// 	    			console.log('handle value: ' + this.$getSlider().slider( "values", 1 ));
-// 	    			console.log('slider max: ' + this.$getSlider().slider('option', 'max'));
-	    			
-	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
-	    			
-	    			// console.log(-1 * this.$getFirstHandle().width() * ( this.$getSlider().slider( "values", 0 ) / this.$getSlider().slider('option', 'max')));
-	    			
-// 	    			console.log('---------- FIRST --------------------');
-// 	    			console.log('handle width: ' + this.$getFirstHandle().width());
-// 	    			console.log('handle value: ' + this.$getSlider().slider( "values", 0 ));
-// 	    			console.log('slider max: ' + this.$getSlider().slider('option', 'max'));
+	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( ui.values[ 1 ] / this.$getSlider().slider('option', 'max')));
+
+					// console.log('------------- LAST HANDLE -----------------');
+					// console.log(-1 * this.$getLastHandle().width() * ( ui.values[ 1 ]  / this.$getSlider().slider('option', 'max')));
+
+	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( ui.values[ 0 ] / this.$getSlider().slider('option', 'max')));
+
+					// console.log('---------- FIRST HANDLE --------------------');
+	    			// console.log(-1 * this.$getFirstHandle().width() * ( ui.values[ 0 ] / this.$getSlider().slider('option', 'max')));
 	    			
 				}
 
@@ -115,10 +107,10 @@ initSlider() {
 				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
 				    $( this.valueInput ).val(value);
 				    // submit form
-				   // $( this.updateFacet ).click();
+				   $( this.updateFacet ).click();
 				}
-				console.log('something changed');
-				console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
+				// console.log('something changed');
+				// console.log(-1 * this.$getLastHandle().width() * ( this.$getSlider().slider( "values", 1 ) / this.$getSlider().slider('option', 'max')));
 			},
 		}
 	console.log("init slider", this.opts, options);
