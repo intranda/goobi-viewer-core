@@ -681,6 +681,13 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{downloadBean.openDownloadAction()}</action>
 	</url-mapping>
+    
+    <!-- PERSON -->
+    <url-mapping id="person1">
+        <pattern value="/person/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewPerson.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 
 	<!-- BOOKMARKS -->
     <url-mapping id="bookmarkLists">
