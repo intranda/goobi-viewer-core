@@ -1,0 +1,45 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminQuartz')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <div id="adminAllUsers">
+            <h:panelGroup rendered="#{userBean.admin}">
+                <h:form
+                    id="adminAllUserForm"
+                    prependId="false">
+                    <div class="admin__title-bar">
+                        <!-- TITLE -->
+                        <h1 class="admin__title">#{msg.admin__quartz__title}</h1>
+                    </div>
+
+
+                    <viewerComponent:adminBreadcrumbs />
+
+                    <div class="admin__content-inner-content">
+
+                        <div class="admin__msg-queue-title-wrapper"></div>
+
+                    </div>
+
+                </h:form>
+            </h:panelGroup>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

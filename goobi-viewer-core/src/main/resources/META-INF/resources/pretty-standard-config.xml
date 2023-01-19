@@ -941,6 +941,11 @@
         <view-id value="/resources/admin/views/adminMessageQueue.xhtml" />
     </url-mapping>
 
+    <url-mapping id="adminQuartz">
+        <pattern value="/admin/quartz/" />
+        <view-id value="/resources/admin/views/adminQuartz.xhtml" />
+    </url-mapping>
+
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">
         <pattern value="/admin/styles/" />
