@@ -32,7 +32,87 @@
 
                     <div class="admin__content-inner-content">
 
-                        <div class="admin__msg-queue-title-wrapper"></div>
+                        <div class="admin__msg-queue-title-wrapper">
+                        
+                            <!-- show all active message types -->
+                            
+                            <div
+                            style="width: 100%;"
+                                id="new-table-adminallmessagetypes"
+                                class="admin__table-content"
+                                role="grid"
+                                aria-label="#{msg.admin__queue_types}: #{msg.aria_label__table__actions}">
+                                <!-- TITLE ROW -->
+                                <div
+                                    class="row no-gutters admin__table-title"
+                                    role="row">
+                                    <!-- NAME COL -->
+                                    <div class="col-3 d-flex">
+                                     Name
+                                    </div>
+                                    <!-- LAST LOGIN COL -->
+                                    <div class="col-3 d-flex">
+                                    Group
+                                    </div>
+                                               <div class="col-2 d-flex">
+                                    previousFireTime
+                                    </div>
+                                               <div class="col-2 d-flex">
+                                    nextFireTime
+                                    </div>
+                                               <div class="col-2 d-flex">
+                                    fire
+                                    </div>
+                                    
+                                </div>
+
+
+                                <!-- INDIVIDUAL ROWS -->
+                                <ui:repeat
+                                    var="entry"
+                                    value="#{quartzBean.activeJobs}">
+                                    <div
+                                        class="row no-gutters admin__table-entry"
+                                        role="row">
+                                        <div class="col-3 d-flex">
+                                            <h:outputText value="#{msg[entry.jobName]}" />
+                                        </div>
+
+                                        <div
+                                            class="col-3 d-flex align-items-center"
+                                            role="gridcell">
+                                            <h:outputText value="#{entry.jobGroup}" />
+                                        </div>
+
+                                        <div
+                                            class="col-2 d-flex align-items-center"
+                                            role="gridcell">
+                                            <h:outputText value="#{entry.previousFireTime}" />
+                                        </div>
+                                        <div
+                                            class="col-2 d-flex align-items-center"
+                                            role="gridcell">
+                                            <h:outputText value="#{entry.nextFireTime}" />
+                                        </div>
+
+                                        <div
+                                            class="col-2 d-flex align-items-center align-content-center flex-wrap"
+                                            role="gridcell">
+
+                                            <button
+                                                jsf:action="#{quartzBean.triggerQuartzJob}"
+                                                class="btn">
+                                                <i class="fa fa-trash-o" />
+                                                <f:setPropertyActionListener
+                                                    target="#{quartzBean.quartzJobDetails}"
+                                                    value="#{entry}" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+                            </div>
+                        
+                        </div>
 
                     </div>
 
