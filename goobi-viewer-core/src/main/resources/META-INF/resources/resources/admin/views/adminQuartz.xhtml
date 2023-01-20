@@ -26,18 +26,31 @@
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.admin__quartz__title}</h1>
                     </div>
-
-
                     <viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content">
+                        <div class="admin__msg-queue-title-wrapper">
+                            <h:outputText value="#{quartzBean.paused}" />
+                            <button
+                                jsf:action="#{quartzBean.pauseAllJobs}"
+                                class="btn">
+                                <i class="fa fa-pause"></i>
+                            </button>
+
+                            <button
+                                jsf:action="#{quartzBean.resumeAllJobs}"
+                                class="btn">
+                                <i class="fa fa-play"></i>
+                            </button>
+
+                        </div>
 
                         <div class="admin__msg-queue-title-wrapper">
-                        
+
                             <!-- show all active message types -->
-                            
+
                             <div
-                            style="width: 100%;"
+                                style="width: 100%;"
                                 id="new-table-adminallmessagetypes"
                                 class="admin__table-content"
                                 role="grid"
@@ -47,23 +60,13 @@
                                     class="row no-gutters admin__table-title"
                                     role="row">
                                     <!-- NAME COL -->
-                                    <div class="col-3 d-flex">
-                                     Name
-                                    </div>
+                                    <div class="col-3 d-flex">Name</div>
                                     <!-- LAST LOGIN COL -->
-                                    <div class="col-3 d-flex">
-                                    Group
-                                    </div>
-                                               <div class="col-2 d-flex">
-                                    previousFireTime
-                                    </div>
-                                               <div class="col-2 d-flex">
-                                    nextFireTime
-                                    </div>
-                                               <div class="col-2 d-flex">
-                                    fire
-                                    </div>
-                                    
+                                    <div class="col-3 d-flex">Group</div>
+                                    <div class="col-2 d-flex">previousFireTime</div>
+                                    <div class="col-2 d-flex">nextFireTime</div>
+                                    <div class="col-2 d-flex">actions</div>
+
                                 </div>
 
 
@@ -99,10 +102,30 @@
                                             class="col-2 d-flex align-items-center align-content-center flex-wrap"
                                             role="gridcell">
 
+                                            <h:outputText value="#{entry.paused}" />
+
                                             <button
                                                 jsf:action="#{quartzBean.triggerQuartzJob}"
                                                 class="btn">
-                                                <i class="fa fa-trash-o" />
+                                                <i class="fa fa-fast-forward" />
+                                                <f:setPropertyActionListener
+                                                    target="#{quartzBean.quartzJobDetails}"
+                                                    value="#{entry}" />
+                                            </button>
+
+                                            <button
+                                                jsf:action="#{quartzBean.pauseJob}"
+                                                class="btn">
+                                                <i class="fa fa-pause" />
+                                                <f:setPropertyActionListener
+                                                    target="#{quartzBean.quartzJobDetails}"
+                                                    value="#{entry}" />
+                                            </button>
+
+                                            <button
+                                                jsf:action="#{quartzBean.resumeJob}"
+                                                class="btn">
+                                                <i class="fa fa-play" />
                                                 <f:setPropertyActionListener
                                                     target="#{quartzBean.quartzJobDetails}"
                                                     value="#{entry}" />
@@ -111,7 +134,7 @@
                                     </div>
                                 </ui:repeat>
                             </div>
-                        
+
                         </div>
 
                     </div>

@@ -10,12 +10,11 @@ import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.Job;
-import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 
@@ -30,12 +29,17 @@ public class QuartzBean implements Serializable {
     private static final Logger log = LogManager.getLogger(QuartzBean.class);
 
     private QuartzJobDetails quartzJobDetails;
-    private List<QuartzJobDetails> activeJobs = new ArrayList<>();;
 
-    public void initJobList() throws SchedulerException {
+    private boolean paused;
 
-        Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+    private Scheduler scheduler = null;
 
+    public QuartzBean() throws SchedulerException {
+        scheduler = new StdSchedulerFactory().getScheduler();
+    }
+
+    public List<QuartzJobDetails> getActiveJobs() throws SchedulerException {
+        List<QuartzJobDetails> activeJobs = new ArrayList<>();
         for (String groupName : scheduler.getJobGroupNames()) {
 
             for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
@@ -43,44 +47,30 @@ public class QuartzBean implements Serializable {
                 QuartzJobDetails details = new QuartzJobDetails();
                 activeJobs.add(details);
 
+                details.setJobKey(jobKey);
+
                 String jobName = jobKey.getName();
                 details.setJobName(jobName);
 
                 String jobGroup = jobKey.getGroup();
                 details.setJobGroup(jobGroup);
-
-                JobDetail detail = scheduler.getJobDetail(jobKey);
-
-                Class<? extends Job> clazz = detail.getJobClass();
-                details.setClazz(clazz);
-
                 //get job's trigger
                 List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+                Trigger trigger = triggers.get(0);
+                if (TriggerState.PAUSED.equals(scheduler.getTriggerState(trigger.getKey()))) {
+                    details.setPaused(true);
+                }
 
-                Date nextFireTime = triggers.get(0).getNextFireTime();
-                Date lastFireTime = triggers.get(0).getPreviousFireTime();
+                Date nextFireTime = trigger.getNextFireTime();
+                Date lastFireTime = trigger.getPreviousFireTime();
                 details.setNextFireTime(nextFireTime);
                 details.setPreviousFireTime(lastFireTime);
             }
 
         }
-    }
-
-    public List<QuartzJobDetails> getActiveJobs() {
-
-        if (activeJobs.isEmpty()) {
-            try {
-                initJobList();
-            } catch (SchedulerException e) {
-                log.error(e);
-            }
-        }
 
         return activeJobs;
     }
-
-
-
 
     public QuartzJobDetails getQuartzJobDetails() {
         return quartzJobDetails;
@@ -90,10 +80,51 @@ public class QuartzBean implements Serializable {
         this.quartzJobDetails = quartzJobDetails;
     }
 
-
     public void triggerQuartzJob() {
-        System.out.println(quartzJobDetails.getJobName());
+        try {
+            scheduler.triggerJob(quartzJobDetails.getJobKey());
+        } catch (SchedulerException e) {
+            log.error(e);
+        }
 
+    }
+
+    public void pauseAllJobs() {
+        try {
+            scheduler.pauseAll();
+        } catch (SchedulerException e) {
+            log.error(e);
+        }
+        paused = true;
+    }
+
+    public void pauseJob() {
+        try {
+            scheduler.pauseJob(quartzJobDetails.getJobKey());
+        } catch (SchedulerException e) {
+            log.error(e);
+        }
+    }
+
+    public void resumeAllJobs() {
+        try {
+            scheduler.resumeAll();
+        } catch (SchedulerException e) {
+            log.error(e);
+        }
+        paused = false;
+    }
+
+    public void resumeJob() {
+        try {
+            scheduler.resumeJob(quartzJobDetails.getJobKey());
+        } catch (SchedulerException e) {
+            log.error(e);
+        }
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 
 }
