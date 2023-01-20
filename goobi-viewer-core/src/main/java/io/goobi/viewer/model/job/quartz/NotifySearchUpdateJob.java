@@ -26,19 +26,32 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 
-public class SampleJob extends AbstractViewerJob implements Job, IViewerJob {
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.search.SearchHitsNotifier;
 
-    private static final Logger log = LogManager.getLogger(SampleJob.class);
+public class NotifySearchUpdateJob extends AbstractViewerJob implements Job, IViewerJob {
+
+    private static final Logger logger = LogManager.getLogger(NotifySearchUpdateJob.class);
 
     @Override
     public String getJobName() {
-        return "SampleJob";
+        return "NotifySearchUpdateJob";
     }
 
     @Override
     public void execute() {
+        try {
+            new SearchHitsNotifier().sendNewHitsNotifications();
+        } catch (DAOException | PresentationException | IndexUnreachableException | ViewerConfigurationException e) {
+            logger.error("Error in job NotifySearchUpdateJob: {}", e.toString());
+        }
+    }
 
-        log.error("Executing sample job");
-
+    @Override
+    public String getCronExpression() {
+        return "0 42 8,12,17 * * ?";
     }
 }

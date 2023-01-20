@@ -26,19 +26,42 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 
-public class SampleJob extends AbstractViewerJob implements Job, IViewerJob {
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.security.DownloadTicket;
 
-    private static final Logger log = LogManager.getLogger(SampleJob.class);
+public class PurgeExpiredDownloadTicketsJob extends AbstractViewerJob implements Job, IViewerJob {
+
+    private static final Logger logger = LogManager.getLogger(PurgeExpiredDownloadTicketsJob.class);
 
     @Override
     public String getJobName() {
-        return "SampleJob";
+        return "PurgeExpiredDownloadTicketsJob";
     }
 
     @Override
     public void execute() {
+        int count = 0;
+        try {
+            for (DownloadTicket ticket : DataManager.getInstance()
+                    .getDao()
+                    .getActiveDownloadTickets(0, Integer.MAX_VALUE, null, false, null)) {
+                if (ticket.isExpired() && DataManager.getInstance().getDao().deleteDownloadTicket(ticket)) {
+                    count++;
+                }
+            }
 
-        log.error("Executing sample job");
+            // TODO cleanup old ViewerMessages in database
 
+        } catch (DAOException e) {
+            logger.error(e);
+        }
+        logger.info("{} expired download tickets removed.", count);
     }
+
+    @Override
+    public String getCronExpression() {
+        return "0 45 0 * * ?";
+    }
+
 }

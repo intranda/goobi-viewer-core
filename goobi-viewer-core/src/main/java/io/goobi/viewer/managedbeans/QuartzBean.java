@@ -10,6 +10,7 @@ import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.CronTrigger;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -54,9 +55,15 @@ public class QuartzBean implements Serializable {
 
                 String jobGroup = jobKey.getGroup();
                 details.setJobGroup(jobGroup);
+
                 //get job's trigger
                 List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
                 Trigger trigger = triggers.get(0);
+                if (trigger instanceof CronTrigger) {
+                    CronTrigger cronTrigger = (CronTrigger) trigger;
+                    String cronExpr = cronTrigger.getCronExpression();
+                    details.setCronExpression(cronExpr);
+                }
                 if (TriggerState.PAUSED.equals(scheduler.getTriggerState(trigger.getKey()))) {
                     details.setPaused(true);
                 }

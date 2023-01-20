@@ -75,7 +75,12 @@ public class QuartzListener implements ServletContextListener {
         Scheduler sched = schedFact.getScheduler();
         sched.start();
 
-        initializeMinutelyJob(new SampleJob(), sched, 5);
+        // initializeMinutelyJob(new SampleJob(), sched, 5);
+
+        initializeCronJob(new NotifySearchUpdateJob(), sched);
+        initializeCronJob(new IndexUsageSstatisticsJob(), sched);
+        initializeCronJob(new PurgeExpiredDownloadTicketsJob(), sched);
+        initializeCronJob(new UpdateUploadJobsJob(), sched);
     }
 
     /**
@@ -85,10 +90,7 @@ public class QuartzListener implements ServletContextListener {
      */
     public static void initializeMinutelyJob(IViewerJob goobiJob, Scheduler sched, int minutes) throws SchedulerException {
 
-        JobDetail jobDetail = JobBuilder.newJob(goobiJob.getClass())
-
-                .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
-                .build();
+        JobDetail jobDetail = generateJob(goobiJob);
 
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
@@ -106,10 +108,7 @@ public class QuartzListener implements ServletContextListener {
      */
     public static void initializeHourlyJob(IViewerJob goobiJob, Scheduler sched, int hours) throws SchedulerException {
 
-        JobDetail jobDetail = JobBuilder.newJob(goobiJob.getClass())
-
-                .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
-                .build();
+        JobDetail jobDetail = generateJob(goobiJob);
 
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
@@ -120,13 +119,24 @@ public class QuartzListener implements ServletContextListener {
         sched.scheduleJob(jobDetail, trigger);
     }
 
+    private static JobDetail generateJob(IViewerJob goobiJob) {
+        return JobBuilder.newJob(goobiJob.getClass()).withIdentity(goobiJob.getJobName(), goobiJob.getJobName()).build();
+    }
+
     /**
      * initializes given IViewerJob to run every day at midnight
      *
      * @throws SchedulerException
      */
     public static void initializeDailyJob(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
-        initializeCronJob(goobiJob, sched, "0 0 0 * * ?");
+
+        JobDetail jobDetail = generateJob(goobiJob);
+
+        CronTrigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?"))
+                .build();
+        sched.scheduleJob(jobDetail, trigger);
     }
 
     /**
@@ -135,7 +145,7 @@ public class QuartzListener implements ServletContextListener {
      * @throws SchedulerException
      */
     public static void executeJobOnce(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
-        JobDetail jobDetail = JobBuilder.newJob(goobiJob.getClass()).withIdentity(goobiJob.getJobName(), goobiJob.getJobName()).build();
+        JobDetail jobDetail = generateJob(goobiJob);
 
         SimpleTrigger trigger =
                 (SimpleTrigger) TriggerBuilder.newTrigger().withIdentity(goobiJob.getJobName(), goobiJob.getJobName()).startNow().build();
@@ -150,13 +160,13 @@ public class QuartzListener implements ServletContextListener {
      * 
      * @throws SchedulerException
      */
-    public static void initializeCronJob(IViewerJob goobiJob, Scheduler sched, String cronConfiguration) throws SchedulerException {
+    public static void initializeCronJob(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
 
-        JobDetail jobDetail = JobBuilder.newJob(goobiJob.getClass()).withIdentity(goobiJob.getJobName(), goobiJob.getJobName()).build();
+        JobDetail jobDetail = generateJob(goobiJob);
 
         CronTrigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
-                .withSchedule(CronScheduleBuilder.cronSchedule(cronConfiguration))
+                .withSchedule(CronScheduleBuilder.cronSchedule(goobiJob.getCronExpression()))
                 .build();
         sched.scheduleJob(jobDetail, trigger);
     }
