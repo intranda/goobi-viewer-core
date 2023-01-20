@@ -92,10 +92,8 @@ public enum PageType {
     adminClients("admin/clients", "admin__clients", adminDashboard),
     adminClientsEdit("admin/clients/edit", "admin__clients__edit__title", adminClients),
     adminConfigEditor("admin/config", "admin__config_editor__title", adminDashboard),
-
     adminMessageQueue("admin/message_queue", "admin__message_queue__title", adminDashboard),
     adminQuartz("admin/quartz", "admin__quartz__title", adminDashboard),
-
 
     // admin/translations
     adminTranslations("admin/translations", "admin__translations", adminDashboard),
@@ -224,7 +222,7 @@ public enum PageType {
      * @return a boolean.
      */
     public boolean isHandledWithCms() {
-        return this.handling.equals(PageTypeHandling.cms);
+        return PageTypeHandling.cms.equals(this.handling);
     }
 
     /**

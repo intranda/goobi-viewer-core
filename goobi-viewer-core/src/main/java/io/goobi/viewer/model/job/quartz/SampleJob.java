@@ -38,7 +38,7 @@ public class SampleJob extends AbstractViewerJob implements Job, IViewerJob {
     @Override
     public void execute() {
 
-        log.info("Executing sample job");
+        log.error("Executing sample job");
 
     }
 
