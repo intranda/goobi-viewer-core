@@ -227,6 +227,10 @@ public class MessageQueueBean implements Serializable {
      */
 
     public List<ViewerMessage> getActiveQueryMesssages() {
+        return getQueryMessages(this.messageType);
+    }
+    
+    public List<ViewerMessage> getQueryMessages(String messageType) {
 
         List<ViewerMessage> answer = new ArrayList<>();
         if (!DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
