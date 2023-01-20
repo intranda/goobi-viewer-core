@@ -22,9 +22,12 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+
+import it.burning.cron.CronExpressionDescriptor;
 
 public interface IViewerJob extends Job {
 
@@ -38,5 +41,16 @@ public interface IViewerJob extends Job {
     public abstract String getJobName();
 
     public abstract void execute();
+
+    default String getCronExpression() {
+        return "";
+    }
+
+    default String getHumanReadableCronTime() {
+        if (StringUtils.isBlank(getCronExpression())) {
+            return "";
+        }
+        return CronExpressionDescriptor.getDescription(getCronExpression());
+    }
 
 }

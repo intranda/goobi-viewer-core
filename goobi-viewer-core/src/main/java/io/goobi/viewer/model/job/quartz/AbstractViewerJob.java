@@ -65,6 +65,5 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
     @Override
     public void setRunning(boolean running) {
         this.running = running;
-
     }
 }

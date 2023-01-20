@@ -103,6 +103,9 @@
                                             role="gridcell">
 
                                             <h:outputText value="#{entry.paused}" />
+ <h:outputText value="#{entry.cronExpression}" />
+
+ <h:outputText value="#{entry.humanReadableCronTime}" />
 
                                             <button
                                                 jsf:action="#{quartzBean.triggerQuartzJob}"

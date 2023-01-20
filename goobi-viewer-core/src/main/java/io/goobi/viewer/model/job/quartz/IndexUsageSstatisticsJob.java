@@ -22,23 +22,36 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 
-public class SampleJob extends AbstractViewerJob implements Job, IViewerJob {
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
 
-    private static final Logger log = LogManager.getLogger(SampleJob.class);
+public class IndexUsageSstatisticsJob extends AbstractViewerJob implements Job, IViewerJob {
+
+    private static final Logger logger = LogManager.getLogger(IndexUsageSstatisticsJob.class);
 
     @Override
     public String getJobName() {
-        return "SampleJob";
+        return "IndexUsageSstatisticsJob";
     }
 
     @Override
     public void execute() {
-
-        log.error("Executing sample job");
-
+        try {
+            new StatisticsIndexTask().startTask();
+        } catch (DAOException | IOException e) {
+            logger.error("Error in job IndexUsageSstatisticsJob: {}", e.toString());
+        }
     }
+
+    @Override
+    public String getCronExpression() {
+        return "0 45 0 * * ?";
+    }
+
 }
