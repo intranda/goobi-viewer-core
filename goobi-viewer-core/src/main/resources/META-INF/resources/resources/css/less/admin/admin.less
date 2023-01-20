@@ -1956,6 +1956,10 @@
 	&__comment_greyed_out {
 		opacity: 0.35;
 	}
+	&__msg-queue-all-jobs-wrapper {
+		display: flex;
+		gap: 15px;
+	}
 	&__msg-queue-status {
 	}
 	&__msg-queue-icon-wrapper {
@@ -2006,6 +2010,52 @@
 		font-size: 14px;
 		color: #1a321a;
 	}
+	&__msg-queue-task-details-column-heads {
+		display: grid;
+		grid-template-columns: 2fr 3fr 50px;
+		font-weight: 600;
+		gap: 0 0px;
+		padding-top: 20px;
+	}
+	&__msg-queue-task-title {
+	}
+	&__msg-queue-task-details-wrapper {
+		display: none;
+		padding-left: 10px;
+	}
+	&__msg-queue-task-details-row {
+		display: grid;
+		gap: 0 15px;
+		grid-template-columns: 2fr 3fr 50px;
+		transition: all 0.2s ease;
+		border-bottom: 1px solid #ededed;
+		word-break: break-all;
+		margin: 0 -30px;
+		padding: 5px 30px;
+		margin-right: -20px;
+		&:hover {
+			background: #f7f7f7;
+			.admin__msg-queue-task-details-delete-button {
+				opacity: 1;
+			}
+		}
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+	&__msg-queue-task-details-row-entry {
+		display: flex;
+		align-items: center;
+	}
+	&__msg-queue-task-details-delete-button {
+		color: @redBar;
+		font-size: 20px;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	&__msg-queue-task-details-all-tasks-hidden-button {
+		display: none;
+	}
 	&__msg-queue-button-play {
 		display: block;
 		&.-hidden {
@@ -2018,13 +2068,27 @@
 			display: none;
 		}
 	}
+	&__msg-queue-title-number {
+		background: #e8e8e8;
+		border-radius: 100%;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		margin-right: 10px;
+		min-width: 35px;
+		height: 35px;
+		padding: 0 3px;
+	}
+	&__msg-queue-title {
+		margin-bottom: 0;
+	}
 	&__msg-queue-button-trash {
 		
 	}
 	&__msg-queue-icon-loader {
 		background: #e2ffe2;
-		width: 32px;
-		height: 32px;
+		width: 38px;
+		height: 38px;
 		border: 3px solid @greenBar;
 		border-bottom-color: #f2f3f4;
 		border-radius: 50%;
@@ -2040,19 +2104,17 @@
 		display: flex;
 		gap: 10px;
 		align-items: center;
-		margin-bottom: 10px;
+		margin-left: 20px;
 	}
 	&__content-inner-content {
-		.admin__msg-queue-title-wrapper {
-			h2 {
-				margin-bottom: 0;
-			}
+		.admin__msg-queue-task-title {
+			margin-bottom: 0px;
 		}
 	}
 	&__msg-queue-clear-all {
 		background: rgba(244, 67, 54, 0.2);
-		width: 32px;
-		height: 32px;
+		width: 38px;
+		height: 38px;
 		border: 3px solid @redBar;
 		border-radius: 50%;
 		display: inline-block; 
