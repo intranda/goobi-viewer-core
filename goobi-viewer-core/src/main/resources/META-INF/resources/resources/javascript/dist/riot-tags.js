@@ -794,43 +794,172 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronologygraph', '<div><canvas ref="chart"></canvas></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div ref="container" class="widget-chronology-slider__item chronology-slider"><canvas ref="chart"></canvas><canvas ref="draw"></canvas></div>', '', '', function(opts) {
 
 this.on( 'mount', function() {
 
 	let chartElement = this.refs.chart;
-	console.log("render chart in ", chartElement);
+	this.yearList = Array.from(this.opts.datamap.keys()).map(y => parseInt(y));
+	this.yearValues = Array.from(this.opts.datamap.values());
+	this.startYear = parseInt(opts.startYear);
+	this.endYear = parseInt(opts.endYear);
+	this.minYear = this.yearList[0];
+	this.maxYear = this.yearList[this.yearList.length - 1];
+	this.valueInput = document.getElementById(opts.valueInput);
+	this.updateFacet = document.getElementById(opts.updateFacet);
+	this.loader = document.getElementById(opts.loader);
+	this.msg = opts.msg;
+	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
 
 	this.chartConfig = {
-			type: "bar",
+			type: "line",
 			data: {
-				labels: ['1700', '1800', '1900', '2000'],
+				labels: this.yearList,
 				datasets: [
 					{
-						label: 'Artists born',
-						data: [34, 36, 78, 8],
+						data: this.yearValues,
 						borderWidth: 1
-					},
-					{
-						label: 'Artists died',
-						data: [31, 51, 12, 21],
-						borderWidth: 2
 					}
 				]
 			},
 			options: {
+				elements: {
+					point: {
+						pointStyle: false,
+					}
+				},
+				plugins: {
+					legend: {
+				        display: false
+				    },
+				},
 				scales: {
 					y: {
-						beginAtZero: true
+						beginAtZero: true,
+					},
+					x: {
+						type: "time",
+
+						time: {
+							unit: "year",
+							tooltipFormat: "yyyy",
+							displayFormats: {
+								"year" : "yyyy"
+							},
+							parser: s => {
+								let date = new Date();
+								date.setYear(parseInt(s));
+								return date.getTime();
+							}
+						},
+					    ticks: {
+					    	maxTicksLimit: 5,
+					    	maxRotation: 0,
+					    }
 					}
 				}
 			}
 
 	}
-
+	console.log("init chart with config ", this.chartConfig);
 	this.chart = new Chart(chartElement, this.chartConfig);
+	this.initDraw();
+
+	if(this.startYear > this.yearList[0] || this.endYear < this.yearList[this.yearList.length-1]) {
+		this.drawInitialRange();
+	}
 
 })
+
+this.drawInitialRange = function() {
+	var points = this.chart.getDatasetMeta(0).data;
+	if(points && points.length){
+		let startYearIndex = this.yearList.indexOf(this.startYear);
+		let endYearIndex = this.yearList.indexOf(this.endYear);
+		let x1 = points[startYearIndex].x;
+		let x2 = points[endYearIndex].x;
+		this.drawRect(x1, x2, this.refs.draw);
+	}
+}.bind(this)
+
+this.initDraw = function() {
+	let width = this.refs.chart.offsetWidth;
+	let height = this.refs.chart.offsetHeight;
+	this.refs.draw.style.width = width + "px";
+	this.refs.draw.style.height = height + "px";
+
+	this.refs.draw.style.position = "absolute";
+	this.refs.draw.style.top = 0;
+	this.refs.container.style.position = "relative";
+
+	let drawContext = this.refs.draw.getContext("2d");
+
+	let startPoint = undefined;
+	let startYear = undefined;
+	let endYear = undefined;
+	let drawing = false;
+	this.refs.draw.addEventListener("mousedown", e => {
+		startYear = this.calculateYearFromEvent(e);
+		endYear = undefined;
+		startPoint = this.getPointFromEvent(e, this.refs.draw);
+		drawing = true;
+		drawContext.clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
+	})
+	this.refs.draw.addEventListener("mousemove", e => {
+		if(drawing) {
+			let currPoint = this.getPointFromEvent(e, this.refs.draw);
+			this.drawRect(startPoint.x, currPoint.x, this.refs.draw)
+
+		}
+	})
+	this.refs.draw.addEventListener("mouseup", e => {
+		if(drawing) {
+			endYear = this.calculateYearFromEvent(e);
+			drawing = false;
+			if(startYear && endYear) {
+				this.setRange(startYear, endYear);
+			}
+		}
+	})
+}.bind(this)
+
+this.drawRect = function(x1, x2, canvas) {
+	let scaleX = canvas.width/canvas.getBoundingClientRect().width;
+
+    let x1Scaled = x1*scaleX;
+    let x2Scaled = x2*scaleX;
+	let drawContext = canvas.getContext("2d");
+	drawContext.clearRect(0,0, canvas.width, canvas.height);
+	drawContext.beginPath();
+
+	drawContext.rect(x1Scaled, 0, x2Scaled-x1Scaled, canvas.height);
+	drawContext.stroke();
+}.bind(this)
+
+this.setRange = function(startDate, endDate) {
+
+	    $( this.loader ).addClass( 'active' );
+
+	    let value = '[' + startDate + ' TO ' + endDate + ']' ;
+	    $( this.valueInput ).val(value);
+
+	    $( this.updateFacet ).click();
+}.bind(this)
+
+this.calculateYearFromEvent = function(e) {
+	var activePoints = this.chart.getElementsAtEventForMode(e, 'nearest', { axis: "x" }, true);
+
+    if(activePoints.length > 0) {
+    	let year = this.yearList[activePoints[0].index];
+    	return year;
+    }
+}.bind(this)
+
+this.getPointFromEvent = function(e, canvas) {
+	let currX = e.clientX - canvas.getBoundingClientRect().left;
+    let currY = e.clientY - canvas.getBoundingClientRect().top;
+    return {x: currX, y: currY};
+}.bind(this)
 
 });
 riot.tag2('chronoslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {

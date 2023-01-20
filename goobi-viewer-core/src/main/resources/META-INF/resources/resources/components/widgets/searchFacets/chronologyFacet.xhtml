@@ -13,7 +13,12 @@
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-        
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+    
         <!--  WIDGET CHRONOLOGY -->
         <ui:fragment rendered="#{searchBean.facets.hasChronologyFacets}">
             <c:forEach var="field" items="#{searchBean.facets.getAvailableFacets('range').entrySet().toArray()}" varStatus="status">
@@ -38,7 +43,6 @@
                             </div>
                         </div>
                     </div>
-			
 					<div id="chronoSlider_#{status.count}" class="widget-chronology-slider__body widget__body"
 	                    	year-list="#{searchBean.facets.getValueRange(field.key)}" 
 	                    	start-year="#{searchBean.facets.getCurrentMinRangeValue(field.key)}"
@@ -57,11 +61,19 @@
 
                 </div>
 	            <script>
-		        riot.mount("#chronoSlider_#{status.count}", "chronoslider", {
-		        	msg: {
-		        		enterYear: "#{msg.enterYear}"
-		        	}
-		        })
+	            (() => {
+				let values = #{searchBean.facets.getValueRangeAsJsonMap(field.key)};
+					let valueMap = new Map(Object.entries(values));
+	
+					let graphType = "chronologygraph";
+					
+			        riot.mount("#chronoSlider_#{status.count}", graphType, {
+			        	datamap: valueMap,
+			        	msg: {
+			        		enterYear: "#{msg.enterYear}"
+			        	}
+			        })
+	            })();
 	            </script>
             </c:forEach>
         </ui:fragment>

@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -769,6 +770,14 @@ public class SearchFacets implements Serializable {
             return Collections.emptyList();
         }
         return new ArrayList<>(valueRanges.get(field).keySet());
+    }
+    
+    public String getValueRangeAsJsonMap(String field) throws PresentationException, IndexUnreachableException {
+        if (!maxValues.containsKey(field)) {
+            return "[]";
+        } else {
+            return new JSONObject(valueRanges.get(field)).toString();
+        }
     }
 
     public boolean isRangeFacetActive(String field) {
