@@ -24,7 +24,7 @@ package io.goobi.viewer.model.job.quartz;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
 
 import it.burning.cron.CronExpressionDescriptor;

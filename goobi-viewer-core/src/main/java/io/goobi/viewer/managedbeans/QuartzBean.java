@@ -11,7 +11,6 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -20,7 +19,6 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 
-import io.goobi.viewer.model.job.quartz.IViewerJob;
 import io.goobi.viewer.model.job.quartz.QuartzJobDetails;
 
 @Named
@@ -57,9 +55,6 @@ public class QuartzBean implements Serializable {
 
                 String jobGroup = jobKey.getGroup();
                 details.setJobGroup(jobGroup);
-
-                JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-                Class<IViewerJob> job = (Class<IViewerJob>) jobDetail.getJobClass();
 
                 //get job's trigger
                 List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
