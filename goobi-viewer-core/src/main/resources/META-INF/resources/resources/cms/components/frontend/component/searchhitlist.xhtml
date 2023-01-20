@@ -29,10 +29,9 @@
 					rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
-
 				<div id="templateSearchListCustom"
-					class="tpl-search-list-custom content-component__legacy-full-width">
-					<div class="tpl-search-list-custom__list">
+					class="tpl-search-list-custom content-component__legacy-full-width search-list__hits #{cc.attrs.component.getContent('recordlist').view.cssClass}">
+					<div class="tpl-search-list-custom__list search-list__hits__list">
 						<ui:repeat var="hit" value="#{cmsBean.getQueryResults()}">
 							<div class="row">
 								<div class="tpl-search-list-custom__list-element clearfix">
