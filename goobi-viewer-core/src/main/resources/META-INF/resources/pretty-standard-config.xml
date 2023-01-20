@@ -942,7 +942,7 @@
     </url-mapping>
 
     <url-mapping id="adminQuartz">
-        <pattern value="/admin/quartz/" />
+        <pattern value="/admin/jobs/" />
         <view-id value="/resources/admin/views/adminQuartz.xhtml" />
     </url-mapping>
 

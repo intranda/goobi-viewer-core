@@ -68,6 +68,8 @@
                     
                     <div class="admin__content-inner-content">
                     
+                    <div class="admin__info-text">#{msg.admin__message_queue__info_text}</div>
+                    
                     <h2><h:outputText value="#{msg.admin__message_queue__pending_tasks}" /></h2>
 
                     <!-- TODO style buttons, increase in size, add tooltip, change color of active button -->
@@ -156,7 +158,7 @@
                                             <!-- SHOW DETAILS -->
                                             <a href="#" data-js-trigger="showAllSingleTasks" class="admin__boxed-entry-actions-edit" aria-label="show all tasks"><span data-target="showOrHideTasks">#{msg.show}</span><span class="admin__msg-queue-task-details-all-tasks-hidden-button" data-target="showOrHideTasks">#{msg.hide}</span></a>
 
-                                            <!-- DELETE THIS -->
+                                            <!-- DELETE THIS --> 
                                             <button
                                                 class="admin__boxed-entry-actions-delete -redlink"
                                                 data-require-confirmation="true"
@@ -164,7 +166,7 @@
                                                 jsf:action="#{messageQueueBean.removeMessagesFromQueue}"
                                                 aria-label="#{msg.delete}: #{task.key}" >
                                                 #{msg.delete}
-                                            </button>
+                                            </button> 
 
                                            </div>
                                        </div> 
@@ -231,11 +233,16 @@
                                     <div
                                         class="col-2 d-flex"
                                         role="columnheader">
+                                        <h:outputText value="#{msg.admin__message_queue__last_update}" />
+                                    </div>
+                                    <div
+                                        class="col-1 d-flex"
+                                        role="columnheader">
                                         <h:outputText value="#{msg.admin__message_queue__status}" />
                                     </div>
 
                                     <div
-                                        class="col-2 d-flex"
+                                        class="col-1 d-flex"
                                         role="columnheader">
                                         <h:outputText value="#{msg.admin__message_queue__retries}" />
                                     </div>
@@ -273,10 +280,13 @@
                                                 </ui:repeat>
                                             </div>
                                             <div class="col-2 d-flex">
+                                                <h:outputText value="#{msg[message.lastUpdateTime]}" />
+                                            </div>
+                                            <div class="col-1 d-flex">
                                                 <h:outputText value="#{msg[message.messageStatus]}" />
                                             </div>
 
-                                            <div class="col-2 d-flex">
+                                            <div class="col-1 d-flex">
                                                 <h:outputText value="#{message.retryCount}" />
                                             </div>
                                         </div>
