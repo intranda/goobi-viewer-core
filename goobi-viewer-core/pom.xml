@@ -758,8 +758,10 @@
 				<version>3.10.1</version>
                 <configuration>
                     <release>11</release>
-					<compilerArgument>-Xlint:deprecation</compilerArgument>
-					<compilerArgument>-Xlint:unchecked</compilerArgument>
+                    <compilerArgs>
+                        <arg>-Xlint:deprecation</arg>
+					    <arg>-Xlint:unchecked</arg>
+                    </compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
