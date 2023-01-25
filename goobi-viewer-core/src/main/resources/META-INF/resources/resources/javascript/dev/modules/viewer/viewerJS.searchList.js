@@ -128,7 +128,6 @@ var viewerJS = ( function( viewer ) {
 			} else {
 				_searchListStyle = _defaults.listStyle;
 			}
-			console.log("searchListStyle = ", _searchListStyle);
             
             // load thumbnails before appying search list style
             //console.log("Load search hits with style " + _searchListStyle);

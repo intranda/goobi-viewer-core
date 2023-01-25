@@ -64,6 +64,7 @@
 					<ui:include src="/resources/includes/search/searchHitList.xhtml">
 						<ui:param name="listStyle" value="#{cc.attrs.component.getContent('recordlist').view.cssClass}"></ui:param>
 						<ui:param name="searchParam" value="#{cc.attrs.component.getContent('recordlist').search}"></ui:param>
+						<ui:param name="showSortingOptions" value="#{false}"></ui:param>
 					</ui:include>
 					
 				</div>
