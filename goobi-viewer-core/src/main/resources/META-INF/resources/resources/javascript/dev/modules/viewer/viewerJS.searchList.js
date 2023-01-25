@@ -43,6 +43,7 @@ var viewerJS = ( function( viewer ) {
         excelExportLoaderSelector: '.excel-export-loader',
         hitContentLoaderSelector: '.search-list__loader',
         hitContentSelector: '.search-list__hit-content',
+        listStyle: '',
         msg: {
             getMoreChildren: 'Mehr Treffer laden',
         }
@@ -119,10 +120,15 @@ var viewerJS = ( function( viewer ) {
             } );
                         
             // get/set list style from local storage
-            if ( sessionStorage.getItem( 'searchListStyle' ) == undefined ) {
-                sessionStorage.setItem( 'searchListStyle', 'default' );
-            }
-            _searchListStyle = sessionStorage.getItem( 'searchListStyle' );
+            if(!_defaults.listStyle) {				
+	            if ( sessionStorage.getItem( 'searchListStyle' ) == undefined ) {
+	                sessionStorage.setItem( 'searchListStyle', 'default' );
+	            }
+	            _searchListStyle = sessionStorage.getItem( 'searchListStyle' );
+			} else {
+				_searchListStyle = _defaults.listStyle;
+			}
+			console.log("searchListStyle = ", _searchListStyle);
             
             // load thumbnails before appying search list style
             //console.log("Load search hits with style " + _searchListStyle);

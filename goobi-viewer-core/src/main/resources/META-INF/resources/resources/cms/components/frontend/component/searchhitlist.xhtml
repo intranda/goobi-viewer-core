@@ -30,63 +30,12 @@
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
 				<div id="templateSearchListCustom"
-					class="tpl-search-list-custom content-component__legacy-full-width search-list__hits #{cc.attrs.component.getContent('recordlist').view.cssClass}">
-					<div class="tpl-search-list-custom__list search-list__hits__list">
-						<ui:repeat var="hit" value="#{cmsBean.getQueryResults()}">
-							<div class="row">
-								<div class="tpl-search-list-custom__list-element clearfix">
-									<div class="col-4 col-sm-2">
-										<div class="tpl-search-list-custom__list-image">
-											<img data-src="#{hit.browseElement.getThumbnailUrl(50, 150)}"
-												alt="#{hit.browseElement.label}"
-												data-viewer-thumbnail="thumbnail" />
-										</div>
-									</div>
-									<div class="col-8 col-sm-10">
-										<div class="tpl-search-list-custom__list-text">
-											<dl class="dl-horizontal">
-												<dt>#{msg.MD_TITLE}:</dt>
-												<dd>
-													<a
-														href="#{navigationHelper.applicationUrl}#{hit.browseElement.url}"
-														title="#{hit.browseElement.label}">#{hit.browseElement.label}</a>
-												</dd>
-											</dl>
-											<dl class="dl-horizontal">
-												<dt>#{msg.MD_CREATOR}:</dt>
-												<dd>
-													<ui:repeat
-														value="#{hit.browseElement.getMetadataList('MD_CREATOR')}"
-														var="metadata">
-														<ui:repeat value="#{metadata.values}" var="val">
-															<span class="tpl-search-list-custom__list-text-person">
-																<h:outputFormat value="#{msg[val.masterValue]}"
-																	escape="false">
-																	<f:param
-																		value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
-																	<f:param
-																		value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
-																	<f:param
-																		value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />
-																	<f:param
-																		value="#{val.paramValues[3] != null ? val.paramValues[3] : ''}" />
-																</h:outputFormat>
-															</span>
-														</ui:repeat>
-													</ui:repeat>
-												</dd>
-											</dl>
-										</div>
-									</div>
-								</div>
-							</div>
-						</ui:repeat>
-					</div>
-					<!-- paginator -->
-					<viewerComponent:simplePaginator
-						itemCount="#{cmsBean.getQueryResultCount()}"
-						itemActive="#{cc.attrs.component.owningPage.listPage}"
-						urlPrefix="#{cmsBean.getUrl(cc.attrs.component.owningPage)}" />
+					class="tpl-search-list-custom content-component__legacy-full-width search-list__hits">
+					<ui:include src="/resources/includes/search/searchHitList.xhtml">
+						<ui:param name="listStyle" value="#{cc.attrs.component.getContent('recordlist').view.cssClass}"></ui:param>
+						<ui:param name="searchParam" value="#{cc.attrs.component.getContent('recordlist').search}"></ui:param>
+					</ui:include>
+					
 				</div>
 
 			</div>
