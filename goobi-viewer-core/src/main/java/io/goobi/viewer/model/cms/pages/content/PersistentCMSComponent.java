@@ -99,7 +99,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
     private Map<String, String> attributes = new HashMap<>();
 
     /**
-     * JPA contrutor
+     * JPA constructor.
      */
     public PersistentCMSComponent() {
     }

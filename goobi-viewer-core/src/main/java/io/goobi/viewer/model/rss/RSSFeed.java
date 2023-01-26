@@ -692,7 +692,7 @@ public class RSSFeed {
             List<String> filterQueries = null;
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
-                searchFacets.setCurrentFacetString(facets);
+                searchFacets.setActiveFacetString(facets);
                 filterQueries = searchFacets.generateFacetFilterQueries(true);
             }
 
@@ -735,7 +735,7 @@ public class RSSFeed {
             List<String> filterQueries = null;
             if (StringUtils.isNotBlank(facets)) {
                 SearchFacets searchFacets = new SearchFacets();
-                searchFacets.setCurrentFacetString(facets);
+                searchFacets.setActiveFacetString(facets);
                 filterQueries = searchFacets.generateFacetFilterQueries(true);
             }
 

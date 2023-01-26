@@ -129,7 +129,7 @@ public class SearchHitsNotifier {
         //clone the search so any alterations are discarded later
         Search tempSearch = new Search(search);
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString(tempSearch.getFacetString());
+        facets.setActiveFacetString(tempSearch.getFacetString());
         tempSearch.execute(facets, null, 0, null);
         // TODO what if there're >100 new hits?
         if (tempSearch.getHitsCount() > tempSearch.getLastHitsCount()) {

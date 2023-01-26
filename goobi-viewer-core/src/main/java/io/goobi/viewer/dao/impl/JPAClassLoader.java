@@ -161,7 +161,7 @@ public class JPAClassLoader extends ClassLoader {
 
         // Iterate over module persistence.xml files
         for (URL url : moduleUrls) {
-            logger.trace("Processing {}", url.toString());
+            logger.trace("Processing {}", url);
             Document docModule = XmlTools.readXmlFile(url);
             // For each persistence unit in the master file check for any new classes in the module file
             for (Element eleModulePU : docModule.getRootElement().getChildren("persistence-unit", null)) {

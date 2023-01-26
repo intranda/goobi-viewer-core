@@ -2479,37 +2479,27 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the names of all configured facet fields in the order they appear in the list, no matter whether they're regular or hierarchical.
+     * <p>
+     * Returns a list containing all simple facet fields.
+     * </p>
      *
-     * @return List of regular and hierarchical fields in the order in which they appear in the config file
      * @should return correct order
+     * @return a {@link java.util.List} object.
      */
     public List<String> getAllFacetFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> facets = getLocalConfigurationsAt("search.facets");
-        if (facets == null || facets.isEmpty()) {
-            getLocalConfigurationAt("search.drillDown");
-            logger.warn("Old configuration found: search.drillDown; please update to search.facets");
-        }
-        if (facets == null || facets.isEmpty()) {
-            logger.warn("Config element not found: search.facets");
-            return Collections.emptyList();
-        }
-        List<HierarchicalConfiguration<ImmutableNode>> nodes =
-                facets.get(0).childConfigurationsAt("");
-        if (nodes.isEmpty()) {
-            return Collections.emptyList();
-        }
+        return getLocalList("search.facets.field");
+    }
 
-        List<String> ret = new ArrayList<>(nodes.size());
-        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
-            switch (node.getRootElementName()) {
-                case "field":
-                case "hierarchicalField":
-                case "geoField":
-                    ret.add(node.getString("."));
-                    break;
-                default:
-                    break;
+    /**
+     * 
+     * @return
+     */
+    public List<String> getRegularFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (StringUtils.isEmpty(type)) {
+                ret.add(field);
             }
         }
 
@@ -2518,26 +2508,42 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * Returns a list containing all simple facet fields.
+     * getHierarchicalFacetFields.
      * </p>
      *
-     * @should return all values
      * @return a {@link java.util.List} object.
+     * @should return all values
      */
-    public List<String> getFacetFields() {
-        return getLocalList("search.facets.field");
+    public List<String> getHierarchicalFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("hierarchical")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
     }
 
     /**
      * <p>
-     * getHierarchicalFacetFields.
+     * getRangeFacetFields.
      * </p>
      *
+     * @return List of facet fields to be used as range values
      * @should return all values
-     * @return a {@link java.util.List} object.
      */
-    public List<String> getHierarchicalFacetFields() {
-        return getLocalList("search.facets.hierarchicalField");
+    public List<String> getRangeFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("range")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -2545,22 +2551,39 @@ public class Configuration extends AbstractConfiguration {
      * getGeoFacetFields.
      * </p>
      *
-     * @should return all values
      * @return a {@link java.util.List} object.
+     * @should return all values
      */
-    public String getGeoFacetFields() {
-        return getLocalString("search.facets.geoField", null);
-    }
+    public List<String> getGeoFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("geo")) {
+                ret.add(field);
+            }
+        }
 
-    public String getGeoFacetFieldPredicate() {
-        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
+        return ret;
     }
 
     /**
+     * @param facetField
      * @return
+     * @should return correct value
      */
-    public boolean isShowSearchHitsInGeoFacetMap() {
-        return getLocalBoolean("search.facets.geoField[@displayResultsOnMap]", true);
+    public String getGeoFacetFieldPredicate(String facetField) {
+        return getPropertyForFacetField(facetField, "[@predicate]", "ISWITHIN");
+        
+    }
+
+    /**
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isShowSearchHitsInGeoFacetMap(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@displayResultsOnMap]", "true");
+        return Boolean.valueOf(value.trim());
     }
 
     /**
@@ -2639,6 +2662,48 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public int getGroupToLengthForFacetField(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@groupToLength]", "-1");
+        return Integer.parseInt(value);
+    }
+
+    /**
+     *
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isAlwaysApplyFacetFieldToUnfilteredHits(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@alwaysApplyToUnfilteredHits]", "false");
+        return Boolean.valueOf(value);
+    }
+
+    /**
+     *
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isFacetFieldSkipInWidget(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@skipInWidget]", "false");
+        return Boolean.valueOf(value);
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return
+     */
+    public String getFacetFieldType(String facetField) {
+        return getPropertyForFacetField(facetField, "[@type]", "");
+    }
+
+    /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
      *
      * @param facetField Facet field
@@ -2684,17 +2749,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return defaultValue;
-    }
-
-    /**
-     * <p>
-     * getRangeFacetFields.
-     * </p>
-     *
-     * @return List of facet fields to be used as range values
-     */
-    public List<String> getRangeFacetFields() {
-        return Collections.singletonList(SolrConstants.CALENDAR_YEAR);
     }
 
     /**

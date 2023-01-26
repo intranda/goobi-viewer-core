@@ -21,8 +21,6 @@
  */
 package io.goobi.viewer.model.search;
 
-import java.io.Serializable;
-
 /**
  * @author florian
  *
@@ -120,8 +118,20 @@ public interface IFacetItem {
     IFacetItem setCount(long count);
 
     /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getCount()
+     */
+    boolean isGroup();
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#setCount(boolean)
+     */
+    IFacetItem setGroup(boolean group);
+
+    /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.IFacetItem#isHierarchial()
      */
     boolean isHierarchial();
 
+    
+    
 }

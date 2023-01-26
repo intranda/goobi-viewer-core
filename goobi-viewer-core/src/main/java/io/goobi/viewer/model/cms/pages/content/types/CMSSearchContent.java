@@ -137,7 +137,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
                 }
                 if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                     return searchAction();
-                } else if (this.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getCurrentFacetString())) {
+                } else if (this.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getActiveFacetString())) {
                     String searchString = StringUtils.isNotBlank(this.search.getQueryString().replace("-", "")) ? this.search.getQueryString() : "";
                     searchBean.setExactSearchString(searchString);
                     return searchAction();

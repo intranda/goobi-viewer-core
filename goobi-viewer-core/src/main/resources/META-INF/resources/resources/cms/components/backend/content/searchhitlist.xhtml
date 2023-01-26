@@ -85,6 +85,24 @@
 				</div>
 			</div>
 		</div>
+		
+		<!-- HIT LIST VIEW -->
+		<div class="admin__content-component-input-group">
+			<div class="admin__content-component-input-label">
+				<label for="hitListView">#{msg.cms__search_hit_list__select_view}:</label>
+			</div>
+			<div class="admin__content-component-input-field">
+				<div class="custom-control custom-control--select">
+					<h:selectOneMenu id="hitListView" styleClass="form-control"
+						value="#{cc.attrs.contentItem.content.view}">
+						<f:selectItems value="#{cmsBean.possibleHitListViews}" var="hitlistview"
+							itemValue="#{hitlistview}" itemLabel="#{msg[hitlistview.label]}" />
+						<f:passThroughAttribute name="aria-label"
+							value="#{msg.cms__search_hit_list__select_view}" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+		</div>
 
 	    <!-- CONTENT TYPE URL PARAMS -->
 	    <div class="admin__content-component-input-group">

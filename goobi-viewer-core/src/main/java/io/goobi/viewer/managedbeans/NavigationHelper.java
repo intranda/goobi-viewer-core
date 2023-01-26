@@ -30,7 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,7 +40,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -469,7 +467,7 @@ public class NavigationHelper implements Serializable {
     public void setCurrentPageAdmin(String pageName) {
         setCurrentPageAdmin(pageName, Collections.emptyList());
     }
-    
+
     public void setCurrentPageAdmin(String pageName, List<List<String>> labels) {
         breadcrumbBean.resetBreadcrumbs(false);
         resetCurrentDocument();
@@ -489,19 +487,17 @@ public class NavigationHelper implements Serializable {
 
     }
 
-    
-    
     protected List<LabeledLink> createAdminBreadcrumbs(PageType pageType, List<List<String>> labels) {
-        
+
         PageType breadcrumbType = pageType;
         List<LabeledLink> links = new ArrayList<>();
         Iterator<List<String>> labelIterator = labels.iterator();
-        while(breadcrumbType != null) {
+        while (breadcrumbType != null) {
             String label;
-            if(labelIterator.hasNext()) {
+            if (labelIterator.hasNext()) {
                 List<String> labelArray = labelIterator.next();
                 String key = labelArray.get(0);
-                String[] params = labelArray.subList(1, labelArray.size()).toArray(new String[labelArray.size()-1]);
+                String[] params = labelArray.subList(1, labelArray.size()).toArray(new String[labelArray.size() - 1]);
                 label = ViewerResourceBundle.getTranslationWithParameters(key, locale, params);
             } else {
                 label = ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale);
@@ -1417,7 +1413,6 @@ public class NavigationHelper implements Serializable {
         PageType page = PageType.getByName(url);
         if (page != null && !page.equals(PageType.other)) {
             url = getUrl(page);
-        } else {
         }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         breadcrumbBean.updateBreadcrumbs(newLink);
@@ -1971,7 +1966,7 @@ public class NavigationHelper implements Serializable {
                             sb.getExactSearchString(),
                             sb.getCurrentPage(),
                             sb.getSortString(),
-                            sb.getFacets().getCurrentFacetString());
+                            sb.getFacets().getActiveFacetString());
                     try {
                         ViewerPath newPath =
                                 ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())
