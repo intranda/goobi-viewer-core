@@ -23,9 +23,19 @@ package io.goobi.viewer.controller.mq;
 
 public enum MessageStatus {
 
-    FINISH,
-    ERROR,
-    WAIT,
-    NEW;
+    FINISH("admin__tasks__status_finished"),
+    ERROR("admin__tasks__status_error"),
+    WAIT("admin__tasks__status_wait"),
+    NEW("admin__tasks__status_new");
+    
+    private final String label;
+    
+    private MessageStatus(String label) {
+        this.label = label;
+    }
+    
+    public String getLabel() {
+        return label;
+    }
 
 }
