@@ -54,13 +54,16 @@ public class ViewHistory {
 
     private static final PageType[] IGNORED_VIEWS = new PageType[] {};
 
+    private ViewHistory() {
+    }
+
     /**
      * Saves the current view information to the session map. Also saves the previous view information to the session map if it represents a different
      * view than the current view
      *
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
-    public synchronized static void setCurrentView(final ServletRequest request) {
+    public static synchronized void setCurrentView(final ServletRequest request) {
 
         try {
             if (request != null) {
@@ -82,7 +85,6 @@ public class ViewHistory {
                         setCurrentView(oCurrentPath.get(), session);
                     } else {
                         //some other url
-                        return;
                     }
                 }
             }
@@ -137,7 +139,7 @@ public class ViewHistory {
      *         stored yet
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
-    public synchronized static Optional<ViewerPath> getCurrentView(ServletRequest request) {
+    public static synchronized Optional<ViewerPath> getCurrentView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpSession session = httpRequest.getSession();
@@ -159,7 +161,7 @@ public class ViewHistory {
      *         been stored yet
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
-    public synchronized static Optional<ViewerPath> getPreviousView(ServletRequest request) {
+    public static synchronized Optional<ViewerPath> getPreviousView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpSession session = httpRequest.getSession();
@@ -180,7 +182,7 @@ public class ViewHistory {
      * @param url The url to redirect to
      * @throws java.io.IOException if any.
      */
-    public synchronized static void redirectToUrl(String url) throws IOException {
+    public static synchronized void redirectToUrl(String url) throws IOException {
 
         FacesContext.getCurrentInstance().getExternalContext().getFlash().setRedirect(true);
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
