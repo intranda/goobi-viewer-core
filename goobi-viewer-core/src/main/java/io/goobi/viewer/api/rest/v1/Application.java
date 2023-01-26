@@ -32,6 +32,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageBroker;
 import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -61,7 +62,9 @@ public class Application extends ResourceConfig {
                 apiUrl = apiUrl.replace("/rest", "/api/v1");
                 bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
                 CMSTemplateManager templateManager = applicationBean.getTemplateManager();
+                MessageBroker messageBroker = applicationBean.getMessageBroker();
                 bind(templateManager).to(CMSTemplateManager.class);
+                bind(messageBroker).to(MessageBroker.class);
             }
         };
         this.init(binder, servletConfig);

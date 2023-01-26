@@ -31,12 +31,13 @@ import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
 
 public class IndexUsageHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(IndexUsageHandler.class);
-
+    
     @Override
     public MessageStatus call(ViewerMessage message) {
         try {
@@ -50,7 +51,7 @@ public class IndexUsageHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public String getMessageHandlerName() {
-        return "INDEX_USAGE_STATISTICS";
+        return TaskType.INDEX_USAGE_STATISTICS.name();
     }
 
 }

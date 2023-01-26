@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.model.job.TaskType;
 
 public class SearchExcelExportHandler implements MessageHandler<MessageStatus> {
 
@@ -41,7 +42,7 @@ public class SearchExcelExportHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public String getMessageHandlerName() {
-        return "SEARCH_EXCEL_EXPORT";
+        return TaskType.SEARCH_EXCEL_EXPORT.name();
     }
 
 }

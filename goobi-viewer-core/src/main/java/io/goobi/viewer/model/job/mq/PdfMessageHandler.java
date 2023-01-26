@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
@@ -50,7 +51,7 @@ import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 
 public class PdfMessageHandler implements MessageHandler<MessageStatus> {
-
+    
     @Override
     public MessageStatus call(ViewerMessage message) {
 
@@ -111,7 +112,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public String getMessageHandlerName() {
-        return "pdfDownload";
+        return TaskType.DOWNLOAD_PDF.name();
     }
 
 }

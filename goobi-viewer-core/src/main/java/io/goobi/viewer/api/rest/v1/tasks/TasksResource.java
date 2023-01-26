@@ -55,13 +55,15 @@ import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.model.tasks.Task;
-import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageGenerator;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.mq.IndexUsageHandler;
+import io.goobi.viewer.model.job.mq.NotifySearchUpdateHandler;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,20 +99,10 @@ public class TasksResource {
 
             if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
                 ViewerMessage message = null;
+                message = MessageGenerator.generateSimpleMessage(desc.type.name());
                 switch (desc.type) {
-                    case NOTIFY_SEARCH_UPDATE:
-                        message = MessageGenerator.generateSimpleMessage("NOTIFY_SEARCH_UPDATE");
-                        break;
-
-                    case PURGE_EXPIRED_DOWNLOAD_TICKETS:
-                        message = MessageGenerator.generateSimpleMessage("PURGE_EXPIRED_DOWNLOAD_TICKETS");
-                        break;
-                    case SEARCH_EXCEL_EXPORT:
-                        message = MessageGenerator.generateSimpleMessage("SEARCH_EXCEL_EXPORT");
-                        break;
+                    
                     case UPDATE_SITEMAP:
-                        message = MessageGenerator.generateSimpleMessage("UPDATE_SITEMAP");
-
                         SitemapRequestParameters params = Optional.ofNullable(desc)
                                 .filter(SitemapRequestParameters.class::isInstance)
                                 .map(SitemapRequestParameters.class::cast)
@@ -123,10 +115,9 @@ public class TasksResource {
                         }
                         message.getProperties().put("viewerRootUrl", viewerRootUrl);
                         message.getProperties().put("baseurl", outputPath);
-
                         break;
+                        
                     case UPDATE_DATA_REPOSITORY_NAMES:
-
                         ToolsRequestParameters tools = Optional.ofNullable(desc)
                                 .filter(ToolsRequestParameters.class::isInstance)
                                 .map(ToolsRequestParameters.class::cast)
@@ -134,21 +125,12 @@ public class TasksResource {
                         if (tools == null) {
                             return null;
                         }
-
-                        message = MessageGenerator.generateSimpleMessage("UPDATE_DATA_REPOSITORY_NAMES");
                         String identifier = tools.getPi();
                         String dataRepositoryName = tools.getDataRepositoryName();
-
                         message.getProperties().put("identifier", identifier);
                         message.getProperties().put("dataRepositoryName", dataRepositoryName);
+                        break;
 
-                        break;
-                    case UPDATE_UPLOAD_JOBS:
-                        message = MessageGenerator.generateSimpleMessage("UPDATE_UPLOAD_JOBS");
-                        break;
-                    case INDEX_USAGE_STATISTICS:
-                        message = MessageGenerator.generateSimpleMessage("INDEX_USAGE_STATISTICS");
-                        break;
                     default:
                         // unknown type
                         return null;

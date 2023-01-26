@@ -26,6 +26,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.model.job.TaskType;
 
 public class UpdateDataRepositoryHandler implements MessageHandler<MessageStatus> {
 
@@ -43,7 +44,7 @@ public class UpdateDataRepositoryHandler implements MessageHandler<MessageStatus
 
     @Override
     public String getMessageHandlerName() {
-        return "UPDATE_DATA_REPOSITORY_NAMES";
+        return TaskType.UPDATE_DATA_REPOSITORY_NAMES.name();
     }
 
 }

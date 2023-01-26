@@ -30,6 +30,7 @@ import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.security.DownloadTicket;
 
 public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatus> {
@@ -58,7 +59,7 @@ public class PurgeExpiredDownloadsHandler implements MessageHandler<MessageStatu
 
     @Override
     public String getMessageHandlerName() {
-        return "PURGE_EXPIRED_DOWNLOAD_TICKETS";
+        return TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS.name();
     }
 
 }
