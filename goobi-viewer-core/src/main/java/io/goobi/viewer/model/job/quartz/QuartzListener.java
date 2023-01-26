@@ -75,12 +75,12 @@ public class QuartzListener implements ServletContextListener {
         Scheduler sched = schedFact.getScheduler();
         sched.start();
 
-//        initializeMinutelyJob(new SampleJob(), sched, 1);
+        initializeMinutelyJob(new SampleJob(), sched, 1);
 
-        initializeCronJob(new NotifySearchUpdateJob(), sched);
-        initializeCronJob(new IndexUsageSstatisticsJob(), sched);
-        initializeCronJob(new PurgeExpiredDownloadTicketsJob(), sched);
-        initializeCronJob(new UpdateUploadJobsJob(), sched);
+//        initializeCronJob(new NotifySearchUpdateJob(), sched);
+//        initializeCronJob(new IndexUsageSstatisticsJob(), sched);
+//        initializeCronJob(new PurgeExpiredDownloadTicketsJob(), sched);
+//        initializeCronJob(new UpdateUploadJobsJob(), sched);
     }
 
     /**

@@ -51,6 +51,8 @@ import jakarta.mail.MessagingException;
 
 public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
+    public static final String NAME = "pdfDownload";
+    
     @Override
     public MessageStatus call(ViewerMessage message) {
 
@@ -111,7 +113,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public String getMessageHandlerName() {
-        return "pdfDownload";
+        return NAME;
     }
 
 }

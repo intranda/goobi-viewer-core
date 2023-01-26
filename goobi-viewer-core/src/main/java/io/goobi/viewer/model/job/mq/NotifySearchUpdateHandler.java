@@ -38,6 +38,8 @@ public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> 
 
     private static final Logger logger = LogManager.getLogger(NotifySearchUpdateHandler.class);
 
+    public static final String NAME = "NOTIFY_SEARCH_UPDATE";
+    
     @Override
     public MessageStatus call(ViewerMessage ticket) {
         try {
@@ -52,7 +54,7 @@ public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> 
 
     @Override
     public String getMessageHandlerName() {
-        return "NOTIFY_SEARCH_UPDATE";
+        return NAME;
     }
 
 }

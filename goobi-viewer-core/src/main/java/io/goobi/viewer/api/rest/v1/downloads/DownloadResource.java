@@ -61,6 +61,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.mq.MessageGenerator;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
@@ -71,6 +72,7 @@ import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.mq.PdfMessageHandler;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -168,7 +170,7 @@ public class DownloadResource {
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
-        ViewerMessage message = MessageGenerator.generateSimpleMessage("pdfDownload");
+        ViewerMessage message = MessageGenerator.generateSimpleMessage(PdfMessageHandler.NAME);
         message.setPi(pi);
         // create new downloadjob
 
@@ -187,7 +189,7 @@ public class DownloadResource {
         message.getProperties().put("logId", logId);
 
         try {
-            MessageGenerator.submitInternalMessage(message, "viewer", "pdfDownload", pi);
+            MessageGenerator.submitInternalMessage(message, "viewer", PdfMessageHandler.NAME, pi);
         } catch (JMSException | JsonProcessingException e) {
             // mq is not reachable
             logger.error(e);

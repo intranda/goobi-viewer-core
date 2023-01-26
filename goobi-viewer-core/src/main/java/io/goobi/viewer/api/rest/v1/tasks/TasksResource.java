@@ -62,6 +62,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageGenerator;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.model.job.mq.IndexUsageHandler;
+import io.goobi.viewer.model.job.mq.NotifySearchUpdateHandler;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -99,7 +101,7 @@ public class TasksResource {
                 ViewerMessage message = null;
                 switch (desc.type) {
                     case NOTIFY_SEARCH_UPDATE:
-                        message = MessageGenerator.generateSimpleMessage("NOTIFY_SEARCH_UPDATE");
+                        message = MessageGenerator.generateSimpleMessage(NotifySearchUpdateHandler.NAME);
                         break;
 
                     case PURGE_EXPIRED_DOWNLOAD_TICKETS:
@@ -147,7 +149,7 @@ public class TasksResource {
                         message = MessageGenerator.generateSimpleMessage("UPDATE_UPLOAD_JOBS");
                         break;
                     case INDEX_USAGE_STATISTICS:
-                        message = MessageGenerator.generateSimpleMessage("INDEX_USAGE_STATISTICS");
+                        message = MessageGenerator.generateSimpleMessage(IndexUsageHandler.NAME);
                         break;
                     default:
                         // unknown type
