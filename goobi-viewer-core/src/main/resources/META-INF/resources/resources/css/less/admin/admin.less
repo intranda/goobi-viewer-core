@@ -1956,13 +1956,13 @@
 	&__comment_greyed_out {
 		opacity: 0.35;
 	}
-	&__msg-queue-all-jobs-wrapper {
+	&__tasks-all-jobs-wrapper {
 		display: flex;
 		gap: 15px;
 	}
-	&__msg-queue-status {
+	&__tasks-status {
 	}
-	&__msg-queue-icon-wrapper {
+	&__tasks-icon-wrapper {
 		position: relative;
 		display: flex;
 		cursor: pointer;
@@ -1978,31 +1978,31 @@
 			}
 		}
 		&.-paused {
-				.admin__msg-queue-button-pause {
+				.admin__tasks-button-pause {
 					display: none;
 				}
-				.admin__msg-queue-button-play {
+				.admin__tasks-button-play {
 					display: block;
 				}	
-			.admin__msg-queue-icon-loader {
+			.admin__tasks-icon-loader {
 				background: rgba(255, 111, 0, 0.2);
 				animation-play-state: paused;
 				border: 3px solid #ff6f00;
 			}
 		}
 		&.-stoppingStatus {
-			.admin__msg-queue-icon-loader {
+			.admin__tasks-icon-loader {
 				background: #e2ffe2;
 				border: 3px solid @greenBar;
 				border-bottom-color: #f2f3f4;
 				opacity: 0.8;
 			}
-			.admin__msg-queue-icon {
+			.admin__tasks-icon {
 				opacity: 0.8;
 			}
 		}
 	}
-	&__msg-queue-icon {
+	&__tasks-icon {
 		position: absolute;
 		top: 50%;
 		right: 50%;
@@ -2010,20 +2010,20 @@
 		font-size: 14px;
 		color: #1a321a;
 	}
-	&__msg-queue-task-details-column-heads {
+	&__tasks-task-details-column-heads {
 		display: grid;
 		grid-template-columns: 2fr 3fr 50px;
 		font-weight: 600;
 		gap: 0 0px;
 		padding-top: 20px;
 	}
-	&__msg-queue-task-title {
+	&__tasks-task-title {
 	}
-	&__msg-queue-task-details-wrapper {
+	&__tasks-task-details-wrapper {
 		display: none;
 		padding-left: 10px;
 	}
-	&__msg-queue-task-details-row {
+	&__tasks-task-details-row {
 		display: grid;
 		gap: 0 15px;
 		grid-template-columns: 2fr 3fr 50px;
@@ -2035,7 +2035,7 @@
 		margin-right: -20px;
 		&:hover {
 			background: #f7f7f7;
-			.admin__msg-queue-task-details-delete-button {
+			.admin__tasks-task-details-delete-button {
 				opacity: 1;
 			}
 		}
@@ -2043,32 +2043,32 @@
 			border-bottom: none;
 		}
 	}
-	&__msg-queue-task-details-row-entry {
+	&__tasks-task-details-row-entry {
 		display: flex;
 		align-items: center;
 	}
-	&__msg-queue-task-details-delete-button {
+	&__tasks-task-details-delete-button {
 		color: @redBar;
 		font-size: 20px;
 		opacity: 0;
 		transition: opacity 0.2s ease;
 	}
-	&__msg-queue-task-details-all-tasks-hidden-button {
+	&__tasks-task-details-all-tasks-hidden-button {
 		display: none;
 	}
-	&__msg-queue-button-play {
+	&__tasks-button-play {
 		display: block;
 		&.-hidden {
 			display: none;
 		}
 	}
-	&__msg-queue-button-pause {
+	&__tasks-button-pause {
 		display: block;
 		&.-hidden {
 			display: none;
 		}
 	}
-	&__msg-queue-title-number {
+	&__tasks-title-number {
 		background: #e8e8e8;
 		border-radius: 100%;
 		display: inline-flex;
@@ -2079,13 +2079,13 @@
 		height: 35px;
 		padding: 0 3px;
 	}
-	&__msg-queue-title {
+	&__tasks-title {
 		margin-bottom: 0;
 	}
-	&__msg-queue-button-trash {
+	&__tasks-button-trash {
 		
 	}
-	&__msg-queue-icon-loader {
+	&__tasks-icon-loader {
 		background: #e2ffe2;
 		width: 38px;
 		height: 38px;
@@ -2100,18 +2100,18 @@
 	[data-target="resumeButton"], [data-target="pauseButton"], [data-target="clearButton"] {
 		display: none;
 	}
-	&__msg-queue-title-wrapper {
+	&__tasks-title-wrapper {
 		display: flex;
 		gap: 10px;
 		align-items: center;
 		margin-left: 20px;
 	}
 	&__content-inner-content {
-		.admin__msg-queue-task-title {
+		.admin__tasks-task-title {
 			margin-bottom: 0px;
 		}
 	}
-	&__msg-queue-clear-all {
+	&__tasks-clear-all {
 		background: rgba(244, 67, 54, 0.2);
 		width: 38px;
 		height: 38px;
@@ -2121,7 +2121,7 @@
 		position: relative;
 		box-sizing: border-box;
 	}
-	&__msg-queue-single-job-wrapper {
+	&__tasks-single-job-wrapper {
 		
 	}
 	 

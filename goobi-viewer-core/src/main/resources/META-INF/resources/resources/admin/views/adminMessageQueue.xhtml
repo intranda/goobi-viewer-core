@@ -24,39 +24,39 @@
                     prependId="false">
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h1 class="admin__title">#{msg.admin__message_queue__title}</h1>
-		                    <div class="admin__msg-queue-title-wrapper">
+                        <h1 class="admin__title">#{msg.admin__tasks__title}</h1>
+		                    <div class="admin__tasks-title-wrapper">
 			                    
-			                    <div class="admin__msg-queue-status">
-		<!-- 							<div class="admin__msg-queue-icon-text">Status: #{messageQueueBean.paused ? 'stopped' : 'running'}</div> -->
+			                    <div class="admin__tasks-status">
+		<!-- 							<div class="admin__tasks-icon-text">Status: #{messageQueueBean.paused ? 'stopped' : 'running'}</div> -->
 									
-									<div class="admin__msg-queue-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}" 
+									<div class="admin__tasks-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}" 
 										data-js-trigger="#{messageQueueBean.paused ? 'resumeButton' : 'pauseButton'}"
-										title="#{msg.admin__message_queue__resume_button_tooltip}"
+										title="#{msg.admin__tasks__resume_button_tooltip}"
 										data-toggle="tooltip"
 										data-placement="top"
 										data-trigger="hover">
-									<div class="admin__msg-queue-icon-loader"></div>
-										<div class="admin__msg-queue-icon">
-											<div class="admin__msg-queue-button-pause #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-pause"></i></div>
-				                        	<div class="admin__msg-queue-button-play #{messageQueueBean.paused ? '-active' : '-hidden'}"><i class="fa fa-play"></i></div>
+									<div class="admin__tasks-icon-loader"></div>
+										<div class="admin__tasks-icon">
+											<div class="admin__tasks-button-pause #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-pause"></i></div>
+				                        	<div class="admin__tasks-button-play #{messageQueueBean.paused ? '-active' : '-hidden'}"><i class="fa fa-play"></i></div>
 										</div>
 									</div>
 								</div>
 								
-								<a class="admin__msg-queue-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}"
-								title="#{msg.admin__message_queue__clear_all_button_tooltip}"
+								<a class="admin__tasks-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}"
+								title="#{msg.admin__tasks__clear_all_button_tooltip}"
 								data-toggle="tooltip"
 								data-placement="top"
 								data-trigger="hover"
 		                        jsf:action="#{messageQueueBean.clearQueue}"
 		                        jsf:id="clearButton"
 		                        data-require-confirmation="true"
-		                        data-confirmation-text="#{msg.admin__message_queue__clear_all_button_confirmation}"
-		                        aria-label="#{msg.admin__message_queue__clear_all_button_confirmation}">
-								<div class="admin__msg-queue-clear-all"></div>
-									<div class="admin__msg-queue-icon">
-										<div class="admin__msg-queue-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-times"></i></div>
+		                        data-confirmation-text="#{msg.admin__tasks__clear_all_button_confirmation}"
+		                        aria-label="#{msg.admin__tasks__clear_all_button_confirmation}">
+								<div class="admin__tasks-clear-all"></div>
+									<div class="admin__tasks-icon">
+										<div class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-times"></i></div>
 									</div>
 								</a>
 		
@@ -68,9 +68,9 @@
                     
                     <div class="admin__content-inner-content">
                     
-                    <div class="admin__info-text">#{msg.admin__message_queue__info_text}</div>
+                    <div class="admin__info-text">#{msg.admin__tasks__info_text}</div>
                     
-                    <h2><h:outputText value="#{msg.admin__message_queue__pending_tasks}" /></h2>
+                    <h2><h:outputText value="#{msg.admin__tasks__pending_tasks}" /></h2>
 
                     <!-- TODO style buttons, increase in size, add tooltip, change color of active button -->
                     <button
@@ -90,7 +90,7 @@
                     </button>
 
                     <ui:fragment rendered="#{!messageQueueBean.messageBrokerStart}">
-                        <h:outputText value="#{msgs.admin__message_queue__queues_switched_off}" />
+                        <h:outputText value="#{msgs.admin__tasks__queues_switched_off}" />
                     </ui:fragment>
 
 
@@ -104,9 +104,9 @@
 
 
 
-								<h2 class="admin__msg-queue-task-title">
-									<span class="admin__msg-queue-title-number" 
-										title="#{msg.admin__message_queue__task_number_of_single_tasks}"
+								<h2 class="admin__tasks-task-title">
+									<span class="admin__tasks-title-number" 
+										title="#{msg.admin__tasks__task_number_of_single_tasks}"
 										data-toggle="tooltip"
 										data-placement="top"
 										data-trigger="hover">
@@ -114,9 +114,9 @@
 									</span> <h:outputText value="#{msg[task.key]}" />
 								</h2>
                                     
-                                    <div class="admin__msg-queue-task-details-wrapper" data-target="showAllSingleTasks">
+                                    <div class="admin__tasks-task-details-wrapper" data-target="showAllSingleTasks">
 
-                                 		<div class="admin__msg-queue-task-details-column-heads">
+                                 		<div class="admin__tasks-task-details-column-heads">
                                  			<div>Identifier</div>
                                  			<div>Properties</div>
                                  		</div>
@@ -125,12 +125,12 @@
                                         var="msgqueueticket"
                                         value="#{messageQueueBean.getQueryMessages(task.key)}">
 
-                                        <div class="admin__msg-queue-task-details-row">
+                                        <div class="admin__tasks-task-details-row">
 
-                                            <div class="admin__msg-queue-task-details-row-entry">
+                                            <div class="admin__tasks-task-details-row-entry">
                                                 <h:outputText value="#{msgqueueticket.pi}" />
                                             </div>
-                                            <div class="admin__msg-queue-task-details-row-entry">
+                                            <div class="admin__tasks-task-details-row-entry">
                                                 <ui:repeat
                                                     var="prop"
                                                     value="#{msgqueueticket.properties.keySet()}">
@@ -138,10 +138,10 @@
                                                     <br />
                                                 </ui:repeat>
                                             </div>
-                                            <div class="admin__msg-queue-task-details-row-entry">
+                                            <div class="admin__tasks-task-details-row-entry">
                                                 <button
                                                     jsf:action="#{messageQueueBean.deleteMessage(msgqueueticket)}"
-                                                    class="btn admin__msg-queue-task-details-delete-button">
+                                                    class="btn admin__tasks-task-details-delete-button">
                                                     <i class="fa fa-times" />
                                                 </button>
                                             </div>
@@ -156,13 +156,13 @@
                                        <div class="row admin__boxed-entry-actions">
                                            <div class="col-3 d-flex">
                                             <!-- SHOW DETAILS -->
-                                            <a href="#" data-js-trigger="showAllSingleTasks" class="admin__boxed-entry-actions-edit" aria-label="show all tasks"><span data-target="showOrHideTasks">#{msg.show}</span><span class="admin__msg-queue-task-details-all-tasks-hidden-button" data-target="showOrHideTasks">#{msg.hide}</span></a>
+                                            <a href="#" data-js-trigger="showAllSingleTasks" class="admin__boxed-entry-actions-edit" aria-label="show all tasks"><span data-target="showOrHideTasks">#{msg.show}</span><span class="admin__tasks-task-details-all-tasks-hidden-button" data-target="showOrHideTasks">#{msg.hide}</span></a>
 
                                             <!-- DELETE THIS --> 
                                             <button
                                                 class="admin__boxed-entry-actions-delete -redlink"
                                                 data-require-confirmation="true"
-                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__message_queue__delete_message_type_confirmation, task.key)}"
+                                                data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__tasks__delete_message_type_confirmation, task.key)}"
                                                 jsf:action="#{messageQueueBean.removeMessagesFromQueue}"
                                                 aria-label="#{msg.delete}: #{task.key}" >
                                                 #{msg.delete}
@@ -181,7 +181,7 @@
                             layout="block"
                             styleClass="message-history">
 
-                            <h2><h:outputText value="#{msg.admin__message_queue__history}" /></h2>
+                            <h2><h:outputText value="#{msg.admin__tasks__history}" /></h2>
                             <div class="admin__table-tools flex-wrap">
                                 <!-- PAGINATOR -->
                                 <div class="admin__table-paginator">
@@ -213,38 +213,38 @@
                                     <div
                                         class="col-2 d-flex -sorting-arrow-trigger"
                                         role="columnheader">
-                                        <h:outputText value="#{msg.admin__message_queue__message_id}" />
+                                        <h:outputText value="#{msg.admin__tasks__message_id}" />
                                     </div>
                                     <div
                                         class="col-2 d-flex -sorting-arrow-trigger"
                                         role="columnheader">
-                                        <h:outputText value="#{msg.admin__message_queue__message_type}" />
+                                        <h:outputText value="#{msg.admin__tasks__message_type}" />
                                     </div>
                                     <div
                                         class="col-2 d-flex -sorting-arrow-trigger"
                                         role="columnheader">
-                                        <h:outputText value="#{msg.admin__message_queue__pi}" />
+                                        <h:outputText value="#{msg.admin__tasks__pi}" />
                                     </div>
                                     <div
                                         class="col-2 d-flex -sorting-arrow-trigger"
                                         role="columnheader">
-                                        <h:outputText value="#{msg.admin__message_queue__properties}" />
+                                        <h:outputText value="#{msg.admin__tasks__properties}" />
                                     </div>
                                     <div
                                         class="col-2 d-flex"
                                         role="columnheader">
-                                        <h:outputText value="#{msg.admin__message_queue__last_update}" />
+                                        <h:outputText value="#{msg.admin__tasks__last_update}" />
                                     </div>
                                     <div
                                         class="col-1 d-flex"
                                         role="columnheader">
-                                        <h:outputText value="#{msg.admin__message_queue__status}" />
+                                        <h:outputText value="#{msg.admin__tasks__status}" />
                                     </div>
 
                                     <div
                                         class="col-1 d-flex"
                                         role="columnheader">
-                                        <h:outputText value="#{msg.admin__message_queue__retries}" />
+                                        <h:outputText value="#{msg.admin__tasks__retries}" />
                                     </div>
                                 </div>
 
@@ -319,16 +319,16 @@
         </div>
 		<script>
 		$('[data-js-trigger="resumeButton"]').on('click', function() {
-			$('.admin__msg-queue-icon-wrapper').toggleClass('-paused');
+			$('.admin__tasks-icon-wrapper').toggleClass('-paused');
 		    $('[ data-target="resumeButton"]').click();
-		    $('.admin__msg-queue-button-pause, .admin__msg-queue-button-play').toggleClass('-hidden');
+		    $('.admin__tasks-button-pause, .admin__tasks-button-play').toggleClass('-hidden');
 		});
 		
 		$('[data-js-trigger="pauseButton"]').on('click', function() {
-			$('.admin__msg-queue-icon-wrapper').toggleClass('-paused');
-			$('.admin__msg-queue-icon-wrapper').addClass('-stoppingStatus');
+			$('.admin__tasks-icon-wrapper').toggleClass('-paused');
+			$('.admin__tasks-icon-wrapper').addClass('-stoppingStatus');
 		    $('[ data-target="pauseButton"]').click();
-		    $('.admin__msg-queue-button-pause, .admin__msg-queue-button-play').toggleClass('-hidden');
+		    $('.admin__tasks-button-pause, .admin__tasks-button-play').toggleClass('-hidden');
 		});
 		
 		$('[data-js-trigger="clearAllButton"]').on('click', function() {

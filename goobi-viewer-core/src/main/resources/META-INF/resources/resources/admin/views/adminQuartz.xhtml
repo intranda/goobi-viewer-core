@@ -26,38 +26,38 @@
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.admin__quartz__title}</h1>
                         
-		                    <div class="admin__msg-queue-title-wrapper">
+		                    <div class="admin__tasks-title-wrapper">
 			                    
-			                    <div class="admin__msg-queue-status">
-		<!-- 							<div class="admin__msg-queue-icon-text">Status: #{messageQueueBean.paused ? 'stopped' : 'running'}</div> -->
+			                    <div class="admin__tasks-status">
+		<!-- 							<div class="admin__tasks-icon-text">Status: #{messageQueueBean.paused ? 'stopped' : 'running'}</div> -->
 									
-									<div class="admin__msg-queue-icon-wrapper #{quartzBean.paused ? '-paused' : ''}" 
+									<div class="admin__tasks-icon-wrapper #{quartzBean.paused ? '-paused' : ''}" 
 										data-js-trigger="#{quartzBean.paused ? 'resumeButton' : 'pauseButton'}"
-										title="#{msg.admin__message_queue__resume_button_tooltip}"
+										title="#{msg.admin__tasks__resume_button_tooltip}"
 										data-toggle="tooltip"
 										data-placement="top"
 										data-trigger="hover">
-									<div class="admin__msg-queue-icon-loader"></div>
-										<div class="admin__msg-queue-icon">
-											<div class="admin__msg-queue-button-pause #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-pause"></i></div>
-				                        	<div class="admin__msg-queue-button-play #{messageQueueBean.paused ? '-active' : '-hidden'}"><i class="fa fa-play"></i></div>
+									<div class="admin__tasks-icon-loader"></div>
+										<div class="admin__tasks-icon">
+											<div class="admin__tasks-button-pause #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-pause"></i></div>
+				                        	<div class="admin__tasks-button-play #{messageQueueBean.paused ? '-active' : '-hidden'}"><i class="fa fa-play"></i></div>
 										</div>
 									</div>
 								</div>
 								
-<!-- 								<a class="admin__msg-queue-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}" -->
-<!-- 								title="#{msg.admin__message_queue__clear_all_button_tooltip}"  -->
+<!-- 								<a class="admin__tasks-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}" -->
+<!-- 								title="#{msg.admin__tasks__clear_all_button_tooltip}"  -->
 <!-- 								data-toggle="tooltip" -->
 <!-- 								data-placement="top" -->
 <!-- 								data-trigger="hover" -->
 <!-- 		                        jsf:action="#{messageQueueBean.clearQueue}" -->
 <!-- 		                        jsf:id="clearButton" -->
 <!-- 		                        data-require-confirmation="true" -->
-<!-- 		                        data-confirmation-text="#{msg.admin__message_queue__clear_all_button_confirmation}" -->
-<!-- 		                        aria-label="#{msg.admin__message_queue__clear_all_button_confirmation}"> -->
-<!-- 								<div class="admin__msg-queue-clear-all"></div> -->
-<!-- 									<div class="admin__msg-queue-icon"> -->
-<!-- 										<div class="admin__msg-queue-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-times"></i></div> -->
+<!-- 		                        data-confirmation-text="#{msg.admin__tasks__clear_all_button_confirmation}" -->
+<!-- 		                        aria-label="#{msg.admin__tasks__clear_all_button_confirmation}"> -->
+<!-- 								<div class="admin__tasks-clear-all"></div> -->
+<!-- 									<div class="admin__tasks-icon"> -->
+<!-- 										<div class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}"><i class="fa fa-times"></i></div> -->
 <!-- 									</div> -->
 <!-- 								</a> -->
 		
@@ -197,16 +197,16 @@
         
         <script>
 			$('[data-js-trigger="resumeButton"]').on('click', function() {
-				$('.admin__msg-queue-icon-wrapper').toggleClass('-paused');
+				$('.admin__tasks-icon-wrapper').toggleClass('-paused');
 			    $('[ data-target="resumeButton"]').click();
-			    $('.admin__msg-queue-button-pause, .admin__msg-queue-button-play').toggleClass('-hidden');
+			    $('.admin__tasks-button-pause, .admin__tasks-button-play').toggleClass('-hidden');
 			});
 			
 			$('[data-js-trigger="pauseButton"]').on('click', function() {
-				$('.admin__msg-queue-icon-wrapper').toggleClass('-paused');
-				$('.admin__msg-queue-icon-wrapper').addClass('-stoppingStatus');
+				$('.admin__tasks-icon-wrapper').toggleClass('-paused');
+				$('.admin__tasks-icon-wrapper').addClass('-stoppingStatus');
 			    $('[ data-target="pauseButton"]').click();
-			    $('.admin__msg-queue-button-pause, .admin__msg-queue-button-play').toggleClass('-hidden');
+			    $('.admin__tasks-button-pause, .admin__tasks-button-play').toggleClass('-hidden');
 			});
 		</script>
 
