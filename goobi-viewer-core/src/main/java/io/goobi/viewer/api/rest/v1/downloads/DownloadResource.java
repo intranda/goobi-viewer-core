@@ -69,6 +69,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
@@ -170,7 +171,7 @@ public class DownloadResource {
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
-        ViewerMessage message = MessageGenerator.generateSimpleMessage(PdfMessageHandler.NAME);
+        ViewerMessage message = MessageGenerator.generateSimpleMessage(TaskType.DOWNLOAD_PDF.name());
         message.setPi(pi);
         // create new downloadjob
 
@@ -189,7 +190,7 @@ public class DownloadResource {
         message.getProperties().put("logId", logId);
 
         try {
-            MessageGenerator.submitInternalMessage(message, "viewer", PdfMessageHandler.NAME, pi);
+            MessageGenerator.submitInternalMessage(message, "viewer", TaskType.DOWNLOAD_PDF.name(), pi);
         } catch (JMSException | JsonProcessingException e) {
             // mq is not reachable
             logger.error(e);

@@ -33,6 +33,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.upload.UploadJob;
 
 public class UpdateUploadJobsHandler implements MessageHandler<MessageStatus> {
@@ -61,7 +62,7 @@ public class UpdateUploadJobsHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public String getMessageHandlerName() {
-        return "UPDATE_UPLOAD_JOBS";
+        return TaskType.UPDATE_UPLOAD_JOBS.name();
     }
 
 }

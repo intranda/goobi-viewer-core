@@ -32,13 +32,13 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.search.SearchHitsNotifier;
 
 public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(NotifySearchUpdateHandler.class);
 
-    public static final String NAME = "NOTIFY_SEARCH_UPDATE";
     
     @Override
     public MessageStatus call(ViewerMessage ticket) {
@@ -54,7 +54,7 @@ public class NotifySearchUpdateHandler implements MessageHandler<MessageStatus> 
 
     @Override
     public String getMessageHandlerName() {
-        return NAME;
+        return TaskType.NOTIFY_SEARCH_UPDATE.name();
     }
 
 }

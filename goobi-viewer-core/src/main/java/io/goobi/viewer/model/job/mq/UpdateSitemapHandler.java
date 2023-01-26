@@ -31,6 +31,7 @@ import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 
 public class UpdateSitemapHandler implements MessageHandler<MessageStatus> {
@@ -53,7 +54,7 @@ public class UpdateSitemapHandler implements MessageHandler<MessageStatus> {
 
     @Override
     public String getMessageHandlerName() {
-        return "UPDATE_SITEMAP";
+        return TaskType.UPDATE_SITEMAP.name();
     }
 
 }
