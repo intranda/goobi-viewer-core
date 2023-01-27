@@ -35,6 +35,7 @@ import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -56,6 +57,8 @@ import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.omnifaces.cdi.Push;
+import org.omnifaces.cdi.PushContext;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,6 +89,10 @@ public class MessageQueueBean implements Serializable {
 
     private boolean paused;
 
+    @Inject
+    @Push
+    PushContext messageQueueState;
+    
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
     public MessageQueueBean() {
@@ -364,6 +371,10 @@ public class MessageQueueBean implements Serializable {
 
     public TableDataProvider<ViewerMessage> getLazyModelViewerHistory() {
         return lazyModelViewerHistory;
+    }
+    
+    public void updateMessageQueueState() {
+        messageQueueState.send("update");
     }
 
 }

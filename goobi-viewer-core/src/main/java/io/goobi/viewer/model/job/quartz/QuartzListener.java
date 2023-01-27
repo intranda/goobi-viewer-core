@@ -111,7 +111,6 @@ public class QuartzListener implements ServletContextListener {
             for (RecurringTaskTrigger trigger : triggers) {
                 HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression() ,messageBroker);
                 
-                
                 JobDetail jobDetail = initializeCronJob(job, sched);
                 Map<String, Object> params = getParams(job.getTaskType(), true, servletContext);
                 sched.getContext().put(jobDetail.getKey().getName(), params);

@@ -46,6 +46,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.MessageQueueBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 public class DefaultQueueListener {
 
@@ -97,7 +99,10 @@ public class DefaultQueueListener {
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());
                             ViewerMessage ticket = optTicket.get();
-
+                            MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
+                            if(mqBean != null) {
+                                mqBean.updateMessageQueueState();
+                            }
                             try {
                                 ViewerMessage retry = DataManager.getInstance().getDao().getViewerMessageByMessageID(message.getJMSMessageID());
                                 if (retry != null) {
@@ -122,6 +127,10 @@ public class DefaultQueueListener {
                             } catch (Throwable t) {
                                 log.error("Error handling ticket " + message.getJMSMessageID() + ": ", t);
                                 sess.recover();
+                            } finally {
+                                if(mqBean != null) {
+                                    mqBean.updateMessageQueueState();
+                                }
                             }
                         }
                     } catch (JMSException | JsonProcessingException e) {
