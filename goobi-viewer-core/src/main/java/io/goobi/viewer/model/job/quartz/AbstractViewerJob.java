@@ -22,11 +22,16 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
+
+import io.goobi.viewer.controller.mq.MessageBroker;
 
 public abstract class AbstractViewerJob implements Job, IViewerJob {
     private static boolean running = false;
@@ -48,10 +53,21 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
         if (!running) {
             log.trace("Start scheduled Job: " + getJobName());
             if (!running) {
-                log.trace("start history updating for all processes");
                 setRunning(true);
-                execute();
-                setRunning(false);
+                try {
+                    log.trace("start history updating for all processes");
+                    setRunning(true);
+                    MessageBroker broker = (MessageBroker) context.getScheduler().getContext().get("messageBroker");
+                    String keyName = context.getJobDetail().getKey().getName();
+
+                    Map<String, Object> params = (Map<String, Object>) context.getScheduler().getContext().get(keyName);
+                    execute(params, broker);
+                    setRunning(false);
+                } catch (SchedulerException e) {
+                    log.error(e);
+                } finally {
+                    setRunning(false);
+                }
             }
             log.trace("End scheduled Job: " + getJobName());
         }

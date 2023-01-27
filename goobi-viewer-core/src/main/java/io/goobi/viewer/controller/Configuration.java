@@ -1155,6 +1155,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Get the base url of the viewer. This is the url up to the context path. The returned url always ends with a '/'
+     * @return  The base viewer url
+     */
+    public String getViewerBaseUrl() {
+        String urlString = getLocalString("urls.base");
+        if (urlString == null) {
+            urlString = getRestApiUrl().replaceAll("api/v1/?", "");
+        } else if(!urlString.endsWith("/")) {
+            urlString = urlString + "/";
+        }
+        return urlString;
+    }
+    
+    /**
      * <p>
      * getRestApiUrl.
      * </p>

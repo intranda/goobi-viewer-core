@@ -19,7 +19,13 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.quartz.QuartzJobDetails;
+import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
+import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
 
 @Named
 @ApplicationScoped
@@ -108,9 +114,17 @@ public class QuartzBean implements Serializable {
     public void pauseJob() {
         try {
             scheduler.pauseJob(quartzJobDetails.getJobKey());
-        } catch (SchedulerException e) {
+            persistTriggerStatus(TaskTriggerStatus.PAUSED);
+        } catch (SchedulerException | DAOException e) {
             log.error(e);
         }
+    }
+
+    private void persistTriggerStatus(TaskTriggerStatus status) throws DAOException {
+        IDAO dao = DataManager.getInstance().getDao();
+        RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(quartzJobDetails.getJobName()));
+        trigger.setStatus(status);
+        dao.updateRecurringTaskTrigger(trigger);
     }
 
     public void resumeAllJobs() {
@@ -125,7 +139,8 @@ public class QuartzBean implements Serializable {
     public void resumeJob() {
         try {
             scheduler.resumeJob(quartzJobDetails.getJobKey());
-        } catch (SchedulerException e) {
+            persistTriggerStatus(TaskTriggerStatus.RUNNING);
+        } catch (SchedulerException | DAOException e) {
             log.error(e);
         }
     }

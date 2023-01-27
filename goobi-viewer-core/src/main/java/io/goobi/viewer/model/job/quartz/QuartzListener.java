@@ -22,7 +22,9 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
@@ -102,39 +104,41 @@ public class QuartzListener implements ServletContextListener {
         SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
         Scheduler sched = schedFact.getScheduler();
         sched.start();
-
+        sched.getContext().put("messageBroker", messageBroker);
+        
         try {
             List<RecurringTaskTrigger> triggers = loadOrCreateTriggers();
             for (RecurringTaskTrigger trigger : triggers) {
                 HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression() ,messageBroker);
                 
-                addParams(job, servletContext);
                 
-                initializeCronJob(job, sched);
+                JobDetail jobDetail = initializeCronJob(job, sched);
+                Map<String, Object> params = getParams(job.getTaskType(), true, servletContext);
+                sched.getContext().put(jobDetail.getKey().getName(), params);
+                if(TaskTriggerStatus.PAUSED.equals(trigger.getStatus())) {                    
+                    sched.pauseJob(jobDetail.getKey());
+                }
             }
         } catch (DAOException e) {
             throw new SchedulerException(e);
         }
-        
-        initializeMinutelyJob(new SampleJob(), sched, 1);
-
-//        initializeCronJob(new NotifySearchUpdateJob(), sched);
-//        initializeCronJob(new IndexUsageSstatisticsJob(), sched);
-//        initializeCronJob(new PurgeExpiredDownloadTicketsJob(), sched);
-//        initializeCronJob(new UpdateUploadJobsJob(), sched);
     }
 
-    private void addParams(HandleMessageJob job, ServletContext servletContext) {
-        switch(job.getTaskType()) {
+    private Map<String, Object> getParams(TaskType taskType, boolean runInQueue, ServletContext servletContext) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("taskType", taskType);
+        params.put("runInQueue", runInQueue);
+        switch(taskType) {
             case UPDATE_SITEMAP:
-                String contextPath = servletContext.getContextPath();
+                String rootUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl();
                 String realPath =  servletContext.getRealPath("/");
-                job.setParam("viewerRootUrl", contextPath);
-                job.setParam("baseurl", realPath);
+                params.put("viewerRootUrl", rootUrl);
+                params.put("baseurl", realPath);
                 break;
             default:
                 break;
         }
+        return params;
     }
 
     private List<RecurringTaskTrigger> loadOrCreateTriggers() throws DAOException {
@@ -229,15 +233,15 @@ public class QuartzListener implements ServletContextListener {
      * 
      * @throws SchedulerException
      */
-    public static void initializeCronJob(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
+    public static JobDetail initializeCronJob(IViewerJob goobiJob, Scheduler sched) throws SchedulerException {
 
         JobDetail jobDetail = generateJob(goobiJob);
-
         CronTrigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(goobiJob.getJobName(), goobiJob.getJobName())
                 .withSchedule(CronScheduleBuilder.cronSchedule(goobiJob.getCronExpression()))
                 .build();
         sched.scheduleJob(jobDetail, trigger);
+        return jobDetail;
     }
 
     @Override
