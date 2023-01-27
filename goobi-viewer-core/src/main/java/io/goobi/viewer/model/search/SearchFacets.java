@@ -68,9 +68,9 @@ public class SearchFacets implements Serializable {
 
     private final Map<String, Boolean> facetsExpanded = new HashMap<>();
 
-    private final Map<String, String> minValues = new HashMap<>();
+    final Map<String, String> minValues = new HashMap<>();
 
-    private final Map<String, String> maxValues = new HashMap<>();
+    final Map<String, String> maxValues = new HashMap<>();
 
     private final Map<String, List<Integer>> valueRanges = new HashMap<>();
     /** Map storing labels from separate label fields that were already retrieved from the index. */
@@ -93,6 +93,8 @@ public class SearchFacets implements Serializable {
      * <p>
      * resetCurrentFacets.
      * </p>
+     * 
+     * @should reset facets correctly
      */
     public void resetActiveFacets() {
         resetActiveFacetString();
@@ -188,6 +190,7 @@ public class SearchFacets implements Serializable {
      * @should return empty list if facet list empty
      * @should skip range facet fields if so requested
      * @should skip subelement fields
+     * @should skip hierarchical fields
      * @should combine facet queries if field name same
      */
     List<String> generateSimpleFacetFilterQueries(boolean includeRangeFacets) {
@@ -247,6 +250,7 @@ public class SearchFacets implements Serializable {
      *
      * @param field The field name to match.
      * @return a {@link java.util.List} object.
+     * @should return correct items
      */
     public List<IFacetItem> getActiveFacetsForField(String field) {
         List<IFacetItem> ret = new ArrayList<>();
@@ -276,6 +280,7 @@ public class SearchFacets implements Serializable {
      *
      * @param facet The facet to check.
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isFacetCurrentlyUsed(IFacetItem facet) {
         for (IFacetItem fi : getActiveFacetsForField(facet.getField())) {
@@ -391,6 +396,7 @@ public class SearchFacets implements Serializable {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should return correct value
      */
     public boolean isHasRangeFacets() throws PresentationException, IndexUnreachableException {
         for (String rangeField : DataManager.getInstance().getConfiguration().getRangeFacetFields()) {
@@ -782,7 +788,7 @@ public class SearchFacets implements Serializable {
     public boolean isRangeFacetActive(String field) {
         try {
             List<Integer> range = getValueRange(field);
-            if(!range.isEmpty()) {                
+            if (!range.isEmpty()) {
                 return Integer.parseInt(getCurrentMinRangeValue(field)) > range.get(0)
                         || Integer.parseInt(getCurrentMaxRangeValue(field)) < range.get(range.size() - 1);
             }
