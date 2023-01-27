@@ -38,7 +38,7 @@ public class QuartzBean implements Serializable {
     public QuartzBean() throws SchedulerException {
         scheduler = new StdSchedulerFactory().getScheduler();
     }
-
+    
     public List<QuartzJobDetails> getActiveJobs() throws SchedulerException {
         List<QuartzJobDetails> activeJobs = new ArrayList<>();
         for (String groupName : scheduler.getJobGroupNames()) {

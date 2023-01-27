@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
@@ -44,6 +45,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 @WebListener
 public class StartQueueBrokerListener implements ServletContextListener {
@@ -53,10 +56,12 @@ public class StartQueueBrokerListener implements ServletContextListener {
     private RMIConnectorServer rmiServer;
     private BrokerService broker;
     private List<DefaultQueueListener> listeners = new ArrayList<>();
+    @Inject 
+    transient private MessageBroker messageBroker;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-
+        
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             // JMX/RMI part taken from: https://vafer.org/blog/20061010091658/
             String address = "localhost";
@@ -98,7 +103,7 @@ public class StartQueueBrokerListener implements ServletContextListener {
 
             try {
                 for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
-                    DefaultQueueListener listener = new DefaultQueueListener();
+                    DefaultQueueListener listener = new DefaultQueueListener(messageBroker);
                     listener.register(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
                             DataManager.getInstance().getConfiguration().getActiveMQPassword(), "viewer");
                     listeners.add(listener);

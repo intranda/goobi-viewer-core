@@ -113,6 +113,7 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
+        <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -245,8 +246,9 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
-        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
+        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
+		<class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test" />

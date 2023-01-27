@@ -22,13 +22,8 @@
 
 package io.goobi.viewer.controller.mq;
 
-import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -44,7 +39,6 @@ import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.reflections.Reflections;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,12 +51,15 @@ public class DefaultQueueListener {
 
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);
 
+    private final MessageBroker messageBroker;
     private Thread thread;
     private ActiveMQConnection conn;
     private MessageConsumer consumer;
     private volatile boolean shouldStop = false;
 
-    private static Map<String, MessageHandler<MessageStatus>> instances = new HashMap<>();
+    public DefaultQueueListener(MessageBroker messageBroker) {
+        this.messageBroker = messageBroker;
+    }
 
     public void register(String username, String password, String queueType) throws JMSException {
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory("vm://localhost");
@@ -113,7 +110,7 @@ public class DefaultQueueListener {
 
                             ticket.setMessageId(message.getJMSMessageID());
                             try {
-                                MessageStatus result = handleMessage(ticket);
+                                MessageStatus result = messageBroker.handle(ticket);
 
                                 if (result != MessageStatus.ERROR) {
                                     //acknowledge message, it is done
@@ -151,32 +148,6 @@ public class DefaultQueueListener {
         thread.start();
     }
 
-    private MessageStatus handleMessage(ViewerMessage message) {
-        if (!instances.containsKey(message.getTaskName())) {
-            getInstalledTicketHandler();
-        }
-        MessageHandler<MessageStatus> handler = instances.get(message.getTaskName());
-        if (handler == null) {
-            return MessageStatus.ERROR;
-        }
-
-        // create database entry
-
-        MessageStatus rv = handler.call(message);
-        message.setMessageStatus(rv);
-        message.setLastUpdateTime(LocalDateTime.now());
-        try {
-            if (message.getId() == null) {
-                DataManager.getInstance().getDao().addViewerMessage(message);
-            } else {
-                DataManager.getInstance().getDao().updateViewerMessage(message);
-            }
-        } catch (DAOException e) {
-            log.error(e);
-        }
-
-        return handler.call(message);
-    }
 
     public void close() throws JMSException {
         this.shouldStop = true;
@@ -190,18 +161,4 @@ public class DefaultQueueListener {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static void getInstalledTicketHandler() {
-        instances = new HashMap<>();
-        Set<Class<? extends MessageHandler>> ticketHandlers = new Reflections("io.goobi.viewer.model.job.mq.*").getSubTypesOf(MessageHandler.class);
-        for (Class<? extends MessageHandler> clazz : ticketHandlers) {
-            try {
-                MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
-                instances.put(handler.getMessageHandlerName(), handler);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
-                    | SecurityException e) {
-                log.error(e);
-            }
-        }
-    }
 }

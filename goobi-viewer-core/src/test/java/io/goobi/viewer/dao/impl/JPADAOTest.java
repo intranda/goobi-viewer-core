@@ -84,9 +84,11 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.crowdsourcing.questions.QuestionType;
 import io.goobi.viewer.model.crowdsourcing.questions.TargetSelector;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -3283,5 +3285,32 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<DownloadTicket> result = DataManager.getInstance().getDao().getDownloadTicketRequests();
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(Long.valueOf(3), result.get(0).getId());
+    }
+    
+    @Test
+    public void test_persistRecurringTaskTrigger() throws Exception {
+        IDAO dao = DataManager.getInstance().getDao();
+        RecurringTaskTrigger trigger = new RecurringTaskTrigger(TaskType.DOWNLOAD_PDF, "0 0 0 * * ?");
+        
+        dao.addRecurringTaskTrigger(trigger);
+        assertEquals(1, dao.getRecurringTaskTriggers().size());
+        RecurringTaskTrigger loaded = dao.getRecurringTaskTrigger(trigger.getId());
+        assertNotNull(loaded);
+        assertEquals(TaskType.DOWNLOAD_PDF.name(), loaded.getTaskType());
+        assertEquals("0 0 0 * * ?", loaded.getScheduleExpression());
+        
+        LocalDateTime triggered = LocalDateTime.now();
+        loaded.setLastTimeTriggered(triggered);
+        dao.updateRecurringTaskTrigger(loaded);
+        
+        RecurringTaskTrigger updated = dao.getRecurringTaskTriggerForTask(TaskType.DOWNLOAD_PDF);
+        assertNotNull(updated);
+        assertEquals(TaskType.DOWNLOAD_PDF.name(), updated.getTaskType());
+        assertEquals("0 0 0 * * ?", updated.getScheduleExpression());
+        assertEquals(triggered, updated.getLastTimeTriggered());
+        
+        dao.deleteRecurringTaskTrigger(trigger.getId());
+        assertTrue(dao.getRecurringTaskTriggers().isEmpty());
+        
     }
 }

@@ -79,7 +79,9 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
@@ -6844,6 +6846,109 @@ public class JPADAO implements IDAO {
             }
         }
         return getFilteredRowCount("ViewerMessage", filterQuery, params);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<RecurringTaskTrigger> getRecurringTaskTriggers() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o FROM RecurringTaskTrigger o").getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get RecurringTaskTriggers. Returning empty list", e.toString());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public RecurringTaskTrigger getRecurringTaskTrigger(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(RecurringTaskTrigger.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public RecurringTaskTrigger getRecurringTaskTriggerForTask(TaskType task) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM RecurringTaskTrigger a WHERE a.taskType = :taskType");
+
+            Query q = em.createQuery(sbQuery.toString());
+
+            q.setParameter("taskType", task.name());
+            return (RecurringTaskTrigger) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(trigger);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error adding ViewerMessage to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(trigger);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean deleteRecurringTaskTrigger(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            RecurringTaskTrigger o = em.getReference(RecurringTaskTrigger.class, id);
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error deleting RecurringTaskTrigger", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
     }
 
 }

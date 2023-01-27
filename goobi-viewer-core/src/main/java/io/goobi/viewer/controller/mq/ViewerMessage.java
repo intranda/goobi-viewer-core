@@ -44,7 +44,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "mq_messages")
 public class ViewerMessage {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
