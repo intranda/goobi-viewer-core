@@ -720,7 +720,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         //        Assert.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
         Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
         Assert.assertEquals("FACET_MD2_FOO", SearchHelper.facetifyField("MD2_FOO_UNTOKENIZED"));
-        Assert.assertEquals("FACET_MDNUM_NUMBER", SearchHelper.facetifyField("MDNUM_NUMBER"));
+        Assert.assertEquals("MDNUM_NUMBER", SearchHelper.facetifyField("MDNUM_NUMBER"));
     }
 
     /**
