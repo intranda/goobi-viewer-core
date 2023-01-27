@@ -25,6 +25,7 @@ package io.goobi.viewer.model.job.quartz;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -59,6 +60,8 @@ public class QuartzListener implements ServletContextListener {
     private final IDAO dao;
     @Inject 
     transient private MessageBroker messageBroker;
+    @Inject
+    private ServletContext context;
     
     public QuartzListener() throws DAOException {
         this.dao = DataManager.getInstance().getDao();
@@ -76,7 +79,7 @@ public class QuartzListener implements ServletContextListener {
      */
     public void restartTimedJobs() throws SchedulerException {
         stopTimedJobs();
-        startTimedJobs();
+        startTimedJobs(this.context);
     }
 
     /**
@@ -91,10 +94,11 @@ public class QuartzListener implements ServletContextListener {
 
     /**
      * Starts timed updates of {@link HistoryAnalyserJob}
+     * @param servletContext 
      * 
      * @throws SchedulerException
      */
-    private void startTimedJobs() throws SchedulerException {
+    private void startTimedJobs(ServletContext servletContext) throws SchedulerException {
         SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
         Scheduler sched = schedFact.getScheduler();
         sched.start();
@@ -102,7 +106,10 @@ public class QuartzListener implements ServletContextListener {
         try {
             List<RecurringTaskTrigger> triggers = loadOrCreateTriggers();
             for (RecurringTaskTrigger trigger : triggers) {
-                AbstractViewerJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression() ,messageBroker);
+                HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression() ,messageBroker);
+                
+                addParams(job, servletContext);
+                
                 initializeCronJob(job, sched);
             }
         } catch (DAOException e) {
@@ -115,6 +122,19 @@ public class QuartzListener implements ServletContextListener {
 //        initializeCronJob(new IndexUsageSstatisticsJob(), sched);
 //        initializeCronJob(new PurgeExpiredDownloadTicketsJob(), sched);
 //        initializeCronJob(new UpdateUploadJobsJob(), sched);
+    }
+
+    private void addParams(HandleMessageJob job, ServletContext servletContext) {
+        switch(job.getTaskType()) {
+            case UPDATE_SITEMAP:
+                String contextPath = servletContext.getContextPath();
+                String realPath =  servletContext.getRealPath("/");
+                job.setParam("viewerRootUrl", contextPath);
+                job.setParam("baseurl", realPath);
+                break;
+            default:
+                break;
+        }
     }
 
     private List<RecurringTaskTrigger> loadOrCreateTriggers() throws DAOException {
@@ -231,10 +251,10 @@ public class QuartzListener implements ServletContextListener {
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent arg0) {
+    public void contextInitialized(ServletContextEvent evt) {
         log.debug("Start daily JobManager scheduler");
         try {
-            startTimedJobs();
+            startTimedJobs(evt.getServletContext());
         } catch (SchedulerException e) {
             log.error("daily JobManager could not be started", e);
         }
