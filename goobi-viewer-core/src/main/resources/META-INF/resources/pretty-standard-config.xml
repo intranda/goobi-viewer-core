@@ -937,13 +937,8 @@
     </url-mapping>
 
     <url-mapping id="adminMessageQueue">
-        <pattern value="/admin/message_queue/" />
-        <view-id value="/resources/admin/views/adminMessageQueue.xhtml" />
-    </url-mapping>
-
-    <url-mapping id="adminQuartz">
-        <pattern value="/admin/jobs/" />
-        <view-id value="/resources/admin/views/adminQuartz.xhtml" />
+        <pattern value="/admin/tasks/" />
+        <view-id value="/resources/admin/views/adminTasks.xhtml" />
     </url-mapping>
 
     <!-- ADMIN STYLES FOR DEVS -->

@@ -1973,16 +1973,14 @@
 			margin-left: 2px;
 		}
 		&:hover {
-			.fa {
-				transform: translateY(-1px);
-			}
+
 		}
 		&.-paused {
 				.admin__tasks-button-pause {
 					display: none;
 				}
 				.admin__tasks-button-play {
-					display: block;
+					display: flex;
 				}	
 			.admin__tasks-icon-loader {
 				background: rgba(255, 111, 0, 0.2);
@@ -2063,7 +2061,7 @@
 		}
 	}
 	&__tasks-button-pause {
-		display: block;
+		display: flex;
 		&.-hidden {
 			display: none;
 		}
@@ -2083,12 +2081,12 @@
 		margin-bottom: 0;
 	}
 	&__tasks-button-trash {
-		
+		display: flex;
 	}
 	&__tasks-icon-loader {
 		background: #e2ffe2;
-		width: 38px;
-		height: 38px;
+		width: 30px;
+		height: 30px;
 		border: 3px solid @greenBar;
 		border-bottom-color: #f2f3f4;
 		border-radius: 50%;
@@ -2097,14 +2095,18 @@
 		box-sizing: border-box;
 		animation: msgQrotation 1.85s linear infinite;
 	}
-	[data-target="resumeButton"], [data-target="pauseButton"], [data-target="clearButton"] {
+	[data-target="resumeMsgQueueButton"], 
+	[data-target="pauseMsgQueueButton"], 
+	[data-target="clearButton"], 
+	[data-target="resumeQuartzButton"], 
+	[data-target="pauseQuartzButton"] {
 		display: none;
 	}
 	&__tasks-title-wrapper {
 		display: flex;
 		gap: 10px;
 		align-items: center;
-		margin-left: 20px;
+		margin-bottom: 15px;
 	}
 	&__content-inner-content {
 		.admin__tasks-task-title {
@@ -2113,8 +2115,8 @@
 	}
 	&__tasks-clear-all {
 		background: rgba(244, 67, 54, 0.2);
-		width: 38px;
-		height: 38px;
+		width: 30px;
+		height: 30px;
 		border: 3px solid @redBar;
 		border-radius: 50%;
 		display: inline-block; 
@@ -2123,6 +2125,21 @@
 	}
 	&__tasks-single-job-wrapper {
 		
+	}
+	&__tasks-table-row {
+		&.-error {
+			background: #fdbcb0;
+		}
+	}
+	&__tasks-quartz-table-row {
+		&.-paused {
+			opacity: 0.5;
+		}
+	}
+	&__tasks-quartz-table-entry-name-wrapper {
+		display: flex;
+		gap: 10px;
+		align-items: center;
 	}
 	 
 	@keyframes msgQrotation {
