@@ -27,7 +27,9 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
 
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import it.burning.cron.CronExpressionDescriptor;
+import it.burning.cron.CronExpressionParser.Options;
 
 public class QuartzJobDetails {
 
@@ -103,7 +105,8 @@ public class QuartzJobDetails {
         if (StringUtils.isBlank(cronExpression)) {
             return "";
         }
-        return CronExpressionDescriptor.getDescription(cronExpression);
+        Options options = new Options(false, true, true, false, BeanUtils.getLocale());
+        return CronExpressionDescriptor.getDescription(cronExpression, options);
     }
 
 }
