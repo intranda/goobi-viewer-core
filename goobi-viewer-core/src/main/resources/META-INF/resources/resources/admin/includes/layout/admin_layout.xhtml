@@ -60,9 +60,18 @@
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-backend-right">
+	            <h:panelGroup styleClass="admin__topbar-queue-warning-wrapper" layout="block" id="queueIsNotProcessed">
+	                <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount == 0}">
+							<a class="admin__topbar-queue-warning-link" href="#{request.contextPath}/admin/tasks">
+								<div class="admin__topbar-queue-warning-icon"><i class="fa fa-exclamation-circle" aria-hidden="true"></i></div>
+								<div class="admin__topbar-queue-warning-text">#{msg.admin__tasks__queue_not_running}</div>
+							</a>
+					</ui:fragment>
+				</h:panelGroup>
+
 	            <div class="admin__topbar-frontend-hotfolder">
 	            	<!-- COUNT FILES PROCESSING -->
-	            	<h:panelGroup id="hotfolderFileCountGroup">
+	            	<h:panelGroup layout="block" id="hotfolderFileCountGroup">
                     <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
 						<div class="admin__topbar-frontend-hotfolder-files-action">
 						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>

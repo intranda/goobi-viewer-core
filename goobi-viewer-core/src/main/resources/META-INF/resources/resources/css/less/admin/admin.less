@@ -1232,6 +1232,7 @@
 	&__topbar-backend-right {
 		margin-left: auto;
 		display: flex;
+		gap: 0 20px;
 	}
 	&__topbar-backend-dropdown {
 		opacity: 0;
@@ -1325,7 +1326,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 0 2rem;
+		padding: 0 20px;
 		transition: all 0.2s ease;
 		cursor: default;
 		.activeLang {
@@ -1664,7 +1665,6 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 0 2rem;
 		transition: all 0.2s ease;
 		cursor: default;
 		.fa {
@@ -1678,6 +1678,9 @@
 	}
 	&__topbar-frontend-hotfolder-files-action {
 		color: @white;
+		.fa {
+			color: @greenBar;
+		}
 		&:hover {
 			color: @white;
 			text-decoration: none;
@@ -1687,6 +1690,25 @@
 		&:focus-within {
 			color: @white;
 		}
+	}
+	&__topbar-queue-warning-wrapper {
+		display: flex;
+	}
+	&__topbar-queue-warning-link {
+		display: flex;
+		gap: 0 10px;
+		align-items: center;
+		color: white;
+		&:hover {
+			color: white;
+		}
+	}
+	&__topbar-queue-warning-icon {
+		color: #ff6f00;
+		font-size: 16px;
+	}
+	&__topbar-queue-warning-text {
+		
 	}
 	&__topbar-frontend-logout {
 		display: flex;
@@ -2133,15 +2155,40 @@
 	}
 	&__tasks-quartz-table-row {
 		&.-paused {
-			opacity: 0.5;
+			.admin__tasks-quartz-table-row-data {
+					opacity: 0.5;
+			}
 		}
 	}
 	&__tasks-quartz-table-entry-name-wrapper {
 		display: flex;
 		gap: 10px;
 		align-items: center;
+		.admin__tasks-quartz-table-row-data {
+			font-weight: 600;
+		}
 	}
-	 
+	&__tasks-quartz-table-entry-buttons-wrapper {
+		width: 15px;
+		&.-paused {
+			.admin__tasks-quartz-table-pause-button {
+				display: none;
+			}
+			.admin__tasks-quartz-table-play-button {
+				display: flex;
+			}
+		}
+	}
+	&__tasks-quartz-table-pause-button {
+		display: flex;
+		animation: fadeIn 0.2s ease;
+	}
+	&__tasks-quartz-table-play-button {
+		display: none;
+		animation: fadeIn 0.2s ease;
+	}
+
+
 	@keyframes msgQrotation {
 	  0% {
 	    transform: rotate(0deg);

@@ -5,6 +5,7 @@
 	xmlns:o="http://omnifaces.org/ui"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html"
 	xmlns:jsf="http://xmlns.jcp.org/jsf">
 
@@ -77,23 +78,45 @@
 										<i class="fa fa-times"></i>
 									</div>
 								</div>
+								<f:ajax execute="@form" render="@form" />
 							</a>
 
 						</div>
 
+<!-- 						<button jsf:action="#{messageQueueBean.pauseQueue}" -->
+<!-- 							jsf:id="pauseButton" data-target="pauseMsgQueueButton"> -->
+<!-- 						</button> -->
+						
+						<h:commandButton 
+							id="pauseMsgQueueButton" 
+							action="#{messageQueueBean.pauseQueue}"
+							pt:data-target="pauseMsgQueueButton">
+					    	<f:ajax execute="@form" render="@form" />
+						</h:commandButton>
 
-						<!-- TODO style buttons, increase in size, add tooltip, change color of active button -->
-						<button jsf:action="#{messageQueueBean.pauseQueue}"
-							jsf:id="pauseButton" data-target="pauseMsgQueueButton"
-							class="btn">
-							<i class="fa fa-pause"></i>
-						</button>
+<!-- 						<button jsf:action="#{messageQueueBean.resumeQueue}" -->
+<!-- 							jsf:id="resumeMsgQueueButton" data-target="resumeMsgQueueButton"> -->
+<!-- 						</button> -->
+						
+						<h:commandButton 
+							id="resumeMsgQueueButton" 
+							action="#{messageQueueBean.resumeQueue}"
+							pt:data-target="resumeMsgQueueButton">
+					    	<f:ajax execute="@form" render="@form" />
+						</h:commandButton>
+						
+						
+						
+<!-- 						<button jsf:action="#{messageQueueBean.resumeQueue}" -->
+<!-- 							jsf:id="resumeMsgQueueButtonxx" data-target="abcdefg" -->
+<!-- 							jsf:process="@form" jsf:update="@form" -->
+<!-- 							class="btn"> -->
+<!-- 							<i class="fa fa-play"></i> -->
+<!-- 							PLAY -->
+<!-- 						</button> -->
+						
 
-						<button jsf:action="#{messageQueueBean.resumeQueue}"
-							jsf:id="resumeMsgQueueButton" data-target="resumeMsgQueueButton"
-							class="btn">
-							<i class="fa fa-play"></i>
-						</button>
+						
 
 						<!-- INDIVIDUAL ROWS -->
 						<ui:repeat var="task" value="#{messageQueueBean.queueContent}">
@@ -205,7 +228,7 @@
 							</div>
 						</div>
 
-						<div class="admin__quartz">
+						<h:panelGroup id="quartzTableWrapper" styleClass="admin__quartz">
 
 							<button data-target="pauseQuartzButton"
 								jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
@@ -236,25 +259,30 @@
 
 								<!-- INDIVIDUAL ROWS -->
 								<ui:repeat var="entry" value="#{quartzBean.activeJobs}">
-									<div class="row no-gutters admin__table-entry admin__tasks-quartz-table-row #{entry.paused == true ? '-paused' : ''}" role="row">
+									<h:panelGroup id="quartzRowID" layout="block" styleClass="row no-gutters admin__table-entry admin__tasks-quartz-table-row #{entry.paused == true ? '-paused' : ''}" role="row">
 										<div class="col-3 d-flex flex-column">
 											
 											<div class="admin__tasks-quartz-table-entry-name-wrapper" role="gridcell">
+											
+												<div class="admin__tasks-quartz-table-entry-buttons-wrapper #{entry.paused == true ? '-paused' : ''}">
 												
+													<button jsf:action="#{quartzBean.pauseJob}" class="btn btn--clean admin__tasks-quartz-table-pause-button">
+														<i class="fa fa-pause" />
+														<f:ajax execute="@form" render="quartzRowID" />
+														<f:setPropertyActionListener
+															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
+													</button>
+		
+													<button jsf:action="#{quartzBean.resumeJob}" class="btn btn--clean admin__tasks-quartz-table-play-button">
+														<i class="fa fa-play" />
+														<f:ajax execute="@form" render="quartzRowID" />
+														<f:setPropertyActionListener
+															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
+													</button>
 												
-												<button jsf:action="#{quartzBean.pauseJob}" class="btn btn--clean">
-													<i class="fa fa-pause" />
-													<f:setPropertyActionListener
-														target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
-												</button>
-	
-												<button jsf:action="#{quartzBean.resumeJob}" class="btn btn--clean">
-													<i class="fa fa-play" />
-													<f:setPropertyActionListener
-														target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
-												</button>
+												</div>
 												
-												<h:outputText value="#{msg[entry.jobName]}" />
+												<span class="admin__tasks-quartz-table-row-data"><h:outputText value="#{msg[entry.jobName]}" /></span>
 											</div>
 
 											<div>
@@ -263,24 +291,29 @@
 												#{msg.admin__tasks__run_once_now}
 												<f:setPropertyActionListener
 													target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
+												<f:ajax execute="@form" render="@form" />
 											</button>
+											
+											
+											
+											
 											</div>
 
 										</div>
 
-										<div class="col-3 d-flex align-items-center" role="gridcell">
+										<div class="col-3 d-flex align-items-center admin__tasks-quartz-table-row-data" role="gridcell">
 											<h:outputText value="#{entry.jobGroup}" />
 										</div>
 
-										<div class="col-2 d-flex align-items-center" role="gridcell">
+										<div class="col-2 d-flex align-items-center admin__tasks-quartz-table-row-data" role="gridcell">
 											<h:outputText value="#{entry.previousFireTime}" />
 										</div>
-										<div class="col-2 d-flex align-items-center" role="gridcell">
+										<div class="col-2 d-flex align-items-center admin__tasks-quartz-table-row-data" role="gridcell">
 											<h:outputText value="#{entry.nextFireTime}" />
 										</div>
 
 										<div
-											class="col-2 d-flex align-items-center align-content-center flex-wrap"
+											class="col-2 d-flex align-items-center align-content-center flex-wrap admin__tasks-quartz-table-row-data"
 											role="gridcell">
 
 											
@@ -292,11 +325,11 @@
 
 
 										</div>
-									</div>
+									</h:panelGroup>
 								</ui:repeat>
 							</div>
 
-						</div>
+						</h:panelGroup>
 
 
 
@@ -407,54 +440,56 @@
 						</h:panelGroup>
 
 					</div>
+					
+					<script>
+			     	// SCRIPT FOR MESSAGE QUEUE PAUSE/RESUME BUTTON FUNCTIONALITY
+					$('[data-js-trigger="resumeRunningTasksButton"]').on('click', function() {
+						$(this).toggleClass('-paused');
+					    $('[ data-target="resumeMsgQueueButton"]').click();
+					    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
+					});
+					
+					$('[data-js-trigger="pauseRunningTasksButton"]').on('click', function() {
+						$(this).toggleClass('-paused');
+						$(this).addClass('-stoppingStatus');
+					    $('[ data-target="pauseMsgQueueButton"]').click();
+					    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
+					});
+					
+			// 		$('[data-js-trigger="clearAllButton"]').on('click', function() {
+			// 		    $('[ data-target="clearMsgQueueButton"]').click();
+			// 		});
+					
+					$('[data-js-trigger="showAllSingleTasks"]').on('click', function() {
+						event.preventDefault();
+					    $(this).closest('.admin__boxed-entry').find('[ data-target="showAllSingleTasks"]').slideToggle();
+					    $(this).closest('.admin__boxed-entry').find('[ data-target="showOrHideTasks"]').toggle();
+					});
+			
+					</script>
+			
+			
+			
+					<script>
+			     	// SCRIPT FOR QUARTZ PAUSE/RESUME BUTTON FUNCTIONALITY
+						$('[data-js-trigger="resumeQuartzButton"]').on('click', function() {
+							$(this).toggleClass('-paused');
+			 			    $('[ data-target="resumeQuartzButton"]').click();
+						    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+						});
+						
+						$('[data-js-trigger="pauseQuartzButton"]').on('click', function() {
+							$(this).toggleClass('-paused');
+							$(this).addClass('-stoppingStatus');
+			 			    $('[data-target="pauseQuartzButton"]').click();
+						    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+						});
+					</script>		
 
 				</h:form>
 			</h:panelGroup>
 		</div>
-		<script>
-     	// SCRIPT FOR MESSAGE QUEUE PAUSE/RESUME BUTTON FUNCTIONALITY
-		$('[data-js-trigger="resumeRunningTasksButton"]').on('click', function() {
-			$(this).toggleClass('-paused');
-		    $('[ data-target="resumeMsgQueueButton"]').click();
-		    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
-		});
-		
-		$('[data-js-trigger="pauseRunningTasksButton"]').on('click', function() {
-			$(this).toggleClass('-paused');
-			$(this).addClass('-stoppingStatus');
-		    $('[ data-target="pauseMsgQueueButton"]').click();
-		    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
-		});
-		
-// 		$('[data-js-trigger="clearAllButton"]').on('click', function() {
-// 		    $('[ data-target="clearMsgQueueButton"]').click();
-// 		});
-		
-		$('[data-js-trigger="showAllSingleTasks"]').on('click', function() {
-			event.preventDefault();
-		    $(this).closest('.admin__boxed-entry').find('[ data-target="showAllSingleTasks"]').slideToggle();
-		    $(this).closest('.admin__boxed-entry').find('[ data-target="showOrHideTasks"]').toggle();
-		});
 
-		</script>
-
-
-
-		<script>
-     	// SCRIPT FOR QUARTZ PAUSE/RESUME BUTTON FUNCTIONALITY
-			$('[data-js-trigger="resumeQuartzButton"]').on('click', function() {
-				$(this).toggleClass('-paused');
- 			    $('[ data-target="resumeQuartzButton"]').click();
-			    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
-			});
-			
-			$('[data-js-trigger="pauseQuartzButton"]').on('click', function() {
-				$(this).toggleClass('-paused');
-				$(this).addClass('-stoppingStatus');
- 			    $('[data-target="pauseQuartzButton"]').click();
-			    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
-			});
-		</script>
 
 
 		<script type="text/javascript">
