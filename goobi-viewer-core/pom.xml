@@ -89,7 +89,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.8.2</ics.version>
+		<ics.version>3.8.3</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.3.0</iiif-api-model.version>
