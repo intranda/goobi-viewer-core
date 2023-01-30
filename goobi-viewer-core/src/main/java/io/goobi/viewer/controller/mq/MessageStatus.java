@@ -26,6 +26,7 @@ public enum MessageStatus {
     FINISH("admin__tasks__status_finished"),
     ERROR("admin__tasks__status_error"),
     WAIT("admin__tasks__status_wait"),
+    PROCESSING("admin__tasks__status_processing"),
     NEW("admin__tasks__status_new");
     
     private final String label;

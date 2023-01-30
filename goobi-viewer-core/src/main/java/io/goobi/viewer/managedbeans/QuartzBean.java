@@ -1,8 +1,30 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -20,6 +42,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
@@ -74,8 +97,8 @@ public class QuartzBean implements Serializable {
                     details.setPaused(true);
                 }
 
-                Date nextFireTime = trigger.getNextFireTime();
-                Date lastFireTime = trigger.getPreviousFireTime();
+                LocalDateTime nextFireTime =  DateTools.convertDateToLocalDateTimeViaInstant(trigger.getNextFireTime());
+                LocalDateTime lastFireTime = DateTools.convertDateToLocalDateTimeViaInstant(trigger.getPreviousFireTime());
                 details.setNextFireTime(nextFireTime);
                 details.setPreviousFireTime(lastFireTime);
             }
@@ -105,6 +128,7 @@ public class QuartzBean implements Serializable {
     public void pauseAllJobs() {
         try {
             scheduler.pauseAll();
+            getActiveJobs().forEach(job -> persistTriggerStatus(job.getJobName(), TaskTriggerStatus.PAUSED));
         } catch (SchedulerException e) {
             log.error(e);
         }
@@ -114,22 +138,27 @@ public class QuartzBean implements Serializable {
     public void pauseJob() {
         try {
             scheduler.pauseJob(quartzJobDetails.getJobKey());
-            persistTriggerStatus(TaskTriggerStatus.PAUSED);
-        } catch (SchedulerException | DAOException e) {
+            persistTriggerStatus(quartzJobDetails.getJobName(), TaskTriggerStatus.PAUSED);
+        } catch (SchedulerException e) {
             log.error(e);
         }
     }
 
-    private void persistTriggerStatus(TaskTriggerStatus status) throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
-        RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(quartzJobDetails.getJobName()));
-        trigger.setStatus(status);
-        dao.updateRecurringTaskTrigger(trigger);
+    private void persistTriggerStatus(String jobName, TaskTriggerStatus status){
+        try {            
+            IDAO dao = DataManager.getInstance().getDao();
+            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
+            trigger.setStatus(status);
+            dao.updateRecurringTaskTrigger(trigger);
+        } catch(DAOException e) {
+            log.error(e);
+        }
     }
 
     public void resumeAllJobs() {
         try {
             scheduler.resumeAll();
+            getActiveJobs().forEach(job -> persistTriggerStatus(job.getJobName(), TaskTriggerStatus.RUNNING));
         } catch (SchedulerException e) {
             log.error(e);
         }
@@ -139,8 +168,8 @@ public class QuartzBean implements Serializable {
     public void resumeJob() {
         try {
             scheduler.resumeJob(quartzJobDetails.getJobKey());
-            persistTriggerStatus(TaskTriggerStatus.RUNNING);
-        } catch (SchedulerException | DAOException e) {
+            persistTriggerStatus(quartzJobDetails.getJobName(), TaskTriggerStatus.RUNNING);
+        } catch (SchedulerException e) {
             log.error(e);
         }
     }

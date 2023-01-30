@@ -99,10 +99,6 @@ public class DefaultQueueListener {
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());
                             ViewerMessage ticket = optTicket.get();
-                            MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
-                            if(mqBean != null) {
-                                mqBean.updateMessageQueueState();
-                            }
                             try {
                                 ViewerMessage retry = DataManager.getInstance().getDao().getViewerMessageByMessageID(message.getJMSMessageID());
                                 if (retry != null) {
@@ -115,6 +111,7 @@ public class DefaultQueueListener {
 
                             ticket.setMessageId(message.getJMSMessageID());
                             try {
+                                
                                 MessageStatus result = messageBroker.handle(ticket);
 
                                 if (result != MessageStatus.ERROR) {
@@ -127,10 +124,6 @@ public class DefaultQueueListener {
                             } catch (Throwable t) {
                                 log.error("Error handling ticket " + message.getJMSMessageID() + ": ", t);
                                 sess.recover();
-                            } finally {
-                                if(mqBean != null) {
-                                    mqBean.updateMessageQueueState();
-                                }
                             }
                         }
                     } catch (JMSException | JsonProcessingException e) {
@@ -169,5 +162,5 @@ public class DefaultQueueListener {
             Thread.currentThread().interrupt();
         }
     }
-
+    
 }

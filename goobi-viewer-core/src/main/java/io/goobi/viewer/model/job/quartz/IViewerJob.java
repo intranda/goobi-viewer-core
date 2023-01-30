@@ -37,9 +37,9 @@ public interface IViewerJob extends Job {
     @Override
     public abstract void execute(JobExecutionContext context) throws JobExecutionException;
 
-    public abstract void setRunning(boolean running);
+    public abstract void setRunning(String jobName, boolean running);
 
-    public abstract boolean isRunning();
+    public abstract boolean isRunning(String jobName);
 
     public abstract String getJobName();
 
