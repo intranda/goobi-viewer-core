@@ -22,7 +22,9 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +36,7 @@ import org.quartz.SchedulerException;
 import io.goobi.viewer.controller.mq.MessageBroker;
 
 public abstract class AbstractViewerJob implements Job, IViewerJob {
-    private static boolean running = false;
+    private static Map<String, Boolean> running = new HashMap<>();
 
     private static final Logger log = LogManager.getLogger(AbstractViewerJob.class);
 
@@ -50,23 +52,23 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // execute job only, if no other instance is running
-        if (!running) {
+        String keyName = context.getJobDetail().getKey().getName();
+        if (!isRunning(keyName)) {
             log.trace("Start scheduled Job: " + getJobName());
-            if (!running) {
-                setRunning(true);
+            if (!isRunning(keyName)) {
+                setRunning(keyName, true);
                 try {
                     log.trace("start history updating for all processes");
-                    setRunning(true);
+                    setRunning(keyName, true);
                     MessageBroker broker = (MessageBroker) context.getScheduler().getContext().get("messageBroker");
-                    String keyName = context.getJobDetail().getKey().getName();
 
                     Map<String, Object> params = (Map<String, Object>) context.getScheduler().getContext().get(keyName);
                     execute(params, broker);
-                    setRunning(false);
+                    setRunning(keyName, false);
                 } catch (SchedulerException e) {
                     log.error(e);
                 } finally {
-                    setRunning(false);
+                    setRunning(keyName, false);
                 }
             }
             log.trace("End scheduled Job: " + getJobName());
@@ -74,12 +76,12 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
     }
 
     @Override
-    public boolean isRunning() {
-        return running;
+    public boolean isRunning(String jobName) {
+        return Optional.ofNullable(running.get(jobName)).orElse(false);
     }
 
     @Override
-    public void setRunning(boolean running) {
-        this.running = running;
+    public void setRunning(String jobName, boolean running) {
+        this.running.put(jobName, running);
     }
 }

@@ -45,6 +45,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
 import io.goobi.viewer.controller.AlphabetIterator;
+import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -6790,6 +6791,29 @@ public class JPADAO implements IDAO {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ViewerMessage> getActiveViewerMessages()
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a WHERE a.messageStatus = :wait OR a.messageStatus = :processing");
+
+            sbQuery.append(" ORDER BY a.lastUpdateTime ").append(QUERY_ELEMENT_DESC);
+            logger.trace(sbQuery);
+            Query q = em.createQuery(sbQuery.toString());
+            q.setParameter("wait", MessageStatus.WAIT);
+            q.setParameter("processing", MessageStatus.PROCESSING);
+            
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+
+            return q.getResultList();
+        } finally {
+            close(em);
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public List<ViewerMessage> getViewerMessages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)

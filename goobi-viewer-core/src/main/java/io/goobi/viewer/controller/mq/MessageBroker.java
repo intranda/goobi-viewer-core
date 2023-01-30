@@ -1,3 +1,25 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package io.goobi.viewer.controller.mq;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +41,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.MessageQueueBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * Manages handling of messages by their respective MessageHandlers. Main method is {@link #handle(ViewerMessage message)}
@@ -57,6 +81,15 @@ public class MessageBroker {
         } catch (JsonProcessingException | JMSException e) {
             logger.error("Error adding message {}/{} to queue: {}", message.getTaskName(), message.getMessageId(), e.toString(), e);
             return false;
+        } finally {            
+            notifyMessageQueueStateUpdate();
+        }
+    }
+
+    public static void notifyMessageQueueStateUpdate() {
+        MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
+        if(mqBean != null) {
+            mqBean.updateMessageQueueState();
         }
     }
     
@@ -74,8 +107,16 @@ public class MessageBroker {
         }
 
         // create database entry
-
+        updateMessageStatus(message, MessageStatus.PROCESSING);
+        notifyMessageQueueStateUpdate();
         MessageStatus rv = handler.call(message);
+        updateMessageStatus(message, rv);
+        notifyMessageQueueStateUpdate();
+
+        return rv;
+    }
+
+    private void updateMessageStatus(ViewerMessage message, MessageStatus rv) {
         message.setMessageStatus(rv);
         message.setLastUpdateTime(LocalDateTime.now());
         try {
@@ -87,8 +128,6 @@ public class MessageBroker {
         } catch (DAOException e) {
             logger.error(e);
         }
-
-        return rv;
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })

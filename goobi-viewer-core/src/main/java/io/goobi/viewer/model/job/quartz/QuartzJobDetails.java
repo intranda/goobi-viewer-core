@@ -22,6 +22,7 @@
 
 package io.goobi.viewer.model.job.quartz;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,8 +37,8 @@ public class QuartzJobDetails {
     private String jobName;
     private String jobGroup;
 
-    private Date previousFireTime;
-    private Date nextFireTime;
+    private LocalDateTime previousFireTime;
+    private LocalDateTime nextFireTime;
 
     private JobKey jobKey;
 
@@ -61,19 +62,19 @@ public class QuartzJobDetails {
         this.jobGroup = jobGroup;
     }
 
-    public Date getPreviousFireTime() {
+    public LocalDateTime getPreviousFireTime() {
         return previousFireTime;
     }
 
-    public void setPreviousFireTime(Date previousFireTime) {
+    public void setPreviousFireTime(LocalDateTime previousFireTime) {
         this.previousFireTime = previousFireTime;
     }
 
-    public Date getNextFireTime() {
+    public LocalDateTime getNextFireTime() {
         return nextFireTime;
     }
 
-    public void setNextFireTime(Date nextFireTime) {
+    public void setNextFireTime(LocalDateTime nextFireTime) {
         this.nextFireTime = nextFireTime;
     }
 
