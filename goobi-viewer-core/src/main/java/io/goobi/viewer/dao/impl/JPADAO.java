@@ -4079,7 +4079,7 @@ public class JPADAO implements IDAO {
             StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-
+            
             return (long) q.getSingleResult();
         } finally {
             close(em);
@@ -6803,8 +6803,7 @@ public class JPADAO implements IDAO {
             if (filters != null) {
                 String filterValue = filters.values().stream().findFirst().orElse("");
                 if (StringUtils.isNotBlank(filterValue)) {
-                    String filterQuery = getUsersFilterQuery("value");
-                    params.put("value", sanitizeQueryParam(filterValue, true));
+                    String filterQuery = createFilterQuery(null, filters, params);
                     sbQuery.append(filterQuery);
                 }
             }
@@ -6841,11 +6840,11 @@ public class JPADAO implements IDAO {
         if (filters != null) {
             String filterValue = filters.values().stream().findFirst().orElse("");
             if (StringUtils.isNotBlank(filterValue)) {
-                filterQuery = getUsersFilterQuery("value");
-                params.put("value", sanitizeQueryParam(filterValue, true));
+                filterQuery = createFilterQuery(null, filters, params);
             }
         }
-        return getFilteredRowCount("ViewerMessage", filterQuery, params);
+        long count = getFilteredRowCount("ViewerMessage", filterQuery, params);
+        return count;
     }
 
     @SuppressWarnings("unchecked")
