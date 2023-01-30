@@ -2714,7 +2714,7 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     public String getFacetFieldType(String facetField) {
-        return getPropertyForFacetField(facetField, "[@type]", "");
+        return getPropertyForFacetField(facetField, XML_PATH_ATTRIBUTE_TYPE, "");
     }
 
     /**

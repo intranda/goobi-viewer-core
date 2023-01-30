@@ -14,7 +14,7 @@
     <ui:param name="search" value="#{searchParam != null ? searchParam : searchBean}"></ui:param>
     <ui:param name="showSortingOptions" value="#{showSortingOptions != null ? showSortingOptions : true}"></ui:param>
     <ui:param name="displayHitsPerPage" value="#{displayHitsPerPage != null ? displayHitsPerPage : true}"></ui:param>
-
+	<ui:param name="listStyle" value="#{listStyle != null ? listStyle : ''}"></ui:param>
     
     <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
 
@@ -78,14 +78,14 @@
 			            urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
 
                </div>
-
+			
             <div class="clearfix"></div>
         </h:panelGroup>
 
 
         <div class="clearfix"></div>
         
-        <h:form class="search-list__hits__list" id="searchListHitsForm" prependId="false">
+        <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
                 <div class="search-list__hit">
                     <!-- COinS IMPLEMENTATION -->
@@ -159,12 +159,13 @@
             var searchSortingDropdownConfig = {};
             var searchListConfig = {
                 contextPath: "#{request.contextPath}",
-                    msg: {
-                        getMoreChildren: "#{msg.searchList_getMoreHits}"
-                    }
+                msg: {
+                    getMoreChildren: "#{msg.searchList_getMoreHits}"
+                },
+        		listStyle: "#{listStyle}",
             };
             
-            viewerJS.searchList.init( searchListConfig );
+             viewerJS.searchList.init( searchListConfig ); 
         } );
                         
         $( window ).on( "load", function() {

@@ -179,6 +179,7 @@ public class CitationDataProvider implements ItemDataProvider {
                     break;
                 case SCALE:
                     builder.scale(entry.getValue().get(0));
+                    break;
                 case TITLE:
                     builder.title(entry.getValue().get(0));
                     break;

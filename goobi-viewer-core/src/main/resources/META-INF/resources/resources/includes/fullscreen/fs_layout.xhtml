@@ -265,7 +265,7 @@
                     </div>
                     
                     <!-- STATISTICS -->
-					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive}">
+					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive and userBean.admin}">
 	                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
 	                            <span>#{msg.widget_usage_statistics__title}</span>

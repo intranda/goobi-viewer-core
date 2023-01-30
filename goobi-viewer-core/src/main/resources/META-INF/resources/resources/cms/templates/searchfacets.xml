@@ -16,11 +16,16 @@
                 <library>cms/components/backend/content</library>
                 <name>searchfacets</name>
             </jsfComponent>
-            <attributes>
-                <attribute name="type" value="heading"/>
-                <attribute name="level" value="h2"/>
-            </attributes>
         </item>
+        <item id="recordlist">
+			<label>cms_component__search_label</label>
+			<description>cms_content__text_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>searchhitlist</name>
+			</jsfComponent>
+		</item>
     </content>
 
     <attribute name="hideOnScreenSizes" type="toggle">
