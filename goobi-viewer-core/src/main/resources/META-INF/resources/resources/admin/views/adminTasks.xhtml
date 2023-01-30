@@ -36,7 +36,8 @@
 						<div class="admin__info-text">#{msg.admin__tasks__info_text}</div>
 
 
-						<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
+						<h:panelGroup layout="block" id="runningTasksQueueWrapper">
+							<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
 						
 						<div class="admin__tasks-title-wrapper">
 							<h2 class="admin__tasks-task-title">
@@ -48,7 +49,7 @@
 								<div
 									class="admin__tasks-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}"
 									data-js-trigger="#{messageQueueBean.paused ? 'resumeRunningTasksButton' : 'pauseRunningTasksButton'}"
-									title="#{msg.admin__tasks__resume_button_tooltip}"
+									title="#{messageQueueBean.paused ? msg.admin__tasks__resume_button_tooltip : msg.admin__tasks__pause_button_tooltip}"
 									data-toggle="tooltip" data-placement="top" data-trigger="hover">
 									<div class="admin__tasks-icon-loader"></div>
 									<div class="admin__tasks-icon">
@@ -139,8 +140,8 @@
 									data-target="showAllSingleTasks">
 
 									<div class="admin__tasks-task-details-column-heads">
-										<div>Identifier</div>
-										<div>Properties</div>
+										<div>#{msg.admin__tasks__task_identifier}</div>
+										<div>#{msg.admin__tasks__task_properties}</div>
 									</div>
 
 									<ui:repeat var="msgqueueticket"
@@ -197,46 +198,75 @@
 							</div>
 						</ui:repeat>
 						
+						<script>
+				     	// SCRIPT FOR MESSAGE QUEUE PAUSE/RESUME BUTTON FUNCTIONALITY
+						$('[data-js-trigger="resumeRunningTasksButton"]').on('click', function() {
+							$(this).toggleClass('-paused');
+						    $('[ data-target="resumeMsgQueueButton"]').click();
+						    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
+						});
+						
+						$('[data-js-trigger="pauseRunningTasksButton"]').on('click', function() {
+							$(this).toggleClass('-paused');
+							$(this).addClass('-stoppingStatus');
+						    $('[ data-target="pauseMsgQueueButton"]').click();
+						    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
+						});
+						
+						$('[data-js-trigger="showAllSingleTasks"]').on('click', function() {
+							event.preventDefault();
+						    $(this).closest('.admin__boxed-entry').find('[ data-target="showAllSingleTasks"]').slideToggle();
+						    $(this).closest('.admin__boxed-entry').find('[ data-target="showOrHideTasks"]').toggle();
+						});
+				
+						</script>
+					
 						</ui:fragment>
+						
+						</h:panelGroup>
 
 
+
+
+						<h:panelGroup id="quartzTableWrapper" layout="block" styleClass="admin__quartz">
+						
 						<div class="admin__tasks-title-wrapper">
 							<h2 class="admin__tasks-task-title">
 								<h:outputText value="#{msg.admin__tasks__planned_tasks}" />
 							</h2>
 
 							<div class="admin__tasks-status">
-								<!-- <div class="admin__tasks-icon-text">Status: #{messageQueueBean.paused ? 'stopped' : 'running'}</div> -->
 
 								<div
-									class="admin__tasks-icon-wrapper #{quartzBean.paused ? '-paused' : ''}"
+									class="admin__tasks-quartz-icon-wrapper #{quartzBean.paused ? '-stopped' : ''}"
 									data-js-trigger="#{quartzBean.paused ? 'resumeQuartzButton' : 'pauseQuartzButton'}"
-									title="#{msg.admin__tasks__resume_button_tooltip}"
+									title="#{quartzBean.paused ? msg.admin__tasks__quartz_start_all_button_tooltip : msg.admin__tasks__quartz_stop_all_button_tooltip}"
 									data-toggle="tooltip" data-placement="top" data-trigger="hover">
-									<div class="admin__tasks-icon-loader"></div>
+									<div class="admin__tasks-quartz-icon-holder"></div>
 									<div class="admin__tasks-icon">
 										<div data-target="playPauseQuartzToggle"
 											class="admin__tasks-button-pause #{quartzBean.paused ? '-hidden' : '-active'}">
-											<i class="fa fa-pause"></i>
+											<i class="fa fa-stop" aria-hidden="true"></i>
 										</div>
 										<div data-target="playPauseQuartzToggle"
 											class="admin__tasks-button-play #{quartzBean.paused ? '-active' : '-hidden'}">
 											<i class="fa fa-play"></i>
 										</div>
 									</div>
-								</div>
+								</div>			
+
 							</div>
 						</div>
 
-						<h:panelGroup id="quartzTableWrapper" styleClass="admin__quartz">
-
 							<button data-target="pauseQuartzButton"
 								jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
+								<f:ajax execute="@form" render="quartzTableWrapper" />
 								<i class="fa fa-pause"></i>
 							</button>
 
 							<button data-target="resumeQuartzButton"
 								jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
+								<f:ajax execute="@form" render="quartzTableWrapper" />
 								<i class="fa fa-play"></i>
 							</button>
 
@@ -247,12 +277,12 @@
 								<!-- TITLE ROW -->
 								<div class="row no-gutters admin__table-title" role="row">
 									<!-- NAME COL -->
-									<div class="col-3 d-flex">Name</div>
+									<div class="col-3 d-flex">#{msg.admin__tasks__quartz_single_name}</div>
 									<!-- LAST LOGIN COL -->
-									<div class="col-3 d-flex">Group</div>
-									<div class="col-2 d-flex">previousFireTime</div>
-									<div class="col-2 d-flex">nextFireTime</div>
-									<div class="col-2 d-flex">Turnus</div>
+									<div class="col-3 d-flex">#{msg.admin__tasks__quartz_single_group}</div>
+									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_last}</div>
+									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_next}</div>
+									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_cycle}</div>
 
 								</div>
 
@@ -291,7 +321,7 @@
 												#{msg.admin__tasks__run_once_now}
 												<f:setPropertyActionListener
 													target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
-												<f:ajax execute="@form" render="@form" />
+												<f:ajax execute="@form" render="runningTasksQueueWrapper" />
 											</button>
 											
 											
@@ -309,7 +339,12 @@
 											<h:outputText value="#{entry.previousFireTime}" />
 										</div>
 										<div class="col-2 d-flex align-items-center admin__tasks-quartz-table-row-data" role="gridcell">
-											<h:outputText value="#{entry.nextFireTime}" />
+												<h:outputText value="#{entry.nextFireTime}">
+<!-- 													<f:convertDateTime type="localDate" pattern="#{navigationHelper.dateTimePattern}" /> -->
+												</h:outputText>
+											
+											
+											
 										</div>
 
 										<div
@@ -328,6 +363,22 @@
 									</h:panelGroup>
 								</ui:repeat>
 							</div>
+							
+						<script>
+				     	// SCRIPT FOR QUARTZ START/STOP ALL QUARTZ JOBS BUTTON
+							$('[data-js-trigger="resumeQuartzButton"]').on('click', function() {
+								$(this).toggleClass('-paused');
+				 			    $('[ data-target="resumeQuartzButton"]').click();
+							    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+							});
+							
+							$('[data-js-trigger="pauseQuartzButton"]').on('click', function() {
+								$(this).toggleClass('-paused');
+								$(this).addClass('-stoppingStatus');
+				 			    $('[data-target="pauseQuartzButton"]').click();
+							    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+							});
+						</script>
 
 						</h:panelGroup>
 
@@ -352,7 +403,7 @@
 										
 										<!-- TODO: ADD FILTER FOR targetPI, TOO  -->
                                         <viewerComponent:dataTableColumnFilter
-                                            key="admin__comment_search"
+                                            key="admin__tasks__history_table_search"
                                             filter="#{messageQueueBean.lazyModelViewerHistory.getFilter('pi_taskName_messageStatus')}" />
 								</div>
 							</div>
@@ -422,7 +473,13 @@
 												</ui:repeat>
 											</div>
 											<div class="col-2 d-flex">
-												<h:outputText value="#{msg[message.lastUpdateTime]}" />
+												<h:outputText value="#{message.lastUpdateTime}">
+													<f:convertDateTime type="localDateTime" pattern="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
+												
+
+												
+												
 											</div>
 											<div class="col-1 d-flex">
 												<h:outputText value="#{msg[message.messageStatus]}" />
@@ -440,51 +497,6 @@
 						</h:panelGroup>
 
 					</div>
-					
-					<script>
-			     	// SCRIPT FOR MESSAGE QUEUE PAUSE/RESUME BUTTON FUNCTIONALITY
-					$('[data-js-trigger="resumeRunningTasksButton"]').on('click', function() {
-						$(this).toggleClass('-paused');
-					    $('[ data-target="resumeMsgQueueButton"]').click();
-					    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
-					});
-					
-					$('[data-js-trigger="pauseRunningTasksButton"]').on('click', function() {
-						$(this).toggleClass('-paused');
-						$(this).addClass('-stoppingStatus');
-					    $('[ data-target="pauseMsgQueueButton"]').click();
-					    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
-					});
-					
-			// 		$('[data-js-trigger="clearAllButton"]').on('click', function() {
-			// 		    $('[ data-target="clearMsgQueueButton"]').click();
-			// 		});
-					
-					$('[data-js-trigger="showAllSingleTasks"]').on('click', function() {
-						event.preventDefault();
-					    $(this).closest('.admin__boxed-entry').find('[ data-target="showAllSingleTasks"]').slideToggle();
-					    $(this).closest('.admin__boxed-entry').find('[ data-target="showOrHideTasks"]').toggle();
-					});
-			
-					</script>
-			
-			
-			
-					<script>
-			     	// SCRIPT FOR QUARTZ PAUSE/RESUME BUTTON FUNCTIONALITY
-						$('[data-js-trigger="resumeQuartzButton"]').on('click', function() {
-							$(this).toggleClass('-paused');
-			 			    $('[ data-target="resumeQuartzButton"]').click();
-						    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
-						});
-						
-						$('[data-js-trigger="pauseQuartzButton"]').on('click', function() {
-							$(this).toggleClass('-paused');
-							$(this).addClass('-stoppingStatus');
-			 			    $('[data-target="pauseQuartzButton"]').click();
-						    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
-						});
-					</script>		
 
 				</h:form>
 			</h:panelGroup>

@@ -2148,6 +2148,71 @@
 	&__tasks-single-job-wrapper {
 		
 	}
+	&__tasks-quartz-icon-wrapper {
+		position: relative;
+		display: flex;
+		cursor: pointer;
+	}
+
+	&__tasks-quartz-icon-wrapper {
+		position: relative;
+		display: flex;
+		cursor: pointer;
+		.fa {
+			transition: all 0.2s ease;
+		}
+		.fa-play {
+			margin-left: 2px;
+		}
+		&.-stopped {
+				.admin__tasks-button-pause {
+					display: none;
+				}
+				.admin__tasks-button-play {
+					display: flex;
+				}	
+			.admin__tasks-icon-loader {
+				background: rgba(255, 111, 0, 0.2);
+				animation-play-state: paused;
+				border: 3px solid #ff6f00;
+			}
+		}
+		&.-stoppingStatus {
+			.admin__tasks-icon-loader {
+				background: #e2ffe2;
+				border: 3px solid @greenBar;
+				border-bottom-color: #f2f3f4;
+				opacity: 0.8;
+			}
+			.admin__tasks-icon {
+				opacity: 0.8;
+			}
+		}
+	}
+	&__tasks-quartz-icon-holder {
+		width: 30px;
+		height: 30px;
+		display: inline-block;
+		position: relative;
+	}
+	&__tasks-quartz-icon {
+		position: absolute;
+		top: 50%;
+		right: 50%;
+		transform: translate(50%,-50%);
+		font-size: 14px;
+		color: #1a321a;
+	}
+
+
+
+
+
+
+
+
+
+
 	&__tasks-table-row {
 		&.-error {
 			background: #fdbcb0;
