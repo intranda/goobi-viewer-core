@@ -429,7 +429,6 @@ public class Metadata implements Serializable {
                     value = value.replace("<", "");
                     value = value.replace(">", "");
                     value = value.replace(" ", "_");
-                    // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
                     break;
                 case TRANSLATEDFIELD:
                     // Values that are message keys (or collection names, etc.)
@@ -536,7 +535,11 @@ public class Metadata implements Serializable {
                     value = value.replace("&lt;br /&gt;", "<br />");
             }
             value = value.replace("'", "&#39;");
-            value = SearchHelper.replaceHighlightingPlaceholders(value);
+            if (param.isRemoveHighlighting()) {
+                value = SearchHelper.removeHighlightingPlaceholders(value);
+            } else {
+                value = SearchHelper.replaceHighlightingPlaceholders(value);
+            }
 
             if (paramIndex >= 0) {
                 while (mdValue.getParamLabels().size() <= paramIndex) {

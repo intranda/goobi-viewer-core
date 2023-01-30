@@ -1525,8 +1525,8 @@ public final class SearchHelper {
      * </p>
      *
      * @param phrase a {@link java.lang.String} object.
-     * @should replace placeholders with bold tags
      * @return a {@link java.lang.String} object.
+     * @should replace placeholders with bold tags
      */
     public static String replaceHighlightingPlaceholdersForHyperlinks(String phrase) {
         return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span style=\"color:blue\">").replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
@@ -1538,8 +1538,8 @@ public final class SearchHelper {
      * </p>
      *
      * @param phrase a {@link java.lang.String} object.
-     * @should replace placeholders with html tags
      * @return a {@link java.lang.String} object.
+     * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
         return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
@@ -1547,16 +1547,13 @@ public final class SearchHelper {
     }
 
     /**
-     * <p>
-     * removeHighlightingTags.
-     * </p>
-     *
-     * @param phrase a {@link java.lang.String} object.
-     * @return Given phrase without the highlighting html tags
-     * @should remove html tags
+     * 
+     * @param phrase
+     * @return
+     * @should replace placeholders with empty strings
      */
-    public static String removeHighlightingTags(String phrase) {
-        return phrase.replace("<span class=\"search-list--highlight\">", "").replace("</span>", "");
+    public static String removeHighlightingPlaceholders(String phrase) {
+        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "").replace(PLACEHOLDER_HIGHLIGHTING_END, "");
     }
 
     /**
