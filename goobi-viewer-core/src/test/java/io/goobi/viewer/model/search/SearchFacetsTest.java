@@ -399,8 +399,8 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     public void isHasRangeFacets_shouldReturnCorrectValue() throws Exception {
         SearchFacets facets = new SearchFacets();
         Assert.assertFalse(facets.isHasRangeFacets());
-        facets.minValues.put(SolrConstants.YEAR, "1");
-        facets.maxValues.put(SolrConstants.YEAR, "10");
+        facets.getMinValues().put(SolrConstants.YEAR, "1");
+        facets.getMaxValues().put(SolrConstants.YEAR, "10");
         Assert.assertTrue(facets.isHasRangeFacets());
     }
 

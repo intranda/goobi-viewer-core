@@ -68,9 +68,9 @@ public class SearchFacets implements Serializable {
 
     private final Map<String, Boolean> facetsExpanded = new HashMap<>();
 
-    final Map<String, String> minValues = new HashMap<>();
+    private final Map<String, String> minValues = new HashMap<>();
 
-    final Map<String, String> maxValues = new HashMap<>();
+    private final Map<String, String> maxValues = new HashMap<>();
 
     private final Map<String, List<Integer>> valueRanges = new HashMap<>();
     /** Map storing labels from separate label fields that were already retrieved from the index. */
@@ -951,6 +951,24 @@ public class SearchFacets implements Serializable {
      */
     public boolean isFacetExpanded(String field) {
         return facetsExpanded.get(field) != null && facetsExpanded.get(field);
+    }
+
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the minValues
+     */
+    Map<String, String> getMinValues() {
+        return minValues;
+    }
+
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the maxValues
+     */
+    Map<String, String> getMaxValues() {
+        return maxValues;
     }
 
     /**
