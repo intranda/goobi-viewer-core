@@ -53,6 +53,19 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#resetActiveFacets()
+     * @verifies reset facets correctly
+     */
+    @Test
+    public void resetActiveFacets_shouldResetFacetsCorrectly() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("foo:bar;;");
+        Assert.assertEquals("foo%3Abar%3B%3B", facets.getActiveFacetString());
+        facets.resetActiveFacets();
+        Assert.assertEquals("-", facets.getActiveFacetString());
+    }
+
+    /**
      * @see SearchFacets#generateFacetPrefix(List,boolean)
      * @verifies encode slashed and backslashes
      */
@@ -146,7 +159,6 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("A", facetItems.get(0).getLabel());
         Assert.assertEquals("A*", facetItems.get(0).getValue());
     }
-    
 
     /**
      * @see SearchFacets#parseFacetString(String,List,Map)
@@ -314,6 +326,20 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
+     * @verifies skip hierarchical fields
+     */
+    @Test
+    public void generateSimpleFacetFilterQueries_shouldSkipHierarchicalFields() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;DC:foo.bar;;");
+        List<String> result = facets.generateSimpleFacetFilterQueries(false);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("FIELD1:a", result.get(0));
+        Assert.assertEquals("FIELD2:b", result.get(1));
+    }
+
+    /**
+     * @see SearchFacets#generateSimpleFacetFilterQueries(boolean)
      * @verifies combine facet queries if field name same
      */
     @Test
@@ -334,8 +360,62 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateSubElementFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":article");
-        Assert.assertEquals("FACET_" + SolrConstants.DOCSTRCT_SUB + ":article", facets.generateSubElementFacetFilterQuery());
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;" + SolrConstants.DOCSTRCT_SUB + ":article;;" + SolrConstants.DOCSTRCT_SUB + ":cover;;");
+        Assert.assertEquals("FACET_" + SolrConstants.DOCSTRCT_SUB + ":article AND " + "FACET_" + SolrConstants.DOCSTRCT_SUB + ":cover",
+                facets.generateSubElementFacetFilterQuery());
+    }
+
+    /**
+     * @see SearchFacets#getActiveFacetsForField(String)
+     * @verifies return correct items
+     */
+    @Test
+    public void getActiveFacetsForField_shouldReturnCorrectItems() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;");
+        List<IFacetItem> result = facets.getActiveFacetsForField("FIELD1");
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals("FIELD1", result.get(0).getField());
+        Assert.assertEquals("a", result.get(0).getValue());
+    }
+
+    /**
+     * @see SearchFacets#isFacetCurrentlyUsed(IFacetItem)
+     * @verifies return correct value
+     */
+    @Test
+    public void isFacetCurrentlyUsed_shouldReturnCorrectValue() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("FIELD1:a;;");
+        Assert.assertTrue(facets.isFacetCurrentlyUsed(new FacetItem("FIELD1:a", false)));
+        Assert.assertFalse(facets.isFacetCurrentlyUsed(new FacetItem("FIELD1:b", false)));
+    }
+
+    /**
+     * @see SearchFacets#isHasRangeFacets()
+     * @verifies return correct value
+     */
+    @Test
+    public void isHasRangeFacets_shouldReturnCorrectValue() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assert.assertFalse(facets.isHasRangeFacets());
+        facets.getMinValues().put(SolrConstants.YEAR, "1");
+        facets.getMaxValues().put(SolrConstants.YEAR, "10");
+        Assert.assertTrue(facets.isHasRangeFacets());
+    }
+
+    /**
+     * @see SearchFacets#generateHierarchicalFacetFilterQuery()
+     * @verifies generate query correctly
+     */
+    @Test
+    public void generateHierarchicalFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("MD_FOO:bar;;DC:a.b;;MD_CREATOR:bob;;");
+
+        String result = facets.generateHierarchicalFacetFilterQuery();
+        Assert.assertEquals("(FACET_DC:\"a.b\" OR FACET_DC:a.b.*) AND (FACET_CREATOR:\"bob\" OR FACET_CREATOR:bob.*)", result);
+
     }
 
     /**

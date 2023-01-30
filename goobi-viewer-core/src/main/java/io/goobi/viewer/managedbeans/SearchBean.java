@@ -1473,6 +1473,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * 
      * @return
+     * @deprecated No longer relevant for current implementation
      */
     @Deprecated(since = "2023.01")
     public String removeChronologyFacetAction() {
