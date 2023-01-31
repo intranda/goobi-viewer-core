@@ -107,7 +107,7 @@ public class QuartzBean implements Serializable {
                     String cronExpr = cronTrigger.getCronExpression();
                     details.setCronExpression(cronExpr);
                 }
-                if (TriggerState.PAUSED.equals(scheduler.getTriggerState(trigger.getKey()))) {
+                if (this.paused || TriggerState.PAUSED.equals(scheduler.getTriggerState(trigger.getKey()))) {
                     details.setPaused(true);
                 }
 
