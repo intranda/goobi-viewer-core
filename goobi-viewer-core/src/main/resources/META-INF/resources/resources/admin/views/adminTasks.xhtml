@@ -104,20 +104,7 @@
 							action="#{messageQueueBean.resumeQueue}"
 							pt:data-target="resumeMsgQueueButton">
 					    	<f:ajax execute="@form" render="@form" />
-						</h:commandButton>
-						
-						
-						
-<!-- 						<button jsf:action="#{messageQueueBean.resumeQueue}" -->
-<!-- 							jsf:id="resumeMsgQueueButtonxx" data-target="abcdefg" -->
-<!-- 							jsf:process="@form" jsf:update="@form" -->
-<!-- 							class="btn"> -->
-<!-- 							<i class="fa fa-play"></i> -->
-<!-- 							PLAY -->
-<!-- 						</button> -->
-						
-
-						
+						</h:commandButton>						
 
 						<!-- INDIVIDUAL ROWS -->
 						<ui:repeat var="task" value="#{messageQueueBean.queueContent}">
@@ -149,7 +136,7 @@
 
 										<div class="admin__tasks-task-details-row">
 
-											<div class="admin__tasks-task-details-row-entry">
+											<div class="admin__tgetActiveJobsasks-task-details-row-entry">
 												<h:outputText value="#{msgqueueticket.pi}" />
 											</div>
 											<div class="admin__tasks-task-details-row-entry">
@@ -235,7 +222,7 @@
 								<h:outputText value="#{msg.admin__tasks__planned_tasks}" />
 							</h2>
 
-							<div class="admin__tasks-status">
+							 <h:panelGroup layout="block" id="pauseAllGroup" class="admin__tasks-status">
 
 								<div
 									class="admin__tasks-quartz-icon-wrapper #{quartzBean.paused ? '-stopped' : ''}"
@@ -255,20 +242,21 @@
 									</div>
 								</div>			
 
-							</div>
+							</h:panelGroup>
+							
 						</div>
+						
+						<button data-target="pauseQuartzButton"
+							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
+							<f:ajax execute="@form" render="quartzTableWrapper" />
+							<i class="fa fa-pause"></i>
+						</button>
 
-							<button data-target="pauseQuartzButton"
-								jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
-								<f:ajax execute="@form" render="quartzTableWrapper" />
-								<i class="fa fa-pause"></i>
-							</button>
-
-							<button data-target="resumeQuartzButton"
-								jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
-								<f:ajax execute="@form" render="quartzTableWrapper" />
-								<i class="fa fa-play"></i>
-							</button>
+						<button data-target="resumeQuartzButton"
+							jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
+							<f:ajax execute="@form" render="quartzTableWrapper" />
+							<i class="fa fa-play"></i>
+						</button>
 
 							<!-- show all active message types -->
 							<div style="width: 100%;" id="new-table-adminallmessagetypes"
@@ -298,14 +286,14 @@
 												
 													<button jsf:action="#{quartzBean.pauseJob}" class="btn btn--clean admin__tasks-quartz-table-pause-button">
 														<i class="fa fa-pause" />
-														<f:ajax execute="@form" render="quartzRowID" />
+														<f:ajax execute="@form" render="quartzRowID pauseAllGroup" />
 														<f:setPropertyActionListener
 															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
 													</button>
 		
 													<button jsf:action="#{quartzBean.resumeJob}" class="btn btn--clean admin__tasks-quartz-table-play-button">
 														<i class="fa fa-play" />
-														<f:ajax execute="@form" render="quartzRowID" />
+														<f:ajax execute="@form" render="quartzRowID pauseAllGroup" />
 														<f:setPropertyActionListener
 															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
 													</button>

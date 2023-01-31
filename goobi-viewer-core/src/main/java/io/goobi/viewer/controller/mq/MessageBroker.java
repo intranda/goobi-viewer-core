@@ -108,7 +108,7 @@ public class MessageBroker {
 
         // create database entry
         updateMessageStatus(message, MessageStatus.PROCESSING);
-        notifyMessageQueueStateUpdate();
+        //notifyMessageQueueStateUpdate();
         MessageStatus rv = handler.call(message);
         updateMessageStatus(message, rv);
         notifyMessageQueueStateUpdate();

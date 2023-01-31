@@ -5444,4 +5444,12 @@ public class Configuration extends AbstractConfiguration {
     public String getActiveMQPassword() {
         return getLocalString("activeMQ.password", "");
     }
+    
+    public String getQuartzSchedulerCronExpression(String taskName) {
+        return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", getQuartzSchedulerCronExpression());
+    }
+    
+    public String getQuartzSchedulerCronExpression() {
+        return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
+    }
 }

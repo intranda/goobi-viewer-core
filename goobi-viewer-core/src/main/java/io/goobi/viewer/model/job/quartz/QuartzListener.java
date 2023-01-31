@@ -32,6 +32,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
@@ -46,6 +47,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageBroker;
 import io.goobi.viewer.dao.IDAO;
@@ -60,6 +62,7 @@ public class QuartzListener implements ServletContextListener {
     private static final String DEFAULT_SCHEDULER_EXPRESSION = "0 0 0 * * ?";
     
     private final IDAO dao;
+    private final Configuration config;
     @Inject 
     transient private MessageBroker messageBroker;
     @Inject
@@ -67,10 +70,12 @@ public class QuartzListener implements ServletContextListener {
     
     public QuartzListener() throws DAOException {
         this.dao = DataManager.getInstance().getDao();
+        this.config = DataManager.getInstance().getConfiguration();
     }
     
-    public QuartzListener(IDAO dao, MessageBroker messageBroker) {
+    public QuartzListener(IDAO dao, Configuration config, MessageBroker messageBroker) {
         this.dao = dao;
+        this.config = config;
         this.messageBroker = messageBroker;
     }
     
@@ -105,15 +110,24 @@ public class QuartzListener implements ServletContextListener {
         Scheduler sched = schedFact.getScheduler();
         sched.start();
         sched.getContext().put("messageBroker", messageBroker);
-        
         try {
             List<RecurringTaskTrigger> triggers = loadOrCreateTriggers();
             for (RecurringTaskTrigger trigger : triggers) {
-                HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression() ,messageBroker);
                 
+                //first check trigger cron expression and update it if necessary
+                String cronExpression = config.getQuartzSchedulerCronExpression(trigger.getTaskType());
+                if(!StringUtils.equals(trigger.getScheduleExpression(), cronExpression)) {
+                    trigger.setScheduleExpression(cronExpression);
+                    this.dao.updateRecurringTaskTrigger(trigger);
+                }
+                
+                //Initialize CronJob
+                HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression() ,messageBroker);
                 JobDetail jobDetail = initializeCronJob(job, sched);
                 Map<String, Object> params = getParams(job.getTaskType(), true, servletContext);
                 sched.getContext().put(jobDetail.getKey().getName(), params);
+                
+                //set to pause depending on stored trigger status
                 if(TaskTriggerStatus.PAUSED.equals(trigger.getStatus())) {                    
                     sched.pauseJob(jobDetail.getKey());
                 }
@@ -129,7 +143,7 @@ public class QuartzListener implements ServletContextListener {
         params.put("runInQueue", runInQueue);
         switch(taskType) {
             case UPDATE_SITEMAP:
-                String rootUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl();
+                String rootUrl = this.config.getViewerBaseUrl();
                 String realPath =  servletContext.getRealPath("/");
                 params.put("viewerRootUrl", rootUrl);
                 params.put("baseurl", realPath);

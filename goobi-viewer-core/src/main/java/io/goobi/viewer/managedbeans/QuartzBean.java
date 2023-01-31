@@ -66,8 +66,22 @@ public class QuartzBean implements Serializable {
 
     public QuartzBean() throws SchedulerException {
         scheduler = new StdSchedulerFactory().getScheduler();
+        initializePausedState();
     }
-    
+
+    private void initializePausedState() throws SchedulerException {
+        this.paused = true;
+        for (String groupName : scheduler.getJobGroupNames()) {
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                Trigger trigger = scheduler.getTriggersOfJob(jobKey).get(0);
+                if (!TriggerState.PAUSED.equals(scheduler.getTriggerState(trigger.getKey()))) {
+                    this.paused = false;
+                    break;
+                }
+            }
+        }
+    }
+
     public List<QuartzJobDetails> getActiveJobs() throws SchedulerException {
         List<QuartzJobDetails> activeJobs = new ArrayList<>();
         for (String groupName : scheduler.getJobGroupNames()) {
@@ -97,7 +111,7 @@ public class QuartzBean implements Serializable {
                     details.setPaused(true);
                 }
 
-                LocalDateTime nextFireTime =  DateTools.convertDateToLocalDateTimeViaInstant(trigger.getNextFireTime());
+                LocalDateTime nextFireTime = DateTools.convertDateToLocalDateTimeViaInstant(trigger.getNextFireTime());
                 LocalDateTime lastFireTime = DateTools.convertDateToLocalDateTimeViaInstant(trigger.getPreviousFireTime());
                 details.setNextFireTime(nextFireTime);
                 details.setPreviousFireTime(lastFireTime);
@@ -139,18 +153,19 @@ public class QuartzBean implements Serializable {
         try {
             scheduler.pauseJob(quartzJobDetails.getJobKey());
             persistTriggerStatus(quartzJobDetails.getJobName(), TaskTriggerStatus.PAUSED);
+            initializePausedState();
         } catch (SchedulerException e) {
             log.error(e);
         }
     }
 
-    private void persistTriggerStatus(String jobName, TaskTriggerStatus status){
-        try {            
+    private void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
+        try {
             IDAO dao = DataManager.getInstance().getDao();
             RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
             trigger.setStatus(status);
             dao.updateRecurringTaskTrigger(trigger);
-        } catch(DAOException e) {
+        } catch (DAOException e) {
             log.error(e);
         }
     }
@@ -169,6 +184,7 @@ public class QuartzBean implements Serializable {
         try {
             scheduler.resumeJob(quartzJobDetails.getJobKey());
             persistTriggerStatus(quartzJobDetails.getJobName(), TaskTriggerStatus.RUNNING);
+            this.paused = false;
         } catch (SchedulerException e) {
             log.error(e);
         }
