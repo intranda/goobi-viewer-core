@@ -240,7 +240,23 @@
 											<i class="fa fa-play"></i>
 										</div>
 									</div>
-								</div>			
+								</div>	
+								
+								<script>
+						     	// SCRIPT FOR QUARTZ START/STOP ALL QUARTZ JOBS BUTTON
+									$('[data-js-trigger="resumeQuartzButton"]').on('click', function() {
+										$(this).toggleClass('-paused');
+						 			    $('[ data-target="resumeQuartzButton"]').click();
+									    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+									});
+									
+									$('[data-js-trigger="pauseQuartzButton"]').on('click', function() {
+										$(this).toggleClass('-paused');
+										$(this).addClass('-stoppingStatus');
+						 			    $('[data-target="pauseQuartzButton"]').click();
+									    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+									});
+								</script>	
 
 							</h:panelGroup>
 							
@@ -352,21 +368,7 @@
 								</ui:repeat>
 							</div>
 							
-						<script>
-				     	// SCRIPT FOR QUARTZ START/STOP ALL QUARTZ JOBS BUTTON
-							$('[data-js-trigger="resumeQuartzButton"]').on('click', function() {
-								$(this).toggleClass('-paused');
-				 			    $('[ data-target="resumeQuartzButton"]').click();
-							    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
-							});
-							
-							$('[data-js-trigger="pauseQuartzButton"]').on('click', function() {
-								$(this).toggleClass('-paused');
-								$(this).addClass('-stoppingStatus');
-				 			    $('[data-target="pauseQuartzButton"]').click();
-							    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
-							});
-						</script>
+
 
 						</h:panelGroup>
 
