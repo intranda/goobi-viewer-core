@@ -27,6 +27,12 @@ import java.util.Map;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -149,5 +155,14 @@ public class ViewerMessage {
     public LocalDateTime getLastUpdateTime() {
         return lastUpdateTime;
     }
+    
+    public boolean isProcessing() {
+        return MessageStatus.PROCESSING.equals(getMessageStatus());
+    }
 
+    public static ViewerMessage parseJSON(String json) throws JsonMappingException, JsonProcessingException {
+        return new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)    
+                .registerModule(new JavaTimeModule()).readValue(json, ViewerMessage.class);
+    }
 }

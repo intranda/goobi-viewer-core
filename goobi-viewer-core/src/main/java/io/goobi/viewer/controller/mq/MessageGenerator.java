@@ -62,7 +62,7 @@ public class MessageGenerator {
             throws JMSException, JsonProcessingException {
 
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory();
-        connFactory.setTrustedPackages(Arrays.asList("io.goobi.managedbeans", "io.goobi.viewer.model.job.mq"));
+        connFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
 
         Connection conn = connFactory.createConnection(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
                 DataManager.getInstance().getConfiguration().getActiveMQPassword());

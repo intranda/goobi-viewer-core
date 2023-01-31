@@ -65,7 +65,7 @@ public class DefaultQueueListener {
 
     public void register(String username, String password, String queueType) throws JMSException {
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory("vm://localhost");
-        connFactory.setTrustedPackages(Arrays.asList("io.goobi.managedbeans", "io.goobi.viewer.model.job.mq"));
+        connFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
         conn = (ActiveMQConnection) connFactory.createConnection(username, password);
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
@@ -86,15 +86,13 @@ public class DefaultQueueListener {
                         Optional<ViewerMessage> optTicket = Optional.empty();
                         if (message instanceof TextMessage) {
                             TextMessage tm = (TextMessage) message;
-                            optTicket =
-                                    Optional.of(new ObjectMapper().registerModule(new JavaTimeModule()).readValue(tm.getText(), ViewerMessage.class));
+                            optTicket = Optional.of(ViewerMessage.parseJSON(tm.getText()));
                         }
                         if (message instanceof BytesMessage) {
                             BytesMessage bm = (BytesMessage) message;
                             byte[] bytes = new byte[(int) bm.getBodyLength()];
                             bm.readBytes(bytes);
-                            optTicket = Optional
-                                    .of(new ObjectMapper().registerModule(new JavaTimeModule()).readValue(new String(bytes), ViewerMessage.class));
+                            optTicket = Optional.of(ViewerMessage.parseJSON(new String(bytes)));
                         }
                         if (optTicket.isPresent()) {
                             log.debug("Handling ticket {}", optTicket.get());
@@ -111,9 +109,8 @@ public class DefaultQueueListener {
 
                             ticket.setMessageId(message.getJMSMessageID());
                             try {
-                                
                                 MessageStatus result = messageBroker.handle(ticket);
-
+                                
                                 if (result != MessageStatus.ERROR) {
                                     //acknowledge message, it is done
                                     message.acknowledge();
@@ -124,6 +121,8 @@ public class DefaultQueueListener {
                             } catch (Throwable t) {
                                 log.error("Error handling ticket " + message.getJMSMessageID() + ": ", t);
                                 sess.recover();
+                            } finally {
+//                                message.setBooleanProperty("processing", false);
                             }
                         }
                     } catch (JMSException | JsonProcessingException e) {

@@ -137,7 +137,7 @@
 										<div class="admin__tasks-task-details-row">
 
 											<div class="admin__tgetActiveJobsasks-task-details-row-entry">
-												<h:outputText value="#{msgqueueticket.pi}" />
+												<h:outputText value="#{msgqueueticket.messageId}" />
 											</div>
 											<div class="admin__tasks-task-details-row-entry">
 												<ui:repeat var="prop"
@@ -176,7 +176,7 @@
 										<button class="admin__boxed-entry-actions-delete -redlink"
 											data-require-confirmation="true"
 											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__tasks__delete_message_type_confirmation, task.key)}"
-											jsf:action="#{messageQueueBean.removeMessagesFromQueue}"
+											jsf:action="#{messageQueueBean.removeMessagesFromQueue(task.key)}"
 											aria-label="#{msg.delete}: #{task.key}">
 											#{msg.delete}</button>
 

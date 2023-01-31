@@ -59,11 +59,8 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
-import javax.jms.QueueReceiver;
 import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.management.MalformedObjectNameException;
@@ -82,8 +79,6 @@ import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
 
 import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.StartQueueBrokerListener;
@@ -127,7 +122,7 @@ public class MessageQueueBean implements Serializable {
         if (this.messageBrokerStart) {
 
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-            connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.managedbeans", "io.goobi.viewer.model.job.mq"));
+            connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
 
             try {
                 connection =
@@ -235,7 +230,6 @@ public class MessageQueueBean implements Serializable {
 
                 QueueViewMBean mbean =
                         (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-
                 mbean.purge();
             } catch (Exception e) {
                 log.error(e);
@@ -275,10 +269,8 @@ public class MessageQueueBean implements Serializable {
                 Enumeration<?> messagesInQueue = browser.getEnumeration();
                 while (messagesInQueue.hasMoreElements() && answer.size() < 100) {
                     ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
-                    ViewerMessage ticket =
-                            new ObjectMapper().registerModule(new JavaTimeModule()).readValue(queueMessage.getText(), ViewerMessage.class);
+                    ViewerMessage ticket = ViewerMessage.parseJSON(queueMessage.getText());
                     ticket.setMessageId(queueMessage.getJMSMessageID());
-
                     answer.add(ticket);
                 }
                 browser.close();
@@ -294,19 +286,24 @@ public class MessageQueueBean implements Serializable {
      * Remove all active messages of a given type from the queue
      * 
      */
-    public void removeMessagesFromQueue() {
-        if (StringUtils.isNotBlank(messageType)) {
+    public void removeMessagesFromQueue(String type) {
+
+        if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             try {
-                Queue queue = queueSession.createQueue("viewer");
-                MessageConsumer consumer = queueSession.createConsumer(queue, "JMSType='" + messageType + "'");
-                connection.start();
-                Message message = consumer.receiveNoWait();
-                while (message != null) {
-                    message.acknowledge();
-                    message = consumer.receiveNoWait();
-                }
-                connection.stop();
-            } catch (JMSException e) {
+                FacesContext facesContext = FacesContext.getCurrentInstance();
+                ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
+                StartQueueBrokerListener listener = (StartQueueBrokerListener) servletContext.getAttribute("BrokerService");
+
+                BrokerService broker = listener.getBroker();
+
+                ObjectName queueViewMBeanName =
+                        new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
+
+                QueueViewMBean mbean =
+                        (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+                int removed = mbean.removeMatchingMessages("JMSType='" + type + "'");
+                log.debug("Removed {} messages of type {} from queue", removed, type);
+            } catch (Exception e) {
                 log.error(e);
             }
         }
@@ -320,19 +317,27 @@ public class MessageQueueBean implements Serializable {
      */
 
     public void deleteMessage(ViewerMessage ticket) {
-        try {
-            connection.start();
-            Queue queue = queueSession.createQueue("viewer");
-            QueueReceiver receiver = queueSession.createReceiver(queue, "JMSMessageID='" + ticket.getMessageId() + "'");
-            Message message = receiver.receiveNoWait();
+        
+        if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+            try {
+                FacesContext facesContext = FacesContext.getCurrentInstance();
+                ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
+                StartQueueBrokerListener listener = (StartQueueBrokerListener) servletContext.getAttribute("BrokerService");
 
-            if (message != null) {
-                message.acknowledge();
+                BrokerService broker = listener.getBroker();
+
+                ObjectName queueViewMBeanName =
+                        new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
+
+                QueueViewMBean mbean =
+                        (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+                int removed = mbean.removeMatchingMessages("JMSMessageID='" + ticket.getMessageId() + "'");
+                log.debug("Removed {} messages with id {} from queue", removed, ticket.getMessageId());
+            } catch (Exception e) {
+                log.error(e);
             }
-            connection.stop();
-        } catch (JMSException e) {
-            log.error(e);
         }
+
     }
 
     public String getMessageType() {
