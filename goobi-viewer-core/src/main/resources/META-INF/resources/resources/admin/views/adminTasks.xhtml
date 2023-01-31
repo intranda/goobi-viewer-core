@@ -103,7 +103,7 @@
 							id="resumeMsgQueueButton" 
 							action="#{messageQueueBean.resumeQueue}"
 							pt:data-target="resumeMsgQueueButton">
-					    	<f:ajax execute="@form" render="@form" />
+					    	<f:ajax execute="@form" render="@form queueIsNotProcessed" />
 						</h:commandButton>						
 
 						<!-- INDIVIDUAL ROWS -->
