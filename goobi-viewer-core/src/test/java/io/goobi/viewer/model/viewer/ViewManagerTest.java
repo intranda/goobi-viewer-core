@@ -23,6 +23,7 @@ package io.goobi.viewer.model.viewer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mockitoSession;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -138,6 +139,45 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(6, pages.size());
         Assert.assertEquals(11, pages.get(0).getOrder());
         Assert.assertEquals(15, pages.get(4).getOrder());
+    }
+    
+    @Test
+    public void getImagesSection_shouldReturnCorrectPhysicalElementsForAThumbnailPageWithStartPageTwo() throws Exception {
+        int thumbnailsPerPage = 30;
+
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        
+        IPageLoader pageLoader = Mockito.mock(IPageLoader.class);
+        Mockito.when(pageLoader.getFirstPageOrder()).thenReturn(2);
+        Mockito.when(pageLoader.getLastPageOrder()).thenReturn(181);
+        Mockito.when(pageLoader.getNumPages()).thenReturn(180);
+        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenAnswer( i -> {
+            int pageNo = i.getArgument(0);
+            PhysicalElement page = new PhysicalElement("" + pageNo, "" + pageNo, pageNo, "" + pageNo, "", "", "", "", "");
+            return page;
+        });
+        
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, null, null);
+        Assert.assertEquals(180, viewManager.getImagesCount());
+
+        viewManager.setCurrentThumbnailPage(1);
+        List<PhysicalElement> pages = viewManager.getImagesSection(thumbnailsPerPage);
+        Assert.assertEquals(30, pages.size());
+        Assert.assertEquals(2, pages.get(0).getOrder());
+        Assert.assertEquals(31, pages.get(pages.size()-1).getOrder());
+
+        viewManager.setCurrentThumbnailPage(2);
+        pages = viewManager.getImagesSection(thumbnailsPerPage);
+        Assert.assertEquals(30, pages.size());
+        Assert.assertEquals(32, pages.get(0).getOrder());
+        Assert.assertEquals(61, pages.get(pages.size()-1).getOrder());
+        
+        viewManager.setCurrentThumbnailPage(6);
+        pages = viewManager.getImagesSection(thumbnailsPerPage);
+        Assert.assertEquals(30, pages.size());
+        Assert.assertEquals(152, pages.get(0).getOrder());
+        Assert.assertEquals(181, pages.get(pages.size()-1).getOrder());
     }
 
     /**
