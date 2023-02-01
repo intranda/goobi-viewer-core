@@ -458,7 +458,7 @@
 												<ui:repeat var="entry"
 													value="#{message.properties.entrySet().toArray()}">
 													<h:outputText
-														value="#{msg[entry.key]}: #{msg[entry.value]} " />
+														value="#{entry.key}: #{entry.value} " />
 													<br />
 												</ui:repeat>
 											</div>
