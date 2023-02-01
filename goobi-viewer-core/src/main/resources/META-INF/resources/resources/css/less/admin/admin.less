@@ -2124,6 +2124,21 @@
 	[data-target="pauseQuartzButton"] {
 		display: none;
 	}
+	&__tasks-running-task-queue-wrapper {
+		&.-paused {
+			.admin__tasks-empty-queue-spacer {
+				&:before,
+				&:after {
+					animation: none;
+				}
+			}
+		}
+		&.-emptyQueue {
+			.admin__tasks-empty-queue-spacer {
+				display: flex;
+			}
+		}
+	}
 	&__tasks-title-wrapper {
 		display: flex;
 		gap: 10px;
@@ -2149,7 +2164,39 @@
 		
 	}
 	&__tasks-empty-queue-spacer {
-    
+          position: relative;
+          display: none;
+		margin-left: 60px;
+		margin-bottom: 40px;
+		margin-top: 40px;
+        &:before , &:after {
+			content: '';
+			width: 10px;
+			height: 10px;
+			display: inline-block;
+			position: relative;
+			margin: 0 8px;
+			border-radius: 50%;
+			color: #E7E7E7;
+			background: currentColor;
+			box-shadow: 50px 0,-50px 0;
+			animation: left 1.5s infinite ease-in-out;
+          }
+          &:after {
+			color: #E7E7E7;
+			animation: right 1.5s infinite ease-in-out;
+          }
+
+
+        @keyframes right {
+          0% , 100%{transform: translateY(-10px) }
+          50% { transform: translateY(10px) }
+        }
+
+        @keyframes left {
+          0% , 100%{ transform: translateY(10px) }
+          50% { transform: translateY(-10px) }
+        }
 	}
 
 	&__tasks-quartz-icon-wrapper {
