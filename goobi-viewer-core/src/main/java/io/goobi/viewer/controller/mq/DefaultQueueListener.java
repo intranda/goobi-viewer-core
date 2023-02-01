@@ -122,8 +122,9 @@ public class DefaultQueueListener {
                                 log.error("Error handling ticket " + message.getJMSMessageID() + ": ", t);
                                 sess.recover();
                             } finally {
-//                                message.setBooleanProperty("processing", false);
+                                MessageBroker.notifyMessageQueueStateUpdate();
                             }
+                            
                         }
                     } catch (JMSException | JsonProcessingException e) {
                         if (!shouldStop) {

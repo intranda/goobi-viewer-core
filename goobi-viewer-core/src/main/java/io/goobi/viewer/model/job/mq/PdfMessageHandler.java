@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -75,7 +77,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
             Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
                     .toPath();
-            createPdf(work, pdfFile);
+            createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank), pdfFile);
             // inform user and update DownloadJob
 
             downloadJob.setStatus(JobStatus.READY);
@@ -91,20 +93,21 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
         return MessageStatus.FINISH;
     }
 
-    private void createPdf(Dataset work, Path pdfFile) throws IOException, ContentLibException {
+    private void createPdf(Dataset work, Optional<String> divId,  Path pdfFile) throws IOException, ContentLibException {
         try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
             Map<String, String> params = new HashMap<>();
             params.put("metsFile", work.getMetadataFilePath().toString());
-            params.put("imageSource", work.getMediaFolderPath().toUri().toString());
-
+            params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
+            divId.ifPresent(id -> params.put("divID", id));
+            
             if (work.getPdfFolderPath() != null) {
-                params.put("pdfSource", work.getPdfFolderPath().toUri().toString());
+                params.put("pdfSource", work.getPdfFolderPath().getParent().toUri().toString());
             }
             if (work.getAltoFolderPath() != null) {
-                params.put("altoSource", work.getAltoFolderPath().toUri().toString());
+                params.put("altoSource", work.getAltoFolderPath().getParent().toUri().toString());
             }
-            params.put("metsFileGroup", "LOCAL");
-            params.put("goobiMetsFile", "true");
+            params.put("metsFileGroup", "PRESENTATION");
+            params.put("goobiMetsFile", "false");
             GetMetsPdfAction action = new GetMetsPdfAction();
             action.writePdf(params, fos);
         }
