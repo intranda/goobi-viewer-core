@@ -111,7 +111,6 @@ public class MessageBroker {
 //        notifyMessageQueueStateUpdate();
         MessageStatus rv = handler.call(message);
         updateMessageStatus(message, rv);
-        notifyMessageQueueStateUpdate();
 
         return rv;
     }
