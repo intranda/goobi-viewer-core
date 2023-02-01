@@ -37,7 +37,7 @@
 
 
 						<h:panelGroup layout="block" id="runningTasksQueueWrapper">
-							<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
+
 						
 						<div class="admin__tasks-title-wrapper">
 							<h2 class="admin__tasks-task-title">
@@ -103,15 +103,17 @@
 							id="resumeMsgQueueButton" 
 							action="#{messageQueueBean.resumeQueue}"
 							pt:data-target="resumeMsgQueueButton">
-					    	<f:ajax execute="@form" render="@form queueIsNotProcessed" />
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed" />
 						</h:commandButton>						
 
+
+						<div class="admin__tasks-empty-queue-spacer"></div>
+
+						<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
 						<!-- INDIVIDUAL ROWS -->
 						<ui:repeat var="task" value="#{messageQueueBean.queueContent}">
 
 							<div class="admin__boxed-entry">
-
-
 
 								<h3 class="admin__tasks-task-title">
 									<span class="admin__tasks-title-number"
@@ -178,12 +180,14 @@
 											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__tasks__delete_message_type_confirmation, task.key)}"
 											jsf:action="#{messageQueueBean.removeMessagesFromQueue(task.key)}"
 											aria-label="#{msg.delete}: #{task.key}">
+											<f:ajax execute="@form" render="runningTasksQueueWrapper" />
 											#{msg.delete}</button>
 
 									</div>
 								</div>
 							</div>
 						</ui:repeat>
+						</ui:fragment>
 						
 						<script>
 				     	// SCRIPT FOR MESSAGE QUEUE PAUSE/RESUME BUTTON FUNCTIONALITY
@@ -208,7 +212,7 @@
 				
 						</script>
 					
-						</ui:fragment>
+
 						
 						</h:panelGroup>
 
@@ -270,7 +274,7 @@
 
 						<button data-target="resumeQuartzButton"
 							jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
-							<f:ajax execute="@form" render="quartzTableWrapper" />
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
 							<i class="fa fa-play"></i>
 						</button>
 
@@ -309,7 +313,7 @@
 		
 													<button jsf:action="#{quartzBean.resumeJob}" class="btn btn--clean admin__tasks-quartz-table-play-button">
 														<i class="fa fa-play" />
-														<f:ajax execute="@form" render="quartzRowID pauseAllGroup" />
+														<f:ajax execute="@form" render="quartzRowID pauseAllGroup quartzNotProcessed" />
 														<f:setPropertyActionListener
 															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
 													</button>
@@ -415,11 +419,7 @@
 										role="columnheader">
 										<h:outputText value="#{msg.admin__tasks__message_type}" />
 									</div>
-									<div class="col-2 d-flex -sorting-arrow-trigger"
-										role="columnheader">
-										<h:outputText value="#{msg.admin__tasks__pi}" />
-									</div>
-									<div class="col-2 d-flex -sorting-arrow-trigger"
+									<div class="col-4 d-flex -sorting-arrow-trigger"
 										role="columnheader">
 										<h:outputText value="#{msg.admin__tasks__properties}" />
 									</div>
@@ -451,16 +451,17 @@
 											<div class="col-2 d-flex">
 												<h:outputText value="#{msg[message.taskName]}" />
 											</div>
-											<div class="col-2 d-flex">
-												<h:outputText value="#{message.pi}" />
-											</div>
-											<div class="col-2 d-flex">
+											<div class="col-4 d-flex">
 												<ui:repeat var="entry"
 													value="#{message.properties.entrySet().toArray()}">
 													<h:outputText
 														value="#{entry.key}: #{entry.value} " />
 													<br />
 												</ui:repeat>
+												<ui:fragment rendered="#{not empty message.pi}">
+													<br />
+													<h:outputText value="#{message.pi}" />
+												</ui:fragment>
 											</div>
 											<div class="col-2 d-flex">
 												<h:outputText value="#{message.lastUpdateTime}">
