@@ -122,7 +122,6 @@ public class FeedbackBean implements Serializable {
     public String submitFeedbackAction(boolean setCurrentUrl) {
         // Check whether the security question has been answered correct, if configured
         if (captchaBean != null && !captchaBean.checkAnswer()) {
-            captchaBean.reset();
             Messages.error("user__security_question_wrong");
             return "";
         }
