@@ -66,6 +66,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
@@ -94,6 +95,9 @@ public class AdminBean implements Serializable {
     private static final Object TRANSLATION_LOCK = new Object();
 
     private static String translationGroupsEditorSession = null;
+
+    @Inject
+    UserBean userBean;
 
     @Inject
     @Push
@@ -179,7 +183,7 @@ public class AdminBean implements Serializable {
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         lazyModelUsers.setFilters("firstName_lastName_nickName_email");
     }
-//
+    //
     // User
 
     /**
@@ -320,7 +324,8 @@ public class AdminBean implements Serializable {
 
     /**
      * <p>
-     * deleteUserAction.
+     * Deletes the given User and optionally their contributions. This method is user for admin-induced deletion of other users as well as
+     * self-deletion by a user.
      * </p>
      *
      * @param user User to be deleted
@@ -356,6 +361,17 @@ public class AdminBean implements Serializable {
 
         // Finally, delete user (and any user-created data that's not publicly visible)
         if (UserTools.deleteUser(user)) {
+            // If user is deleting themselves, log them out; do not redirect to admin page
+            if (userBean != null && user.equals(userBean.getUser())) {
+                logger.trace("User self-deletion: {}", user.getId());
+                try {
+                    userBean.logout();
+                } catch (AuthenticationProviderException e) {
+                    logger.error(e.getMessage());
+                }
+                return "pretty:index";
+            }
+
             Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
             return "pretty:adminUsers";
         }
