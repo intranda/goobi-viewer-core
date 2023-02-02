@@ -63,57 +63,66 @@ public class StartQueueBrokerListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            // JMX/RMI part taken from: https://vafer.org/blog/20061010091658/
-            String address = "localhost";
-            int namingPort = 1099;
-            int protocolPort = 0;
-            try {
-                RMIServerSocketFactory serverFactory = new RMIServerSocketFactoryImpl(InetAddress.getByName(address));
-
-                LocateRegistry.createRegistry(namingPort, null, serverFactory);
-
-                StringBuilder url = new StringBuilder();
-                url.append("service:jmx:");
-                url.append("rmi://").append(address).append(':').append(protocolPort).append("/jndi/");
-                url.append("rmi://").append(address).append(':').append(namingPort).append("/connector");
-
-                Map<String, Object> env = new HashMap<>();
-                env.put(RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, serverFactory);
-
-                rmiServer = new RMIConnectorServer(
-                        new JMXServiceURL(url.toString()),
-                        env,
-                        ManagementFactory.getPlatformMBeanServer());
-
-                rmiServer.start();
-
-            } catch (IOException e1) {
-                log.error("error starting JMX connector. Will not start internal MessageBroker. Exception: {}", e1);
-                return;
-            }
             String activeMqConfig = DataManager.getInstance().getConfiguration().getActiveMQConfigPath();
-            try {
-                broker = BrokerFactory.createBroker("xbean:file:" + activeMqConfig, false);
-                broker.setUseJmx(true);
-                broker.start();
-
-            } catch (Exception e) {
-                log.error(e);
-            }
-
-            try {
-                for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
-                    DefaultQueueListener listener = new DefaultQueueListener(messageBroker);
-                    listener.register(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
-                            DataManager.getInstance().getConfiguration().getActiveMQPassword(), "viewer");
-                    listeners.add(listener);
-                }
-
-            } catch (JMSException e) {
-                log.error(e);
+            String activeMqUserName = DataManager.getInstance().getConfiguration().getActiveMQUsername();
+            String activeMqPassword = DataManager.getInstance().getConfiguration().getActiveMQPassword();
+            
+            if(!initializeMessageServer(activeMqConfig, activeMqUserName, activeMqPassword)) {
+                return;
             }
         }
         sce.getServletContext().setAttribute("BrokerService", this);
+    }
+
+    public boolean initializeMessageServer(String activeMqConfig, String activeMqUserName, String activeMqPassword) {
+        // JMX/RMI part taken from: https://vafer.org/blog/20061010091658/
+        String address = "localhost";
+        int namingPort = 1099;
+        int protocolPort = 0;
+        try {
+            RMIServerSocketFactory serverFactory = new RMIServerSocketFactoryImpl(InetAddress.getByName(address));
+
+            LocateRegistry.createRegistry(namingPort, null, serverFactory);
+
+            StringBuilder url = new StringBuilder();
+            url.append("service:jmx:");
+            url.append("rmi://").append(address).append(':').append(protocolPort).append("/jndi/");
+            url.append("rmi://").append(address).append(':').append(namingPort).append("/connector");
+
+            Map<String, Object> env = new HashMap<>();
+            env.put(RMIConnectorServer.RMI_SERVER_SOCKET_FACTORY_ATTRIBUTE, serverFactory);
+
+            rmiServer = new RMIConnectorServer(
+                    new JMXServiceURL(url.toString()),
+                    env,
+                    ManagementFactory.getPlatformMBeanServer());
+
+            rmiServer.start();
+
+        } catch (IOException e1) {
+            log.error("error starting JMX connector. Will not start internal MessageBroker. Exception: {}", e1);
+            return false;
+        }
+        try {
+            broker = BrokerFactory.createBroker("xbean:file:" + activeMqConfig, false);
+            broker.setUseJmx(true);
+            broker.start();
+
+        } catch (Exception e) {
+            log.error(e);
+        }
+
+        try {
+            for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
+                DefaultQueueListener listener = new DefaultQueueListener(messageBroker);
+                listener.register(activeMqUserName, activeMqPassword, "viewer");
+                listeners.add(listener);
+            }
+
+        } catch (JMSException e) {
+            log.error(e);
+        }
+        return true;
     }
 
     @Override

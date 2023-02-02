@@ -76,7 +76,7 @@ public class MessageBroker {
      */
     public boolean addToQueue(ViewerMessage message) {
         try {
-            MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName(), message.getPi());
+            MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName());
             return true;
         } catch (JsonProcessingException | JMSException e) {
             logger.error("Error adding message {}/{} to queue: {}", message.getTaskName(), message.getMessageId(), e.toString(), e);

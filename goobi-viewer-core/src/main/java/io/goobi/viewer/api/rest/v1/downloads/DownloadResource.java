@@ -173,22 +173,25 @@ public class DownloadResource {
             throws DAOException, URISyntaxException, JsonProcessingException {
 
         ViewerMessage message = MessageGenerator.generateSimpleMessage(TaskType.DOWNLOAD_PDF.name());
-        message.setPi(pi);
         // create new downloadjob
 
         DownloadJob job = new PDFDownloadJob(pi, logId, LocalDateTime.now(), DownloadBean.getTimeToLive());
         if (StringUtils.isNotBlank(email)) {
             job.getObservers().add(email.toLowerCase());
             message.getProperties().put("email", email.toLowerCase());
-        } else {
-            message.getProperties().put("email", "");
         }
+        message.getProperties().put("pi", pi);
+        if(StringUtils.isNotBlank(logId)) {            
+            message.getProperties().put("logId", logId);
+        } else {
+            message.getProperties().put("logId", "-");
+        }
+        
         job.setStatus(JobStatus.WAITING);
         DataManager.getInstance().getDao().addDownloadJob(job);
 
         // create new activemq message
 
-        message.getProperties().put("logId", logId);
 
        messageBroker.addToQueue(message);
 

@@ -56,9 +56,6 @@ public class ViewerMessage {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "identifier", nullable = true)
-    private String pi;
-
     @Column(name = "message_type", nullable = false)
     private String taskName;
 
@@ -71,7 +68,6 @@ public class ViewerMessage {
     @MapKeyColumn(name = "property_name")
     @Column(name = "property_value", nullable = true)
     @PrivateOwned
-
     private Map<String, String> properties = new HashMap<>();
 
     @Column(name = "message_status")
@@ -98,14 +94,6 @@ public class ViewerMessage {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getPi() {
-        return pi;
-    }
-
-    public void setPi(String pi) {
-        this.pi = pi;
     }
 
     public String getTaskName() {

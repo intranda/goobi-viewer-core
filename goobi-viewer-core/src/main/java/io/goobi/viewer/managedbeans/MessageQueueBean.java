@@ -123,7 +123,7 @@ public class MessageQueueBean implements Serializable {
 
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
             connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
-
+            
             try {
                 connection =
                         (ActiveMQConnection) connectionFactory.createConnection(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
@@ -395,7 +395,7 @@ public class MessageQueueBean implements Serializable {
             }
         });
         model.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-        model.setFilters("pi_taskName_messageStatus");
+        model.setFilters("taskName_messageStatus_properties");
         return model;
     }
 

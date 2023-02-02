@@ -136,10 +136,8 @@ public class TasksResource {
                         return null;
                 }
 
-                String identifier = UUID.randomUUID().toString();
-                message.setPi(identifier);
                 try {
-                    MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName(), identifier);
+                    MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName());
                 } catch (JMSException | JsonProcessingException e) {
                     // mq is not reachable
                     logger.error(e);

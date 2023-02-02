@@ -22,6 +22,7 @@
 package io.goobi.viewer.controller.mq;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.jms.Connection;
@@ -58,7 +59,7 @@ public class MessageGenerator {
      * @throws JMSException
      * @throws JsonProcessingException
      */
-    public static String submitInternalMessage(Object ticket, String queueType, String ticketType, String identifier)
+    public static String submitInternalMessage(ViewerMessage ticket, String queueType, String ticketType)
             throws JMSException, JsonProcessingException {
 
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory();
@@ -66,12 +67,12 @@ public class MessageGenerator {
 
         Connection conn = connFactory.createConnection(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
                 DataManager.getInstance().getConfiguration().getActiveMQPassword());
-        String messageId = submitTicket(ticket, queueType, conn, ticketType, identifier);
+        String messageId = submitTicket(ticket, queueType, conn, ticketType);
         conn.close();
         return messageId;
     }
 
-    private static String submitTicket(Object ticket, String queueName, Connection conn, String ticketType, String identifier)
+    private static String submitTicket(ViewerMessage ticket, String queueName, Connection conn, String ticketType)
             throws JMSException, JsonProcessingException {
         Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         final Destination dest = sess.createQueue(queueName);
@@ -85,7 +86,9 @@ public class MessageGenerator {
 
         message.setText(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(ticket));
         message.setStringProperty("JMSType", ticketType);
-        message.setStringProperty("identifier", identifier);
+        for (Map.Entry<String, String> entry : ticket.getProperties().entrySet()) {
+            message.setStringProperty(entry.getKey(), entry.getValue());
+        }
         producer.send(message);
         return message.getJMSMessageID();
     }

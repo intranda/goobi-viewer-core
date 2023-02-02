@@ -57,7 +57,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
     @Override
     public MessageStatus call(ViewerMessage message) {
 
-        String pi = message.getPi();
+        String pi = message.getProperties().get("pi");
 
         String logId = message.getProperties().get("logId");
 
@@ -77,7 +77,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
             Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
                     .toPath();
-            createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank), pdfFile);
+            createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), pdfFile);
             // inform user and update DownloadJob
 
             downloadJob.setStatus(JobStatus.READY);
