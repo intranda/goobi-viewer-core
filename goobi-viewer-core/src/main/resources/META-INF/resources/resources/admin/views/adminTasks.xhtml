@@ -256,7 +256,7 @@
 						
 						<button data-target="pauseQuartzButton"
 							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
-							<f:ajax execute="@form" render="quartzTableWrapper" />
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
 							<i class="fa fa-pause"></i>
 						</button>
 
