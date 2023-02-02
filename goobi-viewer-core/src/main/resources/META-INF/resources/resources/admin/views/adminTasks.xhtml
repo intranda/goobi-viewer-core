@@ -89,7 +89,7 @@
 							id="pauseMsgQueueButton" 
 							action="#{messageQueueBean.pauseQueue}"
 							pt:data-target="pauseMsgQueueButton">
-					    	<f:ajax execute="@form" render="@form" />
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed" />
 						</h:commandButton>
 						
 						<h:commandButton 
@@ -256,7 +256,7 @@
 						
 						<button data-target="pauseQuartzButton"
 							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
-							<f:ajax execute="@form" render="quartzTableWrapper" />
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
 							<i class="fa fa-pause"></i>
 						</button>
 
@@ -277,7 +277,7 @@
 
 									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_last}</div>
 									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_next}</div>
-									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_cycle}</div>
+									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_schedule}</div>
 								</div>
 
 
@@ -292,7 +292,7 @@
 												
 													<button jsf:action="#{quartzBean.pauseJob}" class="btn btn--clean admin__tasks-quartz-table-pause-button">
 														<i class="fa fa-pause" />
-														<f:ajax execute="@form" render="quartzRowID pauseAllGroup" />
+														<f:ajax execute="@form" render="quartzRowID pauseAllGroup quartzNotProcessed" />
 														<f:setPropertyActionListener
 															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
 													</button>
