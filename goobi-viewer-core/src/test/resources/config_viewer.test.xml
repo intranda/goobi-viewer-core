@@ -1351,6 +1351,26 @@
     
     <!-- Configuration for collecting usage statistics -->
     <statistics enabled="true"></statistics>
+    
+        <activeMQ enabled="true" numberOfParallelMessages="2">
+        <!-- path to initialisation file. Default configuration is used, if it is empty or does not exist -->
+        <configuration>/opt/digiverso/viewer/config/config_activemq.xml</configuration>
+        <!-- credentials -->
+        <user>goobi</user>
+        <password>goobi</password>
+    </activeMQ>
+    
+    <quartz>
+        <scheduler>
+        	<cronExpression>0 /5 * * * ?</cronExpression>
+        	<update_sitemap>
+	        	<cronExpression>0 0 * * * ?</cronExpression>
+        	</update_sitemap>
+        	<index_usage_statistics>
+	        	<cronExpression>0 0 * * * ?</cronExpression>
+        	</index_usage_statistics>
+        </scheduler>
+    </quartz>
 
 </config>
 

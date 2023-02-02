@@ -2,6 +2,7 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
 import io.goobi.viewer.model.job.TaskType;
 
 public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
@@ -56,10 +58,17 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, data.getPaginatorList().size());
         
         TableDataFilter filter = data.getFilters().get(0);
-        filter.setValue("PPN12345");
+        filter.setValue(TaskType.DOWNLOAD_PDF.name());
         assertEquals(1, data.getPaginatorList().size());
         
+        filter.setValue(MessageStatus.ERROR.name());
+        assertEquals(1, data.getPaginatorList().size());
         
+        filter.setValue("PPN67890");
+        assertEquals(1, data.getPaginatorList().size());
+
+        filter.setValue("ID:florian-test:2.0.0");
+        assertEquals(1, data.getPaginatorList().size());
     }
 
 }

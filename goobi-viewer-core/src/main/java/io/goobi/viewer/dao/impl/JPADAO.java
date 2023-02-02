@@ -299,7 +299,7 @@ public class JPADAO implements IDAO {
     @Override
     public long getUserCount(Map<String, String> filters) throws DAOException {
         String filterQuery = "";
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         if (filters != null) {
             String filterValue = filters.values().stream().findFirst().orElse("");
             if (StringUtils.isNotBlank(filterValue)) {
@@ -4073,7 +4073,7 @@ public class JPADAO implements IDAO {
      * @return
      * @throws DAOException
      */
-    private long getFilteredRowCount(String className, String filter, Map<String, String> params) throws DAOException {
+    private long getFilteredRowCount(String className, String filter, Map<String, Object> params) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -6822,14 +6822,11 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a");
-            Map<String, String> params = new HashMap<>();
+            Map<String, Object> params = new HashMap<>();
 
             if (filters != null) {
-                String filterValue = filters.values().stream().findFirst().orElse("");
-                if (StringUtils.isNotBlank(filterValue)) {
-                    String filterQuery = createFilterQuery(null, filters, params);
-                    sbQuery.append(filterQuery);
-                }
+                String filterQuery = addViewerMessageFilterQuery(filters, params);
+                sbQuery.append(filterQuery);
             }
 
             if (StringUtils.isNotEmpty(sortField)) {
@@ -6842,7 +6839,7 @@ public class JPADAO implements IDAO {
             }
             logger.trace(sbQuery);
             Query q = em.createQuery(sbQuery.toString());
-            for (Entry<String, String> entry : params.entrySet()) {
+            for (Entry<String, Object> entry : params.entrySet()) {
                 q.setParameter(entry.getKey(), entry.getValue());
             }
 
@@ -6850,22 +6847,38 @@ public class JPADAO implements IDAO {
             q.setMaxResults(pageSize);
             q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
 
-            return q.getResultList();
+            return (List<ViewerMessage>) q.getResultList().stream().distinct().collect(Collectors.toList());
         } finally {
             close(em);
         }
+    }
+
+    String addViewerMessageFilterQuery(Map<String, String> filters, Map<String, Object> params) {
+        String filterValue = filters.values().stream().findFirst().orElse("");
+        String filterQuery = "";
+        if (StringUtils.isNotBlank(filterValue)) {
+            filterQuery += " WHERE (a.taskName = :value OR a.messageId = :value";
+            try {                        
+                params.put("valueStatus", MessageStatus.valueOf(filterValue.toUpperCase()));
+                filterQuery += " OR a.messageStatus =  :valueStatus";
+            } catch(IllegalArgumentException e) {
+                //noop
+            }
+            filterQuery += " OR :value MEMBER OF a.properties";
+            
+            filterQuery += ")";
+            params.put("value", filterValue);
+        }
+        return filterQuery;
     }
 
     /** {@inheritDoc} */
     @Override
     public long getViewerMessageCount(Map<String, String> filters) throws DAOException {
         String filterQuery = "";
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         if (filters != null) {
-            String filterValue = filters.values().stream().findFirst().orElse("");
-            if (StringUtils.isNotBlank(filterValue)) {
-                filterQuery = createFilterQuery(null, filters, params);
-            }
+                filterQuery = addViewerMessageFilterQuery(filters, params);
         }
         long count = getFilteredRowCount("ViewerMessage", filterQuery, params);
         return count;

@@ -395,7 +395,7 @@ public class MessageQueueBean implements Serializable {
             }
         });
         model.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-        model.setFilters("taskName_messageStatus_properties");
+        model.setFilters("all");
         return model;
     }
 
