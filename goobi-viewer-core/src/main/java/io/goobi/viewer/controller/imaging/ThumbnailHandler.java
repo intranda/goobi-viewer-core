@@ -707,7 +707,12 @@ public class ThumbnailHandler {
                 try {
                     StructElement volume = doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS));
                     if (volume != null) {
-                        thumbnailUrl = volume.getPi() + "/" + getImagePath(volume);
+                        String volumeImagePath = getImagePath(volume);
+                        if(StringUtils.isNotBlank(volumeImagePath) && !URI.create(volumeImagePath).isAbsolute()) {                            
+                            thumbnailUrl = volume.getPi() + "/" + getImagePath(volume);
+                        } else {
+                            thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
+                        }
                     } else {
                         thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
                     }
