@@ -104,6 +104,7 @@ public class DefaultQueueListener {
                             }
 
                             ticket.setMessageId(message.getJMSMessageID());
+
                             try {
                                 MessageStatus result = messageBroker.handle(ticket);
                                 
