@@ -41,13 +41,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.MessageQueueBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 public class DefaultQueueListener {
 
@@ -108,6 +104,7 @@ public class DefaultQueueListener {
                             }
 
                             ticket.setMessageId(message.getJMSMessageID());
+
                             try {
                                 MessageStatus result = messageBroker.handle(ticket);
                                 
@@ -118,7 +115,7 @@ public class DefaultQueueListener {
                                     //error or wait => put back to queue and retry by redeliveryPolicy
                                     sess.recover();
                                 }
-                            } catch (Throwable t) {
+                            } catch (Exception t) {
                                 log.error("Error handling ticket " + message.getJMSMessageID() + ": ", t);
                                 sess.recover();
                             } finally {

@@ -82,6 +82,6 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
 
     @Override
     public void setRunning(String jobName, boolean running) {
-        this.running.put(jobName, running);
+        AbstractViewerJob.running.put(jobName, running);
     }
 }

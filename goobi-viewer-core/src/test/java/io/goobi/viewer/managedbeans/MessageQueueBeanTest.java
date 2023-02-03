@@ -2,7 +2,9 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +18,6 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataFilter;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSourceException;
 import io.goobi.viewer.model.job.TaskType;
 
 public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
@@ -32,7 +33,13 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
         //necessary to connect to mq in MessageQueueBean#init
         StartQueueBrokerListener messageQueueEnvironment = new StartQueueBrokerListener();
         messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi");
+        //delete messages from other tests
+        List<ViewerMessage> messages = this.dao.getViewerMessages(0, 10000, "", false, Collections.emptyMap());
+        for (ViewerMessage viewerMessage : messages) {
+            this.dao.deleteViewerMessage(viewerMessage);
+        }
     }
+    
     
     @Test
     public void testSearchFinishedTasks() throws DAOException {

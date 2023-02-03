@@ -59,6 +59,14 @@ public class StartQueueBrokerListener implements ServletContextListener {
     @Inject 
     transient private MessageBroker messageBroker;
 
+    public StartQueueBrokerListener() {
+        //noop
+    }
+    
+    public StartQueueBrokerListener(MessageBroker broker) {
+        this.messageBroker = broker;
+    }
+    
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         

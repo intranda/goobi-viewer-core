@@ -40,6 +40,7 @@ import org.reflections.Reflections;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.MessageQueueBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -60,13 +61,16 @@ public class MessageBroker {
     private static final Logger logger = LogManager.getLogger(MessageBroker.class);
     
     private final Map<String, MessageHandler<MessageStatus>> instances;
+    private final IDAO dao;
     
-    public MessageBroker() {
+    public MessageBroker() throws DAOException {
         this.instances = generateTicketHandlers();
+        this.dao = DataManager.getInstance().getDao();
     }
     
-    public MessageBroker(Map<String, MessageHandler<MessageStatus>> instances) {
+    public MessageBroker(IDAO dao, Map<String, MessageHandler<MessageStatus>> instances) {
         this.instances = instances;
+        this.dao = dao;
     }
     
     /**
@@ -74,13 +78,12 @@ public class MessageBroker {
      * @param message
      * @return
      */
-    public boolean addToQueue(ViewerMessage message) {
+    public String addToQueue(ViewerMessage message) {
         try {
-            MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName());
-            return true;
+            return MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName());
         } catch (JsonProcessingException | JMSException e) {
             logger.error("Error adding message {}/{} to queue: {}", message.getTaskName(), message.getMessageId(), e.toString(), e);
-            return false;
+            return null;
         } finally {            
             notifyMessageQueueStateUpdate();
         }
@@ -120,9 +123,9 @@ public class MessageBroker {
         message.setLastUpdateTime(LocalDateTime.now());
         try {
             if (message.getId() == null) {
-                DataManager.getInstance().getDao().addViewerMessage(message);
+                dao.addViewerMessage(message);
             } else {
-                DataManager.getInstance().getDao().updateViewerMessage(message);
+                dao.updateViewerMessage(message);
             }
         } catch (DAOException e) {
             logger.error(e);
