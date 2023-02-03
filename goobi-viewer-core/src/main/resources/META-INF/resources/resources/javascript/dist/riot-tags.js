@@ -1103,7 +1103,7 @@ this.compareMembers = function(m1, m2, compareMode) {
         } else {
             return res;
         }
-    } else {
+    } else if(compareMode && compareMode.toLocaleLowerCase() == "alphanumeric"){
         return viewerJS.helper.compareAlphanumerical(l1, l2);
     }
 }.bind(this)
