@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,19 +26,25 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
     private static final String activeMqConfigPath = "src/test/resources/config_activemq.xml";
     
     IDAO dao;
+    StartQueueBrokerListener messageQueueEnvironment;
     
     @Before
     public void setup() throws Exception {
         super.setUp();
         this.dao = DataManager.getInstance().getDao();
         //necessary to connect to mq in MessageQueueBean#init
-        StartQueueBrokerListener messageQueueEnvironment = new StartQueueBrokerListener();
+        messageQueueEnvironment = new StartQueueBrokerListener();
         messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi");
         //delete messages from other tests
         List<ViewerMessage> messages = this.dao.getViewerMessages(0, 10000, "", false, Collections.emptyMap());
         for (ViewerMessage viewerMessage : messages) {
             this.dao.deleteViewerMessage(viewerMessage);
         }
+    }
+    
+    @After
+    public void tearDown() {
+        messageQueueEnvironment.contextDestroyed(null);
     }
     
     
