@@ -133,7 +133,7 @@ public class MessageBroker {
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static Map<String, MessageHandler<MessageStatus>> generateTicketHandlers() {
+    public static Map<String, MessageHandler<MessageStatus>> generateTicketHandlers() {
         Map<String, MessageHandler<MessageStatus>> handlers = new HashMap<>();
         Set<Class<? extends MessageHandler>> ticketHandlers = new Reflections("io.goobi.viewer.model.job.mq.*").getSubTypesOf(MessageHandler.class);
         for (Class<? extends MessageHandler> clazz : ticketHandlers) {
