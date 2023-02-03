@@ -2706,6 +2706,6 @@ public interface IDAO {
     public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
     public boolean deleteRecurringTaskTrigger(Long id) throws DAOException;
 
-    public List<ViewerMessage> getViewerMessagesBefore(LocalDate date) throws DAOException;
+    public int deleteViewerMessagesBefore(LocalDateTime date) throws DAOException;
 
 }

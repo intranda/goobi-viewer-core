@@ -65,6 +65,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -5445,11 +5446,21 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("activeMQ.password", "");
     }
     
-    public String getQuartzSchedulerCronExpression(String taskName) {
-        return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", getQuartzSchedulerCronExpression());
+    public int getActiveMQMessagePurgeInterval() {
+        return getLocalInt("activeMQ.deleteCompletedTasksAfterDays", 90);
     }
     
-    public String getQuartzSchedulerCronExpression() {
+    public String getQuartzSchedulerCronExpression(String taskName) {
+        try {
+            TaskType type = TaskType.valueOf(taskName.toUpperCase());
+            return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", type.getDefaultCronExpression());
+
+        } catch(IllegalArgumentException e) {            
+            return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", getQuartzSchedulerCronExpression());
+        }
+    }
+    
+    public String getQuartzSchedulerCronExpression() {           
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
 }

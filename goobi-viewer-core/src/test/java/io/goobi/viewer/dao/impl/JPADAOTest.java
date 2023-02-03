@@ -54,6 +54,8 @@ import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageStatus;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -3274,6 +3276,48 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
                         .getDao()
                         .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456"))
                         .size());
+    }
+    
+    @Test
+    public void test_deleteViewerMessagesBeforeDate() throws DAOException {
+        IDAO dao = DataManager.getInstance().getDao();
+
+        ViewerMessage task1 = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+        task1.setMessageId("ID:florian-test:0.0.0");
+        task1.setMessageStatus(MessageStatus.FINISH);
+        task1.getProperties().put("pi", "PPN12345");
+        task1.getProperties().put("divId", "LOG_0001");
+        task1.setLastUpdateTime(LocalDateTime.of(2022, 12, 20, 23, 30));
+        
+        ViewerMessage task2 = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+        task2.setMessageId("ID:florian-test:1.0.0");
+        task2.setMessageStatus(MessageStatus.FINISH);
+        task2.getProperties().put("pi", "PPN12345");
+        task2.getProperties().put("divId", "LOG_0003");
+        task2.setLastUpdateTime(LocalDateTime.of(2023, 1, 3, 11, 30));
+        
+        ViewerMessage task3 = new ViewerMessage(TaskType.UPDATE_DATA_REPOSITORY_NAMES.name());
+        task3.setMessageId("ID:florian-test:2.0.0");
+        task3.setMessageStatus(MessageStatus.ERROR);
+        task3.getProperties().put("pi", "PPN67890");
+        task3.setLastUpdateTime(LocalDateTime.of(2023, 1, 3, 10, 30));
+        
+        ViewerMessage task4 = new ViewerMessage(TaskType.UPDATE_DATA_REPOSITORY_NAMES.name());
+        task4.setMessageId("ID:florian-test:3.0.0");
+        task4.setMessageStatus(MessageStatus.FINISH);
+        task4.getProperties().put("pi", "PPN2244");
+        task4.setLastUpdateTime(LocalDateTime.of(2023, 2, 1, 11, 30));
+        
+        dao.addViewerMessage(task1);
+        dao.addViewerMessage(task2);
+        dao.addViewerMessage(task3);
+        dao.addViewerMessage(task4);
+        
+        assertEquals(4, dao.getViewerMessageCount(Collections.emptyMap()));
+        int deleted = dao.deleteViewerMessagesBefore(LocalDateTime.of(2023, 1, 3, 11, 00));
+        assertEquals(2, deleted);
+        assertEquals(null, dao.getViewerMessageByMessageID("ID:florian-test:0.0.0"));
+        assertEquals(2, dao.getViewerMessageCount(Collections.emptyMap()));
     }
 
     /**

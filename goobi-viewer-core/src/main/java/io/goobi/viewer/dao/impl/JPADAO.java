@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -45,6 +46,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
+
+import com.ibm.icu.util.TimeZone;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.controller.mq.MessageStatus;
@@ -6796,22 +6799,21 @@ public class JPADAO implements IDAO {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<ViewerMessage> getViewerMessagesBefore(LocalDate date)
+    public int deleteViewerMessagesBefore(LocalDateTime date)
             throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
             
-            sbQuery.append(" ORDER BY a.lastUpdateTime ").append(QUERY_ELEMENT_DESC);
-            logger.trace(sbQuery);
-            Query q = em.createQuery(sbQuery.toString());
-            Date d = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            q.setParameter("date", date.atStartOfDay());
-            
-            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+            em.getTransaction().begin();
 
-            return q.getResultList();
+            Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
+            q.setParameter("date", date);
+            int deleted = q.executeUpdate();
+            
+            em.getTransaction().commit();
+            
+            return deleted;
         } finally {
             close(em);
         }

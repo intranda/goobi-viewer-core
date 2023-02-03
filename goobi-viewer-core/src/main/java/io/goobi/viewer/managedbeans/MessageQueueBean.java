@@ -44,7 +44,7 @@ package io.goobi.viewer.managedbeans;
  */
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -409,9 +409,11 @@ public class MessageQueueBean implements Serializable {
 
     private void cleanOldMessages() {
         try {
-            LocalDate before =  LocalDate.now();//.minusDays(1);
-            List<ViewerMessage> oldMessages = DataManager.getInstance().getDao().getViewerMessagesBefore(before);
-            System.out.println(oldMessages);
+            int deleteAfterDays = DataManager.getInstance().getConfiguration().getActiveMQMessagePurgeInterval();
+            if(deleteAfterDays > 0) {                
+                LocalDateTime before =  LocalDateTime.now().minusDays(deleteAfterDays);
+                DataManager.getInstance().getDao().deleteViewerMessagesBefore(before);
+            }
         } catch (DAOException e) {
             log.error(e);
         }

@@ -24,21 +24,29 @@ package io.goobi.viewer.model.job;
 
 public enum TaskType {
     /** Send emails to all search owners if their searches have changed results */
-    NOTIFY_SEARCH_UPDATE,
+    NOTIFY_SEARCH_UPDATE("0 42 8,12,17 * * ?"),
     /** Remove expired born digital content download tickets from the DB */
-    PURGE_EXPIRED_DOWNLOAD_TICKETS,
+    PURGE_EXPIRED_DOWNLOAD_TICKETS("0 40 0 * * ?"),
     /** Handle asynchronous generation of excel sheets with search results */
-    SEARCH_EXCEL_EXPORT,
+    SEARCH_EXCEL_EXPORT(""),
     /** Update the application sitemap */
-    UPDATE_SITEMAP,
+    UPDATE_SITEMAP("0 50 0 * * ?"),
     /** Update data repository names of a record */
-    UPDATE_DATA_REPOSITORY_NAMES,
+    UPDATE_DATA_REPOSITORY_NAMES(""),
     /** Update uploaded processes status. */
-    UPDATE_UPLOAD_JOBS,
+    UPDATE_UPLOAD_JOBS("0 42 0 * * ?"),
     /** Move daily usage statistics to SOLR */
-    INDEX_USAGE_STATISTICS,
+    INDEX_USAGE_STATISTICS("0 45 0 * * ?"),
     /**Create a pdf for a record or part of record to be offered as download**/
-    DOWNLOAD_PDF,
+    DOWNLOAD_PDF(""),
     /**Create single page pdfs for a record to be used when creating a record pdf**/
-    CREATE_PAGE_PDFS;
+    CREATE_PAGE_PDFS("");
+    
+    private final String defaultCronExpression;
+    private TaskType(String cronExpression) {
+        this.defaultCronExpression = cronExpression;
+    }
+    public String getDefaultCronExpression() {
+        return defaultCronExpression;
+    }
 }
