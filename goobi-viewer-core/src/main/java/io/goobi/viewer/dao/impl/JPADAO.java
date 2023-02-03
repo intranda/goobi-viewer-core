@@ -6860,17 +6860,18 @@ public class JPADAO implements IDAO {
         String filterValue = filters.values().stream().findFirst().orElse("");
         String filterQuery = "";
         if (StringUtils.isNotBlank(filterValue)) {
-            filterQuery += " WHERE (a.taskName = :value OR a.messageId = :value";
+            filterQuery += " WHERE (a.taskName LIKE :value OR a.messageId LIKE :value";
             try {                        
                 params.put("valueStatus", MessageStatus.valueOf(filterValue.toUpperCase()));
-                filterQuery += " OR a.messageStatus =  :valueStatus";
+                filterQuery += " OR a.messageStatus = :valueStatus";
             } catch(IllegalArgumentException e) {
                 //noop
             }
-            filterQuery += " OR :value MEMBER OF a.properties";
+            filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
+            params.put("valueProperty", filterValue );
             
             filterQuery += ")";
-            params.put("value", filterValue);
+            params.put("value", "%" + filterValue + "%");
         }
         return filterQuery;
     }
