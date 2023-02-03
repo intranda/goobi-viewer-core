@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.server.ExportException;
 import java.rmi.server.RMIServerSocketFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,8 +46,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 @WebListener
 public class StartQueueBrokerListener implements ServletContextListener {
@@ -90,7 +89,11 @@ public class StartQueueBrokerListener implements ServletContextListener {
         try {
             RMIServerSocketFactory serverFactory = new RMIServerSocketFactoryImpl(InetAddress.getByName(address));
 
-            LocateRegistry.createRegistry(namingPort, null, serverFactory);
+            try {                
+                LocateRegistry.createRegistry(namingPort, null, serverFactory);
+            } catch(ExportException e) {
+                log.trace("Cannot create registry, already in use");
+            }
 
             StringBuilder url = new StringBuilder();
             url.append("service:jmx:");
