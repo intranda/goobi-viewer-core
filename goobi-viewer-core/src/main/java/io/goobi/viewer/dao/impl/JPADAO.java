@@ -28,8 +28,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +112,7 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -6793,18 +6796,18 @@ public class JPADAO implements IDAO {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<ViewerMessage> getActiveViewerMessages()
+    public List<ViewerMessage> getViewerMessagesBefore(LocalDate date)
             throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a WHERE a.messageStatus = :wait OR a.messageStatus = :processing");
-
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
+            
             sbQuery.append(" ORDER BY a.lastUpdateTime ").append(QUERY_ELEMENT_DESC);
             logger.trace(sbQuery);
             Query q = em.createQuery(sbQuery.toString());
-            q.setParameter("wait", MessageStatus.WAIT);
-            q.setParameter("processing", MessageStatus.PROCESSING);
+            Date d = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            q.setParameter("date", date.atStartOfDay());
             
             q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
 

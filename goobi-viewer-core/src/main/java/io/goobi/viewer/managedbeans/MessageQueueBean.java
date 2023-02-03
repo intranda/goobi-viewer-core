@@ -44,6 +44,7 @@ package io.goobi.viewer.managedbeans;
  */
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -138,9 +139,7 @@ public class MessageQueueBean implements Serializable {
         }
 
     }
-    public List<ViewerMessage> getActiveMessages() throws DAOException {
-        return DataManager.getInstance().getDao().getActiveViewerMessages();
-    }
+
 
     public Map<String, Integer> getQueueContent() {
         Map<String, Integer> fastQueueContent = new TreeMap<>();
@@ -405,6 +404,18 @@ public class MessageQueueBean implements Serializable {
     
     public void updateMessageQueueState() {
         messageQueueState.send("update");
+        cleanOldMessages();
+    }
+
+    private void cleanOldMessages() {
+        try {
+            LocalDate before =  LocalDate.now();//.minusDays(1);
+            List<ViewerMessage> oldMessages = DataManager.getInstance().getDao().getViewerMessagesBefore(before);
+            System.out.println(oldMessages);
+        } catch (DAOException e) {
+            log.error(e);
+        }
+        
     }
 
 }
