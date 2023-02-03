@@ -49,7 +49,7 @@ public class CaptchaBean implements Serializable {
 
     private transient SecurityQuestion securityQuestion = null;
     private transient String securityAnswer;
-    
+
     private final Configuration config;
 
     /** Reusable Random object. */
@@ -58,16 +58,9 @@ public class CaptchaBean implements Serializable {
     public CaptchaBean() {
         this.config = DataManager.getInstance().getConfiguration();
     }
-    
+
     public CaptchaBean(Configuration config) {
         this.config = config;
-    }
-    
-    /**
-     * @deprecated Does nothing, because the bean is ViewScoped and thus automatically reset on each view change
-     */
-    @Deprecated
-    public void reset() {
     }
 
     /**
