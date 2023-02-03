@@ -552,7 +552,7 @@ public class Search implements Serializable {
         }
 
         for (FacetField facetField : resp.getFacetFields()) {
-            if (!rangeFacetFields.contains(facetField.getName())) {
+            if (rangeFacetFields.contains(facetField.getName())) {
                 continue;
             }
 
