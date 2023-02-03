@@ -6829,7 +6829,7 @@ public class JPADAO implements IDAO {
             StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a");
             Map<String, Object> params = new HashMap<>();
 
-            if (filters != null) {
+            if (filters != null && !filters.isEmpty()) {
                 String filterQuery = addViewerMessageFilterQuery(filters, params);
                 sbQuery.append(filterQuery);
             }
@@ -6840,7 +6840,7 @@ public class JPADAO implements IDAO {
                     sbQuery.append(QUERY_ELEMENT_DESC);
                 }
             } else {
-                sbQuery.append(" ORDER BY a.lastUpdateTime desc").append(QUERY_ELEMENT_DESC);
+                sbQuery.append(" ORDER BY a.lastUpdateTime").append(QUERY_ELEMENT_DESC);
             }
             logger.trace(sbQuery);
             Query q = em.createQuery(sbQuery.toString());
