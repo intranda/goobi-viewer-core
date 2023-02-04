@@ -155,8 +155,10 @@
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 		<activemq.version>5.17.2</activemq.version>
-        <spring.version>5.3.23</spring.version>
-        <reflections.version>0.10.2</reflections.version>
+		<spring.version>5.3.23</spring.version>
+		<reflections.version>0.10.2</reflections.version>
+		<quartz.version>2.3.2</quartz.version>
+		<cron-expression-descriptior.version>1.2.6</cron-expression-descriptor.version>
 	</properties>
 
 
@@ -387,11 +389,11 @@
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>${jakarta.annotation-api.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>${jakarta.mail.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>jakarta.mail</artifactId>
+			<version>${jakarta.mail.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -412,12 +414,12 @@
 			<artifactId>javax.faces</artifactId>
 			<version>${javax.faces.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${inject.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>${inject.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
@@ -434,7 +436,7 @@
 			<version>${jdom2.version}</version>
 		</dependency>
  		<dependency>
- 			<groupId>org.glassfish.jersey.core</groupId> 
+ 			<groupId>org.glassfish.jersey.core</groupId>
  			<artifactId>jersey-client</artifactId>
  			<version>${jersey.version}</version>
  			<exclusions>
@@ -657,86 +659,85 @@
 			<version>${swagger.version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-integration</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>${activemq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>${activemq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemq.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-jaas</artifactId>
-            <version>${activemq.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-stomp</artifactId>
-            <version>${activemq.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-spring</artifactId>
-            <version>${activemq.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>${spring.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-            <version>${spring.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>${reflections.version}</version>
-    	</dependency>
-		<!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz -->
 		<dependency>
-		    <groupId>org.quartz-scheduler</groupId>
-		    <artifactId>quartz</artifactId>
-		    <version>2.3.2</version>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-integration</artifactId>
+			<version>${swagger.version}</version>
 		</dependency>
-        <dependency>
-             <groupId>it.burning</groupId>
-             <artifactId>cron-expression-descriptor</artifactId>
-             <version>1.2.6</version>
-        </dependency>		
-		
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+			<version>${activemq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+			<version>${activemq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-kahadb-store</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-jaas</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-stomp</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- FIXME SPRING -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-spring</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${reflections.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>{quartz.version}</version>
+		</dependency>
+		<dependency>
+			 <groupId>it.burning</groupId>
+			 <artifactId>cron-expression-descriptor</artifactId>
+			 <version>{cron-expression-descriptor.version}</version>
+		</dependency>
 	</dependencies>
 
 
@@ -789,7 +790,7 @@
 
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- commons-configuration (1) is required by ICS -->
 								<ignoredUnusedDeclaredDependency>commons-configuration:commons-configuration</ignoredUnusedDeclaredDependency>
 
@@ -808,7 +809,7 @@
 								<!-- org.citationstyles.* are runtime resources for citeproc -->
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- jersey client is falsely declared as unused blocking maven install (windows developer system only) -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
 
@@ -818,31 +819,35 @@
 								<!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
+
 								<!-- H2 is used as database for unit tests -->
 								<ignoredUnusedDeclaredDependency>com.h2database:h2</ignoredUnusedDeclaredDependency>
-								
-								<!-- activemq libraries -->
-								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-kahadb-store</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-jaas</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-stomp</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-spring</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.springframework:spring-beans</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.reflections:reflections</ignoredUnusedDeclaredDependency>
-                                <!-- end activemq libraries -->
+
+								<!-- activemq libs -->
+									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-kahadb-store</ignoredUnusedDeclaredDependency>
+
+									<!-- JAAS, Java Authentication and Authorization Service is used for the authentication defined in the config_activemq.xml -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-jaas</ignoredUnusedDeclaredDependency>
+
+									<!-- FIXME STOMP, Simple Text Oriented Messaging Protocol, configured together with openwire as transportConnector in the config_activemq.xml, to be clarified if needed -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-stomp</ignoredUnusedDeclaredDependency>
+
+									<!-- FIXME -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-spring</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-beans</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 							<ignoredUsedUndeclaredDependencies>
-                                <!-- activemq libraries -->
-                                <ignoredUsedUndeclaredDependency>org.apache.geronimo.specs:geronimo-jms_1.1_spec</ignoredUsedUndeclaredDependency>
-                                <!-- end activemq libraries -->
-                            </ignoredUsedUndeclaredDependencies>
+								<!-- activemq libraries -->
+								<!--ignoredUsedUndeclaredDependency>org.apache.geronimo.specs:geronimo-jms_1.1_spec</ignoredUsedUndeclaredDependency-->
+							</ignoredUsedUndeclaredDependencies>
 							<ignoredNonTestScopedDependencies>
-							    <!-- jersey-container-servlet-core is falsely declared as unused blocking maven install (windows developer system only) -->
-							    <ignoredNonTestScopedDependency>org.glassfish.jersey.containers:jersey-container-servlet-core</ignoredNonTestScopedDependency>
-							</ignoredNonTestScopedDependencies>                            
+								<!-- jersey-container-servlet-core is falsely declared as unused blocking maven install (windows developer system only) -->
+								<ignoredNonTestScopedDependency>org.glassfish.jersey.containers:jersey-container-servlet-core</ignoredNonTestScopedDependency>
+							</ignoredNonTestScopedDependencies>
 						</configuration>
 					</execution>
 				</executions>
@@ -851,12 +856,12 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
-                <configuration>
-                    <release>11</release>
-                    <compilerArgs>
-                        <arg>-Xlint:deprecation</arg>
-					    <arg>-Xlint:unchecked</arg>
-                    </compilerArgs>
+				<configuration>
+					<release>11</release>
+					<compilerArgs>
+						<arg>-Xlint:deprecation</arg>
+						<arg>-Xlint:unchecked</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -992,7 +997,7 @@
 				<artifactId>dependency-check-maven</artifactId>
 				<version>7.4.4</version>
 				<configuration>
-                    <!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
+					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<skipProvidedScope>true</skipProvidedScope>
 					<skipTestScope>true</skipTestScope>

@@ -2,44 +2,33 @@
   xmlns="http://www.springframework.org/schema/beans"
   xmlns:amq="http://activemq.apache.org/schema/core"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
     <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" schedulerSupport="true" schedulerDirectory="/opt/digiverso/viewer/activemq/scheduler">
         <transportConnectors>
-        
-        <!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB -->
-        <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB -->
+            <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="stomp" uri="stomp://0.0.0.0:61613?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
         </transportConnectors>
+
         
         <plugins>
-            <redeliveryPlugin fallbackToDeadLetter="true" 
-                sendToDlqIfMaxRetriesExceeded="true">
+            <redeliveryPlugin fallbackToDeadLetter="true" sendToDlqIfMaxRetriesExceeded="true">
                 <redeliveryPolicyMap>
                     <redeliveryPolicyMap>
                         <redeliveryPolicyEntries>
-                            <redeliveryPolicy queue="viewer"
-                                maximumRedeliveries="5"
-                                initialRedeliveryDelay="10000"
-                                backOffMultiplier="1.5"
-                                useExponentialBackOff="true"/>
+                            <redeliveryPolicy queue="viewer" maximumRedeliveries="5" initialRedeliveryDelay="10000" backOffMultiplier="1.5" useExponentialBackOff="true"/>
                         </redeliveryPolicyEntries>
                         <defaultEntry>
                             <!-- the fallback policy for all other destinations -->
-                            <redeliveryPolicy maximumRedeliveries="10" 
-                                initialRedeliveryDelay="300000"
-                                backOffMultiplier="1.5"
-                                useExponentialBackOff="true"/>
+                            <redeliveryPolicy maximumRedeliveries="10" initialRedeliveryDelay="300000" backOffMultiplier="1.5" useExponentialBackOff="true"/>
                         </defaultEntry>
                     </redeliveryPolicyMap>
                 </redeliveryPolicyMap>
             </redeliveryPlugin>
             <simpleAuthenticationPlugin>
                 <users>
-                    <authenticationUser username="goobi" password="goobi"
-                        groups="admins,publishers,consumers"/>
-                    <authenticationUser username="worker" password="worker"
-                        groups="consumers"/>
+                    <authenticationUser username="goobi" password="goobi" groups="admins,publishers,consumers"/>
+                    <authenticationUser username="worker" password="worker" groups="consumers"/>
                 </users>
             </simpleAuthenticationPlugin>
             <authorizationPlugin>
@@ -55,11 +44,12 @@
                 </map>
             </authorizationPlugin>
         </plugins>
+
         
         <persistenceAdapter>
-            <kahaDB directory="/opt/digiverso/viewer/activemq/messages"
-                journalMaxFileLength="32mb" />
+            <kahaDB directory="/opt/digiverso/viewer/activemq/messages" journalMaxFileLength="32mb" />
         </persistenceAdapter>
+
         
         <systemUsage>
                 <systemUsage>
@@ -74,6 +64,8 @@
                         </tempUsage>
                 </systemUsage>
         </systemUsage>
+
+
         <managementContext>
             <managementContext createConnector="false"/>
         </managementContext>
