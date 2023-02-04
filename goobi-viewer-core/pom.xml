@@ -731,12 +731,12 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>{quartz.version}</version>
+			<version>${quartz.version}</version>
 		</dependency>
 		<dependency>
 			 <groupId>it.burning</groupId>
 			 <artifactId>cron-expression-descriptor</artifactId>
-			 <version>{cron-expression-descriptor.version}</version>
+			 <version>${cron-expression-descriptor.version}</version>
 		</dependency>
 	</dependencies>
 
