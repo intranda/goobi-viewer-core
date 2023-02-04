@@ -158,7 +158,7 @@
 		<spring.version>5.3.23</spring.version>
 		<reflections.version>0.10.2</reflections.version>
 		<quartz.version>2.3.2</quartz.version>
-		<cron-expression-descriptior.version>1.2.6</cron-expression-descriptor.version>
+		<cron-expression-descriptor.version>1.2.6</cron-expression-descriptor.version>
 	</properties>
 
 
