@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -41,6 +42,11 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
         for (ViewerMessage viewerMessage : messages) {
             this.dao.deleteViewerMessage(viewerMessage);
         }
+    }
+    
+    @After
+    public void tearDown() {
+        messageQueueEnvironment.contextDestroyed(null);
     }
     
     @Test

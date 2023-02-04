@@ -3334,6 +3334,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     public void test_persistRecurringTaskTrigger() throws Exception {
         IDAO dao = DataManager.getInstance().getDao();
+        
+        
         RecurringTaskTrigger trigger = new RecurringTaskTrigger(TaskType.DOWNLOAD_PDF, "0 0 0 * * ?");
         
         dao.addRecurringTaskTrigger(trigger);
