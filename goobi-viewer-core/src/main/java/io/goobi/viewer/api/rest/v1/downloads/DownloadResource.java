@@ -40,6 +40,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -66,6 +67,7 @@ import io.goobi.viewer.controller.mq.MessageGenerator;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.DownloadBean;
 import io.goobi.viewer.model.job.JobStatus;
@@ -192,8 +194,11 @@ public class DownloadResource {
 
         // create new activemq message
 
-
-       messageBroker.addToQueue(message);
+        try {
+            this.messageBroker.addToQueue(message);
+        } catch (MessageQueueException e) {
+            throw new WebApplicationException(e);
+        }
 
         // forward to download page
         String id = DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);

@@ -64,7 +64,6 @@ public class MessageGenerator {
 
         ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory();
         connFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
-
         Connection conn = connFactory.createConnection(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
                 DataManager.getInstance().getConfiguration().getActiveMQPassword());
         String messageId = submitTicket(ticket, queueType, conn, ticketType);
@@ -74,6 +73,7 @@ public class MessageGenerator {
 
     private static String submitTicket(ViewerMessage ticket, String queueName, Connection conn, String ticketType)
             throws JMSException, JsonProcessingException {
+        
         Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         final Destination dest = sess.createQueue(queueName);
         MessageProducer producer = sess.createProducer(dest);

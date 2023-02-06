@@ -74,11 +74,11 @@ public class StartQueueBrokerListener implements ServletContextListener {
             String activeMqUserName = DataManager.getInstance().getConfiguration().getActiveMQUsername();
             String activeMqPassword = DataManager.getInstance().getConfiguration().getActiveMQPassword();
             
-            if(!initializeMessageServer(activeMqConfig, activeMqUserName, activeMqPassword)) {
-                return;
+            if(initializeMessageServer(activeMqConfig, activeMqUserName, activeMqPassword)) {
+                this.messageBroker.setQueueRunning(true);
+                sce.getServletContext().setAttribute("BrokerService", this);
             }
         }
-        sce.getServletContext().setAttribute("BrokerService", this);
     }
 
     public boolean initializeMessageServer(String activeMqConfig, String activeMqUserName, String activeMqPassword) {
@@ -121,6 +121,7 @@ public class StartQueueBrokerListener implements ServletContextListener {
 
         } catch (Exception e) {
             log.error(e);
+            return false;
         }
 
         try {
@@ -132,6 +133,7 @@ public class StartQueueBrokerListener implements ServletContextListener {
 
         } catch (JMSException e) {
             log.error(e);
+            return false;
         }
         return true;
     }
