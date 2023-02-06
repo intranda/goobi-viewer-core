@@ -32,19 +32,25 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     IDAO dao;
     Configuration config;
     private static final String activeMqConfigPath = "src/test/resources/config_activemq.xml";
-
+    QuartzListener listener;
+    MessageQueueManager broker;
     
     @Before
     public void setup() throws Exception {
         super.setUp();
         this.dao = DataManager.getInstance().getDao();
         this.config = DataManager.getInstance().getConfiguration();
+        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));        
+        MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, dao);
+        broker = Mockito.spy(tempBroker);
+        listener = new QuartzListener(dao, config, broker);
         clearDatabase(dao);
     }
     
     @After
     public void tearDown() throws Exception {
         super.tearDown();
+        broker.closeMessageServer();
         clearDatabase(dao);
     }
     
@@ -61,10 +67,6 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         ServletContextEvent contextEvt = Mockito.mock(ServletContextEvent.class);
         Mockito.when(contextEvt.getServletContext()).thenReturn(context);
         Mockito.when(context.getRealPath(Mockito.anyString())).thenReturn("/opt/digiverso/viewer/app");
-        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));        
-        MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, dao);
-        MessageQueueManager broker = Mockito.spy(tempBroker);
-        QuartzListener listener = new QuartzListener(dao, config, broker);
         
         listener.contextInitialized(contextEvt);
         

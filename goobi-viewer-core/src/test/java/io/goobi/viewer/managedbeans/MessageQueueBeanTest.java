@@ -32,7 +32,6 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
     private static final String activeMqConfigPath = "src/test/resources/config_activemq.xml";
     
     IDAO dao;
-    StartQueueBrokerListener messageQueueEnvironment;
     MessageQueueManager broker;
     
     @Before

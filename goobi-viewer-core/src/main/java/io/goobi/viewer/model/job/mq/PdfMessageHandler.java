@@ -86,10 +86,12 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             // inform user and update DownloadJob
 
             downloadJob.setStatus(JobStatus.READY);
-            downloadJob.notifyObservers(JobStatus.READY, "");
+            try {
+                downloadJob.notifyObservers(JobStatus.READY, "");
+            } catch(MessagingException e) {
+                logger.error("Error notifying observers: {}", e.toString());                
+            }
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-        } catch(MessagingException e) {
-            logger.error("Error notifying observers: {}", e.toString());
         } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
             return MessageStatus.ERROR;
         }
