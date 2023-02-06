@@ -25,6 +25,7 @@ package io.goobi.viewer.model.job.mq;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +83,10 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
             Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
                     .toPath();
+            if(JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile)) {
+                downloadJob.setStatus(JobStatus.WAITING);
+                DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+            }
             createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), pdfFile);
             // inform user and update DownloadJob
 
