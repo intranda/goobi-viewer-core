@@ -54,7 +54,7 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
         
         ViewerMessage message = MessageGenerator.generateSimpleMessage(TaskType.DOWNLOAD_PDF.name());
         String messageId = broker.addToQueue(message);
-        Mockito.verify(broker, Mockito.timeout(20000).times(1)).handle(Mockito.argThat( m -> m.getMessageId().equals(messageId)  ));
+        Mockito.verify(broker, Mockito.timeout(2000).times(1)).handle(Mockito.argThat( m -> m.getMessageId().equals(messageId)  ));
     }
 
 }
