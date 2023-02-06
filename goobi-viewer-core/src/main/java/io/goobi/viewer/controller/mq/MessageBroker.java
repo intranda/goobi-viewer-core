@@ -42,6 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.managedbeans.MessageQueueBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
@@ -62,6 +63,7 @@ public class MessageBroker {
     
     private final Map<String, MessageHandler<MessageStatus>> instances;
     private final IDAO dao;
+    private boolean queueRunning = false;
     
     public MessageBroker() throws DAOException {
         this.instances = generateTicketHandlers();
@@ -77,15 +79,20 @@ public class MessageBroker {
      * Add the message to the internal message queue to be handled later
      * @param message
      * @return
+     * @throws MessageQueueException 
      */
-    public String addToQueue(ViewerMessage message) {
-        try {
-            return MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName());
-        } catch (JsonProcessingException | JMSException e) {
-            logger.error("Error adding message {}/{} to queue: {}", message.getTaskName(), message.getMessageId(), e.toString(), e);
-            return null;
-        } finally {            
-            notifyMessageQueueStateUpdate();
+    public String addToQueue(ViewerMessage message) throws MessageQueueException {
+        if(this.isQueueRunning()) {            
+            try {
+                return MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName());
+            } catch (JsonProcessingException | JMSException e) {
+                logger.error("Error adding message {}/{} to queue: {}", message.getTaskName(), message.getMessageId(), e.toString(), e);
+                return null;
+            } finally {            
+                notifyMessageQueueStateUpdate();
+            }
+        } else {
+            throw new MessageQueueException("Message queue is not running");
         }
     }
 
@@ -146,5 +153,13 @@ public class MessageBroker {
             }
         }
         return handlers;
+    }
+    
+    public boolean isQueueRunning() {
+        return queueRunning;
+    }
+    
+    public void setQueueRunning(boolean queueRunning) {
+        this.queueRunning = queueRunning;
     }
 }

@@ -2,6 +2,7 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +35,7 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
         this.dao = DataManager.getInstance().getDao();
         //necessary to connect to mq in MessageQueueBean#init
         messageQueueEnvironment = new StartQueueBrokerListener();
-        messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi");
+        assertTrue("Failed to start message queue. See log for details", messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi"));
         //delete messages from other tests
         List<ViewerMessage> messages = this.dao.getViewerMessages(0, 10000, "", false, Collections.emptyMap());
         for (ViewerMessage viewerMessage : messages) {

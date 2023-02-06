@@ -1,5 +1,7 @@
 package io.goobi.viewer.controller.mq;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.mq.PdfMessageHandler;
 
@@ -35,7 +38,8 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
         MessageBroker tempBroker = new MessageBroker(this.dao, Map.of(TaskType.DOWNLOAD_PDF.name(), pdfHandler));
         broker = Mockito.spy(tempBroker);
         messageQueueEnvironment = new StartQueueBrokerListener(broker);
-        messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi");
+        assertTrue("Failed to start message queue. See log for details", messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi"));
+        broker.setQueueRunning(true);
         
         //delete messages from other tests
         List<ViewerMessage> messages = this.dao.getViewerMessages(0, 500, "", false, Collections.emptyMap());
@@ -50,11 +54,11 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
     }
     
     @Test
-    public void testStartQueues() {
+    public void testStartQueues() throws MessageQueueException {
         
         ViewerMessage message = MessageGenerator.generateSimpleMessage(TaskType.DOWNLOAD_PDF.name());
         String messageId = broker.addToQueue(message);
-        Mockito.verify(broker, Mockito.timeout(20000).times(1)).handle(Mockito.argThat( m -> m.getMessageId().equals(messageId)  ));
+        Mockito.verify(broker, Mockito.timeout(2000).times(1)).handle(Mockito.argThat( m -> m.getMessageId().equals(messageId)  ));
     }
 
 }

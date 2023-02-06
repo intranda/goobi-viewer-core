@@ -22,16 +22,17 @@
 
 package io.goobi.viewer.model.job.quartz;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 
 import io.goobi.viewer.controller.mq.MessageBroker;
 import io.goobi.viewer.controller.mq.MessageGenerator;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
 
 /**
@@ -41,6 +42,8 @@ import io.goobi.viewer.model.job.TaskType;
  */
 public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, Job {
 
+    private static final Logger logger = LogManager.getLogger(HandleMessageJob.class);
+    
     private final TaskType taskType;
     private final String cronSchedulerExpression;
     
@@ -77,7 +80,11 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
             message.getProperties().put(key, value.toString());
         });
         if(runInQueue) {
-            messageBroker.addToQueue(message);
+            try {
+                messageBroker.addToQueue(message);
+            } catch (MessageQueueException e) {
+                logger.error("Cannot add job to message queue: {}", e.toString());
+            }
         } else {            
             messageBroker.handle(message);
         }

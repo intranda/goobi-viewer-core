@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,9 +59,11 @@ import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageBroker;
 import io.goobi.viewer.controller.mq.MessageGenerator;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.mq.IndexUsageHandler;
 import io.goobi.viewer.model.job.mq.NotifySearchUpdateHandler;
@@ -82,6 +85,9 @@ public class TasksResource {
 
     @Context
     private HttpServletRequest httpRequest;
+    @Inject
+    private MessageBroker messageBroker;
+
 
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;
@@ -137,10 +143,9 @@ public class TasksResource {
                 }
 
                 try {
-                    MessageGenerator.submitInternalMessage(message, "viewer", message.getTaskName());
-                } catch (JMSException | JsonProcessingException e) {
-                    // mq is not reachable
-                    logger.error(e);
+                    this.messageBroker.addToQueue(message);
+                } catch (MessageQueueException e) {
+                    throw new WebApplicationException(e);
                 }
 
                 // TODO create useful response, containing the message id
