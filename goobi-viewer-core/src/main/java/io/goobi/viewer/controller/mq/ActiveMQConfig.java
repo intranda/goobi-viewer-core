@@ -39,6 +39,9 @@ public class ActiveMQConfig {
         if (Files.exists(filePath)) {
             try {
                 DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                builderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
                 DocumentBuilder builder = builderFactory.newDocumentBuilder();
                 this.config = builder.parse(filePath.toFile());
             } catch (ParserConfigurationException | SAXException | IOException e) {
