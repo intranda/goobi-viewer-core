@@ -142,6 +142,9 @@ public class Search implements Serializable {
     @Column(name = "proximity_search_distance")
     private int proximitySearchDistance = 0;
 
+    @Transient
+    private List<SearchResultGroup> resultGroups = DataManager.getInstance().getConfiguration().getSearchResultGroups();
+
     /** Solr fields for search result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
     @Transient
     private List<StringPair> sortFields = new ArrayList<>();

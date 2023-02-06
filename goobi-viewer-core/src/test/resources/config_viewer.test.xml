@@ -530,7 +530,8 @@
         
         <!--  -->
         <resultGroups enabled="true">
-            <group name="objects" query="SOURCEDOCFORMAT:LIDO" />
+            <group name="lido_objects" query="SOURCEDOCFORMAT:LIDO" />
+            <group name="monographs" query="DOCSTRCT:monograph" />
         </resultGroups>
 	</search>
 

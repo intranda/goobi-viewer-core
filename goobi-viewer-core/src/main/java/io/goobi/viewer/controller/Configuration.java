@@ -75,6 +75,7 @@ import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -2587,7 +2588,7 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getGeoFacetFieldPredicate(String facetField) {
         return getPropertyForFacetField(facetField, "[@predicate]", "ISWITHIN");
-        
+
     }
 
     /**
@@ -5268,6 +5269,41 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<String> getAllowedFacetsForExpandQuery() {
         return getLocalList("search.useFacetsAsExpandQuery.facetQuery");
+    }
+
+    /**
+     *
+     * @return
+     * @should return correct value
+     */
+    public boolean isSearchResultGroupsEnabled() {
+        return getLocalBoolean("search.resultGroups[@enabled]", false);
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return all configured elements
+     */
+    public List<SearchResultGroup> getSearchResultGroups() {
+        List<SearchResultGroup> ret = new ArrayList<>();
+        
+        List<HierarchicalConfiguration<ImmutableNode>> groupNodes = getLocalConfigurationsAt("search.resultGroups.group");
+        for (HierarchicalConfiguration<ImmutableNode> groupNode : groupNodes) {
+            String name = groupNode.getString(XML_PATH_ATTRIBUTE_NAME);
+            if (StringUtils.isBlank(name)) {
+                logger.warn("search/resultGroups/group/@name may not be empty.");
+                continue;
+            }
+            String query = groupNode.getString("query");
+            if (StringUtils.isBlank(query)) {
+                logger.warn("search/resultGroups/group/@query may not be empty.");
+                continue;
+            }
+            ret.add( new SearchResultGroup(name, query));
+        }
+
+        return ret;
     }
 
     /**
