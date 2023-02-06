@@ -33,7 +33,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 
-import io.goobi.viewer.controller.mq.MessageBroker;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 
 public abstract class AbstractViewerJob implements Job, IViewerJob {
     private static Map<String, Boolean> running = new HashMap<>();
@@ -60,7 +60,7 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
                 try {
                     log.trace("start history updating for all processes");
                     setRunning(keyName, true);
-                    MessageBroker broker = (MessageBroker) context.getScheduler().getContext().get("messageBroker");
+                    MessageQueueManager broker = (MessageQueueManager) context.getScheduler().getContext().get("messageBroker");
 
                     Map<String, Object> params = (Map<String, Object>) context.getScheduler().getContext().get(keyName);
                     execute(params, broker);

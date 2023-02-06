@@ -49,20 +49,18 @@ public class DefaultQueueListener {
 
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);
 
-    private final MessageBroker messageBroker;
+    private final MessageQueueManager messageBroker;
     private Thread thread;
     private ActiveMQConnection conn;
     private MessageConsumer consumer;
     private volatile boolean shouldStop = false;
 
-    public DefaultQueueListener(MessageBroker messageBroker) {
+    public DefaultQueueListener(MessageQueueManager messageBroker) {
         this.messageBroker = messageBroker;
     }
 
     public void register(String username, String password, String queueType) throws JMSException {
-        ActiveMQConnectionFactory connFactory = new ActiveMQConnectionFactory("vm://localhost");
-        connFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
-        conn = (ActiveMQConnection) connFactory.createConnection(username, password);
+        conn = this.messageBroker.getConnection();
         ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
         prefetchPolicy.setAll(0);
         conn.setPrefetchPolicy(prefetchPolicy);
@@ -119,7 +117,7 @@ public class DefaultQueueListener {
                                 log.error("Error handling ticket " + message.getJMSMessageID() + ": ", t);
                                 sess.recover();
                             } finally {
-                                MessageBroker.notifyMessageQueueStateUpdate();
+                                MessageQueueManager.notifyMessageQueueStateUpdate();
                             }
                             
                         }

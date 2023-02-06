@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
@@ -62,8 +61,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
-import io.goobi.viewer.controller.mq.MessageBroker;
-import io.goobi.viewer.controller.mq.MessageGenerator;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -96,7 +94,7 @@ public class DownloadResource {
     @Inject
     private ApiUrls urls;
     @Inject
-    private MessageBroker messageBroker;
+    private MessageQueueManager messageBroker;
 
     public DownloadResource() {
     }
@@ -174,7 +172,7 @@ public class DownloadResource {
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
-        ViewerMessage message = MessageGenerator.generateSimpleMessage(TaskType.DOWNLOAD_PDF.name());
+        ViewerMessage message =  new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
         // create new downloadjob
 
         DownloadJob job = new PDFDownloadJob(pi, logId, LocalDateTime.now(), DownloadBean.getTimeToLive());

@@ -5430,20 +5430,9 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("activeMQ[@enabled]", true);
     }
 
-    public String getActiveMQConfigPath() {
-        return getLocalString("activeMQ.configuration", getConfigLocalPath() + "config_activemq.xml");
-    }
 
     public int getNumberOfParallelMessages() {
         return getLocalInt("activeMQ[@numberOfParallelMessages]", 1);
-    }
-
-    public String getActiveMQUsername() {
-        return getLocalString("activeMQ.user", "");
-    }
-
-    public String getActiveMQPassword() {
-        return getLocalString("activeMQ.password", "");
     }
     
     public int getActiveMQMessagePurgeInterval() {

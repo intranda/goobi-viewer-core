@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -54,9 +56,12 @@ import jakarta.mail.MessagingException;
 
 public class PdfMessageHandler implements MessageHandler<MessageStatus> {
     
+    private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
+    
     @Override
     public MessageStatus call(ViewerMessage message) {
 
+        
         String pi = message.getProperties().get("pi");
 
         String logId = message.getProperties().get("logId");
@@ -83,10 +88,9 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             downloadJob.setStatus(JobStatus.READY);
             downloadJob.notifyObservers(JobStatus.READY, "");
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException
-                | MessagingException e) {
-
+        } catch(MessagingException e) {
+            logger.error("Error notifying observers: {}", e.toString());
+        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
             return MessageStatus.ERROR;
         }
 

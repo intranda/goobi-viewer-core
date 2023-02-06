@@ -56,7 +56,6 @@ import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
@@ -66,7 +65,6 @@ import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.servlet.ServletContext;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -82,7 +80,7 @@ import org.omnifaces.cdi.PushContext;
 import com.fasterxml.jackson.core.JacksonException;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.mq.StartQueueBrokerListener;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
@@ -106,6 +104,9 @@ public class MessageQueueBean implements Serializable {
 
     private boolean paused;
 
+    @Inject 
+    transient private MessageQueueManager messageBroker;
+    
     @Inject
     @Push
     PushContext messageQueueState;
@@ -117,18 +118,18 @@ public class MessageQueueBean implements Serializable {
 
     }
 
+    public MessageQueueBean(MessageQueueManager broker) {
+        this.messageBroker = broker;
+        this.initMessageBrokerStart();
+    }
+
     @PostConstruct
     public void init() throws DAOException {
 
         if (this.messageBrokerStart) {
-
-            ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-            connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
             
             try {
-                connection =
-                        (ActiveMQConnection) connectionFactory.createConnection(DataManager.getInstance().getConfiguration().getActiveMQUsername(),
-                                DataManager.getInstance().getConfiguration().getActiveMQPassword());
+                connection = messageBroker.getConnection();
                 queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
             } catch (JMSException e) {
                 log.error(e);
@@ -172,12 +173,7 @@ public class MessageQueueBean implements Serializable {
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             try {
-
-                FacesContext facesContext = FacesContext.getCurrentInstance();
-                ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-                StartQueueBrokerListener listener = (StartQueueBrokerListener) servletContext.getAttribute("BrokerService");
-
-                BrokerService broker = listener.getBroker();
+                BrokerService broker = messageBroker.getBroker();
 
                 ObjectName queueViewMBeanName =
                         new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
@@ -195,11 +191,7 @@ public class MessageQueueBean implements Serializable {
     public void resumeQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             try {
-                FacesContext facesContext = FacesContext.getCurrentInstance();
-                ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-                StartQueueBrokerListener listener = (StartQueueBrokerListener) servletContext.getAttribute("BrokerService");
-
-                BrokerService broker = listener.getBroker();
+                BrokerService broker = messageBroker.getBroker();
 
                 ObjectName queueViewMBeanName =
                         new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
@@ -218,11 +210,7 @@ public class MessageQueueBean implements Serializable {
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             try {
-                FacesContext facesContext = FacesContext.getCurrentInstance();
-                ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-                StartQueueBrokerListener listener = (StartQueueBrokerListener) servletContext.getAttribute("BrokerService");
-
-                BrokerService broker = listener.getBroker();
+                BrokerService broker = messageBroker.getBroker();
 
                 ObjectName queueViewMBeanName =
                         new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
@@ -289,11 +277,7 @@ public class MessageQueueBean implements Serializable {
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             try {
-                FacesContext facesContext = FacesContext.getCurrentInstance();
-                ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-                StartQueueBrokerListener listener = (StartQueueBrokerListener) servletContext.getAttribute("BrokerService");
-
-                BrokerService broker = listener.getBroker();
+                BrokerService broker = messageBroker.getBroker();
 
                 ObjectName queueViewMBeanName =
                         new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
@@ -319,11 +303,7 @@ public class MessageQueueBean implements Serializable {
         
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             try {
-                FacesContext facesContext = FacesContext.getCurrentInstance();
-                ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
-                StartQueueBrokerListener listener = (StartQueueBrokerListener) servletContext.getAttribute("BrokerService");
-
-                BrokerService broker = listener.getBroker();
+                BrokerService broker = messageBroker.getBroker();
 
                 ObjectName queueViewMBeanName =
                         new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");

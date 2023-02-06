@@ -29,7 +29,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import io.goobi.viewer.controller.mq.MessageBroker;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import it.burning.cron.CronExpressionDescriptor;
 
 public interface IViewerJob extends Job {
@@ -43,7 +43,7 @@ public interface IViewerJob extends Job {
 
     public abstract String getJobName();
 
-    public abstract void execute(Map<String, Object> params, MessageBroker messageBroker);
+    public abstract void execute(Map<String, Object> params, MessageQueueManager messageBroker);
 
     default String getCronExpression() {
         return "";

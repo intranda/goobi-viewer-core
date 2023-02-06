@@ -2,6 +2,7 @@ package io.goobi.viewer.controller.mq;
 
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,7 @@ public class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
 private static final String activeMqConfigPath = "src/test/resources/config_activemq.xml";
     
     IDAO dao;
-    StartQueueBrokerListener messageQueueEnvironment;
-    MessageBroker broker;
+    MessageQueueManager broker;
     
     
     @Before
@@ -35,11 +35,10 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
         
         PdfMessageHandler pdfHandler = Mockito.mock(PdfMessageHandler.class);
         Mockito.when(pdfHandler.call(Mockito.any())).thenReturn(MessageStatus.FINISH);
-        MessageBroker tempBroker = new MessageBroker(this.dao, Map.of(TaskType.DOWNLOAD_PDF.name(), pdfHandler));
+        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));
+        MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, this.dao, Map.of(TaskType.DOWNLOAD_PDF.name(), pdfHandler));
         broker = Mockito.spy(tempBroker);
-        messageQueueEnvironment = new StartQueueBrokerListener(broker);
-        assertTrue("Failed to start message queue. See log for details", messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi"));
-        broker.setQueueRunning(true);
+        assertTrue("Failed to start message queue. See log for details", broker.initializeMessageServer("localhost", 1088, 0));
         
         //delete messages from other tests
         List<ViewerMessage> messages = this.dao.getViewerMessages(0, 500, "", false, Collections.emptyMap());
@@ -50,13 +49,13 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
     
     @After
     public void tearDown() {
-        messageQueueEnvironment.contextDestroyed(null);
+        broker.closeMessageServer();
     }
     
     @Test
     public void testStartQueues() throws MessageQueueException {
         
-        ViewerMessage message = MessageGenerator.generateSimpleMessage(TaskType.DOWNLOAD_PDF.name());
+        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
         String messageId = broker.addToQueue(message);
         Mockito.verify(broker, Mockito.timeout(2000).times(1)).handle(Mockito.argThat( m -> m.getMessageId().equals(messageId)  ));
     }

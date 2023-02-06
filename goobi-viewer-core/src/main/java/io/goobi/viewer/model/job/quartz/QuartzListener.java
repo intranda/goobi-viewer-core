@@ -49,7 +49,7 @@ import org.quartz.TriggerBuilder;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.mq.MessageBroker;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
@@ -64,7 +64,7 @@ public class QuartzListener implements ServletContextListener {
     private final IDAO dao;
     private final Configuration config;
     @Inject 
-    transient private MessageBroker messageBroker;
+    transient private MessageQueueManager messageBroker;
     @Inject
     private ServletContext context;
     
@@ -73,7 +73,7 @@ public class QuartzListener implements ServletContextListener {
         this.config = DataManager.getInstance().getConfiguration();
     }
     
-    public QuartzListener(IDAO dao, Configuration config, MessageBroker messageBroker) {
+    public QuartzListener(IDAO dao, Configuration config, MessageQueueManager messageBroker) {
         this.dao = dao;
         this.config = config;
         this.messageBroker = messageBroker;

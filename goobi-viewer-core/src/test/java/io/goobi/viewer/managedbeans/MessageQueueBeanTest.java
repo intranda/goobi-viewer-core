@@ -4,15 +4,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.ActiveMQConfig;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.StartQueueBrokerListener;
 import io.goobi.viewer.controller.mq.ViewerMessage;
@@ -28,14 +33,17 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
     
     IDAO dao;
     StartQueueBrokerListener messageQueueEnvironment;
+    MessageQueueManager broker;
     
     @Before
     public void setup() throws Exception {
         super.setUp();
         this.dao = DataManager.getInstance().getDao();
         //necessary to connect to mq in MessageQueueBean#init
-        messageQueueEnvironment = new StartQueueBrokerListener();
-        assertTrue("Failed to start message queue. See log for details", messageQueueEnvironment.initializeMessageServer(activeMqConfigPath, "goobi", "goobi"));
+        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));
+        MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, this.dao, Collections.emptyMap());
+        broker = Mockito.spy(tempBroker);
+        assertTrue("Failed to start message queue. See log for details", broker.initializeMessageServer("localhost", 1088, 0));
         //delete messages from other tests
         List<ViewerMessage> messages = this.dao.getViewerMessages(0, 10000, "", false, Collections.emptyMap());
         for (ViewerMessage viewerMessage : messages) {
@@ -45,7 +53,7 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
     
     @After
     public void tearDown() {
-        messageQueueEnvironment.contextDestroyed(null);
+        broker.closeMessageServer();
     }
     
     
@@ -66,7 +74,7 @@ public class MessageQueueBeanTest extends AbstractDatabaseEnabledTest {
         dao.addViewerMessage(task1);
         dao.addViewerMessage(task2);
         
-        MessageQueueBean bean = new MessageQueueBean();
+        MessageQueueBean bean = new MessageQueueBean(broker);
         bean.init();
         TableDataProvider<ViewerMessage> data = bean.getLazyModelViewerHistory();
         assertNotNull(data);

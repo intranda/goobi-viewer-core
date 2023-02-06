@@ -29,8 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 
-import io.goobi.viewer.controller.mq.MessageBroker;
-import io.goobi.viewer.controller.mq.MessageGenerator;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
@@ -47,7 +46,7 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
     private final TaskType taskType;
     private final String cronSchedulerExpression;
     
-    public HandleMessageJob(TaskType taskType, String cronSchedulerExpression, MessageBroker messageBroker) {
+    public HandleMessageJob(TaskType taskType, String cronSchedulerExpression, MessageQueueManager messageBroker) {
         this.taskType = taskType;
         this.cronSchedulerExpression = cronSchedulerExpression;
     }
@@ -72,10 +71,10 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
     }
     
     @Override
-    public void execute(Map<String, Object> params, MessageBroker messageBroker) {
+    public void execute(Map<String, Object> params, MessageQueueManager messageBroker) {
         TaskType type = (TaskType)params.get("taskType");
         boolean runInQueue = (boolean) params.get("runInQueue");
-        ViewerMessage message = MessageGenerator.generateSimpleMessage(type.name());
+        ViewerMessage message = new ViewerMessage(type.name());
         params.forEach((key, value) -> {
             message.getProperties().put(key, value.toString());
         });

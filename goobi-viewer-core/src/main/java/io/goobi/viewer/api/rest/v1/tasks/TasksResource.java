@@ -26,11 +26,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.TASKS_TASK;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.jms.JMSException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -47,8 +45,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
@@ -59,14 +55,11 @@ import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.mq.MessageBroker;
-import io.goobi.viewer.controller.mq.MessageGenerator;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
-import io.goobi.viewer.model.job.mq.IndexUsageHandler;
-import io.goobi.viewer.model.job.mq.NotifySearchUpdateHandler;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -86,7 +79,7 @@ public class TasksResource {
     @Context
     private HttpServletRequest httpRequest;
     @Inject
-    private MessageBroker messageBroker;
+    private MessageQueueManager messageBroker;
 
 
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
@@ -105,7 +98,7 @@ public class TasksResource {
 
             if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
                 ViewerMessage message = null;
-                message = MessageGenerator.generateSimpleMessage(desc.type.name());
+                message = new ViewerMessage(desc.type.name());
                 switch (desc.type) {
                     
                     case UPDATE_SITEMAP:
