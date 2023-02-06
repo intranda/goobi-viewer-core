@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -879,8 +880,8 @@ public class TocMaker {
                         .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
                 languageLabelMap.put(language, langValue);
             }
-            for (String language : languageLabelMap.keySet()) {
-                label.setValue(languageLabelMap.get(language), language);
+            for (Entry<String, String> entry : languageLabelMap.entrySet()) {
+                label.setValue(entry.getValue(), entry.getKey());
             }
         }
 

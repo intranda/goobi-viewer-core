@@ -527,6 +527,11 @@
             <facetQuery>(FACET_DC:"foo" OR FACET_DC:foo.*)</facetQuery>
             <facetQuery>(FACET_DC:"bar" OR FACET_DC:bar.*)</facetQuery>
         </useFacetsAsExpandQuery>
+        
+        <!--  -->
+        <resultGroups enabled="true">
+            <group name="objects" query="SOURCEDOCFORMAT:LIDO" />
+        </resultGroups>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->

@@ -179,8 +179,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private String advancedSearchQueryInfo;
 
     private String searchInCurrentItemString;
-    /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
-    private Search currentSearch;
+    /** Current search objects. Contains the results and can be used to persist search parameters in the DB. */
+    private List<Search> currentSearches = new ArrayList<>();
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
     /** Fuzzy search switch. */
@@ -447,10 +447,12 @@ public class SearchBean implements SearchInterface, Serializable {
     public void resetSearchResults() {
         logger.trace("resetSearchResults");
         currentHitIndex = -1;
-        if (currentSearch != null) {
-            currentSearch.setHitsCount(0);
-            currentSearch.getHits().clear();
-            currentSearch = null; //to indicate that no search results are expected. search is initially null anyway
+        if (!currentSearches.isEmpty()) {
+            for (Search currentSearch : currentSearches) {
+                currentSearch.setHitsCount(0);
+                currentSearch.getHits().clear();
+            }
+            currentSearches.clear();
         }
         // Only reset available facets here, not selected facets!
         facets.resetAvailableFacets();
