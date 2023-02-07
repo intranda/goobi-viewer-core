@@ -43,6 +43,7 @@ io.goobi.viewer.api.rest.v2.records.media
 io.goobi.viewer.controller
 io.goobi.viewer.controller.imaging
 io.goobi.viewer.controller.model
+io.goobi.viewer.controller.mq
 io.goobi.viewer.dao
 io.goobi.viewer.dao.converter
 io.goobi.viewer.dao.impl
@@ -94,6 +95,8 @@ io.goobi.viewer.model.iiif.search.model
 io.goobi.viewer.model.iiif.search.parser
 io.goobi.viewer.model.job
 io.goobi.viewer.model.job.download
+io.goobi.viewer.model.job.mq
+io.goobi.viewer.model.job.quartz
 io.goobi.viewer.model.job.upload
 io.goobi.viewer.model.jsf
 io.goobi.viewer.model.log
