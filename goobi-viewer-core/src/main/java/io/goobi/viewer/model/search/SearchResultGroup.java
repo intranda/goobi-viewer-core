@@ -26,6 +26,9 @@ import java.util.List;
 
 import io.goobi.viewer.model.maps.Location;
 
+/**
+ * Used for creating separate groups of search results for a single query. Each group can provide its own filter query for custom results.
+ */
 public class SearchResultGroup {
 
     private final String name;
