@@ -957,6 +957,7 @@ public class Configuration extends AbstractConfiguration {
                 return subElement;
 
             }
+        }
 
         return null;
     }
