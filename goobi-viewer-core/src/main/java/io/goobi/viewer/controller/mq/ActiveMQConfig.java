@@ -39,6 +39,9 @@ public class ActiveMQConfig {
         if (Files.exists(filePath)) {
             try {
                 DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                builderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
                 DocumentBuilder builder = builderFactory.newDocumentBuilder();
                 this.config = builder.parse(filePath.toFile());
             } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -63,36 +66,42 @@ public class ActiveMQConfig {
 
     public String getUsernameAdmin() {
         NodeList nodes = getNodes("/beans/broker/plugins/simpleAuthenticationPlugin/users/authenticationUser");
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            Node attrGroups = node.getAttributes().getNamedItem("groups");
-            if (attrGroups != null) {
-                String groups = attrGroups.getNodeValue();
-                if (groups != null && groups.contains("admins")) {
-                    return node.getAttributes().getNamedItem("username").getNodeValue();
+        if (nodes != null) {
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                Node attrGroups = node.getAttributes().getNamedItem("groups");
+                if (attrGroups != null) {
+                    String groups = attrGroups.getNodeValue();
+                    if (groups != null && groups.contains("admins")) {
+                        return node.getAttributes().getNamedItem("username").getNodeValue();
+                    }
                 }
-            }
 
+            }
         }
+        
         return "goobi";
     }
-    
+
     public String getPasswordAdmin() {
         NodeList nodes = getNodes("/beans/broker/plugins/simpleAuthenticationPlugin/users/authenticationUser");
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            Node attrGroups = node.getAttributes().getNamedItem("groups");
-            if (attrGroups != null) {
-                String groups = attrGroups.getNodeValue();
-                if (groups != null && groups.contains("admins")) {
-                    return node.getAttributes().getNamedItem("password").getNodeValue();
+        if (nodes != null) {
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                Node attrGroups = node.getAttributes().getNamedItem("groups");
+                if (attrGroups != null) {
+                    String groups = attrGroups.getNodeValue();
+                    if (groups != null && groups.contains("admins")) {
+                        return node.getAttributes().getNamedItem("password").getNodeValue();
+                    }
                 }
-            }
 
+            }
         }
+        
         return "goobi";
     }
-    
+
     public Path getConfigFilePath() {
         return this.configFilePath;
     }
@@ -103,10 +112,9 @@ public class ActiveMQConfig {
             NodeList nodes = (NodeList) xPath.compile(path).evaluate(this.config, XPathConstants.NODESET);
             if (nodes != null && nodes.getLength() > 0) {
                 return nodes.item(0).getNodeValue();
-            } else {
-                logger.error("Cannot find node {}", path);
-                return defaultValue;
             }
+            logger.error("Cannot find node {}", path);
+            return defaultValue;
         } catch (XPathExpressionException e) {
             logger.error("Cannot compile connector uri expression '{}': {}", path, e.toString());
             return defaultValue;
@@ -116,8 +124,7 @@ public class ActiveMQConfig {
     private NodeList getNodes(String path) {
         XPath xPath = XPathFactory.newInstance().newXPath();
         try {
-            NodeList nodeList = (NodeList) xPath.compile(path).evaluate(this.config, XPathConstants.NODESET);
-            return nodeList;
+            return (NodeList) xPath.compile(path).evaluate(this.config, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             logger.error("Cannot compile connector uri expression '{}': {}", path, e.toString());
             return null;
