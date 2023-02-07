@@ -1644,21 +1644,13 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        Assert.assertEquals(5, result.size());
+        Assert.assertEquals(6, result.size());
         Assert.assertEquals("DC", result.get(0));
         Assert.assertEquals("YEAR", result.get(1));
         Assert.assertEquals("MD_CREATOR", result.get(2));
         Assert.assertEquals("MD_PLACEPUBLISH", result.get(3));
         Assert.assertEquals("WKT_COORDS", result.get(4));
-    }
-
-    /**
-     * @see Configuration#getFacetFields()
-     * @verifies return all values
-     */
-    @Test
-    public void geFacetFields_shouldReturnAllValues() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getFacetFields().size());
+        Assert.assertEquals("MD_PERSON", result.get(5));
     }
 
     /**
@@ -1668,6 +1660,15 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getHierarchicalFacetFields_shouldReturnAllValues() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().size());
+    }
+
+    /**
+     * @see Configuration#getRangeFacetFields()
+     * @verifies return all values
+     */
+    @Test
+    public void getRangeFacetFields_shouldReturnAllValues() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
     }
 
     /**
@@ -1745,6 +1746,51 @@ public class ConfigurationTest extends AbstractTest {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("YEAR"));
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_CREATOR"));
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels("MD_PLACEPUBLISH"));
+    }
+
+    /**
+     * @see Configuration#getGroupToLengthForFacetField(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void getGroupToLengthForFacetField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(1, DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField("MD_PERSON"));
+    }
+
+    /**
+     * @see Configuration#isAlwaysApplyFacetFieldToUnfilteredHits(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isAlwaysApplyFacetFieldToUnfilteredHits_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits("MD_PERSON"));
+    }
+
+    /**
+     * @see Configuration#isFacetFieldSkipInWidget(String)
+     * @verifies return correct value
+     */
+    @Test
+    public void isFacetFieldSkipInWidget_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget("MD_PERSON"));
+    }
+
+    /**
+     * @see Configuration#getGeoFacetFieldPredicate()
+     * @verifies return correct value
+     */
+    @Test
+    public void getGeoFacetFieldPredicate_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("ISWITHIN", DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate("WKT_COORDS"));
+    }
+
+    /**
+     * @see Configuration#isShowSearchHitsInGeoFacetMap()
+     * @verifies return correct value
+     */
+    @Test
+    public void isShowSearchHitsInGeoFacetMap_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap("WKT_COORDS"));
     }
 
     @Test
@@ -3198,5 +3244,4 @@ public class ConfigurationTest extends AbstractTest {
     public void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
     }
-
 }

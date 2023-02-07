@@ -28,8 +28,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +47,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.exceptions.DatabaseException;
 
+import com.ibm.icu.util.TimeZone;
+
 import io.goobi.viewer.controller.AlphabetIterator;
+import io.goobi.viewer.controller.mq.MessageStatus;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -78,7 +85,9 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
+import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.Search;
@@ -106,6 +115,7 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -295,7 +305,7 @@ public class JPADAO implements IDAO {
     @Override
     public long getUserCount(Map<String, String> filters) throws DAOException {
         String filterQuery = "";
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         if (filters != null) {
             String filterValue = filters.values().stream().findFirst().orElse("");
             if (StringUtils.isNotBlank(filterValue)) {
@@ -4069,14 +4079,14 @@ public class JPADAO implements IDAO {
      * @return
      * @throws DAOException
      */
-    private long getFilteredRowCount(String className, String filter, Map<String, String> params) throws DAOException {
+    private long getFilteredRowCount(String className, String filter, Map<String, Object> params) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             StringBuilder sbQuery = new StringBuilder("SELECT count(DISTINCT a) FROM ").append(className).append(" a").append(" ").append(filter);
             Query q = em.createQuery(sbQuery.toString());
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-
+            
             return (long) q.getSingleResult();
         } finally {
             close(em);
@@ -4871,16 +4881,16 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String query = "SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            StringBuilder query = new StringBuilder("SELECT a FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
             if (page != null) {
-                query += " AND a.targetPageOrder = :page";
+                query.append(" AND a.targetPageOrder = :page");
             } else {
-                query += " AND a.targetPageOrder IS NULL";
+                query.append(" AND a.targetPageOrder IS NULL");
             }
             if (StringUtils.isNotBlank(motivation)) {
-                query += " AND a.motivation =  + :motivation";
+                query.append(" AND a.motivation =  + :motivation");
             }
-            Query q = em.createQuery(query);
+            Query q = em.createQuery(query.toString());
             q.setParameter("pi", pi);
             if (page != null) {
                 q.setParameter("page", page);
@@ -4902,13 +4912,13 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            String query = "SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi";
+            StringBuilder query = new StringBuilder("SELECT COUNT(a) FROM CrowdsourcingAnnotation a WHERE a.targetPI = :pi");
             if (page != null) {
-                query += " AND a.targetPageOrder = :page";
+                query.append(" AND a.targetPageOrder = :page");
             } else {
-                query += " AND a.targetPageOrder IS NULL";
+                query.append(" AND a.targetPageOrder IS NULL");
             }
-            Query q = em.createQuery(query);
+            Query q = em.createQuery(query.toString());
             q.setParameter("pi", pi);
             if (page != null) {
                 q.setParameter("page", page);
@@ -6107,11 +6117,11 @@ public class JPADAO implements IDAO {
                 }
                 whereStatements.add(where); // joinTable.field LIKE :param | field LIKE :param
             }
-            String filterQuery = joinStatements.stream().collect(Collectors.joining(" "));
+            StringBuilder filterQuery = new StringBuilder().append(joinStatements.stream().collect(Collectors.joining(" ")));
             if (!whereStatements.isEmpty()) {
-                filterQuery += " WHERE (" + whereStatements.stream().collect(Collectors.joining(" OR ")) + ")";
+                filterQuery.append(" WHERE (").append(whereStatements.stream().collect(Collectors.joining(" OR "))).append(")");
             }
-            q.append(filterQuery);
+            q.append(filterQuery.toString());
         }
 
         return q.toString();
@@ -6188,14 +6198,14 @@ public class JPADAO implements IDAO {
                     sbOtherStatements.append(whereStatement);
                 }
             }
-            String filterQuery = QUERY_ELEMENT_WHERE + (sbOwner.length() > 0 ? sbOwner.toString() : "");
+            StringBuilder filterQuery = new StringBuilder(QUERY_ELEMENT_WHERE).append(sbOwner.length() > 0 ? sbOwner.toString() : "");
             if (sbOwner.length() > 0 && sbOtherStatements.length() > 0) {
-                filterQuery += QUERY_ELEMENT_AND;
+                filterQuery.append(QUERY_ELEMENT_AND);
             }
             if (sbOtherStatements.length() > 0) {
-                filterQuery += ("(" + sbOtherStatements.toString() + ")");
+                filterQuery.append("(").append(sbOtherStatements.toString()).append(")");
             }
-            q.append(filterQuery);
+            q.append(filterQuery.toString());
         }
 
         return q.toString();
@@ -6291,21 +6301,22 @@ public class JPADAO implements IDAO {
                     sbOtherStatements.append(whereStatement);
                 }
             }
-            String filterQuery = QUERY_ELEMENT_WHERE + (sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
+            StringBuilder filterQuery =
+                    new StringBuilder(QUERY_ELEMENT_WHERE).append(sbCreatorReviewer.length() > 0 ? "(" + sbCreatorReviewer.toString() + ")" : "");
 
             if (sbCreatorReviewer.length() > 0 && (sbGenerator.length() > 0 || sbOtherStatements.length() > 0)) {
-                filterQuery += QUERY_ELEMENT_AND;
+                filterQuery.append(QUERY_ELEMENT_AND);
             }
             if (sbGenerator.length() > 0) {
-                filterQuery += "(" + sbGenerator.toString() + ")";
+                filterQuery.append("(").append(sbGenerator.toString()).append(")");
                 if (sbOtherStatements.length() > 0) {
-                    filterQuery += QUERY_ELEMENT_AND;
+                    filterQuery.append(QUERY_ELEMENT_AND);
                 }
             }
             if (sbOtherStatements.length() > 0) {
-                filterQuery += "(" + sbOtherStatements.toString() + ")";
+                filterQuery.append("(").append(sbOtherStatements.toString()).append(")");
             }
-            q.append(filterQuery);
+            q.append(filterQuery.toString());
         }
 
         return q.toString();
@@ -6688,4 +6699,298 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addViewerMessage(ViewerMessage message) throws DAOException {
+        synchronized (cmsRequestLock) {
+
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                em.persist(message);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error adding ViewerMessage to database", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteViewerMessage(ViewerMessage message) throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                startTransaction(em);
+                ViewerMessage o = em.getReference(ViewerMessage.class, message.getId());
+                em.remove(o);
+                commitTransaction(em);
+                return true;
+            } catch (PersistenceException e) {
+                logger.error("Error deleting ViewerMessage component", e);
+                handleException(em);
+                return false;
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ViewerMessage getViewerMessage(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(ViewerMessage.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateViewerMessage(ViewerMessage message) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(message);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public ViewerMessage getViewerMessageByMessageID(String messageId) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a WHERE a.messageId = :messageId");
+
+            Query q = em.createQuery(sbQuery.toString());
+
+            q.setParameter("messageId", messageId);
+            return (ViewerMessage) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public int deleteViewerMessagesBefore(LocalDateTime date)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            
+            em.getTransaction().begin();
+
+            Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
+            q.setParameter("date", date);
+            int deleted = q.executeUpdate();
+            
+            em.getTransaction().commit();
+            
+            return deleted;
+        } finally {
+            close(em);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ViewerMessage> getViewerMessages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM ViewerMessage a");
+            Map<String, Object> params = new HashMap<>();
+
+            if (filters != null && !filters.isEmpty()) {
+                String filterQuery = addViewerMessageFilterQuery(filters, params);
+                sbQuery.append(filterQuery);
+            }
+
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    sbQuery.append(QUERY_ELEMENT_DESC);
+                }
+            } else {
+                sbQuery.append(" ORDER BY a.lastUpdateTime").append(QUERY_ELEMENT_DESC);
+            }
+            logger.trace(sbQuery);
+            Query q = em.createQuery(sbQuery.toString());
+            for (Entry<String, Object> entry : params.entrySet()) {
+                q.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+
+            return (List<ViewerMessage>) q.getResultList().stream().distinct().collect(Collectors.toList());
+        } finally {
+            close(em);
+        }
+    }
+
+    String addViewerMessageFilterQuery(Map<String, String> filters, Map<String, Object> params) {
+        String filterValue = filters.values().stream().findFirst().orElse("");
+        String filterQuery = "";
+        if (StringUtils.isNotBlank(filterValue)) {
+            filterQuery += " WHERE (a.taskName LIKE :value OR a.messageId LIKE :value";
+            try {                        
+                params.put("valueStatus", MessageStatus.valueOf(filterValue.toUpperCase()));
+                filterQuery += " OR a.messageStatus = :valueStatus";
+            } catch(IllegalArgumentException e) {
+                //noop
+            }
+            filterQuery += " OR :valueProperty MEMBER OF (a.properties)";
+            params.put("valueProperty", filterValue );
+            
+            filterQuery += ")";
+            params.put("value", "%" + filterValue + "%");
+        }
+        return filterQuery;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getViewerMessageCount(Map<String, String> filters) throws DAOException {
+        String filterQuery = "";
+        Map<String, Object> params = new HashMap<>();
+        if (filters != null) {
+                filterQuery = addViewerMessageFilterQuery(filters, params);
+        }
+        long count = getFilteredRowCount("ViewerMessage", filterQuery, params);
+        return count;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<RecurringTaskTrigger> getRecurringTaskTriggers() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT o FROM RecurringTaskTrigger o").getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get RecurringTaskTriggers. Returning empty list", e.toString());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public RecurringTaskTrigger getRecurringTaskTrigger(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(RecurringTaskTrigger.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public RecurringTaskTrigger getRecurringTaskTriggerForTask(TaskType task) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT a FROM RecurringTaskTrigger a WHERE a.taskType = :taskType");
+
+            Query q = em.createQuery(sbQuery.toString());
+
+            q.setParameter("taskType", task.name());
+            return (RecurringTaskTrigger) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            logger.error(e.getMessage());
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(trigger);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error adding ViewerMessage to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(trigger);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    @Override
+    public boolean deleteRecurringTaskTrigger(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            RecurringTaskTrigger o = em.getReference(RecurringTaskTrigger.class, id);
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error deleting RecurringTaskTrigger", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
 }

@@ -269,7 +269,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /** {@inheritDoc} */
     @Override
     public int getPageNo() {
-        return Optional.ofNullable(getSearchBean()).map(bean -> bean.getCurrentPage()).orElse(1);
+        return Optional.ofNullable(getSearchBean()).map(SearchBean::getCurrentPage).orElse(1);
     }
 
     /** {@inheritDoc} */
@@ -320,7 +320,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return the facetString
      */
     public String getFacetString() {
-        return getSearchBean().getFacets().getCurrentFacetString();
+        return getSearchBean().getFacets().getActiveFacetString();
     }
 
     /**
@@ -331,7 +331,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @param facetString the facetString to set
      */
     public void setFacetString(String facetString) {
-        getSearchBean().getFacets().setCurrentFacetString(facetString);
+        getSearchBean().getFacets().setActiveFacetString(facetString);
     }
 
     /**
@@ -457,7 +457,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return a {@link java.lang.String} object.
      */
     public String removeFacet(String facet) {
-        final String currentFacetString = getSearchBean().getFacets().getCurrentFacetString();
+        final String currentFacetString = getSearchBean().getFacets().getActiveFacetString();
         String separator = ";;";
         try {
             separator = URLEncoder.encode(separator, "utf-8");

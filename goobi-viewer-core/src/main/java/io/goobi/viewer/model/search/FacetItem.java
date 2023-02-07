@@ -31,12 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -70,6 +71,7 @@ public class FacetItem implements Serializable, IFacetItem {
     private String label;
     private String translatedLabel;
     private long count;
+    private boolean group;
     private final boolean hierarchial;
 
     /**
@@ -110,9 +112,9 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     public FacetItem(Count count) {
-        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
+        this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(),
+                Messages.translate(count.getName(), BeanUtils.getLocale()), count.getCount(), false);
     }
-
 
     /**
      * Internal constructor.
@@ -180,6 +182,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * Extracts field name and value(s) from the given link string.
      *
      * @should set label to value if label empty
+     * @should removed wildcard from label
      */
     void parseLink() {
         if (link == null) {
@@ -202,23 +205,28 @@ public class FacetItem implements Serializable, IFacetItem {
         }
         if (StringUtils.isEmpty(label)) {
             label = value;
+            if (label.endsWith("*")) {
+                label = label.substring(0, label.length() - 1);
+            }
         }
     }
 
     /**
-     * Constructs facet items from thelist of given field:value combinations. Always sorted by the label translation.
+     * Constructs facet items from the list of given field:value combinations. Always sorted by the label translation.
      *
      * @param field Facet field
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
+     * @param groupToLength If value is greater than 0, facet values will be grouped together by if they contain equal characters at {0-groupByLength}
      * @param locale Optional locale for translation
      * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
      * @should add priority values first
      * @should set label from separate field if configured and found
+     * @should group values by starting character correctly
      */
-    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale,
-            Map<String, String> labelMap) {
+    public static List<IFacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, int groupToLength,
+            Locale locale,  Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field);
         List<IFacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
@@ -238,34 +246,52 @@ public class FacetItem implements Serializable, IFacetItem {
             }
         }
 
-        for (String value : values.keySet()) {
+        Map<String, FacetItem> existingItems = new HashMap<>();
+        for (Entry<String, Long> entry : values.entrySet()) {
             // Skip reversed values
-            if (value.charAt(0) == 1) {
+            if (entry.getKey().charAt(0) == 1) {
                 continue;
             }
-            String label = value;
+            String useValue;
+            if (groupToLength > 0 && entry.getKey().length() > groupToLength) {
+                useValue = entry.getKey().substring(0, groupToLength);
+                // logger.trace("value: {}", entry.getKey());
+            } else {
+                useValue = entry.getKey();
+            }
 
-            String key = field + ":" + value;
+            String label = useValue;
+
+            String key = field + ":" + useValue;
             if (labelMap != null && labelMap.containsKey(key)) {
                 label = labelMap.get(key);
                 logger.trace("using label from map: {}", label);
             }
 
             if (StringUtils.isEmpty(field)) {
-                label = new StringBuilder(value).append(SolrConstants.SUFFIX_DD).toString();
+                label = new StringBuilder(useValue).append(SolrConstants.SUFFIX_DD).toString();
             }
-            String linkValue = value;
+            String linkValue = useValue;
             if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
+                linkValue = '"' + linkValue + '"';
+            } else if (groupToLength > 0) {
+                linkValue += '*';
             }
             String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
-            FacetItem facetItem =
-                    new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), values.get(value),
-                            hierarchical);
-            if (!priorityValues.isEmpty() && priorityValues.contains(value)) {
-                priorityValueMap.put(value, facetItem);
+
+            if (existingItems.containsKey(key)) {
+                existingItems.get(key).increaseCount(entry.getValue());
             } else {
-                retList.add(facetItem);
+                FacetItem facetItem =
+                        new FacetItem(field, link, StringTools.intern(label), ViewerResourceBundle.getTranslation(label, locale), entry.getValue(),
+                                hierarchical);
+                if (!priorityValues.isEmpty() && priorityValues.contains(useValue)) {
+                    priorityValueMap.put(useValue, facetItem);
+                } else {
+                    retList.add(facetItem);
+                }
+
+                existingItems.put(key, facetItem);
             }
         }
         switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
@@ -305,7 +331,7 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
-     * Constructs a list of FilterLink objects for the drill-down. Optionally sorted by the raw values.
+     * Constructs a list of FilterLink objects for faceting. Optionally sorted by the raw values.
      *
      * @param field a {@link java.lang.String} object.
      * @param values a {@link java.util.Map} object.
@@ -317,8 +343,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @return a {@link java.util.List} object.
      */
     public static List<IFacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder,
-            boolean hierarchical,
-            Locale locale) {
+            boolean hierarchical, Locale locale) {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
@@ -386,24 +411,24 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     @Override
     public String getQueryEscapedLink() {
-        String field = SearchHelper.facetifyField(this.field);
+        String f = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
         if (hierarchial) {
-            return new StringBuilder("(").append(field)
+            return new StringBuilder("(").append(f)
                     .append(':')
                     .append(escapedValue)
                     .append(" OR ")
-                    .append(field)
+                    .append(f)
                     .append(':')
                     .append(escapedValue)
                     .append(".*)")
                     .toString();
         }
-        if (value2 == null) {
-            return new StringBuilder(field).append(':').append(escapedValue).toString();
+        if (StringUtils.isEmpty(value2)) {
+            return new StringBuilder(f).append(':').append(escapedValue).toString();
         }
         String escapedValue2 = getEscapedValue(value2);
-        return new StringBuilder(field).append(":[").append(escapedValue).append(" TO ").append(escapedValue2).append(']').toString();
+        return new StringBuilder(f).append(":[").append(escapedValue).append(" TO ").append(escapedValue2).append(']').toString();
     }
 
     /**
@@ -413,11 +438,25 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should escape value correctly
      * @should add quotation marks if value contains space
      * @should preserve leading and trailing quotation marks
+     * @should preserve wildcard
      */
     static String getEscapedValue(String value) {
         if (StringUtils.isEmpty(value)) {
             return value;
         }
+
+        boolean addLeftTruncation = false;
+        boolean addRightTruncation = false;
+        if (value.charAt(0) == '*') {
+            addLeftTruncation = true;
+            value = value.substring(1);
+
+        }
+        if (value.endsWith("*")) {
+            addRightTruncation = true;
+            value = value.substring(0, value.length() - 1);
+        }
+
         String escapedValue = null;
         if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"' && value.length() > 2) {
             escapedValue = '"' + ClientUtils.escapeQueryChars(value.substring(1, value.length() - 1)) + '"';
@@ -427,6 +466,13 @@ public class FacetItem implements Serializable, IFacetItem {
         // Add quotation marks if spaces are contained
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
             escapedValue = '"' + escapedValue + '"';
+        }
+
+        if (addLeftTruncation) {
+            escapedValue = '*' + escapedValue;
+        }
+        if (addRightTruncation) {
+            escapedValue += '*';
         }
 
         return escapedValue;
@@ -652,6 +698,27 @@ public class FacetItem implements Serializable, IFacetItem {
     @Override
     public FacetItem setCount(long count) {
         this.count = count;
+        return this;
+    }
+
+    public void increaseCount(long amount) {
+        this.count += amount;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public boolean isGroup() {
+        return group;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public IFacetItem setGroup(boolean group) {
+        this.group = group;
         return this;
     }
 

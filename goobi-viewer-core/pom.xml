@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>22.12</version>
+	<version>23.01-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -89,7 +89,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.5.9</alto.version>
-		<ics.version>3.8.2</ics.version>
+		<ics.version>3.8.3</ics.version>
 		<tei-conversion.version>1.2.2</tei-conversion.version>
 
 		<iiif-api-model.version>2.3.0</iiif-api-model.version>
@@ -97,7 +97,7 @@
 
 		<!-- other libraries -->
 		<cdi.version>2.0.SP1</cdi.version>
-		<citationstyles.version>22.11</citationstyles.version>
+		<citationstyles.version>23.1</citationstyles.version>
 		<citeproc-java.version>3.0.0-SNAPSHOT</citeproc-java.version>
 		<commons-codec.version>1.15</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
@@ -117,7 +117,7 @@
 		<httpunit.version>1.7.3</httpunit.version>
 		<icu.version>72.1</icu.version>
 		<inject.version>1</inject.version>
-		<jackson.version>2.14.1</jackson.version>
+		<jackson.version>2.14.2</jackson.version>
 		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
 		<jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
 		<javax.annotation.version>1.3.2</javax.annotation.version>
@@ -138,9 +138,9 @@
 		<json.version>20220924</json.version>
 		<jsoup.version>1.15.3</jsoup.version>
 		<junit.version>4.13.2</junit.version>
-		<mariadb-java-client.version>3.1.0</mariadb-java-client.version>
-		<mockito.version>4.11.0</mockito.version>
-		<mockserver.version>5.14.0</mockserver.version>
+		<mariadb-java-client.version>3.1.2</mariadb-java-client.version>
+		<mockito.version>3.2.4</mockito.version>
+		<mockserver.version>5.15.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.1</omnifaces.version>
 		<openpdf.version>1.3.30</openpdf.version>
@@ -154,6 +154,12 @@
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<activemq.version>5.17.3</activemq.version>
+		<spring.version>5.3.23</spring.version>
+		<reflections.version>0.10.2</reflections.version>
+		<quartz.version>2.3.2</quartz.version>
+		<cron-expression-descriptor.version>1.2.6</cron-expression-descriptor.version>
+		<geronimo-specs.version>1.1.1</geronimo-specs.version>
 	</properties>
 
 
@@ -384,11 +390,11 @@
 			<artifactId>jakarta.annotation-api</artifactId>
 			<version>${jakarta.annotation-api.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>${jakarta.mail.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>jakarta.mail</artifactId>
+			<version>${jakarta.mail.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -409,12 +415,12 @@
 			<artifactId>javax.faces</artifactId>
 			<version>${javax.faces.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${inject.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>${inject.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
@@ -431,7 +437,7 @@
 			<version>${jdom2.version}</version>
 		</dependency>
  		<dependency>
- 			<groupId>org.glassfish.jersey.core</groupId> 
+ 			<groupId>org.glassfish.jersey.core</groupId>
  			<artifactId>jersey-client</artifactId>
  			<version>${jersey.version}</version>
  			<exclusions>
@@ -659,6 +665,86 @@
 			<artifactId>swagger-integration</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+			<version>${activemq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+			<version>${activemq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-kahadb-store</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-jaas</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-stomp</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- FIXME SPRING -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-spring</artifactId>
+			<version>${activemq.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${spring.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${reflections.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>it.burning</groupId>
+			<artifactId>cron-expression-descriptor</artifactId>
+			<version>${cron-expression-descriptor.version}</version>
+		 </dependency>
+		 <!-- This dependency is used for javax.jms -->
+		 <dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jms_1.1_spec</artifactId>
+			<version>${geronimo-specs.version}</version>
+		 </dependency>
 	</dependencies>
 
 
@@ -711,7 +797,7 @@
 
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- commons-configuration (1) is required by ICS -->
 								<ignoredUnusedDeclaredDependency>commons-configuration:commons-configuration</ignoredUnusedDeclaredDependency>
 
@@ -730,7 +816,7 @@
 								<!-- org.citationstyles.* are runtime resources for citeproc -->
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>org.citationstyles:styles</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- jersey client is falsely declared as unused blocking maven install (windows developer system only) -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.core:jersey-client</ignoredUnusedDeclaredDependency>
 
@@ -739,14 +825,31 @@
 
 								<!-- rewrite-servlet is used by prettyfaces -->
 								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-integration-faces</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>org.ocpsoft.rewrite:rewrite-servlet</ignoredUnusedDeclaredDependency>
 
 								<!-- H2 is used as database for unit tests -->
 								<ignoredUnusedDeclaredDependency>com.h2database:h2</ignoredUnusedDeclaredDependency>
+
+								<!-- activemq libs -->
+									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-kahadb-store</ignoredUnusedDeclaredDependency>
+
+									<!-- JAAS, Java Authentication and Authorization Service is used for the authentication defined in the config_activemq.xml -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-jaas</ignoredUnusedDeclaredDependency>
+
+									<!-- FIXME STOMP, Simple Text Oriented Messaging Protocol, configured together with openwire as transportConnector in the config_activemq.xml, to be clarified if needed -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-stomp</ignoredUnusedDeclaredDependency>
+
+									<!-- FIXME -->
+									<ignoredUnusedDeclaredDependency>org.apache.activemq:activemq-spring</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-beans</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
+									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
 							</ignoredUnusedDeclaredDependencies>
 							<ignoredNonTestScopedDependencies>
-							    <!-- jersey-container-servlet-core is falsely declared as unused blocking maven install (windows developer system only) -->
-							    <ignoredNonTestScopedDependency>org.glassfish.jersey.containers:jersey-container-servlet-core</ignoredNonTestScopedDependency>
+								<!-- jersey-container-servlet-core is falsely declared as unused blocking maven install (windows developer system only) -->
+								<ignoredNonTestScopedDependency>org.glassfish.jersey.containers:jersey-container-servlet-core</ignoredNonTestScopedDependency>
 							</ignoredNonTestScopedDependencies>
 						</configuration>
 					</execution>
@@ -756,16 +859,18 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
-                <configuration>
-                    <release>11</release>
-					<compilerArgument>-Xlint:deprecation</compilerArgument>
-					<compilerArgument>-Xlint:unchecked</compilerArgument>
+				<configuration>
+					<release>11</release>
+					<compilerArgs>
+						<arg>-Xlint:deprecation</arg>
+						<arg>-Xlint:unchecked</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M4</version>
+				<version>3.0.0-M8</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -921,7 +1026,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.6.0</version>
+						<version>10.7.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

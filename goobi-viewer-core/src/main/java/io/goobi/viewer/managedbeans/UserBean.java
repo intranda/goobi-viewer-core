@@ -149,7 +149,6 @@ public class UserBean implements Serializable {
         }
         // Check whether the security question has been answered correct, if configured
         if (captchaBean != null && !captchaBean.checkAnswer()) {
-            captchaBean.reset();
             Messages.error("user__security_question_wrong");
             logFailedUserRegistration();
             logger.debug("Wrong security question answer.");

@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,6 +65,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -137,7 +137,7 @@ public class Configuration extends AbstractConfiguration {
     public Configuration(String configFilePath) {
         // Load default config file
         builder =
-                new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
+                new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
                                 .setBasePath(Configuration.class.getClassLoader().getResource("").getFile())
                                 .setFileName(configFilePath)
@@ -168,7 +168,7 @@ public class Configuration extends AbstractConfiguration {
         // Load local config file
         File fileLocal = new File(getConfigLocalPath() + CONFIG_FILE_NAME);
         builderLocal =
-                new ReloadingFileBasedConfigurationBuilder<XMLConfiguration>(XMLConfiguration.class)
+                new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
                                 .setFileName(fileLocal.getAbsolutePath())
                                 .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
@@ -489,8 +489,7 @@ public class Configuration extends AbstractConfiguration {
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
@@ -529,9 +528,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<Metadata> ret = new ArrayList<>(elements.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = elements.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
-
+        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
             Metadata md = getMetadataFromSubnodeConfig(sub, topstructValueFallbackDefaultValue, 0);
             if (md != null) {
                 ret.add(md);
@@ -574,8 +571,7 @@ public class Configuration extends AbstractConfiguration {
         List<MetadataParameter> paramList = null;
         if (params != null) {
             paramList = new ArrayList<>(params.size());
-            for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = params.iterator(); it2.hasNext();) {
-                HierarchicalConfiguration<ImmutableNode> sub2 = it2.next();
+            for (HierarchicalConfiguration<ImmutableNode> sub2 : params) {
                 paramList.add(MetadataParameter.createFromConfig(sub2, topstructValueFallbackDefaultValue));
             }
         }
@@ -621,8 +617,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
@@ -782,8 +777,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<CitationLink> ret = new ArrayList<>();
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = links.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : links) {
             String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
             String level = sub.getString("[@for]");
             String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
@@ -892,8 +886,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<BrowsingMenuFieldConfig> ret = new ArrayList<>(fields.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fields.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : fields) {
             String field = sub.getString(".");
             String sortField = sub.getString("[@sortField]");
             String filterQuery = sub.getString("[@filterQuery]");
@@ -954,17 +947,15 @@ public class Configuration extends AbstractConfiguration {
      * @return
      */
     private HierarchicalConfiguration<ImmutableNode> getCollectionConfiguration(String field) {
-            List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
-            if (collectionList == null) {
-                return null;
-            }
+        List<HierarchicalConfiguration<ImmutableNode>> collectionList = getLocalConfigurationsAt("collections.collection");
+        if (collectionList == null) {
+            return null;
+        }
 
-            for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = collectionList.iterator(); it.hasNext();) {
-                HierarchicalConfiguration<ImmutableNode> subElement = it.next();
-                if (subElement.getString("[@field]").equals(field)) {
-                    return subElement;
+        for (HierarchicalConfiguration<ImmutableNode> subElement : collectionList) {
+            if (subElement.getString("[@field]").equals(field)) {
+                return subElement;
 
-                }
             }
 
         return null;
@@ -1164,6 +1155,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Get the base url of the viewer. This is the url up to the context path. The returned url always ends with a '/'
+     * @return  The base viewer url
+     */
+    public String getViewerBaseUrl() {
+        String urlString = getLocalString("urls.base");
+        if (urlString == null) {
+            urlString = getRestApiUrl().replaceAll("api/v1/?", "");
+        } else if(!urlString.endsWith("/")) {
+            urlString = urlString + "/";
+        }
+        return urlString;
+    }
+    
+    /**
      * <p>
      * getRestApiUrl.
      * </p>
@@ -1291,8 +1296,7 @@ public class Configuration extends AbstractConfiguration {
         if (values.isEmpty()) {
             return 10;
         }
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = values.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : values) {
             if (sub.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false)) {
                 return sub.getInt(".");
             }
@@ -1340,8 +1344,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<AdvancedSearchFieldConfiguration> ret = new ArrayList<>(fieldList.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             String field = subElement.getString(".");
             if (StringUtils.isEmpty(field)) {
                 logger.warn("No advanced search field name defined, skipping.");
@@ -1499,8 +1502,7 @@ public class Configuration extends AbstractConfiguration {
             return AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD;
         }
 
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
                 return subElement.getInt("[@displaySelectItemsThreshold]", AdvancedSearchFieldConfiguration.DEFAULT_THRESHOLD);
             }
@@ -1524,8 +1526,7 @@ public class Configuration extends AbstractConfiguration {
             return null;
         }
 
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
                 return subElement.getString(XML_PATH_ATTRIBUTE_LABEL, "");
             }
@@ -1546,8 +1547,7 @@ public class Configuration extends AbstractConfiguration {
             return false;
         }
 
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = fieldList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
                 return subElement.getBoolean("[@" + attribute + "]", false);
             }
@@ -2481,7 +2481,7 @@ public class Configuration extends AbstractConfiguration {
         if (docStructTypes != null) {
             String[] docStructTypesSplit = docStructTypes.split(";");
             for (String dst : docStructTypesSplit) {
-                if (dst.equals("_ALL") || dst.equals(docStructType)) {
+                if ("_ALL".equals(dst) || dst.equals(docStructType)) {
                     logger.trace("Tree view for {} allowed", docStructType);
                     return true;
                 }
@@ -2493,37 +2493,27 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the names of all configured facet fields in the order they appear in the list, no matter whether they're regular or hierarchical.
+     * <p>
+     * Returns a list containing all simple facet fields.
+     * </p>
      *
-     * @return List of regular and hierarchical fields in the order in which they appear in the config file
      * @should return correct order
+     * @return a {@link java.util.List} object.
      */
     public List<String> getAllFacetFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> facets = getLocalConfigurationsAt("search.facets");
-        if (facets == null || facets.isEmpty()) {
-            getLocalConfigurationAt("search.drillDown");
-            logger.warn("Old configuration found: search.drillDown; please update to search.facets");
-        }
-        if (facets == null || facets.isEmpty()) {
-            logger.warn("Config element not found: search.facets");
-            return Collections.emptyList();
-        }
-        List<HierarchicalConfiguration<ImmutableNode>> nodes =
-                facets.get(0).childConfigurationsAt("");
-        if (nodes.isEmpty()) {
-            return Collections.emptyList();
-        }
+        return getLocalList("search.facets.field");
+    }
 
-        List<String> ret = new ArrayList<>(nodes.size());
-        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
-            switch (node.getRootElementName()) {
-                case "field":
-                case "hierarchicalField":
-                case "geoField":
-                    ret.add(node.getString("."));
-                    break;
-                default:
-                    break;
+    /**
+     * 
+     * @return
+     */
+    public List<String> getRegularFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (StringUtils.isEmpty(type)) {
+                ret.add(field);
             }
         }
 
@@ -2532,26 +2522,42 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * Returns a list containing all simple facet fields.
+     * getHierarchicalFacetFields.
      * </p>
      *
-     * @should return all values
      * @return a {@link java.util.List} object.
+     * @should return all values
      */
-    public List<String> getFacetFields() {
-        return getLocalList("search.facets.field");
+    public List<String> getHierarchicalFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("hierarchical")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
     }
 
     /**
      * <p>
-     * getHierarchicalFacetFields.
+     * getRangeFacetFields.
      * </p>
      *
+     * @return List of facet fields to be used as range values
      * @should return all values
-     * @return a {@link java.util.List} object.
      */
-    public List<String> getHierarchicalFacetFields() {
-        return getLocalList("search.facets.hierarchicalField");
+    public List<String> getRangeFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("range")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -2559,22 +2565,39 @@ public class Configuration extends AbstractConfiguration {
      * getGeoFacetFields.
      * </p>
      *
-     * @should return all values
      * @return a {@link java.util.List} object.
+     * @should return all values
      */
-    public String getGeoFacetFields() {
-        return getLocalString("search.facets.geoField", null);
-    }
+    public List<String> getGeoFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("geo")) {
+                ret.add(field);
+            }
+        }
 
-    public String getGeoFacetFieldPredicate() {
-        return getLocalString("search.facets.geoField[@predicate]", "ISWITHIN");
+        return ret;
     }
 
     /**
+     * @param facetField
      * @return
+     * @should return correct value
      */
-    public boolean isShowSearchHitsInGeoFacetMap() {
-        return getLocalBoolean("search.facets.geoField[@displayResultsOnMap]", true);
+    public String getGeoFacetFieldPredicate(String facetField) {
+        return getPropertyForFacetField(facetField, "[@predicate]", "ISWITHIN");
+        
+    }
+
+    /**
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isShowSearchHitsInGeoFacetMap(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@displayResultsOnMap]", "true");
+        return Boolean.valueOf(value.trim());
     }
 
     /**
@@ -2593,7 +2616,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         String value = getPropertyForFacetField(facetField, "[@initialElementNumber]", "-1");
-        return Integer.valueOf(value.trim());
+        return Integer.parseInt(value.trim());
     }
 
     /**
@@ -2649,7 +2672,49 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
         String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
+        return Boolean.parseBoolean(value);
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public int getGroupToLengthForFacetField(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@groupToLength]", "-1");
+        return Integer.parseInt(value);
+    }
+
+    /**
+     *
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isAlwaysApplyFacetFieldToUnfilteredHits(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@alwaysApplyToUnfilteredHits]", "false");
         return Boolean.valueOf(value);
+    }
+
+    /**
+     *
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public boolean isFacetFieldSkipInWidget(String facetField) {
+        String value = getPropertyForFacetField(facetField, "[@skipInWidget]", "false");
+        return Boolean.valueOf(value);
+    }
+
+    /**
+     * 
+     * @param facetField
+     * @return
+     */
+    public String getFacetFieldType(String facetField) {
+        return getPropertyForFacetField(facetField, XML_PATH_ATTRIBUTE_TYPE, "");
     }
 
     /**
@@ -2672,7 +2737,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
+                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -2687,7 +2752,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField)
-                        || nodeText.equals(facetField + SolrConstants.SUFFIX_UNTOKENIZED)
+                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
                         || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
@@ -2698,17 +2763,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return defaultValue;
-    }
-
-    /**
-     * <p>
-     * getRangeFacetFields.
-     * </p>
-     *
-     * @return List of facet fields to be used as range values
-     */
-    public List<String> getRangeFacetFields() {
-        return Collections.singletonList(SolrConstants.CALENDAR_YEAR);
     }
 
     /**
@@ -3709,8 +3763,7 @@ public class Configuration extends AbstractConfiguration {
 
         HierarchicalConfiguration<ImmutableNode> usingTemplate = null;
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME).equals(template)) {
                 usingTemplate = subElement;
                 break;
@@ -3796,8 +3849,7 @@ public class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             String templateName = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (templateName != null) {
                 if (templateName.equals(template)) {
@@ -3823,8 +3875,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<StringPair> ret = new ArrayList<>(fields.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it2 = fields.iterator(); it2.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it2.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : fields) {
             String field = sub.getString(".");
             String order = sub.getString("[@order]");
             ret.add(new StringPair(field, "desc".equals(order) ? "desc" : "asc"));
@@ -3847,8 +3898,7 @@ public class Configuration extends AbstractConfiguration {
             return null;
         }
         HierarchicalConfiguration<ImmutableNode> defaultTemplate = null;
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = templateList.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> subElement = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             String templateName = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (templateName != null) {
                 if (templateName.equals(template)) {
@@ -4093,8 +4143,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<Map<String, String>> ret = new ArrayList<>(elements.size());
-        for (Iterator<HierarchicalConfiguration<ImmutableNode>> it = elements.iterator(); it.hasNext();) {
-            HierarchicalConfiguration<ImmutableNode> sub = it.next();
+        for (HierarchicalConfiguration<ImmutableNode> sub : elements) {
             Map<String, String> fieldConfig = new HashMap<>();
             fieldConfig.put("jsonField", sub.getString("[@jsonField]", null));
             fieldConfig.put("luceneField", sub.getString("[@solrField]", null)); // deprecated
@@ -5374,4 +5423,32 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList("proxy.whitelist.host");
     }
 
+    // active mq configuration //
+
+    public boolean isStartInternalMessageBroker() {
+        return getLocalBoolean("activeMQ[@enabled]", true);
+    }
+
+
+    public int getNumberOfParallelMessages() {
+        return getLocalInt("activeMQ[@numberOfParallelMessages]", 1);
+    }
+    
+    public int getActiveMQMessagePurgeInterval() {
+        return getLocalInt("activeMQ.deleteCompletedTasksAfterDays", 90);
+    }
+    
+    public String getQuartzSchedulerCronExpression(String taskName) {
+        try {
+            TaskType type = TaskType.valueOf(taskName.toUpperCase());
+            return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", type.getDefaultCronExpression());
+
+        } catch(IllegalArgumentException e) {            
+            return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", getQuartzSchedulerCronExpression());
+        }
+    }
+    
+    public String getQuartzSchedulerCronExpression() {           
+        return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
+    }
 }

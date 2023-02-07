@@ -719,7 +719,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("FACET_DOCSTRCT", SearchHelper.facetifyField(SolrConstants.DOCSTRCT));
         //        Assert.assertEquals("FACET_SUPERDOCSTRCT", SearchHelper.facetifyField(SolrConstants.SUPERDOCSTRCT));
         Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
-        Assert.assertEquals("FACET_FOO", SearchHelper.facetifyField("MD2_FOO_UNTOKENIZED"));
+        Assert.assertEquals("FACET_MD2_FOO", SearchHelper.facetifyField("MD2_FOO_UNTOKENIZED"));
+        Assert.assertEquals("FACET_MDNUM_NUMBER", SearchHelper.facetifyField("MDNUM_NUMBER"));
     }
 
     /**
@@ -1297,6 +1298,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#removeHighlightingPlaceholders(String)
+     * @verifies replace placeholders with empty strings
+     */
+    @Test
+    public void removeHighlightingPlaceholders_shouldReplacePlaceholdersWithEmptyStrings() throws Exception {
+        Assert.assertEquals("foo", SearchHelper
+                .removeHighlightingPlaceholders(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
+    }
+
+    /**
      * @see SearchHelper#prepareQuery(String,String)
      * @verifies prepare non-empty queries correctly
      */
@@ -1324,16 +1335,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void parseSortString_shouldParseStringCorrectly() throws Exception {
         String sortString = "!SORT_1;SORT_2;SORT_3";
         Assert.assertEquals(3, SearchHelper.parseSortString(sortString, null).size());
-    }
-
-    /**
-     * @see SearchHelper#removeHighlightingTags(String)
-     * @verifies remove html tags
-     */
-    @Test
-    public void removeHighlightingTags_shouldRemoveHtmlTags() throws Exception {
-        Assert.assertEquals("foo bar", SearchHelper
-                .removeHighlightingTags("f<span class=\"search-list--highlight\">oo</span> <span class=\"search-list--highlight\">bar</span>"));
     }
 
     /**

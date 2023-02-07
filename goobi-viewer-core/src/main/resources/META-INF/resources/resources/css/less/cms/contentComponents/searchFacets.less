@@ -1,0 +1,58 @@
+/* ==============================================================
+	Styling for content component search facets
+   ==============================================================*/
+
+.content-component__search-facets {
+	&-wrapper {
+	}
+	&-list {
+		display: flex;
+		gap: 5px;
+		flex-wrap: wrap;
+		margin-bottom: 20px; 
+	}
+	&-link {
+		width: 32px;
+		height: 32px; 
+		border: 1px solid #eee;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		&:hover {
+			background-color: #eee; 
+		}
+		&:hover,
+		&:focus,
+		&:active {
+			text-decoration: none;
+		}
+		&.-active {
+				color: black;
+				font-weight: 700;
+		}
+	}
+	&-reset {
+		height: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 3px;
+	}
+	.search-list {
+		&__hits {
+			opacity: 1;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

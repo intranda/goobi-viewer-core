@@ -36,6 +36,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.omnifaces.cdi.Eager;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
@@ -58,6 +59,8 @@ public class PersistentStorageBean implements Serializable {
 
     @Inject 
     transient private CMSTemplateManager templateManager;
+    @Inject 
+    transient private MessageQueueManager messageBroker;
     private IDAO dao;
     
     @PostConstruct
@@ -93,5 +96,13 @@ public class PersistentStorageBean implements Serializable {
     
     public void setTemplateManager(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
+    }
+    
+    public MessageQueueManager getMessageBroker() {
+        return messageBroker;
+    }
+    
+    public void setMessageBroker(MessageQueueManager messageBroker) {
+        this.messageBroker = messageBroker;
     }
 }

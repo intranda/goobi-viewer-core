@@ -54,7 +54,7 @@ public class MetadataParameter implements Serializable {
      * Needed for reading xml config
      */
     private static final String XML_PATH_ATTRIBUTE_URL = "[@url]";
-    
+
     public enum MetadataParameterType {
 
         FIELD("field"),
@@ -121,6 +121,7 @@ public class MetadataParameter implements Serializable {
     private String condition = "";
     private boolean addUrl = false;
     private boolean topstructValueFallback = false;
+    private boolean removeHighlighting = false;
     private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
 
     /*
@@ -402,6 +403,22 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
+     * @return the removeHighlighting
+     */
+    public boolean isRemoveHighlighting() {
+        return removeHighlighting;
+    }
+
+    /**
+     * @param removeHighlighting the removeHighlighting to set
+     * @return this
+     */
+    public MetadataParameter setRemoveHighlighting(boolean removeHighlighting) {
+        this.removeHighlighting = removeHighlighting;
+        return this;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>replaceRules</code>.
      * </p>
@@ -421,7 +438,6 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -434,7 +450,6 @@ public class MetadataParameter implements Serializable {
                 .append(suffix)
                 .toString();
     }
-    
 
     public static MetadataParameter createFromConfig(HierarchicalConfiguration<ImmutableNode> config, boolean topstructValueFallbackDefaultValue) {
         String fieldType = config.getString(XML_PATH_ATTRIBUTE_TYPE);
@@ -449,6 +464,7 @@ public class MetadataParameter implements Serializable {
         String condition = config.getString(XML_PATH_ATTRIBUTE_CONDITION);
         boolean addUrl = config.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
         boolean topstructValueFallback = config.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
+        boolean removeHighlighting = config.getBoolean("[@removeHighlighting]", false);
         List<MetadataReplaceRule> replaceRules = Collections.emptyList();
         List<HierarchicalConfiguration<ImmutableNode>> replaceRuleElements = config.configurationsAt("replace");
         if (replaceRuleElements != null) {
@@ -502,6 +518,7 @@ public class MetadataParameter implements Serializable {
                 .setCondition(condition)
                 .setAddUrl(addUrl)
                 .setTopstructValueFallback(topstructValueFallback)
+                .setRemoveHighlighting(removeHighlighting)
                 .setReplaceRules(replaceRules);
     }
 }
