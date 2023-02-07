@@ -28,8 +28,8 @@ import java.util.function.BiConsumer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
+import io.goobi.viewer.model.job.TaskType;
 
 /**
  * A process triggered by a REST call using POST and may be monitored via the {@link TasksResource}. Each task has a unique id of type long given
@@ -77,22 +78,7 @@ public class Task {
         TOKEN;
     }
 
-    public enum TaskType {
-        /** Send emails to all search owners if their searches have changed results */
-        NOTIFY_SEARCH_UPDATE,
-        /** Remove expired born digital content download tickets from the DB */
-        PURGE_EXPIRED_DOWNLOAD_TICKETS,
-        /** Handle asynchronous generation of excel sheets with search results */
-        SEARCH_EXCEL_EXPORT,
-        /** Update the application sitemap */
-        UPDATE_SITEMAP,
-        /** Update data repository names of a record */
-        UPDATE_DATA_REPOSITORY_NAMES,
-        /** Update uploaded processes status. */
-        UPDATE_UPLOAD_JOBS,
-        /** Move daily usage statistics to SOLR */
-        INDEX_USAGE_STATISTICS;
-    }
+
 
     public enum TaskStatus {
         CREATED,

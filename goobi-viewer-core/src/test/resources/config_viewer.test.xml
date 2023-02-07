@@ -1357,6 +1357,9 @@
     
     <!-- Configuration for collecting usage statistics -->
     <statistics enabled="true"></statistics>
+    
+    <activeMQ enabled="true" numberOfParallelMessages="2"/>
+
 
 </config>
 

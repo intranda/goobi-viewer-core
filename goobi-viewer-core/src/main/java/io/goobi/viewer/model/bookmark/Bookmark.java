@@ -643,11 +643,23 @@ public class Bookmark implements Serializable {
         if (this.browseElement == null) {
             try {
                 SolrDocument doc = retrieveSolrDocument();
+                if(this.getOrder() != null) {
+                    doc.setField(SolrConstants.ORDER, this.getOrder());
+                } else if (StringUtils.isNotBlank(this.getLogId())) {
+                    doc.setField(SolrConstants.LOGID, this.getLogId());
+                }
                 if (doc != null) {
                     Locale locale = BeanUtils.getLocale();
                     SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, null, null, null,
                             SearchHit.HitType.DOCSTRCT, 0, BeanUtils.getImageDeliveryBean().getThumbs());
                     this.browseElement = sh.getBrowseElement();
+                    try {
+                        this.browseElement.setThumbnailUrl(this.getRepresentativeImageUrl(DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                                DataManager.getInstance().getConfiguration().getThumbnailsHeight()));
+                    } catch (IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+                        logger.error("Unable to set thumbnail url of browseElement to bookmark thumbnail url: {}", e.toString());
+                    }
+
                 }
             } catch (PresentationException e) {
                 throw new IndexUnreachableException(e.toString());
