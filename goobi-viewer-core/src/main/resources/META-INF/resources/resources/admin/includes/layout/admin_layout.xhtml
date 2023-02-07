@@ -60,9 +60,34 @@
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-backend-right">
+	            <h:panelGroup styleClass="admin__topbar-queue-warning-wrapper" layout="block" id="runningTasksNotProcessed">
+	                <ui:fragment rendered="#{userBean.admin and messageQueueBean.paused}">
+							<a class="admin__topbar-queue-warning-link" href="#{request.contextPath}/admin/tasks">
+								<div class="admin__topbar-queue-warning-icon-wrapper">
+									<div class="admin__topbar-queue-warning-icon"><i class="fa fa-exclamation" aria-hidden="true"></i></div>
+								</div>
+								<div class="admin__topbar-queue-warning-text">#{msg.admin__tasks__running_tasks_off}</div>
+							</a>
+					</ui:fragment>
+				</h:panelGroup>
+				
+	            <h:panelGroup styleClass="admin__topbar-queue-warning-wrapper" layout="block" id="quartzNotProcessed">
+	                <ui:fragment rendered="#{userBean.admin and quartzBean.paused}">
+							<a class="admin__topbar-queue-warning-link" href="#{request.contextPath}/admin/tasks">
+								<div class="admin__topbar-queue-warning-icon-wrapper">
+									<div class="admin__topbar-queue-warning-icon"><i class="fa fa-exclamation" aria-hidden="true"></i></div>
+								</div>
+								<div class="admin__topbar-queue-warning-text">#{msg.admin__tasks__quartz_off}</div>
+							</a>
+					</ui:fragment>
+				</h:panelGroup>
+				
+				
+
+
 	            <div class="admin__topbar-frontend-hotfolder">
 	            	<!-- COUNT FILES PROCESSING -->
-	            	<h:panelGroup id="hotfolderFileCountGroup">
+	            	<h:panelGroup layout="block" id="hotfolderFileCountGroup">
                     <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
 						<div class="admin__topbar-frontend-hotfolder-files-action">
 						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>

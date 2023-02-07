@@ -1553,5 +1553,10 @@ public class BrowseElement implements Serializable {
     public DocType getDocType() {
         return docType;
     }
+    
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
 
 }

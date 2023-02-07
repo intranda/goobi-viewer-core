@@ -112,7 +112,7 @@
 		var adminMediaConfig = {
 			postUrl : '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
 			fileTypes: "#{fileTypes}",
-        	fileTypeValidator: /#{fileTypeValidator.replace("(?i)", "")}/,
+        	fileTypeValidator: /#{fileTypeValidator.replace("(?i)", "")}/i,
 			msg : {
 				buttonUpload : "#{msg.button__upload}",
 				uploadText : "#{msg.admin__media_upload_text}",
@@ -120,7 +120,9 @@
 				mediaUploading : "#{msg.admin__media_upload_uploading}",
 				mediaFinished : "#{msg.admin__media_upload_finished}",
 				mediaError : "#{msg.admin__media_upload_error}",
-				bulkDeleteConfirm: "#{msg.admin__media_bulk_delete_confirm}"
+				bulkDeleteConfirm: "#{msg.admin__media_bulk_delete_confirm}",
+				overwriteFileConfirm: "#{msg.admin__media_overwrite_file_confirm}",
+                overwriteFileRefused: "#{msg.admin__media_overwrite_file_refused}"
 			},
 			onUploadSuccess : function() {
 				console.log("upload successful");

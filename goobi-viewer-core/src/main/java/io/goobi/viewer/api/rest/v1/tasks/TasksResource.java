@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -40,19 +41,25 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
+import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.model.tasks.Task;
-import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.AccessDeniedException;
+import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -69,6 +76,11 @@ public class TasksResource {
     private static final Logger logger = LogManager.getLogger(TasksResource.class);
     private final HttpServletRequest request;
 
+    @Context
+    private HttpServletRequest httpRequest;
+    @Inject
+    private MessageQueueManager messageBroker;
+
 
     public TasksResource(@Context HttpServletRequest request, @Context HttpServletResponse response) {
         this.request = request;
@@ -83,11 +95,61 @@ public class TasksResource {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
         if (isAuthorized(desc.type, Optional.empty(), request)) {
-            Task job = new Task(desc, TaskManager.createTask(desc.type));
-            logger.debug("Created new task REST API task '{}'", job);
-            DataManager.getInstance().getRestApiJobManager().addTask(job);
-            DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
-            return job;
+
+            if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+                ViewerMessage message = null;
+                message = new ViewerMessage(desc.type.name());
+                switch (desc.type) {
+                    
+                    case UPDATE_SITEMAP:
+                        SitemapRequestParameters params = Optional.ofNullable(desc)
+                                .filter(SitemapRequestParameters.class::isInstance)
+                                .map(SitemapRequestParameters.class::cast)
+                                .orElse(null);
+
+                        String viewerRootUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
+                        String outputPath = request.getServletContext().getRealPath("/");
+                        if (params != null && StringUtils.isNotBlank(params.getOutputPath())) {
+                            outputPath = params.getOutputPath();
+                        }
+                        message.getProperties().put("viewerRootUrl", viewerRootUrl);
+                        message.getProperties().put("baseurl", outputPath);
+                        break;
+                        
+                    case UPDATE_DATA_REPOSITORY_NAMES:
+                        ToolsRequestParameters tools = Optional.ofNullable(desc)
+                                .filter(ToolsRequestParameters.class::isInstance)
+                                .map(ToolsRequestParameters.class::cast)
+                                .orElse(null);
+                        if (tools == null) {
+                            return null;
+                        }
+                        String identifier = tools.getPi();
+                        String dataRepositoryName = tools.getDataRepositoryName();
+                        message.getProperties().put("identifier", identifier);
+                        message.getProperties().put("dataRepositoryName", dataRepositoryName);
+                        break;
+
+                    default:
+                        // unknown type
+                        return null;
+                }
+
+                try {
+                    this.messageBroker.addToQueue(message);
+                } catch (MessageQueueException e) {
+                    throw new WebApplicationException(e);
+                }
+
+                // TODO create useful response, containing the message id
+                return null;
+            } else {
+                Task job = new Task(desc, TaskManager.createTask(desc.type));
+                logger.debug("Created new task REST API task '{}'", job);
+                DataManager.getInstance().getRestApiJobManager().addTask(job);
+                DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);
+                return job;
+            }
         }
 
         throw new WebApplicationException(new AccessDeniedException("Not authorized to create this type of job"));
