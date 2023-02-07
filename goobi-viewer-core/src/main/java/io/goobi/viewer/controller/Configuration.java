@@ -1158,18 +1158,19 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Get the base url of the viewer. This is the url up to the context path. The returned url always ends with a '/'
-     * @return  The base viewer url
+     * 
+     * @return The base viewer url
      */
     public String getViewerBaseUrl() {
         String urlString = getLocalString("urls.base");
         if (urlString == null) {
             urlString = getRestApiUrl().replaceAll("api/v1/?", "");
-        } else if(!urlString.endsWith("/")) {
+        } else if (!urlString.endsWith("/")) {
             urlString = urlString + "/";
         }
         return urlString;
     }
-    
+
     /**
      * <p>
      * getRestApiUrl.
@@ -5275,7 +5276,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isSearchResultGroupsEnabled() {
         return getLocalBoolean("search.resultGroups[@enabled]", false);
     }
-    
+
     /**
      * 
      * @return
@@ -5283,7 +5284,7 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<SearchResultGroup> getSearchResultGroups() {
         List<SearchResultGroup> ret = new ArrayList<>();
-        
+
         List<HierarchicalConfiguration<ImmutableNode>> groupNodes = getLocalConfigurationsAt("search.resultGroups.group");
         for (HierarchicalConfiguration<ImmutableNode> groupNode : groupNodes) {
             String name = groupNode.getString(XML_PATH_ATTRIBUTE_NAME);
@@ -5291,12 +5292,12 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("search/resultGroups/group/@name may not be empty.");
                 continue;
             }
-            String query = groupNode.getString("query");
+            String query = groupNode.getString("[@query]");
             if (StringUtils.isBlank(query)) {
                 logger.warn("search/resultGroups/group/@query may not be empty.");
                 continue;
             }
-            ret.add( new SearchResultGroup(name, query));
+            ret.add(new SearchResultGroup(name, query));
         }
 
         return ret;
@@ -5466,26 +5467,25 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("activeMQ[@enabled]", true);
     }
 
-
     public int getNumberOfParallelMessages() {
         return getLocalInt("activeMQ[@numberOfParallelMessages]", 1);
     }
-    
+
     public int getActiveMQMessagePurgeInterval() {
         return getLocalInt("activeMQ.deleteCompletedTasksAfterDays", 90);
     }
-    
+
     public String getQuartzSchedulerCronExpression(String taskName) {
         try {
             TaskType type = TaskType.valueOf(taskName.toUpperCase());
             return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", type.getDefaultCronExpression());
 
-        } catch(IllegalArgumentException e) {            
+        } catch (IllegalArgumentException e) {
             return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", getQuartzSchedulerCronExpression());
         }
     }
-    
-    public String getQuartzSchedulerCronExpression() {           
+
+    public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
 }
