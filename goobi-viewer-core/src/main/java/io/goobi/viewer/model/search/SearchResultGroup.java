@@ -21,14 +21,38 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.goobi.viewer.model.maps.Location;
+
 public class SearchResultGroup {
 
     private final String name;
     private final String query;
 
+    /** Total hits count for the current search. */
+    private long hitsCount = 0;
+
+    /** BrowseElement list for the current search result page. */
+    private final List<SearchHit> hits = new ArrayList<>();
+
+    /** List of geo-locations found by the last search */
+    private List<Location> hitLocationList = new ArrayList<>();
+
+    private boolean hasGeoLocationHits = false;
+
     public SearchResultGroup(String name, String query) {
         this.name = name;
         this.query = query;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public static SearchResultGroup createDefaultGroup() {
+        return new SearchResultGroup("_DEFAULT", "");
     }
 
     /**
@@ -44,4 +68,54 @@ public class SearchResultGroup {
     public String getQuery() {
         return query;
     }
+
+    /**
+     * @return the hitsCount
+     */
+    public long getHitsCount() {
+        return hitsCount;
+    }
+
+    /**
+     * @param hitsCount the hitsCount to set
+     */
+    public void setHitsCount(long hitsCount) {
+        this.hitsCount = hitsCount;
+    }
+
+    /**
+     * @return the hitLocationList
+     */
+    public List<Location> getHitLocationList() {
+        return hitLocationList;
+    }
+
+    /**
+     * @param hitLocationList the hitLocationList to set
+     */
+    public void setHitLocationList(List<Location> hitLocationList) {
+        this.hitLocationList = hitLocationList;
+    }
+
+    /**
+     * @return the hasGeoLocationHits
+     */
+    public boolean isHasGeoLocationHits() {
+        return hasGeoLocationHits;
+    }
+
+    /**
+     * @param hasGeoLocationHits the hasGeoLocationHits to set
+     */
+    public void setHasGeoLocationHits(boolean hasGeoLocationHits) {
+        this.hasGeoLocationHits = hasGeoLocationHits;
+    }
+
+    /**
+     * @return the hits
+     */
+    public List<SearchHit> getHits() {
+        return hits;
+    }
+
 }

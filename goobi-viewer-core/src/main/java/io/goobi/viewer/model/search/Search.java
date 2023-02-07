@@ -197,7 +197,6 @@ public class Search implements Serializable {
         this.lastHitsCount = blueprint.lastHitsCount;
         this.newHitsNotification = blueprint.newHitsNotification;
         this.proximitySearchDistance = blueprint.proximitySearchDistance;
-
     }
 
     /**
@@ -336,6 +335,11 @@ public class Search implements Serializable {
         if (facets == null) {
             throw new IllegalArgumentException("facets may not be null");
         }
+
+        if (this.resultGroups.isEmpty()) {
+            this.resultGroups.add(SearchResultGroup.createDefaultGroup());
+        }
+
         String currentQuery = SearchHelper.prepareQuery(this.query);
 
         List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
