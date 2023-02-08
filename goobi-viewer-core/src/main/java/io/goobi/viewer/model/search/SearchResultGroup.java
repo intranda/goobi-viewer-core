@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,9 @@ import io.goobi.viewer.model.maps.Location;
 /**
  * Used for creating separate groups of search results for a single query. Each group can provide its own filter query for custom results.
  */
-public class SearchResultGroup {
+public class SearchResultGroup implements Serializable {
+
+    private static final long serialVersionUID = 1421650450703418495L;
 
     private final String name;
     private final String query;

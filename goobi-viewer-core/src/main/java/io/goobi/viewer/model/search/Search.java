@@ -38,24 +38,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.exceptions.IllegalArgumentException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -73,6 +64,14 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * Persistable search query.
@@ -143,7 +142,9 @@ public class Search implements Serializable {
     private int proximitySearchDistance = 0;
 
     @Transient
-    private List<SearchResultGroup> resultGroups = DataManager.getInstance().getConfiguration().getSearchResultGroups();
+    private List<SearchResultGroup> resultGroups = DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty()
+            ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+            : DataManager.getInstance().getConfiguration().getSearchResultGroups();
 
     /** Solr fields for search result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
     @Transient
@@ -318,10 +319,6 @@ public class Search implements Serializable {
         logger.trace("execute");
         if (facets == null) {
             throw new IllegalArgumentException("facets may not be null");
-        }
-
-        if (this.resultGroups.isEmpty()) {
-            this.resultGroups.add(SearchResultGroup.createDefaultGroup());
         }
 
         String currentQuery = SearchHelper.prepareQuery(this.query);
@@ -1185,7 +1182,9 @@ public class Search implements Serializable {
      * @param hitsCount the hitsCount to set
      */
     public void setHitsCount(long hitsCount) {
-        // noop
+        if (!resultGroups.isEmpty()) {
+            resultGroups.get(0).setHitsCount(hitsCount);
+        }
     }
 
     /**

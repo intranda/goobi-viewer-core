@@ -21,7 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -34,9 +35,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.search.Search;
-import io.goobi.viewer.model.search.SearchHit;
-import io.goobi.viewer.model.search.SearchHitsNotifier;
 
 /**
  * @author florian
