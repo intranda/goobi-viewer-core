@@ -111,6 +111,10 @@ public class ActiveMQConfig {
         return "goobi";
     }
 
+    public String getSchedulerDirectory() {
+        return getValue("/beans/broker/@schedulerDirectory", "/temp/scheduler");
+    }
+
     public Path getConfigFilePath() {
         return this.configFilePath;
     }
@@ -139,5 +143,6 @@ public class ActiveMQConfig {
             return null;
         }
     }
+    
 
 }

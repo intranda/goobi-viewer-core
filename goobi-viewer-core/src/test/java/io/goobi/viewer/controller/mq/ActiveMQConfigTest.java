@@ -33,5 +33,10 @@ public class ActiveMQConfigTest {
     public void testReadPassword() {
         assertEquals("test", config.getPasswordAdmin());
     }
+    
+    @Test
+    public void testReadSchedulerDirectory() {
+        assertEquals("src/test/resources/activemq/scheduler", config.getSchedulerDirectory());
+    }
 
 }

@@ -3,16 +3,17 @@ package io.goobi.viewer.model.job.quartz;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.quartz.SchedulerException;
@@ -25,7 +26,6 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.QuartzBean;
-import io.goobi.viewer.model.job.TaskType;
 
 public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
 
@@ -34,6 +34,7 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     private static final String activeMqConfigPath = "src/test/resources/config_activemq.xml";
     QuartzListener listener;
     MessageQueueManager broker;
+    Path schedulerDirectory;
     
     @Before
     public void setup() throws Exception {
@@ -45,6 +46,10 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         broker = Mockito.spy(tempBroker);
         listener = new QuartzListener(dao, config, broker);
         clearDatabase(dao);
+        schedulerDirectory = Paths.get(activeMQConfig.getSchedulerDirectory());
+        if(Files.exists(schedulerDirectory)) {
+            FileUtils.deleteDirectory(schedulerDirectory.toFile());
+        }
     }
     
     @After
@@ -52,6 +57,9 @@ public class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         super.tearDown();
         broker.closeMessageServer();
         clearDatabase(dao);
+        if(schedulerDirectory != null && Files.exists(schedulerDirectory)) {
+            FileUtils.deleteDirectory(schedulerDirectory.toFile());
+        }
     }
     
     private void clearDatabase(IDAO dao) throws DAOException {

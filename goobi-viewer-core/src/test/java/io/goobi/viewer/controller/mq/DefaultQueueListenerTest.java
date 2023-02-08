@@ -2,17 +2,22 @@ package io.goobi.viewer.controller.mq;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.model.job.TaskType;
@@ -24,7 +29,7 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
     
     IDAO dao;
     MessageQueueManager broker;
-    
+    Path schedulerDirectory;
     
     @Before
     public void setup() throws Exception {
@@ -45,11 +50,19 @@ private static final String activeMqConfigPath = "src/test/resources/config_acti
         for (ViewerMessage viewerMessage : messages) {
             this.dao.deleteViewerMessage(viewerMessage);
         }
+        
+        schedulerDirectory = Paths.get(activeMQConfig.getSchedulerDirectory());
+        if(Files.exists(schedulerDirectory)) {
+            FileUtils.deleteDirectory(schedulerDirectory.toFile());
+        }
     }
     
     @After
-    public void tearDown() {
+    public void tearDown() throws IOException {
         broker.closeMessageServer();
+        if(schedulerDirectory != null && Files.exists(schedulerDirectory)) {
+            FileUtils.deleteDirectory(schedulerDirectory.toFile());
+        }
     }
     
     @Test
