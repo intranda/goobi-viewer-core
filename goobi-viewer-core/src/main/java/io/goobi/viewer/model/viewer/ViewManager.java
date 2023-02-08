@@ -591,7 +591,7 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getCurrentMasterImageUrl.
+     * getCurrentThumbnailUrlForDownload.
      * </p>
      *
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -627,7 +627,7 @@ public class ViewManager implements Serializable {
         }
         return sb.toString();
     }
-
+    
     /**
      * @param view
      * @param size

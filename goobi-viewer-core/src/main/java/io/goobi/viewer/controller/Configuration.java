@@ -720,7 +720,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isDisplayWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
     }
-
+    
     /**
      *
      * @return Boolean value
@@ -1016,7 +1016,7 @@ public class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
         return getLocalList(collection, null, "blacklist.collection", Collections.<String> emptyList());
-    }
+        }
 
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
@@ -5007,11 +5007,11 @@ public class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-
+    
     public String getMapBoxUser() {
         return getLocalString("maps.mapbox.user", "");
     }
-
+    
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }
