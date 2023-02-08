@@ -1,0 +1,181 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsScheduledObjects')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <div id="scheduledObjects" class="admin__scheduled-objects">
+            <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+                <h:form prependId="false">
+
+                    <div class="admin__title-bar">
+                        <!-- TITLE -->
+                        <h1 class="admin__title">#{msg.admin__scheduled_objects__title}</h1>
+                        
+                        <!-- CREATE NEW SCHEDULED OBJECT -->
+                        <!-- TO DO AK: Functionality add new object-->
+                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
+                            <a href="#{navigationHelper.applicationUrl}admin/cms/scheduledobjects/new/" class="btn btn--default admin__title-bar-action">
+                                <span>#{msg.add}</span>
+                            </a>
+                        </ui:fragment>
+                    </div>
+                    
+					<viewerComponent:adminBreadcrumbs />
+
+                    <div class="admin__content-inner-content">
+                    <div class="admin__info-text">#{msg.cms__record_notes_overview__description}</div>
+
+                        <div class="admin__table-tools">
+                            <!-- PAGINATOR -->
+                            <div class="admin__table-paginator">
+                                <viewerComponent:dataTablePaginator tableValues="#{cmsRecordNotesBean.dataProvider}" />
+                            </div>
+                            <!-- FILTER -->
+                            <!-- TO DO AK: Functionality search in columns/filter -->
+                            <div class="admin__table-filter">
+                                <viewerComponent:dataTableColumnFilter key="cms__record_notes__search"
+                                filter="#{cmsRecordNotesBean.dataProvider.getFilter('PI_OR_TITLE')}"/>
+                            </div>
+                        </div>
+
+
+                        <!-- SCHEDULED OBJECTS TABLE -->
+                        <div class="admin__table-content" role="grid" aria-label="#{msg.cms__record_notes__title_plural}: #{msg.aria_label__table__actions}">
+                            
+                            <!-- TITLE ROW -->
+                            <div class="row no-gutters admin__table-title" role="row">
+
+                                <!-- PAGE COL -->
+                                <div class="col-6 d-flex" role="columnheader">
+                                	#{msg.admin__scheduled_objects__table_header}
+                                </div>
+                                <div class="col-2 d-flex justify-content-center" role="columnheader">
+                                	#{msg.admin__scheduled_objects__table_from}
+                                </div>
+                                <div class="col-2 d-flex justify-content-center" role="columnheader">
+                                	#{msg.admin__scheduled_objects__table_until}
+                                </div>
+                                <div class="col-2 d-flex justify-content-center" role="columnheader">
+                                	#{msg.admin__scheduled_objects__table_active}
+                                </div>
+
+                            </div>
+
+
+                            <!-- INDIVIDUAL ROWS -->
+                            <!-- TO DO AK: Functionality ui:repeat -->
+                            <ui:repeat var="note" value="#{cmsRecordNotesBean.dataProvider.paginatorList}">
+                                <div class="row no-gutters admin__table-entry" role="row">
+                                    
+                                    <div class="col-6 d-flex" role="presentation">
+                                       	<div class="admin__record-notes-table-img align-self-center">
+                                   			<ui:fragment rendered="#{note.isSingleRecordNote()}">
+                                   				<!-- TO DO AK: Functionality representative image -->
+                                           		<img alt="#{note.recordPi}" title="#{note.recordPi}"
+                                           			src="#{cmsRecordNotesBean.getThumbnailUrl(note, 160, 160)}" />
+                                       		</ui:fragment>
+                                        </div>
+
+                                        <div class="admin__table-data" role="gridcell">
+                                        	<ui:fragment>
+                                        		<!-- TO DO AK: Functionality name of object -->
+                                            	<div class="admin__table-name">Name of object</div>
+                                            </ui:fragment>
+                                            <div>
+                                            
+                                                <!-- EDIT -->
+                                                <!-- TO DO AK: Functionality Edit the object -->
+                                                <a href="#{navigationHelper.applicationUrl}admin/cms/recordnotes/edit/#{note.id}/"
+                                                class="admin__table-action-link"
+                                                aria-label="#{msg.edit}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">#{msg.edit}</a>
+
+                                                <!-- PREVIEW -->
+                                                <!-- TO DO AK: Functionality link to the object -->
+                                                <ui:fragment rendered="#{note.isSingleRecordNote()}">
+                                                	<a
+                                                    class="admin__table-action-link" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}"
+                                                    aria-label="#{msg.title__preview}: #{note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale)}">#{msg.show}
+                                                  </a>
+                                                </ui:fragment>
+
+	                                           <!-- DELETE -->
+	                                           <!-- TO DO AK: Functionality delete the object -->
+	                                           <button
+	                                               class="admin__table-action-link -redlink"
+	                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__record_notes__delete_confirmation, note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale))}"
+	                                               data-require-confirmation="true"
+	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__record_notes__delete_confirmation, note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale))}"
+	                                               jsf:action="#{cmsRecordNotesBean.deleteNote(note)}"
+	                                               aria-label="#{msg.delete}" >
+	                                               #{msg.delete}
+	                                           </button>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- SCHEDULE FROM -->
+                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
+                                    	<!-- TO DO AK: Functionality for date from -->
+                                        <span>20.01.2022</span>
+                                  	</div>
+                                  	
+                                    <!-- SCHEDULE UNTIL -->
+                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
+                                    	<!-- TO DO AK: Functionality for date until -->
+                                        <span>20.02.2022</span>
+                                  	</div>
+
+                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
+                                    	<!-- TO DO AK: Functionality for date until -->
+                                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
+                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{!userBean.user.cmsAdmin}">
+                                        	<span class="sr-only">#{msg.no}</span>
+                                        </ui:fragment>
+                                  </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </div>
+
+        <script type="text/javascript">
+            $( document ).ready( function() {
+
+                var dataTableConfig = {
+                    dataTablePaginator: "#dataTablePaginator",
+                    txtField1: "#txtMoveTo1",
+                    txtField2: "#txtMoveTo2",
+                    totalCount: "#totalCount",
+                    reloadBtn: 'input[id*="cmdMoveTo"]',
+                };
+
+                viewerJS.dataTable.init( dataTableConfig );
+            } );
+
+            // Create no entries found message
+			if($('.admin__table-entry').length == 0) {
+				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+			}    
+
+		</script>
+    </ui:define>
+
+</ui:composition>
+

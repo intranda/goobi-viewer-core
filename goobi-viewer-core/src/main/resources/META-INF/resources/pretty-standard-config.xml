@@ -1116,6 +1116,23 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
 
+	<!-- CMS SCHEDULED OBJECTS -->
+    <url-mapping id="adminScheduledObjects">
+        <pattern value="/admin/cms/scheduledobjects/" />
+        <view-id value="/resources/cms/adminScheduledObjects.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminScheduledObjectsNew">
+        <pattern value="/admin/cms/scheduledobjects/new/" />
+        <view-id value="/resources/cms/adminScheduledObjectsEdit.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminScheduledObjectsEdit">
+        <pattern value="/admin/cms/scheduledobjects/edit/#{selectedNoteId}/" />
+        <view-id value="/resources/admin/views/adminScheduledObjectsEdit.xhtml" />
+        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
+    </url-mapping>
+
 	<!-- CMS -->
 	<url-mapping id="cmsOpenPage1">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/" />
