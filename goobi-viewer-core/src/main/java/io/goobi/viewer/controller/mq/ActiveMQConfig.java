@@ -2,9 +2,10 @@ package io.goobi.viewer.controller.mq;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.DocumentBuilder;
@@ -21,6 +22,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import de.unigoettingen.sub.commons.util.PathConverter;
 
 public class ActiveMQConfig {
 
@@ -54,8 +57,14 @@ public class ActiveMQConfig {
     }
 
     public ActiveMQConfig(String filename) throws IOException {
-        this(Paths.get(ActiveMQConfig.class.getClassLoader().getResource("").getFile(), filename));
+        this(getConfigResource(filename));
 
+    }
+
+    private static Path getConfigResource(String filename) {
+        URI uri = PathConverter.toURI(ActiveMQConfig.class.getClassLoader().getResource(""));
+        Path configFilePath = PathConverter.getPath(uri).resolve(filename);
+        return configFilePath;
     }
 
     public String getConnectorURI() {
