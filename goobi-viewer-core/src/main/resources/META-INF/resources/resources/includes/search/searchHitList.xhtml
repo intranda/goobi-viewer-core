@@ -86,7 +86,9 @@
         <div class="clearfix"></div>
         
         <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
-            <ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
+            <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
+            <h2>#{msg[resultGroup.name]}</h2>
+            <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
                 <div class="search-list__hit">
                     <!-- COinS IMPLEMENTATION -->
                     <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
@@ -139,6 +141,7 @@
 
                     <div class="search-list__hit-content"></div>
                 </div>
+            </ui:repeat>
             </ui:repeat>
         </h:form>
 

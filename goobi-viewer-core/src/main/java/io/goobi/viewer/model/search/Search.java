@@ -141,10 +141,14 @@ public class Search implements Serializable {
     @Column(name = "proximity_search_distance")
     private int proximitySearchDistance = 0;
 
+    /**
+     * Load configured result groups. If none are configured or groups are disabled, use a single default group for regular search.
+     */
     @Transient
-    private List<SearchResultGroup> resultGroups = DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty()
-            ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
-            : DataManager.getInstance().getConfiguration().getSearchResultGroups();
+    private List<SearchResultGroup> resultGroups = (!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+            || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
+                    ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+                    : DataManager.getInstance().getConfiguration().getSearchResultGroups();
 
     /** Solr fields for search result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
     @Transient
@@ -356,12 +360,19 @@ public class Search implements Serializable {
                 SearchHelper.buildFinalQuery(currentQuery, true, aggregationType) + subElementQueryFilterSuffix;
         logger.debug("Final main query: {}", finalQuery);
 
-        for (SearchResultGroup group : resultGroups) {
+        for (SearchResultGroup resultGroup : resultGroups) {
+            logger.trace("Result group: {}", resultGroup.getName());
+            List<String> allFilterQueries = new ArrayList<>();
+            if (resultGroup.getHitsCount() == 0) {
+                allFilterQueries.addAll(activeFacetFilterQueries);
 
-            if (group.getHitsCount() == 0) {
                 // Add custom filter query
                 if (StringUtils.isNotEmpty(customFilterQuery)) {
-                    activeFacetFilterQueries.add(customFilterQuery);
+                    allFilterQueries.add(customFilterQuery);
+                }
+                // Add result group query
+                if (StringUtils.isNotEmpty(resultGroup.getQuery())) {
+                    allFilterQueries.add(resultGroup.getQuery());
                 }
 
                 // Search without active facets to determine range facets min/max
@@ -380,7 +391,7 @@ public class Search implements Serializable {
                             .getSearchIndex()
                             .search(extraQuery, 0, 0, null, facets.getConfiguredSubelementFacetFields(),
                                     Collections.singletonList(SolrConstants.IDDOC),
-                                    activeFacetFilterQueries, params);
+                                    allFilterQueries, params);
                     if (resp != null && resp.getFacetFields() != null) {
                         // logger.trace("hits: {}", resp.getResults().getNumFound());
                         for (FacetField facetField : resp.getFacetFields()) {
@@ -422,35 +433,35 @@ public class Search implements Serializable {
                 // Search for hit count + facets
                 resp = DataManager.getInstance()
                         .getSearchIndex()
-                        .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, activeFacetFilterQueries, params);
+                        .search(finalQuery, 0, maxResults, null, allFacetFields, fieldList, allFilterQueries, params);
                 if (resp.getResults() != null) {
-                    group.setHitsCount(resp.getResults().getNumFound());
-                    logger.trace("Pre-grouping search hits: {}", group.getHitsCount());
+                    resultGroup.setHitsCount(resp.getResults().getNumFound());
+                    logger.trace("Pre-grouping search hits: {}", resultGroup.getHitsCount());
                     // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                     for (FacetField facetField : resp.getFacetFields()) {
                         if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
                             for (Count count : facetField.getValues()) {
                                 if (count.getCount() > 1) {
-                                    setHitsCount(group.getHitsCount() - (count.getCount() - 1));
+                                    setHitsCount(resultGroup.getHitsCount() - (count.getCount() - 1));
                                 }
                             }
                         }
                     }
                     if (facets.getGeoFacetting().isActive()) {
-                        group.setHasGeoLocationHits(resp.getFacetField(SolrConstants.BOOL_WKT_COORDS)
+                        resultGroup.setHasGeoLocationHits(resp.getFacetField(SolrConstants.BOOL_WKT_COORDS)
                                 .getValues()
                                 .stream()
                                 .anyMatch(c -> c.getName().equalsIgnoreCase("true")));
                         if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap(facets.getGeoFacetting().getField())) {
-                            group.setHitLocationList(getLocations(facets.getGeoFacetting().getField(), resp.getResults()));
-                            group.getHitLocationList().sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter())); // TODO
+                            resultGroup.setHitLocationList(getLocations(facets.getGeoFacetting().getField(), resp.getResults()));
+                            resultGroup.getHitLocationList().sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter())); // TODO
                         }
                     }
-                    logger.debug("Total search hits: {}", group.getHitsCount());
+                    logger.debug("Total search hits: {}", resultGroup.getHitsCount());
                 }
             }
 
-            if (group.getHitsCount() == 0) {
+            if (resultGroup.getHitsCount() == 0) {
                 return;
             }
 
@@ -494,9 +505,9 @@ public class Search implements Serializable {
             if (StringUtils.isNotEmpty(expandQuery)) {
                 // Search for child hits only if initial search query is not empty (empty query means collection listing)
                 useExpandQuery = expandQuery + subElementQueryFilterSuffix;
-            } else if (!activeFacetFilterQueries.isEmpty() && DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery()) {
+            } else if (!allFilterQueries.isEmpty() && DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery()) {
                 // If explicitly configured to use facets for expand query to produce child hits
-                useExpandQuery = SearchHelper.buildExpandQueryFromFacets(activeFacetFilterQueries,
+                useExpandQuery = SearchHelper.buildExpandQueryFromFacets(allFilterQueries,
                         DataManager.getInstance().getConfiguration().getAllowedFacetsForExpandQuery());
             }
             if (StringUtils.isNotEmpty(useExpandQuery)) {
@@ -508,14 +519,14 @@ public class Search implements Serializable {
             List<SearchHit> foundHits = Collections.emptyList();
             // Actual hits for listing
             if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
-                foundHits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                foundHits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, allFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
             } else if (SearchAggregationType.NO_AGGREGATION.equals(aggregationType)) {
-                foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, activeFacetFilterQueries, params,
+                foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, allFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
             }
 
-            group.getHits().addAll(foundHits);
+            resultGroup.getHits().addAll(foundHits);
         }
     }
 
@@ -1135,6 +1146,13 @@ public class Search implements Serializable {
      */
     public void setProximitySearchDistance(int proximitySearchDistance) {
         this.proximitySearchDistance = proximitySearchDistance;
+    }
+
+    /**
+     * @return the resultGroups
+     */
+    public List<SearchResultGroup> getResultGroups() {
+        return resultGroups;
     }
 
     /**
