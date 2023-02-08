@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -67,6 +68,7 @@ public class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void testcheckSearchUpdate() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
         SearchHitsNotifier resource = new SearchHitsNotifier();
         Search search = new Search();
         search.setQuery("ISWORK:*");
