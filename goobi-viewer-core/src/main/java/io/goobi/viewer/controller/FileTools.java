@@ -70,12 +70,16 @@ public class FileTools {
 
     private static final Logger logger = LogManager.getLogger(FileTools.class);
 
+    /**
+     * Private constructor.
+     */
+    private FileTools() {
+        //
+    }
+
     /** Constant <code>filenameFilterXML</code> */
-    public static FilenameFilter filenameFilterXML = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return "xml".equals(FilenameUtils.getExtension(name.toLowerCase()));
-        }
+    public static final FilenameFilter filenameFilterXML = (File dir, String name) -> {
+        return "xml".equals(FilenameUtils.getExtension(name.toLowerCase()));
     };
 
     /**

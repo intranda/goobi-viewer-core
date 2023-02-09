@@ -300,7 +300,7 @@ public class ConfigurationTest extends AbstractTest {
      */
     @Test
     public void getHotfolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
+        Assert.assertEquals("target/hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
     }
 
     /**

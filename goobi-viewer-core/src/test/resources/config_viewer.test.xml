@@ -55,7 +55,7 @@
     <annotationFolder>annotations</annotationFolder>
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
-	<hotfolder>hotfolder</hotfolder>
+	<hotfolder>target/hotfolder</hotfolder>
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
     <!-- umlautsFile: location of the goobi_opacUmlaut.txt file for process title creation -->

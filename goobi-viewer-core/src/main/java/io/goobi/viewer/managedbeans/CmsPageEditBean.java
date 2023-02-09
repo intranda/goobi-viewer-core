@@ -218,6 +218,9 @@ public class CmsPageEditBean implements Serializable {
                     logger.error(e.getMessage());
                 }
             }
+            
+            // Re-index cms page metadata
+            IndexerTools.triggerReIndexCMSPage(selectedPage, null);
         } else {
             Messages.error("cms_pageSaveFailure");
         }
