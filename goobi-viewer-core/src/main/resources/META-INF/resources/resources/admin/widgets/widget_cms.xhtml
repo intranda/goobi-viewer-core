@@ -102,6 +102,15 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
+                        
+                         <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}">
+                            <li class="#{navigationHelper.currentPage == 'adminCmsScheduledObjects' ? 'active' : ''}">
+                                <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsScheduledObjects')}/">
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <span>#{msg.admin__scheduled_objects__title}</span>
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
                     </ul>
                 </h:form>
             </div>
