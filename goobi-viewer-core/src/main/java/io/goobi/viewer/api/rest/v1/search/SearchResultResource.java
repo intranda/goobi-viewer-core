@@ -36,7 +36,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -124,10 +123,10 @@ public class SearchResultResource {
      * @throws ViewerConfigurationException
      */
     @GET
-    @Path(ApiUrls.SEARCH_HIT_CHILDREN)
+    @Path(ApiUrls.SEARCH_HIT_CHILDREN_GROUP)
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren,
-            @PathParam("group") String resultGroupName)
+            @PathParam("resultGroup") String resultGroupName)
             throws DAOException, PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
         // logger.trace("/search/hit/{}/{}/", hitId, numChildren);
         SearchBean searchBean = BeanUtils.getSearchBean();
