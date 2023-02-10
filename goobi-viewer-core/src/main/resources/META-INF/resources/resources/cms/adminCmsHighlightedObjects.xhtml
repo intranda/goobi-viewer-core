@@ -10,23 +10,23 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsScheduledObjects')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlightedObjects')}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">
-        <div id="scheduledObjects" class="admin__scheduled-objects">
+        <div id="highlightedObjects" class="admin__highlighted-objects">
             <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                 <h:form prependId="false">
 
                     <div class="admin__title-bar">
                         <!-- TITLE -->
-                        <h1 class="admin__title">#{msg.admin__scheduled_objects__title}</h1>
+                        <h1 class="admin__title">#{msg.admin__highlighted_objects__title}</h1>
                         
-                        <!-- CREATE NEW SCHEDULED OBJECT -->
+                        <!-- CREATE NEW HIGHLIGHTED OBJECT -->
                         <!-- TO DO AK: Functionality add new object-->
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
-                            <a href="#{navigationHelper.applicationUrl}admin/cms/scheduledobjects/new/" class="btn btn--default admin__title-bar-action">
+                            <a href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/new/" class="btn btn--default admin__title-bar-action">
                                 <span>#{msg.add}</span>
                             </a>
                         </ui:fragment>
@@ -35,7 +35,7 @@
 					<viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content">
-                    <div class="admin__info-text">#{msg.admin__scheduled_objects__description}</div>
+                    <div class="admin__info-text">#{msg.admin__highlighted_objects__description}</div>
 
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
@@ -45,13 +45,13 @@
                             <!-- FILTER -->
                             <!-- TO DO AK: Functionality search in columns/filter -->
                             <div class="admin__table-filter">
-                                <viewerComponent:dataTableColumnFilter key="admin__scheduled_objects__search"
+                                <viewerComponent:dataTableColumnFilter key="admin__highlighted_objects__search"
                                 filter="#{cmsRecordNotesBean.dataProvider.getFilter('PI_OR_TITLE')}"/>
                             </div>
                         </div>
 
 
-                        <!-- SCHEDULED OBJECTS TABLE -->
+                        <!-- HIGHLIGHTED OBJECTS TABLE -->
                         <div class="admin__table-content" role="grid" aria-label="#{msg.cms__record_notes__title_plural}: #{msg.aria_label__table__actions}">
                             
                             <!-- TITLE ROW -->
@@ -59,16 +59,16 @@
 
                                 <!-- PAGE COL -->
                                 <div class="col-6 d-flex" role="columnheader">
-                                	#{msg.admin__scheduled_objects__table_header}
+                                	#{msg.admin__highlighted_objects__table_header}
                                 </div>
                                 <div class="col-2 d-flex justify-content-center" role="columnheader">
-                                	#{msg.admin__scheduled_objects__table_from}
+                                	#{msg.admin__highlighted_objects__table_from}
                                 </div>
                                 <div class="col-2 d-flex justify-content-center" role="columnheader">
-                                	#{msg.admin__scheduled_objects__table_until}
+                                	#{msg.admin__highlighted_objects__table_until}
                                 </div>
                                 <div class="col-2 d-flex justify-content-center" role="columnheader">
-                                	#{msg.admin__scheduled_objects__table_active}
+                                	#{msg.admin__highlighted_objects__table_active}
                                 </div>
 
                             </div>

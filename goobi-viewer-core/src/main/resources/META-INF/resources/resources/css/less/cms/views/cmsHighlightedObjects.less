@@ -1,10 +1,10 @@
 /* ==============================================================
-   Admin scheduled objects (object of the month)
-   style declarations for adminScheduledObjects.xhtml / adminScheduledObjectsEdit.xhtml
+   Admin highlighted objects (object of the month)
+   style declarations for adminHighlightedObjects.xhtml / adminHighlightedObjectsEdit.xhtml
    ==============================================================*/
 
-#scheduledObjects {}
-.admin__scheduled-objects {
+#highlightedObjects {}
+.admin__highlighted-objects {
 	&-date-wrapper {
 		display: flex;
 		gap: 20px;
@@ -12,6 +12,14 @@
 	&-date-picker {
 		flex-grow: 1;
 		width: auto;
+		input::placeholder {
+			color: #bebebe; 
+		}
+	}
+	&-date-picker-text-between {
+		display: flex;
+		align-items: center;
+		font-size: 18px;
 	}
 	
 }
