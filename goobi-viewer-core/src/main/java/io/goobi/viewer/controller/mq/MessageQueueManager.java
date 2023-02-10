@@ -84,6 +84,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 @Startup
 public class MessageQueueManager {
 
+    private static final int SERVER_REGISTRY_PORT = 1095;
+
     private static final String QUEUE_NAME = "viewer";
 
     private static final Logger logger = LogManager.getLogger(MessageQueueManager.class);
@@ -171,7 +173,7 @@ public class MessageQueueManager {
     }
     
     public boolean initializeMessageServer() {
-        return initializeMessageServer("localhost", 1099, 0);
+        return initializeMessageServer("localhost", SERVER_REGISTRY_PORT, 0);
     }
 
     
