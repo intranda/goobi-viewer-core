@@ -1,39 +1,12 @@
 /* ==============================================================
-   Admin Licence Single
-   style declarations for adminLicense.xhtml
+   Admin scheduled objects (object of the month)
+   style declarations for adminScheduledObjects.xhtml / adminScheduledObjectsEdit.xhtml
    ==============================================================*/
 
-#adminClients {}
-.admin {
-	&__clients-edit-info-text {
-		font-weight: 400;
-		margin-bottom: 2rem;
-	}
-	&__clients-edit-label {
-		flex: 0 0 250px;
-		max-width: 250px;
-		font-weight: 700;
-		margin-bottom: 0.5rem;
-	}
-	&__clients-edit-label-formatted {
-		font-weight: 700;
-		margin-bottom: 0.5rem;
-	}
-	&__clients-edit-data {
-		flex-grow: 1;
-	}
-	&__clients-table-client-name {}
-	&__clients-unconfigured-entry {
-		transition: background .2s ease;
-		padding: .4rem .5rem;
-		margin: 0 -2rem;
-		&:hover {
-			background: @lightgray2;
-		}
-	}
+#scheduledObjects {}
+.admin__scheduled-objects {
+	
 }
-
-
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
@@ -42,22 +15,7 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-	.admin {
-		&__clients-edit-info-text {
-			font-weight: 400;
-			margin-bottom: 2rem;
-		}
-		&__clients-edit-label {
-			flex: 0 0 100%;
-			max-width: 100%;
-		}
-		&__clients-edit-data {
-			flex: 0 0 100%;
-			max-width: 100%;
-		}
-	}
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}
