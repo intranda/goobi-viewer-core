@@ -49,34 +49,160 @@
 									</span>
 								</h2>
 								<div class="admin__default-block">
-										<div>
-											<label for="inputRecordIdentifier">#{msg.admin__scheduled_objects__new_info}:
-											</label>
-											 <!-- TYPE:  #{cmsRecordNoteEditBean.currentNoteType}  -->
-										</div>
-									<div class="form-group">
-	                            			<div class="form-row">
-												<label>#{msg.admin__scheduled_objects__new_pi}</label>
-				                            	<div class="admin__form-input cms-module__option-control">
-
-													<h:message for="inputRecordIdentifier"
-														errorClass="-validation-message -danger"></h:message>
-													<div class="-validation-mark">
-														<i class="fa fa-check" aria-hidden="true"></i> <i
-															class="fa fa-exclamation" aria-hidden="true"></i>
-													</div>
-													<h:inputText id="inputRecordIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
-														styleClass="form-control -validation-input"
-														requiredMessage="#{msg.info__input_required}"
-														validatorMessage="#{msg.pi_errNotFound}"
-														required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
-														value="#{cmsRecordNoteEditBean.recordIdentifier}">
-														<f:validator validatorId="piInSolrValidator"
-															for="inputRecordIdentifier" />
-													</h:inputText>
-													<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
-												</div>
+									<div class="form-group form-row">
+								
+											<div class="col-12 col-lg-2 control-label admin__form-label">
+												<label>#{msg.admin__scheduled_objects__naming}:</label>
 											</div>
+			                            	<div class="col-11 col-lg-9 admin__form-input">
+
+												<h:message for="inputRecordIdentifier"
+													errorClass="-validation-message -danger"></h:message>
+												<div class="-validation-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+												<h:inputText id="inputRecordIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
+													styleClass="form-control -validation-input"
+													requiredMessage="#{msg.info__input_required}"
+													validatorMessage="#{msg.pi_errNotFound}"
+													required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
+													value="#{cmsRecordNoteEditBean.recordIdentifier}">
+													<f:validator validatorId="piInSolrValidator"
+														for="inputRecordIdentifier" />
+												</h:inputText>
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+											</div>
+
+									</div>
+									<div class="form-group form-row">
+								
+											<div class="col-12 col-lg-2 control-label admin__form-label">
+												<label for="inputObjectIdentifier">#{msg.admin__scheduled_objects__new_pi}:</label>
+											</div>
+			                            	<div class="col-11 col-lg-9 admin__form-input">
+
+												<h:message for="inputRecordIdentifier"
+													errorClass="-validation-message -danger"></h:message>
+												<div class="-validation-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+												<h:inputText id="inputObjectIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
+													styleClass="form-control -validation-input"
+													requiredMessage="#{msg.info__input_required}"
+													validatorMessage="#{msg.pi_errNotFound}"
+													required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
+													value="#{cmsRecordNoteEditBean.recordIdentifier}">
+													<f:validator validatorId="piInSolrValidator"
+														for="inputRecordIdentifier" />
+												</h:inputText>
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+											</div>
+
+									</div>
+									<div class="form-group form-row">
+								
+											<div class="col-12 col-lg-2 control-label admin__form-label">
+												<label for="inputObjectStartDate">#{msg.admin__scheduled_objects__table_from}:</label>
+											</div>
+			                            	<div class="col-11 col-lg-9 admin__form-input">
+
+												<h:message for="inputRecordIdentifier"
+													errorClass="-validation-message -danger"></h:message>
+												<div class="-validation-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+												
+												<h:inputText id="inputObjectStartDate" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
+													styleClass="form-control -validation-input"
+													requiredMessage="#{msg.info__input_required}"
+													validatorMessage="#{msg.pi_errNotFound}"
+													required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
+													value="#{cmsRecordNoteEditBean.recordIdentifier}">
+													<f:validator validatorId="piInSolrValidator"
+														for="inputRecordIdentifier" />
+												</h:inputText>
+												
+												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
+											</div>
+
+									</div>
+									<div class="form-group form-row">
+								
+											<div class="col-12 col-lg-2 control-label admin__form-label">
+												<label for="inputObjectEndDate">#{msg.admin__scheduled_objects__period}:</label>
+											</div>
+			                            	<div class="col-11 col-lg-9 admin__form-input">
+
+											<div class="admin__scheduled-objects-date-wrapper">
+												<h:message for="inputRecordIdentifier"
+													errorClass="-validation-message -danger"></h:message>
+												<div class="-validation-mark">
+													<i class="fa fa-check" aria-hidden="true"></i> <i
+														class="fa fa-exclamation" aria-hidden="true"></i>
+												</div>
+
+                                                <div class="admin__campaign-date-picker admin__scheduled-objects-date-picker">
+                                                	<h:inputText
+                                                		id="pickerDateStart" 
+                                                		name="pickerDateStart" 
+                                                		value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}"
+                                                		converter="localDateConverter"
+                                                		data-format="#{navigationHelper.datePattern}"
+                                                		styleClass="form-control">
+                                                		<f:passThroughAttribute name="data-target" value="datePickerStart" />
+                                                	</h:inputText>
+                                                </div>
+                                                
+                                                <div class="admin__campaign-date-picker admin__scheduled-objects-date-picker-text-between">
+                                                
+                                                </div>
+												
+                                                <div class="admin__campaign-date-picker admin__scheduled-objects-date-picker">
+													<h:inputText 
+														id="pickerDateEnd" 
+														name="pickerDateEnd"
+														value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
+														converter="localDateConverter"
+														data-format="#{navigationHelper.datePattern}"
+														styleClass="form-control">
+														<f:passThroughAttribute name="data-target"
+															value="datePickerEnd" />
+													</h:inputText>
+												</div>
+												
+
+												<script type="text/javascript">
+                                                       	
+                                                       	$(document).ready(function(){
+                                                       	    $("[data-target='datePickerStart']").datepicker({
+                                                       	        onSelect: function(selected) {
+                                                       	          $("[data-target='datePickerEnd']").datepicker("option","minDate", selected)
+                                                       	        },
+                                                           		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+                                                           		isRTL: #{navigationHelper.rtl},
+                                                       	    });
+                                                       	    
+                                                       	    $("[data-target='datePickerEnd']").datepicker({
+                                                       	        onSelect: function(selected) {
+                                                       	           $("[data-target='datePickerStart']").datepicker("option","maxDate", selected)
+                                                       	        },
+                                                        		dateFormat: "#{navigationHelper.datePatternjQueryDatePicker}",
+                                                        		isRTL: #{navigationHelper.rtl},
+                                                       	    });  
+                                                       	});
+
+									 			</script>
+									 			
+									 			
+
+		 										
+		 										</div>
+
+											</div>
+
 									</div>
 								</div>
 								
@@ -270,7 +396,7 @@
 														</div>
 													</div>
 
-													<!-- EDIT RECORD NOTE -->
+													<!-- EDIT SCHEDULED OBJECT -->
 													<div class="form-group form-row">
 
 														<div class="col-2 control-label admin__form-label">
@@ -306,12 +432,12 @@
 												</h:panelGroup>
 											</div>
 
-											<!-- SHOW OR HIDE RECORD NOTE -->
+											<!-- SHOW OR HIDE SCHEDULED OBJECT -->
 										</div>
 
 									</div>
 
-									<!-- ABORT/SHOW/SAVE RECORD NOTE -->
+									<!-- ABORT/SHOW/SAVE SCHEDULED OBJECT -->
 									<div
 										class="row no-gutters justify-content-end admin__final-actions">
 
