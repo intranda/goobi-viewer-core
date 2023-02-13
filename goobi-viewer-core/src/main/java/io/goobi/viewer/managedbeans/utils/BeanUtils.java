@@ -528,7 +528,7 @@ public class BeanUtils {
 
         return null;
     }
-
+    
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
         if (request != null && request.getSession() != null) {

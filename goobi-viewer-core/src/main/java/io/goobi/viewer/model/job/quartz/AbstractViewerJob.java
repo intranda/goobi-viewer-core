@@ -49,6 +49,7 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
      * @see org.goobi.production.flow.jobs.IGoobiJob#execute(org.quartz.
      * JobExecutionContext)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // execute job only, if no other instance is running

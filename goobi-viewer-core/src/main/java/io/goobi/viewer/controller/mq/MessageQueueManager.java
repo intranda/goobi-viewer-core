@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.nio.file.Paths;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.ExportException;
 import java.rmi.server.RMIServerSocketFactory;
@@ -49,7 +48,6 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
-import javax.servlet.ServletContextEvent;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -65,6 +63,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -84,6 +83,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 @Singleton
 @Startup
 public class MessageQueueManager {
+
+    private static final int SERVER_REGISTRY_PORT = 1095;
 
     private static final String QUEUE_NAME = "viewer";
 
@@ -172,7 +173,7 @@ public class MessageQueueManager {
     }
     
     public boolean initializeMessageServer() {
-        return initializeMessageServer("localhost", 1099, 0);
+        return initializeMessageServer("localhost", SERVER_REGISTRY_PORT, 0);
     }
 
     
@@ -207,7 +208,7 @@ public class MessageQueueManager {
             return false;
         }
         try {
-            broker = BrokerFactory.createBroker("xbean:file:" + this.config.getConfigFilePath().toAbsolutePath().toString(), false);
+            broker = BrokerFactory.createBroker("xbean:" + PathConverter.toURI(this.config.getConfigFilePath().toAbsolutePath()).toString(), false);
             broker.setUseJmx(true);
             broker.start();
 

@@ -85,7 +85,7 @@ public class StatisticsSummaryBuilderTest {
         docs.add(new SolrDocument(Map.of(StatisticsLuceneFields.DATE,
                 Date.from(LocalDate.of(2022, 8, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()), SolrConstants.PI, "PI_04")));
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
-        Mockito.when(searchIndex.search(Mockito.eq("+(DC:test) +ISWORK:*"), Mockito.anyList())).thenReturn(docs);
+        Mockito.when(searchIndex.search(Mockito.eq("+(DC:test) +(ISWORK:* ISANCHOR:*)"), Mockito.anyList())).thenReturn(docs);
         return searchIndex;
     }
 
