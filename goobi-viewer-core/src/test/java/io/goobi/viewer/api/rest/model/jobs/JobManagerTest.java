@@ -36,9 +36,9 @@ import org.junit.Test;
 
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.Task.TaskStatus;
-import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
+import io.goobi.viewer.model.job.TaskType;
 
 /**
  * @author florian

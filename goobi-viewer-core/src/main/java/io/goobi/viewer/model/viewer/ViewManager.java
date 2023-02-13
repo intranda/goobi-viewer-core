@@ -591,7 +591,7 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * getCurrentMasterImageUrl.
+     * getCurrentThumbnailUrlForDownload.
      * </p>
      *
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -627,7 +627,7 @@ public class ViewManager implements Serializable {
         }
         return sb.toString();
     }
-
+    
     /**
      * @param view
      * @param size
@@ -1605,6 +1605,7 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Fist thumbnail index +not+ on the current page anymore
      * @param thumbnailsPerPage
      * @param i
      * @return
@@ -1620,7 +1621,7 @@ public class ViewManager implements Serializable {
     private int getFirstDisplayedThumbnailIndex(int thumbnailsPerPage) {
         int i = pageLoader.getFirstPageOrder();
         if (currentThumbnailPage > 1) {
-            i = (currentThumbnailPage - 1) * thumbnailsPerPage + 1;
+            i = (currentThumbnailPage - 1) * thumbnailsPerPage + pageLoader.getFirstPageOrder();
         }
         return i;
     }

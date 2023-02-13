@@ -43,6 +43,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.HitListView;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -66,6 +67,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     private boolean includeStructureElements = false;
     @Column(name = "elements_per_page")
     private int elementsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
+    @Column(name = "view")
+    private HitListView view = HitListView.DETAILS;
 
     @Transient
     private SearchFunctionality search = null;
@@ -81,6 +84,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.groupingField = orig.groupingField;
         this.includeStructureElements = orig.includeStructureElements;
         this.elementsPerPage = orig.elementsPerPage;
+        this.view = orig.view;
     }
 
     private SearchFunctionality initSearch() {
@@ -199,6 +203,14 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
      */
     public Functionality getFunctionality() {
         return getSearch();
+    }
+    
+    public HitListView getView() {
+        return view;
+    }
+    
+    public void setView(HitListView view) {
+        this.view = view;
     }
 
     @Override

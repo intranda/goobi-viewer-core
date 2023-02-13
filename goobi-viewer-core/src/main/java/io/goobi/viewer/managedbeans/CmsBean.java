@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -50,6 +51,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
+
+import com.fasterxml.jackson.databind.ser.std.EnumSerializer;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -88,6 +91,7 @@ import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
@@ -1774,6 +1778,10 @@ public class CmsBean implements Serializable {
     
     public CMSTemplateManager getTemplateManager() {
         return templateManager;
+    }
+    
+    public Collection<HitListView> getPossibleHitListViews() {
+        return EnumSet.allOf(HitListView.class);
     }
 
 }

@@ -534,8 +534,10 @@ public class Search implements Serializable {
      */
     private void populateRanges(String finalQuery, SearchFacets facets, Map<String, String> params)
             throws PresentationException, IndexUnreachableException {
+        logger.trace("populateRanges");
         List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
         List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(false);
+
         if (StringUtils.isNotEmpty(customFilterQuery)) {
             nonRangeFacetFilterQueries.add(customFilterQuery);
         }
@@ -545,11 +547,12 @@ public class Search implements Serializable {
                 .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries,
                         params);
         if (resp == null || resp.getFacetFields() == null) {
+            logger.trace("No facet fields");
             return;
         }
 
         for (FacetField facetField : resp.getFacetFields()) {
-            if (!rangeFacetFields.contains(facetField.getName())) {
+            if (rangeFacetFields.contains(facetField.getName())) {
                 continue;
             }
 

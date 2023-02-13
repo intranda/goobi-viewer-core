@@ -96,6 +96,8 @@ public class SearchFacets implements Serializable {
      * <p>
      * resetCurrentFacets.
      * </p>
+     * 
+     * @should reset facets correctly
      */
     public void resetActiveFacets() {
         resetActiveFacetString();
@@ -191,6 +193,7 @@ public class SearchFacets implements Serializable {
      * @should return empty list if facet list empty
      * @should skip range facet fields if so requested
      * @should skip subelement fields
+     * @should skip hierarchical fields
      * @should combine facet queries if field name same
      */
     List<String> generateSimpleFacetFilterQueries(boolean includeRangeFacets) {
@@ -250,6 +253,7 @@ public class SearchFacets implements Serializable {
      *
      * @param field The field name to match.
      * @return a {@link java.util.List} object.
+     * @should return correct items
      */
     public List<IFacetItem> getActiveFacetsForField(String field) {
         List<IFacetItem> ret = new ArrayList<>();
@@ -279,6 +283,7 @@ public class SearchFacets implements Serializable {
      *
      * @param facet The facet to check.
      * @return a boolean.
+     * @should return correct value
      */
     public boolean isFacetCurrentlyUsed(IFacetItem facet) {
         for (IFacetItem fi : getActiveFacetsForField(facet.getField())) {
@@ -365,17 +370,6 @@ public class SearchFacets implements Serializable {
 
     /**
      * 
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     */
-    public boolean isHasChronologyFacets() throws PresentationException, IndexUnreachableException {
-        return !getLimitedFacetListForField(SolrConstants.YEAR).isEmpty()
-                && !getAbsoluteMinRangeValue(SolrConstants.YEAR).equals(getAbsoluteMaxRangeValue(SolrConstants.YEAR));
-    }
-
-    /**
-     * 
      * @param field
      * @param excludeSelected If true, selected facets will be removed from the list
      * @return
@@ -398,6 +392,23 @@ public class SearchFacets implements Serializable {
         }
 
         return facetItems;
+    }
+
+    /**
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return correct value
+     */
+    public boolean isHasRangeFacets() throws PresentationException, IndexUnreachableException {
+        for (String rangeField : DataManager.getInstance().getConfiguration().getRangeFacetFields()) {
+            if (!getAbsoluteMinRangeValue(rangeField).equals(getAbsoluteMaxRangeValue(rangeField))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -780,10 +791,15 @@ public class SearchFacets implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @param field
+     * @return
+     */
     public boolean isRangeFacetActive(String field) {
         try {
             List<Integer> range = getValueRange(field);
-            if(!range.isEmpty()) {                
+            if (!range.isEmpty()) {
                 return Integer.parseInt(getCurrentMinRangeValue(field)) > range.get(0)
                         || Integer.parseInt(getCurrentMaxRangeValue(field)) < range.get(range.size() - 1);
             }
@@ -946,6 +962,24 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * Getter for unit tests.
+     * 
+     * @return the minValues
+     */
+    Map<String, String> getMinValues() {
+        return minValues;
+    }
+
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the maxValues
+     */
+    Map<String, String> getMaxValues() {
+        return maxValues;
+    }
+
+    /**
      * <p>
      * isFacetCollapsed.
      * </p>
@@ -958,6 +992,14 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public List<String> getAllRangeFacetFields() {
+        return DataManager.getInstance().getConfiguration().getRangeFacetFields();
+    }
+
+    /**
      * <p>
      * Returns configured facet fields of regular and hierarchical type only.
      * </p>
@@ -967,15 +1009,6 @@ public class SearchFacets implements Serializable {
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
         return getAvailableFacets(Arrays.asList("", "hierarchical"));
-    }
-
-    /**
-     * 
-     * @param type
-     * @return
-     */
-    public Map<String, List<IFacetItem>> getAvailableFacets(String type) {
-        return getAvailableFacets(Collections.singletonList(type));
     }
 
     /**

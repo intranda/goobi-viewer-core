@@ -28,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
-import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
+import io.goobi.viewer.model.job.TaskType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -54,12 +54,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TaskParameter {
 
     @Schema(description = "The type of the task to execute")
-    public Task.TaskType type;
+    public TaskType type;
 
     public TaskParameter() {
     }
 
-    public TaskParameter(Task.TaskType type) {
+    public TaskParameter(TaskType type) {
         this.type = type;
     }
 
