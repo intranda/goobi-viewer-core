@@ -20,6 +20,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
     
         <!--  WIDGET CHRONOLOGY -->
+        RANGE FACETS: #{searchBean.facets.hasRangeFacets} #{searchBean.facets.allRangeFacetFields}
         <ui:fragment rendered="#{searchBean.facets.hasRangeFacets}">
             <c:forEach var="field" items="#{searchBean.facets.allRangeFacetFields}" varStatus="status">
                 <div class="widget widget-chronology-slider">
@@ -62,7 +63,7 @@
                 </div>
 	            <script>
 	            (() => {
-				let values = #{searchBean.facets.getValueRangeAsJsonMap(field.key)};
+				let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};
 					let valueMap = new Map(Object.entries(values));
 	
 					let graphType = "chronologygraph";
