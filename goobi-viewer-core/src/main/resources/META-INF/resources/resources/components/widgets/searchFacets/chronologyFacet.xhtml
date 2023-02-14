@@ -20,7 +20,6 @@
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
     
         <!--  WIDGET CHRONOLOGY -->
-        RANGE FACETS: #{searchBean.facets.hasRangeFacets} #{searchBean.facets.allRangeFacetFields}
         <ui:fragment rendered="#{searchBean.facets.hasRangeFacets}">
             <c:forEach var="field" items="#{searchBean.facets.allRangeFacetFields}" varStatus="status">
                 <div class="widget widget-chronology-slider">
@@ -50,7 +49,8 @@
 	                    	end-year="#{searchBean.facets.getCurrentMaxRangeValue(field)}"
 	                    	value-input="#{cc.clientId}:chronologySliderForm_#{status.count}:chronologySliderInput"
 	                    	update-facet="#{cc.clientId}:chronologySliderForm_#{status.count}:chronologySliderSet"
-	                    	loader="chronologyLoader-#{status.count}">
+	                    	loader="chronologyLoader-#{status.count}"
+	                    	show-tooltip="true">
                     </div>
 
             
@@ -71,7 +71,9 @@
 			        riot.mount("#chronoSlider_#{status.count}", graphType, {
 			        	datamap: valueMap,
 			        	msg: {
-			        		enterYear: "#{msg.enterYear}"
+			        		enterYear: "#{msg.enterYear}",
+			        		ok: "#{msg.ok}",
+			        		hits: "#{msg.hits}"
 			        	}
 			        })
 	            })();
