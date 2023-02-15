@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+		<link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/bs/bootstrap.custom.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/jQueryUi/jquery-ui.min.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/jQueryUi/jquery.ui.slider-rtl.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/font-awesome/css/font-awesome.min.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/swiper/swiper-bundle.min.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/sweetalert/sweetalert2.min.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/leaflet/leaflet.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/leaflet/extra-markers/leaflet.extra-markers.min.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/leaflet/markercluster/MarkerCluster.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/leaflet/draw/leaflet.draw.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/mapbox/geocoder/mapbox-gl-geocoder.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/libs/mapbox/mapbox-gl.css?1a8b91c" />
+        <link type="text/css" rel="stylesheet" href="/viewer/resources/css/dist/viewer.min.css?1a8b91c" />
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/jquery/jquery.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/jqueryUi/jquery-ui.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/jqueryUi/plugins/jquery.ui.touch-punch.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/jqueryUi/plugins/jquery.ui.slider-1.12.1-rtl.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/bs/bootstrap.bundle.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/datatables.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/reactiveX/rxjs.umd.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/clipboard/clipboard.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/pdfjs/pdf.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/riot/riot.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/swiper/swiper-bundle.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/sweetalert/sweetalert2.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/hcsticky/hc-sticky.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/leaflet/leaflet.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/leaflet/extra-markers/leaflet.extra-markers.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/leaflet/markercluster/leaflet.markercluster.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/leaflet/draw/leaflet.draw.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/mapbox/geocoder/mapbox-gl-geocoder.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/libs/mapbox/mapbox-gl.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/dist/browsersupport.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/dist/viewer.min.js?1a8b91c"></script>
+        <script type="text/javascript" src="/viewer/resources/javascript/dist/riot-tags.js?1a8b91c"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+
+<title>Testing Page</title>
+</head>
+<body>
+
+<chronologyGraph/>
+
+<script>
+
+	let indexQueryUrl = "https://www.digitale-bibliothek-mv.de/viewer/api/v1/index/query/";
+	let params = {
+			facetFields: ["FACET_YEARPUBLISH"]
+	}
+
+	function createQuery(docStruct, startYear, endYear) {
+		let query = "";
+		if(docStruct) {
+			
+		}
+	}
+	
+	
+	let pMonographs = fetch(urlMonographs)
+	.then(response => response.json())
+	.then(json => json.items);
+	
+	let pNewspapers = fetch(urlNewspapers)
+	.then(response => response.json())
+	.then(json => json.items);
+	
+	Promise.all([pMonographs, pNewspapers])
+	.then(values => {
+		console.log("got values", values);
+		let datasets = [];
+		values.forEach(items => {
+			let data = [];
+			items.forEach(item => {
+				let year = getDate(getMetadata(item, "Veröffentlicht"))?.getFullYear();
+				if(year) {
+					let bucket = data.find(d => d.year == year);
+					if(!bucket) {
+						bucket = {year: year, count: 0};
+						data.push(bucket);
+					}
+					bucket.count++;
+				}
+			});
+			data.sort((d1,d2) => d1.year - d2.year);
+			datasets.push(data);
+		})
+		console.log("datasets", datasets);
+	});
+
+	function getMetadata(item, label) {
+		let metadataList = item.description.metadata;
+		let metadata = metadataList.find(m => m.label == label);
+		return metadata?.value;
+	}
+	
+	function getDate(value) {
+		if(value) {			
+			let matches = value.match(/\d[\d-.]+/);
+			if(matches.length > 0) {
+				return new Date(Date.parse(matches[0]));
+			}
+		}
+		return undefined;
+	}
+
+	let string = "Gregor, 1917-04-12";
+	let date = string.match(/\d[\d-.]+/);
+	console.log(string, date);
+	console.log("mounting chronologyGraph");
+	riot.mount("chronologyGraph");
+
+</script>
+
+</body>
+</html>

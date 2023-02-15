@@ -13,7 +13,7 @@
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-        
+    
         <!--  WIDGET CHRONOLOGY -->
         <ui:fragment rendered="#{searchBean.facets.hasRangeFacets}">
             <c:forEach var="field" items="#{searchBean.facets.allRangeFacetFields}" varStatus="status">
@@ -38,14 +38,14 @@
                             </div>
                         </div>
                     </div>
-			
 					<div id="chronoSlider_#{status.count}" class="widget-chronology-slider__body widget__body"
 	                    	year-list="#{searchBean.facets.getValueRange(field)}" 
 	                    	start-year="#{searchBean.facets.getCurrentMinRangeValue(field)}"
 	                    	end-year="#{searchBean.facets.getCurrentMaxRangeValue(field)}"
 	                    	value-input="#{cc.clientId}:chronologySliderForm_#{status.count}:chronologySliderInput"
 	                    	update-facet="#{cc.clientId}:chronologySliderForm_#{status.count}:chronologySliderSet"
-	                    	loader="chronologyLoader-#{status.count}">
+	                    	loader="chronologyLoader-#{status.count}"
+	                    	show-tooltip="true">
                     </div>
 
             
@@ -57,11 +57,21 @@
 
                 </div>
 	            <script>
-		        riot.mount("#chronoSlider_#{status.count}", "chronoslider", {
-		        	msg: {
-		        		enterYear: "#{msg.enterYear}"
-		        	}
-		        })
+	            (() => {
+				let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};
+					let valueMap = new Map(Object.entries(values));
+	
+					let graphType = "chronologygraph";
+					
+			        riot.mount("#chronoSlider_#{status.count}", graphType, {
+			        	datamap: valueMap,
+			        	msg: {
+			        		enterYear: "#{msg.enterYear}",
+			        		ok: "#{msg.ok}",
+			        		hits: "#{msg.hits}"
+			        	}
+			        })
+	            })();
 	            </script>
             </c:forEach>
         </ui:fragment>

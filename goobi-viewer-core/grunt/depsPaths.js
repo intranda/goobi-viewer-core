@@ -265,6 +265,39 @@ const depsPathsJS = [
     dest: `${jsLibsDir}swiper/`
   },
   
+  { // CHARTJS
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'chart.js/dist/chart.umd.js*', 
+      'chart.js/LICENSE.md'
+    ],
+    flatten: true,
+    dest: `${jsLibsDir}chartjs/`
+  },
+  
+  { // LUXON (date and time module for chartjs)
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'luxon/build/global/luxon.js*', 
+      'luxon/LICENSE.md'
+    ],
+    flatten: true,
+    dest: `${jsLibsDir}chartjs/luxon`
+  },
+  
+  { // LUXON-CHARTJS-INTEGRATION
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'chartjs-adapter-luxon/dist/chartjs-adapter-luxon.umd.min.js', 
+      'chartjs-adapter-luxon/LICENSE.md'
+    ],
+    flatten: true,
+    dest: `${jsLibsDir}chartjs/chartjs-adapter-luxon`
+  },
+  
   /*
   { // ThreeJS
     expand: true,

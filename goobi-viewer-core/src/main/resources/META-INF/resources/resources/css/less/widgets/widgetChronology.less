@@ -69,6 +69,7 @@
 		&.chronology-slider {
 			padding: 0.6rem 0 1rem 0;
 			flex: 0 0 100%;
+			max-width: 100%;
 		}
 	}
 	&__item-input {
@@ -128,6 +129,29 @@
 .chronology-slider {
 	.widget-chronology-slider__slider {
 		border: none;
+	}
+	&__input {
+		display: flex;
+		justify-content:space-between;
+		margin-bottom: 10px;
+		input {
+			width: 40px;
+			font-size: 12px;
+		}
+	}
+	&__graph {
+		height: 150px;
+		&__line {  
+			color: rgba(200,89,153,1),
+		}
+		&__area {
+			color: rgba(200,89,153,0.3)
+		}
+		&__range {
+			color: @blue;
+			background-color: @blue;
+			opacity: 0.1;
+		}
 	}
 }
 

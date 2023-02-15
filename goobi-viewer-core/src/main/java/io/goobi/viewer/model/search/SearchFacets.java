@@ -34,11 +34,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -72,7 +75,7 @@ public class SearchFacets implements Serializable {
 
     private final Map<String, String> maxValues = new HashMap<>();
 
-    private final Map<String, List<Integer>> valueRanges = new HashMap<>();
+    private final Map<String, SortedMap<Integer, Long>> valueRanges = new HashMap<>();
     /** Map storing labels from separate label fields that were already retrieved from the index. */
     private final Map<String, String> labelMap = new HashMap<>();
 
@@ -777,7 +780,15 @@ public class SearchFacets implements Serializable {
         if (!maxValues.containsKey(field)) {
             return Collections.emptyList();
         }
-        return valueRanges.get(field);
+        return new ArrayList<>(valueRanges.get(field).keySet());
+    }
+    
+    public String getValueRangeAsJsonMap(String field) throws PresentationException, IndexUnreachableException {
+        if (!maxValues.containsKey(field)) {
+            return "[]";
+        } else {
+            return new JSONObject(valueRanges.get(field)).toString();
+        }
     }
 
     /**
@@ -806,7 +817,7 @@ public class SearchFacets implements Serializable {
      * @should populate values correctly
      * @should add all values to list
      */
-    void populateAbsoluteMinMaxValuesForField(String field, List<String> stringValues) {
+    void populateAbsoluteMinMaxValuesForField(String field, SortedMap<String, Long> counts) {
         if (field == null) {
             return;
         }
@@ -816,24 +827,21 @@ public class SearchFacets implements Serializable {
             return;
         }
 
-        List<Integer> intValues = null;
-        if (stringValues != null) {
-            intValues = new ArrayList<>(stringValues.size());
-            for (String s : stringValues) {
-                if (s == null) {
+        SortedMap<Integer, Long> intValues = new TreeMap<Integer, Long>();
+        if (counts != null) {
+            for (Entry<String, Long> e : counts.entrySet()) {
+                if (e.getKey() == null || e.getValue() == null) {
                     continue;
                 }
-                intValues.add(Integer.valueOf(s));
+                intValues.put(Integer.valueOf(e.getKey()), e.getValue());
             }
         } else {
             logger.trace("No facets found for field {}", field);
-            intValues = Collections.emptyList();
         }
         if (!intValues.isEmpty()) {
-            Collections.sort(intValues);
             valueRanges.put(field, intValues);
-            minValues.put(field, String.valueOf(intValues.get(0)));
-            maxValues.put(field, String.valueOf(intValues.get(intValues.size() - 1)));
+            minValues.put(field, String.valueOf(intValues.firstKey()));
+            maxValues.put(field, String.valueOf(intValues.lastKey()));
             logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));
         }
     }
