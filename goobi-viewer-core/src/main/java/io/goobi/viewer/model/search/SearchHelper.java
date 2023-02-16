@@ -2449,7 +2449,8 @@ public final class SearchHelper {
             throw new IllegalArgumentException("fieldNamemae not be null");
         }
 
-        if (fieldName.startsWith(SolrConstants.PREFIX_BOOL) || fieldName.equals(SolrConstants.CALENDAR_YEAR)
+        if (fieldName.startsWith(SolrConstants.PREFIX_BOOL) || fieldName.startsWith(SolrConstants.PREFIX_MDNUM) ||
+                fieldName.equals(SolrConstants.CALENDAR_YEAR)
                 || fieldName.equals(SolrConstants.CALENDAR_MONTH) || fieldName.equals(SolrConstants.CALENDAR_DAY)) {
             return fieldName;
         }
