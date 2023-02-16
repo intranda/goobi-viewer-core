@@ -87,7 +87,7 @@
         
         <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
-                <div class="search-list__hit">
+                <div class="search-list__hit #{hit.cssClass}">
                     <!-- COinS IMPLEMENTATION -->
                     <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
                     <!-- HEADER -->
