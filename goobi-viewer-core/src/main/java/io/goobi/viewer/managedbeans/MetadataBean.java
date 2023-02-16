@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -35,8 +36,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -48,10 +47,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.viewer.EventElement;
-import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Provides the metadata for the current structure and event elements.
@@ -69,8 +65,6 @@ public class MetadataBean {
     /** Metadata blocks for the docstruct hierarchy from the anchor to the current element. */
     private Map<Integer, List<MetadataElement>> metadataElementMap = new HashMap<>();
 
-    /** Metadata blocks for all docstructs that are included within a specific page. */
-    private Map<Integer, List<MetadataElement>> allMetadataElementsforPage = new HashMap<>();
     /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
 
@@ -182,69 +176,6 @@ public class MetadataBean {
     }
 
     /**
-     * Returns a list of <code>MetadataElement</code>s for all structure elements contained on the given page (as opposed to just the immediate
-     * hierarchy down to the first element that BEGINS on the current page, such as returned by <code>getMetadataElementList</code>.
-     *
-     * @param index Metadata view index
-     * @param order Page number
-     * @return List of <code>MetadataElement</code>s for all structure elements contained on the given page
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @should return metadata elements for all contained docstructs
-     */
-    @Deprecated
-    public List<MetadataElement> getAllMetadataElementsForPage(int index, int order) throws IndexUnreachableException, DAOException {
-        if (allMetadataElementsforPage.get(order) != null) {
-            return allMetadataElementsforPage.get(order);
-        }
-        if (activeDocumentBean == null) {
-            return Collections.emptyList();
-        }
-
-        StructElement topElement = activeDocumentBean.getTopDocument();
-        if (topElement == null) {
-            return Collections.emptyList();
-        }
-
-        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + topElement.getPi() + " +" + SolrConstants.THUMBPAGENO + ":[1 TO " + order + "]";
-        logger.trace("All metadata elements query: {}", query);
-        SolrDocumentList docs;
-        try {
-            docs = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.LOGID, "asc")), null);
-            if (docs.isEmpty()) {
-                return Collections.emptyList();
-            }
-
-            for (SolrDocument doc : docs) {
-                int thumbPage = (int) doc.getFieldValue(SolrConstants.THUMBPAGENO);
-                int numPages = (int) doc.getFieldValue(SolrConstants.NUMPAGES);
-                if (thumbPage < 1) {
-                    continue;
-                }
-                if (thumbPage == order || thumbPage + numPages - 1 >= order) {
-                    StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-                    Locale locale = BeanUtils.getLocale();
-                    MetadataElement metadataElement =
-                            new MetadataElement().init(se, index, locale).setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage());
-                    if (allMetadataElementsforPage.get(order) == null) {
-                        allMetadataElementsforPage.put(order, new ArrayList<>(docs.size()));
-                    }
-                    allMetadataElementsforPage.get(order).add(metadataElement);
-                }
-            }
-
-            return allMetadataElementsforPage.get(order);
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-
-        }
-
-        return Collections.emptyList();
-    }
-
-    /**
      * <p>
      * getTopMetadataElement.
      * </p>
@@ -352,8 +283,8 @@ public class MetadataBean {
      * @param selectedRecordLanguage a {@link java.lang.String} object.
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
-        for (int index : metadataElementMap.keySet()) {
-            List<MetadataElement> metadataElementList = metadataElementMap.get(index);
+        for (Entry<Integer, List<MetadataElement>> entry : metadataElementMap.entrySet()) {
+            List<MetadataElement> metadataElementList = entry.getValue();
             if (metadataElementList != null) {
                 metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
             }

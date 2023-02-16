@@ -2356,15 +2356,6 @@ public class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isUseViewerLocaleAsRecordLanguage()
-     * @verifies return correct value
-     */
-    @Test
-    public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
-    }
-
-    /**
      * @see Configuration#getFallbackDefaultLanguage()
      * @verifies return correct value
      */
