@@ -710,12 +710,10 @@ public class NavigationHelper implements Serializable {
             }
         }
 
-        // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
-        if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
-            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-            if (adb != null) {
-                adb.setSelectedRecordLanguage(inLocale);
-            }
+        // Also set ActiveDocumentBean.selectedRecordLanguage, so that multilingual metadata values etc. are displayed in the selected language as well
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null) {
+            adb.setSelectedRecordLanguage(inLocale);
         }
     }
 
