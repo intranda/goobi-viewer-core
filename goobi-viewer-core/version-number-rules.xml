@@ -78,5 +78,10 @@
                 <ignoreVersion>2.0.2</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.springframework" artifactId="spring-*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">6.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
     </rules>
 </ruleset>
