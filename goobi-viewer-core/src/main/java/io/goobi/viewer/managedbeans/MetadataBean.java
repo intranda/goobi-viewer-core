@@ -182,69 +182,6 @@ public class MetadataBean {
     }
 
     /**
-     * Returns a list of <code>MetadataElement</code>s for all structure elements contained on the given page (as opposed to just the immediate
-     * hierarchy down to the first element that BEGINS on the current page, such as returned by <code>getMetadataElementList</code>.
-     *
-     * @param index Metadata view index
-     * @param order Page number
-     * @return List of <code>MetadataElement</code>s for all structure elements contained on the given page
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @should return metadata elements for all contained docstructs
-     */
-    @Deprecated
-    public List<MetadataElement> getAllMetadataElementsForPage(int index, int order) throws IndexUnreachableException, DAOException {
-        if (allMetadataElementsforPage.get(order) != null) {
-            return allMetadataElementsforPage.get(order);
-        }
-        if (activeDocumentBean == null) {
-            return Collections.emptyList();
-        }
-
-        StructElement topElement = activeDocumentBean.getTopDocument();
-        if (topElement == null) {
-            return Collections.emptyList();
-        }
-
-        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + topElement.getPi() + " +" + SolrConstants.THUMBPAGENO + ":[1 TO " + order + "]";
-        logger.trace("All metadata elements query: {}", query);
-        SolrDocumentList docs;
-        try {
-            docs = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.LOGID, "asc")), null);
-            if (docs.isEmpty()) {
-                return Collections.emptyList();
-            }
-
-            for (SolrDocument doc : docs) {
-                int thumbPage = (int) doc.getFieldValue(SolrConstants.THUMBPAGENO);
-                int numPages = (int) doc.getFieldValue(SolrConstants.NUMPAGES);
-                if (thumbPage < 1) {
-                    continue;
-                }
-                if (thumbPage == order || thumbPage + numPages - 1 >= order) {
-                    StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-                    Locale locale = BeanUtils.getLocale();
-                    MetadataElement metadataElement =
-                            new MetadataElement().init(se, index, locale).setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage());
-                    if (allMetadataElementsforPage.get(order) == null) {
-                        allMetadataElementsforPage.put(order, new ArrayList<>(docs.size()));
-                    }
-                    allMetadataElementsforPage.get(order).add(metadataElement);
-                }
-            }
-
-            return allMetadataElementsforPage.get(order);
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-
-        }
-
-        return Collections.emptyList();
-    }
-
-    /**
      * <p>
      * getTopMetadataElement.
      * </p>
