@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -35,8 +36,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -48,10 +47,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.viewer.EventElement;
-import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Provides the metadata for the current structure and event elements.
@@ -69,8 +65,6 @@ public class MetadataBean {
     /** Metadata blocks for the docstruct hierarchy from the anchor to the current element. */
     private Map<Integer, List<MetadataElement>> metadataElementMap = new HashMap<>();
 
-    /** Metadata blocks for all docstructs that are included within a specific page. */
-    private Map<Integer, List<MetadataElement>> allMetadataElementsforPage = new HashMap<>();
     /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
 
@@ -289,8 +283,8 @@ public class MetadataBean {
      * @param selectedRecordLanguage a {@link java.lang.String} object.
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
-        for (int index : metadataElementMap.keySet()) {
-            List<MetadataElement> metadataElementList = metadataElementMap.get(index);
+        for (Entry<Integer, List<MetadataElement>> entry : metadataElementMap.entrySet()) {
+            List<MetadataElement> metadataElementList = entry.getValue();
             if (metadataElementList != null) {
                 metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
             }
