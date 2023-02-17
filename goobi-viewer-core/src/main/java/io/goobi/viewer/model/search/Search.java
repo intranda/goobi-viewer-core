@@ -486,15 +486,14 @@ public class Search implements Serializable {
         }
 
         int lastPage = getLastPage(hitsPerPage);
-        if (page > lastPage) {
+        if (page <= 0) {
+            page = 1;
+        } else if (page > lastPage) {
             page = lastPage;
-            logger.trace(" page = getLastPage()");
         }
 
         // Hits for the current page
         int from = (page - 1) * hitsPerPage;
-
-        logger.debug("page: {}, hitsPerPage: {}, start: {}", page, hitsPerPage, from);
 
         // Expand query (child hits)
         String useExpandQuery = "";
