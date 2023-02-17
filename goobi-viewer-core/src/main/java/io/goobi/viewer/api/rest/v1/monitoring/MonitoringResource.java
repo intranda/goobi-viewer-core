@@ -49,6 +49,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,11 +66,7 @@ public class MonitoringResource {
     private ContainerRequestContext requestContext;
 
     /**
-     *
-     * @param content
-     * @param thumbs
-     * @param pdf
-     * @return
+     * @return {@link MonitoringStatus} as JSON
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
@@ -106,7 +103,7 @@ public class MonitoringResource {
         try {
             NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/-/files/footer/-/full/100,/0/default.jpg");
-        } catch (Exception e) {
+        } catch (HTTPException | IOException e) {
             ret.getMonitoring().put(MonitoringStatus.KEY_IMAGES, MonitoringStatus.STATUS_ERROR);
             logger.warn("Image delivery monitoring check failed.");
         }
@@ -143,6 +140,11 @@ public class MonitoringResource {
         return ret;
     }
 
+    /**
+     * 
+     * @param versionMap
+     * @param versionJson
+     */
     private static void setVersionValues(Map<String, String> versionMap, String versionJson) {
         versionMap.put("version", JsonTools.getVersion(versionJson));
         versionMap.put("hash", JsonTools.getGitRevision(versionJson));
@@ -150,7 +152,7 @@ public class MonitoringResource {
 
     /**
      * 
-     * @return
+     * @return Formatted version string
      * @deprecated Use /api/v1/monitoring/
      */
     @Deprecated(since = "23.02")
