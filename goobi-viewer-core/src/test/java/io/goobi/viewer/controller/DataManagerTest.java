@@ -68,6 +68,11 @@ public class DataManagerTest {
                 return "1.0";
             }
 
+            @Override
+            public String getVersionJson() {
+                return "{\"version\": \"1.0\"}";
+            }
+
             /* (non-Javadoc)
              * @see io.goobi.viewer.modules.IModule#isLoaded()
              */
