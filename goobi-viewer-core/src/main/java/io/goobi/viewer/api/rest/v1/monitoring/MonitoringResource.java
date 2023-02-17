@@ -149,10 +149,16 @@ public class MonitoringResource {
         versionMap.put("hash", JsonTools.getGitRevision(versionJson));
     }
 
+    /**
+     * 
+     * @return
+     * @deprecated Use /api/v1/monitoring/
+     */
+    @Deprecated(since = "23.02")
     @GET
     @Path(ApiUrls.MONITORING_CORE_VERSION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Reports the Goobi viewer core version", tags = { "monitoring" })
+    @Operation(summary = "DEPRECATED: Reports the Goobi viewer core version", tags = { "monitoring" })
     public String getCoreVersion() {
         return JsonTools.formatVersionString(Version.asJSON());
     }

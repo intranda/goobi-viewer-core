@@ -113,10 +113,16 @@ public class IndexResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * 
+     * @return
+     * @deprecated Use /api/v1/monitoring/
+     */
+    @Deprecated(since = "23.02")
     @GET
     @Path(ApiUrls.INDEX_SCHEMA_VERSION)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "index" }, summary = "Solr schema version")
+    @Operation(tags = { "index" }, summary = "DEPRECATED: Solr schema version")
     public String getSchemaVersion() {
         String[] result = SolrTools.checkSolrSchemaName();
         int status = Integer.parseInt(result[0]);
