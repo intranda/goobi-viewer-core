@@ -137,7 +137,7 @@ public class MonitoringResource {
         //  module versions
         for (IModule module : DataManager.getInstance().getModules()) {
             Map<String, String> moduleVersion = ret.getVersions().computeIfAbsent(module.getId(), k -> new HashMap<>(2));
-            setVersionValues(moduleVersion, module.getVersion());
+            setVersionValues(moduleVersion, module.getVersionJson());
         }
 
         return ret;
