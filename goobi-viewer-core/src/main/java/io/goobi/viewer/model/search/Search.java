@@ -494,6 +494,8 @@ public class Search implements Serializable {
         // Hits for the current page
         int from = (page - 1) * hitsPerPage;
 
+        logger.debug("page: {}, hitsPerPage: {}, start: {}", page, hitsPerPage, from);
+
         // Expand query (child hits)
         String useExpandQuery = "";
         if (StringUtils.isNotEmpty(expandQuery)) {
