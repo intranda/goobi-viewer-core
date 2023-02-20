@@ -486,9 +486,10 @@ public class Search implements Serializable {
         }
 
         int lastPage = getLastPage(hitsPerPage);
-        if (page > lastPage) {
+        if (page <= 0) {
+            page = 1;
+        } else if (page > lastPage) {
             page = lastPage;
-            logger.trace(" page = getLastPage()");
         }
 
         // Hits for the current page

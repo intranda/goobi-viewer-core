@@ -130,24 +130,40 @@
 	.widget-chronology-slider__slider {
 		border: none;
 	}
-	&__input {
+	&__input-wrapper {
 		display: flex;
-		justify-content:space-between;
-		margin-bottom: 10px;
+		margin-top: 10px;
+		align-items: center;
 		input {
 			width: 40px;
 			font-size: 12px;
 		}
 	}
+	&__input-start,
+	&__input-end {
+		flex-grow: 1;
+		align-self: stretch;
+		padding: 0.3rem;
+		height: unset;
+	}
+	&__input-start {}
+	&__input-end {}
+	&__ok-button {
+		min-width: unset;
+		margin-left: 15px;
+	}
+	&__between-year-symbol {
+		margin: 0 5px;
+	}
 	&__graph {
 		height: 150px;
-		&__line {  
+		&-line {  
 			color: rgba(200,89,153,1),
 		}
-		&__area {
+		&-area {
 			color: rgba(200,89,153,0.3)
 		}
-		&__range {
+		&-range {
 			color: @blue;
 			background-color: @blue;
 			opacity: 0.1;

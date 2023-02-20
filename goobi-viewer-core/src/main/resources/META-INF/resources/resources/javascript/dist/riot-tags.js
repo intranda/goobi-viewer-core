@@ -794,7 +794,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__input"><input onchange="{setStartYear}" data-input="number" class="chronology-slider__input__start" ref="input_start" riot-value="{startYear}"></input><span>-</span><input onchange="{setEndYear}" data-input="number" class="chronology-slider__input__end" ref="input_end" riot-value="{endYear}"></input><button onclick="{setRange}">{msg.ok}</button></div><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div></div><div hidden ref="line" class="chronology-slider__graph__line"></div><div hidden ref="area" class="chronology-slider__graph__area"></div><div hidden ref="range" class="chronology-slider__graph__range"></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
 
 
 		this.yearList = [1];
@@ -835,6 +835,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 						]
 					},
 					options: {
+
 						elements: {
 							point: {
 								pointStyle: false,
@@ -849,6 +850,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 							      mode: 'index',
 							      intersect: false,
 							      displayColors: false,
+
 							      callbacks: {
 							    	  label: item => item.raw + " " + this.msg.hits
 
@@ -1027,6 +1029,22 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 		    let currY = e.clientY - canvas.getBoundingClientRect().top;
 		    return {x: currX, y: currY};
 		}.bind(this)
+
+	  this.on('update', function(){
+		$(".chronology-slider__input-start, .chronology-slider__input-end").keyup(function(event) {
+		    if (event.keyCode === 13) {
+		        $('[data-trigger="triggerFacettingGraph"]').click();
+		    }
+		});
+	  })
+
+	  this.on('mount', function(){
+		$(".chronology-slider__input-start, .chronology-slider__input-end").keyup(function(event) {
+		    if (event.keyCode === 13) {
+		        $('[data-trigger="triggerFacettingGraph"]').click();
+		    }
+		});
+	  })
 
 });
 riot.tag2('chronoslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
