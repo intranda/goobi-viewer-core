@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -64,6 +65,7 @@ public class MetadataBean {
 
     /** Metadata blocks for the docstruct hierarchy from the anchor to the current element. */
     private Map<Integer, List<MetadataElement>> metadataElementMap = new HashMap<>();
+    private Locale currentMetadataLocale;
 
     /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
@@ -97,7 +99,7 @@ public class MetadataBean {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String loadMetadata(int index) throws IndexUnreachableException, DAOException {
+    public String loadMetadata(int index, Locale locale) throws IndexUnreachableException, DAOException {
         // logger.trace("loadMetadata({})", index);
         if (activeDocumentBean == null) {
             return "viewMetadata";
@@ -116,7 +118,6 @@ public class MetadataBean {
         }
 
         try {
-            Locale locale = BeanUtils.getLocale();
             metadataElementList.add(new MetadataElement().init(currentElement, index, locale)
                     .setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage()));
 
@@ -162,10 +163,12 @@ public class MetadataBean {
      */
     public List<MetadataElement> getMetadataElementList(int index) {
         //        logger.trace("getMetadataElementList({})", index);
-        if (metadataElementMap.get(index) == null) {
+        Locale locale = BeanUtils.getLocale();
+        if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
-                loadMetadata(index);
+                loadMetadata(index, locale);
+                this.currentMetadataLocale = locale;    //store locale used for translations so it can be checked for changes later on
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error("Error loading metadatalist ", e);
                 return Collections.emptyList();
