@@ -161,18 +161,20 @@
 			this.refs.draw.addEventListener("mousemove", e => {
 				if(drawing) {			
 					let year = this.calculateYearFromEvent(e);
-					if(year < initialYear) {
-						this.endYear = initialYear;
-						this.startYear = year;
-					} else {
-						this.endYear = year;
-						this.startYear = initialYear;
+					if(!isNaN(year)) {
+						if(year < initialYear) {
+							this.endYear = initialYear;
+							this.startYear = year;
+						} else {
+							this.endYear = year;
+							this.startYear = initialYear;
+						}
+						this.startYear = Math.min(year, this.startYear);
+						this.endYear = Math.max(year, this.endYear);
+						let currPoint = this.getPointFromEvent(e, this.refs.draw);
+						this.drawRect(startPoint.x, currPoint.x, this.refs.draw);
+						this.update();
 					}
-					this.startYear = Math.min(year, this.startYear);
-					this.endYear = Math.max(year, this.endYear);
-					let currPoint = this.getPointFromEvent(e, this.refs.draw);
-					this.drawRect(startPoint.x, currPoint.x, this.refs.draw);
-					this.update();
 				} else {
 					let event = new MouseEvent("mousemove", {
 						bubbles: false,
