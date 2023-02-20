@@ -79,7 +79,7 @@
 		<sonar.java.target>11</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>4000</checkstyle.max.violations>
+		<checkstyle.max.violations>3700</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 
@@ -132,11 +132,11 @@
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-runtime.version>2.3.8</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
-		<jersey.version>2.38</jersey.version>
+		<jersey.version>2.39</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20220924</json.version>
-		<jsoup.version>1.15.3</jsoup.version>
+		<jsoup.version>1.15.4</jsoup.version>
 		<junit.version>4.13.2</junit.version>
 		<mariadb-java-client.version>3.1.2</mariadb-java-client.version>
 		<mockito.version>5.1.1</mockito.version>
