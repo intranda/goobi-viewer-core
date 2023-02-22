@@ -682,12 +682,12 @@ public class Search implements Serializable {
             return locs;
         } else if (o instanceof String) {
             String s = (String) o;
-            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
+            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,E\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
             while (polygonMatcher.find()) {
                 String match = polygonMatcher.group();
                 locs.add(new Polygon(getPoints(match)));
                 s = s.replace(match, "");
-                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
+                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,E\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
             }
             if (StringUtils.isNotBlank(s)) {
                 locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
@@ -699,7 +699,7 @@ public class Search implements Serializable {
 
     protected static double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
-        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
+        Matcher matcher = Pattern.compile("([0-9\\.\\-E]+)\\s([0-9\\.\\-E]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
         while (matcher.find() && matcher.groupCount() == 2) {
             points.add(parsePoint(matcher.group(1), matcher.group(2)));
         }
