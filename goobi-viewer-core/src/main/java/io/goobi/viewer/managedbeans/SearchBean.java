@@ -91,6 +91,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.Location;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
@@ -2784,7 +2785,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public GeoMap getHitsMap() {
         GeoMap map = new GeoMap();
-        map.setType(GeoMapType.MANUAL);
+        ManualFeatureSet featureSet = new ManualFeatureSet();
+        map.addFeatureSet(featureSet);
         map.setShowPopover(true);
         //set initial zoom to max zoom so map will be as zoomed in as possible
         map.setInitialView("{" +
@@ -2800,7 +2802,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     //            .distinct()
                     .collect(Collectors.toList());
 
-            map.setFeatures(features);
+            featureSet.setFeatures(features);
         }
         return map;
     }

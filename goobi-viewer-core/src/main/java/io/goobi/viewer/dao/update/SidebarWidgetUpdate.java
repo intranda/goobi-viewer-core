@@ -37,6 +37,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
@@ -70,7 +71,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     private static final Logger logger = LogManager.getLogger(SidebarWidgetUpdate.class);
 
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         if (dao.tableExists("cms_sidebar_elements")) {
             migrateWidgetTables(dao);
             return true;

@@ -59,6 +59,7 @@ import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -88,6 +89,7 @@ import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -2275,10 +2277,11 @@ public class ActiveDocumentBean implements Serializable {
 
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
-            map.setType(GeoMapType.MANUAL);
             map.setShowPopover(true);
-            map.setMarkerTitleField(null);
-            map.setMarker("default");
+            
+            ManualFeatureSet featureSet = new ManualFeatureSet();
+            featureSet.setMarker("default");
+            map.addFeatureSet(featureSet);
 
             String mainDocQuery = String.format("PI:%s", pi);
             List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();
@@ -2329,7 +2332,7 @@ public class ActiveDocumentBean implements Serializable {
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
-                        docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
+                        docFeatures.addAll(GeoCoordinateConverter.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
                     }
                     if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT")) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
@@ -2343,7 +2346,7 @@ public class ActiveDocumentBean implements Serializable {
             //remove dubplicates
             features = features.stream().distinct().collect(Collectors.toList());
             if (!features.isEmpty()) {
-                map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
+                featureSet.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
             }
             return map;
         } catch (IndexUnreachableException e) {

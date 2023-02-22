@@ -26,6 +26,7 @@ import java.util.List;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * @author florian
@@ -36,7 +37,7 @@ public class UserUpdate implements IModelUpdate {
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         if (dao.columnsExists("users", "use_gravatar")) {
             List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM users WHERE use_gravatar=1");
             for (Long userId : userIds) {

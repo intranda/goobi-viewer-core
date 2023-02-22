@@ -45,13 +45,13 @@
 			           		popoverOnHover: #{cc.attrs.popoverOnHover},
 			           		clusterMarkers: #{cc.attrs.clusterMarkers},
 			           		markerIcon: (icon => icon)(#{cc.attrs.geoMap.markerAsJSON}),
+			           		search: {
+				            	searchUrlTemplate : '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}',			           			
+				            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'},
+				            	linkTarget : "#{cc.attrs.linkTarget}",
+				            	loader: "##{cc.attrs.mapId} .ajax_loader"
+			           		}
 			            }
-		            },
-		            search: {
-		            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'},
-		            	searchUrlTemplate : '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}',
-		            	linkTarget : "#{cc.attrs.linkTarget}",
-		            	loader: "##{cc.attrs.mapId} .ajax_loader"
 		            },
 		            heatmap: {
 		            	showSearchResultsHeatmap: #{cc.attrs.geoMap.type == 'SOLR_QUERY' and configurationBean.useHeatmapForCMSMaps()},

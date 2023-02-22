@@ -35,9 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,26 +42,21 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
-import io.goobi.viewer.model.maps.Point;
-import io.goobi.viewer.model.maps.Polygon;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -442,12 +434,12 @@ public class Search implements Serializable {
                     }
                 }
                 if (facets.getGeoFacetting().isActive()) {
-                    this.hasGeoLocationHits = resp.getFacetField(SolrConstants.BOOL_WKT_COORDS)
-                            .getValues()
-                            .stream()
-                            .anyMatch(c -> c.getName().equalsIgnoreCase("true"));
+                    this.hasGeoLocationHits = true;// resp.getFacetField(SolrConstants.BOOL_WKT_COORDS)
+//                            .getValues()
+//                            .stream()
+//                            .anyMatch(c -> c.getName().equalsIgnoreCase("true"));
                     if (DataManager.getInstance().getConfiguration().isShowSearchHitsInGeoFacetMap(facets.getGeoFacetting().getField())) {
-                        this.hitLocationList = getLocations(facets.getGeoFacetting().getField(), resp.getResults());
+                        this.hitLocationList = GeoCoordinateConverter.getLocations(facets.getGeoFacetting().getField(), resp.getResults());
                         this.hitLocationList.sort((l1, l2) -> Double.compare(l2.getArea().getDiameter(), l1.getArea().getDiameter()));
                     }
                 }
@@ -636,100 +628,7 @@ public class Search implements Serializable {
         }
     }
 
-    /**
-     * 
-     * @param solrField
-     * @param results
-     * @return
-     */
-    private static List<Location> getLocations(String solrField, SolrDocumentList results) {
-        List<Location> locations = new ArrayList<>();
-        for (SolrDocument doc : results) {
-            try {
-                String label = (String) doc.getFieldValue(SolrConstants.LABEL);
-                String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-                String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
-                String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
-                Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
-                locations.addAll(getLocations(doc.getFieldValue(solrField))
-                        .stream()
-                        .map(p -> new Location(p, label,
-                                Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false),
-                                        DataManager.getInstance().getUrlBuilder())))
-                        .collect(Collectors.toList()));
-            } catch (IllegalArgumentException e) {
-                logger.error("Error parsing field {} of document {}: {}", solrField, doc.get("IDDOC"), e.getMessage());
-                logger.error(e.toString(), e);
-            }
-        }
-        return locations;
-    }
 
-    /**
-     * 
-     * @param o
-     * @return
-     */
-    protected static List<IArea> getLocations(Object o) {
-        List<IArea> locs = new ArrayList<>();
-        if (o == null) {
-            return locs;
-        } else if (o instanceof List) {
-            for (int i = 0; i < ((List) o).size(); i++) {
-                locs.addAll(getLocations(((List) o).get(i)));
-            }
-            return locs;
-        } else if (o instanceof String) {
-            String s = (String) o;
-            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
-            while (polygonMatcher.find()) {
-                String match = polygonMatcher.group();
-                locs.add(new Polygon(getPoints(match)));
-                s = s.replace(match, "");
-                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
-            }
-            if (StringUtils.isNotBlank(s)) {
-                locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
-            }
-            return locs;
-        }
-        throw new IllegalArgumentException(String.format("Unable to parse %s of type %s as location", o.toString(), o.getClass()));
-    }
-
-    protected static double[][] getPoints(String value) {
-        List<double[]> points = new ArrayList<>();
-        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
-        while (matcher.find() && matcher.groupCount() == 2) {
-            points.add(parsePoint(matcher.group(1), matcher.group(2)));
-        }
-        return points.toArray(new double[points.size()][2]);
-    }
-
-    /**
-     * 
-     * @param x
-     * @param y
-     * @return
-     */
-    protected static double[] parsePoint(Object x, Object y) {
-        if (x instanceof Number) {
-            double[] loc = new double[2];
-            loc[0] = ((Number) x).doubleValue();
-            loc[1] = ((Number) y).doubleValue();
-            return loc;
-        } else if (x instanceof String) {
-            try {
-                double[] loc = new double[2];
-                loc[0] = Double.parseDouble((String) x);
-                loc[1] = Double.parseDouble((String) y);
-                return loc;
-            } catch (NumberFormatException e) {
-                logger.debug(e.getMessage());
-            }
-        }
-        throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
-    }
 
     /**
      * Constructs a search URL using the query parameters contained in this object.

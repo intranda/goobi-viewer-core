@@ -33,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * Converts {@link CMSMediaItem cms_media_items.link_url} from the LONGBLOB datatype (URI in java) to TEXT (String in java). Extracts the link texts
@@ -53,7 +54,7 @@ public class CMSContentItemUpdate implements IModelUpdate {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         logger.debug("Checking database for deprecated cms_content_items.ignore_collections datatype");
 
         if (!dao.tableExists("cms_content_items")) {

@@ -78,6 +78,7 @@ import io.goobi.viewer.api.rest.model.RecordsRequestParameters;
 import io.goobi.viewer.api.rest.model.index.SolrFieldInfo;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -355,7 +356,8 @@ public class IndexResource {
             facetQueries.add(coordQuery);
         }
 
-        String objects = GeoMap.getFeaturesFromSolrQuery(finalQuery, facetQueries, labelField)
+        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+        String objects = GeoCoordinateConverter.getFeaturesFromSolrQuery(finalQuery, facetQueries, coordinateFields, labelField)
                 .stream()
                 .map(GeoMapFeature::getJsonObject)
                 .map(Object::toString)

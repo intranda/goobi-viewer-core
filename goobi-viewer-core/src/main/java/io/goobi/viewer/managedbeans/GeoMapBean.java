@@ -44,6 +44,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.SolrFeatureSet;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
@@ -220,9 +221,9 @@ public class GeoMapBean implements Serializable {
         return !getAllMaps().isEmpty();
     }
 
-    public String getCoordinateSearchQueryTemplate(GeoMap map) {
+    public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
-        String filterQuery = map != null ? map.getSolrQuery() : "";
+        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "";
         String query = locationQuery;
         if (StringUtils.isNotBlank(filterQuery)) {
             query = "(" + locationQuery + ") AND (" + filterQuery + ")";

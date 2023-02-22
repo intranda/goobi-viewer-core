@@ -67,7 +67,7 @@ public class CMSPageUpdate implements IModelUpdate {
     }
 
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
 
         if (!dao.tableExists("cms_content_items")) {
             return false;
