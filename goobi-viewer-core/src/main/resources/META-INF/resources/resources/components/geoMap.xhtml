@@ -2,17 +2,20 @@
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <composite:interface>
         <composite:attribute name="geoMap" required="true" type="io.goobi.viewer.model.maps.GeoMap" />
+        <composite:attribute name="featureSet" required="false" default="#{cc.attrs.geoMap.featureSets[0]}" />
+        <composite:attribute name="solrMap" required="false" default="#{cc.attrs.featureSet['class'].simpleName == 'SolrFeatureSet'}"></composite:attribute>
     	<composite:attribute name="mapId" required="false" default="geomap" />
     	<composite:attribute name="linkTarget" required="false" default="_self" />
     	<composite:attribute name="linkToSearch" required="false" default="true" />
     	<composite:attribute name="linkTarget" required="false" default="_self" />
     	<composite:attribute name="showAnnotations" type="java.lang.Boolean" required="false" default="false"/>
-    	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="#{cc.attrs.geoMap.type == 'SOLR_QUERY'}"/>
-    	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{cc.attrs.geoMap.type == 'SOLR_QUERY'}"/>
+    	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="#{cc.attrs.solrMap}"/>
+    	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{cc.attrs.solrMap}"/>
     	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
     	<composite:attribute name="highlightDocumentId" required="false" default=""/>
     </composite:interface>
@@ -29,10 +32,14 @@
 				<span data-metadata="description"></span> 
 		</popover>
 		<script>
-		    
+		
+		<ui:repeat value="#{cc.attrs.geoMap.featureSets}" var="featureSet">
+		console.log("featureSet:",#{featureSet.featuresAsString});
+		let features = #{featureSet.featuresAsString};
+		</ui:repeat>
+		
 		$(document).ready(() => {   
 		    let config = {
-		    		mapType: "#{cc.attrs.geoMap.type}",
 		    		openSearchOnMarkerClick: true,
 		    		documentIdToHighlight: "#{cc.attrs.highlightDocumentId}",
 		            map: {
@@ -44,27 +51,26 @@
 			           		popover: #{cc.attrs.geoMap.showPopover} ? "#popoverTemplate_#{cc.attrs.mapId}" : undefined,
 			           		popoverOnHover: #{cc.attrs.popoverOnHover},
 			           		clusterMarkers: #{cc.attrs.clusterMarkers},
-			           		markerIcon: (icon => icon)(#{cc.attrs.geoMap.markerAsJSON}),
+			           		markerIcon: (icon => icon)(#{cc.attrs.featureSet.markerAsJSON}),
 			           		search: {
-				            	searchUrlTemplate : '#{geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.geoMap)}',			           			
-				            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and cc.attrs.geoMap.type == 'SOLR_QUERY'},
+				            	searchUrlTemplate : "#{cc.attrs.solrMap ? geoMapBean.getCoordinateSearchQueryTemplate(cc.attrs.featureSet) : ''}",			           			
+				            	openSearchOnMarkerClick: #{cc.attrs.linkToSearch and cc.attrs.solrMap},
 				            	linkTarget : "#{cc.attrs.linkTarget}",
 				            	loader: "##{cc.attrs.mapId} .ajax_loader"
 			           		}
 			            }
 		            },
 		            heatmap: {
-		            	showSearchResultsHeatmap: #{cc.attrs.geoMap.type == 'SOLR_QUERY' and configurationBean.useHeatmapForCMSMaps()},
+		            	showSearchResultsHeatmap: #{cc.attrs.solrMap and configurationBean.useHeatmapForCMSMaps()},
 		            	heatmapUrl: "#{geoMapBean.heatmapUrl}",
 		            	featureUrl: "#{geoMapBean.featureUrl}",
-		        	    filterQuery: "#{cc.attrs.geoMap.solrQueryEncoded}",
-		        	    labelField: "#{cc.attrs.geoMap.markerTitleField}",
+		        	    filterQuery: "#{cc.attrs.solrMap ? cc.attrs.featureSet.solrQueryEncoded : ''}",
+		        	    labelField: "#{cc.attrs.solrMap ? cc.attrs.featureSet.markerTitleField : ''}",
 		            }
 		    }
 	    	let geomap = new viewerJS.GeoMapCms(config);
 
 		    let view = #{cc.attrs.geoMap.initialView};
-	    	let features = #{cc.attrs.geoMap.featuresAsString};
 	    	geomap.init(view, features);
     	})    
 

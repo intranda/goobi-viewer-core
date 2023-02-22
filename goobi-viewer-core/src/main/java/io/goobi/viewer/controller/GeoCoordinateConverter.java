@@ -42,8 +42,8 @@ import io.goobi.viewer.solr.SolrTools;
 public class GeoCoordinateConverter {
 
     private static final Logger logger = LogManager.getLogger(GeoCoordinateConverter.class);
-    protected static final String POINT_LAT_LNG_PATTERN = "([\\d.-]+)[\\s/]*([\\d.-]+)";
-    protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\d.-]+[\\s/]*[\\d.-]+[,\\s]*)+\\)\\)"; //NOSONAR
+    protected static final String POINT_LAT_LNG_PATTERN = "([\\dE.-]+)[\\s/]*([\\dE.-]+)";
+    protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
     
     private GeoCoordinateConverter() {
         
