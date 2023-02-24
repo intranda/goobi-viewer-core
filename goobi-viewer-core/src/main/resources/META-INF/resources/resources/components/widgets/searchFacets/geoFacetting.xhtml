@@ -95,7 +95,7 @@
 				      			}
 				      		},
 				      		heatmap: {
-				      			showSearchResultsHeatmap: #{configurationBean.useHeatmapForFacetting()},
+				      			enabled: #{configurationBean.useHeatmapForFacetting()},
 				      			heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
 				      			featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
 				      			mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",

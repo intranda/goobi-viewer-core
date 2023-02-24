@@ -62,7 +62,7 @@
 									        action__toggle_map_markers : "#{msg.action__toggle_map_markers}"
 									    },
 									    heatmap: {
-											showSearchResultsHeatmap: #{configurationBean.useHeatmapForMapSearch()},
+									    	enabled: #{configurationBean.useHeatmapForMapSearch()},
 											mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
 									    },
 									    hitsLayer: {

@@ -31,12 +31,25 @@ var viewerJS = ( function( viewer ) {
     var _debug = false;
  
     var _defaults_featureGroup = {
+			features: [],
             allowMovingFeatures: false,
             clusterMarkers : false,
             popover: undefined,
             emptyMarkerMessage: undefined,
             popoverOnHover: false,
             markerIcon : undefined,
+            search: {
+            	openSearchOnMarkerClick: true,
+            	searchUrlTemplate : '/viewer/search/-/WKT_COORDS:"Intersects(POINT({lng} {lat})) distErrPct=0"/1/-/-/',
+            	linkTarget : "_blank"
+            },
+            heatmap: {
+            	enabled: false,
+            	heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
+            	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
+            	filterQuery: "BOOL_WKT_COORDS:*",
+		        labelField: "LABEL",
+            },
             style: {
             	stroke: true,
             	color: '#3388ff',
@@ -52,7 +65,6 @@ var viewerJS = ( function( viewer ) {
         
     viewer.GeoMap.featureGroup = function(geoMap, config) {
  		this.geoMap = geoMap;
- 		this.geoMap.layers.push(this);
         this.config = $.extend( true, {}, _defaults_featureGroup, geoMap.config.layer, config );
         if(_debug) {
             console.log("create featureGroup with config ",  config);
@@ -69,9 +81,7 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.GeoMap.featureGroup.prototype.init = function(features, zoomToFeatures) {
-       
-       if(_debug)console.log("init featureGroup ", features);
-        
+              
         this.markerIdCounter = 1;
         this.markers = [];
         this.areas = [];
@@ -169,26 +179,23 @@ var viewerJS = ( function( viewer ) {
         	this.setViewToFeatures(true);
         }
         
+        //display search results as heatmap
+    	if(this.config.heatmap.enabled) {	        	    
+        	let heatmapUrl = this.config.heatmap.heatmapUrl;
+        	let featureUrl = this.config.heatmap.featureUrl;
+        	
+        	this.heatmap = L.solrHeatmap(heatmapUrl, featureUrl, this.layer, {
+        	    field: "WKT_COORDS",
+        	    type: "clusters",
+        	    filterQuery: this.config.heatmap.filterQuery,
+        	    labelField: this.config.heatmap.labelField,
+        	    queryAdapter: "goobiViewer"    
+        	});
+        	this.heatmap.addTo(this.geoMap.map);
+    	} 
+        
     }
-     
-    viewer.GeoMap.featureGroup.prototype.setViewToFeatures = function(setViewToHighlighted, zoom) {
-    	let features = this.getFeatures();
-    	if(features && features.length > 0) {
-            if(!zoom) {
-                zoom = this.geoMap.view ? this.geoMap.zoom : this.geoMap.config.initialView.zoom;
-            }
-            let highlightedFeatures = features.filter(f => f.properties.highlighted);
-            //console.log(" highlightedFeatures", highlightedFeatures);
-            if(setViewToHighlighted && highlightedFeatures.length > 0) {
-            	let viewAroundFeatures = this.geoMap.getViewAroundFeatures(highlightedFeatures, zoom, 0.5);
-	            this.geoMap.setView(viewAroundFeatures);
-            } else {
-	            let viewAroundFeatures = this.geoMap.getViewAroundFeatures(features, zoom);
-	            this.geoMap.setView(viewAroundFeatures);
-            }
-        }
-    } 
-    
+
     viewer.GeoMap.featureGroup.prototype.isEmpty = function() {
     	return this.markers.length == 0 && this.areas.length == 0;
     }

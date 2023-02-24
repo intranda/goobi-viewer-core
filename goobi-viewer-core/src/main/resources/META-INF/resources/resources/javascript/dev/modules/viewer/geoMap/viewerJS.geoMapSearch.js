@@ -57,7 +57,7 @@ var viewerJS = ( function ( viewer ) {
 			    }
 			},
 			heatmap: {
-				showSearchResultsHeatmap: true,
+				enabled: true,
 				heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
 				featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
 				mainQuery: "BOOL_WKT_COORDS:*",

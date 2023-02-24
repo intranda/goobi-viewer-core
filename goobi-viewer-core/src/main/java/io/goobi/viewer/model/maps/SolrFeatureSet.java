@@ -122,4 +122,9 @@ public class SolrFeatureSet extends FeatureSet {
             return false;
         } 
     }
+
+    @Override
+    public boolean isQueryResultSet() {
+        return true;
+    }
 }

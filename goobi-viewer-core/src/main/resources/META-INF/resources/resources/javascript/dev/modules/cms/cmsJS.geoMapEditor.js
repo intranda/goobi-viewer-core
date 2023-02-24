@@ -46,7 +46,7 @@ var cmsJS = ( function( cms ) {
             deleteLabel: "delete"
         },
         heatmap: {
-	    	showSearchResultsHeatmap: false,
+	    	enabled: false,
 	    	heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
 	    	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
 	    	filterQuery: "BOOL_WKT_COORDS:*",
@@ -115,7 +115,7 @@ var cmsJS = ( function( cms ) {
         this.geoMap.init(this.getView(defaultView), features);
         
         //display search results as heatmap
-    	if(this.config.heatmap.showSearchResultsHeatmap) {	        	    
+    	if(this.config.heatmap.enabled) {	        	    
         	this.heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.geoMap.layers[0], {
         	    field: "WKT_COORDS",
         	    type: "clusters",

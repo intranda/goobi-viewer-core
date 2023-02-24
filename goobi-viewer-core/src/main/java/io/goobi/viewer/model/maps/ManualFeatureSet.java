@@ -87,4 +87,9 @@ public class ManualFeatureSet extends FeatureSet {
         return !this.features.isEmpty();
     }
 
+    @Override
+    public boolean isQueryResultSet() {
+        return false;
+    }
+
 }

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Javascript interface for geoMap.tag
+ * Javascript container for a leaflet map and a number of featureGroups to be displayed on that map
  * GeoJson coordinates are always [lng, lat]
  * 
  * @version 3.4.0
@@ -65,23 +65,24 @@ var viewerJS = ( function( viewer ) {
         viewer.GeoMap.maps.set(this.config.mapId, this);
 
         this.layers = [];
+        this.initialized = false;
         
         this.onMapRightclick = new rxjs.Subject();
         this.onMapClick = new rxjs.Subject();
         this.onMapMove = new rxjs.Subject();
-        this.initialized = new Promise( (resolve, reject) => {
+        this.onInitialized = new Promise( (resolve, reject) => {
         	this.resolveInitialization = resolve;
         	this.rejectInitialization = reject;
         });
 
-        new viewer.GeoMap.featureGroup(this, this.config.layer);
+        this.config.layers.forEach(layer => this.addFeatureGroup(layer, layer.features));
 
 		viewer.GeoMap.allMaps.push(this);
     }
     
     viewer.GeoMap.maps = new Map();
 
-    viewer.GeoMap.prototype.init = function(view, features) {
+    viewer.GeoMap.prototype.init = function(view) {
        
        if(_debug)console.log("init geomap with", view, features);
        
@@ -125,6 +126,7 @@ var viewerJS = ( function( viewer ) {
         
         this.map.whenReady(e => {
         	this.resolveInitialization(this);
+        	this.initialized = true;
         });
         if(this.config.tilesource.toLowerCase() == "mapbox" && this.config.mapBox) {
             let url = 'https://api.mapbox.com/styles/v1/{1}/{2}/tiles/{z}/{x}/{y}?access_token={3}'
@@ -165,17 +167,29 @@ var viewerJS = ( function( viewer ) {
         .pipe(rxjs.operators.map(e => this.layers[0].createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
         .subscribe(this.onMapClick);
             
-       	this.layers[0].init(features, false);
-        if(features && features.length > 0) {
-        	this.layers[0].setViewToFeatures(true)
-            
+		let allFeatures = this.config.layers.map(layer => layer.features).flat();
+        if(allFeatures && allFeatures.length > 0) {
+        	this.setViewToFeatures(allFeatures, true)
         } else if(view){                                                    
             this.setView(view); 
         }
         
-        return this.initialized;
+        return this.onInitialized;
         
     }
+    
+    viewer.GeoMap.prototype.addFeatureGroup = function(featureGroupConfig, features) {
+		console.log("add feature group", featureGroupConfig, features);
+		let featureGroup = new viewer.GeoMap.featureGroup(this, featureGroupConfig);
+		this.layers.push(featureGroup);
+		if(this.initialized) {
+			featureGroup.init(features, false);
+		} else {
+			this.onInitialized
+			.then(() => featureGroup.init(features, false));
+		}
+		return featureGroup;
+	}
     
     viewer.GeoMap.prototype.initGeocoder = function(element, config) {
     	if(this.config.mapBox && this.config.mapBox.token) {
@@ -266,6 +280,23 @@ var viewerJS = ( function( viewer ) {
             }
         }
     }
+    
+    viewer.GeoMap.prototype.setViewToFeatures = function(features, setViewToHighlighted, zoom) {
+    	if(features && features.length > 0) {
+            if(!zoom) {
+                zoom = this.view ? this.zoom : this.config.initialView.zoom;
+            }
+            let highlightedFeatures = features.filter(f => f.properties.highlighted);
+            //console.log(" highlightedFeatures", highlightedFeatures);
+            if(setViewToHighlighted && highlightedFeatures.length > 0) {
+            	let viewAroundFeatures = this.getViewAroundFeatures(highlightedFeatures, zoom, 0.5);
+	            this.setView(viewAroundFeatures);
+            } else {
+	            let viewAroundFeatures = this.getViewAroundFeatures(features, zoom);
+	            this.setView(viewAroundFeatures);
+            }
+        }
+    } 
 
     
     viewer.GeoMap.prototype.getZoom = function() {

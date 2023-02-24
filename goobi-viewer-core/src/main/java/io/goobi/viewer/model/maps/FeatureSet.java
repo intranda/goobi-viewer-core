@@ -61,6 +61,8 @@ public abstract class FeatureSet implements Serializable {
     
     public abstract boolean hasFeatures();
     
+    public abstract boolean isQueryResultSet();
+    
     /**
      * @return the marker
      */

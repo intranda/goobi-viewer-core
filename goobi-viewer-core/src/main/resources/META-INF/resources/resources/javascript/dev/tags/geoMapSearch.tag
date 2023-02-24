@@ -28,7 +28,7 @@ this.on("mount", function() {
 	if(this.opts.toggleFeatures) {   
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	if(this.opts.heatmap?.showSearchResultsHeatmap) {	    
+	if(this.opts.heatmap?.enabled) {	    
 		this.heatmap = this.initHeatmap(this.hitsLayer)
 	}
 }); 
