@@ -33,6 +33,9 @@ public class GeoMapUpdate implements IModelUpdate {
             for (GeoMap geoMap : maps) {
                 dao.updateGeoMap(geoMap);
             }
+            
+            dao.executeUpdate("ALTER TABLE cms_geomap DROP COLUMN solr_query");
+            
             return true;
         } else {
             return false;

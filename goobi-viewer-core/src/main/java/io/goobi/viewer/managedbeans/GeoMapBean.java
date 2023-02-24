@@ -44,6 +44,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 
 /**
@@ -250,5 +251,18 @@ public class GeoMapBean implements Serializable {
                 .getDataApiManager()
                 .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())
                 .orElse("");
+    }
+    
+    public void addFeatureSet(GeoMap map, GeoMapType type) {
+        if(map != null && type != null) {            
+            switch(type) {
+                case MANUAL:
+                    map.addFeatureSet(new ManualFeatureSet());
+                    break;
+                case SOLR_QUERY:
+                    map.addFeatureSet(new SolrFeatureSet());
+                    break;
+            }
+        }
     }
 }
