@@ -65,9 +65,11 @@ public class GeoCoordinateConverter {
         List<String> fieldList = new ArrayList<>(coordinateFields);
         fieldList.add(markerTitleField);
         String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
-        String filterQuery = SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
-
-        String finalQuery = String.format("+(%s) +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
+        String filterQuery = "";//SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
+        if (!query.startsWith("{!join")) {
+            query = String.format("+(%s)", query);
+        }
+        String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, fieldList, filterQueries, null).getResults();
         List<GeoMapFeature> features = new ArrayList<>();
         for (SolrDocument doc : docs) {

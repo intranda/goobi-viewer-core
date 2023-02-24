@@ -37,6 +37,7 @@ var viewerJS = ( function( viewer ) {
     
     var _defaults = {
             mapId : "geomap",
+            layers: [],
             minZoom : 1,
             maxZoom : 19,
             initialView : {

@@ -184,14 +184,14 @@ var viewerJS = ( function( viewer ) {
         	let heatmapUrl = this.config.heatmap.heatmapUrl;
         	let featureUrl = this.config.heatmap.featureUrl;
         	
-        	this.heatmap = L.solrHeatmap(heatmapUrl, featureUrl, this.layer, {
+        	this.heatmap = L.solrHeatmap(heatmapUrl, featureUrl, this, {
         	    field: "WKT_COORDS",
         	    type: "clusters",
         	    filterQuery: this.config.heatmap.filterQuery,
         	    labelField: this.config.heatmap.labelField,
         	    queryAdapter: "goobiViewer"    
         	});
-        	this.heatmap.addTo(this.geoMap.map);
+//        	this.heatmap.addTo(this.geoMap.map);
     	} 
         
     }
