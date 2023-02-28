@@ -61,9 +61,10 @@
 				let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};
 					let valueMap = new Map(Object.entries(values));
 	
-					let graphType = "chronologygraph";
+					let graphType = "#{searchBean.facets.getRangeFacetStyle(field)}";
+					graphType = graphType ? graphType : "slider";
 					
-			        riot.mount("#chronoSlider_#{status.count}", graphType, {
+			        riot.mount("#chronoSlider_#{status.count}", "chronology"+graphType, {
 			        	datamap: valueMap,
 			        	msg: {
 			        		enterYear: "#{msg.enterYear}",

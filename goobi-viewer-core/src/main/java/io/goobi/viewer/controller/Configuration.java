@@ -2562,6 +2562,19 @@ public class Configuration extends AbstractConfiguration {
         return ret;
     }
 
+    public String getFacetFieldStyle(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.facets.field");
+        if (fieldList != null) {
+            for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+                if (subElement.getString(".").equals(field)) {
+                    return subElement.getString("[@style]", "");
+                }
+            }
+        }
+
+        return "";
+    }
+
     /**
      * <p>
      * getGeoFacetFields.
