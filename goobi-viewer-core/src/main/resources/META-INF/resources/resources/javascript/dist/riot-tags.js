@@ -794,7 +794,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
 
 
 		this.yearList = [1];
@@ -819,6 +819,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 			this.loader = document.getElementById(opts.loader);
 			this.msg = opts.msg;
 			this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+			this.reloadingPage = false;
 
 			this.chartConfig = {
 					type: "line",
@@ -853,7 +854,6 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 
 							      callbacks: {
 							    	  label: item => item.raw + " " + this.msg.hits
-
 							      }
 							},
 						},
@@ -923,29 +923,46 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 			let drawing = false;
 
 			this.refs.draw.addEventListener("mousedown", e => {
-				initialYear = this.calculateYearFromEvent(e);
-				this.startYear = initialYear;
-				this.endYear = initialYear;
-				startPoint = this.getPointFromEvent(e, this.refs.draw);
-				drawing = true;
-				this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
-				this.update();
+				if(!this.refs["button_search"].disabled) {
+					initialYear = this.calculateYearFromEvent(e);
+					this.startYear = initialYear;
+					this.endYear = initialYear;
+					startPoint = this.getPointFromEvent(e, this.refs.draw);
+					drawing = true;
+					this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
+					this.update();
+				}
 			})
+			this.refs.draw.addEventListener("mouseout", e => {
+				if(drawing) {
+
+					drawing = false;
+				}
+				let event = new MouseEvent("mouseout", {
+					bubbles: false,
+					target: e.target,
+					clientX: e.clientX,
+					clientY: e.clientY
+				});
+				this.refs.chart.dispatchEvent(event);
+			});
 			this.refs.draw.addEventListener("mousemove", e => {
 				if(drawing) {
 					let year = this.calculateYearFromEvent(e);
-					if(year < initialYear) {
-						this.endYear = initialYear;
-						this.startYear = year;
-					} else {
-						this.endYear = year;
-						this.startYear = initialYear;
+					if(!isNaN(year)) {
+						if(year < initialYear) {
+							this.endYear = initialYear;
+							this.startYear = year;
+						} else {
+							this.endYear = year;
+							this.startYear = initialYear;
+						}
+						this.startYear = Math.min(year, this.startYear);
+						this.endYear = Math.max(year, this.endYear);
+						let currPoint = this.getPointFromEvent(e, this.refs.draw);
+						this.drawRect(startPoint.x, currPoint.x, this.refs.draw);
+						this.update();
 					}
-					this.startYear = Math.min(year, this.startYear);
-					this.endYear = Math.max(year, this.endYear);
-					let currPoint = this.getPointFromEvent(e, this.refs.draw);
-					this.drawRect(startPoint.x, currPoint.x, this.refs.draw);
-					this.update();
 				} else {
 					let event = new MouseEvent("mousemove", {
 						bubbles: false,
@@ -1009,6 +1026,10 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 		this.setRange = function() {
 
 			    $( this.loader ).addClass( 'active' );
+
+			    Array.from(document.getElementsByClassName("chronology-slider__input-start")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__input-end")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__ok-button")).forEach(element => element.disabled = true);
 
 			    let value = '[' + this.startYear + ' TO ' + this.endYear + ']' ;
 			    $( this.valueInput ).val(value);
