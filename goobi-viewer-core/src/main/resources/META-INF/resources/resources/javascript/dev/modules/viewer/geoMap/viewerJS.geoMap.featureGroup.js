@@ -80,8 +80,8 @@ var viewerJS = ( function( viewer ) {
 
     }
     
-    viewer.GeoMap.featureGroup.prototype.init = function(features, zoomToFeatures) {
-              
+    viewer.GeoMap.featureGroup.prototype.init = function(features) {
+        console.log("init featureGroup with ", features);
         this.markerIdCounter = 1;
         this.markers = [];
         this.areas = [];
@@ -89,6 +89,7 @@ var viewerJS = ( function( viewer ) {
 
 
         if(this.layer) {
+			console.log("remove layer " + this.layer._leaflet_id);
         	this.geoMap.map.removeLayer(this.layer);
         }
 		this.layer = new L.FeatureGroup();
@@ -152,6 +153,7 @@ var viewerJS = ( function( viewer ) {
         
         //add layer
         this.geoMap.map.addLayer(this.layer);
+        console.log("added layer ", this.layer);
         if(this.config.clusterMarkers) {        
             try {                
                 this.cluster = this.createMarkerCluster();
@@ -173,10 +175,6 @@ var viewerJS = ( function( viewer ) {
             	if(_debug)console.log("add feature for " + type, feature);
             	this.addMarker(feature);
             })
-        }
-        
-        if(zoomToFeatures) {
-        	this.setViewToFeatures(true);
         }
         
         //display search results as heatmap

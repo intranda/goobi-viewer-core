@@ -54,7 +54,7 @@ var cmsJS = ( function( cms ) {
         }
     };
     
-    cms.GeoMapEditor = function(config){
+    cms.GeoMapEditor = function(config) {
         this.config = $.extend({}, _defaults, config);
         this.currentFeature = undefined;
         this.onDeleteClick = new rxjs.Subject();
@@ -63,12 +63,12 @@ var cmsJS = ( function( cms ) {
         
         this.geoMap = new viewerJS.GeoMap({
             language: this.config.displayLanguage,
-            layer : {
+            layers: [{
             	language: this.config.displayLanguage,
 	            popover: this.config.popover,
 	            emptyMarkerMessage: this.config.msg.emptyMarker,
 	            allowMovingFeatures: this.config.allowEditFeatures,
-            }
+            }],
         });
         
         this.geoMap.onMapRightclick
@@ -111,37 +111,42 @@ var cmsJS = ( function( cms ) {
     }
     
     cms.GeoMapEditor.prototype.init = function(defaultView) {
+		console.log("init ", this);
         let features = JSON.parse($(this.config.featuresInput).val());
-        this.geoMap.init(this.getView(defaultView), features);
+        features = features.filter(f => f.geometry);
+        this.geoMap.init(this.getView(defaultView))
+        .then( () => {
+			this.geoMap.layers[0].init(features);
+	        //display search results as heatmap
+	    	if(this.config.heatmap.enabled) {	        	    
+	        	this.heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.geoMap.layers[0], {
+	        	    field: "WKT_COORDS",
+	        	    type: "clusters",
+	        	    filterQuery: this.config.heatmap.filterQuery,
+	        	    labelField: this.config.heatmap.labelField,
+	        	    queryAdapter: "goobiViewer"    
+	        	});
+	        	this.heatmap.addTo(this.geoMap.map);
+	    	}    
+	        
+	        if($("metadataEditor").length > 0) {  
+	            if(this.metadataEditor) {
+	                this.metadataEditor.forEach(component => {
+	                    component.unmount(true);
+	                })
+	            }
+	            this.metadataEditor = riot.mount("metadataEditor", {
+	                languages: this.config.supportedLanguages,
+	                metadata: undefined,
+	                provider: this.metadataProvider,
+	                currentLanguage: this.config.displayLanguage,
+	                updateListener: this.onMetadataUpdate,
+	                deleteListener : this.onDeleteClick,
+	                deleteLabel : this.config.msg.deleteLabel
+	            });
+	        }
+		});
         
-        //display search results as heatmap
-    	if(this.config.heatmap.enabled) {	        	    
-        	this.heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.geoMap.layers[0], {
-        	    field: "WKT_COORDS",
-        	    type: "clusters",
-        	    filterQuery: this.config.heatmap.filterQuery,
-        	    labelField: this.config.heatmap.labelField,
-        	    queryAdapter: "goobiViewer"    
-        	});
-        	this.heatmap.addTo(this.geoMap.map);
-    	}    
-        
-        if($("metadataEditor").length > 0) {  
-            if(this.metadataEditor) {
-                this.metadataEditor.forEach(component => {
-                    component.unmount(true);
-                })
-            }
-            this.metadataEditor = riot.mount("metadataEditor", {
-                languages: this.config.supportedLanguages,
-                metadata: undefined,
-                provider: this.metadataProvider,
-                currentLanguage: this.config.displayLanguage,
-                updateListener: this.onMetadataUpdate,
-                deleteListener : this.onDeleteClick,
-                deleteLabel : this.config.msg.deleteLabel
-            });
-        }
     }
     
     cms.GeoMapEditor.prototype.addFeature = function(geojson) {

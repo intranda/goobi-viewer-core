@@ -384,7 +384,7 @@ public class GeoMap implements Serializable {
     }
     
     public void setFeatureSets(List<FeatureSet> featureSets) {
-        this.featureSets = featureSets;
+        this.featureSets = new ArrayList<>(featureSets);
     }
     
     public void addFeatureSet(FeatureSet set) {

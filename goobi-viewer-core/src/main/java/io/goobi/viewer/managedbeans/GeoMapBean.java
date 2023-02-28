@@ -24,8 +24,10 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -41,6 +43,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.maps.FeatureSet;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
@@ -263,6 +266,33 @@ public class GeoMapBean implements Serializable {
                     map.addFeatureSet(new SolrFeatureSet());
                     break;
             }
+        }
+    }
+    
+    public boolean isSolrQueryMap(GeoMap map) {
+        if(map != null && !map.getFeatureSets().isEmpty()) {
+            return map.getFeatureSets().get(0).isQueryResultSet();
+        } else {
+            return false;
+        }
+    }
+    
+    public GeoMapType getCurrentGeoMapType() {
+        return Optional.ofNullable(currentMap).map(this::isSolrQueryMap).map(b -> b ? GeoMapType.SOLR_QUERY : GeoMapType.MANUAL).orElse(null);
+    }
+    
+    public void setCurrentGeoMapType(GeoMapType type) {
+        
+        if(currentMap != null) {
+            FeatureSet featureSet = null;
+            switch(type) {
+                case MANUAL:
+                    featureSet = new ManualFeatureSet();
+                    break;
+                case SOLR_QUERY:
+                    featureSet = new SolrFeatureSet();
+            }
+            currentMap.setFeatureSets(Collections.singletonList(featureSet));
         }
     }
 }

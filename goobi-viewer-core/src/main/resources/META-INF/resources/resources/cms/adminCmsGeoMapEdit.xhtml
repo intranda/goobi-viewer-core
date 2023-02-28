@@ -139,7 +139,7 @@
 						                    <h:selectOneMenu
 						                        id="mapType"
 						                        styleClass="form-control" 
-						                        value="#{geoMapBean.currentMap.type}"
+						                        value="#{geoMapBean.currentGeoMapType}"
 						                        required="true" requiredMessage="#{msg.error__type_required}">
 						                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
 						                        <f:selectItems 
@@ -171,7 +171,7 @@
 						                    <h:selectOneMenu
 						                        id="mapMarker"
 						                        styleClass="form-control" 
-						                        value="#{geoMapBean.currentMap.marker}"
+						                        value="#{geoMapBean.currentMap.featureSets[0].marker}"
 						                        required="false" requiredMessage="#{msg.error__type_required}">
 						                        <f:selectItems 
 						                            value="#{geoMapBean.possibleMarkers}"
@@ -190,7 +190,7 @@
 		                            <div id="markerHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__marker__help}</div>
 		                        </div>
 		                        <!-- SOLR QUERY -->
-		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'SOLR_QUERY'}">
+		                        <ui:fragment rendered="#{geoMapBean.isSolrQueryMap(geoMapBean.currentMap)}">
 			                        <div class="input_form__option_group">
 			                            <div class="input_form__option_label">
 			                                <label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}:</label>
@@ -211,7 +211,7 @@
 							                    </div>
 							                </div>
 						                    <h:inputText id="solrQueryInput" styleClass="form-control"  
-						                    	value="#{geoMapBean.currentMap.solrQuery}" 
+						                    	value="#{geoMapBean.currentMap.featureSets[0].solrQuery}" 
 						                    	required="true" requiredMessage="#{msg.error__query_required}"
 						                    	>
 						                    	<f:validator validatorId="solrQueryValidator" for="solrQueryInput" />
@@ -238,7 +238,7 @@
 							                    <h:selectOneMenu
 							                        id="popupContent"
 							                        styleClass="form-control" 
-							                        value="#{geoMapBean.currentMap.markerTitleField}"
+							                        value="#{geoMapBean.currentMap.featureSets[0].markerTitleField}"
 							                        required="false">
 							                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.cms__geomaps__popup_content__option__none}"></f:selectItem>
 							                        <f:selectItem itemValue="NORM_NAME" itemLabel="#{msg.cms__geomaps__popup_content__option__place}"></f:selectItem>
@@ -255,48 +255,48 @@
 			                            <div id="popupContentHelp" class="input_form__option_control_helptext">#{msg.cms__geomaps__popup_content__help}</div>
 			                        </div>
 		                        </ui:fragment>
-		                        <ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL' or geoMapBean.currentMap.hasSolrQuery()}">
 		                        	<div>#{msg.cms__geomaps__map__help}</div>
 		                        	<map class="input_form__geomap" id="geomap"></map>
 		                        	<popover id="geoMapPopoverTemplate">
 		                        		<h3 data-metadata="title"></h3>
 		                        		<span data-metadata="description"></span>
 		                        	</popover>
-		                        	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
+		                        	<ui:fragment rendered="#{!geoMapBean.isSolrQueryMap(geoMapBean.currentMap)}">
 		                        		<div>#{msg.cms__geomaps__map_token__help}</div>
 		                        	</ui:fragment>
-		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.currentMap.featuresAsString}"></h:inputHidden>
+		                        	<h:inputHidden id="featuresInput" value="#{geoMapBean.currentMap.featureSets[0].featuresAsString}"></h:inputHidden>
 		                        	<h:inputHidden id="viewInput" value="#{geoMapBean.currentMap.initialView}"></h:inputHidden>
-		                        </ui:fragment>
 			            	</div>
 			            	<br/>
 			            	<div class="admin__content-inner-content__empty_form" id="featureForm">
-				            	<ui:fragment rendered="#{geoMapBean.currentMap.type == 'MANUAL'}">
+				            	<ui:fragment rendered="#{!geoMapBean.isSolrQueryMap(geoMapBean.currentMap)}">
 					            	<metadataEditor/>
 				            	</ui:fragment>
 				            	<script>
 				            	$(document).ready(() => {
 				            	    if($("#geomap").length > 0) {				            	        
-					            	    let editable = #{geoMapBean.currentMap.type == 'MANUAL'};
+					            	    let editable = #{!geoMapBean.isSolrQueryMap(geoMapBean.currentMap)};
 					            	    mapEditor.geoMap.config.popover = "#geoMapPopoverTemplate";
 					            	    
 					            	    mapEditor.config.heatmap = {
-					    		          	enabled: #{geoMapBean.currentMap.type == 'SOLR_QUERY' and configurationBean.useHeatmapForCMSMaps()},
-					    		          	heatmapUrl: "#{geoMapBean.heatmapUrl}",
-					    		          	featureUrl: "#{geoMapBean.featureUrl}",
-					    		      	    filterQuery: "#{geoMapBean.currentMap.solrQueryEncoded}",
-					    		      	    labelField: "#{geoMapBean.currentMap.markerTitleField}",
+					    		          	enabled: #{geoMapBean.isSolrQueryMap(geoMapBean.currentMap) and configurationBean.useHeatmapForCMSMaps()},
+					    		          	heatmapUrl:  "#{geoMapBean.heatmapUrl}",
+					    		          	featureUrl:  "#{geoMapBean.featureUrl}",
+					    		          	<c:if test="#{geoMapBean.isSolrQueryMap(geoMapBean.currentMap)}">
+						    		      	    filterQuery: "#{geoMapBean.currentMap.featureSets[0].solrQueryEncoded}",
+						    		      	    labelField:  "#{geoMapBean.currentMap.featureSets[0].markerTitleField}",
+					    		      	    </c:if>
 					    		        }
 					            	    
 					            	    if(!editable) {					            	        
-						            	    if(#{geoMapBean.currentMap.markerTitleField == ''}) {
+						            	    if(#{geoMapBean.isSolrQueryMap(geoMapBean.currentMap) and geoMapBean.currentMap.featureSets[0].markerTitleField == ''}) {
 						            	        mapEditor.geoMap.config.popover = undefined;
 						            	    }
 					            	    }
 					            	    //cluster icons for non-editable maps
 					            	    mapEditor.geoMap.layers[0].config.clusterMarkers = !editable;
 					            	    mapEditor.geoMap.layers[0].config.popoverOnHover = !editable;
-					            	    mapEditor.geoMap.layers[0].config.markerIcon = #{geoMapBean.currentMap.markerAsJSON};
+					            	    mapEditor.geoMap.layers[0].config.markerIcon = #{geoMapBean.currentMap.featureSets[0].markerAsJSON};
 					            	    mapEditor.init(window.storedView);
 					            	    mapEditor.setAllowEditFeatures(editable);
 // 					            	    mapEditor.updateFeatures();

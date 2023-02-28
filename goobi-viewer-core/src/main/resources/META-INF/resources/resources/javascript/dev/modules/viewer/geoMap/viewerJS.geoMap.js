@@ -168,7 +168,7 @@ var viewerJS = ( function( viewer ) {
         .pipe(rxjs.operators.map(e => this.layers[0].createGeoJson(e.latlng, this.map.getZoom(), this.map.getCenter())))
         .subscribe(this.onMapClick);
             
-		let allFeatures = this.config.layers.map(layer => layer.features).flat();
+		let allFeatures = this.config.layers.map(layer => layer.features).flat().filter(f => f != undefined);
         if(allFeatures && allFeatures.length > 0) {
         	this.setViewToFeatures(allFeatures, true)
         } else if(view){                                                    
@@ -269,7 +269,7 @@ var viewerJS = ( function( viewer ) {
             return undefined;
         } else {
             if(_debug) {
-        	console.log("view around ", features);
+	        	console.log("view around ", features);
             }
         	let bounds = L.latLngBounds();
         	features.map(f => L.geoJson(f).getBounds()).forEach(b => bounds.extend(b));
@@ -287,7 +287,7 @@ var viewerJS = ( function( viewer ) {
             if(!zoom) {
                 zoom = this.view ? this.zoom : this.config.initialView.zoom;
             }
-            let highlightedFeatures = features.filter(f => f.properties.highlighted);
+            let highlightedFeatures = features.filter(f => f?.properties?.highlighted);
             //console.log(" highlightedFeatures", highlightedFeatures);
             if(setViewToHighlighted && highlightedFeatures.length > 0) {
             	let viewAroundFeatures = this.getViewAroundFeatures(highlightedFeatures, zoom, 0.5);

@@ -3,6 +3,7 @@ package io.goobi.viewer.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -61,16 +62,7 @@ public class GeoCoordinateConverter {
      */
     public static List<GeoMapFeature> getFeaturesFromSolrQuery(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField)
             throws PresentationException, IndexUnreachableException {
-        List<SolrDocument> docs;
-        List<String> fieldList = new ArrayList<>(coordinateFields);
-        fieldList.add(markerTitleField);
-        String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
-        String filterQuery = "";//SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
-        if (!query.startsWith("{!join")) {
-            query = String.format("+(%s)", query);
-        }
-        String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
-        docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, fieldList, filterQueries, null).getResults();
+        List<SolrDocument> docs = StringUtils.isNotBlank(query) ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField) : Collections.emptyList();
         List<GeoMapFeature> features = new ArrayList<>();
         for (SolrDocument doc : docs) {
             for (String field : coordinateFields) {
@@ -93,6 +85,21 @@ public class GeoCoordinateConverter {
                 .collect(Collectors.toList());
 
         return features;
+    }
+
+    static List<SolrDocument> getSolrDocuments(String query, List<String> filterQueries, List<String> coordinateFields, String markerTitleField)
+            throws PresentationException, IndexUnreachableException {
+        List<SolrDocument> docs;
+        List<String> fieldList = new ArrayList<>(coordinateFields);
+        fieldList.add(markerTitleField);
+        String coordinateFieldsQuery = coordinateFields.stream().map(s -> s + ":*").collect(Collectors.joining(" "));
+        String filterQuery = SearchHelper.getAllSuffixes(BeanUtils.getRequest(), true, true);
+        if (!query.startsWith("{!join")) {
+            query = String.format("+(%s)", query);
+        }
+        String finalQuery = String.format("%s +(%s) +(%s *:*)", query, coordinateFieldsQuery, filterQuery);
+        docs = DataManager.getInstance().getSearchIndex().search(finalQuery, 0, 10_000, null, null, fieldList, filterQueries, null).getResults();
+        return docs;
     }
     
     /**
