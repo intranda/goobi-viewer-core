@@ -1102,9 +1102,10 @@
         <action onPostback="false">#{geoMapBean.createEmptyCurrentMap()}</action>
     </url-mapping>
     <url-mapping id="adminCmsGeoMapEdit">
-        <pattern value="/admin/cms/maps/edit/#{mapId:geoMapBean.currentMapId}/" />
+        <pattern value="/admin/cms/maps/edit/#{mapId}/" />
         <view-id value="/resources/cms/adminCmsGeoMapEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{geoMapBean.setCurrentMapId(mapId)}</action>
     </url-mapping>
     <url-mapping id="adminCmsWidgetsAdd">
         <pattern value="/admin/cms/widgets/new/" />

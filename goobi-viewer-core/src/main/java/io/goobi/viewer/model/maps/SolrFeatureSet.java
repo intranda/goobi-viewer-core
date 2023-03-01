@@ -23,6 +23,7 @@ import jakarta.persistence.Transient;
 @DiscriminatorValue("solr")
 public class SolrFeatureSet extends FeatureSet {
 
+    private static final long serialVersionUID = -9054215108168526688L;
     private static final Logger logger = LogManager.getLogger(SolrFeatureSet.class);
     
     @Column(name = "solr_query")
@@ -62,6 +63,10 @@ public class SolrFeatureSet extends FeatureSet {
             }
         }
         return this.featuresAsString;
+    }
+    
+    public void setFeaturesAsString(String featuresAsString) {
+        this.featuresAsString = featuresAsString;
     }
 
     private String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
