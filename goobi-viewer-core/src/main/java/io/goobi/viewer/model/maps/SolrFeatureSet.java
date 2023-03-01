@@ -1,5 +1,6 @@
 package io.goobi.viewer.model.maps;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +67,7 @@ public class SolrFeatureSet extends FeatureSet {
     }
     
     public void setFeaturesAsString(String featuresAsString) {
-        this.featuresAsString = featuresAsString;
+        this.featuresAsString = null;
     }
 
     private String createFeaturesAsString() throws PresentationException, IndexUnreachableException {

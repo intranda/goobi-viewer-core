@@ -65,6 +65,7 @@ public class ManualFeatureSet extends FeatureSet {
     public void setFeaturesAsString(String features) {
         JSONArray array = new JSONArray(features);
         this.features = new ArrayList<>();
+        this.featuresAsString = null;
         for (Object object : array) {
             this.features.add(object.toString());
         }
