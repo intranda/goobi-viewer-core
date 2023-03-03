@@ -58,7 +58,6 @@ public class MediaItem {
     private final IMetadataValue label;
     @JsonSerialize(using = WebAnnotationMetadataValueSerializer.class)
     private final IMetadataValue description;
-    @JsonSerialize(using = WebAnnotationMetadataValueSerializer.class)
     private final String altText;
     private final IContent image;
     private final String link;
