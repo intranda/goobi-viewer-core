@@ -363,6 +363,8 @@
                             <div class="admin-cms-media__select">
                                  <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
                                  	<ui:param name="mediaDisplayPanel" value="logoPanel iconPanel fullscreenLogoPanel" />
+                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+        							<ui:param name="fileTypeValidator" value="#{cmsMediaBean.getImageFilter()}"/>
                                 </ui:include>
                             </div>
 	                   </div>
