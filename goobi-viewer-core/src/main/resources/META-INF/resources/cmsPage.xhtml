@@ -44,8 +44,22 @@
                 <div class="cms-page__content content-components__outer-wrapper">
                 
                 	<div id="cmsComponentContainer" class="content-components__all-items-container">
-						<c:forEach var="cmsComponent" items="#{cmsPage.pageViewComponents}">
-								<h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
+                		<c:set var="componentGroups" value="#{cmsPage.groupedPageViewComponents}" scope="request"/>
+						<c:forEach var="cmsComponentGroup" items="#{componentGroups}">
+							<c:choose>
+							<c:when test="#{not empty cmsComponentGroup.name}">
+								<div class="#{cmsComponentGroup.name}">
+									<c:forEach var="cmsComponent" items="#{cmsComponentGroup.components}">
+											<h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
+									</c:forEach>
+								</div>
+							</c:when>
+							<c:otherwise>
+								<c:forEach var="cmsComponent" items="#{cmsComponentGroup.components}">
+										<h:panelGroup binding="#{cmsComponent.uiComponent}"></h:panelGroup>
+								</c:forEach>
+							</c:otherwise>
+							</c:choose>
 						</c:forEach>
 					</div>
 
