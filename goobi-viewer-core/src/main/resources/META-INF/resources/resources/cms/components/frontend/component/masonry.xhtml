@@ -38,16 +38,16 @@
 				<div class="content-component__masonry">
 
 					<!-- LOADER -->
-					<div class="tpl-masonry__loader content-component__masonry-loader" style="display: none;">
+					<div class="tpl-masonry__loader tpl-masonry__loader#{cc.clientId} content-component__masonry-loader" style="display: none;">
 						<img
 							src="#{request.contextPath}/resources/images/infinity_loader.gif"
 							alt="Masonry Loader" /> #{msg.cms_masonryLoading}...
 					</div>
 
 					<!-- MASONRY -->
-					<div id="#{cc.clientId}_masonry" class="grid">
-						<div class="grid-sizer"></div>
-						<div class="gutter-sizer"></div>
+					<div id="masonry#{cc.clientId}" class="grid">
+						<div class="grid-sizer grid-sizer#{cc.clientId}"></div>
+						<div class="gutter-sizer gutter-sizer#{cc.clientId}"></div>
 					</div>
 
 				</div>
@@ -63,8 +63,12 @@
 					}).then( function( data ) {
 					    console.log("init masonry with", data)
 						var masonryConfig = {
-								$grid : $("##{cc.clientId}_masonry"),
-								language: currentLang
+								$grid : $("#masonry#{cc.clientId}"),
+								language: currentLang,
+								loaderSelector: '.tpl-masonry__loader#{cc.clientId}',
+			                    itemSelector: '.grid-item#{cc.clientId}',
+			                    columnWidth: '.grid-sizer#{cc.clientId}',
+			                    gutter: '.gutter-sizer#{cc.clientId}',
 						};
 
 						cmsJS.masonry.init( masonryConfig, data);
