@@ -231,6 +231,7 @@ public class IdentifierResolver extends HttpServlet {
                 } catch (IOException | ServletException e) {
                     logger.error(e.getMessage());
                 }
+                return;
             }
 
             // 4. extract the target field value of the single found document
