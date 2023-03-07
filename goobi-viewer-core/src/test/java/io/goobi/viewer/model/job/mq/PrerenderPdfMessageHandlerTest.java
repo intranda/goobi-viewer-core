@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
