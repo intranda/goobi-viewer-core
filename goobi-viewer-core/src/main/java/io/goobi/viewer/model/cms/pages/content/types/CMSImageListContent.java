@@ -89,10 +89,12 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
 
     private CMSImageListContent(CMSImageListContent orig) {
         super(orig);
-        this.categories = orig.categories;
+        this.categories = new ArrayList<>(orig.categories);
         this.imagesPerView = orig.imagesPerView;
         this.importantImagesPerView = orig.importantImagesPerView;
+        System.out.println("Cloned " + this);
     }
+    
 
     @Override
     public String getBackendComponentName() {
@@ -107,8 +109,8 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
         if (this.selectableCategories == null) {
             createSelectableCategories();
         }
+        System.out.println("Get categories for " + this);
         return this.selectableCategories;
-
     }
 
     private void createSelectableCategories() throws DAOException {
@@ -238,6 +240,17 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     @Override
     public boolean isEmpty() {
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if(this.getOwningComponent() != null) {            
+            sb.append("Parent ID = ").append(this.getOwningComponent().getId())
+            .append("|").append("Order = ").append(getOwningComponent().getOrder());
+        }
+        sb.append("|").append("Categories = ").append(this.categories);
+        return sb.toString();
     }
 
 }

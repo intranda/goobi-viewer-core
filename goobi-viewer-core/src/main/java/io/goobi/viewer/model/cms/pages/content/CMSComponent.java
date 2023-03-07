@@ -409,4 +409,5 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
     public boolean isPaged() {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
     }
+
 }

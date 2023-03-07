@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -299,5 +300,21 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
 
     public boolean isPaged() {
         return getContentItems().stream().anyMatch(PagedCMSContent.class::isInstance);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Optional.ofNullable(this.id).map(Long::intValue).orElse(-1);
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            PersistentCMSComponent other = (PersistentCMSComponent)obj;
+            return this.hashCode() == other.hashCode() &&
+                    Objects.equals(this.order, other.order);
+        } else {
+            return false;
+        }
     }
 }

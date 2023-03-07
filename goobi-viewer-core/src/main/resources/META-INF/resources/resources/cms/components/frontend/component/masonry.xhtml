@@ -45,7 +45,7 @@
 					</div>
 
 					<!-- MASONRY -->
-					<div class="grid">
+					<div id="#{cc.clientId}_masonry" class="grid">
 						<div class="grid-sizer"></div>
 						<div class="gutter-sizer"></div>
 					</div>
@@ -63,7 +63,7 @@
 					}).then( function( data ) {
 					    console.log("init masonry with", data)
 						var masonryConfig = {
-								$grid : $(".grid"),
+								$grid : $("##{cc.clientId}_masonry"),
 								language: currentLang
 						};
 
