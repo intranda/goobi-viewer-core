@@ -47,8 +47,10 @@ import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.model.PrerenderPdfsRequestParameters;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.model.tasks.Task;
@@ -129,7 +131,23 @@ public class TasksResource {
                         message.getProperties().put("identifier", identifier);
                         message.getProperties().put("dataRepositoryName", dataRepositoryName);
                         break;
-
+                          
+                    case PRERENDER_PDF:
+                        PrerenderPdfsRequestParameters prerenderParams = Optional.ofNullable(desc)
+                        .filter(PrerenderPdfsRequestParameters.class::isInstance)
+                        .map(PrerenderPdfsRequestParameters.class::cast)
+                        .orElse(null);
+                        if (prerenderParams == null) {
+                            return null;
+                        }
+                        String pi = prerenderParams.pi;
+                        String config = Optional.ofNullable(prerenderParams.config).orElse(ContentServerConfiguration.DEFAULT_CONFIG_VARIANT);
+                        boolean force = Optional.ofNullable(prerenderParams.force).orElse(false);
+                        message.getProperties().put("pi", pi);
+                        message.getProperties().put("config", config);
+                        message.getProperties().put("force", Boolean.toString(force));
+                        break;
+                        
                     default:
                         // unknown type
                         return null;

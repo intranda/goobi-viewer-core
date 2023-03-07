@@ -78,6 +78,14 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
             } else if (imageFiles.size() == pdfFiles.size() && !force) {
                 logger.trace("PDF files already exist. Abandoning task");
             } else {
+                if(!Files.exists(pdfFolder)) {
+                    try {
+                        Files.createDirectories(pdfFolder);
+                    } catch (IOException e) {
+                        logger.error("Cannot create pdf directory: {}", e.toString());
+                        return false;
+                    }
+                }
                 for (Path imagePath : imageFiles) {
                     if (!createPdfFile(imagePath, pdfFolder, configVariant)) {
                         return false;
@@ -89,7 +97,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
     }
 
     private boolean createPdfFile(Path imagePath, Path pdfFolder, String configVariant) {
-        Map<String, String> params = Map.of("config", configVariant);
+        Map<String, String> params = Map.of("config", configVariant, "ignoreCache", "true");
         Path pdfPath = pdfFolder.resolve(FileTools.replaceExtension(imagePath.getFileName(), "pdf"));
         try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             SinglePdfRequest request = new SinglePdfRequest(imagePath.toString(), params);
