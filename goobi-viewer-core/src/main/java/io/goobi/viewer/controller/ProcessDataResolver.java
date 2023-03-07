@@ -53,14 +53,31 @@ import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Utility class for retrieving data folders, data files and source files.
+ * Must be instantiated with {@link Configuration}, {@link SolrSearchIndex} and {@link RestApiManager} as data sources
+ * No-Args constructor creates required data sources from {@link DataManager#getInstance()}
  *
  */
-public class DataFileTools {
+public class ProcessDataResolver {
 
-    private static final Logger logger = LogManager.getLogger(DataFileTools.class);
+    private static final Logger logger = LogManager.getLogger(ProcessDataResolver.class);
+
+    private final Configuration config;
+    private final SolrSearchIndex searchIndex;
+    private final RestApiManager restApiManager;
+
+    public ProcessDataResolver(Configuration config, SolrSearchIndex searchIndex, RestApiManager restApiManager) {
+        this.config = config;
+        this.searchIndex = searchIndex;
+        this.restApiManager = restApiManager;
+    }
+    
+    public ProcessDataResolver() {
+        this(DataManager.getInstance().getConfiguration(), DataManager.getInstance().getSearchIndex(), DataManager.getInstance().getRestApiManager());
+    }
 
     /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.
@@ -70,8 +87,8 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getDataRepositoryPathForRecord(String pi) throws PresentationException, IndexUnreachableException {
-        String dataRepositoryPath = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+    public  String getDataRepositoryPathForRecord(String pi) throws PresentationException, IndexUnreachableException {
+        String dataRepositoryPath = this.searchIndex.findDataRepositoryName(pi);
         return getDataRepositoryPath(dataRepositoryPath);
     }
 
@@ -85,16 +102,16 @@ public class DataFileTools {
      * @should return correct path for data repository name
      * @should return correct path for absolute data repository path
      */
-    static String getDataRepositoryPath(String dataRepositoryPath) {
+     String getDataRepositoryPath(String dataRepositoryPath) {
         if (StringUtils.isBlank(dataRepositoryPath)) {
-            return DataManager.getInstance().getConfiguration().getViewerHome();
+            return config.getViewerHome();
         }
 
         if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryPath)).isAbsolute()) {
             return dataRepositoryPath + '/';
         }
 
-        return DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + dataRepositoryPath + '/';
+        return config.getDataRepositoriesHome() + dataRepositoryPath + '/';
     }
 
     /**
@@ -105,8 +122,8 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Path getMediaFolder(String pi) throws PresentationException, IndexUnreachableException {
-        return getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder());
+    public  Path getMediaFolder(String pi) throws PresentationException, IndexUnreachableException {
+        return getDataFolder(pi, config.getMediaFolder());
     }
 
     /**
@@ -119,7 +136,7 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Map<String, Path> getDataFolders(String pi, String... dataFolderNames) throws PresentationException, IndexUnreachableException {
+    public  Map<String, Path> getDataFolders(String pi, String... dataFolderNames) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
@@ -127,7 +144,7 @@ public class DataFileTools {
             throw new IllegalArgumentException("dataFolderNames may not be null");
         }
 
-        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+        String dataRepositoryName = this.searchIndex.findDataRepositoryName(pi);
 
         Map<String, Path> ret = new HashMap<>(dataFolderNames.length);
         for (String dataFolderName : dataFolderNames) {
@@ -146,12 +163,12 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Path getDataFolder(String pi, String dataFolderName) throws PresentationException, IndexUnreachableException {
+    public  Path getDataFolder(String pi, String dataFolderName) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
 
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+        String dataRepository = this.searchIndex.findDataRepositoryName(pi);
         return getDataFolder(pi, dataFolderName, dataRepository);
     }
 
@@ -165,15 +182,15 @@ public class DataFileTools {
      * @should return correct folder if data repository used
      * @return a {@link java.nio.file.Path} object.
      */
-    public static Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
+    public  Path getDataFolder(String pi, String dataFolderName, String dataRepositoryFolder) {
         Path repository;
         // TODO Find a way to use absolute repo paths in unit tests
         if (StringUtils.isBlank(dataRepositoryFolder)) {
-            repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+            repository = Paths.get(config.getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder)).isAbsolute()) {
             repository = Paths.get(dataRepositoryFolder);
         } else {
-            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryFolder);
+            repository = Paths.get(config.getDataRepositoriesHome(), dataRepositoryFolder);
         }
 
         Path folder = repository.resolve(dataFolderName).resolve(pi);
@@ -192,7 +209,7 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
+    public  Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
             throws PresentationException, IndexUnreachableException {
         // Make sure fileName is a pure file name and not a path
         fileName = sanitizeFileName(fileName);
@@ -217,7 +234,7 @@ public class DataFileTools {
      * @return Lowest level file name
      * @should remove everything but the file name from given path
      */
-    static String sanitizeFileName(String fileName) {
+     String sanitizeFileName(String fileName) {
         if (StringUtils.isBlank(fileName)) {
             return fileName;
         }
@@ -236,12 +253,12 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Path getDataFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
+    public  Path getDataFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
 
-        String dataRepositoryName = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+        String dataRepositoryName = this.searchIndex.findDataRepositoryName(pi);
         String dataRepositoryPath = getDataRepositoryPath(dataRepositoryName);
 
         return Paths.get(dataRepositoryPath, relativeFilePath);
@@ -256,9 +273,9 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
+    public  String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
         String pi = FilenameUtils.getBaseName(fileName);
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+        String dataRepository = this.searchIndex.findDataRepositoryName(pi);
         return getSourceFilePath(fileName, dataRepository, format);
     }
 
@@ -275,7 +292,7 @@ public class DataFileTools {
      * @should throw IllegalArgumentException if format is unknown
      * @return a {@link java.lang.String} object.
      */
-    public static String getSourceFilePath(String fileName, String dataRepository, String format) {
+    public  String getSourceFilePath(String fileName, String dataRepository, String format) {
         if (StringUtils.isEmpty(fileName)) {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
@@ -296,19 +313,19 @@ public class DataFileTools {
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
-                sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                sb.append(config.getIndexedMetsFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
-                sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
+                sb.append(config.getIndexedLidoFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
-                sb.append(DataManager.getInstance().getConfiguration().getIndexedDenkxwebFolder());
+                sb.append(config.getIndexedDenkxwebFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_DUBLINCORE:
-                sb.append(DataManager.getInstance().getConfiguration().getIndexedDublinCoreFolder());
+                sb.append(config.getIndexedDublinCoreFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
-                sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                sb.append(config.getIndexedMetsFolder());
                 break;
         }
         sb.append('/').append(fileName);
@@ -329,7 +346,7 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static String getTextFilePath(String pi, String fileName, String format) throws PresentationException, IndexUnreachableException {
+    public  String getTextFilePath(String pi, String fileName, String format) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(fileName)) {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
@@ -340,13 +357,13 @@ public class DataFileTools {
         String dataFolderName = null;
         switch (format) {
             case SolrConstants.FILENAME_ALTO:
-                dataFolderName = DataManager.getInstance().getConfiguration().getAltoFolder();
+                dataFolderName = config.getAltoFolder();
                 break;
             case SolrConstants.FILENAME_FULLTEXT:
-                dataFolderName = DataManager.getInstance().getConfiguration().getFulltextFolder();
+                dataFolderName = config.getFulltextFolder();
                 break;
             case SolrConstants.FILENAME_TEI:
-                dataFolderName = DataManager.getInstance().getConfiguration().getTeiFolder();
+                dataFolderName = config.getTeiFolder();
                 break;
         }
 
@@ -364,12 +381,12 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Path getTextFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
+    public  Path getTextFilePath(String pi, String relativeFilePath) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(relativeFilePath)) {
             return null;
         }
 
-        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
+        String dataRepository = this.searchIndex.findDataRepositoryName(pi);
         Path filePath = Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
 
         return filePath;
@@ -392,7 +409,7 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords, HttpServletRequest request)
+    public  String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords, HttpServletRequest request)
             throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath);
         TextResourceBuilder builder = new TextResourceBuilder();
@@ -409,7 +426,7 @@ public class DataFileTools {
                 try {
                     String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
                     String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-                    return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
+                    return this.restApiManager.getContentApiManager().map(urls -> {
                         return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
                     })
                             .map(url -> NetTools.callUrlGET(url))
@@ -451,7 +468,7 @@ public class DataFileTools {
      * @throws FileNotFoundException
      * @should throw ContentNotFoundException
      */
-    public static StringPair loadAlto(String altoFilePath)
+    public  StringPair loadAlto(String altoFilePath)
             throws ContentNotFoundException, IndexUnreachableException, PresentationException, FileNotFoundException {
         if (altoFilePath == null) {
             return null;
@@ -465,7 +482,7 @@ public class DataFileTools {
             TextResourceBuilder builder = new TextResourceBuilder();
             return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
-            return new StringPair(DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
+            return new StringPair(this.restApiManager.getContentApiManager().map(urls -> {
                 return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
             }).map(url -> {
                 String[] u = NetTools.callUrlGET(url);
@@ -491,7 +508,7 @@ public class DataFileTools {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static String loadTei(String pi, String language) throws FileNotFoundException, IOException, ViewerConfigurationException {
+    public  String loadTei(String pi, String language) throws FileNotFoundException, IOException, ViewerConfigurationException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;
@@ -516,9 +533,9 @@ public class DataFileTools {
      * @throws IOException
      */
 
-    public static Dataset getDataset(String pi) throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
+    public  Dataset getDataset(String pi) throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
 
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
+        SolrDocument doc = this.searchIndex.getFirstDoc(SolrConstants.PI + ":" + pi, null);
         if (doc == null) {
             throw new RecordNotFoundException(pi);
         }
@@ -534,25 +551,25 @@ public class DataFileTools {
 
         Path repository;
         if (StringUtils.isBlank(dataRepository)) {
-            repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+            repository = Paths.get(config.getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepository)).isAbsolute()) {
             repository = Paths.get(dataRepository);
         } else {
-            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
+            repository = Paths.get(config.getDataRepositoriesHome(), dataRepository);
         }
 
         // path to metadata file
-        work.setMetadataFilePath(Paths.get(DataFileTools.getSourceFilePath(pi + ".xml", dataRepository,
+        work.setMetadataFilePath(Paths.get(getSourceFilePath(pi + ".xml", dataRepository,
                 format != null ? format.toUpperCase() : SolrConstants.SOURCEDOCFORMAT_METS)));
 
         // path to images
-        work.setMediaFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi));
+        work.setMediaFolderPath(repository.resolve(this.config.getMediaFolder()).resolve(pi));
 
         // alto folder
-        work.setAltoFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).resolve(pi));
+        work.setAltoFolderPath(repository.resolve(this.config.getAltoFolder()).resolve(pi));
 
         // pdf folder
-        work.setPdfFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getPdfFolder()).resolve(pi));
+        work.setPdfFolderPath(repository.resolve(config.getPdfFolder()).resolve(pi));
 
         // collect files
         if (work.getMediaFolderPath()!= null && Files.exists(work.getMediaFolderPath())) {

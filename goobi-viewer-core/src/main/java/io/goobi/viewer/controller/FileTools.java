@@ -42,6 +42,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -568,5 +570,50 @@ public class FileTools {
         }
 
         return path;
+    }
+    
+    public static List<Path> listFiles(Path folder, DirectoryStream.Filter<Path> filter) {
+        List<Path> fileNames = new ArrayList<>();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(folder, filter)) {
+            for (Path path : directoryStream) {
+                if (!path.getFileName().toString().startsWith(".")) {
+                    fileNames.add(path);
+                }
+            }
+        } catch (IOException ex) {
+        }
+        Collections.sort(fileNames);
+        return fileNames;
+    }
+    
+    public static final DirectoryStream.Filter<Path> imageNameFilter = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path path) {
+            return path.getFileName().toString().matches("(?i)[^.]+\\.(jpe?g|tiff?|png|jp2)");
+        }
+    };
+    
+    public static final DirectoryStream.Filter<Path> pdfNameFilter = new DirectoryStream.Filter<Path>() {
+        @Override
+        public boolean accept(Path path) {
+            return path.getFileName().toString().matches("(?i)[^.]+\\.(pdf)");
+        }
+    };
+
+    /**
+     * Return a path which equals the given path but using the given extension in place of the original one
+     * @param path  any file path
+     * @param extension the extension, without leading '.'
+     * @return
+     */
+    public static Path replaceExtension(Path path, String extension) {
+        String filename = path.getFileName().toString();
+        String basename = FilenameUtils.getBaseName(filename);
+        Path relativeFile = Paths.get(basename + "." + extension);
+        if(path.getParent() != null) {
+            return path.getParent().resolve(relativeFile);
+        } else {
+            return relativeFile;
+        }
     }
 }

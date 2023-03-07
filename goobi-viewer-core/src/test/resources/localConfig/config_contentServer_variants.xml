@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    
+    <!-- Path to local config file -->
+    <localConfigPath value="/opt/digiverso/viewer/config/config_contentServer.xml" />
+    
+    
+    <!-- Default resolution for results of image processing, default is 600 -->
+    <defaultResolution value="600" />
+    
+    
+    <!-- (MB); if 0 then disabled -->
+    <maxFileLength value="0" />
+    
+    
+    <!--
+    Set quality with which to scale images.
+      - quality: possible settings are SPEED, QUALITY, ULTRAQUALITY. Higher qualities require more processing time
+      - maxStepSize: may range from 0 to 99; higher values increase both image quality and loading times for QUALITY and ULTRAQUALITY.
+                     Recommended values lie between 10 and 50
+              - useScalrForJpeg: activates a different scaling method for jpeg-images which generally operates much slower, so it is recommended to set this option to "false"
+    -->
+    <scaling quality="SPEED" maxStepSize="50" thumbnailQuality="QUALITY"></scaling>
+    
+    
+    <!-- General rendering options. -->
+    <imageTypeSettings>
+        <type format="png">
+            <settings scaleWithScalr="false" forwardDirectlyIfPossible="true"></settings>
+        </type>
+        <type format="jpg2000">
+            <settings scaleWithScalr="true" allowSubSampling="true"></settings>
+        </type>
+        <type format="default" colorType="default" compression="default" embeddedColorProfile="both" minSize="0" maxSize="0">
+            <settings allowRenderWithJAI="false" allowSubSampling="true" scaleWithScalr="false" mergeWithJAI="false" forceConvertToBuffered="false" forceConvertToRGB="false" forwardDirectlyIfPossible="false"></settings>
+        </type>
+    </imageTypeSettings>
+    
+    
+    <!--
+    default file names for pdf or image (file extension will be automatically added);
+    define if sending of images or pdf should be with header "attachment" or
+    not; currently available variables for file name:
+      - $datetime current:     date and time (pdf and images)
+    
+    Example:
+      <defaultFileNames> * <pdf value="GoobiContentServer_$datetime" sendAsAttachment="true"/> * </defaultFileNames>
+    -->
+    <defaultFileNames>
+        <pdf value="ContentServer_$datetime" sendAsAttachment="true" />
+        <image value="image_$datetime" sendAsAttachment="false" />
+    </defaultFileNames>
+    
+    
+    <!--
+    configuration for the pdf generation, these parameters will change the performance of pdf
+    generation
+      - alwaysUseRenderedImage: convert all images always to rendered image before sending it to iText
+      - alwaysCompressToJPEG: compress all images always to jpeg image before sending it to iText
+      - metsFileGroup: the filegroup to use for pdf generation
+      - metsFileUrlRemove: All strings matching this regex are removed from the URLs in the configured metsFileGroup. Needed together with data repositories because the links from the metsFileGroup are not valid anymore.
+      - writeAsPdfA: write PDF file as Pdf/A
+      - pagesize: default page size for pdf generation; possible values are 'A4', 'original' and 'A4Box'
+      - imageDpi: Scale the image resolution to this value, while leaving the size intact. Effectively creates a blurring effect if set to lower than image DPI. Default is '0' which means no DPI change
+      - convertToGrayscale: convert the PDF image to grayscale if set to true
+          - imageScale: Scale the total image by this factor, creating a smaller 1.0
+          - imageScaleToBox: Scales the image into the given box if the image is larger. This setting overrides the imageScale parameter.
+      - imageCompression: JPEG compression quality for the pdf image. Default is '0' which means default JPEG compression
+    
+    Example:
+      <defaultPdfConfig alwaysUseRenderedImage="true"
+                        alwaysCompressToJPEG="true"
+                        metsFileGroup="DEFAULT"
+                        metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+                        writeAsPdfA="true"
+                        pagesize="A4"
+                        imageDpi="0"
+                        convertToGrayscale="false"
+                        imageScale="0.5"
+                        imageScaleToBox="1500x1500"
+                        imageCompression="50" />
+    -->
+      <pdfConfig>
+      	<config variant="pdfa" 
+                      metsFileGroup="PRESENTATION"
+                      metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+                      writeAsPdfA="true"
+                      pagesize="original" 
+                      imageDpi="0"
+                      convertToGrayscale="false"
+                      imageScaleToBox="1500x1500"
+                      />
+    
+ 	<config variant="small"
+                      metsFileGroup="PRESENTATION"
+                      metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+                      writeAsPdfA="false"
+                      pagesize="original" 
+                      convertToGrayscale="true"
+                      imageScale="0.5"
+                      imageCompression="50"              
+		/>
+		
+		<config variant="default" 
+	        metsFileGroup="PRESENTATION"
+	        metsFileUrlRemove="file:\/\/\/opt\/digiverso\/viewer\/media\/"
+	        writeAsPdfA="false"
+	        pagesize="original" 
+	        imageDpi="0"
+	        convertToGrayscale="false"
+	        imageScaleToBox="1500x1500"
+	        />
+    </pdfConfig>
+    
+    
+    <!-- Factors to scale the estimated pdf size which is calculated by the size of all required image files -->
+    <imageToPdfSizeFactor tiff="0.35" jpg="1.0"/>
+    
+    
+    <!--
+    default path to repository for all image processing requests
+    if repository path is empty, in the servlet request has to be a complete url
+    
+    Example:
+      <defaultRepositoryPath value="file:///home/goobi/imageRepository/" />
+    -->
+    <defaultRepositoryPathImages value="file:///opt/digiverso/viewer/media/" />
+    <defaultRepositoryPathPdf value="file:///opt/digiverso/viewer/pdf/" usage="true" />
+    
+    <!--
+    Path to alto files repository for fulltext inclusion in pdfs and alto coordinate rotation
+    usage switches fulltext generation in pdfs from alto on or off
+    -->
+    <defaultRepositoryPathAlto value="file:///opt/digiverso/viewer/alto/" usage="true" fontFile="NotoSansArabic-Regular.ttf"/>
+    
+    
+    <!--
+    default color for highlighting inside the image as RGB
+      yellow: 255 255 0 255
+      red: 216 7 66 255
+      green: 0 154 107 255
+      blue: 0 154 255 255
+    -->
+    <defaultHighlightColor valueRed="255" valueGreen="255" valueBlue="0" valueAlpha="255" />
+    
+    
+    <!--
+    configuration if watermark should be used and url for watermark content configuration file
+    
+    Example:
+      <watermark use="true" configFile="file:///home/goobi/config/watermarkconfig.xml" />
+    -->
+    <watermark use="false"
+               scale="true"
+               convertColorSpace="false"
+               scaleToPercent="6"
+               configFile="file:///opt/digiverso/viewer/config/config_imageFooter.xml" />
+    
+    <!--
+    configuration for the error watermark if message should not be shown on jsp echo page
+      - title: title on top of image
+      - titleSize: fontsize for title
+      - messageFontSize: fontsize for error message
+      - messageLineLength maximum size of letters for each line
+    -->
+    <errorWaterMark title="Error"
+                    titleFontSize="20"
+                    messageFontSize="14"
+                    messageMaxLineLength="60" />
+    
+    
+    <!--
+    Default path to repository for all mets processing requests
+    if repository path is empty, in the servlet request has to be a complete url
+    
+    Example:
+      <defaultRepositoryPath value="file:///home/goobi/metsRepository/" />
+    -->
+    <defaultRepositoryPathMets value="file:///opt/digiverso/viewer/indexed_mets/" />
+    
+    
+    <!--
+    configuration if titlepage for pdf file should be generated. Each title page is build on a
+    fo-template which is enriched by metadata from the mets/mods file.
+    All templates need to reside in the path given by @templateFolder. If no explicit template is
+    given in the request, the file given in @defaultTemplate is used (with added extension ".fo")
+    -->
+    <pdfTitlePage use="false"
+                  fontFile="font.ttf"
+                  templateFolder="file:///opt/digiverso/viewer/config/PDFTitlePage/"
+                  defaultTemplate="default" />
+    
+    <pdfChapterTitlePages use="false"
+                          fontFile="font.ttf"
+                          templateFolder="file:///opt/digiverso/viewer/config/PdfTitlePage/"
+                          defaultTemplate="default-section" />
+    
+    <singlePdfTitlePage use="false"
+                        fontFile="font.ttf"
+                        templateFolder="file:///opt/digiverso/viewer/config/PdfTitlePage/"
+                        defaultTemplate="default-simple" />
+    
+    
+    <!-- TODO Documentation -->
+    <restapi use="true">
+        <discloseContentLocation>true</discloseContentLocation>
+    </restapi>
+    
+    
+    <!--
+    Path to contentCache and maximum size in MB
+      -path: path in file system
+      -size: size in MB
+      -useCache: central switch, if no cache at all should be used
+      -useShortFileNames: define if the cached file name should only consist of given url-parameter and divid (usShortFileNames=true, not recommended)
+                          or if it should be full named (useShortFileNames=false, more secure option)
+    
+    Example:
+      <contentCache useCache="false" path="/home/goobi/gcsCache" size="300"/>
+    -->
+    <contentCache useCache="true" useShortFileNames="false" cachePartialImages="false"/>
+    <thumbnailCache useCache="true" useShortFileNames="false"/>
+    <pdfCache useCache="true" useShortFileNames="false" path="/opt/digiverso/viewer/cache_pdf/" size="30000"/>
+    
+    
+    
+    <!-- TODO Documentation -->
+    <memoryUsage maximalParallelRequests="0" lowMemoryThreshold="1000000000"></memoryUsage>
+    
+    <!--
+            <memoryUsage memoryUnit="MB" timeoutUnit="s">
+                    <image>
+                            <maxParallelRequests>60</maxParallelRequests>
+                            <lowMemoryThreshold>200</lowMemoryThreshold>
+                            <lowMemoryTimeout>8</lowMemoryTimeout>
+                    </image>
+                    <pdf>
+                            <maxParallelRequests>8</maxParallelRequests>
+                            <lowMemoryThreshold>500</lowMemoryThreshold>
+                            <lowMemoryTimeout>10</lowMemoryTimeout>
+                    </pdf>
+                    <metsPdf>
+                            <maxParallelRequests>4</maxParallelRequests>
+                            <lowMemoryThreshold>1000</lowMemoryThreshold>
+                            <lowMemoryTimeout>20</lowMemoryTimeout>
+                    </metsPdf>
+            </memoryUsage>
+    -->
+    
+    
+    
+    <!-- TODO Documentation -->
+    <!--
+    <S3>
+        <useCustom>true</useCustom>
+        <AccessKeyID>CHANGEME</AccessKeyID>
+        <SecretAccessKey>CHANGEME</SecretAccessKey>
+        <Endpoint>http://192.168.178.124:9000</Endpoint>
+    </S3>
+    -->
+</config>
