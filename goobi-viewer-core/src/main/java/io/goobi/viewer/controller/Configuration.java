@@ -719,7 +719,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isDisplayWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
     }
-    
+
     /**
      *
      * @return Boolean value
@@ -1015,7 +1015,7 @@ public class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
         return getLocalList(collection, null, "blacklist.collection", Collections.<String> emptyList());
-        }
+    }
 
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
@@ -1157,18 +1157,19 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Get the base url of the viewer. This is the url up to the context path. The returned url always ends with a '/'
-     * @return  The base viewer url
+     * 
+     * @return The base viewer url
      */
     public String getViewerBaseUrl() {
         String urlString = getLocalString("urls.base");
         if (urlString == null) {
             urlString = getRestApiUrl().replaceAll("api/v1/?", "");
-        } else if(!urlString.endsWith("/")) {
+        } else if (!urlString.endsWith("/")) {
             urlString = urlString + "/";
         }
         return urlString;
     }
-    
+
     /**
      * <p>
      * getRestApiUrl.
@@ -2561,6 +2562,19 @@ public class Configuration extends AbstractConfiguration {
         return ret;
     }
 
+    public String getFacetFieldStyle(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.facets.field");
+        if (fieldList != null) {
+            for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+                if (subElement.getString(".").equals(field)) {
+                    return subElement.getString("[@style]", "");
+                }
+            }
+        }
+
+        return "";
+    }
+
     /**
      * <p>
      * getGeoFacetFields.
@@ -2588,7 +2602,7 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getGeoFacetFieldPredicate(String facetField) {
         return getPropertyForFacetField(facetField, "[@predicate]", "ISWITHIN");
-        
+
     }
 
     /**
@@ -3577,18 +3591,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public int getFulltextPercentageWarningThreshold() {
         return getLocalInt("viewer.fulltextPercentageWarningThreshold", 30);
-    }
-
-    /**
-     * <p>
-     * isUseViewerLocaleAsRecordLanguage.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isUseViewerLocaleAsRecordLanguage() {
-        return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
 
     /**
@@ -5005,11 +5007,11 @@ public class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-    
+
     public String getMapBoxUser() {
         return getLocalString("maps.mapbox.user", "");
     }
-    
+
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }
@@ -5430,26 +5432,25 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("activeMQ[@enabled]", true);
     }
 
-
     public int getNumberOfParallelMessages() {
         return getLocalInt("activeMQ[@numberOfParallelMessages]", 1);
     }
-    
+
     public int getActiveMQMessagePurgeInterval() {
         return getLocalInt("activeMQ.deleteCompletedTasksAfterDays", 90);
     }
-    
+
     public String getQuartzSchedulerCronExpression(String taskName) {
         try {
             TaskType type = TaskType.valueOf(taskName.toUpperCase());
             return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", type.getDefaultCronExpression());
 
-        } catch(IllegalArgumentException e) {            
+        } catch (IllegalArgumentException e) {
             return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", getQuartzSchedulerCronExpression());
         }
     }
-    
-    public String getQuartzSchedulerCronExpression() {           
+
+    public String getQuartzSchedulerCronExpression() {
         return getLocalString("quartz.scheduler.cronExpression", "0 0 0 * * ?");
     }
 }

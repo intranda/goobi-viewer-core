@@ -54,8 +54,11 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -82,7 +85,7 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public Map<Integer, List<WebAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget, HttpServletRequest request)
+    public Map<Integer, List<WebAnnotation>> getCrowdsourcingAnnotationsFromSolr(String pi, boolean urlOnlyTarget, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
         List<SolrDocument> ugcDocs = getAnnotationDocuments(getAnnotationQuery(pi), request);
         Map<Integer, List<WebAnnotation>> annoMap = new HashMap<>();
@@ -90,6 +93,36 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
             for (SolrDocument doc : ugcDocs) {
                 WebAnnotation anno = createUGCWebAnnotation(pi, doc, urlOnlyTarget);
                 Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
+                List<WebAnnotation> annoList = annoMap.get(page);
+                if (annoList == null) {
+                    annoList = new ArrayList<>();
+                    annoMap.put(page, annoList);
+                }
+                annoList.add(anno);
+            }
+        }
+        return annoMap;
+    }
+    
+    /**
+     * Get all annotations for the given PI from the the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * converted to WebAnnotations here
+     *
+     * @param pi The persistent identifier of the work to query
+     * @return A map of page numbers (1-based) mapped to a list of associated annotations
+     * @param urlOnlyTarget a boolean.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws DAOException 
+     */
+    public Map<Integer, List<WebAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget)
+            throws DAOException {
+        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
+        Map<Integer, List<WebAnnotation>> annoMap = new HashMap<>();
+        if (annotations != null) {
+            for (CrowdsourcingAnnotation persAnno : annotations) {
+                WebAnnotation anno = new AnnotationConverter().getAsWebAnnotation(persAnno);
+                Integer page = Optional.ofNullable(persAnno).map(p -> p.getTargetPageOrder()).orElse(null);
                 List<WebAnnotation> annoList = annoMap.get(page);
                 if (annoList == null) {
                     annoList = new ArrayList<>();
@@ -228,19 +261,20 @@ public class WebAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws DAOException 
      */
-    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException {
+    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly)
+            throws DAOException {
         List<IAnnotation> annos =
-                getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).collect(Collectors.toList());
+                getCrowdsourcingAnnotations(pi, urlsOnly).values().stream().flatMap(List::stream).collect(Collectors.toList());
         AnnotationPage page = new AnnotationPage(uri);
         page.setItems(annos);
         return page;
     }
 
-    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException {
-        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet()
+    public AnnotationPage getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer pageNo, boolean urlsOnly)
+            throws DAOException {
+        List<IAnnotation> annos = getCrowdsourcingAnnotations(pi, urlsOnly).entrySet()
                 .stream()
                 // TODO Use Objects.equals()
                 .filter(entry -> Objects.equals(pageNo, entry.getKey()))

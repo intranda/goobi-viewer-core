@@ -180,10 +180,15 @@ public class AnnotationConverter {
      * @throws java.io.IOException if any.
      */
     public IResource getBodyAsOAResource(PersistentAnnotation anno) throws JsonParseException, JsonMappingException, IOException {
-        TextualResource resource = (TextualResource) getBodyAsResource(anno);
-        if (resource != null) {
-            IResource oaResource = new de.intranda.api.annotation.oa.TextualResource(resource.getText());
-            return oaResource;
+        if (anno.getBody() != null && anno.getBody().startsWith("{")) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            mapper.registerModule(new JavaTimeModule());
+            IResource resource = mapper.readValue(anno.getBody(), de.intranda.api.annotation.oa.TextualResource.class);
+            return resource;
+        } else if(StringUtils.isNotBlank(anno.getBody())){
+            return new TextualResource(anno.getBody());
         }
         return null;
     }

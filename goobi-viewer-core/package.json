@@ -55,6 +55,9 @@
     "sweetalert2": "~11.4.19",
     "swiper": "~6.8.4",
     "three": "~0.132.2",
-    "tinymce": "~5.10.0"
+    "tinymce": "~5.10.0",
+    "chart.js": "~4.2.1",
+    "luxon": "~3.2.1",
+    "chartjs-adapter-luxon": "~1.3.1"
   }
 }

@@ -794,7 +794,281 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronoslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
+
+
+		this.yearList = [1];
+		this.msg = {};
+		this.on( 'mount', function() {
+
+			this.lineColor = window.getComputedStyle(this.refs?.line)?.color;
+			this.areaColor = window.getComputedStyle(this.refs?.area)?.color;
+			this.rangeBorderColor = window.getComputedStyle(this.refs?.range)?.color;
+			this.rangeFillColor = window.getComputedStyle(this.refs?.range)?.backgroundColor;
+			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
+
+			let chartElement = this.refs.chart;
+			this.yearList = Array.from(this.opts.datamap.keys()).map(y => parseInt(y));
+			this.yearValues = Array.from(this.opts.datamap.values());
+			this.startYear = parseInt(opts.startYear);
+			this.endYear = parseInt(opts.endYear);
+			this.minYear = this.yearList[0];
+			this.maxYear = this.yearList[this.yearList.length - 1];
+			this.valueInput = document.getElementById(opts.valueInput);
+			this.updateFacet = document.getElementById(opts.updateFacet);
+			this.loader = document.getElementById(opts.loader);
+			this.msg = opts.msg;
+			this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+			this.reloadingPage = false;
+
+			this.chartConfig = {
+					type: "line",
+					data: {
+						labels: this.yearList,
+						datasets: [
+							{
+								data: this.yearValues,
+								borderWidth: 1,
+								borderColor: this.lineColor,
+								backgroundColor: this.areaColor,
+								fill: "origin",
+							}
+						]
+					},
+					options: {
+
+						elements: {
+							point: {
+								pointStyle: false,
+							}
+						},
+						plugins: {
+							legend: {
+						        display: false
+						    },
+							tooltip: {
+								  enabled: this.opts.showTooltip?.toLowerCase() == "true",
+							      mode: 'index',
+							      intersect: false,
+							      displayColors: false,
+
+							      callbacks: {
+							    	  label: item => item.raw + " " + this.msg.hits
+							      }
+							},
+						},
+						scales: {
+							y: {
+								beginAtZero: true,
+								display: false,
+							},
+							x: {
+								type: "time",
+
+								time: {
+									unit: "year",
+									tooltipFormat: "yyyy",
+									displayFormats: {
+										"year" : "yyyy"
+									},
+									parser: s => {
+										let date = new Date();
+										date.setYear(parseInt(s));
+										return date.getTime();
+									}
+								},
+							    ticks: {
+							    	maxTicksLimit: 5,
+							    	maxRotation: 0,
+							    }
+							}
+						}
+					}
+
+			}
+			if(this.refs.chart) {
+				console.log("init chart with config ", this.chartConfig);
+				this.chart = new Chart(chartElement, this.chartConfig);
+				this.initDraw();
+
+				if(this.startYear > this.yearList[0] || this.endYear < this.yearList[this.yearList.length-1]) {
+					this.drawInitialRange();
+				}
+				this.update();
+			}
+		})
+
+		this.drawInitialRange = function() {
+			var points = this.chart.getDatasetMeta(0).data;
+			if(points && points.length){
+				let startYearIndex = this.yearList.indexOf(this.startYear);
+				let endYearIndex = this.yearList.indexOf(this.endYear);
+				let x1 = points[startYearIndex].x;
+				let x2 = points[endYearIndex].x;
+				this.drawRect(x1, x2, this.refs.draw);
+			}
+		}.bind(this)
+
+		this.initDraw = function() {
+			let width = this.refs.chart.offsetWidth;
+			let height = this.refs.chart.offsetHeight;
+			this.refs.draw.style.width = width + "px";
+			this.refs.draw.style.height = height + "px";
+			this.refs.draw.style.position = "absolute";
+			this.refs.draw.style.top = 0;
+			this.refs.container.style.position = "relative";
+
+			let startPoint = undefined;
+ 			let initialYear = undefined;
+			let drawing = false;
+
+			this.refs.draw.addEventListener("mousedown", e => {
+				if(!this.refs["button_search"].disabled) {
+					initialYear = this.calculateYearFromEvent(e);
+					this.startYear = initialYear;
+					this.endYear = initialYear;
+					startPoint = this.getPointFromEvent(e, this.refs.draw);
+					drawing = true;
+					this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
+					this.update();
+				}
+			})
+			this.refs.draw.addEventListener("mouseout", e => {
+				if(drawing) {
+
+					drawing = false;
+				}
+				let event = new MouseEvent("mouseout", {
+					bubbles: false,
+					target: e.target,
+					clientX: e.clientX,
+					clientY: e.clientY
+				});
+				this.refs.chart.dispatchEvent(event);
+			});
+			this.refs.draw.addEventListener("mousemove", e => {
+				if(drawing) {
+					let year = this.calculateYearFromEvent(e);
+					if(!isNaN(year)) {
+						if(year < initialYear) {
+							this.endYear = initialYear;
+							this.startYear = year;
+						} else {
+							this.endYear = year;
+							this.startYear = initialYear;
+						}
+						this.startYear = Math.min(year, this.startYear);
+						this.endYear = Math.max(year, this.endYear);
+						let currPoint = this.getPointFromEvent(e, this.refs.draw);
+						this.drawRect(startPoint.x, currPoint.x, this.refs.draw);
+						this.update();
+					}
+				} else {
+					let event = new MouseEvent("mousemove", {
+						bubbles: false,
+						target: e.target,
+						clientX: e.clientX,
+						clientY: e.clientY
+					});
+					this.refs.chart.dispatchEvent(event);
+				}
+			})
+			this.refs.draw.addEventListener("mouseup", e => {
+				if(drawing) {
+					drawing = false;
+					if(this.startYear && this.endYear) {
+						this.setRange();
+					}
+					this.update();
+				}
+			})
+		}.bind(this)
+
+		this.drawRect = function(x1, x2, canvas) {
+			let scaleX = canvas.width/canvas.getBoundingClientRect().width;
+
+		    let x1Scaled = x1*scaleX;
+		    let x2Scaled = x2*scaleX;
+			let drawContext = canvas.getContext("2d");
+			drawContext.clearRect(0,0, canvas.width, canvas.height);
+			drawContext.beginPath();
+			drawContext.rect(x1Scaled, 1, x2Scaled-x1Scaled, canvas.height-1);
+			drawContext.globalAlpha = 1;
+			drawContext.strokeStyle = this.rangeBorderColor;
+			drawContext.stroke();
+ 			drawContext.globalAlpha = this.rangeOpacity;
+			drawContext.fillStyle = this.rangeFillColor;
+			drawContext.fill();
+		}.bind(this)
+
+		this.setStartYear = function(e) {
+			e.preventUpdate = true;
+			let year = parseInt(e.target.value);
+			this.startYear = Math.min.apply(Math, this.yearList.filter((x) => x >= year));
+			this.fixDateOrder();
+		}.bind(this)
+
+		this.setEndYear = function(e) {
+			e.preventUpdate = true;
+			let year = parseInt(e.target.value);
+			this.endYear = Math.max.apply(Math, this.yearList.filter((x) => x <= year));
+			this.fixDateOrder();
+		}.bind(this)
+
+		this.fixDateOrder = function() {
+			if(this.startYear > this.endYear) {
+				let temp = this.startYear;
+				this.startYear = this.endYear;
+				this.endYear = temp;
+			}
+		}.bind(this)
+
+		this.setRange = function() {
+
+			    $( this.loader ).addClass( 'active' );
+
+			    Array.from(document.getElementsByClassName("chronology-slider__input-start")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__input-end")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__ok-button")).forEach(element => element.disabled = true);
+
+			    let value = '[' + this.startYear + ' TO ' + this.endYear + ']' ;
+			    $( this.valueInput ).val(value);
+
+			    $( this.updateFacet ).click();
+		}.bind(this)
+
+		this.calculateYearFromEvent = function(e) {
+			var activePoints = this.chart.getElementsAtEventForMode(e, 'nearest', { axis: "x" }, true);
+		    if(activePoints.length > 0) {
+		    	let year = this.yearList[activePoints[0].index];
+		    	return year;
+		    }
+		}.bind(this)
+
+		this.getPointFromEvent = function(e, canvas) {
+			let currX = e.clientX - canvas.getBoundingClientRect().left;
+		    let currY = e.clientY - canvas.getBoundingClientRect().top;
+		    return {x: currX, y: currY};
+		}.bind(this)
+
+	  this.on('update', function(){
+		$(".chronology-slider__input-start, .chronology-slider__input-end").keyup(function(event) {
+		    if (event.keyCode === 13) {
+		        $('[data-trigger="triggerFacettingGraph"]').click();
+		    }
+		});
+	  })
+
+	  this.on('mount', function(){
+		$(".chronology-slider__input-start, .chronology-slider__input-end").keyup(function(event) {
+		    if (event.keyCode === 13) {
+		        $('[data-trigger="triggerFacettingGraph"]').click();
+		    }
+		});
+	  })
+
+});
+riot.tag2('chronologyslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
 
 this.msg={}
 this.on("mount", () => {
@@ -3303,6 +3577,8 @@ this.addCloseHandler = function() {
 
 
 riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
+});
+riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
 });
 riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
 });

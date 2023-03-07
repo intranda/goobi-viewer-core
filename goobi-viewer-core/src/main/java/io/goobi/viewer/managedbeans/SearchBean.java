@@ -1545,6 +1545,10 @@ public class SearchBean implements SearchInterface, Serializable {
     public void setCurrentPage(int currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
         this.currentPage = currentPage;
+        if (currentPage <= 0) {
+            this.currentPage = 1;
+            logger.debug("currentPage set to 1");
+        }
     }
 
     /** {@inheritDoc} */

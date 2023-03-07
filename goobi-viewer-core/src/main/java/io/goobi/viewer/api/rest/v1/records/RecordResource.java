@@ -203,8 +203,8 @@ public class RecordResource {
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
-            throws PresentationException, IndexUnreachableException {
+                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format) throws DAOException
+           {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
         if ("oa".equalsIgnoreCase(format)) {
@@ -212,7 +212,7 @@ public class RecordResource {
             return new OpenAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
         }
         URI uri = URI.create(apiPath.build());
-        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false, servletRequest);
+        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
     }
 
     @GET

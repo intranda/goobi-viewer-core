@@ -65,6 +65,11 @@ public interface IModule extends IndexAugmenter {
     public String getVersion();
 
     /**
+     * @return JSON object with version data
+     */
+    public String getVersionJson();
+
+    /**
      * <p>
      * isLoaded.
      * </p>
