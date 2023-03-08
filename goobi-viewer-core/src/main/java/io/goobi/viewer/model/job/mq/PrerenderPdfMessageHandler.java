@@ -17,6 +17,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.mq.MessageHandler;
@@ -31,6 +32,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
     private static final Logger logger = LogManager.getLogger(PrerenderPdfMessageHandler.class);
     private static final String PDF = "pdf";
     private static final String MEDIA = "media";
+    private static final String ALTO = "alto";
 
     private final ProcessDataResolver processDataResolver;
     private final ContentServerConfiguration contentServerConfiguration;
@@ -67,9 +69,10 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
     }
 
     private boolean createPdfFiles(String pi, String configVariant, boolean force) throws PresentationException, IndexUnreachableException {
-        Map<String, Path> dataFolders = processDataResolver.getDataFolders(pi, MEDIA, PDF);
+        Map<String, Path> dataFolders = processDataResolver.getDataFolders(pi, MEDIA, PDF, ALTO);
         Path imageFolder = dataFolders.get(MEDIA);
         Path pdfFolder = dataFolders.get(PDF);
+        Path altoFolder =dataFolders.get(ALTO);
         if (imageFolder != null && pdfFolder != null && Files.exists(imageFolder)) {
             List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.imageNameFilter);
             List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.pdfNameFilter);
@@ -87,7 +90,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
                     }
                 }
                 for (Path imagePath : imageFiles) {
-                    if (!createPdfFile(imagePath, pdfFolder, configVariant)) {
+                    if (!createPdfFile(imagePath, pdfFolder, altoFolder, configVariant)) {
                         return false;
                     }
                 }
@@ -96,8 +99,12 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         return true;
     }
 
-    private boolean createPdfFile(Path imagePath, Path pdfFolder, String configVariant) {
-        Map<String, String> params = Map.of("config", configVariant, "ignoreCache", "true");
+    private boolean createPdfFile(Path imagePath, Path pdfFolder, Path altoFolder, String configVariant) {
+        Map<String, String> params = Map.of(
+                "config", configVariant,
+                "ignoreCache", "true",
+                "altoSource", PathConverter.toURI(altoFolder.toAbsolutePath()).toString(),
+                "imageSource", PathConverter.toURI(imagePath.getParent().toAbsolutePath()).toString());
         Path pdfPath = pdfFolder.resolve(FileTools.replaceExtension(imagePath.getFileName(), "pdf"));
         try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             SinglePdfRequest request = new SinglePdfRequest(imagePath.toString(), params);
