@@ -42,7 +42,7 @@ public class PrerenderPdfMessageHandlerTest {
         
         ContentServerConfiguration contentServerConfig = ContentServerConfiguration.getInstance(contentServerConfigPath.toString());
         ProcessDataResolver processDataResolver = Mockito.mock(ProcessDataResolver.class);
-        Mockito.when(processDataResolver.getDataFolders(pi, "media", "pdf")).thenReturn(Map.of("media", imageFolder, "pdf", pdfFolder));
+        Mockito.when(processDataResolver.getDataFolders(pi, "media", "pdf", "alto")).thenReturn(Map.of("media", imageFolder, "pdf", pdfFolder));
         
         PrerenderPdfMessageHandler handler = new PrerenderPdfMessageHandler(processDataResolver, contentServerConfig);
         

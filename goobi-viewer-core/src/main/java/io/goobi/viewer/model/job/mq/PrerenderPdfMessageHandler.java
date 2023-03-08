@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -103,7 +104,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         Map<String, String> params = Map.of(
                 "config", configVariant,
                 "ignoreCache", "true",
-                "altoSource", PathConverter.toURI(altoFolder.toAbsolutePath()).toString(),
+                "altoSource", Optional.ofNullable(altoFolder).map(f ->  PathConverter.toURI(f.toAbsolutePath()).toString()).orElse(""),
                 "imageSource", PathConverter.toURI(imagePath.getParent().toAbsolutePath()).toString());
         Path pdfPath = pdfFolder.resolve(FileTools.replaceExtension(imagePath.getFileName(), "pdf"));
         try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
