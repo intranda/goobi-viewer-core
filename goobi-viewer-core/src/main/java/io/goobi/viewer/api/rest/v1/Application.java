@@ -51,7 +51,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 public class Application extends ResourceConfig {
 
     private static final Logger logger = LogManager.getLogger(Application.class);
-    
+
     /**
      * <p>
      * Constructor for ViewerApplication.

@@ -27,15 +27,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * POST request parameters for SitemapResource.
  */
-@Schema(name="UpdateSitemapTaskParameter", description="Parameters for creating a sitemap file")
-public class SitemapRequestParameters extends TaskParameter{
+@Schema(name = "UpdateSitemapTaskParameter", description = "Parameters for creating a sitemap file")
+public class SitemapRequestParameters extends TaskParameter {
 
-    @Schema(description = "The directory path in which to write the sitemap file", example="/opt/digiverso/viewer/sitemap")
+    @Schema(description = "The directory path in which to write the sitemap file", example = "/opt/digiverso/viewer/sitemap")
     private String outputPath;
     @Deprecated
-    @Schema(description = "Whether only the fist pages of records should be included. Currently ignored", example="true")
+    @Schema(description = "Whether only the fist pages of records should be included. Currently ignored", example = "true")
     private Boolean firstPageOnly;
-
 
     /**
      * <p>

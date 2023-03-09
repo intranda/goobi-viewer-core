@@ -79,7 +79,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         if (StringUtils.isNotBlank(pi)) {
             logger.trace("Starting task to prerender pdf files for PI {}, using config {}; force = {}", pi, this.contentServerConfiguration, force);
             try {
-                if(!createPdfFiles(pi, configVariant, force)) {
+                if (!createPdfFiles(pi, configVariant, force)) {
                     return MessageStatus.ERROR;
                 }
             } catch (IndexUnreachableException | PresentationException e) {
@@ -94,7 +94,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         Map<String, Path> dataFolders = processDataResolver.getDataFolders(pi, MEDIA, PDF, ALTO);
         Path imageFolder = dataFolders.get(MEDIA);
         Path pdfFolder = dataFolders.get(PDF);
-        Path altoFolder =dataFolders.get(ALTO);
+        Path altoFolder = dataFolders.get(ALTO);
         if (imageFolder != null && pdfFolder != null && Files.exists(imageFolder)) {
             List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.imageNameFilter);
             List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.pdfNameFilter);
@@ -103,7 +103,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
             } else if (imageFiles.size() == pdfFiles.size() && !force) {
                 logger.trace("PDF files already exist. Abandoning task");
             } else {
-                if(!Files.exists(pdfFolder)) {
+                if (!Files.exists(pdfFolder)) {
                     try {
                         Files.createDirectories(pdfFolder);
                     } catch (IOException e) {
@@ -125,7 +125,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         Map<String, String> params = Map.of(
                 "config", configVariant,
                 "ignoreCache", "true",
-                "altoSource", Optional.ofNullable(altoFolder).map(f ->  PathConverter.toURI(f.toAbsolutePath()).toString()).orElse(""),
+                "altoSource", Optional.ofNullable(altoFolder).map(f -> PathConverter.toURI(f.toAbsolutePath()).toString()).orElse(""),
                 "imageSource", PathConverter.toURI(imagePath.getParent().toAbsolutePath()).toString());
         Path pdfPath = pdfFolder.resolve(FileTools.replaceExtension(imagePath.getFileName(), "pdf"));
         try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {

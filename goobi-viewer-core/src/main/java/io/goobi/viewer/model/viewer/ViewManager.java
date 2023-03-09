@@ -630,7 +630,7 @@ public class ViewManager implements Serializable {
         }
         return sb.toString();
     }
-    
+
     /**
      * @param view
      * @param size
@@ -1609,6 +1609,7 @@ public class ViewManager implements Serializable {
 
     /**
      * Fist thumbnail index +not+ on the current page anymore
+     * 
      * @param thumbnailsPerPage
      * @param i
      * @return
@@ -2053,12 +2054,12 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException, ViewerConfigurationException, URISyntaxException {
         return getPdfDownloadLink(null);
     }
-    
+
     /**
      * Returns the pdf download link for the current document, allowing to attach a number of query parameters to it
      *
@@ -2066,10 +2067,11 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
-    public String getPdfDownloadLink(List<List<String>> queryParams) throws IndexUnreachableException, PresentationException, ViewerConfigurationException, URISyntaxException {
-        String uriString =  imageDeliveryBean.getPdf().getPdfUrl(getTopStructElement(), "");
+    public String getPdfDownloadLink(List<List<String>> queryParams)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException, URISyntaxException {
+        String uriString = imageDeliveryBean.getPdf().getPdfUrl(getTopStructElement(), "");
         uriString = NetTools.addQueryParameters(uriString, queryParams);
         return uriString;
     }
@@ -2104,7 +2106,7 @@ public class ViewManager implements Serializable {
         return imageDeliveryBean.getPdf().getPdfUrl(currentStruct, currentStruct.getLabel());
 
     }
-    
+
     /**
      * Returns the pdf download link for the current struct element, allowing to add a number of query parameters to it
      *
@@ -2114,14 +2116,13 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public String getPdfStructDownloadLink(List<List<String>> queryParams) throws IndexUnreachableException, PresentationException, ViewerConfigurationException, URISyntaxException {
+    public String getPdfStructDownloadLink(List<List<String>> queryParams)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException, URISyntaxException {
         StructElement currentStruct = getCurrentStructElement();
         String uriString = imageDeliveryBean.getPdf().getPdfUrl(currentStruct, currentStruct.getLabel());
         uriString = NetTools.addQueryParameters(uriString, queryParams);
         return uriString;
     }
-
-
 
     /**
      * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively)
@@ -3960,15 +3961,15 @@ public class ViewManager implements Serializable {
 
         return copyrightIndicatorLicense;
     }
-    
+
     public boolean hasPrerenderedPagePdfs() {
-        try {            
+        try {
             Path pdfFolder = new ProcessDataResolver().getDataFolders(pi, "pdf").get("pdf");
             return pdfFolder != null && Files.exists(pdfFolder) && !FileTools.isFolderEmpty(pdfFolder);
-        } catch(IndexUnreachableException | PresentationException | IOException e) {
+        } catch (IndexUnreachableException | PresentationException | IOException e) {
             logger.error("Error checking pdf resource folder for pi {}: {}", pi, e.toString());
             return false;
         }
-        
+
     }
 }
