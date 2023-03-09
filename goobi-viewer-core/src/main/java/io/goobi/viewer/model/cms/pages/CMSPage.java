@@ -45,8 +45,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -1146,6 +1149,47 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
+     * Exports relevant page contents as JDOM2 document for indexing
+     * 
+     * @return {@link Document}
+     * @should create doc correctly
+     */
+    public Document exportAsXml() {
+        Document doc = new Document();
+        doc.setRootElement(new Element("cmsPage"));
+        doc.getRootElement().addContent(new Element("title", getTitle()));
+
+        // Categories
+        Element eleCategories = new Element("categories");
+        doc.getRootElement().addContent(eleCategories);
+        for (CMSCategory cat : getCategories()) {
+            eleCategories.addContent(new Element("category", cat.getName()));
+        }
+
+        // Texts from content items
+        List<TranslatedText> texts = getComponents()
+                .stream()
+                .map(CMSComponent::getTranslatableContentItems)
+                .flatMap(List::stream)
+                .map(CMSContentItem::getContent)
+                .map(TranslatableCMSContent.class::cast)
+                .map(TranslatableCMSContent::getText)
+                .collect(Collectors.toList());
+
+        for (TranslatedText text : texts) {
+            for (ValuePair pair : text.getValues()) {
+                if (StringUtils.isNotBlank(pair.getValue())) {
+                    Element eleText = new Element("text", pair.getValue());
+                    eleText.setAttribute("lang", pair.getLanguage());
+                    doc.getRootElement().addContent(eleText);
+                }
+            }
+        }
+
+        return doc;
+    }
+
+    /**
      * Retrieve all categories fresh from the DAO and write them to this depending on the state of the selectableCategories list. Saving the
      * categories from selectableCategories directly leads to ConcurrentModificationexception when persisting page
      */
@@ -1218,14 +1262,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public List<CMSComponent> getComponents() {
-        if(this.cmsComponents.size() != this.persistentComponents.size()) {
+        if (this.cmsComponents.size() != this.persistentComponents.size()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
     }
 
     public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {
-        return this.getComponents().stream()
+        return this.getComponents()
+                .stream()
                 .filter(c -> c.getPersistentComponent() == p)
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Component " + p.getId() + " is not registered in page"));
@@ -1240,7 +1285,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return success;
     }
 
-    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {
+    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager)
+            throws IllegalArgumentException, IllegalStateException {
         return addComponent(templateManager
                 .getComponent(filename)
                 .orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
@@ -1269,7 +1315,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         Locale defaultLocale = IPolyglott.getDefaultLocale();
         return this.title.isComplete(locale, defaultLocale, true) &&
                 this.menuTitle.isComplete(locale, defaultLocale, false) &&
-                this.getPersistentComponents().stream()
+                this.getPersistentComponents()
+                        .stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
                         .allMatch(content -> content.getText().isComplete(locale, defaultLocale, content.isRequired()));
     }
@@ -1277,7 +1324,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Override
     public boolean isValid(Locale locale) {
         return this.title.isValid(locale) &&
-                this.getPersistentComponents().stream()
+                this.getPersistentComponents()
+                        .stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
                         .filter(TranslatableCMSContent::isRequired)
                         .allMatch(content -> content.getText().isValid(locale));
@@ -1390,14 +1438,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .filter(CMSComponent::isPreview)
                 .collect(Collectors.toList());
     }
-    
+
     public List<CMSComponentGroup> getGroupedPageViewComponents() {
-         List<CMSComponent> components = getPageViewComponents();
-         List<CMSComponentGroup> groups = new ArrayList<>();
-         CMSComponentGroup currentGroup = null;
-         for (CMSComponent cmsComponent : components) {
+        List<CMSComponent> components = getPageViewComponents();
+        List<CMSComponentGroup> groups = new ArrayList<>();
+        CMSComponentGroup currentGroup = null;
+        for (CMSComponent cmsComponent : components) {
             String groupName = cmsComponent.getAttributeValue(HTML_GROUP);
-            if(currentGroup == null || !Objects.equals(currentGroup.getName(), groupName)) {
+            if (currentGroup == null || !Objects.equals(currentGroup.getName(), groupName)) {
                 currentGroup = new CMSComponentGroup(groupName);
                 groups.add(currentGroup);
             }
@@ -1405,7 +1453,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         }
         return groups;
     }
-
 
     public List<CMSComponent> getPageViewComponents() {
         return this.getComponents()

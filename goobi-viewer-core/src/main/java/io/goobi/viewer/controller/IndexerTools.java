@@ -38,7 +38,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
-import org.jdom2.Element;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -370,11 +369,7 @@ public class IndexerTools {
             throw new IllegalArgumentException("page may not be null");
         }
 
-        Document doc = new Document();
-        doc.setRootElement(new Element("cmsPage"));
-        doc.getRootElement().addContent(new Element("title", page.getTitle()));
-        // TODO add text from content items
-
+        Document doc = page.exportAsXml();
         String namingScheme = findNamingScheme(String.valueOf(page.getId()), "xml");
 
         // Finally, write the record XML file to the hotfolder
