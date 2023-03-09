@@ -207,6 +207,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Column(name = "wrapper_element_class")
     private String wrapperElementClass = "";
 
+    /** If true, text contents of this page are exported for indexing. */
+    @Column(name = "searchable", nullable = false, columnDefinition = "boolean default false")
+    private boolean searchable;
+
     @Transient
     private String sidebarElementString = null;
 
@@ -1047,6 +1051,20 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
+     * @return the searchable
+     */
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    /**
+     * @param searchable the searchable to set
+     */
+    public void setSearchable(boolean searchable) {
+        this.searchable = searchable;
+    }
+
+    /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
      *
      * @return Number of deleted files
@@ -1163,7 +1181,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         Element eleCategories = new Element("categories");
         doc.getRootElement().addContent(eleCategories);
         for (CMSCategory cat : getCategories()) {
-            eleCategories.addContent(new Element("category", cat.getName()));
+            eleCategories.addContent(new Element("category").setText(cat.getName()));
         }
 
         // Texts from content items
@@ -1179,9 +1197,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         for (TranslatedText text : texts) {
             for (ValuePair pair : text.getValues()) {
                 if (StringUtils.isNotBlank(pair.getValue())) {
-                    Element eleText = new Element("text", pair.getValue());
-                    eleText.setAttribute("lang", pair.getLanguage());
-                    doc.getRootElement().addContent(eleText);
+                    doc.getRootElement().addContent(new Element("text").setText(pair.getValue()).setAttribute("lang", pair.getLanguage()));
                 }
             }
         }
