@@ -121,6 +121,8 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest {
         Document doc = page.exportAsXml();
         assertNotNull(doc);
         assertEquals("cmsPage", doc.getRootElement().getName());
+        assertEquals("Title", doc.getRootElement().getChildText("title"));
+        
         
         assertNotNull(doc.getRootElement().getChildText("categories"));
         List<Element> eleListCategory = doc.getRootElement().getChild("categories").getChildren("category");
