@@ -27,11 +27,16 @@ import java.util.Map;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -49,6 +54,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "mq_messages")
+@JsonInclude(Include.NON_EMPTY)
 public class ViewerMessage {
     
     @Id
@@ -78,6 +84,8 @@ public class ViewerMessage {
     private int retryCount = 1;
 
     @Column(name = "last_update_time")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime lastUpdateTime = LocalDateTime.now();
 
     public ViewerMessage() {

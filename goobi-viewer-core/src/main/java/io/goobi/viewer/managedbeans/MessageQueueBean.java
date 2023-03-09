@@ -105,7 +105,7 @@ public class MessageQueueBean implements Serializable {
     private boolean paused;
 
     @Inject 
-    transient private MessageQueueManager messageBroker;
+    private transient MessageQueueManager messageBroker;
     
     @Inject
     @Push
@@ -124,7 +124,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     @PostConstruct
-    public void init() throws DAOException {
+    public void init() {
 
         if (this.messageBrokerStart) {
             

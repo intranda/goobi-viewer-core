@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mockitoSession;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.ibm.icu.impl.UResource.Array;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -525,6 +528,32 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement(iddocKleiuniv);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, "application/pdf", null);
         Assert.assertTrue(viewManager.isFilesOnly());
+    }
+    
+    @Test
+    public void test_getPdfDownloadLink() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        String test = String.format("%srecords/%s/pdf/", DataManager.getInstance().getConfiguration().getIIIFApiUrl(), se.getPi());
+        String link = viewManager.getPdfDownloadLink();
+        assertEquals(test, link);
+    }
+    
+    @Test
+    public void test_getPdfDownloadLink_queryParams() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        
+        String test = String.format("%srecords/%s/pdf/?%s=%s", 
+                DataManager.getInstance().getConfiguration().getIIIFApiUrl(), se.getPi(), "usePdfSource", "true");
+        String link = viewManager.getPdfDownloadLink(List.of(List.of("usePdfSource", "true")));
+        assertEquals(test, link);
+        
+        String test2 = String.format(test + "&%s=%s&%s=%s", "queryA", "a", "queryB", "b");
+        String link2 = viewManager.getPdfDownloadLink(List.of(List.of("usePdfSource", "true"), List.of("queryA", "a"), List.of("queryB", "b")));
+        assertEquals(test2, link2);
     }
 
 }

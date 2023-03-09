@@ -34,6 +34,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -47,6 +49,7 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -279,6 +282,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             copy.setOwningPage(this);
             this.persistentComponents.add(copy);
         }
+        
     }
 
     /**
@@ -325,6 +329,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             }
         }
         sortComponents();
+        getText();
+
     }
 
     private void sortComponents() {
@@ -1428,5 +1434,24 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
 
     public void setTemplateId(Long templateId) {
         this.templateId = templateId;
+    }
+    
+    public void getText() {
+        List<TranslatedText> texts = this.getComponents().stream()
+        .map(CMSComponent::getTranslatableContentItems)
+        .flatMap(List::stream)
+        .map(CMSContentItem::getContent)
+        .map(TranslatableCMSContent.class::cast)
+        .map(c -> c.getText())
+        .collect(Collectors.toList());
+        
+        for (TranslatedText text : texts) {
+            for (ValuePair pair : text.getValues()) {
+                if(StringUtils.isNotBlank(pair.getValue())) {                    
+                    System.out.println(pair.getLanguage() + " -> " + pair.getValue());
+                }
+            }
+        }
+        
     }
 }
