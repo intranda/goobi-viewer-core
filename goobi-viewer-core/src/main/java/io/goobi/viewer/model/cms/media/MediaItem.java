@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.model;
+package io.goobi.viewer.model.cms.media;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 /**
+ * Simple representation of a cms-media-item
  * @author florian
  *
  */
@@ -57,6 +58,7 @@ public class MediaItem {
     private final IMetadataValue label;
     @JsonSerialize(using = WebAnnotationMetadataValueSerializer.class)
     private final IMetadataValue description;
+    private final String altText;
     private final IContent image;
     private final String link;
     private final List<String> tags;
@@ -72,6 +74,7 @@ public class MediaItem {
         this.id = null;
         this.important = false;
         this.order = null;
+        this.altText = null;
 
     }
 
@@ -84,6 +87,7 @@ public class MediaItem {
         this.id = source.getId();
         this.important = source.isImportant();
         this.order = source.getDisplayOrder();
+        this.altText = source.getAlternativeText();
     }
 
     /**
@@ -156,6 +160,10 @@ public class MediaItem {
      */
     public Integer getOrder() {
         return order;
+    }
+    
+    public String getAltText() {
+        return altText;
     }
 
 }

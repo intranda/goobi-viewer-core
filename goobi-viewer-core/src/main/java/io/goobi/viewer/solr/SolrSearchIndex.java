@@ -287,8 +287,8 @@ public class SolrSearchIndex {
             }
         }
         if (params != null && !params.isEmpty()) {
-            for (String key : params.keySet()) {
-                solrQuery.set(key, params.get(key));
+            for (Entry<String, String> entry : params.entrySet()) {
+                solrQuery.set(entry.getKey(), entry.getValue());
                 // logger.trace("&{}={}", key, params.get(key));
             }
         }
@@ -727,11 +727,11 @@ public class SolrSearchIndex {
         logger.trace("getImageOwnerIddoc: {}:{}", pi, pageNo);
         String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
                 .append(pi)
-                .append(" AND ")
+                .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.ORDER)
                 .append(":")
                 .append(pageNo)
-                .append(" AND ")
+                .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.DOCTYPE)
                 .append(":")
                 .append(DocType.PAGE.name())
@@ -1087,7 +1087,8 @@ public class SolrSearchIndex {
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
-            if ((name.startsWith("SORT_") || name.startsWith("SORTNUM_") || name.equals("DATECREATED")) && !name.contains("_LANG_")) {
+            if ((name.startsWith(SolrConstants.PREFIX_SORT) || name.startsWith("SORTNUM_") || name.equals(SolrConstants.DATECREATED))
+                    && !name.contains(SolrConstants.MIDFIX_LANG)) {
                 list.add(name);
             }
         }
@@ -1140,11 +1141,11 @@ public class SolrSearchIndex {
         String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
                 .append(":")
                 .append(pi)
-                .append(" AND ")
+                .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.ORDER)
                 .append(":")
                 .append(page)
-                .append(" AND ")
+                .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.DOCTYPE)
                 .append(":")
                 .append(DocType.UGC.name())
@@ -1183,7 +1184,7 @@ public class SolrSearchIndex {
         String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
                 .append(":")
                 .append(pi)
-                .append(" AND ")
+                .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.DOCTYPE)
                 .append(":")
                 .append(DocType.UGC.name())
@@ -1223,12 +1224,12 @@ public class SolrSearchIndex {
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append(SolrConstants.DOCTYPE)
                 .append(":")
-                .append("PAGE")
-                .append(" AND ")
+                .append(DocType.PAGE.name())
+                .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.PI_TOPSTRUCT)
                 .append(":")
                 .append(pi)
-                .append(" AND ")
+                .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.ORDER)
                 .append(":")
                 .append(order);
@@ -1306,7 +1307,7 @@ public class SolrSearchIndex {
      * @return
      */
     public String getSolrServerUrl() {
-        if (client != null && client instanceof HttpSolrClient) {
+        if (client instanceof HttpSolrClient) {
             return ((HttpSolrClient) client).getBaseURL();
         }
 

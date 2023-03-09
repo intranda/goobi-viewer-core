@@ -72,6 +72,8 @@ public class CMSPageUpdate implements IModelUpdate {
         if (!dao.tableExists("cms_content_items")) {
             return false;
         }
+        
+        dao.executeUpdate("ALTER TABLE cms_pages MODIFY template_id varchar(255)"); //allow NULL values in cms_pages.template_id
 
         this.contentConverter = new CMSContentConverter(dao);
 

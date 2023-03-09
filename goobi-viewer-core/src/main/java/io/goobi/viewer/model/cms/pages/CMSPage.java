@@ -63,6 +63,7 @@ import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSComponentGroup;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.CMSContentItem;
@@ -107,6 +108,8 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "cms_pages")
 public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable {
+
+    private static final String HTML_GROUP = "htmlGroup";
 
     private static final long serialVersionUID = -3601192218326197746L;
 
@@ -1387,6 +1390,22 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .filter(CMSComponent::isPreview)
                 .collect(Collectors.toList());
     }
+    
+    public List<CMSComponentGroup> getGroupedPageViewComponents() {
+         List<CMSComponent> components = getPageViewComponents();
+         List<CMSComponentGroup> groups = new ArrayList<>();
+         CMSComponentGroup currentGroup = null;
+         for (CMSComponent cmsComponent : components) {
+            String groupName = cmsComponent.getAttributeValue(HTML_GROUP);
+            if(currentGroup == null || !Objects.equals(currentGroup.getName(), groupName)) {
+                currentGroup = new CMSComponentGroup(groupName);
+                groups.add(currentGroup);
+            }
+            currentGroup.addComponent(cmsComponent);
+        }
+        return groups;
+    }
+
 
     public List<CMSComponent> getPageViewComponents() {
         return this.getComponents()

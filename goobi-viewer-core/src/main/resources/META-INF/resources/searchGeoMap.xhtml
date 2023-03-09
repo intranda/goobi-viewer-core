@@ -38,7 +38,7 @@
 								<!-- TO DO ACTION FOR RESET -->
 								<button type="button" class="btn btn--default search-geo-coords__reset-search" data-feature="reset">#{msg.reset}</button>
 
-								<h:commandButton id="submitSearch" styleClass="btn btn--full search-geo-coords__submit-search" action="pretty:newSearch5" value="#{msg.search}">
+								<h:commandButton id="submitGeoFacet" styleClass="btn btn--full search-geo-coords__submit-search" action="pretty:newSearch5" value="#{msg.search}">
 				                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
 				                    <f:passThroughAttribute name="disabled" value="disabled"></f:passThroughAttribute>
 				                </h:commandButton>
@@ -51,7 +51,7 @@
 							viewerJS.initialized.subscribe(() => {
 							    
 							    config = {
-						            submitSearchSelector: '#submitSearch',
+						            submitSearchSelector: '#submitGeoFacet',
 						    		inputSearchSelector: '#searchInput',
 						    		opts: {
 									    area : '#{searchBean.facets.geoFacetting.feature}',

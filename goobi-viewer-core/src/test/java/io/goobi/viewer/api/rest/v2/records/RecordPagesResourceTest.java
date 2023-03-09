@@ -41,6 +41,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * @author florian
@@ -91,9 +93,12 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
      * Test method for {@link io.goobi.viewer.api.rest.v2.records.RecordResource#getAnnotationsForRecord(java.lang.String)}.
      * @throws JsonProcessingException
      * @throws JsonMappingException
+     * @throws DAOException 
+     * @throws NumberFormatException 
      */
     @Test
-    public void testGetAnnotationsForPage() throws JsonMappingException, JsonProcessingException {
+    public void testGetAnnotationsForPage() throws JsonMappingException, JsonProcessingException, NumberFormatException, DAOException {
+        long annoCount = DataManager.getInstance().getDao().getAnnotationCountForTarget(PI_ANNOTATIONS, Integer.parseInt(PAGENO_ANNOTATIONS));
         try(Response response = target(urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(PI_ANNOTATIONS, PAGENO_ANNOTATIONS).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -104,7 +109,7 @@ public class RecordPagesResourceTest extends AbstractRestApiTest {
             AnnotationPage annoPage = mapper.readValue(entity, AnnotationPage.class);
             assertNotNull(annoPage);
             assertEquals("AnnotationPage", annoPage.getType());
-            assertEquals(0, annoPage.getItems().size()); //No annotations indexed
+            assertEquals(annoCount, annoPage.getItems().size());
         }
     }
 

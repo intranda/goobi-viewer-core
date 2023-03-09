@@ -255,9 +255,13 @@ public class SearchHit implements Comparable<SearchHit> {
         BrowseElement browseElement = new BrowseElement(se, metadataList, locale,
                 (fulltextFragments != null && !fulltextFragments.isEmpty()) ? fulltextFragments.get(0) : null, foundSearchTerms,
                 thumbnailHandler);
+
         // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, ignoreAdditionalFields, translateAdditionalFields,
-                oneLineAdditionalFields);
+        if (DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled()) {
+            browseElement.addAdditionalMetadataContainingSearchTerms(se, foundSearchTerms, ignoreAdditionalFields, translateAdditionalFields,
+                    oneLineAdditionalFields);
+        }
+
         // Add sorting fields (should be added after all other metadata to avoid duplicates)
         browseElement.addSortFieldsToMetadata(se, sortFields, ignoreAdditionalFields);
 

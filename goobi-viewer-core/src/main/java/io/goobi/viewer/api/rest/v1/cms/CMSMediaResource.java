@@ -42,16 +42,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,10 +71,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -87,10 +82,10 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
-import io.goobi.viewer.api.rest.model.MediaItem;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -101,6 +96,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.CMSMediaLister;
+import io.goobi.viewer.model.cms.media.MediaItem;
+import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -121,7 +119,17 @@ public class CMSMediaResource {
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
-
+    @Context
+    private IDAO dao;
+    
+    public CMSMediaResource() {
+        
+    }
+    
+    public CMSMediaResource(IDAO dao) {
+        this.dao = dao;
+    }
+    
     /**
      * <p>
      * getMediaByTag.
@@ -150,18 +158,8 @@ public class CMSMediaResource {
         if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
         }
-
-        List<CMSMediaItem> items = DataManager.getInstance()
-                .getDao()
-                .getAllCMSMediaItems()
-                .stream()
-                .filter(item -> tagList.isEmpty() ||
-                        item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(tagList::contains))
-                .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
-                .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
-                .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
-                .collect(Collectors.toList());
-        return new MediaList(items);
+        List<CMSMediaItem> items = new CMSMediaLister(dao).getMediaItems(tagList, maxItems, prioritySlots, Boolean.TRUE.equals(random));
+        return new MediaList(items, servletRequest);
     }
 
     @GET
@@ -523,90 +521,6 @@ public class CMSMediaResource {
         }
         // logger.trace("Found user {}", user);
         return Optional.of(user);
-    }
-
-    public class MediaList {
-
-        private final List<MediaItem> mediaItems;
-
-        public MediaList(List<CMSMediaItem> items) {
-            this.mediaItems = items.stream().map(item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
-        }
-
-        /**
-         * @return the mediaItems
-         */
-        public List<MediaItem> getMediaItems() {
-            return mediaItems;
-        }
-    }
-
-    /**
-     * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor The remaining items
-     * will be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)}
-     *
-     * @author florian
-     *
-     */
-    public static class PriorityComparator implements Comparator<CMSMediaItem> {
-
-        private final int prioritySlots;
-        private final boolean random;
-        private final Random randomizer = new SecureRandom();
-        private final Map<CMSMediaItem, Integer> map = new IdentityHashMap<>();
-        private final List<CMSMediaItem> priorityList = new ArrayList<>();
-
-        public PriorityComparator(Integer prioritySlots, boolean random) {
-            this.prioritySlots = prioritySlots == null ? 0 : prioritySlots;
-            this.random = random;
-        }
-
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
-        @Override
-        public int compare(CMSMediaItem a, CMSMediaItem b) {
-            maybeAddToPriorityList(a);
-            maybeAddToPriorityList(b);
-            if (priorityList.contains(a) && !priorityList.contains(b)) {
-                return -1;
-            } else if (priorityList.contains(b) && !priorityList.contains(a)) {
-                return 1;
-            } else if (a.getDisplayOrder() != 0 && b.getDisplayOrder() != 0) {
-                return Integer.compare(a.getDisplayOrder(), b.getDisplayOrder());
-            } else if (a.getDisplayOrder() != 0) {
-                return -1;
-            } else if (b.getDisplayOrder() != 0) {
-                return 1;
-            } else if (random) {
-                return Integer.compare(valueFor(a), valueFor(b));
-            } else {
-                return a.compareTo(b);
-            }
-        }
-
-        private int valueFor(CMSMediaItem a) {
-            synchronized (map) {
-                return map.computeIfAbsent(a, ignore -> randomizer.nextInt());
-            }
-        }
-
-        /**
-         * @param b
-         */
-        private void maybeAddToPriorityList(CMSMediaItem item) {
-            if (item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {
-                priorityList.add(item);
-            }
-        }
-
-        /**
-         * @return
-         */
-        private int getRandomOrder() {
-            return randomizer.nextBoolean() ? 1 : -1;
-        }
-
     }
 
     private String serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {

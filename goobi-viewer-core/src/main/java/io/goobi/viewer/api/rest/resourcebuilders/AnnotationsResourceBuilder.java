@@ -55,6 +55,7 @@ import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
+import io.goobi.viewer.model.iiif.presentation.v3.builder.InternalAnnotationPage;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.solr.SolrConstants;
@@ -153,7 +154,7 @@ public class AnnotationsResourceBuilder {
         AnnotationCollection collection = builder.setItemsPerPage((int) count).buildCollection();
         if (count > 0) {
             try {
-                collection.setFirst(getWebAnnotationPageForRecord(pi, uri, 1));
+                collection.setFirst(new InternalAnnotationPage(getWebAnnotationPageForRecord(pi, uri, 1)));
             } catch (IllegalRequestException e) {
                 //no items
             }
@@ -167,7 +168,7 @@ public class AnnotationsResourceBuilder {
         AnnotationCollection collection = builder.setItemsPerPage((int) count).buildCollection();
         if (count > 0) {
             try {
-                collection.setFirst(getWebAnnotationPageForPage(pi, pageNo, uri, 1));
+                collection.setFirst(new InternalAnnotationPage(getWebAnnotationPageForPage(pi, pageNo, uri, 1)));
             } catch (IllegalRequestException e) {
                 //no items
             }

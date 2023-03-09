@@ -29,11 +29,13 @@
 					<ul>
 						<ui:repeat var="selectable"
 							value="#{cc.attrs.content.selectableCategories}">
-							<li><label> <h:selectBooleanCheckbox type="checkbox"
-										value="#{selectable.selected}">
+							<li>
+								<label> 
+									<h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
 										<f:ajax event="valueChange" render="@this"></f:ajax>
 									</h:selectBooleanCheckbox> #{selectable.label}
-							</label></li>
+								</label>
+							</li>
 						</ui:repeat>
 					</ul>
 				</div>

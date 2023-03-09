@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -492,9 +493,10 @@ public class Search implements Serializable {
             }
 
             int lastPage = getLastPage(hitsPerPage);
-            if (page > lastPage) {
+            if (page <= 0) {
+                page = 1;
+            } else if (page > lastPage) {
                 page = lastPage;
-                logger.trace(" page = getLastPage()");
             }
 
             // Hits for the current page
@@ -559,11 +561,11 @@ public class Search implements Serializable {
         }
 
         for (FacetField facetField : resp.getFacetFields()) {
-            if (rangeFacetFields.contains(facetField.getName())) {
+            if (!rangeFacetFields.contains(facetField.getName())) {
                 continue;
             }
 
-            Map<String, Long> counts = new HashMap<>();
+            SortedMap<String, Long> counts = new TreeMap<>();
             List<String> values = new ArrayList<>();
             for (Count count : facetField.getValues()) {
                 if (count.getCount() > 0) {
@@ -575,7 +577,7 @@ public class Search implements Serializable {
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (rangeFacetFields.contains(facetField.getName())) {
                     // Slider range
-                    facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, values);
+                    facets.populateAbsoluteMinMaxValuesForField(defacetifiedFieldName, counts);
                 }
             }
         }
@@ -688,12 +690,12 @@ public class Search implements Serializable {
             return locs;
         } else if (o instanceof String) {
             String s = (String) o;
-            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
+            Matcher polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,E\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
             while (polygonMatcher.find()) {
                 String match = polygonMatcher.group();
                 locs.add(new Polygon(getPoints(match)));
                 s = s.replace(match, "");
-                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
+                polygonMatcher = Pattern.compile("POLYGON\\(\\([0-9.\\-,E\\s]+\\)\\)").matcher(s); //NOSONAR   no catastrophic backtracking detected
             }
             if (StringUtils.isNotBlank(s)) {
                 locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
@@ -705,7 +707,7 @@ public class Search implements Serializable {
 
     protected static double[][] getPoints(String value) {
         List<double[]> points = new ArrayList<>();
-        Matcher matcher = Pattern.compile("([\\d\\.\\-]+)\\s([\\d\\.\\-]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
+        Matcher matcher = Pattern.compile("([0-9\\.\\-E]+)\\s([0-9\\.\\-E]+)").matcher(value); //NOSONAR   no catastrophic backtracking detected
         while (matcher.find() && matcher.groupCount() == 2) {
             points.add(parsePoint(matcher.group(1), matcher.group(2)));
         }

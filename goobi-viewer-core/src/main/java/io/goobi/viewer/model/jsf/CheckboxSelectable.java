@@ -62,5 +62,9 @@ public class CheckboxSelectable<T> {
         return this.labelGetter.apply(this.value);
     }
     
+    @Override
+    public String toString() {
+        return value.toString() + ": " + isSelected();
+    }
 
 }

@@ -12,7 +12,6 @@
 
 	<composite:interface>
 		<composite:attribute name="component" required="true" />
-		<composite:attribute name="imagelist" required="false"
 			default="#{cc.attrs.component.firstContentItem.content}" />
 	</composite:interface>
 
@@ -35,22 +34,24 @@
 				</ui:fragment>
                 
                 <!-- STATIC GRID -->
-                <div class="tpl-static-grid__grid"></div>
-
-                <script type="text/javascript">
-                    $.ajax( {
-                        url: "#{cc.attrs.imagelist.tileGridUrl}",
-                        type: "GET",
-                        datatype: "JSON"
-                    } ).then( function( data ) {
-                        var staticGridConfig = {
-                            gridSelector: ".tpl-static-grid__grid",
-                            language: currentLang
-                        };
-                        
-                        cmsJS.staticGrid.init( staticGridConfig, data );
-                    } );
-                </script>
+                <div class="tpl-static-grid__grid">
+                	<ui:repeat var="mediaItem" value="#{cc.attrs.component.getContent('grid').mediaItems}">
+	                		<div class="grid-tile">
+	                			<div class="grid-tile__title">
+	                				<h3>
+	                					<a href="#{empty mediaItem.link ? '#' : mediaItem.link }" title="#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}">
+	                						#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}
+	                					</a>
+	                				</h3>
+<!-- 	                				<div>#{mediaItem.description.getValueOrFallback(navigationHelper.locale)}</div> -->
+	                			</div>
+	                			<div class="grid-tile__image" style="background-image: url('#{mediaItem.image.id}')" title="#{mediaItem.altText}">
+	                				<a href="#{empty mediaItem.link ? '#' : mediaItem.link }">
+                					</a>
+	                			</div>
+	                		</div>
+					</ui:repeat>
+                </div>
 
 			</div>
 

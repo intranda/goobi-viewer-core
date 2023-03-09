@@ -55,10 +55,8 @@ import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -335,12 +333,11 @@ public class StatisticsBean implements Serializable {
     }
 
     public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
-        if(StringUtils.isNotBlank(pi)) {            
+        if (StringUtils.isNotBlank(pi)) {
             StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
             return new StatisticsSummaryBuilder().loadSummary(filter);
-        } else {
-            return new StatisticsSummary(Collections.emptyMap());
         }
+        return new StatisticsSummary(Collections.emptyMap());
     }
 
     public LocalDate getLastUsageStatisticsCheck() throws IndexUnreachableException {

@@ -168,7 +168,7 @@
 																	<h:panelGroup layout="block" id="pageComponents"
 																		class="page-component-list admin__content-components-wrapper">
 
-																		<c:forEach var="cmsComponent"
+																		<c:forEach var="cmsComponent" varStatus="loop"
 																			items="#{page.components}">
 
 																			<div class="admin__content-component">
@@ -181,9 +181,7 @@
 
 																						<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
 
-																						<ui:fragment
-																							rendered="#{page.isDefaultLocaleSelected()}">
-																							<div class="admin__content-component-options">
+																							<h:panelGroup id="attributes-block-#{loop.index}"  layout="block" rendered="#{page.isDefaultLocaleSelected()}" class="admin__content-component-options">
 
 																								<ui:repeat var="attribute"
 																									value="#{cmsComponent.attributes.values()}">
@@ -199,7 +197,7 @@
 																												class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
 																												#{msg[option.label]}
 																												<f:ajax execute="@this"
-																													render="pageComponents" />
+																													render="attributes-block-#{loop.index}" />
 																											</button>
 
 																										</ui:repeat>
@@ -214,7 +212,7 @@
 																												jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}"
 																												class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
 																												#{msg[option.label]}
-																												<f:ajax render="pageComponents" />
+																												<f:ajax render="attributes-block-#{loop.index}" />
 																											</button>
 																										</ui:repeat>
 																									</ui:fragment>
@@ -226,11 +224,10 @@
 																									jsf:action="#{cmsComponent.togglePrivate()}"
 																									class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">
 																									Private
-																									<f:ajax render="pageComponents" />
+																									<f:ajax render="attributes-block-#{loop.index}" />
 																								</button>
 
-																							</div>
-																						</ui:fragment>
+																						</h:panelGroup>
 
 
 

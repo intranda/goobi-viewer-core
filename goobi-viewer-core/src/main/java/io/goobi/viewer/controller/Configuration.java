@@ -720,7 +720,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isDisplayWidgetUsage() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
     }
-    
+
     /**
      *
      * @return Boolean value
@@ -1016,7 +1016,7 @@ public class Configuration extends AbstractConfiguration {
             return Collections.emptyList();
         }
         return getLocalList(collection, null, "blacklist.collection", Collections.<String> emptyList());
-        }
+    }
 
     /**
      * Returns the index field by which records in the collection with the given name are to be sorted in a listing.
@@ -2563,6 +2563,19 @@ public class Configuration extends AbstractConfiguration {
         return ret;
     }
 
+    public String getFacetFieldStyle(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.facets.field");
+        if (fieldList != null) {
+            for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+                if (subElement.getString(".").equals(field)) {
+                    return subElement.getString("[@style]", "");
+                }
+            }
+        }
+
+        return "";
+    }
+
     /**
      * <p>
      * getGeoFacetFields.
@@ -3579,18 +3592,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public int getFulltextPercentageWarningThreshold() {
         return getLocalInt("viewer.fulltextPercentageWarningThreshold", 30);
-    }
-
-    /**
-     * <p>
-     * isUseViewerLocaleAsRecordLanguage.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isUseViewerLocaleAsRecordLanguage() {
-        return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
 
     /**
@@ -5007,11 +5008,11 @@ public class Configuration extends AbstractConfiguration {
     public String getMapBoxToken() {
         return getLocalString("maps.mapbox.token", "");
     }
-    
+
     public String getMapBoxUser() {
         return getLocalString("maps.mapbox.user", "");
     }
-    
+
     public String getMapBoxStyleId() {
         return getLocalString("maps.mapbox.styleId", "");
     }
