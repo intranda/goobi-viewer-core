@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.dao.impl;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -66,6 +67,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.HighlightedObjectData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -6992,5 +6994,105 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+
+    @Override
+    public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException {
+        return addObject(object);
+    }
+
+    @Override
+    public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException {
+        return updateObject(object);
+    }
+
+    @Override
+    public HighlightedObjectData getHighlightedObject(Long id) throws DAOException {
+        return getObject(id, HighlightedObjectData.class);
+    }
+
+    @Override
+    public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException {
+        return getAllObjects(HighlightedObjectData.class);
+    }
+
+    @Override
+    public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException {
+        return getMatchingObjects(HighlightedObjectData.class, "o.enabled = TRUE AND :date BETWEEN o.dateStart AND o.dateEnd", Map.of("date", date));
+    }
+    
+    private boolean addObject(Serializable obj) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(obj);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error adding object to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+    private boolean updateObject(Serializable obj) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(obj);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error updating object in database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+    
+    private <T> T getObject(Long id, Class<T> clazz) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(clazz, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
+        }
+    }
+    
+    private <T> List<T> getAllObjects(Class<T> clazz) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(String.format("SELECT o FROM %s o", clazz.getSimpleName())).getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e.toString(), clazz.getSimpleName());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+    
+    private <T> List<T> getMatchingObjects(Class<T> clazz, String whereClause, Map<String, Object> params) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery(String.format("SELECT o FROM %s o WHERE %s", clazz.getSimpleName(), whereClause));
+            params.forEach((name, value) -> q.setParameter(name, value));
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e.toString(), clazz.getSimpleName());
+            return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+    
 
 }

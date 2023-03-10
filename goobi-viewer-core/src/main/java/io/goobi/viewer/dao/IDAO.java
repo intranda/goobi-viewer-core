@@ -42,6 +42,7 @@ import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.HighlightedObjectData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -2589,6 +2590,67 @@ public interface IDAO {
 
     public boolean deleteUsageStatistics(long id) throws DAOException;
 
+
+    public boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+
+    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+
+    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
+
+    public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
+
+    public boolean deleteViewerMessage(ViewerMessage message) throws DAOException;
+
+    public boolean addViewerMessage(ViewerMessage message) throws DAOException;
+
+    public boolean updateViewerMessage(ViewerMessage message) throws DAOException;
+
+    public ViewerMessage getViewerMessage(Long id) throws DAOException;
+
+    public ViewerMessage getViewerMessageByMessageID(String id) throws DAOException;
+
+    /**
+     * <p>
+     * getViewerMessages.
+     * </p>
+     *
+     * @param first a int.
+     * @param pageSize a int.
+     * @param sortField a {@link java.lang.String} object.
+     * @param descending a boolean.
+     * @param filters a {@link java.util.Map} object.
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<ViewerMessage> getViewerMessages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException;
+
+    /**
+     * <p>
+     * getViewerMessageCount.
+     * </p>
+     *
+     * @param filters a {@link java.util.Map} object.
+     * @return a long.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public long getViewerMessageCount(Map<String, String> filters) throws DAOException;
+
+    public List<RecurringTaskTrigger> getRecurringTaskTriggers() throws DAOException;
+    public RecurringTaskTrigger getRecurringTaskTrigger(Long id) throws DAOException;
+    public RecurringTaskTrigger getRecurringTaskTriggerForTask(TaskType task) throws DAOException;
+    public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
+    public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
+    public boolean deleteRecurringTaskTrigger(Long id) throws DAOException;
+
+    public int deleteViewerMessagesBefore(LocalDateTime date) throws DAOException;
+    
+    public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException;
+    public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException;
+    public HighlightedObjectData getHighlightedObject(Long id) throws DAOException;
+    public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException;
+    public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException;
+    
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
      *
@@ -2654,58 +2716,5 @@ public interface IDAO {
      */
     void handleException(EntityManager em);
 
-    public boolean deleteCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
-
-    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
-
-    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
-
-    public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
-
-    public boolean deleteViewerMessage(ViewerMessage message) throws DAOException;
-
-    public boolean addViewerMessage(ViewerMessage message) throws DAOException;
-
-    public boolean updateViewerMessage(ViewerMessage message) throws DAOException;
-
-    public ViewerMessage getViewerMessage(Long id) throws DAOException;
-
-    public ViewerMessage getViewerMessageByMessageID(String id) throws DAOException;
-
-    /**
-     * <p>
-     * getViewerMessages.
-     * </p>
-     *
-     * @param first a int.
-     * @param pageSize a int.
-     * @param sortField a {@link java.lang.String} object.
-     * @param descending a boolean.
-     * @param filters a {@link java.util.Map} object.
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public List<ViewerMessage> getViewerMessages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
-            throws DAOException;
-
-    /**
-     * <p>
-     * getViewerMessageCount.
-     * </p>
-     *
-     * @param filters a {@link java.util.Map} object.
-     * @return a long.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public long getViewerMessageCount(Map<String, String> filters) throws DAOException;
-
-    public List<RecurringTaskTrigger> getRecurringTaskTriggers() throws DAOException;
-    public RecurringTaskTrigger getRecurringTaskTrigger(Long id) throws DAOException;
-    public RecurringTaskTrigger getRecurringTaskTriggerForTask(TaskType task) throws DAOException;
-    public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
-    public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
-    public boolean deleteRecurringTaskTrigger(Long id) throws DAOException;
-
-    public int deleteViewerMessagesBefore(LocalDateTime date) throws DAOException;
 
 }
