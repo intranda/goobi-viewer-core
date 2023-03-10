@@ -2,11 +2,17 @@ package io.goobi.viewer.model.cms;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -21,113 +27,82 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cms_sliders")
-public class HighlightedObject implements Serializable {
+public class HighlightedObject implements CMSMediaHolder, IPolyglott {
 
     private static final long serialVersionUID = 2632497568590266830L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "slider_id")
-    private Long id;
     
-    @Column(name = "enabled")
-    private boolean enabled = true;
-    
-    @Column(name = "name", nullable = true, columnDefinition = "MEDIUMTEXT")
-    @Convert(converter = TranslatedTextConverter.class)
-    private TranslatedText name = new TranslatedText();
-    
-    @Column(name="record_identifier")
-    private String recordIdentifier;
-    
-    @Column(name = "date_start")
-    @JsonIgnore
-    private LocalDateTime dateStart;
+    private final HighlightedObjectData data;
 
-    @Column(name = "date_end")
-    @JsonIgnore
-    private LocalDateTime dateEnd;
-    
-    @JoinColumn(name = "media_item_id")
-    private CMSMediaItem mediaItem;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "image_mode")
-    private ImageMode imageMode;
-    
-    public enum ImageMode {
-        NO_IMAGE,
-        UPLOADED_IMAGE,
-        RECORD_REPRESENTATIVE
+    public HighlightedObject(HighlightedObjectData data, )
+
+    @Override
+    public boolean isComplete(Locale locale) {
+        return this.name.isComplete(locale);
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public boolean isValid(Locale locale) {
+        return this.name.isValid(locale);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return this.name.isEmpty();
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    @Override
+    public Locale getSelectedLocale() {
+        return this.name.getSelectedLocale();
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        this.name.setSelectedLocale(locale);
     }
 
-    public TranslatedText getName() {
-        return name;
+    @Override
+    public String getMediaFilter() {
+        return CmsMediaBean.getImageFilter();
     }
 
-    public void setName(TranslatedText name) {
-        this.name = name;
+    @Override
+    public String getMediaTypes() {
+        return CmsMediaBean.getImageTypes();
     }
 
-    public String getRecordIdentifier() {
-        return recordIdentifier;
+    @Override
+    public boolean hasMediaItem() {
+        return this.mediaItem != null;
     }
 
-    public void setRecordIdentifier(String recordIdentifier) {
-        this.recordIdentifier = recordIdentifier;
+    @Override
+    public CategorizableTranslatedSelectable<CMSMediaItem> getMediaItemWrapper() {
+        if (hasMediaItem()) {
+            return new CategorizableTranslatedSelectable<>(mediaItem, true,
+                    mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
+        }
+
+        return null;
     }
 
-    public LocalDateTime getDateStart() {
-        return dateStart;
+    public boolean hasImageURI() {
+        switch (this.imageMode) {
+            case RECORD_REPRESENTATIVE:
+                return true;
+            case UPLOADED_IMAGE:
+                return hasMediaItem();
+            default:
+                return false;
+        }
     }
 
-    public void setDateStart(LocalDateTime dateStart) {
-        this.dateStart = dateStart;
+    public URI getImageURI() {
+        switch (this.imageMode) {
+            case UPLOADED_IMAGE:
+                return this.mediaItem.getIconURI();
+            case RECORD_REPRESENTATIVE:
+                
+        }
     }
 
-    public LocalDateTime getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(LocalDateTime dateEnd) {
-        this.dateEnd = dateEnd;
-    }
-
-    public CMSMediaItem getMediaItem() {
-        return mediaItem;
-    }
-
-    public void setMediaItem(CMSMediaItem mediaItem) {
-        this.mediaItem = mediaItem;
-    }
-
-    public ImageMode getImageMode() {
-        return imageMode;
-    }
-
-    public void setImageMode(ImageMode imageMode) {
-        this.imageMode = imageMode;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-    
-    
 }
