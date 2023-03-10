@@ -1174,7 +1174,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public Document exportAsXml() {
         Document doc = new Document();
-        doc.setRootElement(new Element("cmsPage"));
+        doc.setRootElement(new Element("cmsPage").setAttribute("id", "CMS" + getId()));
         doc.getRootElement().addContent(new Element("title").setText(getTitle()));
 
         // Categories

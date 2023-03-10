@@ -370,7 +370,7 @@ public class IndexerTools {
         }
 
         Document doc = page.exportAsXml();
-        String namingScheme = findNamingScheme(String.valueOf(page.getId()), "xml");
+        String namingScheme = findNamingScheme("CMS" + page.getId(), "xml");
 
         // Finally, write the record XML file to the hotfolder
         try {
