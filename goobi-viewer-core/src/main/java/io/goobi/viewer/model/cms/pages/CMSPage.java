@@ -282,7 +282,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             copy.setOwningPage(this);
             this.persistentComponents.add(copy);
         }
-        
+
     }
 
     /**
@@ -329,8 +329,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             }
         }
         sortComponents();
-        getText();
-
     }
 
     private void sortComponents() {
@@ -1224,14 +1222,15 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     public List<CMSComponent> getComponents() {
-        if(this.cmsComponents.size() != this.persistentComponents.size()) {
+        if (this.cmsComponents.size() != this.persistentComponents.size()) {
             logger.error("CMSComponents not initialized. Call initialiseCMSComponents to do so");
         }
         return this.cmsComponents;
     }
 
     public CMSComponent getAsCMSComponent(PersistentCMSComponent p) {
-        return this.getComponents().stream()
+        return this.getComponents()
+                .stream()
                 .filter(c -> c.getPersistentComponent() == p)
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Component " + p.getId() + " is not registered in page"));
@@ -1246,7 +1245,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return success;
     }
 
-    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager) throws IllegalArgumentException, IllegalStateException {
+    public PersistentCMSComponent addComponent(String filename, CMSTemplateManager templateManager)
+            throws IllegalArgumentException, IllegalStateException {
         return addComponent(templateManager
                 .getComponent(filename)
                 .orElseThrow(() -> new IllegalArgumentException("No component configured with filename " + filename)));
@@ -1275,7 +1275,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         Locale defaultLocale = IPolyglott.getDefaultLocale();
         return this.title.isComplete(locale, defaultLocale, true) &&
                 this.menuTitle.isComplete(locale, defaultLocale, false) &&
-                this.getPersistentComponents().stream()
+                this.getPersistentComponents()
+                        .stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
                         .allMatch(content -> content.getText().isComplete(locale, defaultLocale, content.isRequired()));
     }
@@ -1283,7 +1284,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     @Override
     public boolean isValid(Locale locale) {
         return this.title.isValid(locale) &&
-                this.getPersistentComponents().stream()
+                this.getPersistentComponents()
+                        .stream()
                         .flatMap(comp -> comp.getTranslatableContentItems().stream())
                         .filter(TranslatableCMSContent::isRequired)
                         .allMatch(content -> content.getText().isValid(locale));
@@ -1396,14 +1398,14 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                 .filter(CMSComponent::isPreview)
                 .collect(Collectors.toList());
     }
-    
+
     public List<CMSComponentGroup> getGroupedPageViewComponents() {
-         List<CMSComponent> components = getPageViewComponents();
-         List<CMSComponentGroup> groups = new ArrayList<>();
-         CMSComponentGroup currentGroup = null;
-         for (CMSComponent cmsComponent : components) {
+        List<CMSComponent> components = getPageViewComponents();
+        List<CMSComponentGroup> groups = new ArrayList<>();
+        CMSComponentGroup currentGroup = null;
+        for (CMSComponent cmsComponent : components) {
             String groupName = cmsComponent.getAttributeValue(HTML_GROUP);
-            if(currentGroup == null || !Objects.equals(currentGroup.getName(), groupName)) {
+            if (currentGroup == null || !Objects.equals(currentGroup.getName(), groupName)) {
                 currentGroup = new CMSComponentGroup(groupName);
                 groups.add(currentGroup);
             }
@@ -1411,7 +1413,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         }
         return groups;
     }
-
 
     public List<CMSComponent> getPageViewComponents() {
         return this.getComponents()
@@ -1435,23 +1436,5 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void setTemplateId(Long templateId) {
         this.templateId = templateId;
     }
-    
-    public void getText() {
-        List<TranslatedText> texts = this.getComponents().stream()
-        .map(CMSComponent::getTranslatableContentItems)
-        .flatMap(List::stream)
-        .map(CMSContentItem::getContent)
-        .map(TranslatableCMSContent.class::cast)
-        .map(c -> c.getText())
-        .collect(Collectors.toList());
-        
-        for (TranslatedText text : texts) {
-            for (ValuePair pair : text.getValues()) {
-                if(StringUtils.isNotBlank(pair.getValue())) {                    
-                    System.out.println(pair.getLanguage() + " -> " + pair.getValue());
-                }
-            }
-        }
-        
-    }
+
 }
