@@ -6997,35 +6997,43 @@ public class JPADAO implements IDAO {
 
     @Override
     public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException {
-        return addObject(object);
+        return addEntity(object);
     }
 
     @Override
     public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException {
-        return updateObject(object);
+        return updateEntity(object);
     }
     
     @Override
     public boolean deleteHighlightedObject(Long id) throws DAOException {
-        return deleteObject(id, HighlightedObjectData.class);
+        return deleteEntity(id, HighlightedObjectData.class);
     }
 
     @Override
     public HighlightedObjectData getHighlightedObject(Long id) throws DAOException {
-        return getObject(id, HighlightedObjectData.class);
+        return getEntity(id, HighlightedObjectData.class);
     }
 
     @Override
     public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException {
-        return getAllObjects(HighlightedObjectData.class);
+        return getAllEntities(HighlightedObjectData.class);
     }
 
     @Override
     public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException {
-        return getMatchingObjects(HighlightedObjectData.class, "o.enabled = TRUE AND :date BETWEEN o.dateStart AND o.dateEnd", Map.of("date", date));
+        return getMatchingEntities(HighlightedObjectData.class, "o.enabled = TRUE AND :date BETWEEN o.dateStart AND o.dateEnd", Map.of("date", date));
     }
     
-    private boolean addObject(Serializable obj) throws DAOException {
+
+    @Override
+    public List<HighlightedObjectData> getHighlightedObjects(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters) throws DAOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    private boolean addEntity(Serializable obj) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -7042,7 +7050,7 @@ public class JPADAO implements IDAO {
         }
     }
     
-    private boolean updateObject(Serializable obj) throws DAOException {
+    private boolean updateEntity(Serializable obj) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -7059,7 +7067,7 @@ public class JPADAO implements IDAO {
         }
     }
     
-    private <T> T getObject(Long id, Class<T> clazz) throws DAOException {
+    private <T> T getEntity(Long id, Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -7072,7 +7080,7 @@ public class JPADAO implements IDAO {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> getAllObjects(Class<T> clazz) throws DAOException {
+    private <T> List<T> getAllEntities(Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -7086,7 +7094,7 @@ public class JPADAO implements IDAO {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> getMatchingObjects(Class<T> clazz, String whereClause, Map<String, Object> params) throws DAOException {
+    private <T> List<T> getMatchingEntities(Class<T> clazz, String whereClause, Map<String, Object> params) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -7101,7 +7109,7 @@ public class JPADAO implements IDAO {
         }
     }
     
-    private <T> boolean deleteObject(Long id, Class<T> clazz) throws DAOException {
+    private <T> boolean deleteEntity(Long id, Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -7118,6 +7126,70 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
 
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
+            throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        Character entityVariable = 'a';
+        try {
+            StringBuilder sbQuery = new StringBuilder(String.format("SELECT %c FROM %s %c", entityVariable, clazz.getSimpleName(), entityVariable));
+            Map<String, Object> params = new HashMap<>();
+
+            if (filters != null && !filters.isEmpty()) {
+                String filterQuery = addViewerMessageFilterQuery(filters, params);
+                sbQuery.append(filterQuery);
+            }
+
+            if (StringUtils.isNotEmpty(sortField)) {
+                sbQuery.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    sbQuery.append(QUERY_ELEMENT_DESC);
+                }
+            } else {
+                sbQuery.append(" ORDER BY a.lastUpdateTime").append(QUERY_ELEMENT_DESC);
+            }
+            logger.trace(sbQuery);
+            Query q = em.createQuery(sbQuery.toString());
+            for (Entry<String, Object> entry : params.entrySet()) {
+                q.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+
+            return (List<ViewerMessage>) q.getResultList().stream().distinct().collect(Collectors.toList());
+        } finally {
+            close(em);
+        }
+    }
+    
+    private String addFilterQueries(Map<String, Object> filters, Map<String, Object> params, Character entityVariable) {
+        Stream<String> queries = filters.entrySet().stream().map(entry -> getFilterQuery(entry.getKey(), entry.getValue(), params, entityVariable));
+        return "(" + queries.collect(Collectors.joining(") OR (")) + ")";
+    }
+    
+    /**
+     * returns  String in the form "a.field LIKE :field if filterValue is a string or "a.field = :field" otherwise
+     * @param filterField   A field name to search in
+     * @param filterValue   The value to search for
+     * @param params        a parameter
+     * @param entityVariable
+     * @return
+     */
+    private String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
+        if(filterValue != null && filterValue instanceof String) {            
+            String query = String.format("%c.%s LIKE :%s", entityVariable, filterField, filterField);
+            params.put(filterField, filterValue);
+            return query;
+        } else if(filterValue != null) {
+            String query = String.format("%c.%s = :%s", entityVariable, filterField, filterField);
+            params.put(filterField, filterValue);
+            return query;
+        } else {
+            return "";
+        }
+    }
 }

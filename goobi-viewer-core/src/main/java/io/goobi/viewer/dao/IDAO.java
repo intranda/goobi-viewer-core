@@ -2650,6 +2650,7 @@ public interface IDAO {
     public boolean deleteHighlightedObject(Long id) throws DAOException;
     public HighlightedObjectData getHighlightedObject(Long id) throws DAOException;
     public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException;
+    public List<HighlightedObjectData> getHighlightedObjects(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
     public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException;
     
     /**
