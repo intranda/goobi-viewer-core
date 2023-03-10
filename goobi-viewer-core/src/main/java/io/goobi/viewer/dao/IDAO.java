@@ -2647,6 +2647,7 @@ public interface IDAO {
     
     public boolean addHighlightedObject(HighlightedObjectData object) throws DAOException;
     public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException;
+    public boolean deleteHighlightedObject(Long id) throws DAOException;
     public HighlightedObjectData getHighlightedObject(Long id) throws DAOException;
     public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException;
     public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException;
@@ -2715,6 +2716,5 @@ public interface IDAO {
      * @throws PersistenceException
      */
     void handleException(EntityManager em);
-
 
 }

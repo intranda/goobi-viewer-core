@@ -7004,6 +7004,11 @@ public class JPADAO implements IDAO {
     public boolean updateHighlightedObject(HighlightedObjectData object) throws DAOException {
         return updateObject(object);
     }
+    
+    @Override
+    public boolean deleteHighlightedObject(Long id) throws DAOException {
+        return deleteObject(id, HighlightedObjectData.class);
+    }
 
     @Override
     public HighlightedObjectData getHighlightedObject(Long id) throws DAOException {
@@ -7066,6 +7071,7 @@ public class JPADAO implements IDAO {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private <T> List<T> getAllObjects(Class<T> clazz) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -7079,6 +7085,7 @@ public class JPADAO implements IDAO {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private <T> List<T> getMatchingObjects(Class<T> clazz, String whereClause, Map<String, Object> params) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
@@ -7089,6 +7096,24 @@ public class JPADAO implements IDAO {
         } catch (PersistenceException e) {
             logger.error("Exception \"{}\" when trying to get objects of class {}. Returning empty list", e.toString(), clazz.getSimpleName());
             return new ArrayList<>();
+        } finally {
+            close(em);
+        }
+    }
+    
+    private <T> boolean deleteObject(Long id, Class<T> clazz) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            T o = em.getReference(clazz, id);
+            em.remove(o);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            logger.error("Error deleting {}", clazz.getSimpleName(), e);
+            handleException(em);
+            return false;
         } finally {
             close(em);
         }

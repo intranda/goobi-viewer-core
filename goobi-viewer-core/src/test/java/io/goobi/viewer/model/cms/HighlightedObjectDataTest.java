@@ -22,6 +22,8 @@
 package io.goobi.viewer.model.cms;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +35,9 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.HighlightedObjectData.ImageMode;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.translations.TranslatedText;
 
 public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
 
@@ -45,15 +50,70 @@ public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
+    public void test_add() throws DAOException {
+        HighlightedObjectData object = new HighlightedObjectData();
+        object.setName(new TranslatedText("Test Name"));
+        object.setDateStart(LocalDate.of(2023, 6, 12));
+        object.setDateEnd(LocalDate.of(2023, 6, 24));
+        CMSMediaItem mediaItem = dao.getCMSMediaItem(1);
+        object.setMediaItem(mediaItem);
+        object.setImageMode(ImageMode.UPLOADED_IMAGE);
+        
+        assertTrue(this.dao.addHighlightedObject(object));
+        assertNotNull(object.getId());
+        
+        HighlightedObjectData loaded = this.dao.getHighlightedObject(object.getId());
+        assertEquals("Test Name", loaded.getName().getText());
+        assertEquals(mediaItem, loaded.getMediaItem());
+        assertEquals(ImageMode.UPLOADED_IMAGE, object.getImageMode());
+    }
+    
+    @Test
+    public void test_update() throws DAOException {
+        CMSMediaItem mediaItem = dao.getCMSMediaItem(1);
+        HighlightedObjectData object = dao.getHighlightedObject(1l);
+        assertEquals("Objekt des Monats Januar", object.getName().getText());
+        assertEquals(null, object.getMediaItem());
+        assertEquals(ImageMode.RECORD_REPRESENTATIVE, object.getImageMode());
+        
+        object.setName(new TranslatedText("New Name"));
+        object.setDateStart(LocalDate.of(2023, 4, 12));
+        object.setDateEnd(LocalDate.of(2023, 4, 24));
+        object.setMediaItem(mediaItem);
+        object.setImageMode(ImageMode.UPLOADED_IMAGE);
+        
+        assertTrue(this.dao.updateHighlightedObject(object));
+        assertNotNull(object.getId());
+        
+        HighlightedObjectData loaded = this.dao.getHighlightedObject(object.getId());
+        assertEquals("New Name", loaded.getName().getText());
+        assertEquals(mediaItem, loaded.getMediaItem());
+        assertEquals(ImageMode.UPLOADED_IMAGE, object.getImageMode());
+    }
+    
+    @Test
+    public void test_delete() throws DAOException {
+        assertEquals(3, dao.getAllHighlightedObjects().size());
+        dao.deleteHighlightedObject(1l);
+        assertEquals(2, dao.getAllHighlightedObjects().size());
+    }
+    
+    @Test
     public void test_getAll() throws DAOException {
         assertEquals(3, dao.getAllHighlightedObjects().size());
     }
 
     @Test
     public void test_getForDate() throws DAOException {
-        LocalDateTime time = LocalDate.of(2023, 1, 15).atStartOfDay();
+        LocalDateTime time = LocalDate.of(2023, 2, 15).atStartOfDay();
         assertEquals(1, dao.getHighlightedObjectsForDate(time).size());
-        assertEquals("Objekt des Monats Januar", dao.getHighlightedObjectsForDate(time).get(0).getName().getText());
+        assertEquals("Objekt des Monats Februar", dao.getHighlightedObjectsForDate(time).get(0).getName().getText());
+        
+        LocalDateTime time2 = LocalDate.of(2023, 2, 1).atStartOfDay();
+        assertEquals(2, dao.getHighlightedObjectsForDate(time2).size());
+        
+        LocalDateTime time3 = LocalDate.of(2023, 3, 15).atStartOfDay();
+        assertEquals(0, dao.getHighlightedObjectsForDate(time3).size());
     }
 
 }

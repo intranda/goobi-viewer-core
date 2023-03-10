@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Locale;
@@ -127,6 +128,10 @@ public class HighlightedObjectData implements Serializable {
     public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
     }
+    
+    public void setDateStart(LocalDate dateStart) {
+        this.dateStart = dateStart.atStartOfDay();
+    }
 
     public LocalDateTime getDateEnd() {
         return dateEnd;
@@ -134,6 +139,10 @@ public class HighlightedObjectData implements Serializable {
 
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
+    }
+    
+    public void setDateEnd(LocalDate dateEnd) {
+        this.dateEnd = dateEnd.atStartOfDay();
     }
 
     public CMSMediaItem getMediaItem() {
