@@ -32,9 +32,11 @@ import java.rmi.server.RMIServerSocketFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,6 +46,9 @@ import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
+import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.management.remote.JMXServiceURL;
@@ -53,12 +58,15 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.activemq.memory.buffer.MessageQueue;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Startup;
 import org.reflections.Reflections;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -308,6 +316,31 @@ public class MessageQueueManager {
         }
         producer.send(message);
         return message.getJMSMessageID();
+    }
+    
+    public Optional<ViewerMessage> getMessageById(String messageId) {
+
+        if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker() && StringUtils.isNotBlank(messageId)) {
+            try {
+                ActiveMQConnection connection = getConnection();
+                connection.start();
+                QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+                Queue queue = queueSession.createQueue("viewer");
+                QueueBrowser browser = queueSession.createBrowser(queue, "JMSMessageID='" + messageId + "'");
+                Enumeration<?> messagesInQueue = browser.getEnumeration();
+                if(messagesInQueue.hasMoreElements()) {
+                    ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
+                    ViewerMessage ticket = ViewerMessage.parseJSON(queueMessage.getText());
+                    ticket.setMessageId(queueMessage.getJMSMessageID());
+                    return Optional.of(ticket);
+                }
+                browser.close();
+                connection.stop();
+            } catch (JMSException | JacksonException e) {
+                logger.error(e);
+            }
+        }
+        return Optional.empty();
     }
     
     public BrokerService getBroker() {

@@ -75,7 +75,6 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     private int imagesPerView;
     @Column(name = "important_images_per_view")
     private int importantImagesPerView;
-    
 
     @Transient
     List<CheckboxSelectable<CMSCategory>> selectableCategories = null;
@@ -92,9 +91,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
         this.categories = new ArrayList<>(orig.categories);
         this.imagesPerView = orig.imagesPerView;
         this.importantImagesPerView = orig.importantImagesPerView;
-        System.out.println("Cloned " + this);
     }
-    
 
     @Override
     public String getBackendComponentName() {
@@ -109,7 +106,6 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
         if (this.selectableCategories == null) {
             createSelectableCategories();
         }
-        System.out.println("Get categories for " + this);
         return this.selectableCategories;
     }
 
@@ -141,14 +137,15 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     public List<MediaItem> getMediaItems() throws DAOException {
         return getMediaItems(false);
     }
-    
+
     public List<MediaItem> getMediaItems(boolean random) throws DAOException {
         return new CMSMediaLister(DataManager.getInstance().getDao())
                 .getMediaItems(
-                    this.categories.stream().map(CMSCategory::getName).collect(Collectors.toList()), 
-                    this.imagesPerView, 
-                    this.importantImagesPerView, 
-                    Boolean.TRUE.equals(random), BeanUtils.getRequest()).getMediaItems();
+                        this.categories.stream().map(CMSCategory::getName).collect(Collectors.toList()),
+                        this.imagesPerView,
+                        this.importantImagesPerView,
+                        Boolean.TRUE.equals(random), BeanUtils.getRequest())
+                .getMediaItems();
     }
 
     /**
@@ -241,13 +238,16 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     public boolean isEmpty() {
         return false;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if(this.getOwningComponent() != null) {            
-            sb.append("Parent ID = ").append(this.getOwningComponent().getId())
-            .append("|").append("Order = ").append(getOwningComponent().getOrder());
+        if (this.getOwningComponent() != null) {
+            sb.append("Parent ID = ")
+                    .append(this.getOwningComponent().getId())
+                    .append("|")
+                    .append("Order = ")
+                    .append(getOwningComponent().getOrder());
         }
         sb.append("|").append("Categories = ").append(this.categories);
         return sb.toString();

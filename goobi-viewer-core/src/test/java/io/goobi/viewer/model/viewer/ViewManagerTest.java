@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mockitoSession;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.ibm.icu.impl.UResource.Array;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -140,24 +143,24 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(11, pages.get(0).getOrder());
         Assert.assertEquals(15, pages.get(4).getOrder());
     }
-    
+
     @Test
     public void getImagesSection_shouldReturnCorrectPhysicalElementsForAThumbnailPageWithStartPageTwo() throws Exception {
         int thumbnailsPerPage = 30;
 
         StructElement se = new StructElement(iddocKleiuniv);
         Assert.assertNotNull(se);
-        
+
         IPageLoader pageLoader = Mockito.mock(IPageLoader.class);
         Mockito.when(pageLoader.getFirstPageOrder()).thenReturn(2);
         Mockito.when(pageLoader.getLastPageOrder()).thenReturn(181);
         Mockito.when(pageLoader.getNumPages()).thenReturn(180);
-        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenAnswer( i -> {
+        Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenAnswer(i -> {
             int pageNo = i.getArgument(0);
             PhysicalElement page = new PhysicalElement("" + pageNo, "" + pageNo, pageNo, "" + pageNo, "", "", "", "", "");
             return page;
         });
-        
+
         ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, null, null);
         Assert.assertEquals(180, viewManager.getImagesCount());
 
@@ -165,19 +168,19 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         List<PhysicalElement> pages = viewManager.getImagesSection(thumbnailsPerPage);
         Assert.assertEquals(30, pages.size());
         Assert.assertEquals(2, pages.get(0).getOrder());
-        Assert.assertEquals(31, pages.get(pages.size()-1).getOrder());
+        Assert.assertEquals(31, pages.get(pages.size() - 1).getOrder());
 
         viewManager.setCurrentThumbnailPage(2);
         pages = viewManager.getImagesSection(thumbnailsPerPage);
         Assert.assertEquals(30, pages.size());
         Assert.assertEquals(32, pages.get(0).getOrder());
-        Assert.assertEquals(61, pages.get(pages.size()-1).getOrder());
-        
+        Assert.assertEquals(61, pages.get(pages.size() - 1).getOrder());
+
         viewManager.setCurrentThumbnailPage(6);
         pages = viewManager.getImagesSection(thumbnailsPerPage);
         Assert.assertEquals(30, pages.size());
         Assert.assertEquals(152, pages.get(0).getOrder());
-        Assert.assertEquals(181, pages.get(pages.size()-1).getOrder());
+        Assert.assertEquals(181, pages.get(pages.size() - 1).getOrder());
     }
 
     /**
@@ -448,7 +451,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
         Mockito.when(page.getMimeType()).thenReturn("image/tiff");
         Mockito.when(page.getBaseMimeType()).thenReturn("image");
-        
+
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
         Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);
 
@@ -525,6 +528,34 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement(iddocKleiuniv);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, "application/pdf", null);
         Assert.assertTrue(viewManager.isFilesOnly());
+    }
+
+    @Test
+    public void test_getPdfDownloadLink()
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        String test = String.format("%srecords/%s/pdf/", DataManager.getInstance().getConfiguration().getIIIFApiUrl(), se.getPi());
+        String link = viewManager.getPdfDownloadLink();
+        assertEquals(test, link);
+    }
+
+    @Test
+    public void test_getPdfDownloadLink_queryParams()
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
+        StructElement se = new StructElement(iddocKleiuniv);
+        Assert.assertNotNull(se);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+
+        String test = String.format("%srecords/%s/pdf/?%s=%s",
+                DataManager.getInstance().getConfiguration().getIIIFApiUrl(), se.getPi(), "usePdfSource", "true");
+        String link = viewManager.getPdfDownloadLink(List.of(List.of("usePdfSource", "true")));
+        assertEquals(test, link);
+
+        String test2 = String.format(test + "&%s=%s&%s=%s", "queryA", "a", "queryB", "b");
+        String link2 = viewManager.getPdfDownloadLink(List.of(List.of("usePdfSource", "true"), List.of("queryA", "a"), List.of("queryB", "b")));
+        assertEquals(test2, link2);
     }
 
 }

@@ -1,3 +1,24 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package io.goobi.viewer.model.job.mq;
 
 import java.io.IOException;
@@ -8,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +39,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.mq.MessageHandler;
@@ -31,6 +54,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
     private static final Logger logger = LogManager.getLogger(PrerenderPdfMessageHandler.class);
     private static final String PDF = "pdf";
     private static final String MEDIA = "media";
+    private static final String ALTO = "alto";
 
     private final ProcessDataResolver processDataResolver;
     private final ContentServerConfiguration contentServerConfiguration;
@@ -55,7 +79,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         if (StringUtils.isNotBlank(pi)) {
             logger.trace("Starting task to prerender pdf files for PI {}, using config {}; force = {}", pi, this.contentServerConfiguration, force);
             try {
-                if(!createPdfFiles(pi, configVariant, force)) {
+                if (!createPdfFiles(pi, configVariant, force)) {
                     return MessageStatus.ERROR;
                 }
             } catch (IndexUnreachableException | PresentationException e) {
@@ -67,9 +91,10 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
     }
 
     private boolean createPdfFiles(String pi, String configVariant, boolean force) throws PresentationException, IndexUnreachableException {
-        Map<String, Path> dataFolders = processDataResolver.getDataFolders(pi, MEDIA, PDF);
+        Map<String, Path> dataFolders = processDataResolver.getDataFolders(pi, MEDIA, PDF, ALTO);
         Path imageFolder = dataFolders.get(MEDIA);
         Path pdfFolder = dataFolders.get(PDF);
+        Path altoFolder = dataFolders.get(ALTO);
         if (imageFolder != null && pdfFolder != null && Files.exists(imageFolder)) {
             List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.imageNameFilter);
             List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.pdfNameFilter);
@@ -78,8 +103,16 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
             } else if (imageFiles.size() == pdfFiles.size() && !force) {
                 logger.trace("PDF files already exist. Abandoning task");
             } else {
+                if (!Files.exists(pdfFolder)) {
+                    try {
+                        Files.createDirectories(pdfFolder);
+                    } catch (IOException e) {
+                        logger.error("Cannot create pdf directory: {}", e.toString());
+                        return false;
+                    }
+                }
                 for (Path imagePath : imageFiles) {
-                    if (!createPdfFile(imagePath, pdfFolder, configVariant)) {
+                    if (!createPdfFile(imagePath, pdfFolder, altoFolder, configVariant)) {
                         return false;
                     }
                 }
@@ -88,8 +121,12 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         return true;
     }
 
-    private boolean createPdfFile(Path imagePath, Path pdfFolder, String configVariant) {
-        Map<String, String> params = Map.of("config", configVariant);
+    private boolean createPdfFile(Path imagePath, Path pdfFolder, Path altoFolder, String configVariant) {
+        Map<String, String> params = Map.of(
+                "config", configVariant,
+                "ignoreCache", "true",
+                "altoSource", Optional.ofNullable(altoFolder).map(f -> PathConverter.toURI(f.toAbsolutePath()).toString()).orElse(""),
+                "imageSource", PathConverter.toURI(imagePath.getParent().toAbsolutePath()).toString());
         Path pdfPath = pdfFolder.resolve(FileTools.replaceExtension(imagePath.getFileName(), "pdf"));
         try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             SinglePdfRequest request = new SinglePdfRequest(imagePath.toString(), params);

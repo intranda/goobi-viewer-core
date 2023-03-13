@@ -34,6 +34,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -286,6 +288,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
             copy.setOwningPage(this);
             this.persistentComponents.add(copy);
         }
+
     }
 
     /**
@@ -1492,4 +1495,5 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void setTemplateId(Long templateId) {
         this.templateId = templateId;
     }
+
 }

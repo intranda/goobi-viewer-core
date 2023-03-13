@@ -79,7 +79,7 @@
 		<sonar.java.target>11</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>3700</checkstyle.max.violations>
+		<checkstyle.max.violations>4000</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 
@@ -139,7 +139,7 @@
 		<jsoup.version>1.15.4</jsoup.version>
 		<junit.version>4.13.2</junit.version>
 		<mariadb-java-client.version>3.1.2</mariadb-java-client.version>
-		<mockito.version>5.1.1</mockito.version>
+		<mockito.version>5.2.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.2</omnifaces.version>
@@ -1033,7 +1033,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.8.0</version>
+						<version>10.8.1</version>
 					</dependency>
 				</dependencies>
 				<executions>

@@ -140,6 +140,7 @@ public class Task {
             case UPDATE_DATA_REPOSITORY_NAMES:
             case UPDATE_UPLOAD_JOBS:
             case INDEX_USAGE_STATISTICS:
+            case PRERENDER_PDF:
                 return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;
