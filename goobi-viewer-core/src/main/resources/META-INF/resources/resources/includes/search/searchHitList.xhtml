@@ -87,66 +87,69 @@
         
         <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
-            <ui:fragment rendered="#{not empty resultGroup.hits}">
-            <h2>#{msg[resultGroup.name]}</h2>
-            <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
-                <div class="search-list__hit">
-                    <!-- COinS IMPLEMENTATION -->
-                    <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
-                    <!-- HEADER -->
-                    <header class="search-list__hit-header">
+                <ui:fragment rendered="#{not empty resultGroup.hits}">
+                    <ui:fragment renreded="#{resultGroup.name != '_DEFAULT'}">
+                        <h2>#{msg[resultGroup.name]}</h2>
+                    </ui:fragment>
+                    <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
+                        <div class="search-list__hit">
+                            <!-- COinS IMPLEMENTATION -->
+                            <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
+                            <!-- HEADER -->
+                            <header class="search-list__hit-header">
                     
-                        <ui:include src="/resources/includes/search/browseElement.xhtml">
-                        	<ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
-                        	<ui:param name="showBookmarkIcon" value="#{configurationBean.bookshelvesEnabled}"></ui:param>
-                        </ui:include>
-                    </header>
+                                <ui:include src="/resources/includes/search/browseElement.xhtml">
+                        	       <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
+                        	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookshelvesEnabled}"></ui:param>
+                                </ui:include>
+                            </header>
 
-                    <!-- CONTENT -->
-                    <h:panelGroup rendered="#{hit.hasHitCount}">
-                        <!-- GET CHILD HITS -->
-                        <button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
-                            <i class="fa fa-caret-right" aria-hidden="true"></i>
-                            <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
-                                <f:param value="#{hit.cmsPageHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0}" value=", " />
-                                <f:param value="#{hit.docstructHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
-                                <f:param value="#{hit.pageHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
-                                <f:param value="#{hit.metadataHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
-                                <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
-                                <f:param value="#{hit.eventHitCount}" />
-                            </h:outputFormat>
-                            <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
-                                <h:outputText
-                                    rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
-                                    value=", " />
-                                <f:param value="#{hit.ugcHitCount}" />
-                            </h:outputFormat>
+                            <!-- CONTENT -->
+                            <h:panelGroup rendered="#{hit.hasHitCount}">
+                                <!-- GET CHILD HITS -->
+                                <button type="button" class="btn btn--clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                    <h:outputFormat rendered="#{hit.cmsPageHitCount > 0}" value="#{msg.searchChildCmsPageHitCount}">
+                                        <f:param value="#{hit.cmsPageHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.docstructHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.pageHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.metadataHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
+                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
+                                        <f:param value="#{hit.eventHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
+                                        <h:outputText
+                                         rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
+                                         value=", " />
+                                        <f:param value="#{hit.ugcHitCount}" />
+                                    </h:outputFormat>
                             
-                            <!-- LOADER -->
-                            <span class="search-list__loader">
-                                <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
-                            </span>
-                        </button>
-                    </h:panelGroup>
+                                    <!-- LOADER -->
+                                    <span class="search-list__loader">
+                                        <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
+                                    </span>
+                                </button>
+                            </h:panelGroup>
 
-                    <div class="search-list__hit-content"></div>
-                </div>
-            </ui:repeat>
-                <ui:fragment rendered="#{fn:length(resultGroup.hits) > 12}">
-                    TODO: more results
+                            <div class="search-list__hit-content"></div>
+                        </div>
+                    </ui:repeat>
+                    <!-- EXPAND LINK -->
+                    <ui:fragment rendered="#{resultGroup.displayExpandUrl}">
+                        <a href="#{#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{resultGroup.query}/}" />
+                    </ui:fragment>
                 </ui:fragment>
-            </ui:fragment>
             </ui:repeat>
         </h:form>
 

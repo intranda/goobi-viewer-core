@@ -36,6 +36,7 @@ public class SearchResultGroup implements Serializable {
 
     private final String name;
     private final String query;
+    private final int previewHitCount;
 
     /** Total hits count for the current search. */
     private long hitsCount = 0;
@@ -48,9 +49,16 @@ public class SearchResultGroup implements Serializable {
 
     private boolean hasGeoLocationHits = false;
 
-    public SearchResultGroup(String name, String query) {
+    /**
+     * 
+     * @param name
+     * @param query
+     * @param previewHitCount
+     */
+    public SearchResultGroup(String name, String query, int previewHitCount) {
         this.name = name;
         this.query = query;
+        this.previewHitCount = previewHitCount;
     }
 
     /**
@@ -58,7 +66,15 @@ public class SearchResultGroup implements Serializable {
      * @return
      */
     public static SearchResultGroup createDefaultGroup() {
-        return new SearchResultGroup("_DEFAULT", "");
+        return new SearchResultGroup("_DEFAULT", "", 10);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isDisplayExpandUrl() {
+        return hitsCount > previewHitCount;
     }
 
     /**

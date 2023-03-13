@@ -5298,7 +5298,8 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("search/resultGroups/group/@query may not be empty.");
                 continue;
             }
-            ret.add(new SearchResultGroup(name, query));
+            int previewHitCount = groupNode.getInt("[@previewHitCount]", 10);
+            ret.add(new SearchResultGroup(name, query, previewHitCount));
         }
 
         return ret;

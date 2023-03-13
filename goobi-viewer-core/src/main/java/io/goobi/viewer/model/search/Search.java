@@ -361,6 +361,23 @@ public class Search implements Serializable {
                 SearchHelper.buildFinalQuery(currentQuery, true, aggregationType) + subElementQueryFilterSuffix;
         logger.debug("Final main query: {}", finalQuery);
 
+        // TODO if facet query matches a result group filter query, remove all other result groups from the list
+        SearchResultGroup activeResultGroup = null;
+        for (String fq : activeFacetFilterQueries) {
+            logger.trace("fq: {}", fq);
+            for (SearchResultGroup resultGroup : resultGroups) {
+                logger.trace("rgq: {}", resultGroup.getQuery());
+                if (resultGroup.getQuery().equals(fq.replace(";;", ""))) {
+                    activeResultGroup = resultGroup;
+                    break;
+                }
+            }
+        }
+        if (activeResultGroup != null) {
+            resultGroups = Collections.singletonList(activeResultGroup);
+            logger.trace("Active result group: {}", activeResultGroup.getName());
+        }
+
         logger.trace("result groups: {}", resultGroups.size());
         for (SearchResultGroup resultGroup : resultGroups) {
             logger.trace("Result group: {}", resultGroup.getName());
