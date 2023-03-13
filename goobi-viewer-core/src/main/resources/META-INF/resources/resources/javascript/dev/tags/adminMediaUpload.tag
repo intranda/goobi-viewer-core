@@ -1,6 +1,6 @@
 <adminMediaUpload>
 	<div class="admin-cms-media__upload-wrapper">
-	    <div class="admin-cms-media__upload {isDragover ? 'is-dragover' : ''}" ref="dropZone">
+	    <div class="admin-cms-media__upload" ref="dropZone">
 	        <div class="admin-cms-media__upload-input">
 	            <p>
 	                {opts.msg.uploadText}
@@ -40,7 +40,6 @@
         } else {            
         	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
         }
-        this.isDragover = false;
     
         this.on('mount', function () {
             if(this.opts.showFiles) {
@@ -52,24 +51,24 @@
         }.bind(this));
 
         initDrop() {
-			var dropZone = (this.refs.dropZone);
+			var dropZone = (this.refs.dropZone); 
     
             
-            dropZone.addEventListener('dragover', function (e) {
+            dropZone.addEventListener('dragover', e => {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
 
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
 
-                this.isDragover = true;
+                this.setDragover(true);
                 this.update();
-            }.bind(this));
+            });
     
-            dropZone.addEventListener('dragleave', function (e) {
-                this.isDragover = false;
+            dropZone.addEventListener('dragleave', e => {
+                this.setDragover(false);
                 this.update();
-            }.bind(this));
+            });
     
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
@@ -95,7 +94,7 @@
                 }
     			this.uploadFiles()
     			.then( () => {
-    			    this.isDragover = false;
+    			    this.setDragover(false);
     			    this.update();
     			})
                 
@@ -299,6 +298,19 @@
                 filename = filename.slice(0,filenameEnd);
             }
             return filename;
+        }
+        
+        setDragover(dragover) {
+        	this.isDragover = dragover;
+        	var dropZone = (this.refs.dropZone); 
+        	if(dropZone) {
+        		if(dragover) {
+        			dropZone.classList.add("isdragover");
+        		} else {
+        			dropZone.classList.remove("isdragover");
+        		}
+        	}
+        	
         }
     </script> 
 </adminMediaUpload>

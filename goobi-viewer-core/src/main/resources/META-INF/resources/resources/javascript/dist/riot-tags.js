@@ -1,4 +1,4 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
         this.uploadedFiles = []
@@ -7,7 +7,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         } else {
         	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
         }
-        this.isDragover = false;
 
         this.on('mount', function () {
             if(this.opts.showFiles) {
@@ -21,21 +20,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         this.initDrop = function() {
 			var dropZone = (this.refs.dropZone);
 
-            dropZone.addEventListener('dragover', function (e) {
+            dropZone.addEventListener('dragover', e => {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
 
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
 
-                this.isDragover = true;
+                this.setDragover(true);
                 this.update();
-            }.bind(this));
+            });
 
-            dropZone.addEventListener('dragleave', function (e) {
-                this.isDragover = false;
+            dropZone.addEventListener('dragleave', e => {
+                this.setDragover(false);
                 this.update();
-            }.bind(this));
+            });
 
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
@@ -61,7 +60,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 }
     			this.uploadFiles()
     			.then( () => {
-    			    this.isDragover = false;
+    			    this.setDragover(false);
     			    this.update();
     			})
 
@@ -264,6 +263,19 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 filename = filename.slice(0,filenameEnd);
             }
             return filename;
+        }.bind(this)
+
+        this.setDragover = function(dragover) {
+        	this.isDragover = dragover;
+        	var dropZone = (this.refs.dropZone);
+        	if(dropZone) {
+        		if(dragover) {
+        			dropZone.classList.add("isdragover");
+        		} else {
+        			dropZone.classList.remove("isdragover");
+        		}
+        	}
+
         }.bind(this)
 });
 
