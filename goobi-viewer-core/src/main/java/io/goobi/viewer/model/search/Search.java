@@ -361,6 +361,7 @@ public class Search implements Serializable {
                 SearchHelper.buildFinalQuery(currentQuery, true, aggregationType) + subElementQueryFilterSuffix;
         logger.debug("Final main query: {}", finalQuery);
 
+        logger.trace("result groups: {}", resultGroups.size());
         for (SearchResultGroup resultGroup : resultGroups) {
             logger.trace("Result group: {}", resultGroup.getName());
             List<String> allFilterQueries = new ArrayList<>();
@@ -463,7 +464,7 @@ public class Search implements Serializable {
             }
 
             if (resultGroup.getHitsCount() == 0) {
-                return;
+                continue;
             }
 
             // Collect available facets

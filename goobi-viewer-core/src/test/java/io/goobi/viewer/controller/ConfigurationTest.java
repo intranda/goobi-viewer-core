@@ -3145,7 +3145,7 @@ public class ConfigurationTest extends AbstractTest {
     @Test
     public void getSearchResultGroups_shouldReturnAllConfiguredElements() throws Exception {
         List<SearchResultGroup> groups = DataManager.getInstance().getConfiguration().getSearchResultGroups();
-        Assert.assertEquals(2, groups.size());
+        Assert.assertEquals(3, groups.size());
     }
 
     /**

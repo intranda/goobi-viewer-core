@@ -532,6 +532,7 @@
         <resultGroups enabled="true">
             <group name="lido_objects" query="SOURCEDOCFORMAT:LIDO" />
             <group name="monographs" query="DOCSTRCT:monograph" />
+            <group name="stories" query="+DOCSTRCT:&quot;cms_page&quot; +MD_CATEGORY:&quot;story&quot;" />
         </resultGroups>
 	</search>
 
