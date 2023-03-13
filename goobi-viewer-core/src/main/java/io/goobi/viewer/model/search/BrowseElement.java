@@ -669,7 +669,7 @@ public class BrowseElement implements Serializable {
                                     additionalMetadataList
                                             .add(new Metadata(String.valueOf(structElement.getLuceneId()), docFieldName, "", highlightedValue));
                                     existingMetadataFields.add(docFieldName);
-                                    // logger.trace("added existing field: {}", docFieldName);
+                                    logger.trace("added existing field: {}", docFieldName);
                                 }
                             }
                         }

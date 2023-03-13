@@ -87,6 +87,7 @@
         
         <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
+            <ui:fragment rendered="#{not empty resultGroup.hits}">
             <h2>#{msg[resultGroup.name]}</h2>
             <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
                 <div class="search-list__hit">
@@ -142,6 +143,7 @@
                     <div class="search-list__hit-content"></div>
                 </div>
             </ui:repeat>
+            </ui:fragment>
             </ui:repeat>
         </h:form>
 
