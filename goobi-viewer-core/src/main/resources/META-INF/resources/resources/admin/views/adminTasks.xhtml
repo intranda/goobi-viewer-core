@@ -86,6 +86,7 @@
 
 
 						<h:commandButton 
+							type="button"
 							id="pauseMsgQueueButton" 
 							action="#{messageQueueBean.pauseQueue}"
 							pt:data-target="pauseMsgQueueButton">
@@ -93,6 +94,7 @@
 						</h:commandButton>
 						
 						<h:commandButton 
+							type="button"
 							id="resumeMsgQueueButton" 
 							action="#{messageQueueBean.resumeQueue}"
 							pt:data-target="resumeMsgQueueButton">
@@ -144,6 +146,7 @@
 											</div>
 											<div class="admin__tasks-task-details-row-entry">
 												<button
+													type="button"
 													jsf:action="#{messageQueueBean.deleteMessage(msgqueueticket)}"
 													class="btn admin__tasks-task-details-delete-button">
 													<i class="fa fa-times" />
@@ -169,6 +172,7 @@
 
 										<!-- DELETE THIS -->
 										<button class="admin__boxed-entry-actions-delete -redlink"
+											type="button"
 											data-require-confirmation="true"
 											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__tasks__delete_message_type_confirmation, task.key)}"
 											jsf:action="#{messageQueueBean.removeMessagesFromQueue(task.key)}"
@@ -255,12 +259,14 @@
 						</div>
 						
 						<button data-target="pauseQuartzButton"
+							type="button"
 							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
 							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
 							<i class="fa fa-pause"></i>
 						</button>
 
 						<button data-target="resumeQuartzButton"
+							type="button"
 							jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
 							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed" />
 							<i class="fa fa-play"></i>
@@ -311,6 +317,7 @@
 
 											<div>
 												<button jsf:action="#{quartzBean.triggerQuartzJob}"
+													type="button"
 													class="btn admin__table-action-link -bluelink">
 													#{msg.admin__tasks__run_once_now}
 													<f:setPropertyActionListener
