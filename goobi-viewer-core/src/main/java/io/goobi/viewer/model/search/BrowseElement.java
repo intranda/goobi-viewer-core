@@ -586,7 +586,8 @@ public class BrowseElement implements Serializable {
             boolean skip = false;
             for (Metadata md : metadataList) {
                 if (md.getLabel().equals(termsFieldName)) {
-                    continue;
+                    skip = true;
+                    break;
                 }
             }
             if (skip) {

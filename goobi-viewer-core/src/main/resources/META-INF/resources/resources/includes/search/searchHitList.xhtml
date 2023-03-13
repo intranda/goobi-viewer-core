@@ -143,6 +143,9 @@
                     <div class="search-list__hit-content"></div>
                 </div>
             </ui:repeat>
+                <ui:fragment rendered="#{fn:length(resultGroup.hits) > 12}">
+                    TODO: more results
+                </ui:fragment>
             </ui:fragment>
             </ui:repeat>
         </h:form>

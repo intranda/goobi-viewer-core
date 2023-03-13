@@ -706,6 +706,7 @@ public class ThumbnailHandler {
             return null;
         } else if (doc.isCmsPage() && doc.getPi().startsWith("CMS")) {
             // CMS page
+            logger.trace("CMS PAGE THUMBNAIL");
             int id = Integer.parseInt(doc.getPi().substring(3));
             try {
                 CMSPage page = DataManager.getInstance().getDao().getCMSPage(id);
@@ -720,7 +721,10 @@ public class ThumbnailHandler {
                             .orElse(null);
                     if (item != null) {
                         thumbnailUrl = item.getUrl();
+                        logger.trace("cms thumb url: {}", thumbnailUrl);
                     }
+                } else {
+                    logger.warn("CMS page not found: {}", id);
                 }
             } catch (DAOException | UnsupportedEncodingException e) {
                 logger.error(e.getMessage());
