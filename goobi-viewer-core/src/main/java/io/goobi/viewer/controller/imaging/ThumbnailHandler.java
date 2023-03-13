@@ -699,14 +699,16 @@ public class ThumbnailHandler {
      *         digital material and - depending on configuration - anchors)
      */
     private String getImagePath(StructElement doc) {
+        if (doc == null) {
+            return null;
+        }
+        // logger.trace("getImagePath: {}", doc.getPi());
+
         String thumbnailUrl = null;
         String anchorThumbnailMode = DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();
 
-        if (doc == null) {
-            return null;
-        } else if (doc.isCmsPage() && doc.getPi().startsWith("CMS")) {
+        if (doc.isCmsPage() && doc.getPi().startsWith("CMS")) {
             // CMS page
-            logger.trace("CMS PAGE THUMBNAIL");
             int id = Integer.parseInt(doc.getPi().substring(3));
             try {
                 CMSPage page = DataManager.getInstance().getDao().getCMSPage(id);
@@ -721,7 +723,6 @@ public class ThumbnailHandler {
                             .orElse(null);
                     if (item != null) {
                         thumbnailUrl = item.getUrl();
-                        logger.trace("cms thumb url: {}", thumbnailUrl);
                     }
                 } else {
                     logger.warn("CMS page not found: {}", id);
@@ -807,6 +808,7 @@ public class ThumbnailHandler {
                                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                                 break;
                             default:
+                                logger.warn("mime type not suppoerted: {}", baseMimeType);
                                 break;
                         }
                     }
