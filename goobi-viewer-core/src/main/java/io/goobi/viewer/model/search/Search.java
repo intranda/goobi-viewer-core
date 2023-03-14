@@ -367,15 +367,14 @@ public class Search implements Serializable {
             logger.trace("fq: {}", fq);
             for (SearchResultGroup resultGroup : resultGroups) {
                 logger.trace("rgq: {}", resultGroup.getQuery());
-                if (resultGroup.getQuery().equals(fq.replace(";;", ""))) {
+                if (resultGroup.getQuery().equals(fq.replace(SolrConstants.PREFIX_FACET, "MD_"))) {
                     activeResultGroup = resultGroup;
                     break;
                 }
             }
         }
         if (activeResultGroup != null) {
-            resultGroups = Collections.singletonList(activeResultGroup);
-            logger.trace("Active result group: {}", activeResultGroup.getName());
+            resultGroups = Collections.singletonList(SearchResultGroup.createDefaultGroup(activeResultGroup.getQuery()));
         }
 
         logger.trace("result groups: {}", resultGroups.size());
@@ -510,6 +509,11 @@ public class Search implements Serializable {
                 }
             }
 
+            // If this is a group preview, use the group's configured hit count instead of paginator hits per page
+            if (resultGroup.getPreviewHitCount() > 0) {
+                hitsPerPage = resultGroup.getPreviewHitCount();
+            }
+
             int lastPage = getLastPage(hitsPerPage);
             if (page <= 0) {
                 page = 1;
@@ -539,7 +543,8 @@ public class Search implements Serializable {
             List<SearchHit> foundHits = Collections.emptyList();
             // Actual hits for listing
             if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
-                foundHits = SearchHelper.searchWithAggregation(finalQuery, from, hitsPerPage, useSortFields, null, allFilterQueries, params,
+                foundHits = SearchHelper.searchWithAggregation(finalQuery, from,
+                        hitsPerPage, useSortFields, null, allFilterQueries, params,
                         searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
             } else if (SearchAggregationType.NO_AGGREGATION.equals(aggregationType)) {
                 foundHits = SearchHelper.searchWithFulltext(finalQuery, from, hitsPerPage, useSortFields, null, allFilterQueries, params,
@@ -1205,11 +1210,14 @@ public class Search implements Serializable {
      * @return the hitsCount
      */
     public long getHitsCount() {
+        int ret = 0;
         if (!resultGroups.isEmpty()) {
-            return resultGroups.get(0).getHitsCount();
+            for (SearchResultGroup resultGroup : resultGroups) {
+                ret += resultGroup.getHitsCount();
+            }
         }
 
-        return 0;
+        return ret;
     }
 
     /**
@@ -1291,5 +1299,13 @@ public class Search implements Serializable {
         }
 
         return false;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isGroupPreviewMode() {
+        return resultGroups.size() > 1;
     }
 }

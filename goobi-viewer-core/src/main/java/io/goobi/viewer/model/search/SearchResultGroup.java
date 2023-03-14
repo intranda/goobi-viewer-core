@@ -67,7 +67,15 @@ public class SearchResultGroup implements Serializable {
      * @return
      */
     public static SearchResultGroup createDefaultGroup() {
-        return new SearchResultGroup(StringConstants.DEFAULT_NAME, "", 10);
+        return createDefaultGroup("");
+    }
+
+    /**
+     * @param query
+     * @return
+     */
+    public static SearchResultGroup createDefaultGroup(String query) {
+        return new SearchResultGroup(StringConstants.DEFAULT_NAME, query, -1);
     }
 
     /**
@@ -93,6 +101,13 @@ public class SearchResultGroup implements Serializable {
      */
     public String getQuery() {
         return query;
+    }
+
+    /**
+     * @return the previewHitCount
+     */
+    public int getPreviewHitCount() {
+        return previewHitCount;
     }
 
     /**
