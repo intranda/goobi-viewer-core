@@ -89,7 +89,7 @@
             <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
                 <ui:fragment rendered="#{not empty resultGroup.hits}">
                     <ui:fragment rendered="#{resultGroup.name != '_DEFAULT'}">
-                        <h2>#{msg[resultGroup.name]}</h2>
+                        <h2>#{msg[resultGroup.name]} (#{resultGroup.hitsCount})</h2>
                     </ui:fragment>
                     <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
                         <div class="search-list__hit">
