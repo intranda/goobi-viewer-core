@@ -147,7 +147,7 @@
                     </ui:repeat>
                     <!-- EXPAND LINK -->
                     <ui:fragment rendered="#{resultGroup.displayExpandUrl}">
-                        <a href="#{#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{resultGroup.query}/}" />
+                        <a href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{resultGroup.query}/" />
                     </ui:fragment>
                 </ui:fragment>
             </ui:repeat>
