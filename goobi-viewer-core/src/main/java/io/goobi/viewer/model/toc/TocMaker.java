@@ -41,16 +41,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -162,7 +163,7 @@ public class TocMaker {
 
         logger.trace("generateToc: {}", structElement.getPi());
         LinkedHashMap<String, List<TOCElement>> ret = new LinkedHashMap<>();
-        ret.put(TOC.DEFAULT_GROUP, new ArrayList<TOCElement>());
+        ret.put(StringConstants.DEFAULT_NAME, new ArrayList<TOCElement>());
 
         // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
         boolean sourceFormatPdfAllowed = SolrConstants.SOURCEDOCFORMAT_METS.equals(structElement.getSourceDocFormat());
@@ -190,11 +191,11 @@ public class TocMaker {
             String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
             //                String docstruct = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String docstruct = "_GROUPS";
-            ret.get(TOC.DEFAULT_GROUP)
+            ret.get(StringConstants.DEFAULT_NAME)
                     .add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level, structElement.getPi(), null,
                             false, true, false, mimeType, docstruct, footerId));
             ++level;
-            buildGroupToc(ret.get(TOC.DEFAULT_GROUP), DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields(),
+            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields(),
                     structElement.getPi(), sourceFormatPdfAllowed, mimeType);
         } else if (structElement.isAnchor()) {
             // MultiVolume
@@ -203,10 +204,10 @@ public class TocMaker {
             toc.setCurrentPage(tocCurrentPage);
         } else {
             // Stand-alone or volume
-            ret.put(TOC.DEFAULT_GROUP, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));
+            ret.put(StringConstants.DEFAULT_NAME, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));
         }
 
-        logger.trace("generateToc end: {} groups, {} elements in DEFAULT", ret.size(), ret.get(TOC.DEFAULT_GROUP).size());
+        logger.trace("generateToc end: {} groups, {} elements in DEFAULT", ret.size(), ret.get(StringConstants.DEFAULT_NAME).size());
         return ret;
     }
 
@@ -515,7 +516,7 @@ public class TocMaker {
                     continue;
                 }
                 // Determine the TOC group for this volume based on the grouping field, if configured
-                String groupName = TOC.DEFAULT_GROUP;
+                String groupName = StringConstants.DEFAULT_NAME;
                 if (tocGroupField != null) {
                     String groupValue = String.valueOf(volumeDoc.getFieldValue(tocGroupField));
                     if (StringUtils.isNotEmpty(groupValue)) {
@@ -591,7 +592,7 @@ public class TocMaker {
         // Add anchor document
         IMetadataValue label = buildLabel(anchorDoc, (String) anchorDoc.getFirstValue(SolrConstants.DOCSTRCT));
         String footerId = getFooterId(anchorDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-        ret.get(TOC.DEFAULT_GROUP)
+        ret.get(StringConstants.DEFAULT_NAME)
                 .add(0, new TOCElement(label, null, null, String.valueOf(iddoc), logId, 0, topStructPiLocal, null, sourceFormatPdfAllowed, true,
                         false, mimeType, anchorDocstructType, footerId));
 

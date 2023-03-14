@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.maps.Location;
 
 /**
@@ -66,7 +67,7 @@ public class SearchResultGroup implements Serializable {
      * @return
      */
     public static SearchResultGroup createDefaultGroup() {
-        return new SearchResultGroup("_DEFAULT", "", 10);
+        return new SearchResultGroup(StringConstants.DEFAULT_NAME, "", 10);
     }
 
     /**

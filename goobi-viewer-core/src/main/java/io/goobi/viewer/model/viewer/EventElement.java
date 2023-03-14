@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
@@ -127,7 +128,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
             if (sidebarMetadata.isEmpty()) {
                 // Use default if no elements are defined for the current event type
-                sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+                sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(StringConstants.DEFAULT_NAME);
             }
             populateMetadata(sidebarMetadata, type, doc, locale);
         }
@@ -322,8 +323,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
-            List<Metadata> ret = Metadata.filterMetadata(metadata, adb.getSelectedRecordLanguage(), null);
-            return ret;
+            return Metadata.filterMetadata(metadata, adb.getSelectedRecordLanguage(), null);
         }
 
         return metadata;
