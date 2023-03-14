@@ -73,9 +73,12 @@ public class SearchResultGroup implements Serializable {
     /**
      * 
      * @return
+     * @should return false if default group
+     * @should return false if hitsCount not higher than previewHitCount
+     * @should return true if hitsCount higher than previewHitCount
      */
     public boolean isDisplayExpandUrl() {
-        return hitsCount > previewHitCount;
+        return !StringConstants.DEFAULT_NAME.equals(name) && hitsCount > previewHitCount;
     }
 
     /**

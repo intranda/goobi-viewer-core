@@ -37,6 +37,7 @@ import org.junit.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.StringConstants;
 
 public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -71,17 +72,17 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getLabel_shouldReturnCorrectLabel() throws Exception {
         TOC toc = new TOC();
         toc.setTocElementMap(new HashMap<>());
-        toc.getTocElementMap().put(TOC.DEFAULT_GROUP, new ArrayList<>(3));
+        toc.getTocElementMap().put(StringConstants.DEFAULT_NAME, new ArrayList<>(3));
         toc.getTocElementMap()
-                .get(TOC.DEFAULT_GROUP)
+                .get(StringConstants.DEFAULT_NAME)
                 .add(new TOCElement(new SimpleMetadataValue("one"), "0", null, "1", "LOG_0000", 0, "PPN_anchor", null, false, true, false, null,
                         "periodical", null));
         toc.getTocElementMap()
-                .get(TOC.DEFAULT_GROUP)
+                .get(StringConstants.DEFAULT_NAME)
                 .add(new TOCElement(new SimpleMetadataValue("two"), "1", null, "2", "LOG_0001", 1, "PPN_volume", null, false, false, true, null,
                         "periodical_volume", null));
         toc.getTocElementMap()
-                .get(TOC.DEFAULT_GROUP)
+                .get(StringConstants.DEFAULT_NAME)
                 .add(new TOCElement(new SimpleMetadataValue("three"), "1", null, "3", "LOG_0002", 2, "PPN_volume", null, false, false, true, null,
                         "article", null));
 
@@ -128,11 +129,11 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         TOCElement otherGrandchild = new TOCElement(null, "2", null, "5", "LOG_0005", 2, null, null, false, false, false, null, null, null);
 
         List<TOCElement> list = Arrays.asList(top, child, grandchild, otherChild, otherGrandchild);
-        tocElementMap.put(TOC.DEFAULT_GROUP, list);
+        tocElementMap.put(StringConstants.DEFAULT_NAME, list);
 
         toc.setTocElementMap(tocElementMap);
 
-        toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, null);
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, null);
         assertTrue(top.isVisible());
         assertTrue(top.isExpanded());
         assertTrue(child.isVisible());
@@ -142,7 +143,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         assertFalse(otherChild.isExpanded());
         assertFalse(otherGrandchild.isVisible());
 
-        toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, Long.parseLong(grandchild.getIddoc()));
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, Long.parseLong(grandchild.getIddoc()));
         assertTrue(top.isVisible());
         assertTrue(top.isExpanded());
         assertTrue(child.isVisible());
