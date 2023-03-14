@@ -105,6 +105,7 @@ public class TasksResource {
             if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
                 ViewerMessage message = null;
                 message = new ViewerMessage(desc.type.name());
+                message.getProperties().put("taskType", desc.type.toString());
                 switch (desc.type) {
 
                     case UPDATE_SITEMAP:

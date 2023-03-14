@@ -86,6 +86,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.model.job.TaskType;
 
 @Named
 @ApplicationScoped
@@ -141,86 +142,31 @@ public class MessageQueueBean implements Serializable {
 
     }
 
-
     public Map<String, Integer> getQueueContent() {
         Map<String, Integer> fastQueueContent = new TreeMap<>();
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            try {
-                connection.start();
-                Queue queue = queueSession.createQueue("viewer");
-                QueueBrowser browser = queueSession.createBrowser(queue);
-                Enumeration<?> messagesInQueue = browser.getEnumeration();
-                while (messagesInQueue.hasMoreElements()) {
-                    ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
-
-                    String type = queueMessage.getStringProperty("JMSType");
-                    if (fastQueueContent.containsKey(type)) {
-                        fastQueueContent.put(type, fastQueueContent.get(type) + 1);
-                    } else {
-                        fastQueueContent.put(type, 1);
-                    }
-                }
-                browser.close();
-                connection.stop();
-            } catch (JMSException e) {
-                log.error(e);
-            }
+            fastQueueContent.putAll(messageBroker.countMessagesInQueue(MessageQueueManager.QUEUE_NAME_VIEWER));
+            fastQueueContent.putAll(messageBroker.countMessagesInQueue(MessageQueueManager.QUEUE_NAME_PDF));
         }
         return fastQueueContent;
     }
 
     public void pauseQueue() {
-
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            try {
-                BrokerService broker = messageBroker.getBroker();
-
-                ObjectName queueViewMBeanName =
-                        new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
-
-                QueueViewMBean mbean =
-                        (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-                mbean.pause();
-                paused = true;
-            } catch (MalformedObjectNameException e) {
-                log.error(e);
-            }
+                paused = this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_VIEWER) && this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_PDF);
         }
     }
 
     public void resumeQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            try {
-                BrokerService broker = messageBroker.getBroker();
-
-                ObjectName queueViewMBeanName =
-                        new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
-
-                QueueViewMBean mbean =
-                        (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-                mbean.resume();
-                paused = false;
-            } catch (MalformedObjectNameException e) {
-                log.error(e);
-            }
+            paused = !(this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_VIEWER) && this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_PDF));
         }
     }
 
     public void clearQueue() {
-
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            try {
-                BrokerService broker = messageBroker.getBroker();
-
-                ObjectName queueViewMBeanName =
-                        new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
-
-                QueueViewMBean mbean =
-                        (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-                mbean.purge();
-            } catch (Exception e) {
-                log.error(e);
-            }
+           this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_VIEWER);
+           this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_PDF);
         }
     }
 
@@ -244,29 +190,11 @@ public class MessageQueueBean implements Serializable {
     
     public List<ViewerMessage> getQueryMessages(String messageType) {
 
-        List<ViewerMessage> answer = new ArrayList<>();
-        if (!DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            return answer;
+        if (this.messageBroker != null && DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+            return this.messageBroker.getWaitingMessages(messageType);
         }
-        if (StringUtils.isNotBlank(messageType)) {
-            try {
-                connection.start();
-                Queue queue = queueSession.createQueue("viewer");
-                QueueBrowser browser = queueSession.createBrowser(queue, "JMSType = '" + messageType + "'");
-                Enumeration<?> messagesInQueue = browser.getEnumeration();
-                while (messagesInQueue.hasMoreElements() && answer.size() < 100) {
-                    ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
-                    ViewerMessage ticket = ViewerMessage.parseJSON(queueMessage.getText());
-                    ticket.setMessageId(queueMessage.getJMSMessageID());
-                    answer.add(ticket);
-                }
-                browser.close();
-                connection.stop();
-            } catch (JMSException | JacksonException e) {
-                log.error(e);
-            }
-        }
-        return answer;
+        
+        return new ArrayList<>();
     }
 
     /**
@@ -276,19 +204,7 @@ public class MessageQueueBean implements Serializable {
     public void removeMessagesFromQueue(String type) {
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            try {
-                BrokerService broker = messageBroker.getBroker();
-
-                ObjectName queueViewMBeanName =
-                        new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
-
-                QueueViewMBean mbean =
-                        (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-                int removed = mbean.removeMatchingMessages("JMSType='" + type + "'");
-                log.debug("Removed {} messages of type {} from queue", removed, type);
-            } catch (Exception e) {
-                log.error(e);
-            }
+            this.messageBroker.deleteMessages(type);
         }
 
     }
@@ -302,19 +218,7 @@ public class MessageQueueBean implements Serializable {
     public void deleteMessage(ViewerMessage ticket) {
         
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
-            try {
-                BrokerService broker = messageBroker.getBroker();
-
-                ObjectName queueViewMBeanName =
-                        new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=viewer");
-
-                QueueViewMBean mbean =
-                        (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
-                int removed = mbean.removeMatchingMessages("JMSMessageID='" + ticket.getMessageId() + "'");
-                log.debug("Removed {} messages with id {} from queue", removed, ticket.getMessageId());
-            } catch (Exception e) {
-                log.error(e);
-            }
+            this.messageBroker.deleteMessage(ticket);
         }
 
     }
