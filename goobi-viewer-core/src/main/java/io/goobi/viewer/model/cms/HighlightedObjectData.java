@@ -125,7 +125,7 @@ public class HighlightedObjectData implements Serializable {
     public LocalDate getDateStart() {
         return Optional.ofNullable(dateStart).map(LocalDateTime::toLocalDate).orElse(null);
     }
-    
+
     public void setDateStart(LocalDate dateStart) {
         this.dateStart = Optional.ofNullable(dateStart).map(LocalDate::atStartOfDay).orElse(null);
     }
@@ -133,7 +133,7 @@ public class HighlightedObjectData implements Serializable {
     public LocalDate getDateEnd() {
         return Optional.ofNullable(dateEnd).map(LocalDateTime::toLocalDate).map(date -> date.minusDays(1)).orElse(null);
     }
-    
+
     public void setDateEnd(LocalDate dateEnd) {
         this.dateEnd = Optional.ofNullable(dateEnd).map(date -> date.plusDays(1)).map(LocalDate::atStartOfDay).orElse(null);
     }
@@ -153,7 +153,7 @@ public class HighlightedObjectData implements Serializable {
     public void setImageMode(ImageMode imageMode) {
         this.imageMode = imageMode;
     }
-    
+
     @Override
     public String toString() {
         return getName().getTextOrDefault() + " (ID: " + getId() + ")";

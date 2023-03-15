@@ -113,7 +113,7 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
 
         return null;
     }
-    
+
     public HighlightedObjectData getData() {
         return data;
     };
@@ -154,7 +154,7 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
 
         }
     }
-    
+
     public URI getImageURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getImageURI(DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
                 DataManager.getInstance().getConfiguration().getThumbnailsHeight());
@@ -164,5 +164,5 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
     public String toString() {
         return "Data: " + this.getData().toString();
     }
-    
+
 }

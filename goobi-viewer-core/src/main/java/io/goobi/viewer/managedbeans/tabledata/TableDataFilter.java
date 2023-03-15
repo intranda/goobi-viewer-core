@@ -41,7 +41,6 @@ public class TableDataFilter implements Serializable {
     private String value;
     private final TableDataProvider<?> owner;
 
-
     /**
      * <p>
      * Constructor for TableDataFilter.
@@ -50,14 +49,14 @@ public class TableDataFilter implements Serializable {
      * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
      * @param column a {@link java.lang.String} object.
      */
-    public TableDataFilter(TableDataProvider<?> owner, String...columns) {
+    public TableDataFilter(TableDataProvider<?> owner, String... columns) {
         this.columns = Arrays.asList(columns);
         this.value = "";
         this.owner = owner;
         this.joinTable = null;
     }
 
-    public TableDataFilter(String...columns) {
+    public TableDataFilter(String... columns) {
         this(null, columns);
     }
 
@@ -71,11 +70,10 @@ public class TableDataFilter implements Serializable {
     public List<String> getColumns() {
         return columns;
     }
-    
+
     public String getName() {
         return this.columns.stream().collect(Collectors.joining());
     }
-
 
     /**
      * <p>
@@ -98,11 +96,10 @@ public class TableDataFilter implements Serializable {
     public void setValue(String value) {
         this.value = value;
         // Reset number of records as soon as the value has changed so that the paginator etc. can be updated on time
-        if(owner != null) {
+        if (owner != null) {
             owner.resetTotalNumberOfRecords();
         }
     }
-
 
     /**
      * <p>
@@ -114,7 +111,7 @@ public class TableDataFilter implements Serializable {
     public Optional<String> getJoinTable() {
         return Optional.ofNullable(joinTable);
     }
-    
+
     public void setJoinTable(String joinTable) {
         this.joinTable = joinTable;
     }

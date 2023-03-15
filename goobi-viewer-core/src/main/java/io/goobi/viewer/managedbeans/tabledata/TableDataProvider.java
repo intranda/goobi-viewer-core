@@ -512,12 +512,12 @@ public class TableDataProvider<T> implements Serializable {
 
     public void addFilter(TableDataFilter filter) {
         this.filters.add(filter);
-        
+
     }
 
-    public Optional<TableDataFilter> getFilterIfPresent(String...columns) {
+    public Optional<TableDataFilter> getFilterIfPresent(String... columns) {
         for (TableDataFilter filter : this.getFilters()) {
-            if(CollectionUtils.isEqualCollection(Arrays.asList(columns), filter.getColumns())) {
+            if (CollectionUtils.isEqualCollection(Arrays.asList(columns), filter.getColumns())) {
                 return Optional.of(filter);
             }
         }

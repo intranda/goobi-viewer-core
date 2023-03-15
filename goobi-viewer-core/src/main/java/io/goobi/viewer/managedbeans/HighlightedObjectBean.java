@@ -69,7 +69,7 @@ public class HighlightedObjectBean implements Serializable {
     private static final int NUM_ITEMS_PER_PAGE = 12;
     private static final long serialVersionUID = -6647395682752991930L;
     private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
-    
+
     private TableDataProvider<HighlightedObject> dataProvider;
     private HighlightedObject selectedObject = null;
     private MetadataElement metadataElement = null;
@@ -80,7 +80,7 @@ public class HighlightedObjectBean implements Serializable {
     private transient IDAO dao;
     @Inject
     private ImageDeliveryBean imaging;
-    
+
     @PostConstruct
     public void init() {
         if (dataProvider == null) {
@@ -94,7 +94,7 @@ public class HighlightedObjectBean implements Serializable {
     public TableDataProvider<HighlightedObject> getDataProvider() {
         return dataProvider;
     }
-    
+
     private void initDataProvider() {
         dataProvider = new TableDataProvider<>(new TableDataSource<HighlightedObject>() {
 
@@ -110,7 +110,9 @@ public class HighlightedObjectBean implements Serializable {
                     return DataManager.getInstance()
                             .getDao()
                             .getHighlightedObjects(first, pageSize, sortField, sortOrder.asBoolean(), filters)
-                            .stream().map(HighlightedObject::new).collect(Collectors.toList());
+                            .stream()
+                            .map(HighlightedObject::new)
+                            .collect(Collectors.toList());
                 } catch (DAOException e) {
                     logger.error("Could not initialize lazy model: {}", e.getMessage());
                 }
@@ -122,10 +124,11 @@ public class HighlightedObjectBean implements Serializable {
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 if (!numItems.isPresent()) {
                     try {
-                        numItems = Optional.of( DataManager.getInstance()
+                        numItems = Optional.of(DataManager.getInstance()
                                 .getDao()
                                 .getHighlightedObjects(0, Integer.MAX_VALUE, null, false, filters)
-                                .stream().count());
+                                .stream()
+                                .count());
                     } catch (DAOException e) {
                         logger.error("Unable to retrieve total number of cms pages", e);
                     }
@@ -140,14 +143,14 @@ public class HighlightedObjectBean implements Serializable {
         });
         dataProvider.setEntriesPerPage(NUM_ITEMS_PER_PAGE);
     }
-    
+
     public String getRecordUrl(HighlightedObject object) {
         if (object != null) {
             return navigationHelper.getImageUrl() + "/" + object.getData().getRecordIdentifier() + "/";
         }
         return "";
     }
-    
+
     public void deleteObject(HighlightedObject object) {
         try {
             dao.deleteHighlightedObject(object.getData().getId());
@@ -157,18 +160,20 @@ public class HighlightedObjectBean implements Serializable {
             Messages.error("cms___highlighted_objects__delete__error");
         }
     }
-    
+
     public HighlightedObject getSelectedObject() {
         return selectedObject;
     }
+
     public void setSelectedObject(HighlightedObject selectedObject) {
         this.selectedObject = selectedObject;
     }
+
     public void setSelectedObjectId(long id) {
 
         try {
             HighlightedObjectData data = dao.getHighlightedObject(id);
-            if(data != null) {
+            if (data != null) {
                 setSelectedObject(new HighlightedObject(data));
             } else {
                 setSelectedObject(null);
@@ -178,42 +183,44 @@ public class HighlightedObjectBean implements Serializable {
             setSelectedObject(null);
         }
     }
-    
+
     public void setNewSelectedObject() {
         HighlightedObjectData data = new HighlightedObjectData();
         setSelectedObject(new HighlightedObject(data));
     }
-    
+
     public boolean isNewObject() {
         return this.selectedObject != null && this.selectedObject.getData().getId() != null;
     }
-    
+
     public void saveObject(HighlightedObject object) throws DAOException {
         boolean saved = false;
-        if(object != null && object.getData().getId() != null) {
+        if (object != null && object.getData().getId() != null) {
             saved = dao.updateHighlightedObject(object.getData());
-        } else if(object != null) {
+        } else if (object != null) {
             saved = dao.addHighlightedObject(object.getData());
         }
-        if(saved) {
+        if (saved) {
             Messages.info("Successfully saved object " + object);
-        } else {            
+        } else {
             Messages.error("Failed to save object " + object);
         }
     }
-    
+
     public MetadataElement getMetadataElement() {
         if (this.metadataElement == null && this.selectedObject != null) {
             try {
                 this.metadataElement = loadMetadataElement(this.selectedObject.getData().getRecordIdentifier(), 0);
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", getSelectedObject().getData().getName().getTextOrDefault(), e.getMessage());
-                Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}", getSelectedObject().getData().getName().getTextOrDefault(), e.getMessage());
+                logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", getSelectedObject().getData().getName().getTextOrDefault(),
+                        e.getMessage());
+                Messages.error(null, "Unable to reetrive metadata elemement for {}. Reason: {}",
+                        getSelectedObject().getData().getName().getTextOrDefault(), e.getMessage());
             }
         }
         return this.metadataElement;
     }
-    
+
     /**
      * @param recordPi
      * @param index Metadata view index
@@ -232,7 +239,8 @@ public class HighlightedObjectBean implements Serializable {
             return null;
         }
         StructElement structElement = new StructElement(solrDoc);
-        return new MetadataElement().init(structElement, index, BeanUtils.getLocale()).setSelectedRecordLanguage(this.selectedObject.getSelectedLocale().getLanguage());
+        return new MetadataElement().init(structElement, index, BeanUtils.getLocale())
+                .setSelectedRecordLanguage(this.selectedObject.getSelectedLocale().getLanguage());
     }
 
     /**
@@ -256,28 +264,34 @@ public class HighlightedObjectBean implements Serializable {
 
         return new TranslatedText(((SimpleMetadataValue) label).getValue().orElse(""));
     }
-    
+
     public HighlightedObject getCurrentHighlightedObject() throws DAOException {
         List<HighlightedObject> currentObjects = dao.getHighlightedObjectsForDate(LocalDateTime.now())
-                .stream().map(HighlightedObject::new).collect(Collectors.toList());
-        if(!currentObjects.isEmpty()) {            
+                .stream()
+                .map(HighlightedObject::new)
+                .collect(Collectors.toList());
+        if (!currentObjects.isEmpty()) {
             int randomIndex = new Random().nextInt(currentObjects.size());
             return currentObjects.get(randomIndex);
         } else {
             return null;
         }
     }
-    
+
     public URI getRecordRepresentativeURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        return getRecordRepresentativeURI(DataManager.getInstance().getConfiguration().getThumbnailsWidth(), DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+        return getRecordRepresentativeURI(DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
-    
-    public URI getRecordRepresentativeURI(int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        if(getSelectedObject() != null && StringUtils.isNotBlank(getSelectedObject().getData().getRecordIdentifier())) {            
-            return Optional.ofNullable(imaging.getThumbs().getThumbnailUrl(getSelectedObject().getData().getRecordIdentifier(), width, height)).map(URI::create).orElse(null);
+
+    public URI getRecordRepresentativeURI(int width, int height)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        if (getSelectedObject() != null && StringUtils.isNotBlank(getSelectedObject().getData().getRecordIdentifier())) {
+            return Optional.ofNullable(imaging.getThumbs().getThumbnailUrl(getSelectedObject().getData().getRecordIdentifier(), width, height))
+                    .map(URI::create)
+                    .orElse(null);
         } else {
             return null;
         }
     }
-    
+
 }
