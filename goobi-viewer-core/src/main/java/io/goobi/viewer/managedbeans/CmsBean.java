@@ -235,7 +235,7 @@ public class CmsBean implements Serializable {
                 }
             });
             lazyModelPages.setEntriesPerPage(AdminBean.DEFAULT_ROWS_PER_PAGE);
-            lazyModelPages.addFilter(CMSPAGES_FILTER);
+            lazyModelPages.getFilter(CMSPAGES_FILTER);
             //            lazyModelPages.addFilter("CMSCategory", "name");
         }
     }

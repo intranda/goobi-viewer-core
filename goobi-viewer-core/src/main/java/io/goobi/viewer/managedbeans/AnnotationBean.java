@@ -150,7 +150,7 @@ public class AnnotationBean implements Serializable {
 
             });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelAnnotations.setFilters("targetPI_body");
+            lazyModelAnnotations.getFilter("targetPI_body");
         }
     }
 

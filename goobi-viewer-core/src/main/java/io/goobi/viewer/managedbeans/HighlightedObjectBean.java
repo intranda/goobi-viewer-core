@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -47,6 +48,7 @@ import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 @ViewScoped
 public class HighlightedObjectBean implements Serializable {
 
+    private static final int NUM_ITEMS_PER_PAGE = 12;
     private static final long serialVersionUID = -6647395682752991930L;
     private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
     
@@ -69,7 +71,7 @@ public class HighlightedObjectBean implements Serializable {
     private void initDataProvider() {
         dataProvider = new TableDataProvider<>(new TableDataSource<HighlightedObject>() {
 
-            private Optional<Long> numCreatedPages = Optional.empty();
+            private Optional<Long> numItems = Optional.empty();
 
             @Override
             public List<HighlightedObject> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
@@ -80,7 +82,8 @@ public class HighlightedObjectBean implements Serializable {
 
                     return DataManager.getInstance()
                             .getDao()
-                            .getRecordNotes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                            .getHighlightedObjects(first, pageSize, sortField, sortOrder.asBoolean(), filters)
+                            .stream().map(HighlightedObject::new).collect(Collectors.toList());
                 } catch (DAOException e) {
                     logger.error("Could not initialize lazy model: {}", e.getMessage());
                 }
@@ -90,27 +93,25 @@ public class HighlightedObjectBean implements Serializable {
 
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
-                if (!numCreatedPages.isPresent()) {
+                if (!numItems.isPresent()) {
                     try {
-                        List<CMSRecordNote> notes = DataManager.getInstance()
+                        numItems = Optional.of( DataManager.getInstance()
                                 .getDao()
-                                .getRecordNotes(0, Integer.MAX_VALUE, null, false, filters);
-                        numCreatedPages = Optional.of((long) notes.size());
+                                .getHighlightedObjects(0, Integer.MAX_VALUE, null, false, filters)
+                                .stream().count());
                     } catch (DAOException e) {
                         logger.error("Unable to retrieve total number of cms pages", e);
                     }
                 }
-                return numCreatedPages.orElse(0L);
+                return numItems.orElse(0L);
             }
 
             @Override
             public void resetTotalNumberOfRecords() {
-                numCreatedPages = Optional.empty();
+                numItems = Optional.empty();
             }
         });
-        dataProvider.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        dataProvider.addFilter(PI_TITLE_FILTER);
-        //            lazyModelPages.addFilter("CMSCategory", "name");
+        dataProvider.setEntriesPerPage(NUM_ITEMS_PER_PAGE);
     }
     
 }

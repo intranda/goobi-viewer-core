@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans.tabledata;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -114,7 +116,9 @@ public class TableDataProvider<T> implements Serializable {
         if (filters == null || filters.isEmpty()) {
             return "";
         }
-        return filters.stream().map(filter -> filter.getColumn() + "::" + filter.getValue()).collect(Collectors.joining(";"));
+        return filters.stream()
+                .flatMap(filter -> filter.getColumns().stream().map(column -> column + "::" + filter.getValue()))
+                .collect(Collectors.joining(";"));
     }
 
     /**
@@ -131,7 +135,9 @@ public class TableDataProvider<T> implements Serializable {
     private static Map<String, String> getAsMap(List<TableDataFilter> filters) {
         Map<String, String> map = new HashMap<>();
         for (TableDataFilter filter : filters) {
-            map.put(filter.getJoinTable().map(table -> table + "::").orElse("") + filter.getColumn(), filter.getValue());
+            for (String column : filter.getColumns()) {
+                map.put(filter.getJoinTable().map(table -> table + "::").orElse("") + column, filter.getValue());
+            }
         }
         return map;
     }
@@ -442,113 +448,6 @@ public class TableDataProvider<T> implements Serializable {
 
     /**
      * <p>
-     * addFilter.
-     * </p>
-     *
-     * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
-     */
-    public void addFilter(TableDataFilter filter) {
-        this.filters.add(filter);
-        resetCurrentList();
-    }
-
-    /**
-     * <p>
-     * addFilter.
-     * </p>
-     *
-     * @param joinTable a {@link java.lang.String} object.
-     * @param column a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean addFilter(String joinTable, String column) {
-        if (!getFilterAsOptional(joinTable, column).isPresent()) {
-            addFilter(new TableDataFilter(joinTable, column, "", this));
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * <p>
-     * addFilter.
-     * </p>
-     *
-     * @param column a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean addFilter(String column) {
-        if (!getFilterAsOptional(column).isPresent()) {
-            addFilter(new TableDataFilter(column, "", this));
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * <p>
-     * getFilterAsOptional.
-     * </p>
-     *
-     * @param column a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
-     */
-    public Optional<TableDataFilter> getFilterAsOptional(String column) {
-        for (TableDataFilter filter : filters) {
-            if (filter.getColumn().equalsIgnoreCase(column) && !filter.getJoinTable().isPresent()) {
-                return Optional.of(filter);
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * <p>
-     * getFilterAsOptional.
-     * </p>
-     *
-     * @param joinTable a {@link java.lang.String} object.
-     * @param column a {@link java.lang.String} object.
-     * @return a {@link java.util.Optional} object.
-     */
-    public Optional<TableDataFilter> getFilterAsOptional(String joinTable, String column) {
-        for (TableDataFilter filter : filters) {
-            if (filter.getColumn().equalsIgnoreCase(column) && filter.getJoinTable().equals(Optional.ofNullable(joinTable))) {
-                return Optional.of(filter);
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * <p>
-     * getFilter.
-     * </p>
-     *
-     * @param column a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
-     */
-    public TableDataFilter getFilter(String column) {
-        return getFilterAsOptional(column).orElse(null);
-    }
-
-    /**
-     * <p>
-     * getFilter.
-     * </p>
-     *
-     * @param joinTable a {@link java.lang.String} object.
-     * @param column a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object.
-     */
-    public TableDataFilter getFilter(String joinTable, String column) {
-        return getFilterAsOptional(joinTable, column).orElse(null);
-    }
-
-    /**
-     * <p>
      * removeFilter.
      * </p>
      *
@@ -561,48 +460,11 @@ public class TableDataProvider<T> implements Serializable {
 
     /**
      * <p>
-     * removeFilter.
-     * </p>
-     *
-     * @param column a {@link java.lang.String} object.
-     */
-    public void removeFilter(String column) {
-        getFilterAsOptional(column).ifPresent(filter -> removeFilter(filter));
-    }
-
-    /**
-     * <p>
-     * removeFilter.
-     * </p>
-     *
-     * @param joinTable a {@link java.lang.String} object.
-     * @param column a {@link java.lang.String} object.
-     */
-    public void removeFilter(String joinTable, String column) {
-        getFilterAsOptional(joinTable, column).ifPresent(filter -> removeFilter(filter));
-    }
-
-    /**
-     * <p>
      * resetFilters.
      * </p>
      */
     public void resetFilters() {
         this.filters = new ArrayList<>();
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>filters</code>.
-     * </p>
-     *
-     * @param columns a {@link java.lang.String} object.
-     */
-    public void setFilters(String... columns) {
-        resetFilters();
-        for (String column : columns) {
-            addFilter(column);
-        }
     }
 
     /**
@@ -636,6 +498,30 @@ public class TableDataProvider<T> implements Serializable {
     public void update() {
         resetCurrentList();
         resetTotalNumberOfRecords();
+    }
+
+    public TableDataFilter getFilter(String... columns) {
+        return getFilterIfPresent(columns).orElse(addFilter(columns));
+    }
+
+    private TableDataFilter addFilter(String... columns) {
+        TableDataFilter filter = new TableDataFilter(this, columns);
+        this.filters.add(filter);
+        return filter;
+    }
+
+    public void addFilter(TableDataFilter filter) {
+        this.filters.add(filter);
+        
+    }
+
+    public Optional<TableDataFilter> getFilterIfPresent(String...columns) {
+        for (TableDataFilter filter : this.getFilters()) {
+            if(CollectionUtils.isEqualCollection(Arrays.asList(columns), filter.getColumns())) {
+                return Optional.of(filter);
+            }
+        }
+        return Optional.empty();
     }
 
 }
