@@ -52,7 +52,7 @@ public class TableDataProvider<T> implements Serializable {
     private String sortField = "";
     private SortOrder sortOrder = SortOrder.ASCENDING;
     private List<TableDataFilter> filters = new ArrayList<>();
-    String lastFilterString = "";
+    private String lastFilterString = "";
 
     public static enum SortOrder {
         ASCENDING,
