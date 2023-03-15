@@ -88,7 +88,7 @@
         <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
                 <ui:fragment rendered="#{not empty resultGroup.hits}">
-                    <ui:fragment rendered="#{resultGroup.name != '_DEFAULT'}">
+                    <ui:fragment rendered="#{searchBean.activeResultGroupName eq '-'}">
                         <h2>#{msg[resultGroup.name]} (#{resultGroup.hitsCount})</h2>
                     </ui:fragment>
                     <ui:repeat value="#{resultGroup.hits}" var="hit" varStatus="status">
@@ -146,8 +146,8 @@
                         </div>
                     </ui:repeat>
                     <!-- EXPAND LINK -->
-                    <ui:fragment rendered="#{resultGroup.displayExpandUrl}">
-                        <a href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/-/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{resultGroup.query}/">#{msg.search__all_records}</a>
+                    <ui:fragment rendered="#{searchBean.activeResultGroupName eq '-' and resultGroup.displayExpandUrl}">
+                        <a href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}</a>
                     </ui:fragment>
                 </ui:fragment>
             </ui:repeat>
@@ -159,7 +159,7 @@
         	   classSuffix="-top"
                 itemCount="#{search.lastPage}" 
                 itemActive="#{search.currentPage}" 
-                urlPrefix="#{search.currentSearchUrlRoot}/-/#{search.exactSearchString}/"
+                urlPrefix="#{search.currentSearchUrlRoot}/#{searchBean.activeResultGroupName}/#{search.exactSearchString}/"
                 urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
             <div class="clearfix"></div>
         </ui:fragment>

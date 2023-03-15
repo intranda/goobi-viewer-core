@@ -105,6 +105,7 @@ import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -160,6 +161,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** Individual terms extracted from the user query (used for highlighting). */
     private Map<String, Set<String>> searchTerms = new HashMap<>();
 
+    private SearchResultGroup activeResultGroup;
     private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
@@ -842,6 +844,10 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setExpandQuery(expandQuery);
         }
 
+        if (activeResultGroup != null) {
+            currentSearch.setResultGroups(Collections.singletonList(activeResultGroup));
+        }
+        
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
     }
 
@@ -1411,6 +1417,35 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentSearch != null) {
             currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         }
+    }
+
+    /**
+     * 
+     */
+    public String getActiveResultGroupName() {
+        if (activeResultGroup != null) {
+            return activeResultGroup.getName();
+        }
+
+        return "-";
+    }
+
+    /**
+     * 
+     * @param activeResultGroupName
+     */
+    public void setActiveResultGroupName(String activeResultGroupName) {
+        if (!"-".equals(activeResultGroupName)) {
+            for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
+                if (resultGroup.getName().equals(activeResultGroupName)) {
+                    activeResultGroup = resultGroup;
+                    return;
+                }
+            }
+            logger.warn("Search result group name not found: {}", activeResultGroupName);
+        }
+
+        activeResultGroup = null;
     }
 
     /**
@@ -2928,45 +2963,4 @@ public class SearchBean implements SearchInterface, Serializable {
     public String changeSorting() throws IOException {
         return "pretty:newSearch5";
     }
-
-    /**
-     * TODO Remove this test method after feature development is completed.
-     * 
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     */
-    public void searchMono() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        logger.debug("searchMono");
-        searchStringInternal = "+PI:* +DOCSTRCT:monograph";
-
-        //remember the current page to return to hit list in widget_searchResultNavigation
-        setLastUsedSearchPage();
-
-        // If hitsPerPage is not one of the available values, reset to default
-        if (!hitsPerPageSetterCalled && !DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues().contains(hitsPerPage)) {
-            hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
-            logger.trace("hitsPerPage reset to {}", hitsPerPage);
-        }
-        setHitsPerPageSetterCalled(false);
-
-        if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
-            setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField());
-            logger.trace("Using default sorting: {}", searchSortingOption.getSortString());
-        }
-
-        // Init search object
-        currentSearch = new Search(activeSearchType, currentSearchFilter);
-        currentSearch.setUserInput(searchString);
-        currentSearch.setQuery(searchStringInternal);
-        currentSearch.setPage(currentPage);
-        currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
-        currentSearch.setFacetString(facets.getActiveFacetString());
-        currentSearch.setCustomFilterQuery(customFilterQuery);
-        currentSearch.setProximitySearchDistance(proximitySearchDistance);
-        currentSearch.execute(facets, null, hitsPerPage, navigationHelper.getLocale(), false,
-                SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-    }
-
 }

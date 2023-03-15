@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.maps.Location;
 
@@ -76,6 +77,24 @@ public class SearchResultGroup implements Serializable {
      */
     public static SearchResultGroup createDefaultGroup(String query) {
         return new SearchResultGroup(StringConstants.DEFAULT_NAME, query, -1);
+    }
+
+    /**
+     * Returns a list of configured result groups or a default group if none are configured.
+     * 
+     * @return
+     * @should return correct groups
+     * @should return default group if none are configured
+     * @should return default group if groups disabled
+     */
+    public static List<SearchResultGroup> getConfiguredResultGroups() {
+        List<SearchResultGroup> ret = DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+                ? DataManager.getInstance().getConfiguration().getSearchResultGroups() : new ArrayList<>(1);
+        if (ret.isEmpty()) {
+            ret.add(createDefaultGroup());
+        }
+
+        return ret;
     }
 
     /**
