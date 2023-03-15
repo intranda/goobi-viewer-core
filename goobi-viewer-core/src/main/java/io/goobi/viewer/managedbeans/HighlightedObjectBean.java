@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
@@ -76,6 +78,8 @@ public class HighlightedObjectBean implements Serializable {
     private NavigationHelper navigationHelper;
     @Inject
     private transient IDAO dao;
+    @Inject
+    private ImageDeliveryBean imaging;
     
     @PostConstruct
     public void init() {
@@ -259,6 +263,18 @@ public class HighlightedObjectBean implements Serializable {
         if(!currentObjects.isEmpty()) {            
             int randomIndex = new Random().nextInt(currentObjects.size());
             return currentObjects.get(randomIndex);
+        } else {
+            return null;
+        }
+    }
+    
+    public URI getRecordRepresentativeURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        return getRecordRepresentativeURI(DataManager.getInstance().getConfiguration().getThumbnailsWidth(), DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+    }
+    
+    public URI getRecordRepresentativeURI(int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        if(getSelectedObject() != null && StringUtils.isNotBlank(getSelectedObject().getData().getRecordIdentifier())) {            
+            return Optional.ofNullable(imaging.getThumbs().getThumbnailUrl(getSelectedObject().getData().getRecordIdentifier(), width, height)).map(URI::create).orElse(null);
         } else {
             return null;
         }

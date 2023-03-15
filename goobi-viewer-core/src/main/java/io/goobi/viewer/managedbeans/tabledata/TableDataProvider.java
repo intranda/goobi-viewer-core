@@ -501,7 +501,7 @@ public class TableDataProvider<T> implements Serializable {
     }
 
     public TableDataFilter getFilter(String... columns) {
-        return getFilterIfPresent(columns).orElse(addFilter(columns));
+        return getFilterIfPresent(columns).orElseGet(() -> addFilter(columns));
     }
 
     private TableDataFilter addFilter(String... columns) {
