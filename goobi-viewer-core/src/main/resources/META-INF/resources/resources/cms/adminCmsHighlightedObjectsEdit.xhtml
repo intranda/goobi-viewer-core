@@ -14,12 +14,12 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin( cmsRecordNoteEditBean.newNote ? 'adminCmsHighlightedObjectsNew':'adminCmsHighlightedObjectsEdit')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin( highlightedObjectBean.newObject ? 'adminCmsHighlightedObjectsNew':'adminCmsHighlightedObjectsEdit')}" />
 <!-- 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlightedObjects')}" /> -->
 		</f:metadata>
 	</ui:define>
 
-	<ui:param name="note" value="#{cmsRecordNoteEditBean.note}"></ui:param>
+	<ui:param name="object" value="#{highlightedObjectBean.selectedObject}"></ui:param>
 
 	<ui:define name="content">
 
@@ -31,7 +31,7 @@
 			<h:panelGroup id="mainGroup" layout="block" rendered="#{userBean.user.cmsAdmin}">
 				<!-- TITLE -->
 				<div class="admin__title-bar">
-					<h1 class="admin__title">#{cmsRecordNoteEditBean.newNote ? msg.admin__highlighted_objects__new_title : msg.admin__highlighted_objects__edit_title}</h1>
+					<h1 class="admin__title">#{highlightedObjectBean.newObject ? msg.admin__highlighted_objects__new_title : msg.admin__highlighted_objects__edit_title}</h1>
 				</div>
 				
 				<viewerComponent:adminBreadcrumbs />
@@ -61,21 +61,10 @@
 												<label>#{msg.admin__highlighted_objects__naming}:</label>
 											</div>
 			                            	<div class="col-11 col-lg-9 admin__form-input">
-
-												<h:message for="inputRecordIdentifier"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
-												</div>
-												<h:inputText id="inputRecordIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
+												<h:inputText id="inputObjectName" tabindex="1"
 													styleClass="form-control -validation-input"
 													requiredMessage="#{msg.info__input_required}"
-													validatorMessage="#{msg.pi_errNotFound}"
-													required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
-													value="#{cmsRecordNoteEditBean.recordIdentifier}">
-													<f:validator validatorId="piInSolrValidator"
-														for="inputRecordIdentifier" />
+													value="#{object.data.name.text}">
 												</h:inputText>
 												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</div>
@@ -86,7 +75,7 @@
 											<div class="col-12 col-lg-2 control-label admin__form-label">
 												<label for="inputObjectIdentifier">#{msg.admin__highlighted_objects__new_pi}:</label>
 											</div>
-			                            	<div class="col-11 col-lg-9 admin__form-input">
+			                            	<h:panelGroup id="recordIdentifierInputGroup" layout="block" class="col-11 col-lg-9 admin__form-input">
 
 												<h:message for="inputRecordIdentifier"
 													errorClass="-validation-message -danger"></h:message>
@@ -94,17 +83,17 @@
 													<i class="fa fa-check" aria-hidden="true"></i> <i
 														class="fa fa-exclamation" aria-hidden="true"></i>
 												</div>
-												<h:inputText id="inputObjectIdentifier" tabindex="1" disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'SINGLE'}"
+												<h:inputText id="inputRecordIdentifier" tabindex="1"
 													styleClass="form-control -validation-input"
 													requiredMessage="#{msg.info__input_required}"
 													validatorMessage="#{msg.pi_errNotFound}"
-													required="#{cmsRecordNoteEditBean.currentNoteType eq 'SINGLE'}"
-													value="#{cmsRecordNoteEditBean.recordIdentifier}">
+													value="#{object.data.recordIdentifier}">
 													<f:validator validatorId="piInSolrValidator"
 														for="inputRecordIdentifier" />
+													<f:ajax event="valueChange" execute="@this" render="recordInformation mediaGroup recordIdentifierInputGroup messages"></f:ajax>
 												</h:inputText>
 												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
-											</div>
+											</h:panelGroup>
 
 									</div>
 									<div class="form-group form-row">
@@ -115,7 +104,7 @@
 			                            	<div class="col-11 col-lg-9 admin__form-input">
 
 											<div class="admin__highlighted-objects-date-wrapper">
-												<h:message for="inputRecordIdentifier"
+												<h:message for="pickerDateStart"
 													errorClass="-validation-message -danger"></h:message>
 												<div class="-validation-mark">
 													<i class="fa fa-check" aria-hidden="true"></i> <i
@@ -126,7 +115,7 @@
                                                 	<h:inputText
                                                 		id="pickerDateStart" 
                                                 		name="pickerDateStart" 
-                                                		value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}"
+                                                		value="#{object.data.dateStart}"
                                                 		converter="localDateConverter"
                                                 		data-format="#{navigationHelper.datePattern}"
                                                 		styleClass="form-control">
@@ -145,7 +134,7 @@
 													<h:inputText 
 														id="pickerDateEnd" 
 														name="pickerDateEnd"
-														value="#{crowdsourcingBean.selectedCampaign.dateOnlyEnd}"
+														value="#{object.data.dateEnd}"
 														converter="localDateConverter"
 														data-format="#{navigationHelper.datePattern}"
 														styleClass="form-control">
@@ -201,33 +190,33 @@
                             
                             	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
                             		<div class="connected-top">
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="NONE" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="NO_IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
 	                            	<div class="connected-middle">
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
 	                            	<div class="connected-bottom">
-		                            	<h:selectOneRadio group="imageModeRadio" value="#{cmsCollectionsBean.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="PI" itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
+		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
+		                                	<f:selectItem itemValue="RECORD_REPRESENTATIVE" itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
 								</div>
                             	
                             
-                                <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image" id="mediaGroup" rendered="#{cmsCollectionsBean.imageMode == 'IMAGE'}">
+                                <h:panelGroup layout="block" styleClass="admin__cms-edit-collection-wrapper-choose-image" id="mediaGroup" rendered="#{object.data.imageMode == 'UPLOADED_IMAGE'}">
                                 <!-- THUMBNAIL -->
                                 <div class="admin__cms-edit-collection-image-thumbnail">
-                                    <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
-                                        <img src="#{cmsCollectionsBean.currentCollection.iconURI}" class="img-fluid" alt="" />
+                                    <ui:fragment rendered="#{object.hasMediaItem()}">
+                                        <img src="#{object.imageURI}" class="img-fluid" alt="" />
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
+                                    <ui:fragment rendered="#{!object.hasMediaItem()}">
                                         <img data-src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
                                         data-viewer-thumbnail="thumbnail"
                                             class="img-fluid" alt="" />
@@ -237,15 +226,15 @@
 				                <!-- ACTIONS -->
 				                <div class="admin__cms-edit-collection-image-actions">
 				                    <h:commandLink 
-				                        action="#{cmsBean.setSelectedMediaHolder(cmsCollectionsBean.currentCollection)}" 
-				                        value="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
-				                        class="#{cmsCollectionsBean.currentCollection.getMediaItem() == null ? 'btn btn--default' : ''}" 
+				                        action="#{cmsBean.setSelectedMediaHolder(object)}" 
+				                        value="#{object.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}" 
+				                        class="#{object.getMediaItem() == null ? 'btn btn--default' : ''}" 
 				                        role="button">
 				                        <f:ajax execute="@form" render="mediaSelectPanel" />
 				                    </h:commandLink>
 				                    <h:commandLink 
-				                        rendered="#{cmsCollectionsBean.currentCollection.getMediaItem() != null}" 
-				                        action="#{cmsCollectionsBean.currentCollection.setMediaItem(null)}" 
+				                        rendered="#{object.getMediaItem() != null}" 
+				                        action="#{object.setMediaItem(null)}" 
 				                        value="#{msg.cms_selectMediaItem_deselect}" 
 				                        class="-redlink"
 				                        role="button">
@@ -253,15 +242,14 @@
 				                    </h:commandLink>                    
 				                </div>
                                 
-                                </h:panelGroup>	
+                            </h:panelGroup>	
                             
-                            <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{cmsCollectionsBean.imageMode == 'PI'}">
-                            	<div class="cms-edit-collection__text-control">
-                                	<h:inputText id="workPI" styleClass="form-control" validator="#{cmsCollectionsBean.validatePI}" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}">
-                                   		<!--                                 validator="piInSolrValidator" -->
-                                    	<f:ajax render="@all"></f:ajax>
-                                	</h:inputText>
-                            	</div>
+                            <h:panelGroup layout="block" styleClass="admin__cms-collections-wrapper-identifier" id="piGroup" rendered="#{object.data.imageMode == 'RECORD_REPRESENTATIVE'}">
+                            	<div class="admin__cms-edit-collection-image-thumbnail">
+                                    <ui:fragment rendered="#{not empty object.data.recordIdentifier}">
+                                        <img src="#{object.imageURI}" class="img-fluid" alt="" />
+                                    </ui:fragment>
+                                </div>
                             </h:panelGroup>
                             
                             </h:panelGroup>
@@ -271,10 +259,10 @@
 									class="row no-gutters justify-content-end admin__final-actions">
 
 									<a class="btn btn--cancel"
-										href="#{cmsRecordNoteEditBean.returnUrl}">#{msg.button__abort}
+										href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/">#{msg.button__abort}
 									</a>
 									<button class="btn btn--success"
-										jsf:action="#{cmsRecordNoteEditBean.save()}">
+										jsf:action="#{highlightedObjectBean.saveObject(object)}">
 										#{msg.button__save}
 										<f:ajax render="@form :messages :noteInfoGroup" execute="@form"></f:ajax>
 									</button> 
@@ -282,10 +270,27 @@
 
 
 
-							</div>
 						</div>
+					</div>
 						
-
+					<h:panelGroup id="mediaSelectPanel">
+						<ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+			                   <div class="admin-cms-media-select-overlay">
+			                    
+			                    <!-- SELECT MEDIA ITEM OVERLAY -->
+		                            <div class="admin-cms-media__select-overlay"></div>
+		                            
+		                            <!-- SELECT MEDIA ITEM -->
+		                            <div class="admin-cms-media__select">                            
+		                                 <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+		                                 	<ui:param name="mediaDisplayPanel" value="mediaGroup" />
+		                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+		        							<ui:param name="fileTypeValidator" value="#{cmsMediaBean.getImageFilter()}"/>
+		                                </ui:include>
+		                            </div>
+			                   </div>
+						</ui:fragment>
+			        </h:panelGroup>
 
 
 					<!-- TO DO AK: Rendered condition if already existing object is selected to edit -->
@@ -297,42 +302,41 @@
 
 								<!-- OVERRIDE ACTIVE YES / NO -->
 								<div class="admin__default-block">
-									<h:form>
 										<div class="admin__record-notes-visibility">
 											<h2>#{msg.admin__highlighted_objects__sidebar_status}</h2>
 											<div class="admin__form-help-text in mb-2">#{msg.admin__highlighted_objects__sidebar_status_help}</div>
 											<div class="mb-1 d-flex justify-content-between">
 												<label>#{msg.admin__highlighted_objects__sidebar_status_toggle}: </label>
-												<viewerComponent:toggleSwitch name="showThisNote" value="#{note.displayNote}" />
+												<viewerComponent:toggleSwitch name="showThisNote" value="#{object.data.enabled}" />
 											</div>
 										</div>
-									</h:form>
-
 								</div>
 
 								<!-- OBJECT INFOS + DISPLAY LINK -->
-								<ui:fragment rendered="#{cmsRecordNoteEditBean.isSingleRecordNote()}">
+								<h:panelGroup id="recordInformation">
 
-									<h:panelGroup layout="block" id="noteInfoShowRecord" styleClass="admin__default-block">
+									<h:panelGroup layout="block" styleClass="admin__default-block"
+									rendered="#{not empty object.data.recordIdentifier}">
 										<h2>#{msg.show}</h2>
 										<div class="admin__form-help-text in mb-4 admin__record-notes-info-box">
 											<span>#{msg.cms__record_notes_select_record__show_title}</span>
 										</div>
 											<div class="row">
 												<div class="col-12 d-flex justify-content-center">
-													<a class="btn btn--default" target="_blank" href="#{cmsRecordNotesBean.getRecordUrl(note)}">#{msg.show}</a>
+													<a class="btn btn--default" target="_blank" href="#{highlightedObjectBean.getRecordUrl(object)}">#{msg.show}</a>
 					                            </div>
 											</div>
 									</h:panelGroup>
 
-									<div class="admin__default-block">
+									<h:panelGroup layout="block" styleClass="admin__default-block"
+									rendered="#{not empty object.data.recordIdentifier}">
 										<h2>#{msg.cms__record_notes_select_record__title}</h2>
 										<div class="admin__record-notes-info-box">
 											<div class="admin__record-notes-image-wrapper">
 												<img class="admin__record-notes-image"
-													alt="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
-													title="#{note.recordTitle.getValue(navigationHelper.locale).orElse('')}"
-													src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" />
+													alt="#{cmsRecordNoteEditBean.metadataElement.label}"
+													title="#{cmsRecordNoteEditBean.metadataElement.label}"
+													src="#{object.getImageURI(350, 420)}" />
 											</div>
 											<div class="admin__record-notes-metadata">
 												<ui:include
@@ -342,8 +346,8 @@
 												</ui:include>
 											</div>
 										</div>
-									</div>
-								</ui:fragment>
+									</h:panelGroup>
+								</h:panelGroup>
 
 							<!-- SIDEBAR EOL -->
 							</div>

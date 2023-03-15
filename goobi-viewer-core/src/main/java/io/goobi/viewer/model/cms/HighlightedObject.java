@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Optional;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -112,6 +113,10 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
 
         return null;
     }
+    
+    public HighlightedObjectData getData() {
+        return data;
+    };
 
     /**
      * Check whether an image is set for this object
@@ -138,16 +143,26 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
      * @throws PresentationException
      * @throws ViewerConfigurationException
      */
-    public URI getImageURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    public URI getImageURI(int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         switch (this.data.getImageMode()) {
             case UPLOADED_IMAGE:
                 return Optional.ofNullable(this.getMediaItem()).map(CMSMediaItem::getIconURI).orElse(null);
             case RECORD_REPRESENTATIVE:
-                return Optional.ofNullable(this.thumbs.getThumbnailUrl(this.data.getRecordIdentifier())).map(URI::create).orElse(null);
+                return Optional.ofNullable(this.thumbs.getThumbnailUrl(this.data.getRecordIdentifier(), width, height)).map(URI::create).orElse(null);
             default:
                 return null;
 
         }
     }
+    
+    public URI getImageURI() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        return getImageURI(DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+    }
 
+    @Override
+    public String toString() {
+        return "Data: " + this.getData().toString();
+    }
+    
 }

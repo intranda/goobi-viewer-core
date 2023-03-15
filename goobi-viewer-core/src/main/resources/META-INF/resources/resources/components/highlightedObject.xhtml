@@ -1,0 +1,29 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation>
+		<h:panelGroup styleClass="admin__breadcrumbs-wrapper" layout="block">
+			<c:set scope="request" var="object" value="#{highlightedObjectBean.currentHighlightedObject}"/>
+			<ui:fragment rendered="#{object != null}">
+				<a href ="#{highlightedObjectBean.getRecordUrl(object)}">
+					<ui:fragment rendered="#{object.hasImageURI()}">
+						<img class="admin__record-notes-image"
+							alt="#{object.data.name.textOrDefault}"
+							title="#{object.data.name.textOrDefault}"
+							src="#{object.getImageURI()}" />
+					</ui:fragment>
+					<div>
+						<span>#{object.data.name.textOrDefault}</span>
+					</div>
+				</a>
+			</ui:fragment>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

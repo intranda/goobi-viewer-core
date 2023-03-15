@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -81,7 +82,7 @@ public class HighlightedObjectData implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "image_mode")
-    private ImageMode imageMode;
+    private ImageMode imageMode = ImageMode.RECORD_REPRESENTATIVE;
 
     public enum ImageMode {
         NO_IMAGE,
@@ -121,28 +122,20 @@ public class HighlightedObjectData implements Serializable {
         this.recordIdentifier = recordIdentifier;
     }
 
-    public LocalDateTime getDateStart() {
-        return dateStart;
-    }
-
-    public void setDateStart(LocalDateTime dateStart) {
-        this.dateStart = dateStart;
+    public LocalDate getDateStart() {
+        return Optional.ofNullable(dateStart).map(LocalDateTime::toLocalDate).orElse(null);
     }
     
     public void setDateStart(LocalDate dateStart) {
-        this.dateStart = dateStart.atStartOfDay();
+        this.dateStart = Optional.ofNullable(dateStart).map(LocalDate::atStartOfDay).orElse(null);
     }
 
-    public LocalDateTime getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(LocalDateTime dateEnd) {
-        this.dateEnd = dateEnd;
+    public LocalDate getDateEnd() {
+        return Optional.ofNullable(dateEnd).map(LocalDateTime::toLocalDate).map(date -> date.minusDays(1)).orElse(null);
     }
     
     public void setDateEnd(LocalDate dateEnd) {
-        this.dateEnd = dateEnd.atStartOfDay();
+        this.dateEnd = Optional.ofNullable(dateEnd).map(date -> date.plusDays(1)).map(LocalDate::atStartOfDay).orElse(null);
     }
 
     public CMSMediaItem getMediaItem() {
@@ -159,6 +152,11 @@ public class HighlightedObjectData implements Serializable {
 
     public void setImageMode(ImageMode imageMode) {
         this.imageMode = imageMode;
+    }
+    
+    @Override
+    public String toString() {
+        return getName().getTextOrDefault() + " (ID: " + getId() + ")";
     }
 
 }

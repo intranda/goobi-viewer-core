@@ -1124,13 +1124,12 @@
     <url-mapping id="adminCmsHighlightedObjectsNew">
         <pattern value="/admin/cms/highlightedobjects/new/" />
         <view-id value="/resources/cms/adminCmsHighlightedObjectsEdit.xhtml" />
+        <action onPostback="false">#{highlightedObjectBean.setNewSelectedObject()}</action>
     </url-mapping>
     <url-mapping id="adminCmsHighlightedObjectsEdit">
-        <pattern value="/admin/cms/highlightedobjects/edit/#{selectedNoteId}/" />
-        <view-id value="/resources/admin/views/adminCmsHighlightedObjectsEdit.xhtml" />
-        <query-param name="from" onPostback="false" >#{cmsRecordNoteEditBean.returnUrl}</query-param>
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsRecordNoteEditBean.setNoteId(selectedNoteId)}</action>
+        <pattern value="/admin/cms/highlightedobjects/edit/#{selectedObjectId}/" />
+        <view-id value="/resources/cms/adminCmsHighlightedObjectsEdit.xhtml" />
+        <action onPostback="false">#{highlightedObjectBean.setSelectedObjectId(selectedObjectId)}</action>
     </url-mapping>
 
 	<!-- CMS -->
