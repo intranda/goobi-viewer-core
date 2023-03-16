@@ -3249,7 +3249,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws ViewerConfigurationException
      */
     public boolean showImageNavigator(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getBoolean("navigator.enabled", false);
+        return getZoomImageViewConfig(view, image).getBoolean("navigator[@enabled]", false);
     }
 
     /**
