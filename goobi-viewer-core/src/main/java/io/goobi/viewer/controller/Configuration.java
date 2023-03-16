@@ -3226,6 +3226,17 @@ public class Configuration extends AbstractConfiguration {
     public boolean useTiles(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getBoolean("[@tileImage]", false);
     }
+    
+    /**
+     * whether to show a navigator element in the openseadragon viewe
+     * @param view  get settings for this pageType
+     * @param image  get settings for this image type
+     * @return  true if navigator should be shown
+     * @throws ViewerConfigurationException
+     */
+    public boolean showImageNavigator(PageType view, ImageType image) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, image).getBoolean("navigator.enabled", false);
+    }
 
     /**
      * <p>
