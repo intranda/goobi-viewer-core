@@ -46,7 +46,7 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
         if (data == null || thumbs == null) {
             throw new NullPointerException("Constructor arguments may not be null");
         }
-        this.data = data;
+        this.data = new HighlightedObjectData(data);
         this.thumbs = thumbs;
     }
 

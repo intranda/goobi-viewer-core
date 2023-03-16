@@ -41,10 +41,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
+import com.ocpsoft.pretty.faces.util.PrettyURLBuilder;
+
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -71,8 +74,9 @@ public class HighlightedObjectBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
 
     private TableDataProvider<HighlightedObject> dataProvider;
-    private HighlightedObject selectedObject = null;
+    private transient HighlightedObject selectedObject = null;
     private MetadataElement metadataElement = null;
+    private final Random random = new Random();
 
     @Inject
     private NavigationHelper navigationHelper;
@@ -167,6 +171,10 @@ public class HighlightedObjectBean implements Serializable {
 
     public void setSelectedObject(HighlightedObject selectedObject) {
         this.selectedObject = selectedObject;
+        this.metadataElement = null;
+        if(this.selectedObject != null) {
+            this.selectedObject.setSelectedLocale(BeanUtils.getLocale());
+        }
     }
 
     public void setSelectedObjectId(long id) {
@@ -195,22 +203,33 @@ public class HighlightedObjectBean implements Serializable {
 
     public void saveObject(HighlightedObject object) throws DAOException {
         boolean saved = false;
+        boolean redirect = false;
         if (object != null && object.getData().getId() != null) {
             saved = dao.updateHighlightedObject(object.getData());
         } else if (object != null) {
             saved = dao.addHighlightedObject(object.getData());
+            redirect = true;
         }
         if (saved) {
             Messages.info("Successfully saved object " + object);
         } else {
             Messages.error("Failed to save object " + object);
         }
+        if(redirect) {            
+            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightedObjectsEdit", object.getData().getId()));
+        }
     }
 
     public MetadataElement getMetadataElement() {
         if (this.metadataElement == null && this.selectedObject != null) {
             try {
-                this.metadataElement = loadMetadataElement(this.selectedObject.getData().getRecordIdentifier(), 0);
+                SolrDocument solrDoc = loadSolrDocument(this.selectedObject.getData().getRecordIdentifier());
+                if (solrDoc != null) {
+                    this.metadataElement = loadMetadataElement(solrDoc, 0);
+                    if (this.selectedObject.getData().getName().isEmpty()) {
+                        this.selectedObject.getData().setName(createRecordTitle(solrDoc));
+                    }
+                }
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error("Unable to reetrive metadata elemement for {}. Reason: {}", getSelectedObject().getData().getName().getTextOrDefault(),
                         e.getMessage());
@@ -229,7 +248,14 @@ public class HighlightedObjectBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private MetadataElement loadMetadataElement(String recordPi, int index) throws PresentationException, IndexUnreachableException {
+    private MetadataElement loadMetadataElement(SolrDocument solrDoc, int index) throws PresentationException, IndexUnreachableException {
+        StructElement structElement = new StructElement(solrDoc);
+        return new MetadataElement().init(structElement, index, BeanUtils.getLocale())
+                .setSelectedRecordLanguage(this.selectedObject.getSelectedLocale().getLanguage());
+
+    }
+
+    SolrDocument loadSolrDocument(String recordPi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isBlank(recordPi)) {
             return null;
         }
@@ -238,9 +264,7 @@ public class HighlightedObjectBean implements Serializable {
         if (solrDoc == null) {
             return null;
         }
-        StructElement structElement = new StructElement(solrDoc);
-        return new MetadataElement().init(structElement, index, BeanUtils.getLocale())
-                .setSelectedRecordLanguage(this.selectedObject.getSelectedLocale().getLanguage());
+        return solrDoc;
     }
 
     /**
@@ -256,7 +280,7 @@ public class HighlightedObjectBean implements Serializable {
      * @param label
      * @return
      */
-    public TranslatedText createRecordTitle(IMetadataValue label) {
+    private TranslatedText createRecordTitle(IMetadataValue label) {
         if (label instanceof MultiLanguageMetadataValue) {
             MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
             return new TranslatedText(mLabel);
@@ -271,7 +295,7 @@ public class HighlightedObjectBean implements Serializable {
                 .map(HighlightedObject::new)
                 .collect(Collectors.toList());
         if (!currentObjects.isEmpty()) {
-            int randomIndex = new Random().nextInt(currentObjects.size());
+            int randomIndex = random.nextInt(currentObjects.size());
             return currentObjects.get(randomIndex);
         } else {
             return null;

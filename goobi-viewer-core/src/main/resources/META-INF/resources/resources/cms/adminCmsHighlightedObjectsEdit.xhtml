@@ -92,7 +92,7 @@
 													value="#{object.data.recordIdentifier}">
 													<f:validator validatorId="piInSolrValidator"
 														for="inputRecordIdentifier" />
-													<f:ajax event="valueChange" execute="@this" render="recordInformation mediaGroup recordIdentifierInputGroup messages"></f:ajax>
+													<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
 												</h:inputText>
 												<span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
 											</h:panelGroup>

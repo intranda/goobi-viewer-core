@@ -90,6 +90,21 @@ public class HighlightedObjectData implements Serializable {
         RECORD_REPRESENTATIVE
     }
 
+    public HighlightedObjectData() {
+        //empty
+    }
+    
+    HighlightedObjectData(HighlightedObjectData source) {
+        this.id = source.id;
+        this.dateStart = source.dateStart;
+        this.dateEnd = source.dateEnd;
+        this.enabled = source.enabled;
+        this.imageMode = source.imageMode;
+        this.mediaItem = source.mediaItem;
+        this.name = new TranslatedText(source.getName());
+        this.recordIdentifier = source.recordIdentifier;
+    }
+
     public Long getId() {
         return id;
     }
