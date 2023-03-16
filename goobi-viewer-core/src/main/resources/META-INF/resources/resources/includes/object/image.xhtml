@@ -75,6 +75,9 @@
         		maxZoomLevel: 5,
         		zoomSpeed: allowZoom ? 1.25 : 1,
         		zoomSlider: allowZoom ? '.zoom-slider' : '',
+        		navigator: {
+        			show: #{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}
+        		},
         		controls : {
         		    rotateLeft: '.rotate-left',
         		    rotateRight: '.rotate-right',
@@ -219,6 +222,12 @@
        	}
        	       	
 		if(viewImage) {	
+			
+			if(viewImage.config.global.navigator.show) {				
+	       	 	viewImage.observables.viewerOpen.subscribe(() => {
+	       	 		viewImage.viewer.navigator.element.style.marginBottom = (configViewer.global.bottomMargin()-5) + "px";
+	       	 	});
+			}
 		    
 		    //init image filter tools
        	 	viewImage.observables.viewportUpdate.pipe(RxOp.first()).subscribe( () => {
