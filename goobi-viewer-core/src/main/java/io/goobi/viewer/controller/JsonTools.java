@@ -371,4 +371,40 @@ public class JsonTools {
             return notAvailableKey;
         }
     }
+    
+    /**
+     * 
+     * @param json
+     * @return
+     */
+    public static String getVersion(String json) {
+        return getValue(json, "version");
+    }
+    
+    public static String getGitRevision(String json) {
+        return getValue(json, "git-revision");
+    }
+    
+    
+    /**
+     * 
+     * @param json
+     * @param field
+     * @return
+     */
+     static String getValue(String json, String field) {
+        final String notAvailableKey = "admin__dashboard_versions_not_available";
+
+        if (StringUtils.isEmpty(json)) {
+            return notAvailableKey;
+        }
+
+        try {
+            JSONObject jsonObj = new JSONObject(json);
+            return jsonObj.getString(field) ;
+        } catch (JSONException e) {
+            logger.warn(e.getMessage());
+            return notAvailableKey;
+        }
+    }
 }

@@ -278,7 +278,6 @@ public class CmsPageEditBean implements Serializable {
                 cmsBean.getLazyModelPages().update();
                 Messages.info("cms_deletePage_success");
             } else {
-                logger.error("Failed to delete page");
                 Messages.error("cms_deletePage_failure");
             }
         }

@@ -202,7 +202,7 @@ public class PdfHandler {
     public String getPdfUrl(String pi, Optional<String> divId, Optional<String> label) {
 
         divId = divId.filter(id -> StringUtils.isNotBlank(id));
-        String filename = label.filter(l -> StringUtils.isNotBlank(l))
+        String filename = label.filter(StringUtils::isNotBlank)
                 .map(l -> l.replaceAll("[\\s]", "_"))
                 .map(l -> l.replaceAll("[\\W]", ""))
                 .map(l -> l.toLowerCase().endsWith(".pdf") ? l : (l + ".pdf"))

@@ -50,7 +50,7 @@ import io.goobi.viewer.solr.SolrConstants;
 public class MetadataElement implements Serializable {
 
     private static final long serialVersionUID = 222226787503688100L;
-
+    
     /**
      * Wrapper class for the metadata type numerical value. Needed only for retrieving the proper message key for each type...
      */
@@ -61,6 +61,7 @@ public class MetadataElement implements Serializable {
         private static final String KEY_ROOT = "metadataTab";
 
         private int type;
+        
 
         public MetadataType() {
             this.type = 0;
@@ -731,4 +732,5 @@ public class MetadataElement implements Serializable {
         this.selectedRecordLanguage = language;
         return this;
     }
+
 }

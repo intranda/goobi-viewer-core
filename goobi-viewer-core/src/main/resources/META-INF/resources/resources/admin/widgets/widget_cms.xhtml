@@ -101,8 +101,7 @@
                                     <span>#{msg.cms__record_notes__title_plural}</span>
                                 </h:outputLink>
                             </li>
-                        </ui:fragment>
-                        
+                        </ui:fragment>                        
                          <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_RECORD_NOTES')}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsHighlightedObjects' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsHighlightedObjects')}/">

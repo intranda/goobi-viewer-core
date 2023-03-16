@@ -28,20 +28,19 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Equator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.api.rest.model.MediaItem;
-import io.goobi.viewer.api.rest.v1.cms.CMSMediaResource.MediaList;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.MediaItem;
+import io.goobi.viewer.model.cms.media.MediaList;
 
 /**
  * @author florian
@@ -50,7 +49,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
 
     List<CMSMediaItem> items = new ArrayList<CMSMediaItem>();
-    CMSMediaResource resource = new CMSMediaResource();
+    CMSMediaResource resource;
     CMSCategory category = new CMSCategory("unitTest");
     int numItems = 10;
 
@@ -62,6 +61,7 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
         super.setUp();
 
         DataManager.getInstance().getDao().addCategory(category);
+        resource = new CMSMediaResource(DataManager.getInstance().getDao());
 
         for (long i = 1; i <= numItems; i++) {
             CMSMediaItem item = new CMSMediaItem();

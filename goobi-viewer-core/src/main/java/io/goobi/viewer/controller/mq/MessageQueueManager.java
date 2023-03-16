@@ -32,10 +32,13 @@ import java.rmi.server.RMIServerSocketFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.inject.Singleton;
@@ -44,8 +47,13 @@ import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
+import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
 
@@ -53,12 +61,16 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.jmx.QueueViewMBean;
+import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.activemq.memory.buffer.MessageQueue;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Startup;
 import org.reflections.Reflections;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -70,12 +82,12 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.managedbeans.MessageQueueBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.job.TaskType;
 
 /**
- * Manages handling of messages by their respective MessageHandlers. Main method is {@link #handle(ViewerMessage message)}
- * which accepts a {@link ViewerMessage} and calls a {@link MessageHandler} instance to process the message, returning a
- * {@link MessageStatus} result.
- * #handle may either be called directly to handle the message instantly, or from a {@link MessageQueue
+ * Manages handling of messages by their respective MessageHandlers. Main method is {@link #handle(ViewerMessage message)} which accepts a
+ * {@link ViewerMessage} and calls a {@link MessageHandler} instance to process the message, returning a {@link MessageStatus} result. #handle may
+ * either be called directly to handle the message instantly, or from a {@link MessageQueue
  * 
  * @author florian
  *
@@ -84,57 +96,76 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 @Startup
 public class MessageQueueManager {
 
-    private static final String QUEUE_NAME = "viewer";
+    private static final int SERVER_REGISTRY_PORT = 1095;
+
+    public static final String QUEUE_NAME_VIEWER = "viewer";
+    public static final String QUEUE_NAME_PDF = "pdf";
 
     private static final Logger logger = LogManager.getLogger(MessageQueueManager.class);
-    
+
     private final Map<String, MessageHandler<MessageStatus>> instances;
     private final IDAO dao;
     private boolean queueRunning = false;
-    private ActiveMQConfig config = null;    
+    private ActiveMQConfig config = null;
     private RMIConnectorServer rmiServer = null;
     private BrokerService broker = null;
     private List<DefaultQueueListener> listeners = new ArrayList<>();
-    
+
     public MessageQueueManager() throws DAOException, IOException {
         this.instances = generateTicketHandlers();
         this.dao = DataManager.getInstance().getDao();
         this.config = new ActiveMQConfig("config_activemq.xml");
     }
-    
+
     public MessageQueueManager(ActiveMQConfig config, IDAO dao) throws IOException {
         this.dao = dao;
         this.instances = generateTicketHandlers();
         this.config = config;
     }
-    
+
     public MessageQueueManager(ActiveMQConfig config, IDAO dao, Map<String, MessageHandler<MessageStatus>> instances) {
         this.instances = instances;
         this.dao = dao;
         this.config = config;
     }
-    
+
     /**
      * Add the message to the internal message queue to be handled later
+     * 
      * @param message
      * @return
-     * @throws MessageQueueException 
+     * @throws MessageQueueException
      */
     public String addToQueue(ViewerMessage message) throws MessageQueueException {
-        if(this.isQueueRunning()) {            
+        if (this.isQueueRunning()) {
             try {
                 Connection conn = getConnection();
-                String messageId = submitTicket(message, QUEUE_NAME, conn, message.getTaskName());
+                String messageId = submitTicket(message, getQueueForMessageType(message.getTaskName()), conn, message.getTaskName());
                 conn.close();
                 return messageId;
             } catch (JsonProcessingException | JMSException e) {
                 logger.error("Error adding message {}/{} to queue: {}", message.getTaskName(), message.getMessageId(), e.toString(), e);
                 return null;
-            } finally {            
+            } finally {
                 notifyMessageQueueStateUpdate();
             }
         } else {
             throw new MessageQueueException("Message queue is not running");
+        }
+    }
+
+    public static String getQueueForMessageType(String taskName) {
+        try {
+            TaskType type = TaskType.valueOf(taskName);
+            switch (type) {
+                case PRERENDER_PDF:
+                    return QUEUE_NAME_PDF;
+                default:
+                    return QUEUE_NAME_VIEWER;
+            }
+        } catch (NullPointerException | IllegalArgumentException e) {
+            logger.error("Error parsing TaskType for name {}", taskName);
+            return QUEUE_NAME_VIEWER;
         }
     }
 
@@ -143,16 +174,16 @@ public class MessageQueueManager {
      */
     public static void notifyMessageQueueStateUpdate() {
         MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
-        if(mqBean != null) {
+        if (mqBean != null) {
             mqBean.updateMessageQueueState();
         }
     }
-    
+
     /**
-     * Finds the appropriate MessageHandler for a message, lets the handler handle the message 
-     * and update the message in the database
+     * Finds the appropriate MessageHandler for a message, lets the handler handle the message and update the message in the database
+     * 
      * @param message
-     * @return  the result of the handler calling the message
+     * @return the result of the handler calling the message
      */
     public MessageStatus handle(ViewerMessage message) {
 
@@ -162,27 +193,26 @@ public class MessageQueueManager {
         }
 
         // create database entry
-//        updateMessageStatus(message, MessageStatus.PROCESSING);
-//        notifyMessageQueueStateUpdate();
+        //        updateMessageStatus(message, MessageStatus.PROCESSING);
+        //        notifyMessageQueueStateUpdate();
         MessageStatus rv = handler.call(message);
         updateMessageStatus(message, rv);
 
         return rv;
     }
-    
+
     public boolean initializeMessageServer() {
-        return initializeMessageServer("localhost", 1099, 0);
+        return initializeMessageServer("localhost", SERVER_REGISTRY_PORT, 0);
     }
 
-    
     public boolean initializeMessageServer(String address, int namingPort, int protocolPort) {
-        
+
         // JMX/RMI part taken from: https://vafer.org/blog/20061010091658/
         try {
             RMIServerSocketFactory serverFactory = new RMIServerSocketFactoryImpl(InetAddress.getByName(address));
-            try {                
+            try {
                 LocateRegistry.createRegistry(namingPort, null, serverFactory);
-            } catch(ExportException e) {
+            } catch (ExportException e) {
                 logger.trace("Cannot create registry, already in use");
             }
 
@@ -218,7 +248,12 @@ public class MessageQueueManager {
         try {
             for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
                 DefaultQueueListener listener = new DefaultQueueListener(this);
-                listener.register(this.config.getUsernameAdmin(), this.config.getPasswordAdmin(), QUEUE_NAME);
+                listener.register(this.config.getUsernameAdmin(), this.config.getPasswordAdmin(), QUEUE_NAME_VIEWER);
+                listeners.add(listener);
+            }
+            for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
+                DefaultQueueListener listener = new DefaultQueueListener(this);
+                listener.register(this.config.getUsernameAdmin(), this.config.getPasswordAdmin(), QUEUE_NAME_PDF);
                 listeners.add(listener);
             }
 
@@ -229,7 +264,7 @@ public class MessageQueueManager {
         this.queueRunning = true;
         return true;
     }
-    
+
     public void closeMessageServer() {
         try {
             if (rmiServer != null) {
@@ -246,18 +281,19 @@ public class MessageQueueManager {
             logger.error(e);
         }
     }
-    
+
     public ActiveMQConnection getConnection() throws JMSException {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(config.getConnectorURI());
         connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
         ActiveMQConnection connection =
-                    (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(), this.config.getPasswordAdmin());
+                (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(), this.config.getPasswordAdmin());
         return connection;
 
     }
 
     private void updateMessageStatus(ViewerMessage message, MessageStatus rv) {
         message.setMessageStatus(rv);
+        message.setQueue(MessageQueueManager.getQueueForMessageType(message.getTaskName()));
         message.setLastUpdateTime(LocalDateTime.now());
         try {
             if (message.getId() == null) {
@@ -269,7 +305,7 @@ public class MessageQueueManager {
             logger.error(e);
         }
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static Map<String, MessageHandler<MessageStatus>> generateTicketHandlers() {
         Map<String, MessageHandler<MessageStatus>> handlers = new HashMap<>();
@@ -285,10 +321,10 @@ public class MessageQueueManager {
         }
         return handlers;
     }
-    
+
     private static String submitTicket(ViewerMessage ticket, String queueName, Connection conn, String ticketType)
             throws JMSException, JsonProcessingException {
-        
+
         Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
         final Destination dest = sess.createQueue(queueName);
         MessageProducer producer = sess.createProducer(dest);
@@ -307,17 +343,180 @@ public class MessageQueueManager {
         producer.send(message);
         return message.getJMSMessageID();
     }
-    
+
+    public Optional<ViewerMessage> getMessageById(String messageId) {
+
+        if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker() && StringUtils.isNotBlank(messageId)) {
+            try {
+                ActiveMQConnection connection = getConnection();
+                connection.start();
+                QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+                Queue queue = queueSession.createQueue("viewer");
+                QueueBrowser browser = queueSession.createBrowser(queue, "JMSMessageID='" + messageId + "'");
+                Enumeration<?> messagesInQueue = browser.getEnumeration();
+                if (messagesInQueue.hasMoreElements()) {
+                    ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
+                    ViewerMessage ticket = ViewerMessage.parseJSON(queueMessage.getText());
+                    ticket.setMessageId(queueMessage.getJMSMessageID());
+                    return Optional.of(ticket);
+                }
+                browser.close();
+                connection.stop();
+            } catch (JMSException | JacksonException e) {
+                logger.error(e);
+            }
+        }
+        return Optional.empty();
+    }
+
     public BrokerService getBroker() {
         return broker;
     }
-    
+
     /**
      * Check if the queue has been successfully initialized
+     * 
      * @return true if the queue is running
      */
     public boolean isQueueRunning() {
         return queueRunning;
+    }
+    
+    public Map<String, Integer> countMessagesInQueue(String queueName) {
+        Map<String, Integer> fastQueueContent = new TreeMap<>();
+        try {
+            ActiveMQConnection connection = getConnection();
+            connection.start();
+            QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+            Queue queue = queueSession.createQueue(queueName);
+            QueueBrowser browser = queueSession.createBrowser(queue);
+            Enumeration<?> messagesInQueue = browser.getEnumeration();
+            while (messagesInQueue.hasMoreElements()) {
+                ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
+
+                String type = queueMessage.getStringProperty("JMSType");
+                if (fastQueueContent.containsKey(type)) {
+                    fastQueueContent.put(type, fastQueueContent.get(type) + 1);
+                } else {
+                    fastQueueContent.put(type, 1);
+                }
+            }
+            browser.close();
+            connection.stop();
+        } catch (JMSException e) {
+            logger.error(e);
+        }
+        return fastQueueContent;
+    } 
+    
+    public boolean pauseQueue(String queueName) {
+        if(this.broker == null) {
+            logger.error("Attempted to pause queue before initializing broker server");
+            return false;
+        }
+        try {
+            ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
+            QueueViewMBean mbean =
+                    (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+            mbean.pause();
+            return true;
+        } catch (MalformedObjectNameException e) {
+            logger.error(e);
+            return false;
+        }
+
+    }
+    
+    public boolean resumeQueue(String queueName) {
+        if(this.broker == null) {
+            logger.error("Attempted to resume queue before initializing broker server");
+            return false;
+        }
+        try {
+            ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
+            QueueViewMBean mbean =
+                    (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+            mbean.resume();
+            return true;
+        } catch (MalformedObjectNameException e) {
+            logger.error(e);
+            return false;
+        }
+    }
+    
+    public boolean clearQueue(String queueName) {
+        if(this.broker == null) {
+            logger.error("Attempted to clear queue before initializing broker server");
+            return false;
+        }
+        try {
+            ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
+            QueueViewMBean mbean =
+                    (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+            mbean.purge();
+            return true;
+        } catch (Exception e) {
+            logger.error(e);
+            return false;
+        }
+    }
+    
+    public List<ViewerMessage> getWaitingMessages(String messageType) {
+        List<ViewerMessage> messages = new ArrayList<>();
+        try {
+            String queueName = MessageQueueManager.getQueueForMessageType(messageType);
+            ActiveMQConnection connection = getConnection();
+            connection.start();
+            QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+            Queue queue = queueSession.createQueue(queueName);
+            QueueBrowser browser = queueSession.createBrowser(queue, "JMSType = '" + messageType + "'");
+            Enumeration<?> messagesInQueue = browser.getEnumeration();
+
+            while (messagesInQueue.hasMoreElements() && messages.size() < 100) {
+                ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
+                ViewerMessage ticket = ViewerMessage.parseJSON(queueMessage.getText());
+                ticket.setMessageId(queueMessage.getJMSMessageID());
+                messages.add(ticket);
+            }
+            browser.close();
+            connection.stop();
+        } catch (JMSException | JacksonException e) {
+            logger.error(e);
+        }
+        return messages;
+    }
+    
+    public boolean deleteMessage(ViewerMessage ticket) {
+        try {
+            String queueName = getQueueForMessageType(ticket.getTaskName());
+            ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
+            QueueViewMBean mbean = (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+            int removed = mbean.removeMatchingMessages("JMSMessageID='" + ticket.getMessageId() + "'");
+            logger.debug("Removed {} messages with id {} from queue", removed, ticket.getMessageId());
+            return removed > 0;
+        } catch (Exception e) {
+            logger.error(e);
+            return false;
+        }
+    }
+    
+    public int deleteMessages(String type) {
+        try {
+            String queueName = getQueueForMessageType(type);
+            ObjectName queueViewMBeanName = getQueueViewBeanName(queueName);
+            QueueViewMBean mbean = (QueueViewMBean) broker.getManagementContext().newProxyInstance(queueViewMBeanName, QueueViewMBean.class, true);
+            int removed = mbean.removeMatchingMessages("JMSType='" + type + "'");
+            logger.debug("Removed {} messages of type {} from queue", removed, type);
+            return removed;
+        } catch (Exception e) {
+            logger.error(e);
+            return 0;
+        }
+    }
+    
+    private ObjectName getQueueViewBeanName(String queueName) throws MalformedObjectNameException {
+        String name = String.format("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=%s", queueName);
+        return new ObjectName(name);
     }
 
 }

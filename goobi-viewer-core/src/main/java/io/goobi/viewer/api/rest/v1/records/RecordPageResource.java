@@ -156,7 +156,7 @@ public class RecordPageResource {
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
-            throws PresentationException, IndexUnreachableException {
+            throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
         URI uri = URI.create(apiPath.query("format", "oa").build());

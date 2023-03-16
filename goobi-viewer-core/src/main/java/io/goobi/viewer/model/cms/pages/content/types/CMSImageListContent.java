@@ -42,6 +42,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.media.CMSMediaLister;
+import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.cms.pages.content.CMSCategoryHolder;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.jsf.CheckboxSelectable;
@@ -86,7 +88,7 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
 
     private CMSImageListContent(CMSImageListContent orig) {
         super(orig);
-        this.categories = orig.categories;
+        this.categories = new ArrayList<>(orig.categories);
         this.imagesPerView = orig.imagesPerView;
         this.importantImagesPerView = orig.importantImagesPerView;
     }
@@ -105,7 +107,6 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
             createSelectableCategories();
         }
         return this.selectableCategories;
-
     }
 
     private void createSelectableCategories() throws DAOException {
@@ -131,6 +132,20 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
 
     public void setImportantImagesPerView(int importantImagesPerView) {
         this.importantImagesPerView = importantImagesPerView;
+    }
+
+    public List<MediaItem> getMediaItems() throws DAOException {
+        return getMediaItems(false);
+    }
+
+    public List<MediaItem> getMediaItems(boolean random) throws DAOException {
+        return new CMSMediaLister(DataManager.getInstance().getDao())
+                .getMediaItems(
+                        this.categories.stream().map(CMSCategory::getName).collect(Collectors.toList()),
+                        this.imagesPerView,
+                        this.importantImagesPerView,
+                        Boolean.TRUE.equals(random), BeanUtils.getRequest())
+                .getMediaItems();
     }
 
     /**
@@ -222,6 +237,20 @@ public class CMSImageListContent extends CMSContent implements CMSCategoryHolder
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (this.getOwningComponent() != null) {
+            sb.append("Parent ID = ")
+                    .append(this.getOwningComponent().getId())
+                    .append("|")
+                    .append("Order = ")
+                    .append(getOwningComponent().getOrder());
+        }
+        sb.append("|").append("Categories = ").append(this.categories);
+        return sb.toString();
     }
 
 }
