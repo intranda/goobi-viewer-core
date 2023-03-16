@@ -1114,6 +1114,20 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @return the cmsPage
+     */
+    public boolean isCmsPage() {
+        return cmsPage;
+    }
+
+    /**
+     * @param cmsPage the cmsPage to set
+     */
+    public void setCmsPage(boolean cmsPage) {
+        this.cmsPage = cmsPage;
+    }
+
+    /**
      * <p>
      * isAnchor.
      * </p>
