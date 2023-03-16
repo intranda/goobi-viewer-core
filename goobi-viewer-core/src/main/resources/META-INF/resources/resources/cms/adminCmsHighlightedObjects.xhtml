@@ -52,7 +52,7 @@
 
 
                         <!-- HIGHLIGHTED OBJECTS TABLE -->
-                        <div class="admin__table-content" role="grid" aria-label="#{msg.cms__record_notes__title_plural}: #{msg.aria_label__table__actions}">
+                        <div class="admin__table-content" role="grid" aria-label="#{msg.admin__highlighted_objects__title}: #{msg.aria_label__table__actions}">
                             
                             <!-- TITLE ROW -->
                             <div class="row no-gutters admin__table-title" role="row">
@@ -108,9 +108,9 @@
 	                                           <!-- TO DO AK: Functionality delete the object -->
 	                                           <button
 	                                               class="admin__table-action-link -redlink"
-	                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__record_notes__delete_confirmation, object.data.name.textOrDefault)}"
+	                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
 	                                               data-require-confirmation="true"
-	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__record_notes__delete_confirmation, object.data.name.textOrDefault)}"
+	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
 	                                               jsf:action="#{highlightedObjectBean.deleteObject(object)}"
 	                                               aria-label="#{msg.delete}" >
 	                                               #{msg.delete}

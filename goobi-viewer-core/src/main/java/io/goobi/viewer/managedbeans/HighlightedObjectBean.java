@@ -108,7 +108,7 @@ public class HighlightedObjectBean implements Serializable {
             public List<HighlightedObject> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
                 try {
                     if (StringUtils.isBlank(sortField)) {
-                        sortField = "id";
+                        sortField = "dateStart";
                     }
 
                     return DataManager.getInstance()
