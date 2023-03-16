@@ -8,10 +8,6 @@
 	<label>cms_component__highlighted_object__label</label>
 	<description>cms_component__highlighted_object__desc</description>
 
-	<content>
-
-	</content>
-
 	<attribute name="width">
 		<value label="50 %">50</value>
 		<value label="100 %" default="true">100</value>
