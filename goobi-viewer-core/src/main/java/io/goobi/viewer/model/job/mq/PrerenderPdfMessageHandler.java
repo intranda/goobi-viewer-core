@@ -73,7 +73,7 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
     public MessageStatus call(ViewerMessage ticket) {
 
         String pi = ticket.getProperties().get("pi");
-        String configVariant = ticket.getProperties().get("config");
+        String configVariant = ticket.getProperties().get("variant");
         boolean force = Boolean.parseBoolean(ticket.getProperties().get("force"));
 
         if (StringUtils.isNotBlank(pi)) {
