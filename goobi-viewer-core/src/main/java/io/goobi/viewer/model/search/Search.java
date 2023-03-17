@@ -433,7 +433,6 @@ public class Search implements Serializable {
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                 for (FacetField facetField : resp.getFacetFields()) {
-                    logger.trace("facet field: {}", facetField.getName());
                     if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
                         for (Count count : facetField.getValues()) {
                             if (count.getCount() > 1) {
