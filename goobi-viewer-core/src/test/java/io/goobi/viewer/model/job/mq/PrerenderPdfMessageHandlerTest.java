@@ -68,7 +68,7 @@ public class PrerenderPdfMessageHandlerTest {
 
         ViewerMessage ticket = new ViewerMessage(TaskType.PRERENDER_PDF.name());
         ticket.getProperties().put("pi", pi);
-        ticket.getProperties().put("config", "small");
+        ticket.getProperties().put("variant", "small");
         ticket.getProperties().put("force", "true");
         assertEquals(MessageStatus.FINISH, handler.call(ticket));
 
