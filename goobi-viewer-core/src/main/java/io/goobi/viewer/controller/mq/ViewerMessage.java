@@ -79,6 +79,9 @@ public class ViewerMessage {
     @Column(name = "message_status")
     @Enumerated(EnumType.STRING)
     private MessageStatus messageStatus = MessageStatus.NEW;
+    
+    @Column(name = "queue")
+    private String queue;
 
     @Column(name = "retry_count")
     private int retryCount = 1;
@@ -150,6 +153,14 @@ public class ViewerMessage {
 
     public LocalDateTime getLastUpdateTime() {
         return lastUpdateTime;
+    }
+    
+    public String getQueue() {
+        return queue;
+    }
+    
+    public void setQueue(String queue) {
+        this.queue = queue;
     }
     
     public boolean isProcessing() {

@@ -105,6 +105,7 @@ public class TasksResource {
             if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
                 ViewerMessage message = null;
                 message = new ViewerMessage(desc.type.name());
+                message.getProperties().put("taskType", desc.type.toString());
                 switch (desc.type) {
 
                     case UPDATE_SITEMAP:
@@ -145,10 +146,10 @@ public class TasksResource {
                             return null;
                         }
                         String pi = prerenderParams.pi;
-                        String config = Optional.ofNullable(prerenderParams.config).orElse(ContentServerConfiguration.DEFAULT_CONFIG_VARIANT);
+                        String variant = Optional.ofNullable(prerenderParams.variant).orElse(ContentServerConfiguration.DEFAULT_CONFIG_VARIANT);
                         boolean force = Optional.ofNullable(prerenderParams.force).orElse(false);
                         message.getProperties().put("pi", pi);
-                        message.getProperties().put("config", config);
+                        message.getProperties().put("variant", variant);
                         message.getProperties().put("force", Boolean.toString(force));
                         break;
 

@@ -9,7 +9,7 @@ public class PrerenderPdfsRequestParameters extends TaskParameter {
     @Schema(description = "Record persistent identifier", example="PPN12345")
     public String pi;
     @Schema(description = "ContentServer config variant to use when creating the pdfs", example="default")
-    public String config;
+    public String variant;
     @Schema(description = "Set to true if existing pdf files should be overwritten", example="false")
     public Boolean force;
     

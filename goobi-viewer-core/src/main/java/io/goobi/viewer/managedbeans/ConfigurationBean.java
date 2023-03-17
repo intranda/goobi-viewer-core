@@ -150,6 +150,17 @@ public class ConfigurationBean implements Serializable {
     public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
     }
+    
+    /**
+     * whether to show a navigator element in the openseadragon viewe
+     * @param pageType  get settings for this pageType
+     * @param mimeType  get settings for this image type
+     * @return  true if navigator should be shown
+     * @throws ViewerConfigurationException
+     */
+    public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
+        return DataManager.getInstance().getConfiguration().showImageNavigator(PageType.getByName(pageType), getImageType(mimeType));
+    }
 
     /**
      * <p>

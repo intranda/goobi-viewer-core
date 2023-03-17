@@ -396,7 +396,11 @@
 										role="columnheader">
 										<h:outputText value="#{msg.admin__tasks__message_type}" />
 									</div>
-									<div class="col-4 d-flex -sorting-arrow-trigger"
+									<div class="col-1 d-flex"
+										role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__queue}" />
+									</div>
+									<div class="col-3 d-flex -sorting-arrow-trigger"
 										role="columnheader">
 										<h:outputText value="#{msg.admin__tasks__properties}" />
 									</div>
@@ -428,7 +432,10 @@
 											<div class="col-2 d-flex">
 												<h:outputText value="#{msg[message.taskName]}" />
 											</div>
-											<div class="col-4 d-flex">
+											<div class="col-1 d-flex">
+												<h:outputText value="#{msg[message.queue]}" />
+											</div>
+											<div class="col-3 d-flex">
 												<ui:repeat var="entry"
 													value="#{message.properties.entrySet().toArray()}">
 													<h:outputText value="#{entry.key}: #{entry.value} " />
