@@ -354,7 +354,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("FIELD2:b", result.get(1));
         Assert.assertEquals("YEAR:[c TO d] AND YEAR:[e TO f]", result.get(2));
         
-        DataManager.getInstance().getConfiguration().overrideValue("user.authenticationProviders.provider(2)[@enabled]", "OR");
+        DataManager.getInstance().getConfiguration().overrideValue("user.authenticationProviders.provider(1)[@enabled]", "OR");
         Assert.assertEquals("OR",DataManager.getInstance().getConfiguration().getMultiValueOperatorForField("YEAR"));
         
         result = facets.generateSimpleFacetFilterQueries(true);
