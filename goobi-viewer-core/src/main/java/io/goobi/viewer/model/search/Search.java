@@ -335,7 +335,7 @@ public class Search implements Serializable {
         }
         String currentQuery = SearchHelper.prepareQuery(this.query);
 
-        List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
+        List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
         if (facets.getGeoFacetting().isActive()) {
@@ -433,6 +433,7 @@ public class Search implements Serializable {
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                 for (FacetField facetField : resp.getFacetFields()) {
+                    logger.trace("facet field: {}", facetField.getName());
                     if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
                         for (Count count : facetField.getValues()) {
                             if (count.getCount() > 1) {
