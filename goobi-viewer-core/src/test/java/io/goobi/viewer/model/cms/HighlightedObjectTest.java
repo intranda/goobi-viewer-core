@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
