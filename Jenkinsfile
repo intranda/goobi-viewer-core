@@ -27,7 +27,7 @@ pipeline {
         }
       }
       steps {
-              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=true -DskipCheckstyle=false clean verify -U'
+              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false clean verify -U'
       }
     }
     stage('build release') {
