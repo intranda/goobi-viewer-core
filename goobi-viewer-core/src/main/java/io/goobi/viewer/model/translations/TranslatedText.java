@@ -128,6 +128,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     public TranslatedText(IMetadataValue orig) {
         this(orig, IPolyglott.getCurrentLocale());
     }
+    
 
     /**
      * Create a text using the values of the given IMetadataValue orig. If orig is a {@link SimpleMetadataValue}, its value is written

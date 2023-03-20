@@ -62,6 +62,7 @@ import io.goobi.viewer.model.cms.HighlightedObject;
 import io.goobi.viewer.model.cms.HighlightedObjectData;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.toc.TocMaker;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -173,7 +174,7 @@ public class HighlightedObjectBean implements Serializable {
         this.selectedObject = selectedObject;
         this.metadataElement = null;
         if(this.selectedObject != null) {
-            this.selectedObject.setSelectedLocale(BeanUtils.getLocale());
+            this.selectedObject.setSelectedLocale(BeanUtils.getDefaultLocale());
         }
     }
 
@@ -273,7 +274,9 @@ public class HighlightedObjectBean implements Serializable {
      */
     private TranslatedText createRecordTitle(SolrDocument solrDoc) {
         IMetadataValue label = TocMaker.buildTocElementLabel(solrDoc);
-        return createRecordTitle(label);
+        TranslatedText text = createRecordTitle(label);
+        text.setSelectedLocale(IPolyglott.getDefaultLocale());
+        return text;
     }
 
     /**
@@ -284,9 +287,11 @@ public class HighlightedObjectBean implements Serializable {
         if (label instanceof MultiLanguageMetadataValue) {
             MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
             return new TranslatedText(mLabel);
+        } else {            
+            TranslatedText title = new TranslatedText();
+            title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
+            return title;
         }
-
-        return new TranslatedText(((SimpleMetadataValue) label).getValue().orElse(""));
     }
 
     public HighlightedObject getCurrentHighlightedObject() throws DAOException {
