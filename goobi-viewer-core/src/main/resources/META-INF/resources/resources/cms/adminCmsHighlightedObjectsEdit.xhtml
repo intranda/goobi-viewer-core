@@ -54,15 +54,19 @@
 										class="img-responsive" alt="Waiting..." />
 									</span> 
 								</h2>
+								
+
+								<h:panelGroup id="highlightedObjectMainGroup" layout="block">
+								<div class="admin__language-tabs">
+									<viewerComponent:localeSelector render="highlightedObjectMainGroup" object="#{object}"/>
+								</div>
 								<div class="admin__default-block">
+
 									<div class="form-group form-row">
 											<div class="col-12 col-lg-2 control-label admin__form-label">
 												<label>#{msg.admin__highlighted_objects__naming}:</label>
 											</div>
 			                            	<h:panelGroup id="inputNameBlock" layout="block" class="col-11 col-lg-9 admin__form-input">
-												<div class="admin__language-tabs">
-													<viewerComponent:localeSelector render="inputNameBlock" object="#{object}"/>
-												</div>
 												<h:inputText id="inputObjectName" tabindex="1"
 													styleClass="form-control -validation-input"
 													requiredMessage="#{msg.info__input_required}"
@@ -72,7 +76,7 @@
 											</h:panelGroup>
 
 									</div>
-									<div class="form-group form-row">
+									<div class="form-group form-row #{object.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 								
 											<div class="col-12 col-lg-2 control-label admin__form-label">
 												<label for="inputObjectIdentifier">#{msg.admin__highlighted_objects__new_pi}:</label>
@@ -89,7 +93,8 @@
 													styleClass="form-control -validation-input"
 													requiredMessage="#{msg.info__input_required}"
 													validatorMessage="#{msg.pi_errNotFound}"
-													value="#{object.data.recordIdentifier}">
+													value="#{object.data.recordIdentifier}"
+													disabled="#{!object.isDefaultLocaleSelected()}">
 													<f:validator validatorId="piInSolrValidator"
 														for="inputRecordIdentifier" />
 													<f:ajax event="valueChange" execute="@this" render="@form"></f:ajax>
@@ -98,7 +103,7 @@
 											</h:panelGroup>
 
 									</div>
-									<div class="form-group form-row">
+									<div class="form-group form-row #{object.isDefaultLocaleSelected() == 'false' ? '-deactivated' : ''}">
 								
 											<div class="col-12 col-lg-2 control-label admin__form-label">
 												<label for="inputObjectEndDate">#{msg.admin__highlighted_objects__period}:</label>
@@ -113,14 +118,15 @@
 														class="fa fa-exclamation" aria-hidden="true"></i>
 												</div>
 
-                                                <div class="admin__campaign-date-picker admin__highlighted-objects-date-picker">
+                                                <div class="admin__date-picker admin__highlighted-objects-date-picker">
                                                 	<h:inputText
                                                 		id="pickerDateStart" 
                                                 		name="pickerDateStart" 
                                                 		value="#{object.data.dateStart}"
                                                 		converter="localDateConverter"
                                                 		data-format="#{navigationHelper.datePattern}"
-                                                		styleClass="form-control">
+                                                		styleClass="form-control"
+                                                		disabled="#{!object.isDefaultLocaleSelected()}">
                                                 		<f:passThroughAttribute name="data-target" value="datePickerStart" />
 														<f:passThroughAttribute name="placeholder"
 															value="#{msg.admin__highlighted_objects__date_from}"
@@ -132,14 +138,15 @@
                                                 	<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
                                                 </div>
 												
-                                                <div class="admin__campaign-date-picker admin__highlighted-objects-date-picker">
+                                                <div class="admin__date-picker admin__highlighted-objects-date-picker">
 													<h:inputText 
 														id="pickerDateEnd" 
 														name="pickerDateEnd"
 														value="#{object.data.dateEnd}"
 														converter="localDateConverter"
 														data-format="#{navigationHelper.datePattern}"
-														styleClass="form-control">
+														styleClass="form-control"
+														disabled="#{!object.isDefaultLocaleSelected()}">
 														<f:passThroughAttribute name="data-target"
 															value="datePickerEnd"
 															 />
@@ -181,7 +188,8 @@
 											</div>
 
 									</div>
-								</div>
+									</div>
+								</h:panelGroup>
 								
                         <!-- IMAGE -->
                         <h2>#{msg.admin__highlighted_objects__image}</h2>
@@ -193,19 +201,19 @@
                             	<div class="form-group admin__cms-edit-collection-connected-radio-buttons">
                             		<div class="connected-top">
 		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="NO_IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+		                                	<f:selectItem itemValue="NO_IMAGE" itemLabel="#{msg.admin__highlighted_objects__no_image}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
 	                            	<div class="connected-middle">
 		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+		                                	<f:selectItem itemValue="UPLOADED_IMAGE" itemLabel="#{msg.admin__highlighted_objects__media_image}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
 	                            	<div class="connected-bottom">
 		                            	<h:selectOneRadio group="imageModeRadio" value="#{object.data.imageMode}" immediate="true">
-		                                	<f:selectItem itemValue="RECORD_REPRESENTATIVE" itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
+		                                	<f:selectItem itemValue="RECORD_REPRESENTATIVE" itemLabel="#{msg.admin__highlighted_objects__record_image}" />
 		                                	<f:ajax render="imageModeGroup" />
 		                            	</h:selectOneRadio>
 	                            	</div>
