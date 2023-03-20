@@ -211,7 +211,11 @@ public class SearchFacets implements Serializable {
             }
             StringBuilder sbQuery = queries.computeIfAbsent(facetItem.getField(), k -> new StringBuilder());
             if (sbQuery.length() > 0) {
-                sbQuery.append(' ');
+                if ("OR".equalsIgnoreCase(DataManager.getInstance().getConfiguration().getMultiValueOperatorForField(facetItem.getField()))) {
+                    sbQuery.append(' ');
+                } else {
+                    sbQuery.append(SolrConstants.SOLR_QUERY_AND);
+                }
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
         }
@@ -782,7 +786,7 @@ public class SearchFacets implements Serializable {
         }
         return new ArrayList<>(valueRanges.get(field).keySet());
     }
-    
+
     public String getValueRangeAsJsonMap(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
             return "[]";
@@ -998,12 +1002,10 @@ public class SearchFacets implements Serializable {
     public List<String> getAllRangeFacetFields() {
         return DataManager.getInstance().getConfiguration().getRangeFacetFields();
     }
-    
+
     public String getRangeFacetStyle(String field) {
         return DataManager.getInstance().getConfiguration().getFacetFieldStyle(field);
     }
-    
-
 
     /**
      * <p>

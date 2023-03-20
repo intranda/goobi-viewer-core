@@ -386,7 +386,8 @@ public class Search implements Serializable {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("Result group: {}", resultGroup.getName());
         QueryResponse resp = null;
-        List<String> allFacetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
+
+        List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
         if (facets.getGeoFacetting().isActive()) {

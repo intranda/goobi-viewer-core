@@ -32,9 +32,6 @@ public class SitemapRequestParameters extends TaskParameter {
 
     @Schema(description = "The directory path in which to write the sitemap file", example = "/opt/digiverso/viewer/sitemap")
     private String outputPath;
-    @Deprecated
-    @Schema(description = "Whether only the fist pages of records should be included. Currently ignored", example = "true")
-    private Boolean firstPageOnly;
 
     /**
      * <p>
@@ -58,26 +55,5 @@ public class SitemapRequestParameters extends TaskParameter {
         this.outputPath = outputPath;
     }
 
-    /**
-     * <p>
-     * isFirstPageOnly.
-     * </p>
-     *
-     * @return the firstPageOnly
-     */
-    public Boolean isFirstPageOnly() {
-        return firstPageOnly;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>firstPageOnly</code>.
-     * </p>
-     *
-     * @param firstPageOnly the firstPageOnly to set
-     */
-    public void setFirstPageOnly(boolean firstPageOnly) {
-        this.firstPageOnly = firstPageOnly;
-    }
 
 }

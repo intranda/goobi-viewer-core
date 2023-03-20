@@ -103,7 +103,7 @@ public class Task {
     public final TaskParameter params;
 
     public Task(TaskParameter params, BiConsumer<HttpServletRequest, Task> work) {
-        this.type = params.type;
+        this.type = params.getType();
         this.work = work;
         this.id = idCounter.incrementAndGet();
         this.timeCreated = LocalDateTime.now();

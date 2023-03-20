@@ -2730,6 +2730,15 @@ public class Configuration extends AbstractConfiguration {
     public String getFacetFieldType(String facetField) {
         return getPropertyForFacetField(facetField, XML_PATH_ATTRIBUTE_TYPE, "");
     }
+    
+    /**
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public String  getMultiValueOperatorForField(String facetField) {
+        return getPropertyForFacetField(facetField, "[@multiValueOperator]", "AND");
+    }
 
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.

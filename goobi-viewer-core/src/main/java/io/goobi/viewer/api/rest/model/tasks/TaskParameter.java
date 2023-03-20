@@ -56,12 +56,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TaskParameter {
 
     @Schema(description = "The type of the task to execute")
-    public TaskType type;
+    private TaskType type;
 
     public TaskParameter() {
     }
 
     public TaskParameter(TaskType type) {
+        this.type = type;
+    }
+    
+    public TaskType getType() {
+        return type;
+    }
+    
+    public void setType(TaskType type) {
         this.type = type;
     }
 
