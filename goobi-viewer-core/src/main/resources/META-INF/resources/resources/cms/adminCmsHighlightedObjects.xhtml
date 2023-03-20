@@ -111,16 +111,6 @@
 	                                               aria-label="#{msg.delete}" >
 	                                               #{msg.delete}
 	                                           </button>
-	                                           
-	                                           <button
-	                                               class="admin__table-action-link -redlink"
-	                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__record_notes__delete_confirmation, note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale))}"
-	                                               data-require-confirmation="true"
-	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__record_notes__delete_confirmation, note.noteTitle.getTextOrDefault(navigationHelper.locale, navigationHelper.defaultLocale))}"
-	                                               jsf:action="#{cmsRecordNotesBean.deleteNote(note)}"
-	                                               aria-label="#{msg.delete}" >
-	                                               #{msg.delete}
-	                                           </button>
                                                 
                                             </div>
                                         </div>
