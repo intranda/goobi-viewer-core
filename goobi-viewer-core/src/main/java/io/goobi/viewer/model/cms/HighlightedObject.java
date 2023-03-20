@@ -146,7 +146,7 @@ public class HighlightedObject implements CMSMediaHolder, IPolyglott {
     public URI getImageURI(int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         switch (this.data.getImageMode()) {
             case UPLOADED_IMAGE:
-                return Optional.ofNullable(this.getMediaItem()).map(CMSMediaItem::getIconURI).orElse(null);
+                return Optional.ofNullable(this.getMediaItem()).map(mediaItem -> this.thumbs.getThumbnailUrl(mediaItem, width, height)).map(URI::create).orElse(null);
             case RECORD_REPRESENTATIVE:
                 return Optional.ofNullable(this.thumbs.getThumbnailUrl(this.data.getRecordIdentifier(), width, height)).map(URI::create).orElse(null);
             default:

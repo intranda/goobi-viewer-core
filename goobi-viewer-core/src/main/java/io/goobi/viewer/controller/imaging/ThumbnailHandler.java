@@ -108,6 +108,10 @@ public class ThumbnailHandler {
         this.iiifUrlHandler = iiifUrlHandler;
         this.staticImagesPath = staticImagesPath;
     }
+    
+    public ThumbnailHandler(URI apiUrl, String staticImagesPath) {
+        this(new IIIFUrlHandler(apiUrl), staticImagesPath);
+    }
 
     /**
      * <p>
