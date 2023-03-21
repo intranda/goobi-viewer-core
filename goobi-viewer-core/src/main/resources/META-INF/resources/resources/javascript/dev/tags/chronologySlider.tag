@@ -1,4 +1,4 @@
-<chronoSlider>
+<chronologySlider>
 
 	<!-- START/END YEAR -->
 	<div class="widget-chronology-slider__item chronology-slider-start">
@@ -197,4 +197,4 @@ $getSlider() {
 
 </script> 
 
-</chronoSlider>
+</chronologySlider>

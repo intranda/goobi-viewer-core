@@ -26,6 +26,7 @@ import java.net.URI;
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**

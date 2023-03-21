@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
+import io.goobi.viewer.api.rest.model.PrerenderPdfsRequestParameters;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
@@ -48,18 +49,27 @@ import io.swagger.v3.oas.annotations.media.Schema;
         defaultImpl = TaskParameter.class)
 @JsonSubTypes({
     @JsonSubTypes.Type(value=SitemapRequestParameters.class, name = "UPDATE_SITEMAP"),
-    @JsonSubTypes.Type(value=ToolsRequestParameters.class, name = "UPDATE_DATA_REPOSITORY_NAMES")
+    @JsonSubTypes.Type(value=ToolsRequestParameters.class, name = "UPDATE_DATA_REPOSITORY_NAMES"),
+    @JsonSubTypes.Type(value=PrerenderPdfsRequestParameters.class, name = "PRERENDER_PDF")
 })
 @Schema(name="ViewerTaskParameter", description="Contains the type of the task to execute as well as possible additional parameters depending on the type of the task", requiredProperties= {"type"})
 public class TaskParameter {
 
     @Schema(description = "The type of the task to execute")
-    public TaskType type;
+    private TaskType type;
 
     public TaskParameter() {
     }
 
     public TaskParameter(TaskType type) {
+        this.type = type;
+    }
+    
+    public TaskType getType() {
+        return type;
+    }
+    
+    public void setType(TaskType type) {
         this.type = type;
     }
 

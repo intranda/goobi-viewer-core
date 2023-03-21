@@ -2562,6 +2562,19 @@ public class Configuration extends AbstractConfiguration {
         return ret;
     }
 
+    public String getFacetFieldStyle(String field) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldList = getLocalConfigurationsAt("search.facets.field");
+        if (fieldList != null) {
+            for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
+                if (subElement.getString(".").equals(field)) {
+                    return subElement.getString("[@style]", "");
+                }
+            }
+        }
+
+        return "";
+    }
+
     /**
      * <p>
      * getGeoFacetFields.
@@ -2717,6 +2730,15 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getFacetFieldType(String facetField) {
         return getPropertyForFacetField(facetField, XML_PATH_ATTRIBUTE_TYPE, "");
+    }
+    
+    /**
+     * @param facetField
+     * @return
+     * @should return correct value
+     */
+    public String  getMultiValueOperatorForField(String facetField) {
+        return getPropertyForFacetField(facetField, "[@multiValueOperator]", "AND");
     }
 
     /**
@@ -3226,6 +3248,17 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean useTiles(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getBoolean("[@tileImage]", false);
+    }
+    
+    /**
+     * whether to show a navigator element in the openseadragon viewe
+     * @param view  get settings for this pageType
+     * @param image  get settings for this image type
+     * @return  true if navigator should be shown
+     * @throws ViewerConfigurationException
+     */
+    public boolean showImageNavigator(PageType view, ImageType image) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, image).getBoolean("navigator[@enabled]", false);
     }
 
     /**

@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -33,6 +35,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -45,6 +49,8 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 @ApplicationPath(ApiUrls.API)
 @ViewerRestServiceBinding
 public class Application extends ResourceConfig {
+
+    private static final Logger logger = LogManager.getLogger(Application.class);
 
     /**
      * <p>
@@ -65,6 +71,11 @@ public class Application extends ResourceConfig {
                 MessageQueueManager messageBroker = applicationBean.getMessageBroker();
                 bind(templateManager).to(CMSTemplateManager.class);
                 bind(messageBroker).to(MessageQueueManager.class);
+                try {
+                    bind(DataManager.getInstance().getDao()).to(IDAO.class);
+                } catch (DAOException e) {
+                    logger.fatal("Unable to instantiate DAO for use in rest api", e);
+                }
             }
         };
         this.init(binder, servletConfig);

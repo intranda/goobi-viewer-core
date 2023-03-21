@@ -39,8 +39,9 @@ public enum TaskType {
     INDEX_USAGE_STATISTICS("0 45 0 * * ?"),
     /**Create a pdf for a record or part of record to be offered as download**/
     DOWNLOAD_PDF(""),
-    /**Create single page pdfs for a record to be used when creating a record pdf**/
-    CREATE_PAGE_PDFS("");
+    /** Write single page pdfs to storage to be used when creating a full record pdf **/
+    PRERENDER_PDF("0 35 0 * * ?")
+    ;
     
     private final String defaultCronExpression;
     private TaskType(String cronExpression) {

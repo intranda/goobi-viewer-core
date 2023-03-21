@@ -27,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -40,6 +39,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -349,6 +349,15 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         SearchFacets facets = new SearchFacets();
         facets.setActiveFacetString("FIELD1:a;;FIELD2:b;;YEAR:[c TO d];;YEAR:[e TO f]");
         List<String> result = facets.generateSimpleFacetFilterQueries(true);
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("FIELD1:a", result.get(0));
+        Assert.assertEquals("FIELD2:b", result.get(1));
+        Assert.assertEquals("YEAR:[c TO d] AND YEAR:[e TO f]", result.get(2));
+        
+        DataManager.getInstance().getConfiguration().overrideValue("search.facets.field(1)[@multiValueOperator]", "OR");
+        Assert.assertEquals("OR",DataManager.getInstance().getConfiguration().getMultiValueOperatorForField("YEAR"));
+        
+        result = facets.generateSimpleFacetFilterQueries(true);
         Assert.assertEquals(3, result.size());
         Assert.assertEquals("FIELD1:a", result.get(0));
         Assert.assertEquals("FIELD2:b", result.get(1));

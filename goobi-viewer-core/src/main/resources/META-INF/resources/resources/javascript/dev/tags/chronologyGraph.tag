@@ -9,7 +9,7 @@
 			<input onchange="{setStartYear}" data-input='number' class="form-control chronology-slider__input-start" ref="input_start" value="{startYear}"></input>
 			<div class="chronology-slider__between-year-symbol">-</div>
 			<input onchange="{setEndYear}" data-input='number' class="form-control chronology-slider__input-end" ref="input_end" value="{endYear}"></input>
-			<button class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button>
+			<button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button>
 		</div>
 	</div>
 	<div hidden ref="line" class="chronology-slider__graph-line"></div>
@@ -41,6 +41,7 @@
 			this.loader = document.getElementById(opts.loader);	
 			this.msg = opts.msg;
 			this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+			this.reloadingPage = false;
 			
 			this.chartConfig = {
 					type: "line",
@@ -75,12 +76,6 @@
 							      
 							      callbacks: {
 							    	  label: item => item.raw + " " + this.msg.hits
-// 							    	  label: () => "",
-// 							    	  title: (item) => {
-// 							    		  let year = item[0].label;
-// 							    		  let value = item[0].raw;
-// 							    		  return year + " : " + value + " " + this.msg.hits;
-// 							    	  }
 							      }
 							},
 						},
@@ -144,20 +139,35 @@
 			this.refs.draw.style.position = "absolute";
 			this.refs.draw.style.top = 0;
 			this.refs.container.style.position = "relative";
-
+ 
 			let startPoint = undefined;
  			let initialYear = undefined;
 			let drawing = false;
 			
 			this.refs.draw.addEventListener("mousedown", e => {
-				initialYear = this.calculateYearFromEvent(e);
-				this.startYear = initialYear;
-				this.endYear = initialYear;
-				startPoint = this.getPointFromEvent(e, this.refs.draw);
-				drawing = true;
-				this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
-				this.update();
+				if(!this.refs["button_search"].disabled) {					
+					initialYear = this.calculateYearFromEvent(e);
+					this.startYear = initialYear;
+					this.endYear = initialYear;
+					startPoint = this.getPointFromEvent(e, this.refs.draw);
+					drawing = true;
+					this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
+					this.update();
+				}
 			})
+			this.refs.draw.addEventListener("mouseout", e => {
+				if(drawing) {
+					//just stop drawing but keep the area standing. Don
+					drawing = false;
+				}
+				let event = new MouseEvent("mouseout", {
+					bubbles: false,
+					target: e.target,
+					clientX: e.clientX,
+					clientY: e.clientY
+				});
+				this.refs.chart.dispatchEvent(event);	
+			});
 			this.refs.draw.addEventListener("mousemove", e => {
 				if(drawing) {			
 					let year = this.calculateYearFromEvent(e);
@@ -238,7 +248,10 @@
 		setRange() {
 			    // show loader
 			    $( this.loader ).addClass( 'active' );
-			    
+			    //disable slider inputs and buttons for all chronology sliders 
+			    Array.from(document.getElementsByClassName("chronology-slider__input-start")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__input-end")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__ok-button")).forEach(element => element.disabled = true);
 			    // set query to hidden input
 			    let value = '[' + this.startYear + ' TO ' + this.endYear + ']' ;
 			    $( this.valueInput ).val(value);

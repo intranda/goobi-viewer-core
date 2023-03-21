@@ -41,7 +41,7 @@
 					</div>
 
 				</div>
-					<h:commandButton id="submitSearch" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
+					<h:commandButton id="submitGeoFacet" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
                     	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
                     	<f:passThroughAttribute name="data-geofacet" value="execute"/>
                 	</h:commandButton>

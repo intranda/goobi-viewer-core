@@ -395,17 +395,6 @@ public class UploadJob implements Serializable {
             return oldStatus != status;
         }
 
-        //        if (psr.isProcessCompleted()) {
-        //            setStatus(JobStatus.READY);
-        //            return;
-        //        }
-        //        for (StepResponse sr : psr.getStep()) {
-        //            if (sr.getTitle() != null && sr.getTitle().contains("viewer") && "Completed".equals(sr.getStatus())) {
-        //                setStatus(JobStatus.READY);
-        //                return;
-        //            }
-        //        }
-
         setStatus(JobStatus.WAITING);
 
         return oldStatus != status;

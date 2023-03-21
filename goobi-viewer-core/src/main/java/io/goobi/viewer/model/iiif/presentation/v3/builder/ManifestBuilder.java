@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ALTO;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PDF;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
@@ -36,12 +37,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.Format;
@@ -63,6 +66,8 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
@@ -71,6 +76,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.PageType;
@@ -103,7 +109,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
     }
 
-    public IPresentationModelElement3 build(String pi) throws PresentationException, IndexUnreachableException, ViewerConfigurationException,
+    public IPresentationModelElement3 build(String pi, HttpServletRequest request) throws PresentationException, IndexUnreachableException, ViewerConfigurationException,
             IllegalPathSyntaxException, ContentLibException, URISyntaxException, DAOException {
 
         List<StructElement> documents = this.dataRetriever.getDocumentWithChildren(pi);
@@ -116,11 +122,29 @@ public class ManifestBuilder extends AbstractBuilder {
         if (manifest instanceof Manifest3) {
             addPages(mainDocument, (Manifest3) manifest);
             addStructures(mainDocument, childDocuments, (Manifest3) manifest);
+            addAnnotations(mainDocument.getPi(), (Manifest3) manifest, request);
         } else if (manifest instanceof Collection3) {
             addVolumes(mainDocument, childDocuments, (Collection3) manifest);
         }
 
         return manifest;
+    }
+
+    private void addAnnotations(String pi, Manifest3 manifest, HttpServletRequest request) {
+        try {
+            ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
+            URI uri = URI.create(apiPath.build());
+            AnnotationPage crowdAnnos = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecord(pi, uri).getFirst();
+            if(crowdAnnos != null && !crowdAnnos.getItems().isEmpty()) {
+                manifest.addAnnotations(new InternalAnnotationPage(crowdAnnos));
+            }
+            AnnotationPage comments = new AnnotationsResourceBuilder(urls, request).getWebAnnotationCollectionForRecordComments(pi, uri).getFirst();
+            if(comments != null && !comments.getItems().isEmpty()) {
+                manifest.addAnnotations(new InternalAnnotationPage(comments));
+            }
+        } catch (DAOException e) {
+            logger.error("Error adding annotations to manifest: {}", e.toString(), e);
+        }
     }
 
     /**

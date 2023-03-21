@@ -1,4 +1,4 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
         this.uploadedFiles = []
@@ -7,7 +7,6 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         } else {
         	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
         }
-        this.isDragover = false;
 
         this.on('mount', function () {
             if(this.opts.showFiles) {
@@ -21,21 +20,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         this.initDrop = function() {
 			var dropZone = (this.refs.dropZone);
 
-            dropZone.addEventListener('dragover', function (e) {
+            dropZone.addEventListener('dragover', e => {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
 
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
 
-                this.isDragover = true;
+                this.setDragover(true);
                 this.update();
-            }.bind(this));
+            });
 
-            dropZone.addEventListener('dragleave', function (e) {
-                this.isDragover = false;
+            dropZone.addEventListener('dragleave', e => {
+                this.setDragover(false);
                 this.update();
-            }.bind(this));
+            });
 
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
@@ -61,7 +60,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 }
     			this.uploadFiles()
     			.then( () => {
-    			    this.isDragover = false;
+    			    this.setDragover(false);
     			    this.update();
     			})
 
@@ -264,6 +263,19 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 filename = filename.slice(0,filenameEnd);
             }
             return filename;
+        }.bind(this)
+
+        this.setDragover = function(dragover) {
+        	this.isDragover = dragover;
+        	var dropZone = (this.refs.dropZone);
+        	if(dropZone) {
+        		if(dragover) {
+        			dropZone.classList.add("isdragover");
+        		} else {
+        			dropZone.classList.remove("isdragover");
+        		}
+        	}
+
         }.bind(this)
 });
 
@@ -794,7 +806,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
 
 
 		this.yearList = [1];
@@ -819,6 +831,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 			this.loader = document.getElementById(opts.loader);
 			this.msg = opts.msg;
 			this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+			this.reloadingPage = false;
 
 			this.chartConfig = {
 					type: "line",
@@ -853,7 +866,6 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 
 							      callbacks: {
 							    	  label: item => item.raw + " " + this.msg.hits
-
 							      }
 							},
 						},
@@ -923,14 +935,29 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 			let drawing = false;
 
 			this.refs.draw.addEventListener("mousedown", e => {
-				initialYear = this.calculateYearFromEvent(e);
-				this.startYear = initialYear;
-				this.endYear = initialYear;
-				startPoint = this.getPointFromEvent(e, this.refs.draw);
-				drawing = true;
-				this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
-				this.update();
+				if(!this.refs["button_search"].disabled) {
+					initialYear = this.calculateYearFromEvent(e);
+					this.startYear = initialYear;
+					this.endYear = initialYear;
+					startPoint = this.getPointFromEvent(e, this.refs.draw);
+					drawing = true;
+					this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
+					this.update();
+				}
 			})
+			this.refs.draw.addEventListener("mouseout", e => {
+				if(drawing) {
+
+					drawing = false;
+				}
+				let event = new MouseEvent("mouseout", {
+					bubbles: false,
+					target: e.target,
+					clientX: e.clientX,
+					clientY: e.clientY
+				});
+				this.refs.chart.dispatchEvent(event);
+			});
 			this.refs.draw.addEventListener("mousemove", e => {
 				if(drawing) {
 					let year = this.calculateYearFromEvent(e);
@@ -1012,6 +1039,10 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 
 			    $( this.loader ).addClass( 'active' );
 
+			    Array.from(document.getElementsByClassName("chronology-slider__input-start")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__input-end")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__ok-button")).forEach(element => element.disabled = true);
+
 			    let value = '[' + this.startYear + ' TO ' + this.endYear + ']' ;
 			    $( this.valueInput ).val(value);
 
@@ -1049,7 +1080,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 	  })
 
 });
-riot.tag2('chronoslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
+riot.tag2('chronologyslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
 
 this.msg={}
 this.on("mount", () => {
