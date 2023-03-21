@@ -94,6 +94,7 @@
 													requiredMessage="#{msg.info__input_required}"
 													validatorMessage="#{msg.pi_errNotFound}"
 													value="#{object.data.recordIdentifier}"
+													required="true"
 													disabled="#{!object.isDefaultLocaleSelected()}">
 													<f:validator validatorId="piInSolrValidator"
 														for="inputRecordIdentifier" />
