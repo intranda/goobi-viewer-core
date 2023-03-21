@@ -6,13 +6,14 @@
 
 .highlighted-object {
 	&__link {
-		display: inline-block;
+		display: inline-flex;
 		position: relative;
 	}
 	&__figure { 
 		margin: 0;
 	}
-	&__image { 
+	&__image {
+		max-width: 100%;
 		transition: opacity 0.2s ease; 
 		&:hover {
 			opacity: 0.8;
