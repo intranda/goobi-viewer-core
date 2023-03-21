@@ -7022,7 +7022,14 @@ public class JPADAO implements IDAO {
 
     @Override
     public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException {
-        return getMatchingEntities(HighlightedObjectData.class, "o.enabled = TRUE AND :date BETWEEN o.dateStart AND o.dateEnd", Map.of("date", date));
+        return getMatchingEntities(HighlightedObjectData.class, "o.enabled = TRUE AND "
+                + "(:date BETWEEN o.dateStart AND o.dateEnd)"
+                + " OR "
+                + "(o.dateStart IS NULL AND :date < o.dateEnd)"
+                + " OR "
+                + "(o.dateEnd IS NULL AND :date > o.dateStart)"
+                + " OR "
+                + "(o.dateStart IS NULL AND o.dateEnd IS NULL)", Map.of("date", date));
     }
     
 

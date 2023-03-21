@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -140,6 +141,10 @@ public class HighlightedObjectData implements Serializable {
     public LocalDate getDateStart() {
         return Optional.ofNullable(dateStart).map(LocalDateTime::toLocalDate).orElse(null);
     }
+    
+    public LocalDateTime getTimeStart() {
+        return dateStart;
+    }
 
     public void setDateStart(LocalDate dateStart) {
         this.dateStart = Optional.ofNullable(dateStart).map(LocalDate::atStartOfDay).orElse(null);
@@ -147,6 +152,10 @@ public class HighlightedObjectData implements Serializable {
 
     public LocalDate getDateEnd() {
         return Optional.ofNullable(dateEnd).map(LocalDateTime::toLocalDate).map(date -> date.minusDays(1)).orElse(null);
+    }
+    
+    public LocalDateTime getTimeEnd() {
+        return dateEnd;
     }
 
     public void setDateEnd(LocalDate dateEnd) {
@@ -167,6 +176,28 @@ public class HighlightedObjectData implements Serializable {
 
     public void setImageMode(ImageMode imageMode) {
         this.imageMode = imageMode;
+    }
+    
+    @Override
+    public int hashCode() {
+        return recordIdentifier == null ? 0 : recordIdentifier.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            HighlightedObjectData other = (HighlightedObjectData)obj;
+            return Objects.equals(this.id, other.id) &&
+                    Objects.equals(this.recordIdentifier, other.recordIdentifier) &&
+                    Objects.equals(this.dateStart, other.dateStart) && 
+                    Objects.equals(this.dateEnd, other.dateEnd) && 
+                    Objects.equals(this.enabled, other.enabled) &&
+                    Objects.equals(this.imageMode, other.imageMode) &&
+                    Objects.equals(this.mediaItem, other.mediaItem) &&
+                    Objects.equals(this.name, other.name);
+        } else {
+            return false;
+        }
     }
 
     @Override

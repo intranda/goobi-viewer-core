@@ -116,4 +116,34 @@ public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(0, dao.getHighlightedObjectsForDate(time3).size());
     }
 
+    @Test
+    public void test_EndDateOnly() throws DAOException {
+        HighlightedObjectData object = new HighlightedObjectData();
+        object.setDateEnd(LocalDate.of(2022, 5, 1));
+        object.setDateStart(null);
+        assertTrue(dao.addHighlightedObject(object));
+        assertEquals(object, dao.getHighlightedObjectsForDate(LocalDate.of(2022,4,1).atStartOfDay()).get(0));
+        assertEquals(0, dao.getHighlightedObjectsForDate(LocalDate.of(2022, 6, 1).atStartOfDay()).size());
+    }
+    
+    @Test
+    public void test_StartdDateOnly() throws DAOException {
+        HighlightedObjectData object = new HighlightedObjectData();
+        object.setDateStart(LocalDate.of(2022, 5, 1));
+        object.setDateEnd(null);
+        assertTrue(dao.addHighlightedObject(object));
+        assertEquals(object, dao.getHighlightedObjectsForDate(LocalDate.of(2022,6,1).atStartOfDay()).get(0));
+        assertEquals(0, dao.getHighlightedObjectsForDate(LocalDate.of(2022, 4, 1).atStartOfDay()).size());
+    }
+    
+    @Test
+    public void test_noDates() throws DAOException {
+        HighlightedObjectData object = new HighlightedObjectData();
+        object.setDateStart(null);
+        object.setDateEnd(null);
+        assertTrue(dao.addHighlightedObject(object));
+        assertEquals(object, dao.getHighlightedObjectsForDate(LocalDate.of(1900,1,1).atStartOfDay()).get(0));
+        assertEquals(object, dao.getHighlightedObjectsForDate(LocalDate.of(3000,1,1).atStartOfDay()).get(0));
+    }
+
 }
