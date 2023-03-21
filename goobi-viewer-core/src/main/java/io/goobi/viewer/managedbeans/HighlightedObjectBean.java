@@ -71,7 +71,7 @@ public class HighlightedObjectBean implements Serializable {
 
     private static final long serialVersionUID = -6647395682752991930L;
     private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
-    private static final int NUM_ITEMS_PER_PAGE = 2;
+    private static final int NUM_ITEMS_PER_PAGE = 12;
     private static final String ALL_OBJECTS_SORT_FIELD = "dateStart";
     private static final SortOrder ALL_OBJECTS_SORT_ORDER = SortOrder.DESCENDING;
     private static final String CURRENT_OBJECTS_SORT_FIELD = "dateStart";
