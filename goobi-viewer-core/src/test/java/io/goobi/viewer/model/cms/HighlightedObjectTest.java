@@ -8,7 +8,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
