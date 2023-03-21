@@ -5,6 +5,7 @@
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:jsf="http://xmlns.jcp.org/jsf"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
                 template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
@@ -35,134 +36,17 @@
 					<viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content">
-                    <div class="admin__info-text">#{msg.admin__highlighted_objects__description}</div>
-
-                        <div class="admin__table-tools">
-                            <!-- PAGINATOR -->
-                            <div class="admin__table-paginator">
-                                <viewerComponent:dataTablePaginator tableValues="#{highlightedObjectBean.dataProvider}" />
-                            </div>
-                            <!-- FILTER -->
-                            <!-- TO DO AK: Functionality search in columns/filter -->
-                            <div class="admin__table-filter">
-                                <viewerComponent:dataTableColumnFilter key="admin__highlighted_objects__search"
-                                filter="#{highlightedObjectBean.dataProvider.getFilter('name', 'recordIdentifier')}"/>
-                            </div>
-                        </div>
-
-
-                        <!-- HIGHLIGHTED OBJECTS TABLE -->
-                        <div class="admin__table-content" role="grid" aria-label="#{msg.admin__highlighted_objects__title}: #{msg.aria_label__table__actions}">
-                            
-                            <!-- TITLE ROW -->
-                            <div class="row no-gutters admin__table-title" role="row">
-
-                                <!-- PAGE COL -->
-                                <div class="col-6 d-flex" role="columnheader">
-                                	#{msg.admin__highlighted_objects__table_header}
-                                </div>
-                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-                                	#{msg.admin__highlighted_objects__table_from}
-                                </div>
-                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-                                	#{msg.admin__highlighted_objects__table_until}
-                                </div>
-                                <div class="col-2 d-flex justify-content-center" role="columnheader">
-                                	#{msg.admin__highlighted_objects__table_active}
-                                </div>
-
-                            </div>
-
-
-                            <!-- INDIVIDUAL ROWS -->
-                            <ui:repeat var="object" value="#{highlightedObjectBean.dataProvider.paginatorList}">
-                                <div class="row no-gutters admin__table-entry #{object.data.enabled ? '-isActive' : ''}" role="row">
-                                    
-                                    <div class="col-6 d-flex" role="presentation">
-                                       	<div class="admin__record-notes-table-img align-self-center">
-                                           		<img alt="#{object.data.recordIdentifier}" title="#{object.data.recordIdentifier}"
-                                           			src="#{object.getImageURI(160, 160)}" />
-                                        </div>
-
-                                        <div class="admin__table-data" role="gridcell">
-                                        	<ui:fragment>
-                                            	<div class="admin__table-name">#{object.data.name.textOrDefault}</div>
-                                            </ui:fragment>
-                                            <div>
-                                            
-                                                <!-- EDIT -->
-                                                <a href="#{navigationHelper.applicationUrl}admin/cms/highlightedobjects/edit/#{object.data.id}/"
-                                                class="admin__table-action-link"
-                                                aria-label="#{msg.edit}: #{object.data.name.textOrDefault}">#{msg.edit}</a>
-
-                                                <!-- PREVIEW -->
-                                                	<a
-                                                    class="admin__table-action-link" target="_blank" href="#{highlightedObjectBean.getRecordUrl(object)}"
-                                                    aria-label="#{msg.title__preview}: #{object.data.name.textOrDefault}">#{msg.show}
-                                                  </a>
-
-	                                           <!-- DELETE -->
-	                                           <button
-	                                               class="admin__table-action-link -redlink"
-	                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
-	                                               data-require-confirmation="true"
-	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__highlighted_objects__delete_confirmation, object.data.name.textOrDefault)}"
-	                                               jsf:action="#{highlightedObjectBean.deleteObject(object)}"
-	                                               aria-label="#{msg.delete}" >
-	                                               #{msg.delete}
-	                                           </button>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- SCHEDULE FROM -->
-                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-                                        <span>#{object.data.dateStart}</span>
-                                  	</div>
-                                  	
-                                    <!-- SCHEDULE UNTIL -->
-                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-                                        <span>#{object.data.dateEnd}</span>
-                                  	</div>
-
-									<!-- IS ACTIVE? -->
-                                    <div class="col-2 d-flex justify-content-center" role="gridcell">
-                                        <ui:fragment rendered="#{object.data.enabled}">
-                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i>
-                                        </ui:fragment>
-                                        <ui:fragment rendered="#{!object.data.enabled}">
-                                        	<span class="sr-only">#{msg.no}</span>
-                                        </ui:fragment>
-                                  </div>
-                                </div>
-                            </ui:repeat>
-                        </div>
+	                    <div class="admin__info-text">#{msg.admin__highlighted_objects__description}</div>
+	                    <h2>CURRENT OBJECTS</h2>
+	                    <cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getCurrentObjectsProvider()}" showPaginator="false"/>
+	                    <h2>FUTURE OBJECTS</h2>
+						<cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getFutureObjectsProvider()}"/>
+						<h2>PAST OBJECTS</h2>
+						<cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getPastObjectsProvider()}"/>
                     </div>
                 </h:form>
             </h:panelGroup>
         </div>
-
-        <script type="text/javascript">
-            $( document ).ready( function() {
-
-                var dataTableConfig = {
-                    dataTablePaginator: "#dataTablePaginator",
-                    txtField1: "#txtMoveTo1",
-                    txtField2: "#txtMoveTo2",
-                    totalCount: "#totalCount",
-                    reloadBtn: 'input[id*="cmdMoveTo"]',
-                };
-
-                viewerJS.dataTable.init( dataTableConfig );
-            } );
-
-            // Create no entries found message
-			if($('.admin__table-entry').length == 0) {
-				$('.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
-			}    
-
-		</script>
     </ui:define>
 
 </ui:composition>

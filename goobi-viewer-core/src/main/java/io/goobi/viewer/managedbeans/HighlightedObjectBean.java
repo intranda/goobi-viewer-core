@@ -41,11 +41,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
-import com.ocpsoft.pretty.faces.util.PrettyURLBuilder;
-
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.controller.DAOSearchFunction;
+import io.goobi.viewer.controller.DAOSearchFunction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.dao.IDAO;
@@ -70,11 +69,20 @@ import io.goobi.viewer.model.viewer.StructElement;
 @SessionScoped
 public class HighlightedObjectBean implements Serializable {
 
-    private static final int NUM_ITEMS_PER_PAGE = 12;
     private static final long serialVersionUID = -6647395682752991930L;
     private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
+    private static final int NUM_ITEMS_PER_PAGE = 2;
+    private static final String PAST_OBJECTS_SORT_FIELD = "dateStart";
+    private static final SortOrder PAST_OBJECTS_SORT_ORDER = SortOrder.DESCENDING;
+    private static final String FUTURE_OBJECTS_SORT_FIELD = "dateStart";
+    private static final SortOrder FUTURE_OBJECTS_SORT_ORDER = SortOrder.ASCENDING;
+    private static final String CURRENT_OBJECTS_SORT_FIELD = "dateStart";
+    private static final SortOrder CURRENT_OBJECTS_SORT_ORDER = SortOrder.ASCENDING;
 
-    private TableDataProvider<HighlightedObject> dataProvider;
+    private TableDataProvider<HighlightedObject> pastObjectsProvider;
+    private TableDataProvider<HighlightedObject> futureObjectsProvider;
+    private TableDataProvider<HighlightedObject> currentObjectsProvider;
+
     private transient HighlightedObject selectedObject = null;
     private MetadataElement metadataElement = null;
     private final Random random = new Random();
@@ -86,67 +94,53 @@ public class HighlightedObjectBean implements Serializable {
     @Inject
     private ImageDeliveryBean imaging;
 
+    public HighlightedObjectBean() {
+        
+    }
+    
+    public HighlightedObjectBean(IDAO dao) {
+        this.dao = dao;
+    }
+    
     @PostConstruct
     public void init() {
-        if (dataProvider == null) {
-            initDataProvider();
+        LocalDateTime now = LocalDateTime.now();
+        if (pastObjectsProvider == null || futureObjectsProvider == null || currentObjectsProvider == null) {
+            initProviders(now);
         }
     }
 
-    /**
-     * @return the dataProvider
-     */
-    public TableDataProvider<HighlightedObject> getDataProvider() {
-        return dataProvider;
+    void initProviders(LocalDateTime now) {
+        pastObjectsProvider = TableDataProvider.initDataProvider(NUM_ITEMS_PER_PAGE, PAST_OBJECTS_SORT_FIELD, PAST_OBJECTS_SORT_ORDER,
+                (first, pageSize, sortField, descending, filters) -> dao
+                        .getPastHighlightedObjectsForDate(first, pageSize, sortField, descending, filters, now)
+                        .stream()
+                        .map(HighlightedObject::new)
+                        .collect(Collectors.toList()));
+        futureObjectsProvider = TableDataProvider.initDataProvider(NUM_ITEMS_PER_PAGE, PAST_OBJECTS_SORT_FIELD, PAST_OBJECTS_SORT_ORDER,
+                (first, pageSize, sortField, descending, filters) -> dao
+                        .getFutureHighlightedObjectsForDate(first, pageSize, sortField, descending, filters, now)
+                        .stream()
+                        .map(HighlightedObject::new)
+                        .collect(Collectors.toList()));
+        currentObjectsProvider = TableDataProvider.initDataProvider(Integer.MAX_VALUE, CURRENT_OBJECTS_SORT_FIELD, CURRENT_OBJECTS_SORT_ORDER,
+                (first, pageSize, sortField, descending, filters) -> dao
+                .getHighlightedObjectsForDate(now)
+                .stream()
+                .map(HighlightedObject::new)
+                .collect(Collectors.toList()));
     }
 
-    private void initDataProvider() {
-        dataProvider = new TableDataProvider<>(new TableDataSource<HighlightedObject>() {
+    public TableDataProvider<HighlightedObject> getPastObjectsProvider() {
+        return pastObjectsProvider;
+    }
 
-            private Optional<Long> numItems = Optional.empty();
-
-            @Override
-            public List<HighlightedObject> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                try {
-                    if (StringUtils.isBlank(sortField)) {
-                        sortField = "dateStart";
-                    }
-
-                    return DataManager.getInstance()
-                            .getDao()
-                            .getHighlightedObjects(first, pageSize, sortField, sortOrder.asBoolean(), filters)
-                            .stream()
-                            .map(HighlightedObject::new)
-                            .collect(Collectors.toList());
-                } catch (DAOException e) {
-                    logger.error("Could not initialize lazy model: {}", e.getMessage());
-                }
-
-                return Collections.emptyList();
-            }
-
-            @Override
-            public long getTotalNumberOfRecords(Map<String, String> filters) {
-                if (!numItems.isPresent()) {
-                    try {
-                        numItems = Optional.of(DataManager.getInstance()
-                                .getDao()
-                                .getHighlightedObjects(0, Integer.MAX_VALUE, null, false, filters)
-                                .stream()
-                                .count());
-                    } catch (DAOException e) {
-                        logger.error("Unable to retrieve total number of cms pages", e);
-                    }
-                }
-                return numItems.orElse(0L);
-            }
-
-            @Override
-            public void resetTotalNumberOfRecords() {
-                numItems = Optional.empty();
-            }
-        });
-        dataProvider.setEntriesPerPage(NUM_ITEMS_PER_PAGE);
+    public TableDataProvider<HighlightedObject> getFutureObjectsProvider() {
+        return futureObjectsProvider;
+    }
+    
+    public TableDataProvider<HighlightedObject> getCurrentObjectsProvider() {
+        return currentObjectsProvider;
     }
 
     public String getRecordUrl(HighlightedObject object) {
@@ -173,7 +167,7 @@ public class HighlightedObjectBean implements Serializable {
     public void setSelectedObject(HighlightedObject selectedObject) {
         this.selectedObject = selectedObject;
         this.metadataElement = null;
-        if(this.selectedObject != null) {
+        if (this.selectedObject != null) {
             this.selectedObject.setSelectedLocale(BeanUtils.getDefaultLocale());
         }
     }
@@ -216,7 +210,7 @@ public class HighlightedObjectBean implements Serializable {
         } else {
             Messages.error("Failed to save object " + object);
         }
-        if(redirect) {            
+        if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsHighlightedObjectsEdit", object.getData().getId()));
         }
     }
@@ -287,7 +281,7 @@ public class HighlightedObjectBean implements Serializable {
         if (label instanceof MultiLanguageMetadataValue) {
             MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
             return new TranslatedText(mLabel);
-        } else {            
+        } else {
             TranslatedText title = new TranslatedText();
             title.setValue(label.getValue().orElse(""), IPolyglott.getDefaultLocale());
             return title;
@@ -297,6 +291,7 @@ public class HighlightedObjectBean implements Serializable {
     public HighlightedObject getCurrentHighlightedObject() throws DAOException {
         List<HighlightedObject> currentObjects = dao.getHighlightedObjectsForDate(LocalDateTime.now())
                 .stream()
+                .filter(HighlightedObjectData::isEnabled)
                 .map(HighlightedObject::new)
                 .collect(Collectors.toList());
         if (!currentObjects.isEmpty()) {
@@ -321,6 +316,10 @@ public class HighlightedObjectBean implements Serializable {
         } else {
             return null;
         }
+    }
+
+    public List<HighlightedObject> getCurrentObjects() throws DAOException {
+        return this.dao.getHighlightedObjectsForDate(LocalDateTime.now()).stream().map(HighlightedObject::new).collect(Collectors.toList());
     }
 
 }

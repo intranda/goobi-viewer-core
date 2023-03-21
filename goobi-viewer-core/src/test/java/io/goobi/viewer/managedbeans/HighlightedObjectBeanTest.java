@@ -21,12 +21,17 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 
 public class HighlightedObjectBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -35,32 +40,34 @@ public class HighlightedObjectBeanTest extends AbstractDatabaseEnabledTest {
     @Before
     public void setup() throws Exception {
         super.setUp();
-        bean = new HighlightedObjectBean();
+        bean = new HighlightedObjectBean(DataManager.getInstance().getDao());
         bean.init();
     }
     
     @Test
-    public void test_listObjecs() {
+    public void test_listObjecs() throws DAOException {
         
-        assertEquals(3, bean.getDataProvider().getPaginatorList().size());
-        assertEquals(3, bean.getDataProvider().getSizeOfDataList());
-        assertEquals(1l, bean.getDataProvider().getPageNumberCurrent().longValue());
-        assertEquals(0, bean.getDataProvider().getLastPageNumber());
-        bean.getDataProvider().cmdMoveNext();
-        assertEquals(1l, bean.getDataProvider().getPageNumberCurrent().longValue());
+        LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
+        bean.initProviders(now);
+        assertEquals(2, bean.getPastObjectsProvider().getPaginatorList().size());
+        assertEquals(0, bean.getFutureObjectsProvider().getPaginatorList().size());
+        assertEquals(1, bean.getCurrentObjects().size());
     }
     
     @Test
     public void test_filterList() {
         
-        bean.getDataProvider().getFilter("name").setValue("Monat");
-        assertEquals(2, bean.getDataProvider().getSizeOfDataList());
+        LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
+        bean.initProviders(now);
         
-        bean.getDataProvider().getFilter("name").setValue("Januar");
-        assertEquals(1, bean.getDataProvider().getSizeOfDataList());
+        bean.getPastObjectsProvider().getFilter("name").setValue("Monat");
+        assertEquals(2, bean.getPastObjectsProvider().getSizeOfDataList());
+        
+        bean.getPastObjectsProvider().getFilter("name").setValue("Januar");
+        assertEquals(1, bean.getPastObjectsProvider().getSizeOfDataList());
 
-        bean.getDataProvider().getFilter("name").setValue("");
-        assertEquals(3, bean.getDataProvider().getSizeOfDataList());
+        bean.getPastObjectsProvider().getFilter("name").setValue("");
+        assertEquals(3, bean.getPastObjectsProvider().getSizeOfDataList());
     }
 
 }

@@ -2652,6 +2652,10 @@ public interface IDAO {
     public List<HighlightedObjectData> getAllHighlightedObjects() throws DAOException;
     public List<HighlightedObjectData> getHighlightedObjects(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
     public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException;
+    public List<HighlightedObjectData> getPastHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters, LocalDateTime date) throws DAOException;
+    public List<HighlightedObjectData> getFutureHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters, LocalDateTime date) throws DAOException;
     
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.

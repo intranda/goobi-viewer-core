@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.HighlightedObjectData.ImageMode;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jnr.ffi.Struct.size_t;
 
 public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
 
@@ -113,7 +114,8 @@ public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, dao.getHighlightedObjectsForDate(time2).size());
         
         LocalDateTime time3 = LocalDate.of(2023, 3, 15).atStartOfDay();
-        assertEquals(0, dao.getHighlightedObjectsForDate(time3).size());
+        assertEquals(1, dao.getHighlightedObjectsForDate(time3).size());
+        assertEquals(0l, dao.getHighlightedObjectsForDate(time3).stream().filter(HighlightedObjectData::isEnabled).count());
     }
 
     @Test
@@ -144,6 +146,27 @@ public class HighlightedObjectDataTest extends AbstractDatabaseEnabledTest {
         assertTrue(dao.addHighlightedObject(object));
         assertEquals(object, dao.getHighlightedObjectsForDate(LocalDate.of(1900,1,1).atStartOfDay()).get(0));
         assertEquals(object, dao.getHighlightedObjectsForDate(LocalDate.of(3000,1,1).atStartOfDay()).get(0));
+    }
+    
+    @Test
+    public void getCurrentObjects() throws DAOException {
+        assertEquals(1, dao.getHighlightedObjectsForDate(LocalDate.of(2023,1,15).atStartOfDay()).size());
+        assertEquals(1, dao.getHighlightedObjectsForDate(LocalDate.of(2023,2,15).atStartOfDay()).size());
+        assertEquals(1, dao.getHighlightedObjectsForDate(LocalDate.of(2023,3,15).atStartOfDay()).size());
+    }
+    
+    @Test
+    public void getFutureObjects() throws DAOException {
+        assertEquals(3, dao.getFutureHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2022,12,1).atStartOfDay()).size());
+        assertEquals(1, dao.getFutureHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,2,15).atStartOfDay()).size());
+        assertEquals(0, dao.getFutureHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,5,1).atStartOfDay()).size());
+    }
+    
+    @Test
+    public void getPasteObjects() throws DAOException {
+        assertEquals(0, dao.getPastHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2022,12,1).atStartOfDay()).size());
+        assertEquals(1, dao.getPastHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,2,15).atStartOfDay()).size());
+        assertEquals(3, dao.getPastHighlightedObjectsForDate(0, 100, "dateStart", true, null, LocalDate.of(2023,5,1).atStartOfDay()).size());
     }
 
 }

@@ -32,7 +32,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.controller.DAOSearchFunction;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.model.cms.HighlightedObject;
+import io.goobi.viewer.model.cms.HighlightedObjectData;
+
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -69,6 +77,50 @@ public class TableDataProvider<T> implements Serializable {
         }
     }
 
+    public static <T> TableDataProvider<T> initDataProvider(int itemsPerPage, String defaultSortField, SortOrder defaultSortOrder, DAOSearchFunction<T> search) {
+        return new TableDataProvider<>(itemsPerPage, defaultSortOrder, new TableDataSource<T>() {
+
+            private Optional<Long> numItems = Optional.empty();
+
+            @Override
+            public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+                try {
+                    if (StringUtils.isBlank(sortField)) {
+                        sortField = defaultSortField;
+                    }
+
+                    return search.apply(first, pageSize, sortField, sortOrder.asBoolean(), filters)
+                            .stream()
+                            .collect(Collectors.toList());
+                } catch (DAOException e) {
+                    logger.error("Could not initialize lazy model: {}", e.getMessage());
+                }
+
+                return Collections.emptyList();
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                if (!numItems.isPresent()) {
+                    try {
+                        numItems = Optional.of(search.apply(0, Integer.MAX_VALUE, null, false, filters)
+                                .stream()
+                                .count());
+                    } catch (DAOException e) {
+                        logger.error("Unable to retrieve total number of objects", e);
+                    }
+                }
+                return numItems.orElse(0L);
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
+                numItems = Optional.empty();
+            }
+        });
+    }
+    
+    
     /**
      * <p>
      * Constructor for TableDataProvider.
@@ -78,6 +130,20 @@ public class TableDataProvider<T> implements Serializable {
      */
     public TableDataProvider(TableDataSource<T> source) {
         this.source = source;
+    }
+    
+    /**
+     * <p>
+     * Constructor for TableDataProvider.
+     * </p>
+     *
+     * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
+     * @param entriesPerPage    the number of entries per page
+     */
+    public TableDataProvider(int entriesPerPage, SortOrder sortOrder, TableDataSource<T> source) {
+        this.source = source;
+        this.sortOrder = sortOrder;
+        this.entriesPerPage = entriesPerPage;
     }
 
     /**

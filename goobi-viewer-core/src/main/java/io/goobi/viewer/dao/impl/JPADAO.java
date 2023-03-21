@@ -7022,14 +7022,28 @@ public class JPADAO implements IDAO {
 
     @Override
     public List<HighlightedObjectData> getHighlightedObjectsForDate(LocalDateTime date) throws DAOException {
-        return getMatchingEntities(HighlightedObjectData.class, "o.enabled = TRUE AND "
-                + "(:date BETWEEN o.dateStart AND o.dateEnd)"
+        return getMatchingEntities(HighlightedObjectData.class,
+                "(:date BETWEEN o.dateStart AND o.dateEnd)"
                 + " OR "
                 + "(o.dateStart IS NULL AND :date < o.dateEnd)"
                 + " OR "
                 + "(o.dateEnd IS NULL AND :date > o.dateStart)"
                 + " OR "
                 + "(o.dateStart IS NULL AND o.dateEnd IS NULL)", Map.of("date", date));
+    }
+    
+    @Override
+    public List<HighlightedObjectData> getPastHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters, LocalDateTime date) throws DAOException {
+        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
+        return data;
+    }
+    
+    @Override
+    public List<HighlightedObjectData> getFutureHighlightedObjectsForDate(int first, int pageSize, String sortField, boolean descending,
+            Map<String, String> filters, LocalDateTime date) throws DAOException {
+        List<HighlightedObjectData> data = getEntities(HighlightedObjectData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
+        return data;
     }
     
 
@@ -7136,6 +7150,12 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters)
             throws DAOException {
+        return getEntities(clazz, first, pageSize, sortField, descending, filters, null, Collections.emptyMap());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getEntities(Class<T> clazz, int first, int pageSize, String sortField, boolean descending, Map<String, String> filters, String whereClause, Map<String, Object> whereClauseParams)
+            throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         Character entityVariable = 'a';
@@ -7145,9 +7165,19 @@ public class JPADAO implements IDAO {
 
             if (filters != null && !filters.isEmpty()) {
                 String filterQuery = addFilterQueries(filters, params, entityVariable);
-                sbQuery.append(filterQuery);
+                sbQuery.append(" WHERE (").append(filterQuery).append(")");
             }
 
+            if(StringUtils.isNotBlank(whereClause)) {
+                if (filters != null && !filters.isEmpty()) {
+                    sbQuery.append(" AND ");
+                } else {
+                    sbQuery.append(" WHERE ");
+                }
+                sbQuery.append("(").append(whereClause).append(")");
+                whereClauseParams.forEach((key, value) -> params.put(key, value));
+            }
+            
             if (StringUtils.isNotEmpty(sortField)) {
                 sbQuery.append(" ORDER BY a.").append(sortField);
                 if (descending) {
@@ -7172,7 +7202,7 @@ public class JPADAO implements IDAO {
     
     private String addFilterQueries(Map<String, String> filters, Map<String, Object> params, Character entityVariable) {
         Stream<String> queries = filters.entrySet().stream().map(entry -> getFilterQuery(entry.getKey(), entry.getValue(), params, entityVariable));
-        return " WHERE (" + queries.collect(Collectors.joining(") OR (")) + ")";
+        return "(" + queries.collect(Collectors.joining(") OR (")) + ")";
     }
     
     /**
