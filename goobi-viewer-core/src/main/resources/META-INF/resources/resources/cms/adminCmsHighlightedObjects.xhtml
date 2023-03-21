@@ -39,10 +39,8 @@
 	                    <div class="admin__info-text">#{msg.admin__highlighted_objects__description}</div>
 	                    <h2>CURRENT OBJECTS</h2>
 	                    <cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getCurrentObjectsProvider()}" showPaginator="false"/>
-	                    <h2>FUTURE OBJECTS</h2>
-						<cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getFutureObjectsProvider()}"/>
-						<h2>PAST OBJECTS</h2>
-						<cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getPastObjectsProvider()}"/>
+	                    <h2>ALL OBJECTS</h2>
+						<cmsComponent:highlightedObjectTable dataProvider="#{highlightedObjectBean.getAllObjectsProvider()}"/>
                     </div>
                 </h:form>
             </h:panelGroup>

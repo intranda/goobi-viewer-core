@@ -49,8 +49,7 @@ public class HighlightedObjectBeanTest extends AbstractDatabaseEnabledTest {
         
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         bean.initProviders(now);
-        assertEquals(2, bean.getPastObjectsProvider().getPaginatorList().size());
-        assertEquals(0, bean.getFutureObjectsProvider().getPaginatorList().size());
+        assertEquals(3, bean.getAllObjectsProvider().getPaginatorList().size());
         assertEquals(1, bean.getCurrentObjects().size());
     }
     
@@ -60,14 +59,14 @@ public class HighlightedObjectBeanTest extends AbstractDatabaseEnabledTest {
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         bean.initProviders(now);
         
-        bean.getPastObjectsProvider().getFilter("name").setValue("Monat");
-        assertEquals(2, bean.getPastObjectsProvider().getSizeOfDataList());
+        bean.getAllObjectsProvider().getFilter("name").setValue("Monat");
+        assertEquals(2, bean.getAllObjectsProvider().getSizeOfDataList());
         
-        bean.getPastObjectsProvider().getFilter("name").setValue("Januar");
-        assertEquals(1, bean.getPastObjectsProvider().getSizeOfDataList());
+        bean.getAllObjectsProvider().getFilter("name").setValue("Januar");
+        assertEquals(1, bean.getAllObjectsProvider().getSizeOfDataList());
 
-        bean.getPastObjectsProvider().getFilter("name").setValue("");
-        assertEquals(3, bean.getPastObjectsProvider().getSizeOfDataList());
+        bean.getAllObjectsProvider().getFilter("name").setValue("");
+        assertEquals(3, bean.getAllObjectsProvider().getSizeOfDataList());
     }
 
 }

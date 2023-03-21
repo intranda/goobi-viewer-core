@@ -72,15 +72,12 @@ public class HighlightedObjectBean implements Serializable {
     private static final long serialVersionUID = -6647395682752991930L;
     private static final Logger logger = LogManager.getLogger(HighlightedObjectBean.class);
     private static final int NUM_ITEMS_PER_PAGE = 2;
-    private static final String PAST_OBJECTS_SORT_FIELD = "dateStart";
-    private static final SortOrder PAST_OBJECTS_SORT_ORDER = SortOrder.DESCENDING;
-    private static final String FUTURE_OBJECTS_SORT_FIELD = "dateStart";
-    private static final SortOrder FUTURE_OBJECTS_SORT_ORDER = SortOrder.ASCENDING;
+    private static final String ALL_OBJECTS_SORT_FIELD = "dateStart";
+    private static final SortOrder ALL_OBJECTS_SORT_ORDER = SortOrder.DESCENDING;
     private static final String CURRENT_OBJECTS_SORT_FIELD = "dateStart";
     private static final SortOrder CURRENT_OBJECTS_SORT_ORDER = SortOrder.ASCENDING;
 
-    private TableDataProvider<HighlightedObject> pastObjectsProvider;
-    private TableDataProvider<HighlightedObject> futureObjectsProvider;
+    private TableDataProvider<HighlightedObject> allObjectsProvider;
     private TableDataProvider<HighlightedObject> currentObjectsProvider;
 
     private transient HighlightedObject selectedObject = null;
@@ -105,21 +102,15 @@ public class HighlightedObjectBean implements Serializable {
     @PostConstruct
     public void init() {
         LocalDateTime now = LocalDateTime.now();
-        if (pastObjectsProvider == null || futureObjectsProvider == null || currentObjectsProvider == null) {
+        if (allObjectsProvider == null || currentObjectsProvider == null) {
             initProviders(now);
         }
     }
 
     void initProviders(LocalDateTime now) {
-        pastObjectsProvider = TableDataProvider.initDataProvider(NUM_ITEMS_PER_PAGE, PAST_OBJECTS_SORT_FIELD, PAST_OBJECTS_SORT_ORDER,
+        allObjectsProvider = TableDataProvider.initDataProvider(NUM_ITEMS_PER_PAGE, ALL_OBJECTS_SORT_FIELD, ALL_OBJECTS_SORT_ORDER,
                 (first, pageSize, sortField, descending, filters) -> dao
-                        .getPastHighlightedObjectsForDate(first, pageSize, sortField, descending, filters, now)
-                        .stream()
-                        .map(HighlightedObject::new)
-                        .collect(Collectors.toList()));
-        futureObjectsProvider = TableDataProvider.initDataProvider(NUM_ITEMS_PER_PAGE, PAST_OBJECTS_SORT_FIELD, PAST_OBJECTS_SORT_ORDER,
-                (first, pageSize, sortField, descending, filters) -> dao
-                        .getFutureHighlightedObjectsForDate(first, pageSize, sortField, descending, filters, now)
+                        .getHighlightedObjects(first, pageSize, sortField, descending, filters)
                         .stream()
                         .map(HighlightedObject::new)
                         .collect(Collectors.toList()));
@@ -131,12 +122,8 @@ public class HighlightedObjectBean implements Serializable {
                 .collect(Collectors.toList()));
     }
 
-    public TableDataProvider<HighlightedObject> getPastObjectsProvider() {
-        return pastObjectsProvider;
-    }
-
-    public TableDataProvider<HighlightedObject> getFutureObjectsProvider() {
-        return futureObjectsProvider;
+    public TableDataProvider<HighlightedObject> getAllObjectsProvider() {
+        return allObjectsProvider;
     }
     
     public TableDataProvider<HighlightedObject> getCurrentObjectsProvider() {
