@@ -16,7 +16,7 @@ function getTomcatDir() {
 	}
 	let viewer_config = XML.parse(xml_string);
 	 
-	if (viewer_config.viewer.theme.specialName.length) {
+	if (viewer_config.viewer.theme.specialName && viewer_config.viewer.theme.specialName.length) {
 		return config.tomcat_dir + "/goobi-viewer-theme-" + viewer_config.viewer.theme.specialName;
 	}
 	else {
