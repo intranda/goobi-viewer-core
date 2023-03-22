@@ -256,13 +256,13 @@ public class GeoMapBean implements Serializable {
                 .orElse("");
     }
     
-    public void addFeatureSet(GeoMap map, GeoMapType type) {
+    public void addFeatureSet(GeoMap map, String type) {
         if(map != null && type != null) {            
             switch(type) {
-                case MANUAL:
+                case "MANUAL":
                     map.addFeatureSet(new ManualFeatureSet());
                     break;
-                case SOLR_QUERY:
+                case "SOLR_QUERY":
                     map.addFeatureSet(new SolrFeatureSet());
                     break;
             }

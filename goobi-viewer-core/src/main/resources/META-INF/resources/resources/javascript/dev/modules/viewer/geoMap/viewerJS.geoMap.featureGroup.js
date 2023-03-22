@@ -189,7 +189,7 @@ var viewerJS = ( function( viewer ) {
         	    labelField: this.config.heatmap.labelField,
         	    queryAdapter: "goobiViewer"    
         	});
-//        	this.heatmap.addTo(this.geoMap.map);
+        	this.heatmap.addTo(this.geoMap.map);
     	} 
         
     }
