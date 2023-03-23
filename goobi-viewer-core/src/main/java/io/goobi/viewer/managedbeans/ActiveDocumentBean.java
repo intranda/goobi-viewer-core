@@ -748,10 +748,10 @@ public class ActiveDocumentBean implements Serializable {
     public void setImageToShow(String imageToShow) throws PresentationException {
         synchronized (lock) {
             if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^[0-9]+(-[0-9]+)?$")) {
-                this.imageToShow = SolrTools.escapeSpecialCharacters(imageToShow);
+                this.imageToShow = imageToShow;
             } else {
                 throw new PresentationException(
-                        "The passed image number " + SolrTools.escapeSpecialCharacters(imageToShow) + " contains illegal characters");
+                        "The passed image number " + imageToShow + " contains illegal characters");
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
