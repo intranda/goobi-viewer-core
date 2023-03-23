@@ -747,7 +747,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setImageToShow(String imageToShow) throws PresentationException {
         synchronized (lock) {
-            if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("[0-9-]+")) {
+            if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^[0-9]+(-[0-9]+)?$")) {
                 this.imageToShow = SolrTools.escapeSpecialCharacters(imageToShow);
             } else {
                 throw new PresentationException(
@@ -882,7 +882,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setAction(String action) {
         synchronized (this) {
-            logger.trace("setAction: " + action);
+            logger.trace("setAction: {}", action);
             this.action = action;
             if (searchBean != null && action != null) {
                 switch (action) {
