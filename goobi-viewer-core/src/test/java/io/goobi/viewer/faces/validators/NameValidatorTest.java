@@ -41,6 +41,6 @@ public class NameValidatorTest {
      */
     @Test
     public void validate_shouldNotMatchInvalidName() throws Exception {
-        Assert.assertTrue(NameValidator.validate("John Doe<script />"));
+        Assert.assertFalse(NameValidator.validate("John Doe<script />"));
     }
 }
