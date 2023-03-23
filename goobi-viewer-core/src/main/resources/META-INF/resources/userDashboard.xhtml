@@ -201,7 +201,7 @@
 
 					<div class="user-dashboard__sidebar-welcome-text">
 						<h:outputFormat value="#{msg.user_dashboard__hello}" escape="true">
-							 <f:param value="#{userBean.user.displayName}" />
+							 <f:param value="#{userBean.user.displayNameEscaped}" />
 						</h:outputFormat>
 					</div>
 

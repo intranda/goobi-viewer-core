@@ -742,7 +742,7 @@ public class ActiveDocumentBean implements Serializable {
      * Setter for the field <code>imageToShow</code>.
      * </p>
      *
-     * @param imageToShow the imageToShow to set
+     * @param imageToShow Single page number (1) or range (2-3)
      * @throws PresentationException
      */
     public void setImageToShow(String imageToShow) throws PresentationException {
