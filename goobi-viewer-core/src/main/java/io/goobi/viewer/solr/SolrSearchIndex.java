@@ -242,7 +242,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        SolrQuery solrQuery = new SolrQuery(query).setStart(first).setRows(rows);
+        SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query)).setStart(first).setRows(rows);
 
         if (sortFields != null && !sortFields.isEmpty()) {
             for (int i = 0; i < sortFields.size(); ++i) {
@@ -282,7 +282,7 @@ public class SolrSearchIndex {
         }
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
-                solrQuery.addFilterQuery(fq);
+                solrQuery.addFilterQuery(SolrTools.cleanUpQuery(fq));
                 // logger.trace("adding filter query: {}", fq)
             }
         }
@@ -335,7 +335,7 @@ public class SolrSearchIndex {
      * @throws IndexUnreachableException
      */
     public List<String> querySpellingSuggestions(String query, float accuracy, boolean build) throws IndexUnreachableException {
-        SolrQuery solrQuery = new SolrQuery(query);
+        SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query));
         solrQuery.set(CommonParams.QT, "/spell");
         solrQuery.set("spellcheck", true);
         solrQuery.set(SpellingParams.SPELLCHECK_ACCURACY, Float.toString(accuracy));
@@ -467,7 +467,7 @@ public class SolrSearchIndex {
     public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields)
             throws PresentationException, IndexUnreachableException {
         // logger.trace("getFirstDoc: {}", query);
-        SolrDocumentList hits = search(query, 0, 1, sortFields, null, fieldList).getResults();
+        SolrDocumentList hits = search(SolrTools.cleanUpQuery(query), 0, 1, sortFields, null, fieldList).getResults();
         if (hits.getNumFound() > 0) {
             return hits.get(0);
         }
@@ -487,7 +487,7 @@ public class SolrSearchIndex {
      */
     public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
         // logger.trace("getDocs: {}", query);
-        SolrDocumentList hits = search(query, fieldList);
+        SolrDocumentList hits = search(SolrTools.cleanUpQuery(query), fieldList);
         if (hits.getNumFound() > 0) {
             return hits;
         }
@@ -510,7 +510,8 @@ public class SolrSearchIndex {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
         SolrDocument ret = null;
         SolrDocumentList hits =
-                search(new StringBuilder(SolrConstants.IDDOC).append(':').append(iddoc).toString(), 0, 1, null, null, null).getResults();
+                search(new StringBuilder(SolrConstants.IDDOC).append(':').append(SolrTools.cleanUpQuery(iddoc)).toString(), 0, 1, null, null, null)
+                        .getResults();
         if (hits != null && !hits.isEmpty()) {
             ret = hits.get(0);
         }
@@ -532,7 +533,9 @@ public class SolrSearchIndex {
     public SolrDocument getDocumentByPI(String pi) throws IndexUnreachableException, PresentationException {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
         SolrDocument ret = null;
-        SolrDocumentList hits = search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 0, 1, null, null, null).getResults();
+        SolrDocumentList hits =
+                search(new StringBuilder(SolrConstants.PI).append(':').append(SolrTools.cleanUpQuery(pi)).toString(), 0, 1, null, null, null)
+                        .getResults();
         if (hits != null && !hits.isEmpty()) {
             ret = hits.get(0);
         }
@@ -541,7 +544,6 @@ public class SolrSearchIndex {
     }
 
     public SolrDocument getDocumentByPIAndLogId(String pi, String divId) throws IndexUnreachableException, PresentationException {
-
         SolrDocument ret = null;
         if (StringUtils.isNoneBlank(pi, divId)) {
             // logger.trace("getDocumentByIddoc: {}", iddoc);
@@ -569,7 +571,7 @@ public class SolrSearchIndex {
     public List<Tag> generateFilteredTagCloud(String fieldName, String querySuffix) throws IndexUnreachableException {
         List<Tag> tags = new ArrayList<>();
 
-        String query = new StringBuilder(fieldName).append(":*").append(querySuffix).toString();
+        String query = SolrTools.cleanUpQuery(new StringBuilder(fieldName).append(":*").append(querySuffix).toString());
         logger.trace("generateFilteredTagCloud query: {}", query);
         Pattern p = Pattern.compile(StringTools.REGEX_WORDS);
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
@@ -661,7 +663,7 @@ public class SolrSearchIndex {
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
         // logger.trace("getIddocFromIdentifier: {}", identifier);
-        SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(identifier).toString(), 1, null,
+        SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(SolrTools.cleanUpQuery(identifier)).toString(), 1, null,
                 Collections.singletonList(SolrConstants.IDDOC));
         if (!docs.isEmpty()) {
             return Long.valueOf((String) docs.get(0).getFieldValue(SolrConstants.IDDOC));
@@ -725,7 +727,7 @@ public class SolrSearchIndex {
      */
     public long getImageOwnerIddoc(String pi, int pageNo) throws IndexUnreachableException, PresentationException {
         logger.trace("getImageOwnerIddoc: {}:{}", pi, pageNo);
-        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
+        String query = SolrTools.cleanUpQuery(new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
                 .append(pi)
                 .append(SolrConstants.SOLR_QUERY_AND)
                 .append(SolrConstants.ORDER)
@@ -735,7 +737,7 @@ public class SolrSearchIndex {
                 .append(SolrConstants.DOCTYPE)
                 .append(":")
                 .append(DocType.PAGE.name())
-                .toString();
+                .toString());
         logger.trace("query: {}", query);
         String luceneOwner = SolrConstants.IDDOC_OWNER;
         SolrDocument pageDoc = getFirstDoc(query, Collections.singletonList(luceneOwner));
@@ -759,7 +761,7 @@ public class SolrSearchIndex {
      */
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
-        String query = new StringBuilder("+")
+        String query = SolrTools.cleanUpQuery(new StringBuilder("+")
                 .append(SolrConstants.PI_TOPSTRUCT)
                 .append(":")
                 .append(pi)
@@ -771,7 +773,7 @@ public class SolrSearchIndex {
                 .append(SolrConstants.DOCTYPE)
                 .append(":")
                 .append(DocType.DOCSTRCT.name())
-                .toString();
+                .toString());
         SolrDocument doc = getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC));
         if (doc != null) {
             String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
@@ -850,7 +852,7 @@ public class SolrSearchIndex {
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }
-        SolrQuery solrQuery = new SolrQuery(new StringBuilder(SolrConstants.PI).append(":").append(pi).toString());
+        SolrQuery solrQuery = new SolrQuery(new StringBuilder(SolrConstants.PI).append(":").append(SolrTools.cleanUpQuery(pi)).toString());
         solrQuery.setRows(1);
         solrQuery.setFields(SolrConstants.DATAREPOSITORY);
 
@@ -978,7 +980,7 @@ public class SolrSearchIndex {
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
         // logger.trace("searchFacetsAndStatistics: {}", query);
-        SolrQuery solrQuery = new SolrQuery(query);
+        SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query));
         solrQuery.setStart(0);
         solrQuery.setRows(0);
 
@@ -1277,7 +1279,7 @@ public class SolrSearchIndex {
 
             // logger.trace("label query: {}{}", queryRoot, sbValueQuery.toString());
 
-            SolrDocumentList result = search(queryRoot + sbValueQuery.toString(), Arrays.asList(fields));
+            SolrDocumentList result = search(SolrTools.cleanUpQuery(queryRoot + sbValueQuery.toString()), Arrays.asList(fields));
             for (SolrDocument doc : result) {
                 String value = SolrTools.getSingleFieldStringValue(doc, "MD_VALUE");
                 String label = String.valueOf(doc.getFirstValue(labelField));
@@ -1334,8 +1336,8 @@ public class SolrSearchIndex {
         }
 
         final JsonQueryRequest request = new JsonQueryRequest()
-                .setQuery(query)
-                .withFilter(filterQuery)
+                .setQuery(SolrTools.cleanUpQuery(query))
+                .withFilter(SolrTools.cleanUpQuery(filterQuery))
                 .setLimit(0)
                 .withFacet("heatmapFacet", facetMap);
 
