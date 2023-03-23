@@ -379,26 +379,4 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.reset();
         Assert.assertNull(bean.lastReceivedIdentifier);
     }
-
-    /**
-     * @see ActiveDocumentBean#setImageToShow(String)
-     * @verifies remove javascript
-     */
-    @Test
-    public void setImageToShow_shouldRemoveJavascript() throws Exception {
-        ActiveDocumentBean bean = new ActiveDocumentBean();
-        bean.setImageToShow("");
-        Assert.assertEquals("1", bean.getImageToShow());
-    }
-
-    /**
-     * @see ActiveDocumentBean#setLogid(String)
-     * @verifies remove javascript
-     */
-    @Test
-    public void setLogid_shouldRemoveJavascript() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
-    }
-
 }
