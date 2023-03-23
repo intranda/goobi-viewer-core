@@ -752,7 +752,11 @@ public class ActiveDocumentBean implements Serializable {
                 viewManager.setDropdownSelected(String.valueOf(imageToShow));
             }
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
-            setLogid("");
+            try {
+                setLogid("");
+            } catch (PresentationException e) {
+                //cannot be thrown here
+            }
             logger.trace("imageToShow: {}", this.imageToShow);
         }
     }
@@ -776,13 +780,16 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param logid the logid to set
+     * @throws PresentationException 
      */
-    public void setLogid(String logid) {
+    public void setLogid(String logid) throws PresentationException {
         synchronized (this) {
             if ("-".equals(logid)) {
                 this.logid = "";
-            } else {
+            } else if(StringUtils.isNotBlank(logid) && logid.matches("[\\w-]+")) {
                 this.logid = SolrTools.escapeSpecialCharacters(logid);
+            } else {
+                throw new PresentationException("The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
             }
         }
     }
