@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.solr;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 import java.util.Map;
 
@@ -254,5 +256,21 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() throws Exception {
         String html = "<html><head><title>foo bar</title></head><body><h1>foo</h1></body</html>";
         Assert.assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
+    }
+    
+    @Test
+    public void test_escapeSpecialCharacters() {
+        assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>", SolrTools.escapeSpecialCharacters("x\"><svG onLoad=alert(\"Hello_XSS_World\")>"));
+        assertEquals("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>", SolrTools.escapeSpecialCharacters("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>"));
+        assertEquals(null, SolrTools.escapeSpecialCharacters(null));
+        assertEquals("LOG_0004", SolrTools.escapeSpecialCharacters("LOG_0004"));
+    }
+    
+    @Test
+    public void test_unescapeSpecialCharacters() {
+        assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>", SolrTools.unescapeSpecialCharacters("x\\\"\\>\\<svG onLoad=alert\\(\\\"Hello_XSS_World\\\"\\)\\>"));
+        assertEquals("x\"><svG onLoad=alert(\"Hello_XSS_World\")>", SolrTools.unescapeSpecialCharacters("x\"><svG onLoad=alert(\"Hello_XSS_World\")>"));
+        assertEquals(null, SolrTools.unescapeSpecialCharacters(null));
+        assertEquals("LOG_0004", SolrTools.unescapeSpecialCharacters("LOG_0004"));
     }
 }

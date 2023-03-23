@@ -73,6 +73,7 @@ import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -110,6 +111,7 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -462,11 +464,11 @@ public class ActiveDocumentBean implements Serializable {
                 new StructElement(topDocumentIddoc);
                 String query = new StringBuilder("+")
                         .append(SolrConstants.LOGID)
-                        .append(':')
+                        .append(":\"")
                         .append(logid)
-                        .append(" +")
+                        .append("\" +")
                         .append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
+                        .append(":")
                         .append(viewManager.getPi())
                         .append(" +")
                         .append(SolrConstants.DOCTYPE)
@@ -780,7 +782,7 @@ public class ActiveDocumentBean implements Serializable {
             if ("-".equals(logid)) {
                 this.logid = "";
             } else {
-                this.logid = logid;
+                this.logid = SolrTools.escapeSpecialCharacters(logid);
             }
         }
     }
@@ -2162,6 +2164,11 @@ public class ActiveDocumentBean implements Serializable {
             // logger.trace("page type: {}", currentPageType.getName());
             // logger.trace("current url: {}", navigationHelper.getCurrentUrl());
             String currentUrl = navigationHelper.getCurrentUrl();
+            
+            if(currentUrl.contains(SolrTools.unescapeSpecialCharacters(getLogid()))) {
+                currentUrl = currentUrl.replace(SolrTools.unescapeSpecialCharacters(getLogid()), getLogid());
+            }
+            
             if (currentUrl.contains("!" + currentPageType.getName())) {
                 // Preferred view - add regular view URL
                 sb.append("\n<link rel=\"canonical\" href=\"")
