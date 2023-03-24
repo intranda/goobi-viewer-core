@@ -61,6 +61,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -936,7 +937,9 @@ public class SearchBean implements SearchInterface, Serializable {
                 default:
                     this.activeSearchType = activeSearchType;
             }
-            facets.resetActiveFacetString();
+            // Resetting facet string here will result in collection listings returning all records in the index, if the collection page doesn't set
+            // activeSearchType=0 beforehand
+            // facets.resetActiveFacetString();
         }
         logger.trace("activeSearchType: {}", activeSearchType);
     }
@@ -2390,9 +2393,10 @@ public class SearchBean implements SearchInterface, Serializable {
      * </p>
      *
      * @return the advancedSearchQueryInfo
+     * @should html escape string
      */
     public String getAdvancedSearchQueryInfo() {
-        return advancedSearchQueryInfo;
+        return StringEscapeUtils.escapeHtml4(advancedSearchQueryInfo);
     }
 
     /** {@inheritDoc} */

@@ -19,41 +19,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.model;
+package io.goobi.viewer.faces.validators;
 
-import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
-import io.swagger.v3.oas.annotations.media.Schema;
+import org.junit.Assert;
+import org.junit.Test;
 
-/**
- * POST request parameters for SitemapResource.
- */
-@Schema(name = "UpdateSitemapTaskParameter", description = "Parameters for creating a sitemap file")
-public class SitemapRequestParameters extends TaskParameter {
-
-    @Schema(description = "The directory path in which to write the sitemap file", example = "/opt/digiverso/viewer/sitemap")
-    private String outputPath;
+public class NameValidatorTest {
 
     /**
-     * <p>
-     * Getter for the field <code>outputPath</code>.
-     * </p>
-     *
-     * @return the outputPath
+     * @see NameValidator#validate(String)
+     * @verifies match correct name
      */
-    public String getOutputPath() {
-        return outputPath;
+    @Test
+    public void validate_shouldMatchCorrectName() throws Exception {
+        Assert.assertTrue(NameValidator.validate("John Doe"));
     }
 
     /**
-     * <p>
-     * Setter for the field <code>outputPath</code>.
-     * </p>
-     *
-     * @param outputPath the outputPath to set
+     * @see NameValidator#validate(String)
+     * @verifies not match invalid name
      */
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
+    @Test
+    public void validate_shouldNotMatchInvalidName() throws Exception {
+        Assert.assertFalse(NameValidator.validate("John Doe<script />"));
     }
-
-
 }

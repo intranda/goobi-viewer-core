@@ -97,16 +97,16 @@ public class TasksResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details")
     public Response addTask(TaskParameter desc) throws WebApplicationException {
-        if (desc == null || desc.type == null) {
+        if (desc == null || desc.getType() == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));
         }
-        if (isAuthorized(desc.type, Optional.empty(), request)) {
+        if (isAuthorized(desc.getType(), Optional.empty(), request)) {
 
             if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
                 ViewerMessage message = null;
-                message = new ViewerMessage(desc.type.name());
-                message.getProperties().put("taskType", desc.type.toString());
-                switch (desc.type) {
+                message = new ViewerMessage(desc.getType().name());
+                message.getProperties().put("taskType", desc.getType().toString());
+                switch (desc.getType()) {
 
                     case UPDATE_SITEMAP:
                         SitemapRequestParameters params = Optional.ofNullable(desc)
@@ -145,11 +145,11 @@ public class TasksResource {
                         if (prerenderParams == null) {
                             return null;
                         }
-                        String pi = prerenderParams.pi;
-                        String config = Optional.ofNullable(prerenderParams.config).orElse(ContentServerConfiguration.DEFAULT_CONFIG_VARIANT);
-                        boolean force = Optional.ofNullable(prerenderParams.force).orElse(false);
+                        String pi = prerenderParams.getPi();
+                        String variant = Optional.ofNullable(prerenderParams.getVariant()).orElse(ContentServerConfiguration.DEFAULT_CONFIG_VARIANT);
+                        boolean force = Optional.ofNullable(prerenderParams.getForce()).orElse(false);
                         message.getProperties().put("pi", pi);
-                        message.getProperties().put("config", config);
+                        message.getProperties().put("variant", variant);
                         message.getProperties().put("force", Boolean.toString(force));
                         break;
 
@@ -168,7 +168,7 @@ public class TasksResource {
                 // TODO create useful response, containing the message id
                 return Response.ok(message).build();
             } else {
-                Task job = new Task(desc, TaskManager.createTask(desc.type));
+                Task job = new Task(desc, TaskManager.createTask(desc.getType()));
                 logger.debug("Created new task REST API task '{}'", job);
                 DataManager.getInstance().getRestApiJobManager().addTask(job);
                 DataManager.getInstance().getRestApiJobManager().triggerTaskInThread(job.id, request);

@@ -658,12 +658,12 @@ public class CmsBean implements Serializable {
      * @param currentPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public void setCurrentPage(CMSPage currentPage) {
-        if (currentPage != null) {            
-                this.currentPage = new CMSPage(currentPage);
-                this.currentPage.initialiseCMSComponents(templateManager);
-                this.currentPage.setListPage(1);
-                navigationHelper.setCmsPage(true);
-                logger.trace("Set current cms page to {}", this.currentPage.getTitle());                
+        if (currentPage != null) {
+            this.currentPage = new CMSPage(currentPage);
+            this.currentPage.initialiseCMSComponents(templateManager);
+            this.currentPage.setListPage(1);
+            navigationHelper.setCmsPage(true);
+            logger.trace("Set current cms page to {}", this.currentPage.getTitle());
         } else {
             this.currentPage = null;
         }
@@ -915,7 +915,6 @@ public class CmsBean implements Serializable {
      */
     private static List<String> getMetadataValues(SearchHit hit, String solrField) {
 
-        
         SolrDocument doc = hit.getSolrDoc();
         if (doc != null) {
             Collection<Object> values = doc.getFieldValues(solrField);
@@ -1228,13 +1227,18 @@ public class CmsBean implements Serializable {
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<String> getSubthemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
+    public List<String> getSubthemeDiscriminatorValues() throws PresentationException {
         String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(subThemeDiscriminatorField)) {
-            return SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
+            try {
+                return SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
+            } catch (IndexUnreachableException e) {
+                logger.error(e.getMessage());
+                Messages.error("errIndexUnreachableMsg");
+            }
         }
+
         return Collections.emptyList();
     }
 
@@ -1601,7 +1605,7 @@ public class CmsBean implements Serializable {
             }
         });
     }
-    
+
     public CMSMediaHolder getSelectedMediaHolder() {
         return selectedMediaHolder.orElse(null);
     }
@@ -1775,11 +1779,11 @@ public class CmsBean implements Serializable {
         }
         return "";
     }
-    
+
     public CMSTemplateManager getTemplateManager() {
         return templateManager;
     }
-    
+
     public Collection<HitListView> getPossibleHitListViews() {
         return EnumSet.allOf(HitListView.class);
     }

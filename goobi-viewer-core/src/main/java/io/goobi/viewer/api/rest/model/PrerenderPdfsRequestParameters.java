@@ -7,10 +7,31 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class PrerenderPdfsRequestParameters extends TaskParameter {
 
     @Schema(description = "Record persistent identifier", example="PPN12345")
-    public String pi;
+    private String pi;
     @Schema(description = "ContentServer config variant to use when creating the pdfs", example="default")
-    public String config;
+    private String variant;
     @Schema(description = "Set to true if existing pdf files should be overwritten", example="false")
-    public Boolean force;
+    private Boolean force;
+    
+    public String getPi() {
+        return pi;
+    }
+    public void setPi(String pi) {
+        this.pi = pi;
+    }
+    public String getVariant() {
+        return variant;
+    }
+    public void setVariant(String variant) {
+        this.variant = variant;
+    }
+    public Boolean getForce() {
+        return force;
+    }
+    public void setForce(Boolean force) {
+        this.force = force;
+    } 
+    
+    
     
 }
