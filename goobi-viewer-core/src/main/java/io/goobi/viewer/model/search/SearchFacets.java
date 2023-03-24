@@ -407,7 +407,7 @@ public class SearchFacets implements Serializable {
      */
     public boolean isUnselectedValuesAvailable() {
         for (String field : getAllAvailableFacets().keySet()) {
-            if (getLimitedFacetListForField(field).isEmpty()) {
+            if (!getLimitedFacetListForField(field).isEmpty()) {
                 return true;
             }
         }
