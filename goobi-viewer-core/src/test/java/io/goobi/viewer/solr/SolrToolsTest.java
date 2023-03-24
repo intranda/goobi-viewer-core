@@ -286,4 +286,13 @@ public class SolrToolsTest extends AbstractSolrEnabledTest {
     public void cleanUpQuery_shouldRemoveBraces() throws Exception {
         Assert.assertEquals("foo:bar", SolrTools.cleanUpQuery("{foo:bar}"));
     }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies keep join parameter
+     */
+    @Test
+    public void cleanUpQuery_shouldKeepJoinParameter() throws Exception {
+        Assert.assertEquals("{!join from=PI_TOPSTRUCT to=PI}foo:bar", SolrTools.cleanUpQuery("{!join from=PI_TOPSTRUCT to=PI}{foo:bar}"));
+    }
 }
