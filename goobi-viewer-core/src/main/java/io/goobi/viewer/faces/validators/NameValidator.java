@@ -31,6 +31,8 @@ import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -39,7 +41,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 @FacesValidator("nameValidator")
 public class NameValidator implements Validator<String> {
 
-    private static final String REGEX =  "^[\\w ]+$"; //NOSONAR   input size is limited
+    private static final String REGEX = "^[\\w ]+$"; //NOSONAR   input size is limited
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     /* (non-Javadoc)
@@ -66,7 +68,10 @@ public class NameValidator implements Validator<String> {
      * @return a boolean.
      */
     public static boolean validate(String name) {
-        if (name == null || name.length() > 10_000) {
+        if (StringUtils.isEmpty(name)) {
+            return true;
+        }
+        if (name.length() > 10_000) {
             return false;
         }
         Matcher m = PATTERN.matcher(name.toLowerCase());
