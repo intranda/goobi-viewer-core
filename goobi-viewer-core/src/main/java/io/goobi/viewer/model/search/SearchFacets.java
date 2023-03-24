@@ -399,6 +399,22 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * Checks whether there are still selectable values across all available facet fields.
+     * 
+     * @return true if any available facet field has at least one unselected value; false otherwise
+     * @should return true if a facet field has selectable values
+     * @should return false of no selectable values found
+     */
+    public boolean isUnselectedValuesAvailable() {
+        for (String field : getAllAvailableFacets().keySet()) {
+            if (getLimitedFacetListForField(field).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 
      * @return
      * @throws PresentationException
