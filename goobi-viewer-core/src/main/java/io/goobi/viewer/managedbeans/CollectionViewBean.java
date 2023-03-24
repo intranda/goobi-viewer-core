@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -92,15 +93,26 @@ public class CollectionViewBean implements Serializable {
      */
     public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
+        return getCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, "");
+    }
+    
+    public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
+            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
         CollectionView collection = collections.get(myId);
         if (collection == null) {
             try {
-                collection = initializeCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy);
+                collection = initializeCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, topVisibleElement);
                 collections.put(myId, collection);
             } catch (CmsElementNotFoundException e) {
                 logger.debug("Not matching collection element for id {} on page {}", content.getItemId(), content.getOwningPage().getId());
             }
+        } else {
+            if(!Objects.equals(collection.getTopVisibleElement(), topVisibleElement)) {
+                collection.setTopVisibleElement(topVisibleElement);
+                collection.populateCollectionList();
+            }
+
         }
         return collection;
     }
@@ -134,7 +146,7 @@ public class CollectionViewBean implements Serializable {
      * @throws IllegalRequestException
      */
     public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean displayParents, boolean openExpanded,
-            boolean ignoreHierarchy) throws PresentationException, IllegalRequestException, IndexUnreachableException {
+            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IllegalRequestException, IndexUnreachableException {
         if (StringUtils.isBlank(content.getSolrField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
@@ -145,6 +157,7 @@ public class CollectionViewBean implements Serializable {
         collection.setIgnore(content.getIgnoreCollectionsAsList());
         collection.setIgnoreHierarchy(ignoreHierarchy);
         collection.setShowAllHierarchyLevels(openExpanded);
+        collection.setTopVisibleElement(topVisibleElement);
         collection.populateCollectionList();
         return collection;
     }

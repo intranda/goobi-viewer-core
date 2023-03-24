@@ -1140,13 +1140,14 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
 	</url-mapping>
-
+	<!-- Deprecated. Keep for backward compatibility -->
 	<url-mapping id="cmsOpenPageWithCollection">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+	<!-- Deprecated. Keep for backward compatibility -->
 	<url-mapping id="cmsOpenPagePreviewWithCollection">
 		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
