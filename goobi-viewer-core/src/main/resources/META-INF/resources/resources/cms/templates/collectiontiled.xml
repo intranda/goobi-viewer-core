@@ -17,7 +17,7 @@
 		</item>
 	</content>
 	<attribute name="collectionBaseLevels" display="false" boolean="false">
-		<value>2</value>
+		<value>0</value>
 	</attribute>
 	<attribute name="openExpanded" display="false" boolean="true">
 		<value>true</value>
