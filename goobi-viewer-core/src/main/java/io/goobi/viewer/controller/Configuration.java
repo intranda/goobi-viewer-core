@@ -390,7 +390,7 @@ public class Configuration extends AbstractConfiguration {
     public List<Metadata> getSearchHitMetadataForTemplate(String template) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt("metadata.searchHitMetadataList.template");
         if (templateList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>(); // must be a mutable list!
         }
 
         return getMetadataForTemplate(template, templateList, true, true);
